@@ -1,5 +1,13 @@
 # @octanejs/stylex
 
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies [9d5d642]
+- Updated dependencies [3aada64]
+  - octane@0.1.19
+
 ## 0.1.17
 
 ### Patch Changes
