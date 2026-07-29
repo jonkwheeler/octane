@@ -9,6 +9,7 @@ import { mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
 	CartesianChartsApp,
+	HierarchyChartsApp,
 	LineChartApp,
 	OverlayChartApp,
 	PolarChartsApp,
@@ -99,6 +100,15 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-polar-grid')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-polar-angle-axis')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-polar-radius-axis')).toBeTruthy();
+		result.unmount();
+	});
+
+	it('renders sankey and sunburst hierarchy charts', async () => {
+		const result = mount(HierarchyChartsApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-sankey-node').length).toBe(3);
+		expect(result.container.querySelectorAll('.recharts-sankey-link').length).toBe(2);
+		expect(result.container.querySelectorAll('.recharts-sunburst path.recharts-sector').length).toBe(2);
 		result.unmount();
 	});
 });

@@ -57,6 +57,8 @@ export { RadialBar } from './polar/RadialBar.tsrx';
 export { PolarGrid } from './polar/PolarGrid.tsrx';
 export { PolarAngleAxis } from './polar/PolarAngleAxis.tsrx';
 export { PolarRadiusAxis } from './polar/PolarRadiusAxis.tsrx';
+export { Sankey } from './chart/Sankey.tsrx';
+export { SunburstChart } from './chart/SunburstChart.tsrx';
 export { CartesianAxis } from './cartesian/CartesianAxis.tsrx';
 export { BarStack } from './cartesian/BarStack.tsrx';
 export { LineDrawShape } from './cartesian/LineDrawShape.tsrx';

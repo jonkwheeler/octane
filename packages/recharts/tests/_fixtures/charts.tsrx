@@ -23,6 +23,8 @@ import {
 	ResponsiveContainer,
 	Scatter,
 	ScatterChart,
+	Sankey,
+	SunburstChart,
 	Tooltip,
 	XAxis,
 	YAxis,
@@ -146,5 +148,32 @@ export function PolarChartsApp() @{
 			<PolarAngleAxis type="number" domain={[0, 100]} />
 			<RadialBar dataKey="value" fill="#82ca9d" isAnimationActive={false} />
 		</RadialBarChart>
+	</div>
+}
+
+export function HierarchyChartsApp() @{
+	<div>
+		<Sankey
+			width={500}
+			height={300}
+			data={{
+				nodes: [{ name: 'Start' }, { name: 'Middle' }, { name: 'End' }],
+				links: [
+					{ source: 0, target: 1, value: 10 },
+					{ source: 1, target: 2, value: 7 },
+				],
+			}}
+		/>
+		<SunburstChart
+			width={400}
+			height={300}
+			data={{
+				name: 'root',
+				children: [
+					{ name: 'A', value: 100, fill: '#8884d8' },
+					{ name: 'B', value: 60, fill: '#82ca9d' },
+				],
+			}}
+		/>
 	</div>
 }
