@@ -11,6 +11,7 @@ export const KNOWN_BINDINGS = {
 	'mobx-react-lite': '@octanejs/mobx',
 	'@mantine/core': '@octanejs/mantine-core',
 	'@mantine/charts': '@octanejs/mantine-charts',
+	'@mantine/code-highlight': '@octanejs/mantine-code-highlight',
 	'@mantine/form': '@octanejs/mantine-form',
 	'@mantine/hooks': '@octanejs/mantine-hooks',
 	'@mantine/modals': '@octanejs/mantine-modals',

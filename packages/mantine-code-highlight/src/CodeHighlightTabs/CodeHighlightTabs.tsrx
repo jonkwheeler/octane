@@ -1,0 +1,204 @@
+import { useEffect } from 'octane';
+import {
+  Box,
+  BoxProps,
+  ElementProps,
+  factory,
+  Factory,
+  ScrollArea,
+  StylesApiProps,
+  UnstyledButton,
+  useProps,
+  useResolvedStylesApi,
+  useStyles,
+} from '@octanejs/mantine-core';
+import { useUncontrolled } from '@octanejs/mantine-hooks';
+import {
+  CodeHighlight,
+  CodeHighlightSettings,
+  CodeHighlightStylesNames,
+} from '../CodeHighlight/CodeHighlight';
+import { FileIcon } from './FileIcon';
+import classes from '../CodeHighlight.module.css';
+
+/** Available shiki languages for default Mantine shiki instance.
+ *  Should be used only with *.mantine.dev projects */
+export type CodeHighlightDefaultLanguage = 'tsx' | 'scss' | 'html' | 'bash' | 'json';
+
+export interface CodeHighlightTabsCode {
+  language?: CodeHighlightDefaultLanguage | (string & {});
+  code: string;
+  fileName?: string;
+  icon?: React.ReactNode;
+}
+
+export type CodeHighlightTabsStylesNames =
+  | 'root'
+  | 'files'
+  | 'file'
+  | 'fileIcon'
+  | 'filesScrollarea'
+  | CodeHighlightStylesNames;
+
+export interface CodeHighlightTabsProps
+  extends
+    CodeHighlightSettings,
+    BoxProps,
+    StylesApiProps<CodeHighlightTabsFactory>,
+    ElementProps<'div'> {
+  /** Code to highlight with meta data (file name and icon) */
+  code: CodeHighlightTabsCode[];
+
+  /** Function that returns icon based on file name */
+  getFileIcon?: (fileName: string) => React.ReactNode;
+
+  /** Default active tab index */
+  defaultActiveTab?: number;
+
+  /** Index of controlled active tab state */
+  activeTab?: number;
+
+  /** Called when tab changes */
+  onTabChange?: (tab: number) => void;
+}
+
+export type CodeHighlightTabsFactory = Factory<{
+  props: CodeHighlightTabsProps;
+  ref: HTMLDivElement;
+  stylesNames: CodeHighlightTabsStylesNames;
+}>;
+
+export const CodeHighlightTabs = factory<CodeHighlightTabsFactory>((_props) => {
+  const props = useProps('CodeHighlightTabs', null, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    defaultActiveTab,
+    activeTab,
+    onTabChange,
+    defaultExpanded,
+    expanded,
+    onExpandedChange,
+    code,
+    getFileIcon,
+    withCopyButton,
+    withExpandButton,
+    withBorder,
+    radius,
+    maxCollapsedHeight,
+    copyLabel,
+    copiedLabel,
+    expandCodeLabel,
+    collapseCodeLabel,
+    background,
+    controls,
+    codeColorScheme,
+    withLineNumbers,
+    attributes,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<CodeHighlightTabsFactory>({
+    name: 'CodeHighlightTabs',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+  });
+
+  const [value, setValue] = useUncontrolled({
+    defaultValue: defaultActiveTab,
+    value: activeTab,
+    finalValue: 0,
+    onChange: onTabChange,
+  });
+
+  const [_expanded, setExpanded] = useUncontrolled({
+    defaultValue: defaultExpanded,
+    value: expanded,
+    finalValue: true,
+    onChange: onExpandedChange,
+  });
+
+  const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<CodeHighlightTabsFactory>({
+    classNames,
+    styles,
+    props,
+  });
+
+  useEffect(() => {
+    if (value >= code.length) {
+      setValue(code.length - 1);
+    }
+  }, [value, code]);
+
+  if (code.length <= 0) {
+    return null;
+  }
+
+  const currentCode = code[value] || { code: '', language: 'tsx', fileName: '' };
+
+  const files = code.map((node, index) => (
+    <UnstyledButton
+      {...getStyles('file')}
+      key={node.fileName}
+      mod={{ active: index === value }}
+      onClick={() => setValue(index)}
+      data-color-scheme={codeColorScheme}
+    >
+      <FileIcon
+        fileIcon={node.icon}
+        getFileIcon={getFileIcon}
+        fileName={node.fileName}
+        key="file-icon"
+        {...getStyles('fileIcon')}
+      />
+      <span key="file-name">{node.fileName}</span>
+    </UnstyledButton>
+  ));
+
+  return (
+    <Box {...getStyles('root')} {...others}>
+      <ScrollArea type="never" dir="ltr" offsetScrollbars={false} {...getStyles('filesScrollarea')}>
+        <div {...getStyles('files')}>{files}</div>
+      </ScrollArea>
+
+      <CodeHighlight
+        code={currentCode.code}
+        language={currentCode.language}
+        expanded={_expanded}
+        onExpandedChange={setExpanded}
+        withCopyButton={withCopyButton}
+        withExpandButton={withExpandButton}
+        withBorder={withBorder}
+        radius={radius}
+        maxCollapsedHeight={maxCollapsedHeight}
+        copiedLabel={copiedLabel}
+        copyLabel={copyLabel}
+        expandCodeLabel={expandCodeLabel}
+        collapseCodeLabel={collapseCodeLabel}
+        background={background}
+        controls={controls}
+        codeColorScheme={codeColorScheme}
+        withLineNumbers={withLineNumbers}
+        __withOffset
+        __staticSelector="CodeHighlightTabs"
+        classNames={resolvedClassNames}
+        styles={resolvedStyles}
+        attributes={attributes}
+      />
+    </Box>
+  );
+});
+
+CodeHighlightTabs.displayName = '@mantine/code-highlight/CodeHighlightTabs';
+CodeHighlightTabs.classes = classes;
