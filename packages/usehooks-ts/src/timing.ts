@@ -11,15 +11,15 @@ export function useInterval(
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [() => void, number | null];
 	const [callback, delay] = args;
-	const saved = (useRef as any)(callback, subSlot(slot, 'ref'));
-	(useIsoLayoutEffect as any)(
+	const saved = useRef(callback, subSlot(slot, 'ref'));
+	useIsoLayoutEffect(
 		() => {
 			saved.current = callback;
 		},
 		[callback],
 		subSlot(slot, 'layout'),
 	);
-	(useEffect as any)(
+	useEffect(
 		() => {
 			if (delay === null) return;
 			const id = setInterval(() => saved.current(), delay);
@@ -36,15 +36,15 @@ export function useTimeout(
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [() => void, number | null];
 	const [callback, delay] = args;
-	const saved = (useRef as any)(callback, subSlot(slot, 'ref'));
-	(useIsoLayoutEffect as any)(
+	const saved = useRef(callback, subSlot(slot, 'ref'));
+	useIsoLayoutEffect(
 		() => {
 			saved.current = callback;
 		},
 		[callback],
 		subSlot(slot, 'layout'),
 	);
-	(useEffect as any)(
+	useEffect(
 		() => {
 			if (!delay && delay !== 0) return;
 			const id = setTimeout(() => saved.current(), delay);
@@ -61,32 +61,36 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [T, number?, DebounceOptions?];
 	const [func, delay = 500, options] = args;
-	const active = (useRef as any)(undefined, subSlot(slot, 'active'));
-	const wrapped = (useMemo as any)(
+	const wrapped = useMemo(
 		() => {
-			const instance = debounce(func!, delay, options);
-			const value = ((...callArgs: Parameters<T>) => instance(...callArgs)) as DebouncedState<T>;
-			value.cancel = () => instance.cancel();
+			let pending = false;
+			const instance = debounce(
+				(...callArgs: Parameters<T>) => {
+					pending = false;
+					return func(...callArgs);
+				},
+				delay,
+				options,
+			);
+			const value = ((...callArgs: Parameters<T>) => {
+				pending = true;
+				return instance(...callArgs);
+			}) as DebouncedState<T>;
+			value.cancel = () => {
+				pending = false;
+				instance.cancel();
+			};
 			value.flush = () => {
+				pending = false;
 				instance.flush();
 			};
-			value.isPending = () => !!active.current;
+			value.isPending = () => pending;
 			return value;
 		},
 		[func, delay, options],
 		subSlot(slot, 'memo'),
 	);
-	(useEffect as any)(
-		() => {
-			active.current = wrapped;
-			return () => {
-				wrapped.cancel();
-				active.current = undefined;
-			};
-		},
-		[wrapped],
-		subSlot(slot, 'effect'),
-	);
+	useIsoLayoutEffect(() => () => wrapped.cancel(), [wrapped], subSlot(slot, 'cleanup'));
 	return wrapped;
 }
 
@@ -106,15 +110,10 @@ export function useDebounceValue<T>(
 	const args = rawArgs as [T | (() => T), number?, UseDebounceValueOptions<T>?];
 	const [initialValue, delay, options] = args;
 	const value = initialValue instanceof Function ? initialValue() : initialValue!;
-	const [debouncedValue, setDebouncedValue] = (useState as any)(value, subSlot(slot, 'state'));
-	const previous = (useRef as any)(value, subSlot(slot, 'previous'));
-	const update = (useDebounceCallback as any)(
-		setDebouncedValue,
-		delay,
-		options,
-		subSlot(slot, 'callback'),
-	);
-	const equal = options?.equalityFn ?? Object.is;
+	const [debouncedValue, setDebouncedValue] = useState(value, subSlot(slot, 'state'));
+	const previous = useRef(value, subSlot(slot, 'previous'));
+	const update = useDebounceCallback(setDebouncedValue, delay, options, subSlot(slot, 'callback'));
+	const equal = options?.equalityFn ?? ((left: T, right: T) => left === right);
 	if (!equal(previous.current, value)) {
 		update(value);
 		previous.current = value;

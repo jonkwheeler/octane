@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { mount } from '../../octane/tests/_helpers';
-import { StateProbe } from './_fixtures/hooks.tsrx';
+import { StateProbe, StepValidationProbe } from './_fixtures/hooks.tsrx';
 
 afterEach(() => document.body.replaceChildren());
 
@@ -25,6 +25,29 @@ describe('state hooks', () => {
 		result.click('#reset');
 		result.click('#remove');
 		expect(result.find('#state').textContent).toBe('false/true/2/true/-/2');
+		result.unmount();
+	});
+
+	it('replaces map contents and supports previous and updater step transitions', () => {
+		const result = mount(StateProbe);
+		result.click('#map-all');
+		expect(result.find('#state').textContent).toBe('false/true/2/false/-/1');
+		result.click('#set-updater');
+		expect(result.find('#state').textContent).toBe('false/true/2/false/-/2');
+		result.click('#prev');
+		expect(result.find('#state').textContent).toBe('false/true/2/false/-/1');
+		result.unmount();
+	});
+
+	it('rejects step values outside the configured range', () => {
+		let setStep: ((value: number) => void) | undefined;
+		const result = mount(StepValidationProbe, {
+			onReady(callback) {
+				setStep = callback;
+			},
+		});
+		expect(() => setStep?.(3)).toThrow('Step not valid');
+		expect(result.find('p').textContent).toBe('1');
 		result.unmount();
 	});
 });

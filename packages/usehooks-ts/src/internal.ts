@@ -1,4 +1,5 @@
 const childSlots = new Map<symbol, Map<string, symbol>>();
+const childSlotNamespace = '@octanejs/usehooks-ts';
 
 export function splitSlot<T>(args: T[]): { args: T[]; slot: symbol | undefined } {
 	const tail = args.at(-1);
@@ -16,7 +17,7 @@ export function subSlot(slot: symbol | undefined, key: string): symbol | undefin
 	}
 	let child = slots.get(key);
 	if (!child) {
-		child = Symbol(key);
+		child = Symbol.for(`${childSlotNamespace}:${slot.description ?? ''}:${key}`);
 		slots.set(key, child);
 	}
 	return child;

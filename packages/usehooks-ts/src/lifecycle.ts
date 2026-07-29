@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef } from 'octane';
 import { splitSlot, subSlot } from './internal';
 
 export function useUnmount(...runtime: [func: () => void, slot?: symbol]): void {
-	const { args, slot } = splitSlot(runtime);
-	const func = args[0] as () => void;
+	const { slot } = splitSlot(runtime);
+	const func = runtime[0];
 	const ref = useRef(func, subSlot(slot, 'ref'));
 	ref.current = func;
 	useEffect(() => () => ref.current(), [], subSlot(slot, 'effect'));

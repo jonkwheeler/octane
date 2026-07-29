@@ -11,17 +11,14 @@ export interface UseBooleanReturn {
 }
 
 export function useBoolean(...runtime: [defaultValue?: boolean, slot?: symbol]): UseBooleanReturn {
-	const { args, slot } = splitSlot(runtime);
+	const { args: rawArgs, slot } = splitSlot(runtime);
+	const args = rawArgs as [defaultValue?: boolean];
 	const defaultValue = args[0] ?? false;
 	if (typeof defaultValue !== 'boolean') throw new Error('defaultValue must be `true` or `false`');
-	const [value, setValue] = (useState as any)(defaultValue, subSlot(slot, 'state'));
-	const setTrue = (useCallback as any)(() => setValue(true), [], subSlot(slot, 'true'));
-	const setFalse = (useCallback as any)(() => setValue(false), [], subSlot(slot, 'false'));
-	const toggle = (useCallback as any)(
-		() => setValue((x: boolean) => !x),
-		[],
-		subSlot(slot, 'toggle'),
-	);
+	const [value, setValue] = useState(defaultValue, subSlot(slot, 'state'));
+	const setTrue = useCallback(() => setValue(true), [], subSlot(slot, 'true'));
+	const setFalse = useCallback(() => setValue(false), [], subSlot(slot, 'false'));
+	const toggle = useCallback(() => setValue((x: boolean) => !x), [], subSlot(slot, 'toggle'));
 	return { value, setValue, setTrue, setFalse, toggle };
 }
 
@@ -34,20 +31,13 @@ export interface UseCounterReturn {
 }
 
 export function useCounter(...runtime: [initialValue?: number, slot?: symbol]): UseCounterReturn {
-	const { args, slot } = splitSlot(runtime);
+	const { args: rawArgs, slot } = splitSlot(runtime);
+	const args = rawArgs as [initialValue?: number];
 	const initialValue = args[0];
-	const [count, setCount] = (useState as any)(initialValue ?? 0, subSlot(slot, 'state'));
-	const increment = (useCallback as any)(
-		() => setCount((x: number) => x + 1),
-		[],
-		subSlot(slot, 'inc'),
-	);
-	const decrement = (useCallback as any)(
-		() => setCount((x: number) => x - 1),
-		[],
-		subSlot(slot, 'dec'),
-	);
-	const reset = (useCallback as any)(
+	const [count, setCount] = useState(initialValue ?? 0, subSlot(slot, 'state'));
+	const increment = useCallback(() => setCount((x: number) => x + 1), [], subSlot(slot, 'inc'));
+	const decrement = useCallback(() => setCount((x: number) => x - 1), [], subSlot(slot, 'dec'));
+	const reset = useCallback(
 		() => setCount(initialValue ?? 0),
 		[initialValue],
 		subSlot(slot, 'reset'),
@@ -58,13 +48,10 @@ export function useCounter(...runtime: [initialValue?: number, slot?: symbol]): 
 export function useToggle(
 	...runtime: [defaultValue?: boolean, slot?: symbol]
 ): [boolean, () => void, Dispatch<SetStateAction<boolean>>] {
-	const { args, slot } = splitSlot(runtime);
-	const [value, setValue] = (useState as any)(!!args[0], subSlot(slot, 'state'));
-	const toggle = (useCallback as any)(
-		() => setValue((x: boolean) => !x),
-		[],
-		subSlot(slot, 'toggle'),
-	);
+	const { args: rawArgs, slot } = splitSlot(runtime);
+	const args = rawArgs as [defaultValue?: boolean];
+	const [value, setValue] = useState(!!args[0], subSlot(slot, 'state'));
+	const toggle = useCallback(() => setValue((x: boolean) => !x), [], subSlot(slot, 'toggle'));
 	return [value, toggle, setValue];
 }
 
@@ -77,22 +64,22 @@ export interface Actions<K, V> {
 
 export function useMap<K, V>(
 	...runtime: [initialState?: Map<K, V> | Iterable<readonly [K, V]>, slot?: symbol]
-): [Map<K, V>, Actions<K, V>] {
+): [Omit<Map<K, V>, 'set' | 'clear' | 'delete'>, Actions<K, V>] {
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [initialState?: Map<K, V> | Iterable<readonly [K, V]>];
-	const [map, setMap] = (useState as any)(() => new Map(args[0]), subSlot(slot, 'state'));
+	const [map, setMap] = useState<Map<K, V>>(() => new Map(args[0]), subSlot(slot, 'state'));
 	const actions: Actions<K, V> = {
-		set: (useCallback as any)(
+		set: useCallback(
 			(key: K, value: V) => setMap((prev: Map<K, V>) => new Map(prev).set(key, value)),
 			[],
 			subSlot(slot, 'set'),
 		),
-		setAll: (useCallback as any)(
+		setAll: useCallback(
 			(entries: Iterable<readonly [K, V]>) => setMap(new Map(entries)),
 			[],
 			subSlot(slot, 'all'),
 		),
-		remove: (useCallback as any)(
+		remove: useCallback(
 			(key: K) =>
 				setMap((prev: Map<K, V>) => {
 					const copy = new Map(prev);
@@ -102,7 +89,7 @@ export function useMap<K, V>(
 			[],
 			subSlot(slot, 'remove'),
 		),
-		reset: (useCallback as any)(() => setMap(new Map()), [], subSlot(slot, 'reset')),
+		reset: useCallback(() => setMap(new Map()), [], subSlot(slot, 'reset')),
 	};
 	return [map, actions];
 }
@@ -120,10 +107,10 @@ export function useStep(...runtime: [maxStep: number, slot?: symbol]): [number, 
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [number];
 	const maxStep = args[0]!;
-	const [currentStep, setCurrentStep] = (useState as any)(1, subSlot(slot, 'state'));
+	const [currentStep, setCurrentStep] = useState(1, subSlot(slot, 'state'));
 	const canGoToNextStep = currentStep + 1 <= maxStep;
 	const canGoToPrevStep = currentStep - 1 > 0;
-	const setStep = (useCallback as any)(
+	const setStep = useCallback(
 		(step: SetStateAction<number>) => {
 			const next = typeof step === 'function' ? step(currentStep) : step;
 			if (next < 1 || next > maxStep) throw new Error('Step not valid');
@@ -132,21 +119,21 @@ export function useStep(...runtime: [maxStep: number, slot?: symbol]): [number, 
 		[maxStep, currentStep],
 		subSlot(slot, 'set'),
 	);
-	const goToNextStep = (useCallback as any)(
+	const goToNextStep = useCallback(
 		() => {
 			if (canGoToNextStep) setCurrentStep((step: number) => step + 1);
 		},
 		[canGoToNextStep],
 		subSlot(slot, 'next'),
 	);
-	const goToPrevStep = (useCallback as any)(
+	const goToPrevStep = useCallback(
 		() => {
 			if (canGoToPrevStep) setCurrentStep((step: number) => step - 1);
 		},
 		[canGoToPrevStep],
 		subSlot(slot, 'prev'),
 	);
-	const reset = (useCallback as any)(() => setCurrentStep(1), [], subSlot(slot, 'reset'));
+	const reset = useCallback(() => setCurrentStep(1), [], subSlot(slot, 'reset'));
 	return [
 		currentStep,
 		{ goToNextStep, goToPrevStep, canGoToNextStep, canGoToPrevStep, setStep, reset },
