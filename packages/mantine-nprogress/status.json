@@ -1,0 +1,8 @@
+{
+  "upstream": { "package": "@mantine/nprogress", "version": "9.5.0" },
+  "surface": "Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions.",
+  "divergences": [],
+  "ssr": "The initial progress state renders deterministically; timers activate only when actions run on the client.",
+  "verified": "2026-07-29",
+  "notes": []
+}

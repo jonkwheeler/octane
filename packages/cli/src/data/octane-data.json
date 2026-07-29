@@ -243,6 +243,16 @@
       "verified": "2026-07-28"
     },
     {
+      "name": "@octanejs/mantine-modals",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/modals", "version": "9.5.0" },
+      "surface": "Complete @mantine/modals 9.5.0 runtime surface: content, confirmation, and registered context modals; updates; stacking; and centralized close actions.",
+      "divergences": ["Button callbacks receive native browser events."],
+      "ssr": "The provider renders closed and deterministic until modal events are dispatched on the client.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-notifications",
       "version": "0.1.0",
       "category": "UI and interaction",
@@ -253,6 +263,16 @@
         "Pointer, drag, wheel, and close callbacks receive native browser events."
       ],
       "ssr": "Notification containers render deterministic store state; timers and dismissal listeners activate on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-nprogress",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/nprogress", "version": "9.5.0" },
+      "surface": "Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions.",
+      "divergences": [],
+      "ssr": "The initial progress state renders deterministically; timers activate only when actions run on the client.",
       "verified": "2026-07-29"
     },
     {
@@ -746,7 +766,9 @@
     "@mantine/core": "@octanejs/mantine-core",
     "@mantine/form": "@octanejs/mantine-form",
     "@mantine/hooks": "@octanejs/mantine-hooks",
+    "@mantine/modals": "@octanejs/mantine-modals",
     "@mantine/notifications": "@octanejs/mantine-notifications",
+    "@mantine/nprogress": "@octanejs/mantine-nprogress",
     "@mantine/spotlight": "@octanejs/mantine-spotlight",
     "@mantine/store": "@octanejs/mantine-store",
     "@mdx-js/react": "@octanejs/mdx",

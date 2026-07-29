@@ -28,8 +28,6 @@ const MANTINE_PACKAGES = [
 	'@mantine/tiptap',
 	'@mantine/dropzone',
 	'@mantine/carousel',
-	'@mantine/nprogress',
-	'@mantine/modals',
 	'@mantine/schedule',
 ];
 
@@ -110,6 +108,16 @@ describe('migration compatibility corpus', () => {
 		expect(bySpecifier.get('@mantine/spotlight')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/mantine-spotlight',
+			evidence: 'binding-catalog:react-package',
+		});
+		expect(bySpecifier.get('@mantine/modals')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-modals',
+			evidence: 'binding-catalog:react-package',
+		});
+		expect(bySpecifier.get('@mantine/nprogress')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-nprogress',
 			evidence: 'binding-catalog:react-package',
 		});
 		expect(bySpecifier.get('recharts')).toMatchObject({

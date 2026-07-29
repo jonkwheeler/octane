@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**64 publishable package(s), including 52 framework binding(s).**
+**66 publishable package(s), including 54 framework binding(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
@@ -34,7 +34,9 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/mantine-core` | [`packages/mantine-core`](../packages/mantine-core) | framework binding | `0.1.0` | 4 |
 | `@octanejs/mantine-form` | [`packages/mantine-form`](../packages/mantine-form) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-hooks` | [`packages/mantine-hooks`](../packages/mantine-hooks) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-modals` | [`packages/mantine-modals`](../packages/mantine-modals) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-notifications` | [`packages/mantine-notifications`](../packages/mantine-notifications) | framework binding | `0.1.0` | 3 |
+| `@octanejs/mantine-nprogress` | [`packages/mantine-nprogress`](../packages/mantine-nprogress) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-spotlight` | [`packages/mantine-spotlight`](../packages/mantine-spotlight) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-store` | [`packages/mantine-store`](../packages/mantine-store) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mcp-server` | [`packages/octane-mcp-server`](../packages/octane-mcp-server) | agent tooling | `0.2.9` | 2 |

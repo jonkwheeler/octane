@@ -1,0 +1,10 @@
+{
+  "upstream": { "package": "@mantine/modals", "version": "9.5.0" },
+  "surface": "Complete @mantine/modals 9.5.0 runtime surface: content, confirmation, and registered context modals; updates; stacking; and centralized close actions.",
+  "divergences": [
+    "Button callbacks receive native browser events."
+  ],
+  "ssr": "The provider renders closed and deterministic until modal events are dispatched on the client.",
+  "verified": "2026-07-29",
+  "notes": []
+}
