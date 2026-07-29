@@ -73,7 +73,7 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 		const local = mounted.find('#local');
 		expect(local.getAttribute('fill')).toBe('navy');
 		expect(local.getAttribute('width')).toBe('18');
-		expect(local.getAttribute('transform')).toBe('scale(-1, 1)');
+		expect(local.getAttribute('transform')).toBe(null);
 		expect(local.getAttribute('class')).toBe('local');
 
 		mounted.unmount();
