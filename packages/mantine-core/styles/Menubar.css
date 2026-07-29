@@ -1,0 +1,29 @@
+.m_de2654db {
+  display: flex;
+  align-items: center;
+}
+
+.m_f08a2b4a {
+  font-size: var(--mantine-font-size-sm);
+  line-height: 1;
+  padding: calc(var(--mantine-spacing-xs) / 1.5) var(--mantine-spacing-sm);
+  border-radius: var(--mantine-radius-default);
+  color: var(--mantine-color-text);
+  background-color: transparent;
+  user-select: none;
+  cursor: pointer;
+}
+
+.m_f08a2b4a:where([data-disabled], :disabled) {
+    color: var(--mantine-color-disabled-color);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+:where([data-mantine-color-scheme='light']) .m_f08a2b4a:where(:hover, :focus-visible, [data-expanded]):where(:not(:disabled, [data-disabled])) {
+        background-color: var(--mantine-color-gray-1);
+}
+
+:where([data-mantine-color-scheme='dark']) .m_f08a2b4a:where(:hover, :focus-visible, [data-expanded]):where(:not(:disabled, [data-disabled])) {
+        background-color: var(--mantine-color-dark-5);
+}
