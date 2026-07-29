@@ -1,0 +1,24 @@
+.root {
+  min-height: var(--chart-size, auto);
+  height: var(--chart-size, auto);
+  width: var(--chart-size, auto);
+  min-width: var(--chart-size, auto);
+
+  & :where(*) {
+    outline: 0;
+  }
+
+  & :where(:global(.recharts-surface)) {
+    overflow: visible;
+  }
+
+  svg:focus-visible {
+    outline: 2px solid var(--mantine-primary-color-filled);
+    outline-offset: 2px;
+  }
+}
+
+.label {
+  fill: var(--mantine-color-text);
+  font-size: var(--mantine-font-size-sm);
+}

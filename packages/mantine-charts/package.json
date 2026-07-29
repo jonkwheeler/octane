@@ -1,0 +1,50 @@
+{
+  "name": "@octanejs/mantine-charts",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Mantine charts for the Octane renderer.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/mantine-charts"
+  },
+  "sideEffects": ["*.css"],
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": ["src", "styles.css", "styles.layer.css", "README.md"],
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./styles.css",
+    "./styles.layer.css": "./styles.layer.css"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --project mantine-charts"
+  },
+  "dependencies": {
+    "@octanejs/mantine-core": "workspace:*",
+    "@octanejs/mantine-hooks": "workspace:*",
+    "@octanejs/recharts": "workspace:*"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@mantine/charts": "9.5.0",
+    "@types/react": "catalog:default",
+    "octane": "workspace:*",
+    "react": "catalog:default",
+    "vitest": "catalog:default"
+  }
+}

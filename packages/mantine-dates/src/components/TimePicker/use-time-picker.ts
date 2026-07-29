@@ -1,0 +1,255 @@
+import { useRef, useState } from 'octane';
+import { useDidUpdate } from '@octanejs/mantine-hooks';
+import type {
+  TimePickerAmPmLabels,
+  TimePickerFormat,
+  TimePickerPasteSplit,
+  TimePickerType,
+} from './TimePicker.types';
+import { clampTime } from './utils/clamp-time/clamp-time';
+import { getParsedTime } from './utils/get-parsed-time/get-parsed-time';
+import { getTimeString } from './utils/get-time-string/get-time-string';
+
+interface UseTimePickerInput {
+  value: string | undefined;
+  defaultValue: string | undefined;
+  onChange: ((value: string) => void) | undefined;
+  format: TimePickerFormat;
+  amPmLabels: TimePickerAmPmLabels;
+  withSeconds: boolean | undefined;
+  min: string | undefined;
+  max: string | undefined;
+  readOnly: boolean | undefined;
+  disabled: boolean | undefined;
+  clearable: boolean | undefined;
+  pasteSplit: TimePickerPasteSplit | undefined;
+  type: TimePickerType;
+}
+
+export function useTimePicker({
+  value,
+  defaultValue,
+  onChange,
+  format,
+  amPmLabels,
+  withSeconds = false,
+  min,
+  max,
+  clearable,
+  readOnly,
+  disabled,
+  pasteSplit,
+  type,
+}: UseTimePickerInput) {
+  const parsedTime = getParsedTime({
+    time: value || defaultValue || '',
+    amPmLabels,
+    format,
+  });
+
+  const initialTimeString = getTimeString({
+    hours: parsedTime.hours,
+    minutes: parsedTime.minutes,
+    seconds: parsedTime.seconds,
+    format,
+    withSeconds,
+    amPm: parsedTime.amPm,
+    amPmLabels,
+  });
+
+  const acceptChange = useRef(true);
+  const wasInvalidBefore = useRef(!initialTimeString.valid);
+
+  const [hours, setHours] = useState<number | null>(parsedTime.hours);
+  const [minutes, setMinutes] = useState<number | null>(parsedTime.minutes);
+  const [seconds, setSeconds] = useState<number | null>(parsedTime.seconds);
+  const [amPm, setAmPm] = useState<string | null>(parsedTime.amPm);
+
+  const isClearable =
+    clearable &&
+    !readOnly &&
+    !disabled &&
+    (hours !== null || minutes !== null || seconds !== null || amPm !== null);
+
+  const hoursRef = useRef<HTMLInputElement | null>(null);
+  const minutesRef = useRef<HTMLInputElement | null>(null);
+  const secondsRef = useRef<HTMLInputElement | null>(null);
+  const amPmRef = useRef<HTMLSelectElement | null>(null);
+
+  const focus = (field: 'hours' | 'minutes' | 'seconds' | 'amPm') => {
+    if (field === 'hours') {
+      hoursRef.current?.focus();
+    }
+
+    if (field === 'minutes') {
+      minutesRef.current?.focus();
+    }
+
+    if (field === 'seconds') {
+      secondsRef.current?.focus();
+    }
+
+    if (field === 'amPm') {
+      amPmRef.current?.focus();
+    }
+  };
+
+  const handleTimeChange = (field: 'hours' | 'minutes' | 'seconds' | 'amPm', val: any) => {
+    const timeString = getTimeString({
+      hours: field === 'hours' ? val : hours,
+      minutes: field === 'minutes' ? val : minutes,
+      seconds: field === 'seconds' ? val : seconds,
+      amPm: field === 'amPm' ? val : amPm,
+      format,
+      withSeconds,
+      amPmLabels,
+    });
+
+    if (timeString.valid) {
+      acceptChange.current = false;
+      wasInvalidBefore.current = false;
+      if (field === 'hours') {
+        setHours(val);
+      }
+      if (field === 'minutes') {
+        setMinutes(val);
+      }
+      if (field === 'seconds') {
+        setSeconds(val);
+      }
+      if (field === 'amPm') {
+        setAmPm(val);
+      }
+
+      onChange?.(timeString.value);
+    } else {
+      acceptChange.current = false;
+      if (!wasInvalidBefore.current) {
+        onChange?.('');
+        wasInvalidBefore.current = true;
+      }
+    }
+  };
+
+  const setTimeString = (timeString: string) => {
+    acceptChange.current = false;
+
+    const parsedTime = getParsedTime({ time: timeString, amPmLabels, format });
+    setHours(parsedTime.hours);
+    setMinutes(parsedTime.minutes);
+    setSeconds(parsedTime.seconds);
+    setAmPm(parsedTime.amPm);
+
+    const next = getTimeString({ ...parsedTime, format, withSeconds, amPmLabels });
+    wasInvalidBefore.current = !next.valid;
+    onChange?.(timeString);
+  };
+
+  const onHoursChange = (value: number | null) => {
+    let adjustedValue = value;
+    if (format === '12h' && typeof value === 'number' && value > 12) {
+      adjustedValue = ((value - 1) % 12) + 1;
+    }
+
+    setHours(adjustedValue);
+    handleTimeChange('hours', adjustedValue);
+    focus('hours');
+  };
+
+  const onMinutesChange = (value: number | null) => {
+    setMinutes(value);
+    handleTimeChange('minutes', value);
+    focus('minutes');
+  };
+
+  const onSecondsChange = (value: number | null) => {
+    setSeconds(value);
+    handleTimeChange('seconds', value);
+    focus('seconds');
+  };
+
+  const onAmPmChange = (value: string | null) => {
+    setAmPm(value);
+    handleTimeChange('amPm', value);
+    focus('amPm');
+  };
+
+  const clear = () => {
+    acceptChange.current = false;
+    setHours(null);
+    setMinutes(null);
+    setSeconds(null);
+    setAmPm(null);
+    onChange?.('');
+    wasInvalidBefore.current = true;
+    focus('hours');
+  };
+
+  const onPaste = (event: OctaneClipboardEvent<any>) => {
+    event.preventDefault();
+    const pastedValue = event.clipboardData?.getData('text') ?? '';
+    const parsedTime = (pasteSplit || getParsedTime)({ time: pastedValue, format, amPmLabels });
+    const timeString = getTimeString({ ...parsedTime, format, withSeconds, amPmLabels });
+    if (timeString.valid) {
+      acceptChange.current = false;
+      const defaultMax = type === 'duration' ? undefined : '23:59:59';
+      const clamped = clampTime(
+        timeString.value,
+        min || '00:00:00',
+        max || defaultMax,
+        withSeconds
+      );
+      onChange?.(clamped.timeString);
+      setHours(parsedTime.hours);
+      setMinutes(parsedTime.minutes);
+      setSeconds(parsedTime.seconds);
+      setAmPm(parsedTime.amPm);
+    }
+  };
+
+  const hiddenInputValue = getTimeString({
+    hours,
+    minutes,
+    seconds,
+    format,
+    withSeconds,
+    amPm,
+    amPmLabels: amPmLabels!,
+  });
+
+  useDidUpdate(() => {
+    if (value === '') {
+      acceptChange.current = false;
+      setHours(null);
+      setMinutes(null);
+      setSeconds(null);
+      setAmPm(null);
+      acceptChange.current = true;
+      return;
+    }
+
+    if (acceptChange.current && typeof value === 'string') {
+      const parsedTime = getParsedTime({ time: value || '', amPmLabels, format });
+      setHours(parsedTime.hours);
+      setMinutes(parsedTime.minutes);
+      setSeconds(parsedTime.seconds);
+      setAmPm(parsedTime.amPm);
+    }
+    acceptChange.current = true;
+  }, [value]);
+
+  return {
+    refs: { hours: hoursRef, minutes: minutesRef, seconds: secondsRef, amPm: amPmRef },
+    values: { hours, minutes, seconds, amPm },
+    setHours: onHoursChange,
+    setMinutes: onMinutesChange,
+    setSeconds: onSecondsChange,
+    setAmPm: onAmPmChange,
+    focus,
+    clear,
+    onPaste,
+    setTimeString,
+    isClearable,
+    hiddenInputValue: hiddenInputValue.value,
+  };
+}

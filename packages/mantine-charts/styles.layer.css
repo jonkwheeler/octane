@@ -1,0 +1,16 @@
+@import './src/grid-chart.module.css' layer(mantine);
+@import './src/BarsList/BarsList.module.css' layer(mantine);
+@import './src/BulletChart/BulletChart.module.css' layer(mantine);
+@import './src/ChartBrush/ChartBrush.module.css' layer(mantine);
+@import './src/ChartLegend/ChartLegend.module.css' layer(mantine);
+@import './src/ChartTooltip/ChartTooltip.module.css' layer(mantine);
+@import './src/DonutChart/DonutChart.module.css' layer(mantine);
+@import './src/FunnelChart/FunnelChart.module.css' layer(mantine);
+@import './src/Heatmap/Heatmap.module.css' layer(mantine);
+@import './src/PieChart/PieChart.module.css' layer(mantine);
+@import './src/RadarChart/RadarChart.module.css' layer(mantine);
+@import './src/RadialBarChart/RadialBarChart.module.css' layer(mantine);
+@import './src/SankeyChart/SankeyChart.module.css' layer(mantine);
+@import './src/Sparkline/Sparkline.module.css' layer(mantine);
+@import './src/SunburstChart/SunburstChart.module.css' layer(mantine);
+@import './src/Treemap/Treemap.module.css' layer(mantine);
