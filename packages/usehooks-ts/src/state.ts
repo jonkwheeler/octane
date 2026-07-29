@@ -80,8 +80,7 @@ export function useMap<K, V>(
 ): [Map<K, V>, Actions<K, V>] {
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [initialState?: Map<K, V> | Iterable<readonly [K, V]>];
-	const initialState = args[0] ?? new Map<K, V>();
-	const [map, setMap] = (useState as any)(new Map(initialState), subSlot(slot, 'state'));
+	const [map, setMap] = (useState as any)(() => new Map(args[0]), subSlot(slot, 'state'));
 	const actions: Actions<K, V> = {
 		set: (useCallback as any)(
 			(key: K, value: V) => setMap((prev: Map<K, V>) => new Map(prev).set(key, value)),

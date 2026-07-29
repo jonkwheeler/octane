@@ -1,7 +1,6 @@
 import debounce from 'lodash.debounce';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'octane';
 import { splitSlot, subSlot } from './internal';
-import { useUnmount } from './lifecycle';
 import type { DebounceOptions, DebouncedState } from './types';
 
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -63,14 +62,6 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 	const args = rawArgs as [T, number?, DebounceOptions?];
 	const [func, delay = 500, options] = args;
 	const active = (useRef as any)(undefined, subSlot(slot, 'active'));
-	const returned = (useRef as any)(undefined, subSlot(slot, 'returned'));
-	(useUnmount as any)(
-		() => {
-			returned.current?.cancel();
-			active.current?.cancel();
-		},
-		subSlot(slot, 'unmount'),
-	);
 	const wrapped = (useMemo as any)(
 		() => {
 			const instance = debounce(func!, delay, options);
@@ -85,14 +76,15 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 		[func, delay, options],
 		subSlot(slot, 'memo'),
 	);
-	returned.current = wrapped;
-	(useEffect as any)(() => () => wrapped.cancel(), [wrapped], subSlot(slot, 'returnedCleanup'));
 	(useEffect as any)(
 		() => {
-			active.current = debounce(func!, delay, options);
-			return () => active.current?.cancel();
+			active.current = wrapped;
+			return () => {
+				wrapped.cancel();
+				active.current = undefined;
+			};
 		},
-		[func, delay, options],
+		[wrapped],
 		subSlot(slot, 'effect'),
 	);
 	return wrapped;
