@@ -281,14 +281,44 @@ export const getEndPoints = (
   return null;
 };
 
-function ReportReferenceLine(props: ReferenceLineSettings): null {
+export function ReportReferenceLine(props: ReferenceLineSettings): null {
   const dispatch = useAppDispatch();
+  const { xAxisId, yAxisId, ifOverflow, x, y, segment } = props;
+  const segmentStartX = segment?.[0]?.x;
+  const segmentStartY = segment?.[0]?.y;
+  const segmentEndX = segment?.[1]?.x;
+  const segmentEndY = segment?.[1]?.y;
   useEffect(() => {
-    dispatch(addLine(props));
-    return () => {
-      dispatch(removeLine(props));
+    const settings: ReferenceLineSettings = {
+      xAxisId,
+      yAxisId,
+      ifOverflow,
+      x,
+      y,
+      segment:
+        segment == null
+          ? segment
+          : [
+              { x: segmentStartX, y: segmentStartY },
+              { x: segmentEndX, y: segmentEndY },
+            ],
     };
-  });
+    dispatch(addLine(settings));
+    return () => {
+      dispatch(removeLine(settings));
+    };
+  }, [
+    dispatch,
+    ifOverflow,
+    segmentEndX,
+    segmentEndY,
+    segmentStartX,
+    segmentStartY,
+    x,
+    xAxisId,
+    y,
+    yAxisId,
+  ]);
   return null;
 }
 

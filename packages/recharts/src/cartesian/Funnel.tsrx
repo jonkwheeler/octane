@@ -42,9 +42,8 @@ import {
 import { TooltipPayload, TooltipPayloadConfiguration } from '../state/tooltipSlice';
 import { SetTooltipEntrySettings } from '../state/SetTooltipEntrySettings';
 import { Formatter } from '../component/DefaultTooltipContent';
+import type { LegendPayload } from '../component/DefaultLegendContent';
 import { ResolvedFunnelSettings, selectFunnelTrapezoids } from '../state/selectors/funnelSelectors';
-import { findAllByType } from '../util/ReactUtils';
-import { Cell } from '../component/Cell';
 import { RequiresDefaultProps, resolveDefaultProps } from '../util/resolveDefaultProps';
 import { usePlotArea } from '../hooks';
 import { svgPropertiesNoEvents } from '../util/svgPropertiesNoEvents';
@@ -53,6 +52,8 @@ import { AnimationMatchByProp, matchAppend } from '../animation/matchBy';
 import { GraphicalItemId } from '../state/graphicalItemsSlice';
 import { RegisterGraphicalItemId } from '../context/RegisterGraphicalItemId';
 import { WithIdRequired } from '../util/useUniqueId';
+import { SetLegendPayload } from '../state/SetLegendPayload';
+import { CellsContext, useCellRegistry } from '../context/CellsContext';
 import { useCartesianChartLayout } from '../context/chartLayoutContext';
 
 export type FunnelTrapezoidItem = TrapezoidProps &
@@ -533,7 +534,7 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
   } = props;
 
   const presentationProps = svgPropertiesNoEvents(props);
-  const cells = findAllByType(props.children, Cell);
+  const [cells, cellRegistry] = useCellRegistry();
 
   const funnelSettings: ResolvedFunnelSettings = useMemo(
     () => ({
@@ -563,6 +564,18 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
   );
 
   const trapezoids = useAppSelector(state => selectFunnelTrapezoids(state, funnelSettings));
+  const legendPayload = useMemo<ReadonlyArray<LegendPayload>>(() => {
+    if (hide || legendType === 'none' || !trapezoids) {
+      return [];
+    }
+    return trapezoids.map(entry => ({
+      value: entry.name,
+      dataKey: props.dataKey,
+      color: typeof entry.fill === 'string' ? entry.fill : fill,
+      type: legendType,
+      payload: entry.payload != null && typeof entry.payload === 'object' ? entry.payload : entry,
+    }));
+  }, [fill, hide, legendType, props.dataKey, trapezoids]);
 
   if (hide || !trapezoids || !trapezoids.length || !plotArea) {
     return null;
@@ -572,7 +585,8 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
   const layerClass = clsx('recharts-trapezoids', props.className);
 
   return (
-    <>
+    <CellsContext.Provider value={cellRegistry}>
+      <SetLegendPayload legendPayload={legendPayload} />
       <SetFunnelTooltipEntrySettings
         dataKey={props.dataKey}
         nameKey={props.nameKey}
@@ -606,7 +620,7 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
           trapezoids={trapezoids}
         />
       </Layer>
-    </>
+    </CellsContext.Provider>
   );
 }
 

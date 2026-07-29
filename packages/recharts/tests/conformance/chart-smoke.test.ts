@@ -9,6 +9,7 @@ import { mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
 	CartesianChartsApp,
+	FunnelLegendApp,
 	HierarchyChartsApp,
 	LineChartApp,
 	OverlayChartApp,
@@ -90,6 +91,30 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-cartesian-grid')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-reference-line')).toBeTruthy();
 		result.unmount();
+	});
+
+	it('registers Funnel segments in the legend with their names and colors', async () => {
+		const result = mount(FunnelLegendApp, {});
+		await settle();
+		const items = result.container.querySelectorAll('.recharts-legend-item');
+		expect(items).toHaveLength(2);
+		expect(result.container.textContent).toContain('Visitors');
+		expect(result.container.textContent).toContain('Customers');
+		expect(result.container.innerHTML).toContain('#ff0000');
+		expect(result.container.innerHTML).toContain('#0000ff');
+		result.unmount();
+	});
+
+	it('does not register hidden Funnel segments or legendType none', async () => {
+		const hidden = mount(FunnelLegendApp, { hide: true });
+		await settle();
+		expect(hidden.container.querySelectorAll('.recharts-legend-item')).toHaveLength(0);
+		hidden.unmount();
+
+		const none = mount(FunnelLegendApp, { legendType: 'none' });
+		await settle();
+		expect(none.container.querySelectorAll('.recharts-legend-item')).toHaveLength(0);
+		none.unmount();
 	});
 
 	it('forwards Scatter animation lifecycle callbacks', async () => {

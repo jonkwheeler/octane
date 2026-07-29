@@ -4,6 +4,7 @@ import {
 	BarChart,
 	LineChart,
 	Bar,
+	Cell,
 	CartesianGrid,
 	ComposedChart,
 	DefaultLegendContent,
@@ -127,6 +128,25 @@ export function CartesianChartsApp() @{
 			/>
 		</FunnelChart>
 	</div>
+}
+
+export function FunnelLegendApp({ legendType, hide }) @{
+	<FunnelChart width={500} height={300}>
+		<Legend />
+		<Funnel
+			dataKey="value"
+			data={[
+				{ name: 'Visitors', value: 100 },
+				{ name: 'Customers', value: 60 },
+			]}
+			isAnimationActive={false}
+			legendType={legendType}
+			hide={hide}
+		>
+			<Cell fill="#ff0000" />
+			<Cell fill="#0000ff" />
+		</Funnel>
+	</FunnelChart>
 }
 
 const scatterAnimationData = [{ x: 10, y: 20 }];
