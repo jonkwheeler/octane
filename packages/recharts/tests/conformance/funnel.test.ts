@@ -37,6 +37,38 @@ describe('computeFunnelTrapezoids', () => {
 		}
 	});
 
+	it('normalizes non-finite scalar and ranged values without poisoning geometry', () => {
+		const trapezoids = computeFunnelTrapezoids({
+			dataKey: 'value',
+			nameKey: 'name',
+			displayedData: [
+				{ name: 'Invalid scalar', value: Number.NaN },
+				{ name: 'Invalid range end', value: [80, Number.NaN] },
+				{ name: 'Valid', value: 40 },
+			],
+			lastShapeType: 'triangle',
+			reversed: false,
+			offset: { left: 0, top: 0, width: 200, height: 150 } as never,
+			customWidth: undefined,
+			graphicalItemId: 'funnel-non-finite-regression',
+		});
+
+		expect(trapezoids.map((trapezoid) => trapezoid.value)).toEqual([0, 80, 40]);
+		expect(trapezoids[1].lowerWidth).toBe(100);
+		for (const trapezoid of trapezoids) {
+			expect(
+				[
+					trapezoid.x,
+					trapezoid.y,
+					trapezoid.upperWidth,
+					trapezoid.lowerWidth,
+					trapezoid.tooltipPosition.x,
+					trapezoid.tooltipPosition.y,
+				].every(Number.isFinite),
+			).toBe(true);
+		}
+	});
+
 	it('exposes the normalized public value when dataKey uses another field', () => {
 		const [trapezoid] = computeFunnelTrapezoids({
 			dataKey: 'amount',

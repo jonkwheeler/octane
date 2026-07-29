@@ -5,7 +5,7 @@
  * recharts is asserted separately by the differential suite.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { mount, nextPaint } from '../_helpers';
+import { flushEffects, mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
 	CartesianChartsApp,
@@ -25,6 +25,7 @@ import {
 	ScatterCellsApp,
 	ZeroErrorBarApp,
 } from '../_fixtures/charts.tsrx';
+import { CSSTransitionReactivationApp } from '../_fixtures/css-transition-animation.tsrx';
 import { HiddenFunnelRegistrationsApp } from '../_fixtures/hidden-funnel-registrations.tsrx';
 
 async function settle() {
@@ -152,6 +153,26 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(originY).toBeCloseTo(y);
 		result.unmount();
 	});
+
+	it.each([
+		['isActive', { isActive: false, canBegin: true }],
+		['canBegin', { isActive: true, canBegin: false }],
+	])(
+		'restarts CSS transitions without animating backwards after %s is disabled',
+		(_, disabledProps) => {
+			const activeProps = { isActive: true, canBegin: true };
+			const result = mount(CSSTransitionReactivationApp, activeProps);
+			flushEffects();
+
+			result.update(CSSTransitionReactivationApp, disabledProps);
+			result.update(CSSTransitionReactivationApp, activeProps);
+			const target = result.find('.css-transition-target') as HTMLElement;
+			const transition = target.style.transition;
+			result.unmount();
+
+			expect(transition).toBe('');
+		},
+	);
 
 	it('registers Funnel segments in the legend with their names and colors', async () => {
 		const result = mount(FunnelLegendApp, {});

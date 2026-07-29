@@ -675,13 +675,17 @@ function normalizeFunnelValue(value: unknown): {
 	value: number;
 	rangedNextValue: number | undefined;
 } {
-	if (typeof value === 'number') {
+	if (typeof value === 'number' && Number.isFinite(value)) {
 		return { value, rangedNextValue: undefined };
 	}
 	if (Array.isArray(value)) {
+		const currentValue = value[0];
+		const nextValue = value[1];
 		return {
-			value: typeof value[0] === 'number' ? value[0] : 0,
-			rangedNextValue: typeof value[1] === 'number' ? value[1] : undefined,
+			value: typeof currentValue === 'number' && Number.isFinite(currentValue) ? currentValue : 0,
+			rangedNextValue: typeof nextValue === 'number' && Number.isFinite(nextValue)
+				? nextValue
+				: undefined,
 		};
 	}
 	return { value: 0, rangedNextValue: undefined };

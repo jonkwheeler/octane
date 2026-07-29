@@ -117,11 +117,13 @@ export function CSSTransitionAnimate(outsideProps: CSSTransitionAnimateProps) {
 	]);
 
 	if (!isActive) {
+		initialized.current = false;
 		return children({
 			[attributeName]: to,
 		});
 	}
 	if (!canBegin) {
+		initialized.current = false;
 		return children({
 			[attributeName]: from,
 		});
