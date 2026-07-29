@@ -83,12 +83,18 @@ function importsFrom(ast) {
 				specifier: node.source.value,
 				location: sourceLocation(node.source),
 				typeOnly:
-					node.type === 'ImportDeclaration' &&
-					(node.importKind === 'type' ||
-						(node.specifiers?.length > 0 &&
-							node.specifiers.every(
-								(/** @type {any} */ specifier) => specifier.importKind === 'type',
-							))),
+					(node.type === 'ImportDeclaration' &&
+						(node.importKind === 'type' ||
+							(node.specifiers?.length > 0 &&
+								node.specifiers.every(
+									(/** @type {any} */ specifier) => specifier.importKind === 'type',
+								)))) ||
+					(node.type === 'ExportNamedDeclaration' &&
+						(node.exportKind === 'type' ||
+							(node.specifiers?.length > 0 &&
+								node.specifiers.every(
+									(/** @type {any} */ specifier) => specifier.exportKind === 'type',
+								)))),
 			});
 		}
 		if (node.type === 'ImportExpression') {

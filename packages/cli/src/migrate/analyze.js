@@ -136,6 +136,7 @@ export function analyzeMigration({ root, entries }) {
 		const reactNamespaces = new Set();
 		for (const node of record.ast.body ?? []) {
 			if (node.type === 'ImportDeclaration' && node.source?.value === 'react') {
+				if (node.importKind === 'type') continue;
 				const incompatible = (node.specifiers ?? []).find(
 					(/** @type {any} */ specifier) =>
 						specifier.type === 'ImportDefaultSpecifier' ||
@@ -266,6 +267,8 @@ export function analyzeMigration({ root, entries }) {
 		packages,
 		findings: normalizedFindings,
 		blocked: normalizedFindings.some((finding) => finding.severity === 'blocker'),
-		candidateBoundaries: selectedEntries.filter((file) => !HOST_FILENAMES.has(path.basename(file))),
+		candidateBoundaries: graph.files
+			.map((record) => record.file)
+			.filter((file) => !HOST_FILENAMES.has(path.basename(file))),
 	};
 }

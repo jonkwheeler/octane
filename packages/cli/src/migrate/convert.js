@@ -106,8 +106,21 @@ function planFile(root, file) {
 	const edits = [];
 
 	for (const node of ast.body ?? []) {
-		if (node.type !== 'ImportDeclaration' || typeof node.source?.value !== 'string') continue;
-		if (node.importKind === 'type') continue;
+		if (
+			(node.type !== 'ImportDeclaration' &&
+				node.type !== 'ExportNamedDeclaration' &&
+				node.type !== 'ExportAllDeclaration') ||
+			typeof node.source?.value !== 'string'
+		)
+			continue;
+		if (
+			node.importKind === 'type' ||
+			node.exportKind === 'type' ||
+			(node.type === 'ExportNamedDeclaration' &&
+				node.specifiers?.length > 0 &&
+				node.specifiers.every((/** @type {any} */ specifier) => specifier.exportKind === 'type'))
+		)
+			continue;
 		const classified = classifyPackageImport(root, node.source.value, file);
 		if (classified.classification !== 'supported' || !classified.replacement) continue;
 		if (classified.replacement === node.source.value) continue;

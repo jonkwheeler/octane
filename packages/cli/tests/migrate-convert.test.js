@@ -85,6 +85,47 @@ export function Leaf() {
 		expect(plan.files[0].output).toContain('<input type={type} onChange=');
 	});
 
+	it('converts the full local import closure', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				import { Helper } from './Helper';
+				export const Leaf = () => <Helper />;
+			`,
+			'src/Helper.tsx': `
+				import { useState } from 'react';
+				export const Helper = () => {
+					const [value] = useState('ready');
+					return <span>{value}</span>;
+				};
+			`,
+		});
+
+		const plan = createConversionPlan({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(plan.files.map((file) => file.file.slice(project.root.length))).toEqual([
+			'/src/Helper.tsx',
+			'/src/Leaf.tsx',
+		]);
+		expect(plan.files.find((file) => file.file.endsWith('/Helper.tsx'))?.output).toContain(
+			"from 'octane'",
+		);
+	});
+
+	it('rewrites supported re-exports but preserves type-only exports', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				export { useSelector } from 'react-redux';
+				export type { ReactNode } from 'react';
+			`,
+		});
+
+		const plan = createConversionPlan({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(plan.blocked).toBe(false);
+		expect(plan.files[0].output).toContain("export { useSelector } from '@octanejs/redux'");
+		expect(plan.files[0].output).toContain("export type { ReactNode } from 'react'");
+	});
+
 	it('adds a leading ownership pragma when the phrase appears only in code', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `

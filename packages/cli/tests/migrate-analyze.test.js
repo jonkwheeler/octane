@@ -143,6 +143,21 @@ describe('migration preflight', () => {
 		expect(report.blocked).toBe(false);
 	});
 
+	it('preserves pure type-only React imports without blocking migration', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				import type { ReactNode } from 'react';
+				export const Leaf = ({ children }: { children: ReactNode }) => <p>{children}</p>;
+			`,
+		});
+
+		const report = analyzeMigration({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(report.findings.map((finding) => finding.code)).not.toContain('react-import-shape');
+		expect(report.packages.some((entry) => entry.specifier === 'react')).toBe(false);
+		expect(report.blocked).toBe(false);
+	});
+
 	it('classifies conditional package subpaths from the imported entrypoint', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `
