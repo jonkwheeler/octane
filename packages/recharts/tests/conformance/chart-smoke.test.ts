@@ -9,6 +9,7 @@ import { mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
 	CartesianChartsApp,
+	FunnelAnimationStabilityApp,
 	FunnelLegendApp,
 	HiddenPieTooltipApp,
 	HierarchyChartsApp,
@@ -151,6 +152,43 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 			await settle();
 			expect(starts).toEqual(['start']);
 			expect(ends).toEqual(['end']);
+			result.unmount();
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	});
+
+	it('does not restart Funnel animation for equivalent props but propagates presentation changes', async () => {
+		let frameTime = performance.now();
+		vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
+			setTimeout(() => callback((frameTime += 16)), 0),
+		);
+		vi.stubGlobal('cancelAnimationFrame', (handle: number) => clearTimeout(handle));
+		const starts: string[] = [];
+		const ends: string[] = [];
+		const props = {
+			fill: '#8884d8',
+			onAnimationStart: () => starts.push('start'),
+			onAnimationEnd: () => ends.push('end'),
+		};
+		try {
+			const result = mount(FunnelAnimationStabilityApp, props);
+			await settle();
+			expect(starts).toEqual(['start']);
+			expect(ends).toEqual(['end']);
+
+			result.update(FunnelAnimationStabilityApp, { ...props });
+			await settle();
+			expect(starts).toEqual(['start']);
+			expect(ends).toEqual(['end']);
+
+			result.update(FunnelAnimationStabilityApp, { ...props, fill: '#82ca9d' });
+			await settle();
+			expect(starts).toEqual(['start', 'start']);
+			expect(ends).toEqual(['end', 'end']);
+			expect(
+				result.container.querySelector('.recharts-funnel-trapezoid path')?.getAttribute('fill'),
+			).toBe('#82ca9d');
 			result.unmount();
 		} finally {
 			vi.unstubAllGlobals();

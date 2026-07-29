@@ -1,5 +1,6 @@
 import * as React from 'octane';
 import { MutableRefObject, ReactElement, ReactNode, useMemo, useRef } from 'octane';
+import { shallowEqual } from '@octanejs/redux';
 import omit from 'es-toolkit/compat/omit';
 
 import { clsx } from 'clsx';
@@ -533,7 +534,12 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
     ...everythingElse
   } = props;
 
-  const presentationProps = svgPropertiesNoEvents(props);
+  const nextPresentationProps = svgPropertiesNoEvents(props);
+  const presentationPropsRef = useRef(nextPresentationProps);
+  if (!shallowEqual(presentationPropsRef.current, nextPresentationProps)) {
+    presentationPropsRef.current = nextPresentationProps;
+  }
+  const presentationProps = presentationPropsRef.current;
   const [cells, cellRegistry] = useCellRegistry();
 
   const funnelSettings: ResolvedFunnelSettings = useMemo(

@@ -149,6 +149,25 @@ export function FunnelLegendApp({ legendType, hide }) @{
 	</FunnelChart>
 }
 
+const funnelAnimationData = [
+	{ name: 'Visitors', value: 100 },
+	{ name: 'Customers', value: 60 },
+];
+
+export function FunnelAnimationStabilityApp({ fill, onAnimationStart, onAnimationEnd }) @{
+	<FunnelChart width={500} height={300}>
+		<Funnel
+			dataKey="value"
+			data={funnelAnimationData}
+			fill={fill}
+			animationBegin={0}
+			animationDuration={1}
+			onAnimationStart={onAnimationStart}
+			onAnimationEnd={onAnimationEnd}
+		/>
+	</FunnelChart>
+}
+
 const scatterAnimationData = [{ x: 10, y: 20 }];
 
 export function ScatterAnimationCallbacksApp({ onAnimationStart, onAnimationEnd }) @{
