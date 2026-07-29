@@ -53,20 +53,34 @@ function exportTarget(manifest, specifier, name) {
  * @returns {boolean | null}
  */
 function entryReactEvidence(installed, specifier, name) {
-	const target = exportTarget(installed.manifest, specifier, name);
-	if (!target || !target.startsWith('.')) return null;
-	const file = path.resolve(installed.dir, target);
+	const initialTarget = exportTarget(installed.manifest, specifier, name);
+	if (!initialTarget || !initialTarget.startsWith('.')) return null;
 	try {
-		const graph = buildImportGraph([file]);
 		const reactImport =
 			/(?:from\s*|import\s*\(|require\s*\()\s*['"](?:react|react-dom)(?:\/[^'"]*)?['"]/;
-		if (graph.files.some((entry) => reactImport.test(entry.source))) return true;
-		if (
-			graph.unresolved.length > 0 ||
-			graph.files.length === 0 ||
-			graph.files.some((entry) => entry.parseError !== null)
-		) {
-			return null;
+		const targets = [initialTarget];
+		const seenTargets = new Set();
+		for (let targetIndex = 0; targetIndex < targets.length; targetIndex++) {
+			const target = targets[targetIndex];
+			if (seenTargets.has(target)) continue;
+			seenTargets.add(target);
+			const graph = buildImportGraph([path.resolve(installed.dir, target)]);
+			if (graph.files.some((entry) => reactImport.test(entry.source))) return true;
+			if (
+				graph.unresolved.length > 0 ||
+				graph.files.length === 0 ||
+				graph.files.some((entry) => entry.parseError !== null)
+			) {
+				return null;
+			}
+			for (const entry of graph.files) {
+				for (const imported of entry.imports) {
+					if (!imported.specifier || packageName(imported.specifier) !== name) continue;
+					const selfTarget = exportTarget(installed.manifest, imported.specifier, name);
+					if (!selfTarget || !selfTarget.startsWith('.')) return null;
+					targets.push(selfTarget);
+				}
+			}
 		}
 		return false;
 	} catch {

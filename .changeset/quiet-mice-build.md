@@ -14,6 +14,7 @@
 "@octanejs/mantine-store": patch
 "@octanejs/mantine-tiptap": patch
 "@octanejs/number-format": patch
+"@octanejs/recharts": patch
 "@octanejs/cli": patch
 "@octanejs/mcp-server": patch
 ---

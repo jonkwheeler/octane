@@ -179,6 +179,28 @@ export const Leaf = () => <p>{help}</p>;
 		]);
 	});
 
+	it('does not partially apply a multi-file plan when any file is stale', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `import { useState } from 'react'; import './Other'; export const Leaf = () => <p />;\n`,
+			'src/Other.tsx': `export const Other = () => <span />;\n`,
+		});
+		const plan = createConversionPlan({ root: project.root, entries: ['src/Leaf.tsx'] });
+		const first = plan.files[0];
+		const stale = plan.files[1];
+		const originalFirst = readFileSync(first.file, 'utf8');
+		project.write('src/Other.tsx', '// human edit\n' + stale.output);
+
+		const results = applyConversionPlan(plan);
+
+		expect(results).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ file: stale.file, applied: false, conflict: true }),
+				expect.objectContaining({ file: first.file, applied: false, conflict: false }),
+			]),
+		);
+		expect(readFileSync(first.file, 'utf8')).toBe(originalFirst);
+	});
+
 	it('preserves checkable onChange and blocks unknown React packages', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `

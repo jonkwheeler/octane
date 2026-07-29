@@ -254,6 +254,37 @@ describe('migration preflight', () => {
 		expect(report.blocked).toBe(true);
 	});
 
+	it('follows package self-imports when checking for React evidence', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				import { Widget } from 'self-importing';
+				export const Leaf = () => <Widget />;
+			`,
+			'node_modules/self-importing/package.json': {
+				name: 'self-importing',
+				version: '1.0.0',
+				peerDependencies: { react: '^19' },
+				exports: {
+					'.': './index.js',
+					'./react': './react.js',
+				},
+			},
+			'node_modules/self-importing/index.js': `export { Widget } from 'self-importing/react';`,
+			'node_modules/self-importing/react.js': `import React from 'react'; export const Widget = () => null;`,
+		});
+
+		const report = analyzeMigration({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(report.packages).toContainEqual(
+			expect.objectContaining({
+				specifier: 'self-importing',
+				classification: 'blocked',
+				evidence: 'react-entrypoint',
+			}),
+		);
+		expect(report.blocked).toBe(true);
+	});
+
 	it('follows CommonJS package entrypoints when checking for React evidence', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `

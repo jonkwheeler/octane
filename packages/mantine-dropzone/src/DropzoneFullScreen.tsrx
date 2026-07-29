@@ -24,7 +24,7 @@ export interface DropzoneFullScreenProps
     BoxProps,
     Omit<DropzoneProps, 'styles' | 'classNames' | 'vars' | 'variant' | 'attributes'>,
     StylesApiProps<DropzoneFullScreenFactory>,
-    ElementProps<'div', 'onDragLeave' | 'onDragOver' | 'onDrop' | 'onDragEnter'> {
+    ElementProps<'div', 'onDragLeave' | 'onDragOver' | 'onDrop' | 'onDragEnter' | 'onError'> {
   /** Determines whether user can drop files to browser window @default true */
   active?: boolean;
 

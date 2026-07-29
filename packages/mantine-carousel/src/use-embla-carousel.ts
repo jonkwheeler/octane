@@ -5,7 +5,12 @@ import EmblaCarousel, {
 } from 'embla-carousel';
 import { useEffect, useState } from 'octane';
 
-export function useEmblaCarousel(options: EmblaOptionsType, plugins: EmblaPluginType[] = []) {
+const EMPTY_PLUGINS: EmblaPluginType[] = [];
+
+export function useEmblaCarousel(
+	options: EmblaOptionsType,
+	plugins: EmblaPluginType[] = EMPTY_PLUGINS,
+) {
 	const [element, setElement] = useState<HTMLElement | null>(null);
 	const [api, setApi] = useState<EmblaCarouselType | undefined>();
 

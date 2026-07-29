@@ -31,6 +31,7 @@ interface Options {
 	onDragOver?: (event: DragEvent) => void;
 	onFileDialogOpen?: () => void;
 	onFileDialogCancel?: () => void;
+	onError?: (error: unknown) => void;
 	getFilesFromEvent?: (event: DropEvent) => Promise<Array<File | DataTransferItem>>;
 	validator?: (file: FileWithPath) => FileError | FileError[] | null;
 	preventDropOnDocument?: boolean;
@@ -99,6 +100,15 @@ export function useDropzone(options: Options) {
 		return Array.from((event.currentTarget as HTMLInputElement).files ?? []) as FileWithPath[];
 	};
 
+	const processFiles = async (event: DropEvent) => {
+		try {
+			validate(await filesFrom(event));
+		} catch (error) {
+			setDragState({ active: false, accept: false, reject: false });
+			options.onError?.(error);
+		}
+	};
+
 	const open = () => {
 		if (options.disabled) return;
 		fileDialogActive.current = true;
@@ -154,7 +164,7 @@ export function useDropzone(options: Options) {
 			style: { display: 'none', ...props.style },
 			onChange: async (event: Event) => {
 				fileDialogActive.current = false;
-				if (!options.disabled) validate(await filesFrom(event));
+				if (!options.disabled) await processFiles(event);
 				props.onChange?.(event);
 			},
 		}),
@@ -206,7 +216,7 @@ export function useDropzone(options: Options) {
 					: async (event: DragEvent) => {
 							event.preventDefault();
 							if (options.noDragEventsBubbling) event.stopPropagation();
-							validate(await filesFrom(event));
+							await processFiles(event);
 						},
 		}),
 	};

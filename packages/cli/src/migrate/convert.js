@@ -196,16 +196,22 @@ export function createConversionPlan({ root, entries }) {
  * @returns {{ file: string, applied: boolean, conflict: boolean }[]}
  */
 export function applyConversionPlan(plan) {
-	/** @type {{ file: string, applied: boolean, conflict: boolean }[]} */
-	const results = [];
-	for (const file of plan.files) {
-		const current = readFileSync(file.file, 'utf8');
-		if (digest(current) !== file.digest) {
-			results.push({ file: file.file, applied: false, conflict: true });
-			continue;
-		}
-		if (file.changed) writeFileSync(file.file, file.output);
-		results.push({ file: file.file, applied: file.changed, conflict: false });
+	/** @type {Set<string>} */
+	const conflicts = new Set(
+		plan.files
+			.filter((file) => digest(readFileSync(file.file, 'utf8')) !== file.digest)
+			.map((file) => file.file),
+	);
+	if (conflicts.size > 0) {
+		return plan.files.map((file) => ({
+			file: file.file,
+			applied: false,
+			conflict: conflicts.has(file.file),
+		}));
 	}
-	return results;
+
+	return plan.files.map((file) => {
+		if (file.changed) writeFileSync(file.file, file.output);
+		return { file: file.file, applied: file.changed, conflict: false };
+	});
 }

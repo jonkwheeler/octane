@@ -1,1 +1,3 @@
-export type SyncReactNode = Exclude<React.ReactNode, Promise<unknown>>;
+import type { OctaneNode } from 'octane';
+
+export type SyncReactNode = Exclude<OctaneNode, Promise<unknown>>;

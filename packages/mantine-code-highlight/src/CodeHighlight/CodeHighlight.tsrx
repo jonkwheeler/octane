@@ -1,322 +1,289 @@
 import cx from 'clsx';
+import type { OctaneNode } from 'octane';
 import {
-  Box,
-  BoxProps,
-  createVarsResolver,
-  ElementProps,
-  factory,
-  Factory,
-  getRadius,
-  getThemeColor,
-  MantineColor,
-  MantineRadius,
-  rem,
-  ScrollArea,
-  StylesApiProps,
-  UnstyledButton,
-  useComputedColorScheme,
-  useProps,
-  useStyles,
+	Box,
+	BoxProps,
+	createVarsResolver,
+	ElementProps,
+	factory,
+	Factory,
+	getRadius,
+	getThemeColor,
+	MantineColor,
+	MantineRadius,
+	rem,
+	ScrollArea,
+	StylesApiProps,
+	UnstyledButton,
+	useComputedColorScheme,
+	useProps,
+	useStyles,
 } from '@octanejs/mantine-core';
 import { useUncontrolled } from '@octanejs/mantine-hooks';
 import {
-  useHighlight,
-  type CodeHighlightAdapter,
+	useHighlight,
+	type CodeHighlightAdapter,
 } from '../CodeHighlightProvider/CodeHighlightProvider.tsrx';
 import type {
-  CodeHighlightDefaultLanguage,
-  CodeHighlightTabsCode,
-  CodeHighlightTabsFactory,
-  CodeHighlightTabsProps,
-  CodeHighlightTabsStylesNames,
+	CodeHighlightDefaultLanguage,
+	CodeHighlightTabsCode,
+	CodeHighlightTabsFactory,
+	CodeHighlightTabsProps,
+	CodeHighlightTabsStylesNames,
 } from '../CodeHighlightTabs/CodeHighlightTabs.tsrx';
 import type {
-  InlineCodeHighlightCssVariables,
-  InlineCodeHighlightFactory,
-  InlineCodeHighlightProps,
-  InlineCodeHighlightStylesNames,
+	InlineCodeHighlightCssVariables,
+	InlineCodeHighlightFactory,
+	InlineCodeHighlightProps,
+	InlineCodeHighlightStylesNames,
 } from './InlineCodeHighlight.tsrx';
 import {
-  CodeHighlightContextProvider,
-  type CodeHighlightContextValue,
+	CodeHighlightContextProvider,
+	type CodeHighlightContextValue,
 } from './CodeHighlight.context';
 import {
-  CodeHighlightControl,
-  type CodeHighlightControlProps,
+	CodeHighlightControl,
+	type CodeHighlightControlProps,
 } from './CodeHighlightControl/CodeHighlightControl.tsrx';
 import { CopyCodeButton } from './CopyCodeButton/CopyCodeButton.tsrx';
 import { ExpandCodeButton } from './ExpandCodeButton/ExpandCodeButton.tsrx';
 import classes from '../CodeHighlight.module.css';
 
 export type CodeHighlightStylesNames =
-  | 'codeHighlight'
-  | 'pre'
-  | 'code'
-  | 'control'
-  | 'controlTooltip'
-  | 'controls'
-  | 'scrollarea'
-  | 'showCodeButton'
-  | 'lineNumbers'
-  | 'codeWrapper';
+	| 'codeHighlight'
+	| 'pre'
+	| 'code'
+	| 'control'
+	| 'controlTooltip'
+	| 'controls'
+	| 'scrollarea'
+	| 'showCodeButton'
+	| 'lineNumbers'
+	| 'codeWrapper';
 
 export type CodeHighlightCssVariables = {
-  codeHighlight: '--ch-max-height' | '--ch-background' | '--ch-radius';
+	codeHighlight: '--ch-max-height' | '--ch-background' | '--ch-radius';
 };
 
 export interface CodeHighlightSettings {
-  /** Label for copy button in default state @default 'Copy' */
-  copyLabel?: string;
-
-  /** Label for copy button in copied state @default 'Copied' */
-  copiedLabel?: string;
-
-  /** Uncontrolled expanded default state */
-  defaultExpanded?: boolean;
-
-  /** Controlled expanded state */
-  expanded?: boolean;
-
-  /** Called when expanded state changes */
-  onExpandedChange?: (expanded: boolean) => void;
-
-  /** Max height of collapsed state @default 180px */
-  maxCollapsedHeight?: number | string;
-
-  /** Determines whether the copy button should be displayed @default true  */
-  withCopyButton?: boolean;
-
-  /** Determines whether the expand/collapse button should be displayed @default false */
-  withExpandButton?: boolean;
-
-  /** Label for expand button @default 'Expand code' */
-  expandCodeLabel?: string;
-
-  /** Label for collapse button @default 'Collapse code' */
-  collapseCodeLabel?: string;
-
-  /** Controls background color of the code. By default, the value depends on color scheme. */
-  background?: MantineColor;
-
-  /** Key of `theme.radius` or any valid CSS value to set border-radius @default 0 */
-  radius?: MantineRadius;
-
-  /** Adds border to the root element @default false */
-  withBorder?: boolean;
-
-  /** Determines whether line numbers should be displayed @default false */
-  withLineNumbers?: boolean;
-
-  /** Extra controls to display in the controls list */
-  controls?: React.ReactNode[];
-
-  /** Set to use dark or light color scheme. When using shiki adapter, you can use loaded themes here */
-  codeColorScheme?: 'dark' | 'light' | (string & {});
+	/** Label for copy button in default state @default 'Copy' */
+	copyLabel?: string;
+	/** Label for copy button in copied state @default 'Copied' */
+	copiedLabel?: string;
+	/** Uncontrolled expanded default state */
+	defaultExpanded?: boolean;
+	/** Controlled expanded state */
+	expanded?: boolean;
+	/** Called when expanded state changes */
+	onExpandedChange?: (expanded: boolean) => void;
+	/** Max height of collapsed state @default 180px */
+	maxCollapsedHeight?: number | string;
+	/** Determines whether the copy button should be displayed @default true  */
+	withCopyButton?: boolean;
+	/** Determines whether the expand/collapse button should be displayed @default false */
+	withExpandButton?: boolean;
+	/** Label for expand button @default 'Expand code' */
+	expandCodeLabel?: string;
+	/** Label for collapse button @default 'Collapse code' */
+	collapseCodeLabel?: string;
+	/** Controls background color of the code. By default, the value depends on color scheme. */
+	background?: MantineColor;
+	/** Key of `theme.radius` or any valid CSS value to set border-radius @default 0 */
+	radius?: MantineRadius;
+	/** Adds border to the root element @default false */
+	withBorder?: boolean;
+	/** Determines whether line numbers should be displayed @default false */
+	withLineNumbers?: boolean;
+	/** Extra controls to display in the controls list */
+	controls?: OctaneNode[];
+	/** Set to use dark or light color scheme. When using shiki adapter, you can use loaded themes here */
+	codeColorScheme?: 'dark' | 'light' | (string & {});
 }
 
-export interface CodeHighlightProps
-  extends
-    CodeHighlightSettings,
-    BoxProps,
-    StylesApiProps<CodeHighlightFactory>,
-    ElementProps<'div'> {
-  __withOffset?: boolean;
-  __staticSelector?: string;
-
-  /** If set, the code will be rendered as inline element without `<pre>` @default false */
-  __inline?: boolean;
-
-  /** Code to highlight */
-  code: string;
-
-  /** Language of the code, used for syntax highlighting */
-  language?: string;
+export interface CodeHighlightProps extends CodeHighlightSettings, BoxProps, StylesApiProps<
+	CodeHighlightFactory
+>, ElementProps<'div'> {
+	__withOffset?: boolean;
+	__staticSelector?: string;
+	/** If set, the code will be rendered as inline element without `<pre>` @default false */
+	__inline?: boolean;
+	/** Code to highlight */
+	code: string;
+	/** Language of the code, used for syntax highlighting */
+	language?: string;
 }
 
-export type CodeHighlightFactory = Factory<{
-  props: CodeHighlightProps;
-  ref: HTMLDivElement;
-  stylesNames: CodeHighlightStylesNames;
-  vars: CodeHighlightCssVariables;
-  staticComponents: {
-    Control: typeof CodeHighlightControl;
-  };
-}>;
+export type CodeHighlightFactory =
+	Factory<{
+		props: CodeHighlightProps;
+		ref: HTMLDivElement;
+		stylesNames: CodeHighlightStylesNames;
+		vars: CodeHighlightCssVariables;
+		staticComponents: {
+			Control: typeof CodeHighlightControl;
+		};
+	}>;
 
 const defaultProps = {
-  withCopyButton: true,
-  expandCodeLabel: 'Expand code',
-  collapseCodeLabel: 'Collapse code',
+	withCopyButton: true,
+	expandCodeLabel: 'Expand code',
+	collapseCodeLabel: 'Collapse code',
 } satisfies Partial<CodeHighlightProps>;
 
 const varsResolver = createVarsResolver<CodeHighlightFactory>(
-  (theme, { maxCollapsedHeight, background, radius }) => ({
-    codeHighlight: {
-      '--ch-max-height': rem(maxCollapsedHeight),
-      '--ch-background': background ? getThemeColor(background, theme) : undefined,
-      '--ch-radius': typeof radius !== 'undefined' ? getRadius(radius) : undefined,
-    },
-  })
+	(theme, { maxCollapsedHeight, background, radius }) => ({
+		codeHighlight: {
+			'--ch-max-height': rem(maxCollapsedHeight),
+			'--ch-background': background ? getThemeColor(background, theme) : undefined,
+			'--ch-radius': typeof radius !== 'undefined' ? getRadius(radius) : undefined,
+		},
+	}),
 );
 
 export const CodeHighlight = factory<CodeHighlightFactory>((_props) => {
-  const props = useProps('CodeHighlight', defaultProps, _props);
-  const {
-    classNames,
-    className,
-    style,
-    styles,
-    unstyled,
-    vars,
-    code,
-    copiedLabel,
-    copyLabel,
-    defaultExpanded,
-    expanded,
-    onExpandedChange,
-    maxCollapsedHeight,
-    withCopyButton,
-    withExpandButton,
-    expandCodeLabel,
-    collapseCodeLabel,
-    radius,
-    background,
-    withBorder,
-    withLineNumbers,
-    controls,
-    language,
-    codeColorScheme,
-    __withOffset,
-    __inline,
-    __staticSelector,
-    attributes,
-    ...others
-  } = props;
+	const props = useProps('CodeHighlight', defaultProps, _props);
+	const {
+		classNames,
+		className,
+		style,
+		styles,
+		unstyled,
+		vars,
+		code,
+		copiedLabel,
+		copyLabel,
+		defaultExpanded,
+		expanded,
+		onExpandedChange,
+		maxCollapsedHeight,
+		withCopyButton,
+		withExpandButton,
+		expandCodeLabel,
+		collapseCodeLabel,
+		radius,
+		background,
+		withBorder,
+		withLineNumbers,
+		controls,
+		language,
+		codeColorScheme,
+		__withOffset,
+		__inline,
+		__staticSelector,
+		attributes,
+		...others
+	} = props;
 
-  const getStyles = useStyles<CodeHighlightFactory>({
-    name: __staticSelector || 'CodeHighlight',
-    classes,
-    props,
-    className,
-    style,
-    classNames,
-    styles,
-    unstyled,
-    attributes,
-    vars,
-    varsResolver,
-    rootSelector: 'codeHighlight',
-  });
+	const getStyles = useStyles<CodeHighlightFactory>({
+		name: __staticSelector || 'CodeHighlight',
+		classes,
+		props,
+		className,
+		style,
+		classNames,
+		styles,
+		unstyled,
+		attributes,
+		vars,
+		varsResolver,
+		rootSelector: 'codeHighlight',
+	});
 
-  const [_expanded, setExpanded] = useUncontrolled({
-    value: expanded,
-    defaultValue: defaultExpanded,
-    finalValue: true,
-    onChange: onExpandedChange,
-  });
+	const [_expanded, setExpanded] = useUncontrolled({
+		value: expanded,
+		defaultValue: defaultExpanded,
+		finalValue: true,
+		onChange: onExpandedChange,
+	});
 
-  const shouldDisplayControls =
-    (controls && controls.length > 0) || withExpandButton || withCopyButton;
+	const shouldDisplayControls =
+		controls && controls.length > 0 || withExpandButton || withCopyButton;
 
-  const colorScheme = useComputedColorScheme();
-  const highlight = useHighlight();
-  const highlightedCode = highlight({
-    code: code.trim(),
-    language,
-    colorScheme: codeColorScheme ?? colorScheme,
-  });
+	const colorScheme = useComputedColorScheme();
+	const highlight = useHighlight();
+	const highlightedCode = highlight({
+		code: code.trim(),
+		language,
+		colorScheme: codeColorScheme ?? colorScheme,
+	});
 
-  const codeContent = highlightedCode.isHighlighted
-    ? { dangerouslySetInnerHTML: { __html: highlightedCode.highlightedCode } }
-    : { children: code.trim() };
+	const codeContent = highlightedCode.isHighlighted
+		? { dangerouslySetInnerHTML: { __html: highlightedCode.highlightedCode } }
+		: { children: code.trim() };
 
-  if (__inline) {
-    return (
-      <Box
-        component="code"
-        {...(others as any)}
-        {...highlightedCode.codeElementProps}
-        {...getStyles('codeHighlight', {
-          className: cx(highlightedCode.codeElementProps?.className, className),
-          style: [{ ...highlightedCode.codeElementProps?.style }, style],
-        })}
-        data-with-border={withBorder || undefined}
-        {...codeContent}
-      />
-    );
-  }
+	if (__inline) {
+		return <Box
+			component="code"
+			{...others as any}
+			{...highlightedCode.codeElementProps}
+			{...getStyles('codeHighlight', {
+				className: cx(highlightedCode.codeElementProps?.className, className),
+				style: [{ ...highlightedCode.codeElementProps?.style }, style],
+			})}
+			data-with-border={withBorder || undefined}
+			{...codeContent}
+		/>;
+	}
 
-  return (
-    <CodeHighlightContextProvider value={{ getStyles, codeColorScheme }}>
-      <Box
-        {...getStyles('codeHighlight')}
-        {...others}
-        dir="ltr"
-        data-code-color-scheme={codeColorScheme}
-        data-with-border={withBorder || undefined}
-      >
-        {shouldDisplayControls && (
-          <div {...getStyles('controls')} data-with-offset={__withOffset || undefined}>
-            {controls}
+	return <CodeHighlightContextProvider value={{ getStyles, codeColorScheme }}>
+		<Box
+			{...getStyles('codeHighlight')}
+			{...others}
+			dir="ltr"
+			data-code-color-scheme={codeColorScheme}
+			data-with-border={withBorder || undefined}
+		>
+			{shouldDisplayControls &&
+				<div {...getStyles('controls')} data-with-offset={__withOffset || undefined}>
+					{controls}
 
-            {withExpandButton && (
-              <ExpandCodeButton
-                expanded={_expanded}
-                onExpand={setExpanded}
-                expandCodeLabel={expandCodeLabel}
-                collapseCodeLabel={collapseCodeLabel}
-              />
-            )}
-            {withCopyButton && (
-              <CopyCodeButton code={code} copiedLabel={copiedLabel} copyLabel={copyLabel} />
-            )}
-          </div>
-        )}
+					{withExpandButton &&
+						<ExpandCodeButton
+							expanded={_expanded}
+							onExpand={setExpanded}
+							expandCodeLabel={expandCodeLabel}
+							collapseCodeLabel={collapseCodeLabel}
+						/>}
+					{withCopyButton &&
+						<CopyCodeButton code={code} copiedLabel={copiedLabel} copyLabel={copyLabel} />}
+				</div>}
 
-        <ScrollArea
-          type="hover"
-          scrollbarSize={4}
-          dir="ltr"
-          offsetScrollbars={false}
-          data-collapsed={!_expanded || undefined}
-          styles={{ viewport: { overscrollBehaviorInline: 'none' } }}
-          {...getStyles('scrollarea')}
-        >
-          <div {...getStyles('codeWrapper')}>
-            {withLineNumbers && (
-              <div {...getStyles('lineNumbers')} data-with-offset={__withOffset || undefined}>
-                {code
-                  .trim()
-                  .split('\n')
-                  .map((_, i) => (
-                    <div key={i}>{i + 1}</div>
-                  ))}
-              </div>
-            )}
-            <pre {...getStyles('pre')} data-with-offset={__withOffset || undefined}>
-              <code
-                {...highlightedCode.codeElementProps}
-                {...getStyles('code', {
-                  className: highlightedCode.codeElementProps?.className,
-                  style: highlightedCode.codeElementProps?.style,
-                })}
-                {...codeContent}
-              />
-            </pre>
-          </div>
-        </ScrollArea>
+			<ScrollArea
+				type="hover"
+				scrollbarSize={4}
+				dir="ltr"
+				offsetScrollbars={false}
+				data-collapsed={!_expanded || undefined}
+				styles={{ viewport: { overscrollBehaviorInline: 'none' } }}
+				{...getStyles('scrollarea')}
+			>
+				<div {...getStyles('codeWrapper')}>
+					{withLineNumbers &&
+						<div
+							{...getStyles('lineNumbers')}
+							data-with-offset={__withOffset || undefined}
+						>{code.trim().split('\n').map((_, i) => <div key={i}>{i + 1}</div>)}</div>}
+					<pre {...getStyles('pre')} data-with-offset={__withOffset || undefined}>
+						<code
+							{...highlightedCode.codeElementProps}
+							{...getStyles('code', {
+								className: highlightedCode.codeElementProps?.className,
+								style: highlightedCode.codeElementProps?.style,
+							})}
+							{...codeContent}
+						/>
+					</pre>
+				</div>
+			</ScrollArea>
 
-        <UnstyledButton
-          {...getStyles('showCodeButton')}
-          mod={{ hidden: _expanded }}
-          onClick={() => setExpanded(true)}
-          data-code-color-scheme={codeColorScheme}
-        >
-          {expandCodeLabel}
-        </UnstyledButton>
-      </Box>
-    </CodeHighlightContextProvider>
-  );
+			<UnstyledButton
+				{...getStyles('showCodeButton')}
+				mod={{ hidden: _expanded }}
+				onClick={() => setExpanded(true)}
+				data-code-color-scheme={codeColorScheme}
+			>{expandCodeLabel}</UnstyledButton>
+		</Box>
+	</CodeHighlightContextProvider>;
 });
 
 CodeHighlight.displayName = '@mantine/code-highlight/CodeHighlight';
@@ -325,29 +292,29 @@ CodeHighlight.varsResolver = varsResolver;
 CodeHighlight.Control = CodeHighlightControl;
 
 export declare namespace CodeHighlight {
-  export type Props = CodeHighlightProps;
-  export type StylesNames = CodeHighlightStylesNames;
-  export type CssVariables = CodeHighlightCssVariables;
-  export type Factory = CodeHighlightFactory;
-  export type ContextValue = CodeHighlightContextValue;
-  export type Adapter = CodeHighlightAdapter;
+	export type Props = CodeHighlightProps;
+	export type StylesNames = CodeHighlightStylesNames;
+	export type CssVariables = CodeHighlightCssVariables;
+	export type Factory = CodeHighlightFactory;
+	export type ContextValue = CodeHighlightContextValue;
+	export type Adapter = CodeHighlightAdapter;
 
-  export namespace Tabs {
-    export type Props = CodeHighlightTabsProps;
-    export type StylesNames = CodeHighlightTabsStylesNames;
-    export type Code = CodeHighlightTabsCode;
-    export type Factory = CodeHighlightTabsFactory;
-    export type DefaultLanguage = CodeHighlightDefaultLanguage;
-  }
+	export namespace Tabs {
+		export type Props = CodeHighlightTabsProps;
+		export type StylesNames = CodeHighlightTabsStylesNames;
+		export type Code = CodeHighlightTabsCode;
+		export type Factory = CodeHighlightTabsFactory;
+		export type DefaultLanguage = CodeHighlightDefaultLanguage;
+	}
 
-  export namespace Inline {
-    export type Props = InlineCodeHighlightProps;
-    export type StylesNames = InlineCodeHighlightStylesNames;
-    export type CssVariables = InlineCodeHighlightCssVariables;
-    export type Factory = InlineCodeHighlightFactory;
-  }
+	export namespace Inline {
+		export type Props = InlineCodeHighlightProps;
+		export type StylesNames = InlineCodeHighlightStylesNames;
+		export type CssVariables = InlineCodeHighlightCssVariables;
+		export type Factory = InlineCodeHighlightFactory;
+	}
 
-  export namespace Control {
-    export type Props = CodeHighlightControlProps;
-  }
+	export namespace Control {
+		export type Props = CodeHighlightControlProps;
+	}
 }
