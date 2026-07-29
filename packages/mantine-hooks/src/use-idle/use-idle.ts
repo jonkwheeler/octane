@@ -10,8 +10,12 @@ const DEFAULT_OPTIONS: Required<UseIdleOptions> = {
 	initialState: true,
 };
 
+function withoutSlot<T>(value: T | symbol): T | undefined {
+	return typeof value === 'symbol' ? undefined : value;
+}
+
 export function useIdle(timeout: number, options?: UseIdleOptions) {
-	const { events, initialState } = { ...DEFAULT_OPTIONS, ...options };
+	const { events, initialState } = { ...DEFAULT_OPTIONS, ...withoutSlot(options) };
 	const [idle, setIdle] = useState(initialState);
 	const timer = useRef(-1);
 

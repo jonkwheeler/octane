@@ -23,11 +23,17 @@ export interface UseMoveReturnValue<T extends HTMLElement = any> {
 	active: boolean;
 }
 
+function withoutSlot<T>(value: T | symbol): T | undefined {
+	return typeof value === 'symbol' ? undefined : value;
+}
+
 export function useMove<T extends HTMLElement = any>(
 	onChange: (value: UseMovePosition) => void,
 	handlers?: UseMoveHandlers,
 	dir: 'ltr' | 'rtl' = 'ltr',
 ): UseMoveReturnValue<T> {
+	const normalizedHandlers = withoutSlot(handlers);
+	const direction = withoutSlot(dir) ?? 'ltr';
 	const mounted = useRef<boolean>(false);
 	const isSliding = useRef(false);
 	const frame = useRef(0);
@@ -61,7 +67,7 @@ export function useMove<T extends HTMLElement = any>(
 						if (rect.width && rect.height) {
 							const _x = clamp((x - rect.left) / rect.width, 0, 1);
 							onChange({
-								x: dir === 'ltr' ? _x : 1 - _x,
+								x: direction === 'ltr' ? _x : 1 - _x,
 								y: clamp((y - rect.top) / rect.height, 0, 1),
 							});
 						}
@@ -86,7 +92,8 @@ export function useMove<T extends HTMLElement = any>(
 			const startScrubbing = () => {
 				if (!isSliding.current && mounted.current) {
 					isSliding.current = true;
-					typeof handlers?.onScrubStart === 'function' && handlers.onScrubStart();
+					typeof normalizedHandlers?.onScrubStart === 'function' &&
+						normalizedHandlers.onScrubStart();
 					setActive(true);
 					bindEvents();
 				}
@@ -98,7 +105,7 @@ export function useMove<T extends HTMLElement = any>(
 					setActive(false);
 					unbindEvents();
 					setTimeout(() => {
-						typeof handlers?.onScrubEnd === 'function' && handlers.onScrubEnd();
+						typeof normalizedHandlers?.onScrubEnd === 'function' && normalizedHandlers.onScrubEnd();
 					}, 0);
 				}
 			};
@@ -146,7 +153,7 @@ export function useMove<T extends HTMLElement = any>(
 				}
 			};
 		},
-		[dir, onChange],
+		[direction, onChange],
 	);
 
 	return { ref: refCallback, active };

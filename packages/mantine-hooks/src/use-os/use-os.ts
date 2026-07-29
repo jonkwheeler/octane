@@ -73,12 +73,13 @@ export interface UseOsOptions {
 }
 
 export function useOs(options: UseOsOptions = { getValueInEffect: true }): UseOSReturnValue {
+	const normalizedOptions = typeof options === 'symbol' ? { getValueInEffect: true } : options;
 	const [value, setValue] = useState<UseOSReturnValue>(
-		options.getValueInEffect ? 'undetermined' : getOS(),
+		normalizedOptions.getValueInEffect ? 'undetermined' : getOS(),
 	);
 
 	useIsomorphicEffect(() => {
-		if (options.getValueInEffect) {
+		if (normalizedOptions.getValueInEffect) {
 			setValue(getOS);
 		}
 	}, []);

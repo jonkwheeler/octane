@@ -1,7 +1,8 @@
 import { useRef, useState } from 'octane';
 
 export function useMap<T, V>(initialState?: [T, V][]): Map<T, V> {
-	const [map, setMap] = useState(() => new Map<T, V>(initialState));
+	const normalizedInitialState = typeof initialState === 'symbol' ? undefined : initialState;
+	const [map, setMap] = useState(() => new Map<T, V>(normalizedInitialState));
 	const mapRef = useRef(map);
 	mapRef.current = map;
 

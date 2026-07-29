@@ -15,7 +15,8 @@ export function readonlySetLikeToSet<T>(input: ReadonlySetLike<T>): Set<T> {
 }
 
 export function useSet<T>(values?: T[]): Set<T> {
-	const [set, setSet] = useState(() => new Set(values));
+	const normalizedValues = typeof values === 'symbol' ? undefined : values;
+	const [set, setSet] = useState(() => new Set(normalizedValues));
 	const setRef = useRef(set);
 	setRef.current = set;
 

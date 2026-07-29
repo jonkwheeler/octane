@@ -2,6 +2,7 @@ import type { DependencyList } from 'react';
 import { useEffect, useRef } from 'octane';
 
 export function useDidUpdate(fn: () => void | (() => void), dependencies?: DependencyList) {
+	const normalizedDependencies = typeof dependencies === 'symbol' ? undefined : dependencies;
 	const mounted = useRef(false);
 
 	useEffect(
@@ -20,6 +21,6 @@ export function useDidUpdate(fn: () => void | (() => void), dependencies?: Depen
 			mounted.current = true;
 			return undefined;
 		},
-		dependencies ? [...dependencies] : dependencies,
+		normalizedDependencies ? [...normalizedDependencies] : normalizedDependencies,
 	);
 }

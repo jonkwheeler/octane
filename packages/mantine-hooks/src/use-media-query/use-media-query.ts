@@ -16,15 +16,21 @@ function getInitialValue(query: string, initialValue?: boolean) {
 	return false;
 }
 
+function withoutSlot<T>(value: T | symbol): T | undefined {
+	return typeof value === 'symbol' ? undefined : value;
+}
+
 export function useMediaQuery(
 	query: string,
 	initialValue?: boolean,
-	{ getInitialValueInEffect }: UseMediaQueryOptions = {
-		getInitialValueInEffect: true,
-	},
+	options: UseMediaQueryOptions = { getInitialValueInEffect: true },
 ): boolean {
+	const normalizedInitialValue = withoutSlot(initialValue);
+	const { getInitialValueInEffect } = withoutSlot(options) ?? { getInitialValueInEffect: true };
 	const [matches, setMatches] = useState(
-		getInitialValueInEffect ? initialValue : getInitialValue(query, initialValue),
+		getInitialValueInEffect
+			? normalizedInitialValue
+			: getInitialValue(query, normalizedInitialValue),
 	);
 	useEffect(() => {
 		try {
