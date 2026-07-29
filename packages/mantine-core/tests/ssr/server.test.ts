@@ -10,6 +10,10 @@ describe('@octanejs/mantine-core server behavior', () => {
 		expect(first).toBe(second);
 		expect(first).toContain('Server button');
 		expect(first).toContain('12,345');
+		expect(first).toContain('Server first');
+		expect(first).toContain('Server second');
+		expect(first).toContain('server-active-step');
+		expect(first).not.toContain('Server complete');
 		expect(first).toContain('data-mantine-styles');
 	});
 });

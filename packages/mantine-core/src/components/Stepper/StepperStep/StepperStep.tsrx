@@ -1,4 +1,5 @@
 import type { OctaneNode } from 'octane';
+import { Fragment } from 'octane';
 import {
   BoxProps,
   CompoundStylesApiProps,
@@ -12,6 +13,7 @@ import {
 } from '../../../core';
 import { CheckIcon } from '../../Checkbox';
 import { Loader } from '../../Loader';
+import { Portal } from '../../Portal';
 import { Transition } from '../../Transition';
 import { UnstyledButton } from '../../UnstyledButton';
 import type { StepFragmentComponent } from '../Stepper.tsrx';
@@ -128,35 +130,57 @@ export const StepperStep = factory<StepperStepFactory>((props) => {
     iconPosition,
     orientation,
     mod,
+    children,
     ...others
   } = useProps('StepperStep', defaultProps, props);
 
   const ctx = useStepperContext();
+  const resolved = ctx.resolveStep(props);
+  const resolvedStep = step ?? resolved.step;
+  const resolvedState = state ?? resolved.state;
+  const resolvedColor = color ?? resolved.color;
+  const resolvedIcon = icon ?? resolved.icon;
+  const resolvedCompletedIcon = completedIcon ?? resolved.completedIcon;
+  const resolvedProgressIcon = progressIcon ?? resolved.progressIcon;
+  const resolvedIconSize = iconSize ?? resolved.iconSize;
+  const resolvedAllowStepClick = allowStepClick && resolved.allowStepClick;
   const theme = useMantineTheme();
   const stylesApi = { classNames, styles };
 
-  const _icon = state === 'stepCompleted' ? null : state === 'stepProgress' ? progressIcon : icon;
+  const _icon =
+    resolvedState === 'stepCompleted'
+      ? null
+      : resolvedState === 'stepProgress'
+        ? resolvedProgressIcon
+        : resolvedIcon;
   const dataAttributes = {
-    'data-progress': state === 'stepProgress' || undefined,
-    'data-completed': state === 'stepCompleted' || undefined,
+    'data-progress': resolvedState === 'stepProgress' || undefined,
+    'data-completed': resolvedState === 'stepCompleted' || undefined,
   };
 
   return (
-    <UnstyledButton
+    <Fragment>
+      <UnstyledButton
       {...ctx.getStyles('step', { className, style, variant: ctx.orientation, ...stylesApi })}
       mod={[
-        { 'icon-position': iconPosition || ctx.iconPosition, 'allow-click': allowStepClick },
+        {
+          'icon-position': iconPosition || ctx.iconPosition,
+          'allow-click': resolvedAllowStepClick,
+        },
         mod,
       ]}
       {...dataAttributes}
       {...others}
-      __vars={{ '--step-color': color ? getThemeColor(color, theme) : undefined }}
-      tabIndex={allowStepClick ? 0 : -1}
+      __vars={{
+        '--step-color': resolvedColor ? getThemeColor(resolvedColor, theme) : undefined,
+      }}
+      tabIndex={resolvedAllowStepClick ? 0 : -1}
+      onClick={resolved.onClick}
     >
       {withIcon && (
         <span {...ctx.getStyles('stepWrapper', stylesApi)}>
           <span {...ctx.getStyles('stepIcon', stylesApi)} {...dataAttributes}>
-            <Transition mounted={state === 'stepCompleted'} transition="pop" duration={200}>
+            <Transition mounted={resolvedState === 'stepCompleted'} transition="pop" duration={200}>
               {(transitionStyles) => (
                 <span
                   {...ctx.getStyles('stepCompletedIcon', { style: transitionStyles, ...stylesApi })}
@@ -168,22 +192,22 @@ export const StepperStep = factory<StepperStepFactory>((props) => {
                       {...ctx.getStyles('stepLoader', stylesApi)}
                     />
                   ) : (
-                    getStepFragment(completedIcon, step) || <CheckIcon size="60%" />
+                    getStepFragment(resolvedCompletedIcon, resolvedStep) || <CheckIcon size="60%" />
                   )}
                 </span>
               )}
             </Transition>
 
-            {state !== 'stepCompleted' ? (
+            {resolvedState !== 'stepCompleted' ? (
               <span {...ctx.getStyles('stepIconContent', stylesApi)}>
                 {loading ? (
                   <Loader
                     {...ctx.getStyles('stepLoader', stylesApi)}
                     size="calc(var(--stepper-icon-size) / 2)"
-                    color={color}
+                    color={resolvedColor}
                   />
                 ) : (
-                  getStepFragment(_icon || icon, step)
+                  getStepFragment(_icon || resolvedIcon, resolvedStep)
                 )}
               </span>
             ) : null}
@@ -191,7 +215,7 @@ export const StepperStep = factory<StepperStepFactory>((props) => {
           {orientation === 'vertical' && (
             <span
               {...ctx.getStyles('verticalSeparator', stylesApi)}
-              data-active={state === 'stepCompleted' || undefined}
+              data-active={resolvedState === 'stepCompleted' || undefined}
             />
           )}
         </span>
@@ -204,16 +228,39 @@ export const StepperStep = factory<StepperStepFactory>((props) => {
           data-icon-position={iconPosition || ctx.iconPosition}
         >
           {label && (
-            <span {...ctx.getStyles('stepLabel', stylesApi)}>{getStepFragment(label, step)}</span>
+            <span {...ctx.getStyles('stepLabel', stylesApi)}>
+              {getStepFragment(label, resolvedStep)}
+            </span>
           )}
           {description && (
             <span {...ctx.getStyles('stepDescription', stylesApi)}>
-              {getStepFragment(description, step)}
+              {getStepFragment(description, resolvedStep)}
             </span>
           )}
         </span>
       )}
-    </UnstyledButton>
+      </UnstyledButton>
+      {ctx.orientation === 'horizontal' && (
+        <div
+          {...ctx.getStyles('separator')}
+          data-active={resolvedState === 'stepCompleted' || undefined}
+          data-orientation={ctx.orientation}
+        />
+      )}
+      {!ctx.contentTarget && children && resolvedState === 'stepProgress' && (
+        <div {...ctx.getStyles('content')}>{children}</div>
+      )}
+      {ctx.contentTarget && children && (ctx.keepMounted || resolvedState === 'stepProgress') && (
+        <Portal target={ctx.contentTarget}>
+          <div
+            {...ctx.getStyles('content')}
+            style={ctx.keepMounted && resolvedState !== 'stepProgress' ? { display: 'none' } : undefined}
+          >
+            {children}
+          </div>
+        </Portal>
+      )}
+    </Fragment>
   );
 });
 

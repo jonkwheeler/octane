@@ -1,7 +1,5 @@
-import type { OctaneNode, ElementDescriptor } from 'octane';
-import { Activity as OctaneActivity, Children, cloneElement } from 'octane';
-
-const Activity = OctaneActivity as any;
+import type { OctaneNode } from 'octane';
+import { useCallback, useId, useState } from 'octane';
 import {
   Box,
   BoxProps,
@@ -26,7 +24,10 @@ import {
   useStyles,
 } from '../../core';
 import { StepperProvider, type StepperContextValue } from './Stepper.context';
-import { StepperCompleted, StepperCompletedProps } from './StepperCompleted/StepperCompleted.tsrx';
+import {
+  StepperCompleted,
+  StepperCompletedProps,
+} from './StepperCompleted/StepperCompleted.tsrx';
 import { StepperStep, StepperStepProps } from './StepperStep/StepperStep.tsrx';
 import classes from './Stepper.module.css';
 export type StepFragmentComponent = OctaneComponent<{ step: number }>;
@@ -190,90 +191,55 @@ export const Stepper = factory<StepperFactory>((_props) => {
     vars,
     varsResolver,
   });
+  const contentId = useId();
+  const [contentTarget, setContentTarget] = useState<HTMLElement | null>(null);
+  const contentRef = useCallback((node: HTMLElement | null) => {
+    if (node) {
+      setContentTarget((current) => (current === node ? current : node));
+    }
+  }, []);
 
-  const convertedChildren = Children.toArray(children) as ElementDescriptor[];
-  const _children = convertedChildren.filter(
-    (child) => child.type !== StepperCompleted
-  ) as ElementDescriptor<StepperStepProps>[];
-  const completedStep = convertedChildren.find(
-    (item) => item.type === StepperCompleted
-  ) as ElementDescriptor<StepperCompletedProps>;
-
-  const items = _children.reduce<ElementDescriptor<StepperStepProps>[]>(
-    (acc, item: ElementDescriptor<StepperStepProps>, index) => {
-      const state =
+  let nextStep = 0;
+  const resolveStep = (stepProps: StepperStepProps) => {
+      const index = nextStep++;
+      const state: NonNullable<StepperStepProps['state']> =
         active === index ? 'stepProgress' : active > index ? 'stepCompleted' : 'stepInactive';
-
       const shouldAllowSelect = () => {
         if (typeof onStepClick !== 'function') {
           return false;
         }
-
-        if (typeof item.props.allowStepSelect === 'boolean') {
-          return item.props.allowStepSelect;
+        if (typeof stepProps.allowStepSelect === 'boolean') {
+          return stepProps.allowStepSelect;
         }
-
         return state === 'stepCompleted' || allowNextStepsSelect;
       };
-
       const isStepSelectionEnabled = shouldAllowSelect();
-
-      acc.push(
-        cloneElement(item, {
-          icon: item.props.icon || icon || index + 1,
-          key: index,
-          step: index,
-          state,
-          onClick: () => isStepSelectionEnabled && onStepClick?.(index),
-          allowStepClick: isStepSelectionEnabled,
-          completedIcon: item.props.completedIcon || completedIcon,
-          progressIcon: item.props.progressIcon || progressIcon,
-          color: item.props.color || color,
-          iconSize,
-          iconPosition: item.props.iconPosition || iconPosition,
-          orientation,
-        })
-      );
-
-      if (orientation === 'horizontal' && index !== _children.length - 1) {
-        acc.push(
-          <div
-            {...getStyles('separator')}
-            data-active={index < active || undefined}
-            data-orientation={orientation}
-            key={`separator-${index}`}
-          />
-        );
-      }
-
-      return acc;
-    },
-    []
-  );
-
-  const stepContent = _children[active]?.props?.children;
-  const completedContent = completedStep?.props?.children;
-  const content = active > _children.length - 1 ? completedContent : stepContent;
-
-  const contentSection = keepMounted ? (
-    <>
-      {_children.map((child, index) => (
-        <Activity key={index} mode={active === index ? 'visible' : 'hidden'}>
-          <div {...getStyles('content')}>{child.props.children}</div>
-        </Activity>
-      ))}
-      {completedStep && (
-        <Activity mode={active > _children.length - 1 ? 'visible' : 'hidden'}>
-          <div {...getStyles('content')}>{completedStep.props.children}</div>
-        </Activity>
-      )}
-    </>
-  ) : (
-    content && <div {...getStyles('content')}>{content}</div>
-  );
+      return {
+        step: index,
+        state,
+        allowStepClick: isStepSelectionEnabled,
+        onClick: isStepSelectionEnabled ? () => onStepClick?.(index) : undefined,
+        icon: stepProps.icon || icon || index + 1,
+        completedIcon: stepProps.completedIcon || completedIcon,
+        progressIcon: stepProps.progressIcon || progressIcon,
+        color: stepProps.color || color,
+        iconSize,
+      };
+  };
+  const isCompleted = () => active >= nextStep;
 
   return (
-    <StepperProvider value={{ getStyles, orientation, iconPosition }}>
+    <StepperProvider
+      value={{
+        getStyles,
+        orientation,
+        iconPosition,
+        contentTarget,
+        keepMounted: Boolean(keepMounted),
+        resolveStep,
+        isCompleted,
+      }}
+    >
       <Box {...getStyles('root')} size={size} {...others}>
         <Box
           {...getStyles('steps')}
@@ -283,9 +249,9 @@ export const Stepper = factory<StepperFactory>((_props) => {
             wrap: wrap && orientation !== 'vertical',
           }}
         >
-          {items}
+          {children}
         </Box>
-        {contentSection}
+        <div id={contentId} ref={contentRef} />
       </Box>
     </StepperProvider>
   );

@@ -1,5 +1,6 @@
 import type { OctaneNode } from 'octane';
-import { Children, cloneElement } from 'octane';
+import { useLayoutEffect, useRef } from 'octane';
+import { useMergedRef } from '@octanejs/mantine-hooks';
 import {
   Box,
   BoxProps,
@@ -110,6 +111,7 @@ export const Timeline = factory<TimelineFactory>((_props) => {
     mod,
     autoContrast,
     attributes,
+    ref,
     ...others
   } = props;
 
@@ -127,25 +129,42 @@ export const Timeline = factory<TimelineFactory>((_props) => {
     varsResolver,
   });
 
-  const _children = Children.toArray(children);
-  const hasOpposite = _children.some((item: any) => item.props?.opposite != null);
-  const items = _children.map((item: any, index) =>
-    cloneElement(item, {
-      unstyled,
-      __align: align,
-      __active:
-        item.props?.active ||
-        (reverseActive ? active >= _children.length - index - 1 : active >= index),
-      __lineActive:
-        item.props?.lineActive ||
-        (reverseActive ? active >= _children.length - index - 1 : active - 1 >= index),
-    })
-  );
+  let nextItem = 0;
+  const resolveItem = (itemProps: TimelineItemProps) => {
+    const index = nextItem++;
+    return {
+      align: align || 'left',
+      active: Boolean(itemProps.__active) || (!reverseActive && (active ?? -1) >= index),
+      lineActive:
+        Boolean(itemProps.__lineActive) || (!reverseActive && (active ?? -1) - 1 >= index),
+    };
+  };
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const mergedRef = useMergedRef(ref, rootRef);
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const items = Array.from(root.querySelectorAll<HTMLElement>(':scope > [data-timeline-item]'));
+    root.toggleAttribute(
+      'data-opposite',
+      items.some((item) => item.hasAttribute('data-has-opposite')),
+    );
+    if (reverseActive) {
+      items.forEach((item, index) => {
+        const itemActive = (active ?? -1) >= items.length - index - 1;
+        item.toggleAttribute('data-active', itemActive);
+        item.toggleAttribute('data-line-active', itemActive);
+        item
+          .querySelector<HTMLElement>('[data-timeline-bullet]')
+          ?.toggleAttribute('data-active', itemActive);
+      });
+    }
+  }, [children, active, reverseActive]);
 
   return (
-    <TimelineProvider value={{ getStyles }}>
-      <Box {...getStyles('root')} mod={[{ align, opposite: hasOpposite }, mod]} {...others}>
-        {items}
+    <TimelineProvider value={{ getStyles, resolveItem }}>
+      <Box {...getStyles('root')} mod={[{ align }, mod]} {...others} ref={mergedRef}>
+        {children}
       </Box>
     </TimelineProvider>
   );

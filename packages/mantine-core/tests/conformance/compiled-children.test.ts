@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { CompiledChildren } from '../_fixtures/compiled-children.tsrx';
-import { mount } from '../_helpers';
+import { mount, nextPaint } from '../_helpers';
 
 describe('@octanejs/mantine-core compiled children', () => {
-  it('preserves child-aware component behavior through TSRX blocks', () => {
+  it('preserves child-aware component behavior through TSRX blocks', async () => {
     window.matchMedia = () =>
       ({
         matches: false,
@@ -18,6 +18,25 @@ describe('@octanejs/mantine-core compiled children', () => {
 
     expect(result.find('#first-section').getAttribute('data-first-section')).toBe('true');
     expect(result.find('#last-section').getAttribute('data-last-section')).toBe('true');
+
+    const steps = result.find('#stepper').querySelectorAll('.mantine-Stepper-step');
+    expect(steps).toHaveLength(2);
+    expect(steps[0]?.getAttribute('data-completed')).toBe('true');
+    expect(steps[1]?.getAttribute('data-progress')).toBe('true');
+    await nextPaint();
+    expect(result.find('#second-step-content').textContent).toBe('Second content');
+
+    (steps[0] as HTMLElement).click();
+    await nextPaint();
+    expect(steps[0]?.getAttribute('data-progress')).toBe('true');
+    expect(document.querySelector('#first-step-content')?.textContent).toBe('First content');
+
+    const timeline = result.find('#timeline');
+    const timelineItems = timeline.querySelectorAll('.mantine-Timeline-item');
+    expect(timelineItems).toHaveLength(2);
+    expect(timelineItems[0]?.hasAttribute('data-active')).toBe(true);
+    expect(timelineItems[1]?.hasAttribute('data-active')).toBe(true);
+    expect(timeline.hasAttribute('data-opposite')).toBe(true);
 
     result.unmount();
   });

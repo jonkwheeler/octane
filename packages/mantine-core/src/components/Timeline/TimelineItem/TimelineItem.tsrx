@@ -87,10 +87,15 @@ export const TimelineItem = factory<TimelineItemFactory>((_props) => {
   } = props;
 
   const ctx = useTimelineContext();
+  const resolved = ctx.resolveItem(props);
+  const resolvedAlign = __align ?? resolved.align;
+  const resolvedActive = __active ?? resolved.active;
+  const resolvedLineActive = __lineActive ?? resolved.lineActive;
   const theme = useMantineTheme();
 
   const stylesApiProps = { classNames, styles };
-  const bodyFirst = (__align === 'left' && !!alternate) || (__align === 'right' && !alternate);
+  const bodyFirst =
+    (resolvedAlign === 'left' && !!alternate) || (resolvedAlign === 'right' && !alternate);
 
   const oppositeNode = opposite != null && (
     <div {...ctx.getStyles('itemOpposite', stylesApiProps)}>{opposite}</div>
@@ -106,7 +111,9 @@ export const TimelineItem = factory<TimelineItemFactory>((_props) => {
   return (
     <Box
       {...ctx.getStyles('item', { ...stylesApiProps, className, style })}
-      mod={[{ 'line-active': __lineActive, active: __active, alternate }, mod]}
+      mod={[{ 'line-active': resolvedLineActive, active: resolvedActive, alternate }, mod]}
+      data-timeline-item
+      data-has-opposite={opposite != null || undefined}
       __vars={{
         '--tli-radius': radius !== undefined ? getRadius(radius) : undefined,
         '--tli-color': color ? getThemeColor(color, theme) : undefined,
@@ -118,7 +125,8 @@ export const TimelineItem = factory<TimelineItemFactory>((_props) => {
 
       <Box
         {...ctx.getStyles('itemBullet', stylesApiProps)}
-        mod={{ 'with-child': !!bullet, align: __align, active: __active }}
+        mod={{ 'with-child': !!bullet, align: resolvedAlign, active: resolvedActive }}
+        data-timeline-bullet
       >
         {bullet}
       </Box>

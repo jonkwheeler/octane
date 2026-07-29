@@ -2,9 +2,14 @@ import {
   Breadcrumbs,
   Card,
   MantineProvider,
+  Stepper,
+  Timeline,
 } from '@octanejs/mantine-core';
+import { useState } from 'octane';
 
 export function CompiledChildren() @{
+  const [active, setActive] = useState(1);
+
   <MantineProvider>
     <Breadcrumbs id="breadcrumbs" separator="→">
       <a href="/one">One</a>
@@ -17,5 +22,20 @@ export function CompiledChildren() @{
       <div id="card-body">Body</div>
       <Card.Section id="last-section">Last</Card.Section>
     </Card>
+
+    <Stepper id="stepper" active={active} onStepClick={setActive}>
+      <Stepper.Step label="First" description="First description">
+        <div id="first-step-content">First content</div>
+      </Stepper.Step>
+      <Stepper.Step label="Second" description="Second description">
+        <div id="second-step-content">Second content</div>
+      </Stepper.Step>
+      <Stepper.Completed>Complete</Stepper.Completed>
+    </Stepper>
+
+    <Timeline id="timeline" active={1}>
+      <Timeline.Item title="First event">First body</Timeline.Item>
+      <Timeline.Item title="Second event" opposite="10:00">Second body</Timeline.Item>
+    </Timeline>
   </MantineProvider>
 }
