@@ -21,7 +21,6 @@ function setup() {
 		queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
 	});
 	flushEffects();
-	return config;
 }
 
 afterEach(() => {

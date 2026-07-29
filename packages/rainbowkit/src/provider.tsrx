@@ -1,14 +1,8 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'octane';
-import {
-	useChains,
-	useConnect,
-	useConnection,
-	useDisconnect,
-	useSwitchChain,
-} from '@octanejs/wagmi';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'octane';
+import { useConnect, useConnection, useDisconnect, useSwitchChain } from '@octanejs/wagmi';
 import type { OctaneNode } from 'octane';
 import type { Connector } from '@wagmi/core';
-import { RainbowKitContext, subSlot, type ModalKind } from './internal';
+import { RainbowKitContext, type ModalKind } from './internal';
 import { lightTheme, type Theme } from './theme';
 import './styles.css';
 
@@ -230,21 +224,24 @@ function Modal(props: {
 export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 	const [activeModal, setActiveModal] = useState<ModalKind | null>(null);
 	const opener = useRef<HTMLElement | null>(null);
-	const connectors = uniqueConnectors(useConnect().connectors);
+	const availableConnectors = useConnect().connectors;
+	const connectors = useMemo(() => uniqueConnectors(availableConnectors), [availableConnectors]);
 	const selectedTheme = props.theme ?? lightTheme();
-	const closeModal = () => {
+	const closeModal = useCallback(() => {
 		setActiveModal(null);
 		const returnTo = opener.current;
 		opener.current = null;
 		queueMicrotask(() => returnTo?.focus());
-	};
-	const openModal = (kind: ModalKind, nextOpener?: HTMLElement | null) => {
+	}, []);
+	const openModal = useCallback((kind: ModalKind, nextOpener?: HTMLElement | null) => {
 		opener.current = nextOpener ?? document.activeElement as HTMLElement | null;
 		setActiveModal(kind);
-	};
+	}, []);
 	const context = useMemo(() => ({ activeModal, closeModal, connectors, openModal }), [
 		activeModal,
+		closeModal,
 		connectors,
+		openModal,
 	]);
 
 	<div data-rk="" style={themeStyle(selectedTheme)}>

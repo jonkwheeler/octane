@@ -1,43 +1,44 @@
 import { useContext } from 'octane';
-import { RainbowKitContext, subSlot, type ModalKind } from './internal';
+import { RainbowKitContext } from './internal';
 
-function useModal(kind: ModalKind, slot?: symbol) {
+export function useConnectModal(): {
+	connectModalOpen: boolean;
+	openConnectModal?: (event?: Event) => void;
+} {
 	const context = useContext(RainbowKitContext);
 	return {
-		[`${kind}ModalOpen`]: context?.activeModal === kind,
-		[`open${kind[0]!.toUpperCase()}${kind.slice(1)}Modal`]: context
-			? (event?: Event) =>
-					context.openModal(kind, event?.currentTarget as HTMLElement | null | undefined)
+		connectModalOpen: context?.activeModal === 'connect',
+		openConnectModal: context
+			? (event) =>
+					context.openModal('connect', event?.currentTarget as HTMLElement | null | undefined)
 			: undefined,
 	};
 }
 
-export function useConnectModal(slot?: symbol): {
-	connectModalOpen: boolean;
-	openConnectModal?: (event?: Event) => void;
-} {
-	return useModal('connect', subSlot(slot, 'connect')) as {
-		connectModalOpen: boolean;
-		openConnectModal?: (event?: Event) => void;
-	};
-}
-
-export function useAccountModal(slot?: symbol): {
+export function useAccountModal(): {
 	accountModalOpen: boolean;
 	openAccountModal?: (event?: Event) => void;
 } {
-	return useModal('account', subSlot(slot, 'account')) as {
-		accountModalOpen: boolean;
-		openAccountModal?: (event?: Event) => void;
+	const context = useContext(RainbowKitContext);
+	return {
+		accountModalOpen: context?.activeModal === 'account',
+		openAccountModal: context
+			? (event) =>
+					context.openModal('account', event?.currentTarget as HTMLElement | null | undefined)
+			: undefined,
 	};
 }
 
-export function useChainModal(slot?: symbol): {
+export function useChainModal(): {
 	chainModalOpen: boolean;
 	openChainModal?: (event?: Event) => void;
 } {
-	return useModal('chain', subSlot(slot, 'chain')) as {
-		chainModalOpen: boolean;
-		openChainModal?: (event?: Event) => void;
+	const context = useContext(RainbowKitContext);
+	return {
+		chainModalOpen: context?.activeModal === 'chain',
+		openChainModal: context
+			? (event) =>
+					context.openModal('chain', event?.currentTarget as HTMLElement | null | undefined)
+			: undefined,
 	};
 }

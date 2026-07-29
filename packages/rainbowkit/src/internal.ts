@@ -11,7 +11,3 @@ export type RainbowKitContextValue = {
 };
 
 export const RainbowKitContext = createContext<RainbowKitContextValue | null>(null);
-
-export function subSlot(slot: symbol | undefined, name: string): symbol {
-	return Symbol.for(`octane.rainbowkit.${slot?.description ?? 'root'}.${name}`);
-}
