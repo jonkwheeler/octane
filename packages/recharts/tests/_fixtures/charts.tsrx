@@ -1,4 +1,12 @@
-import { BarChart, LineChart, Bar, Line, XAxis, YAxis } from '@octanejs/recharts';
+import {
+	BarChart,
+	LineChart,
+	Bar,
+	Line,
+	ResponsiveContainer,
+	XAxis,
+	YAxis,
+} from '@octanejs/recharts';
 
 // Phase 1 differential fixture: static BarChart + LineChart with axes
 // (isAnimationActive={false} — the animated path is Phase 5).
@@ -34,4 +42,14 @@ export function LineChartApp() @{
 			isAnimationActive={false}
 		/>
 	</LineChart>
+}
+
+export function ResponsiveChartApp() @{
+	<ResponsiveContainer width={420} height={240}>
+		<LineChart data={data}>
+			<XAxis dataKey="name" />
+			<YAxis />
+			<Line dataKey="uv" isAnimationActive={false} />
+		</LineChart>
+	</ResponsiveContainer>
 }
