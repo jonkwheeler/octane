@@ -240,6 +240,19 @@
       "verified": "2026-07-29"
     },
     {
+      "name": "@octanejs/mantine-dropzone",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/dropzone", "version": "9.5.0" },
+      "surface": "Mantine Dropzone and FullScreen components with native input selection, drag and drop, accept, size, count, and custom validation.",
+      "divergences": [
+        "Uses an Octane-native drop hook instead of react-dropzone.",
+        "The File System Access API option falls back to the native hidden file input."
+      ],
+      "ssr": "The drop target and hidden input render deterministically; browser file APIs activate on interaction.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-form",
       "version": "0.1.0",
       "category": "Forms and content",
@@ -803,6 +816,7 @@
     "@mantine/charts": "@octanejs/mantine-charts",
     "@mantine/code-highlight": "@octanejs/mantine-code-highlight",
     "@mantine/core": "@octanejs/mantine-core",
+    "@mantine/dropzone": "@octanejs/mantine-dropzone",
     "@mantine/form": "@octanejs/mantine-form",
     "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mantine/modals": "@octanejs/mantine-modals",

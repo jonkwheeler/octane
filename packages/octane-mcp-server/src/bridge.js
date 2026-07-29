@@ -13,6 +13,7 @@ export const KNOWN_BINDINGS = {
 	'@mantine/charts': '@octanejs/mantine-charts',
 	'@mantine/carousel': '@octanejs/mantine-carousel',
 	'@mantine/code-highlight': '@octanejs/mantine-code-highlight',
+	'@mantine/dropzone': '@octanejs/mantine-dropzone',
 	'@mantine/form': '@octanejs/mantine-form',
 	'@mantine/hooks': '@octanejs/mantine-hooks',
 	'@mantine/modals': '@octanejs/mantine-modals',

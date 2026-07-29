@@ -24,7 +24,6 @@ function project(files) {
 }
 
 const MANTINE_PACKAGES = [
-	'@mantine/dropzone',
 	'@mantine/schedule',
 ];
 
@@ -130,6 +129,11 @@ describe('migration compatibility corpus', () => {
 		expect(bySpecifier.get('@mantine/carousel')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/mantine-carousel',
+			evidence: 'binding-catalog:react-package',
+		});
+		expect(bySpecifier.get('@mantine/dropzone')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-dropzone',
 			evidence: 'binding-catalog:react-package',
 		});
 		expect(bySpecifier.get('recharts')).toMatchObject({

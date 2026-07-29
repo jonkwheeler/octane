@@ -38,6 +38,7 @@
       "@octanejs/mantine-charts",
       "@octanejs/mantine-carousel",
       "@octanejs/mantine-code-highlight",
+      "@octanejs/mantine-dropzone",
       "@octanejs/mantine-modals",
       "@octanejs/mantine-notifications",
       "@octanejs/mantine-nprogress",

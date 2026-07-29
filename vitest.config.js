@@ -805,6 +805,39 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'mantine-dropzone',
+					include: ['packages/mantine-dropzone/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mantine-dropzone$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-dropzone/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-core$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-core/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-hooks/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/number-format$/,
+							replacement: resolve(import.meta.dirname, 'packages/number-format/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-tiptap',
 					include: ['packages/mantine-tiptap/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
