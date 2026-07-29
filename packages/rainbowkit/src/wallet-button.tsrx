@@ -1,14 +1,14 @@
 import { useConnect } from '@octanejs/wagmi';
-import { useContext } from 'octane';
+import { createElement, isChildrenBlock, useContext } from 'octane';
 import type { OctaneNode } from 'octane';
 import { RainbowKitContext } from './internal';
 
 export type WalletButtonProps = {
-	children?: (props: { ready: boolean; connect: () => void }) => OctaneNode;
+	children?: OctaneNode | ((props: { ready: boolean; connect: () => void }) => OctaneNode);
 	wallet: string;
 };
 
-export function WalletButton(props: WalletButtonProps) @{
+export function WalletButton(props: WalletButtonProps) {
 	const context = useContext(RainbowKitContext);
 	const mutation = useConnect();
 	const entry = context?.wallets.find(
@@ -25,18 +25,19 @@ export function WalletButton(props: WalletButtonProps) @{
 			() => context.endConnecting(token),
 		);
 	};
-	@if (props.children) {
-		{
-			props.children({ ready, connect });
-		}
-	} @else {
-		<button
-			type="button"
-			className="rk-wallet-button"
-			disabled={!ready || context?.connecting || mutation.isPending}
-			onClick={connect}
-		>
-			{entry?.name ?? props.wallet}
-		</button>
+	if (props.children != null) {
+		return typeof props.children === 'function' && !isChildrenBlock(props.children)
+			? props.children({ ready, connect })
+			: props.children;
 	}
+	return createElement(
+		'button',
+		{
+			type: 'button',
+			className: 'rk-wallet-button',
+			disabled: !ready || context?.connecting || mutation.isPending,
+			onClick: connect,
+		},
+		entry?.name ?? props.wallet,
+	);
 }

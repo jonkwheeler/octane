@@ -41,6 +41,12 @@ afterEach(() => {
 });
 
 describe('RainbowKit Wagmi v3 compatibility gate', () => {
+	it('renders natural element children without invoking compiled child blocks', () => {
+		setup();
+		expect(mounted!.find('#custom-natural-child').textContent).toBe('Custom natural child');
+		expect(mounted!.find('#wallet-natural-child').textContent).toBe('Wallet natural child');
+	});
+
 	it('moves custom controls from disconnected through modal-open to connected', async () => {
 		setup();
 		expect(mounted!.find('#custom-status').textContent).toBe('disconnected');
@@ -343,10 +349,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 	it('labels only the selected wallet as pending and clears the label after rejection', async () => {
 		const config = createConfig({
 			chains: [mainnet],
-			connectors: [
-				mock({ accounts: [account] }),
-				mock({ accounts: [account] }),
-			],
+			connectors: [mock({ accounts: [account] }), mock({ accounts: [account] })],
 			transports: { [mainnet.id]: http() },
 		});
 		const [first, second] = config.connectors;
@@ -367,9 +370,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		flushSync(() => {});
 		mounted.click('#custom-connect');
 		flushEffects();
-		const walletButtons = Array.from(
-			document.querySelectorAll<HTMLButtonElement>('.rk-action'),
-		);
+		const walletButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.rk-action'));
 		walletButtons[0]!.click();
 		await act(async () => {
 			await Promise.resolve();
