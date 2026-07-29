@@ -56,17 +56,19 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 	it('inherits context defaults and lets local props override them', () => {
 		const contextRefs: (SVGSVGElement | null)[] = [];
 		const localRefs: (SVGSVGElement | null)[] = [];
+		const unsafeContextValue = {
+			color: 'tomato',
+			size: 40,
+			weight: 'bold',
+			mirrored: true,
+			className: 'provided',
+			'data-source': 'context',
+			// Simulate an untyped JavaScript consumer passing the unsupported value.
+			ref: (node: SVGSVGElement | null) => contextRefs.push(node),
+		};
 		const App = () =>
 			createElement(IconContext.Provider, {
-				value: {
-					color: 'tomato',
-					size: 40,
-					weight: 'bold',
-					mirrored: true,
-					className: 'provided',
-					'data-source': 'context',
-					ref: (node) => contextRefs.push(node),
-				},
+				value: unsafeContextValue as never,
 				children: [
 					createElement(Camera, { id: 'provided' }),
 					createElement(Camera, {

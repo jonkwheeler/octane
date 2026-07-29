@@ -13,6 +13,7 @@ export function IconBase(props: IconBaseProps) {
 		size: contextSize = '1em',
 		weight: contextWeight = 'regular',
 		mirrored: contextMirrored = false,
+		ref: _contextRef,
 		...contextRest
 	} = useContext(IconContext);
 
