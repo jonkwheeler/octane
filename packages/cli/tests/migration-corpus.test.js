@@ -25,7 +25,6 @@ function project(files) {
 
 const MANTINE_PACKAGES = [
 	'@mantine/core',
-	'@mantine/hooks',
 	'@mantine/form',
 	'@mantine/charts',
 	'@mantine/notifications',
@@ -61,7 +60,7 @@ describe('migration compatibility corpus', () => {
 		expect(report.blocked).toBe(false);
 	});
 
-	it('keeps the Mantine family blocked without hiding supported leaf dependencies', () => {
+	it('keeps the unported Mantine family blocked without hiding supported dependencies', () => {
 		let installedPackages = {};
 		for (const packageName of MANTINE_PACKAGES) {
 			installedPackages = {
@@ -73,6 +72,9 @@ describe('migration compatibility corpus', () => {
 		}
 		const fixture = project({
 			'src/Leaf.tsx': source('mantine-blocked'),
+			...installed('@mantine/hooks', '9.5.0', {
+				peerDependencies: { react: '^19.2.0' },
+			}),
 			...installedPackages,
 		});
 
@@ -85,6 +87,11 @@ describe('migration compatibility corpus', () => {
 				evidence: 'react-dependency',
 			});
 		}
+		expect(bySpecifier.get('@mantine/hooks')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-hooks',
+			evidence: 'binding-catalog:react-package',
+		});
 		expect(bySpecifier.get('recharts')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/recharts',

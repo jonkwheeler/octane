@@ -33,6 +33,7 @@
       "@octanejs/radix",
       "@octanejs/base-ui",
       "@octanejs/aria",
+      "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",
       "@octanejs/dnd-kit",

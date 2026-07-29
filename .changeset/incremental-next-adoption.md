@@ -1,5 +1,6 @@
 ---
 '@octanejs/cli': patch
+'@octanejs/mantine-hooks': patch
 '@octanejs/mobx': patch
 '@octanejs/rspack-plugin': patch
 ---
@@ -20,3 +21,6 @@ installed beside the migrated file are classified correctly.
 
 Add `@octanejs/mobx`, an Octane-native port of the `mobx-react-lite`
 function-component surface backed by the unchanged MobX core.
+
+Add `@octanejs/mantine-hooks`, a complete Octane-native port of the
+`@mantine/hooks@9.5.0` runtime surface.
