@@ -94,7 +94,8 @@ function importsFrom(ast) {
 							(node.specifiers?.length > 0 &&
 								node.specifiers.every(
 									(/** @type {any} */ specifier) => specifier.exportKind === 'type',
-								)))),
+								)))) ||
+					(node.type === 'ExportAllDeclaration' && node.exportKind === 'type'),
 			});
 		}
 		if (node.type === 'ImportExpression') {

@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 const fixtureRoot = dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = resolve(fixtureRoot, '../..');
+const octaneRuntime = resolve(workspaceRoot, 'packages/octane/dist/index.js');
+const octaneReactRuntime = resolve(workspaceRoot, 'packages/octane/dist/react/index.js');
 const octaneBindingSource = /node_modules[\\/]\.pnpm[\\/]@octanejs\+(?:recharts|redux|tiptap)@/;
 const octaneLoader = (requireDirective) => ({
 	loader: '@octanejs/rspack-plugin/loader',
@@ -22,6 +24,10 @@ const config = {
 	},
 	turbopack: {
 		root: workspaceRoot,
+		resolveAlias: {
+			octane: '../../packages/octane/dist/index.js',
+			'octane/react': '../../packages/octane/dist/react/index.js',
+		},
 		rules: {
 			'*.tsx': {
 				condition: {
@@ -60,6 +66,8 @@ const config = {
 	},
 	webpack(config) {
 		config.resolve.extensions.push('.tsrx');
+		config.resolve.alias['octane$'] = octaneRuntime;
+		config.resolve.alias['octane/react$'] = octaneReactRuntime;
 		config.module.rules.push({
 			test: /(?<!\.d)\.(?:ts|tsrx)$/,
 			include(resourcePath) {
@@ -75,6 +83,7 @@ const config = {
 		});
 		config.module.rules.push({
 			test: /\.tsrx$/,
+			exclude: octaneBindingSource,
 			enforce: 'pre',
 			use: octaneLoader(true),
 		});

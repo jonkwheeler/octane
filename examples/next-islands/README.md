@@ -34,4 +34,5 @@ The consumer typecheck uses small declaration shims because the published
 bindings currently expose implementation source instead of generated
 declarations. Next's duplicate stock TypeScript pass remains disabled because
 it does not understand the `.tsrx` module extension. Browser tests exercise
-the actual published runtime packages under both webpack and Turbopack.
+the published Recharts and Tiptap bindings against the workspace runtime and
+compiler under both webpack and Turbopack.

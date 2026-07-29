@@ -6,8 +6,8 @@
   "description": "A Next.js App Router shell incrementally hosting an Octane TSRX island.",
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "pnpm typecheck && next build --webpack",
-    "build:turbopack": "pnpm typecheck && next build",
+    "build": "node ../../packages/octane/scripts/build.mjs && pnpm typecheck && next build --webpack",
+    "build:turbopack": "node ../../packages/octane/scripts/build.mjs && pnpm typecheck && next build",
     "start": "next start",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.typecheck.json",
     "test:e2e": "pnpm build && playwright test --config e2e/playwright.config.ts"
@@ -17,7 +17,7 @@
     "@octanejs/tiptap": "npm:@octanejs/tiptap@0.0.12",
     "@tiptap/starter-kit": "3.28.0",
     "next": "catalog:default",
-    "octane": "npm:octane@0.1.18",
+    "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default"
   },

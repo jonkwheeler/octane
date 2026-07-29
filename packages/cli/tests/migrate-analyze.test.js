@@ -147,6 +147,7 @@ describe('migration preflight', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `
 				import type { ReactNode } from 'react';
+				export type * from 'react';
 				export const Leaf = ({ children }: { children: ReactNode }) => <p>{children}</p>;
 			`,
 		});
