@@ -1,0 +1,14 @@
+{
+  "upstream": {
+    "package": "@mantine/form",
+    "version": "9.5.0"
+  },
+  "surface": "Complete @mantine/form 9.5.0 runtime and type surface: useForm, useField, providers, actions, validators, nested paths, list operations, sync/async validation, schemas, watchers, and controlled/uncontrolled input props.",
+  "divergences": [
+    "Hooks use Octane lifecycle and state primitives.",
+    "Input and submit callbacks receive native browser events instead of React synthetic events."
+  ],
+  "ssr": "Form state and validation are deterministic during server rendering; browser event attachment activates during hydration.",
+  "verified": "2026-07-29",
+  "notes": []
+}
