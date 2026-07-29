@@ -2,12 +2,7 @@ import path from 'node:path';
 import { defineCommand } from '../../kernel/command.js';
 import { EXIT } from '../../kernel/errors.js';
 import { analyzeMigration } from '../../migrate/analyze.js';
-
-/** @param {string} root @param {string} file */
-function relative(root, file) {
-	const value = path.relative(root, file);
-	return value && !value.startsWith('..') ? value : file;
-}
+import { displayPath } from './path.js';
 
 export default defineCommand({
 	description:
@@ -33,7 +28,7 @@ export default defineCommand({
 			ctx.ui.intro('octane migrate analyze');
 			for (const finding of report.findings) {
 				const where = finding.file
-					? `${relative(project.root, finding.file)}${
+					? `${displayPath(project.root, finding.file)}${
 							finding.location ? `:${finding.location.line}:${finding.location.column}` : ''
 						}`
 					: 'project';
@@ -43,7 +38,7 @@ export default defineCommand({
 				report.blocked
 					? 'Migration is blocked; resolve every blocker before conversion.'
 					: `Candidate boundary: ${report.candidateBoundaries
-							.map((file) => relative(project.root, file))
+							.map((file) => displayPath(project.root, file))
 							.join(', ')}`,
 			);
 		}

@@ -2,12 +2,7 @@ import path from 'node:path';
 import { defineCommand } from '../../kernel/command.js';
 import { EXIT } from '../../kernel/errors.js';
 import { applyConversionPlan, createConversionPlan } from '../../migrate/convert.js';
-
-/** @param {string} root @param {string} file */
-function relative(root, file) {
-	const value = path.relative(root, file);
-	return value && !value.startsWith('..') ? value : file;
-}
+import { displayPath } from './path.js';
 
 export default defineCommand({
 	description:
@@ -47,14 +42,14 @@ export default defineCommand({
 					(finding) => finding.severity === 'blocker',
 				)) {
 					ctx.ui.log(
-						`BLOCKER ${finding.file ? relative(project.root, finding.file) : 'project'} ${finding.message}`,
+						`BLOCKER ${finding.file ? displayPath(project.root, finding.file) : 'project'} ${finding.message}`,
 					);
 				}
 				ctx.ui.outro('No edits were planned.');
 			} else {
 				for (const file of plan.files) {
 					ctx.ui.log(
-						`${input.flags.apply ? 'WRITE' : 'DRY-RUN'} ${relative(project.root, file.file)} — ${file.edits.length} edit(s)`,
+						`${input.flags.apply ? 'WRITE' : 'DRY-RUN'} ${displayPath(project.root, file.file)} — ${file.edits.length} edit(s)`,
 					);
 				}
 				ctx.ui.outro(

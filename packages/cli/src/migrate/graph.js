@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { parseModule } from '@tsrx/core';
+import { sourceLocation, walkAst } from './ast.js';
 
 const SOURCE_EXTENSIONS = ['.ts', '.tsx', '.tsrx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs'];
 const IGNORED_DIRECTORIES = new Set(['node_modules', '.git', '.next', 'dist', 'build']);
@@ -20,9 +21,8 @@ export function expandMigrationEntries(entries) {
 	const files = [];
 	/** @type {string[]} */
 	const queue = entries.map((entry) => path.resolve(entry));
-	while (queue.length > 0) {
-		const candidate = queue.shift();
-		if (candidate === undefined) break;
+	for (let queueIndex = 0; queueIndex < queue.length; queueIndex++) {
+		const candidate = queue[queueIndex];
 		if (!existsSync(candidate)) {
 			files.push(candidate);
 			continue;
@@ -48,30 +48,11 @@ export function expandMigrationEntries(entries) {
 	return [...new Set(files)].sort();
 }
 
-/** @param {any} node @returns {import('./findings.js').SourceLocation | null} */
-function sourceLocation(node) {
-	return node?.loc?.start ? { line: node.loc.start.line, column: node.loc.start.column + 1 } : null;
-}
-
-/** @param {any} node @param {(node: any) => void} visit */
-function walk(node, visit) {
-	if (!node || typeof node !== 'object') return;
-	visit(node);
-	for (const [key, value] of Object.entries(node)) {
-		if (key === 'loc' || key === 'metadata') continue;
-		if (Array.isArray(value)) {
-			for (const child of value) walk(child, visit);
-		} else {
-			walk(value, visit);
-		}
-	}
-}
-
 /** @param {any} ast @returns {ImportReference[]} */
 function importsFrom(ast) {
 	/** @type {ImportReference[]} */
 	const imports = [];
-	walk(ast, (node) => {
+	walkAst(ast, (node) => {
 		if (
 			(node.type === 'ImportDeclaration' ||
 				node.type === 'ExportNamedDeclaration' ||
@@ -158,9 +139,8 @@ export function buildImportGraph(entries) {
 	/** @type {{ importer: string | null, specifier: string | null, location: import('./findings.js').SourceLocation | null, reason: string }[]} */
 	const unresolved = [];
 
-	while (queue.length > 0) {
-		const file = queue.shift();
-		if (file === undefined) break;
+	for (let queueIndex = 0; queueIndex < queue.length; queueIndex++) {
+		const file = queue[queueIndex];
 		if (seen.has(file)) continue;
 		seen.add(file);
 		if (!existsSync(file)) {

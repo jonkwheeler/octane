@@ -2,6 +2,7 @@ import path from 'node:path';
 import { buildImportGraph, expandMigrationEntries } from './graph.js';
 import { classifyPackageImport } from './classify.js';
 import { createFinding, sortFindings } from './findings.js';
+import { sourceLocation, walkAst } from './ast.js';
 
 const UNSUPPORTED_REACT_APIS = new Set([
 	'forwardRef',
@@ -26,22 +27,6 @@ const SERVER_ONLY_IMPORTS = new Set(['server-only', 'next/server', 'next/headers
  *   candidateBoundaries: string[]
  * }} MigrationReport
  */
-
-/** @param {any} node @param {(node: any) => void} visit */
-function walk(node, visit) {
-	if (!node || typeof node !== 'object') return;
-	visit(node);
-	for (const [key, value] of Object.entries(node)) {
-		if (key === 'loc' || key === 'metadata') continue;
-		if (Array.isArray(value)) for (const child of value) walk(child, visit);
-		else walk(value, visit);
-	}
-}
-
-/** @param {any} node @returns {import('./findings.js').SourceLocation | null} */
-function location(node) {
-	return node?.loc?.start ? { line: node.loc.start.line, column: node.loc.start.column + 1 } : null;
-}
 
 /**
  * @param {{ root: string, entries: string[] }} input
@@ -151,7 +136,7 @@ export function analyzeMigration({ root, entries }) {
 							message:
 								'React default, namespace, and mixed type imports require a manual split before conversion.',
 							file: record.file,
-							location: location(incompatible),
+							location: sourceLocation(incompatible),
 						}),
 					);
 				}
@@ -174,14 +159,14 @@ export function analyzeMigration({ root, entries }) {
 								severity: 'blocker',
 								message: `${importedName} requires manual migration review.`,
 								file: record.file,
-								location: location(specifier),
+								location: sourceLocation(specifier),
 							}),
 						);
 					}
 				}
 			}
 		}
-		walk(record.ast, (node) => {
+		walkAst(record.ast, (node) => {
 			const superClass = node.superClass;
 			const extendsReactComponent =
 				(superClass?.type === 'Identifier' && reactClassBases.has(superClass.name)) ||
@@ -201,7 +186,7 @@ export function analyzeMigration({ root, entries }) {
 						severity: 'blocker',
 						message: 'Class components cannot cross the Octane island boundary.',
 						file: record.file,
-						location: location(node),
+						location: sourceLocation(node),
 					}),
 				);
 			}
@@ -216,7 +201,7 @@ export function analyzeMigration({ root, entries }) {
 						severity: 'blocker',
 						message: 'React provider ownership must remain outside the migrated leaf.',
 						file: record.file,
-						location: location(node),
+						location: sourceLocation(node),
 					}),
 				);
 			}

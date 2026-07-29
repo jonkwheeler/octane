@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseModule } from '@tsrx/core';
 import { analyzeMigration } from './analyze.js';
+import { walkAst } from './ast.js';
 import { classifyPackageImport } from './classify.js';
 import { applyTextEdits } from './edits.js';
 
@@ -51,17 +52,6 @@ function hasLeadingOctanePragma(source) {
 	const leadingTrivia =
 		/^\uFEFF?(?:(?:\s+)|(?:\/\/[^\n]*(?:\n|$))|(?:\/\*[\s\S]*?\*\/))*/.exec(source)?.[0] ?? '';
 	return /@jsxImportSource\s+([^\s*]+)/.exec(leadingTrivia)?.[1] === 'octane';
-}
-
-/** @param {any} node @param {(node: any) => void} visit */
-function walk(node, visit) {
-	if (!node || typeof node !== 'object') return;
-	visit(node);
-	for (const [key, value] of Object.entries(node)) {
-		if (key === 'loc' || key === 'metadata') continue;
-		if (Array.isArray(value)) for (const child of value) walk(child, visit);
-		else walk(value, visit);
-	}
 }
 
 /** @param {any} node @returns {string | null} */
@@ -138,7 +128,7 @@ function planFile(root, file) {
 		});
 	}
 
-	walk(ast, (node) => {
+	walkAst(ast, (node) => {
 		if (
 			node.type === 'ImportExpression' &&
 			typeof node.source?.value === 'string' &&
