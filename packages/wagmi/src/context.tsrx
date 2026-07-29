@@ -23,10 +23,9 @@ export function WagmiProvider(props: WagmiProviderProps) @{
 	let lifecycle = lifecycleRef.current;
 
 	if (
-		!lifecycle ||
-		lifecycle.config !== props.config ||
-		lifecycle.initialState !== props.initialState ||
-		lifecycle.reconnectOnMount !== reconnectOnMount
+		!lifecycle || lifecycle.config !== props.config ||
+			lifecycle.initialState !== props.initialState ||
+			lifecycle.reconnectOnMount !== reconnectOnMount
 	) {
 		const { onMount } = hydrate(props.config, {
 			initialState: props.initialState,
