@@ -44,13 +44,11 @@
     "generate:check": "node scripts/generate.mjs --check",
     "test": "vitest run --root ../.. --project phosphor-icons --project phosphor-icons-ssr"
   },
-  "dependencies": {
-    "@phosphor-icons/core": "catalog:default"
-  },
   "peerDependencies": {
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@phosphor-icons/core": "catalog:default",
     "@phosphor-icons/react": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",

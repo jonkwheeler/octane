@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -19,19 +19,23 @@ describe('@octanejs/phosphor-icons — generator', () => {
 
 	it('rejects changed generated output', () => {
 		const fixtureRoot = mkdtempSync(join(tmpdir(), 'octane-phosphor-generator-'));
-		cpSync(packageRoot, fixtureRoot, {
-			recursive: true,
-			filter: (source) => !source.includes(`${join(packageRoot, 'node_modules')}`),
-		});
-		symlinkSync(join(packageRoot, 'node_modules'), join(fixtureRoot, 'node_modules'), 'dir');
-		const camera = join(fixtureRoot, 'src/icons/camera.ts');
-		writeFileSync(camera, `${readFileSync(camera, 'utf8')}\n// stale\n`);
+		try {
+			cpSync(packageRoot, fixtureRoot, {
+				recursive: true,
+				filter: (source) => !source.includes(`${join(packageRoot, 'node_modules')}`),
+			});
+			symlinkSync(join(packageRoot, 'node_modules'), join(fixtureRoot, 'node_modules'), 'dir');
+			const camera = join(fixtureRoot, 'src/icons/camera.ts');
+			writeFileSync(camera, `${readFileSync(camera, 'utf8')}\n// stale\n`);
 
-		const result = spawnSync(process.execPath, ['scripts/generate.mjs', '--check'], {
-			cwd: fixtureRoot,
-			encoding: 'utf8',
-		});
-		expect(result.status).toBe(1);
-		expect(result.stderr).toContain('stale src/icons/camera.ts');
+			const result = spawnSync(process.execPath, ['scripts/generate.mjs', '--check'], {
+				cwd: fixtureRoot,
+				encoding: 'utf8',
+			});
+			expect(result.status).toBe(1);
+			expect(result.stderr).toContain('stale src/icons/camera.ts');
+		} finally {
+			rmSync(fixtureRoot, { recursive: true, force: true });
+		}
 	});
 });
