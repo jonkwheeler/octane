@@ -55,3 +55,13 @@ objects through application routing state.
 Unmounting `OctaneCompat` disposes the hosted Octane root. Wagmi watchers,
 RainbowKit dialogs, focus isolation, and scroll locks are released with that
 root, while the surrounding React route remains mounted.
+
+The repository pins this integration in both environments:
+
+- `packages/octane/tests/react-hosted/web3-island.test.ts` covers development
+  and production compilation, React SSR hydration, rejected-request recovery,
+  connection state, navigation, and exact teardown.
+- `packages/octane/tests/browser/react-hosted-web3/` runs the package-resolved
+  graph through a production Vite build and a real Chromium journey. The host
+  `.tsx` stays on React's JSX pipeline while the island `.tsrx` is compiled by
+  Octane.

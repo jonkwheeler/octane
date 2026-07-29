@@ -196,12 +196,25 @@ describe('incremental React adoption — Wagmi and RainbowKit island', () => {
 		expect(serverHost.querySelector('#island-route')?.textContent).toBe('portfolio');
 		expect(readWeb3IslandObservation(id).activeWatchers).toBeGreaterThan(0);
 
+		await reactAct(async () => (serverConnectButton as HTMLButtonElement).click());
+		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+		await reactAct(async () => {
+			(document.querySelector('.rk-action') as HTMLButtonElement).click();
+			await nextTurns();
+		});
+		expect(serverHost.querySelector('#island-status')?.textContent).toBe('connected');
+		expect(serverHost.querySelector('#island-address')?.textContent).toBe(
+			'0x0000000000000000000000000000000000000001',
+		);
+		expect(serverHost.querySelector('#island-chain')?.textContent).toBe('1');
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+
 		await reactAct(async () => {
 			root.unmount();
 		});
 		await nextTurns();
 		await flushHostedEffects();
-		expect(readWeb3IslandObservation(id).activeWatchers).toBe(0);
+		expect(readWeb3IslandObservation(id)).toEqual({ activeWatchers: 0, cleanups: 1 });
 		container.remove();
 	});
 });

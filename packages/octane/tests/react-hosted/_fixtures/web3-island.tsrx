@@ -33,10 +33,7 @@ function createTrackedConfig(
 	config.subscribe = ((...arguments_: unknown[]) => {
 		watcherAttached(observationId);
 		const unsubscribe = (subscribe as (...input: unknown[]) => () => void)(...arguments_);
-		let active = true;
 		return () => {
-			if (!active) return;
-			active = false;
 			watcherDetached(observationId);
 			unsubscribe();
 		};
