@@ -1,0 +1,81 @@
+import { createElement } from 'octane';
+import { describe, expect, it } from 'vitest';
+import { mount } from '../../octane/tests/_helpers.js';
+import { Camera, IconContext } from '@octanejs/phosphor-icons';
+
+describe('@octanejs/phosphor-icons — runtime behavior', () => {
+	it('applies defaults, local props, accessibility, children, refs, and native events', () => {
+		const refs: (SVGSVGElement | null)[] = [];
+		const clicks: MouseEvent[] = [];
+		const mounted = mount(Camera, {
+			id: 'camera',
+			alt: 'Take a photo',
+			color: 'rebeccapurple',
+			size: 32,
+			weight: 'duotone',
+			mirrored: true,
+			ref: (node) => refs.push(node),
+			onClick: (event: MouseEvent) => clicks.push(event),
+			children: createElement('desc', { children: 'A custom description' }),
+		});
+		const camera = mounted.find('#camera');
+
+		expect(camera.getAttribute('width')).toBe('32');
+		expect(camera.getAttribute('height')).toBe('32');
+		expect(camera.getAttribute('fill')).toBe('rebeccapurple');
+		expect(camera.getAttribute('transform')).toBe('scale(-1, 1)');
+		expect(camera.querySelector('title')?.textContent).toBe('Take a photo');
+		expect(camera.querySelector('desc')?.textContent).toBe('A custom description');
+		expect(camera.querySelectorAll('path')).toHaveLength(2);
+		expect(camera.querySelector('path')?.getAttribute('opacity')).toBe('0.2');
+		expect(refs).toEqual([camera]);
+
+		mounted.click('#camera');
+		expect(clicks).toHaveLength(1);
+		expect(clicks[0]).toBeInstanceOf(MouseEvent);
+
+		mounted.unmount();
+		expect(refs.at(-1)).toBe(null);
+	});
+
+	it('inherits context defaults and lets local props override them', () => {
+		const App = () =>
+			createElement(IconContext.Provider, {
+				value: {
+					color: 'tomato',
+					size: 40,
+					weight: 'bold',
+					mirrored: true,
+					className: 'provided',
+					'data-source': 'context',
+				},
+				children: [
+					createElement(Camera, { id: 'provided' }),
+					createElement(Camera, {
+						id: 'local',
+						color: 'navy',
+						size: 18,
+						weight: 'thin',
+						mirrored: false,
+						className: 'local',
+					}),
+				],
+			});
+		const mounted = mount(App);
+
+		const provided = mounted.find('#provided');
+		expect(provided.getAttribute('fill')).toBe('tomato');
+		expect(provided.getAttribute('width')).toBe('40');
+		expect(provided.getAttribute('transform')).toBe('scale(-1, 1)');
+		expect(provided.getAttribute('class')).toBe('provided');
+		expect(provided.getAttribute('data-source')).toBe('context');
+
+		const local = mounted.find('#local');
+		expect(local.getAttribute('fill')).toBe('navy');
+		expect(local.getAttribute('width')).toBe('18');
+		expect(local.getAttribute('transform')).toBe('scale(-1, 1)');
+		expect(local.getAttribute('class')).toBe('local');
+
+		mounted.unmount();
+	});
+});

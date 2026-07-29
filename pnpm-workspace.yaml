@@ -120,6 +120,7 @@ catalogs:
     fake-indexeddb: 6.2.5
     '@graphql-typed-document-node/core': ^3.2.0
     '@lucide/icons': 1.24.0
+    '@phosphor-icons/core': 2.1.1
     '@babel/core': 7.29.7
     '@changesets/changelog-github': ^0.7.0
     '@changesets/changelog-git': ^0.2.1
@@ -265,6 +266,7 @@ catalogs:
     lexical: 0.46.0
     lighthouse: 13.4.1
     lucide-react: 1.24.0
+    '@phosphor-icons/react': 2.1.10
     motion: ^12.42.2
     motion-dom: ^12.0.0
     miniflare: 4.20260714.0
