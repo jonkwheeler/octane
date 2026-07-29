@@ -5731,9 +5731,18 @@ importers:
       '@octanejs/lucide':
         specifier: workspace:*
         version: link:../../packages/lucide
+      '@octanejs/mantine-hooks':
+        specifier: workspace:*
+        version: link:../../packages/mantine-hooks
+      '@octanejs/mobx':
+        specifier: workspace:*
+        version: link:../../packages/mobx
       '@octanejs/radix':
         specifier: workspace:*
         version: link:../../packages/radix
+      '@octanejs/react-error-boundary':
+        specifier: workspace:*
+        version: link:../../packages/react-error-boundary
       '@octanejs/sonner':
         specifier: workspace:*
         version: link:../../packages/sonner

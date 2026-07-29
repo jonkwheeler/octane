@@ -16,6 +16,9 @@
   },
   "dependencies": {
     "@octanejs/cmdk": "workspace:*",
+    "@octanejs/mantine-hooks": "workspace:*",
+    "@octanejs/mobx": "workspace:*",
+    "@octanejs/react-error-boundary": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/radix": "workspace:*",
     "@octanejs/sonner": "workspace:*",
