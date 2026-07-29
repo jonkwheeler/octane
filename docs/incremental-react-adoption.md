@@ -65,7 +65,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, octane } from '@octanejs/vite-plugin';
 
 export default defineConfig({
-  plugins: [react(), octane()],
+  plugins: [react(), octane({ requireDirective: true })],
 });
 ```
 
@@ -80,7 +80,9 @@ route component. The committed
 [`react-router-islands` example](../examples/react-router-islands/README.md)
 builds this boundary. TanStack Start follows the same rule: keep file routes,
 server functions, hydration, and the root document React-owned; use Octane for
-client leaves below a route. Do not convert a route module itself.
+client leaves below a route. Do not convert a route module itself. The
+[`tanstack-start-islands` example](../examples/tanstack-start-islands/README.md)
+production-builds this arrangement.
 
 ## 4. Add the Next.js build boundary
 
