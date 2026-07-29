@@ -14,13 +14,13 @@ export function useRequestQuery<T, TError = Error, TData = T>(
 export function useRequestQuery(
 	key: QueryKey,
 	source: RequestSource<unknown> | null,
-	options?: object,
+	options?: Omit<UseQueryOptions<unknown, Error, unknown, QueryKey>, 'queryFn' | 'queryKey'>,
 	slot?: symbol,
 ) {
 	return (useQuery as (...args: unknown[]) => unknown)(
 		{
 			...options,
-			enabled: source !== null && (options as { enabled?: boolean } | undefined)?.enabled !== false,
+			enabled: source === null ? false : options?.enabled,
 			queryKey: key,
 			queryFn: ({ signal }: { signal: AbortSignal }) =>
 				typeof source === 'function' ? source(signal) : source!.send({ abortSignal: signal }),

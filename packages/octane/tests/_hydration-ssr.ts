@@ -4,7 +4,7 @@ import { createServer } from 'vite';
 import { octane } from '../src/compiler/vite.js';
 import type { RenderResult } from '../src/runtime.server';
 
-type HydrationBinding = 'apollo-client' | 'aria' | 'base-ui' | 'docusaurus';
+type HydrationBinding = 'apollo-client' | 'aria' | 'base-ui' | 'docusaurus' | 'solana-react';
 
 const repositoryRoot = resolve(import.meta.dirname, '../../..');
 
@@ -40,6 +40,15 @@ function bindingAliases(binding: HydrationBinding) {
 			{
 				find: /^@octanejs\/remix-router$/,
 				replacement: resolve(repositoryRoot, 'packages/remix-router/src/index.ts'),
+			},
+		];
+	}
+
+	if (binding === 'solana-react') {
+		return [
+			{
+				find: /^@octanejs\/solana-react$/,
+				replacement: resolve(source, 'index.ts'),
 			},
 		];
 	}

@@ -12,7 +12,9 @@ export type ClientProviderProps =
 
 export function ClientProvider(props: ClientProviderProps) @{
 	const store = useMemo(() => createClientStore(props.client), []);
-	store.setClient(props.client);
+	useEffect(() => {
+		store.setClient(props.client);
+	}, [store, props.client]);
 	useEffect(() => () => store.dispose(), [store]);
 	<ClientContext.Provider value={store}>{props.children}</ClientContext.Provider>
 }

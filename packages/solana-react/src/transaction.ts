@@ -25,7 +25,8 @@ export type TransactionResult<TSignature> =
 	| { status: 'confirmed'; signature: TSignature }
 	| {
 			status: 'indeterminate';
-			signature?: TSignature;
+			signature: TSignature;
+			failure?: TransactionFailure;
 			reconcile(): Promise<TransactionResult<TSignature>>;
 	  };
 
@@ -62,27 +63,51 @@ export function createTransactionExecutor<TPayload, TSigned, TSignature>(options
 		} catch (cause) {
 			throw new TransactionFailure('signing-failed', 'Wallet rejected or failed signing', cause);
 		}
+		if (operation !== active || !same(context, options.getContext()))
+			throw new TransactionFailure(
+				'cancelled-before-dispatch',
+				'Transaction context changed before wallet dispatch',
+			);
 		let signature: TSignature;
 		try {
 			signature = await options.send(signed, context);
 		} catch (cause) {
 			throw new TransactionFailure('sending-failed', 'Transaction submission failed', cause);
 		}
-		if (!same(context, options.getContext())) {
-			return { status: 'indeterminate', signature, reconcile: () => reconcile(signature, context) };
-		}
-		return reconcile(signature, context);
+		if (operation !== active || !same(context, options.getContext()))
+			return indeterminate(signature, context);
+		return confirm(signature, context, operation);
 	};
 
-	async function reconcile(
+	function indeterminate(
 		signature: TSignature,
 		context: TransactionContext<TPayload>,
+		failure?: TransactionFailure,
+	): TransactionResult<TSignature> {
+		return {
+			status: 'indeterminate',
+			signature,
+			...(failure ? { failure } : {}),
+			reconcile: () => confirm(signature, context),
+		};
+	}
+
+	async function confirm(
+		signature: TSignature,
+		context: TransactionContext<TPayload>,
+		operation?: number,
 	): Promise<TransactionResult<TSignature>> {
 		try {
 			await options.confirm!(signature, context);
 		} catch (cause) {
-			throw new TransactionFailure('confirmation-failed', 'Transaction confirmation failed', cause);
+			return indeterminate(
+				signature,
+				context,
+				new TransactionFailure('confirmation-failed', 'Transaction confirmation failed', cause),
+			);
 		}
+		if (operation !== undefined && (operation !== active || !same(context, options.getContext())))
+			return indeterminate(signature, context);
 		return { status: 'confirmed', signature };
 	}
 }
