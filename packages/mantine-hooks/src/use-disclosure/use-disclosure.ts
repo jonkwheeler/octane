@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'octane';
+import { withoutSlot } from '../internal';
 
 export interface UseDisclosureOptions {
 	onOpen?: () => void;
@@ -18,27 +19,29 @@ export function useDisclosure(
 	initialState = false,
 	options: UseDisclosureOptions = {},
 ): UseDisclosureReturnValue {
-	const [opened, setOpened] = useState(initialState);
+	const normalizedInitialState = withoutSlot(initialState) ?? false;
+	const normalizedOptions = withoutSlot(options) ?? {};
+	const [opened, setOpened] = useState(normalizedInitialState);
 
 	const open = useCallback(() => {
 		setOpened((isOpened) => {
 			if (!isOpened) {
-				options.onOpen?.();
+				normalizedOptions.onOpen?.();
 				return true;
 			}
 			return isOpened;
 		});
-	}, [options.onOpen]);
+	}, [normalizedOptions.onOpen]);
 
 	const close = useCallback(() => {
 		setOpened((isOpened) => {
 			if (isOpened) {
-				options.onClose?.();
+				normalizedOptions.onClose?.();
 				return false;
 			}
 			return isOpened;
 		});
-	}, [options.onClose]);
+	}, [normalizedOptions.onClose]);
 
 	const toggle = useCallback(() => {
 		opened ? close() : open();

@@ -14,6 +14,19 @@ export function HoverHarness() @{
 	</button>
 }
 
+export function HoverReplacementHarness({ replacement }: { replacement: boolean }) @{
+	const { ref, hovered } = useHover<HTMLElement>();
+	<section>
+		{replacement
+			? <div id="hover-replacement" ref={ref}>
+					{hovered ? 'hovered' : 'idle'}
+				</div>
+			: <button id="hover-replacement" ref={ref}>
+					{hovered ? 'hovered' : 'idle'}
+				</button>}
+	</section>
+}
+
 export function LongPressHarness({
 	onLongPress,
 }: {

@@ -36,8 +36,14 @@ export function useHover<T extends HTMLElement = any>(): UseHoverReturnValue<T> 
 				node?.removeEventListener('mouseleave', handleMouseLeave);
 				if (previousNode.current === node) {
 					previousNode.current = null;
+					// Ref detaches run before replacement attaches. Defer the reset
+					// so a replacement in the same commit can preserve hover state.
+					queueMicrotask(() => {
+						if (previousNode.current === null) {
+							setHovered(false);
+						}
+					});
 				}
-				setHovered(false);
 			};
 		},
 		[handleMouseEnter, handleMouseLeave],

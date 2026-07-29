@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'octane';
+import { withoutSlot } from '../internal';
 import { useCallbackRef } from '../utils';
 
 export interface UseTimeoutOptions {
@@ -15,6 +16,7 @@ export function useTimeout(
 	delay: number,
 	options: UseTimeoutOptions = { autoInvoke: false },
 ): UseTimeoutReturnValue {
+	const normalizedOptions = withoutSlot(options) ?? { autoInvoke: false };
 	const timeoutRef = useRef<number | null>(null);
 	const handleCallback = useCallbackRef(callback);
 
@@ -38,7 +40,7 @@ export function useTimeout(
 	}, []);
 
 	useEffect(() => {
-		if (options.autoInvoke) {
+		if (normalizedOptions.autoInvoke) {
 			start();
 		}
 

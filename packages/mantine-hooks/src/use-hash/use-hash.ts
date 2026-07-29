@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'octane';
+import { withoutSlot } from '../internal';
 import { useWindowEvent } from '../use-window-event/use-window-event';
 
 export interface UseHashInput {
@@ -7,7 +8,8 @@ export interface UseHashInput {
 
 export type UseHashReturnValue = [string, (value: string) => void];
 
-export function useHash({ getInitialValueInEffect = true }: UseHashInput = {}): UseHashReturnValue {
+export function useHash(options: UseHashInput = {}): UseHashReturnValue {
+	const { getInitialValueInEffect = true } = withoutSlot(options) ?? {};
 	const [hash, setHash] = useState<string>(
 		getInitialValueInEffect ? '' : window.location.hash || '',
 	);

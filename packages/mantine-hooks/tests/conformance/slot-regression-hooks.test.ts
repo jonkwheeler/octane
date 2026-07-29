@@ -4,6 +4,7 @@ import {
 	MediaQueryOmittedOptionsHarness,
 	MouseLifecycleHarness,
 	MoveDefaultDirectionHarness,
+	OmittedOptionsHarness,
 } from '../_fixtures/slot-regression-hooks.tsrx';
 
 describe('@octanejs/mantine-hooks compiler slot regressions', () => {
@@ -82,5 +83,28 @@ describe('@octanejs/mantine-hooks compiler slot regressions', () => {
 		await nextPaint();
 		expect(result.find('#mouse-position').textContent).toBe('7,8');
 		result.unmount();
+	});
+
+	it('applies public defaults when TSRX omits hook options', () => {
+		vi.useFakeTimers();
+		const onTimeout = vi.fn();
+		const result = mount(OmittedOptionsHarness, { onTimeout });
+
+		expect(result.find('#clipboard-default').textContent).toBe('idle');
+		expect(result.find('#disclosure-default').textContent).toBe('closed');
+		expect(result.find('#hash-default').textContent).toBe('empty');
+		expect(result.find('#toggle-default').textContent).toBe('off');
+
+		result.click('#open-disclosure');
+		result.click('#toggle-default-value');
+		result.click('#start-timeout');
+		expect(result.find('#disclosure-default').textContent).toBe('open');
+		expect(result.find('#toggle-default').textContent).toBe('on');
+		expect(onTimeout).not.toHaveBeenCalled();
+
+		vi.advanceTimersByTime(10);
+		expect(onTimeout).toHaveBeenCalledOnce();
+		result.unmount();
+		vi.useRealTimers();
 	});
 });

@@ -5,6 +5,7 @@ import { mount, nextPaint } from '../_helpers';
 import {
 	DragHarness,
 	HoverHarness,
+	HoverReplacementHarness,
 	LongPressHarness,
 	OmittedInteractionOptionsHarness,
 } from '../_fixtures/interaction-hooks.tsrx';
@@ -37,6 +38,21 @@ describe('@octanejs/mantine-hooks interaction hooks', () => {
 		expect(removeEventListener).toHaveBeenCalledWith('mouseleave', expect.any(Function));
 		expect(removeEventListener.mock.instances).toContain(node);
 		removeEventListener.mockRestore();
+	});
+
+	it('preserves hovered state across a ref replacement', async () => {
+		const result = mount(HoverReplacementHarness, { replacement: false });
+		const original = result.find('#hover-replacement');
+		original.dispatchEvent(new MouseEvent('mouseenter'));
+		await nextPaint();
+		expect(original.textContent).toBe('hovered');
+
+		result.update(HoverReplacementHarness, { replacement: true });
+		await nextPaint();
+		const replacement = result.find('#hover-replacement');
+		expect(replacement).not.toBe(original);
+		expect(replacement.textContent).toBe('hovered');
+		result.unmount();
 	});
 
 	it('accepts Octane/native mouse events in useLongPress', () => {
