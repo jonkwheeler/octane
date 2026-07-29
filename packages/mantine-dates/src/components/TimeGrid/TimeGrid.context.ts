@@ -1,5 +1,5 @@
 import { createSafeContext, GetStylesApi } from '@octanejs/mantine-core';
-import type { TimeGridFactory } from './TimeGrid';
+import type { TimeGridFactory } from './TimeGrid.tsrx';
 
 interface TimeGridContextValue {
   getStyles: GetStylesApi<TimeGridFactory>;

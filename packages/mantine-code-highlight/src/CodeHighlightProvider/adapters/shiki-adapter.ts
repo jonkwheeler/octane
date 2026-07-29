@@ -1,4 +1,4 @@
-import type { CodeHighlightAdapter } from '../CodeHighlightProvider';
+import type { CodeHighlightAdapter } from '../CodeHighlightProvider.tsrx';
 import { dark, light } from './shiki-themes';
 
 function stripElement(openTag: string, data: string) {

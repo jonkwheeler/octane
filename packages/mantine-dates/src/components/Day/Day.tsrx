@@ -15,7 +15,7 @@ import {
 import { DateStringValue } from '../../types';
 import classes from './Day.module.css';
 
-export type RenderDay = (date: DateStringValue) => React.ReactNode;
+export type RenderDay = (date: DateStringValue) => OctaneNode;
 
 export type DayStylesNames = 'day';
 export type DayCssVariables = {

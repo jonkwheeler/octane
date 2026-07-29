@@ -1,7 +1,7 @@
 import { useCallback, useReducer, useRef } from 'octane';
 import { getDefaultZIndex, Modal } from '@octanejs/mantine-core';
 import { randomId } from '@octanejs/mantine-hooks';
-import { ConfirmModal } from './ConfirmModal';
+import { ConfirmModal } from './ConfirmModal.tsrx';
 import {
   ConfirmLabels,
   ContextModalProps,

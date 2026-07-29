@@ -1,7 +1,5 @@
-import { RefObject } from 'octane';
-
 /** Reference to a 2D array of slot buttons: [resourceIndex][slotIndex] */
-export type ResourcesGridControlsRef = RefObject<HTMLButtonElement[][]>;
+export type ResourcesGridControlsRef = { current: HTMLButtonElement[][] };
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 
@@ -137,7 +135,7 @@ export interface HandleResourcesGridKeyDownInput {
   controlsRef: ResourcesGridControlsRef;
   resourceIndex: number;
   slotIndex: number;
-  event: React.KeyboardEvent<HTMLButtonElement>;
+  event: OctaneKeyboardEvent<HTMLButtonElement>;
 }
 
 export function handleResourcesGridKeyDown({

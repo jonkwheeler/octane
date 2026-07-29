@@ -76,7 +76,7 @@ export interface ScatterChartProps
     | { x?: GridChartBaseProps['valueFormatter']; y?: GridChartBaseProps['valueFormatter'] };
 
   /** Props passed down to recharts `ScatterChart` component */
-  scatterChartProps?: React.ComponentProps<typeof ReChartsScatterChart>;
+  scatterChartProps?: Record<string, any>;
 
   /** Props passed down to recharts `Scatter` component */
   scatterProps?: Partial<Omit<ScatterProps, 'ref'>>;
@@ -165,9 +165,9 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
 
   const theme = useMantineTheme();
 
-  const mappedData = data.map((item) => ({
+  const mappedData = data.map((item: any) => ({
     ...item,
-    data: item.data.map((point) => ({ ...point, name: item.name })),
+    data: item.data.map((point: any) => ({ ...point, name: item.name })),
   }));
 
   const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<ScatterChartFactory>({
@@ -194,7 +194,7 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
   const withYTickLine = gridAxis !== 'none' && (tickLine === 'y' || tickLine === 'xy');
   const [highlightedArea, setHighlightedArea] = useState<string | number | null>(null);
   const shouldHighlight = highlightedArea !== null;
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = (event: OctaneMouseEvent<HTMLDivElement>) => {
     setHighlightedArea(null);
     onMouseLeave?.(event);
   };
@@ -218,7 +218,7 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
     );
   });
 
-  const scatters = mappedData.map((item, index) => {
+  const scatters = mappedData.map((item: any, index: number) => {
     const dimmed = shouldHighlight && highlightedArea !== item.name;
     return (
       <Scatter
@@ -313,13 +313,13 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
                 strokeWidth: 1,
                 strokeDasharray,
               }}
-              content={({ label, payload, labelFormatter }) => (
+              content={({ label, payload, labelFormatter }: { label: any; payload: any; labelFormatter: any }) => (
                 <ChartTooltip
                   type="scatter"
                   label={labelFormatter && payload ? labelFormatter(label, payload) : label}
                   payload={
                     labels
-                      ? payload?.map((item) => ({
+                      ? payload?.map((item: any) => ({
                           ...item,
                           name: labels[getAxis(item.name as string, dataKey)] || item.name,
                           value:
@@ -327,7 +327,7 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
                               item.value as number
                             ) ?? item.value,
                         }))
-                      : payload?.map((item) => ({
+                      : payload?.map((item: any) => ({
                           ...item,
                           value:
                             getFormatter(getAxis(item.name as string, dataKey))?.(
@@ -348,9 +348,9 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="top"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
-                  payload={payload.payload?.map((item, index) => ({
+                  payload={payload.payload?.map((item: any, index: number) => ({
                     ...item,
                     dataKey: data[index].name,
                   }))}
@@ -378,4 +378,3 @@ export const ScatterChart = factory<ScatterChartFactory>((_props) => {
 ScatterChart.displayName = '@mantine/charts/ScatterChart';
 ScatterChart.classes = classes;
 ScatterChart.varsResolver = varsResolver;
-

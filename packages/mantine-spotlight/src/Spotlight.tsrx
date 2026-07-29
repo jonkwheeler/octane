@@ -5,6 +5,7 @@ import {
   ScrollAreaAutosizeProps,
   useProps,
 } from '@octanejs/mantine-core';
+import type { OctaneNode } from 'octane';
 import { useUncontrolled } from '@octanejs/mantine-hooks';
 import { defaultSpotlightFilter } from './default-spotlight-filter';
 import { isActionsGroup } from './is-actions-group';
@@ -14,33 +15,33 @@ import {
   SpotlightAction,
   SpotlightActionProps,
   type SpotlightActionStylesNames,
-} from './SpotlightAction';
+} from './SpotlightAction.tsrx';
 import {
   SpotlightActionsGroup,
   type SpotlightActionsGroupProps,
   type SpotlightActionsGroupStylesNames,
-} from './SpotlightActionsGroup';
+} from './SpotlightActionsGroup.tsrx';
 import {
   SpotlightActionsList,
   type SpotlightActionsListProps,
   type SpotlightActionsListStylesNames,
-} from './SpotlightActionsList';
+} from './SpotlightActionsList.tsrx';
 import {
   SpotlightEmpty,
   type SpotlightEmptyProps,
   type SpotlightEmptyStylesNames,
-} from './SpotlightEmpty';
+} from './SpotlightEmpty.tsrx';
 import {
   SpotlightFooter,
   type SpotlightFooterProps,
   type SpotlightFooterStylesNames,
-} from './SpotlightFooter';
-import { SpotlightRoot, SpotlightRootProps, SpotlightRootStylesNames } from './SpotlightRoot';
+} from './SpotlightFooter.tsrx';
+import { SpotlightRoot, SpotlightRootProps, SpotlightRootStylesNames } from './SpotlightRoot.tsrx';
 import {
   SpotlightSearch,
   SpotlightSearchProps,
   type SpotlightSearchStylesNames,
-} from './SpotlightSearch';
+} from './SpotlightSearch.tsrx';
 import classes from './Spotlight.module.css';
 
 export type SpotlightFilterFunction = (
@@ -73,7 +74,7 @@ export interface SpotlightProps extends SpotlightRootProps {
   filter?: SpotlightFilterFunction;
 
   /** Message displayed when none of the actions match given `filter` */
-  nothingFound?: React.ReactNode;
+  nothingFound?: OctaneNode;
 
   /** Determines whether search query should be highlighted in action label @default false */
   highlightQuery?: boolean;
@@ -159,7 +160,7 @@ export const Spotlight = factory<SpotlightFactory>((_props) => {
     <SpotlightRoot {...others} query={_query} onQueryChange={setQuery}>
       <SpotlightSearch {...searchProps} />
       {filteredActions.length > 0 && (
-        <SpotlightActionsList {...(scrollAreaProps as any)}>{filteredActions}</SpotlightActionsList>
+        <SpotlightActionsList {...(scrollAreaProps as any)}>{filteredActions as any}</SpotlightActionsList>
       )}
       {filteredActions.length === 0 && nothingFound && (
         <SpotlightEmpty>{nothingFound}</SpotlightEmpty>

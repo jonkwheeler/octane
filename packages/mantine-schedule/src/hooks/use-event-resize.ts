@@ -103,7 +103,7 @@ export function useEventResize({
       originalTop: number;
       originalHeight: number;
       eventDate: string;
-      pointerEvent: React.PointerEvent;
+      pointerEvent: OctanePointerEvent<Element>;
     }) => {
       if (!enabled || mode === 'static') {
         return;

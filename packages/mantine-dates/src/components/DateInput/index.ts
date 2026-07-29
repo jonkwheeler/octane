@@ -1,5 +1,5 @@
-import type { DateInputFactory, DateInputProps, DateInputStylesNames } from './DateInput';
+import type { DateInputFactory, DateInputProps, DateInputStylesNames } from './DateInput.tsrx';
 
-export { DateInput } from './DateInput';
+export { DateInput } from './DateInput.tsrx';
 
 export type { DateInputProps, DateInputStylesNames, DateInputFactory };

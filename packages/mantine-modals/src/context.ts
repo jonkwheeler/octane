@@ -1,12 +1,12 @@
-import { createContext, ReactNode } from 'octane';
+import { createContext, type OctaneNode } from 'octane';
 import { ModalProps } from '@octanejs/mantine-core';
-import type { ConfirmModalProps } from './ConfirmModal';
+import type { ConfirmModalProps } from './ConfirmModal.tsrx';
 
 export type ModalSettings = Partial<Omit<ModalProps, 'opened'>> & { modalId?: string };
 
-export type ConfirmLabels = Record<'confirm' | 'cancel', ReactNode>;
+export type ConfirmLabels = Record<'confirm' | 'cancel', OctaneNode>;
 
-export interface OpenConfirmModal extends ModalSettings, ConfirmModalProps {}
+export type OpenConfirmModal = Omit<ModalSettings, keyof ConfirmModalProps> & ConfirmModalProps;
 export interface OpenContextModal<
   CustomProps extends Record<string, any> = {},
 > extends ModalSettings {
@@ -43,11 +43,11 @@ export interface ModalsContextProps {
 export interface MantineModalsOverride {}
 
 export type MantineModalsOverwritten = MantineModalsOverride extends {
-  modals: Record<string, React.FC<ContextModalProps<any>>>;
+  modals: Record<string, OctaneComponent<ContextModalProps<any>>>;
 }
   ? MantineModalsOverride
   : {
-      modals: Record<string, React.FC<ContextModalProps<any>>>;
+      modals: Record<string, OctaneComponent<ContextModalProps<any>>>;
     };
 
 export type MantineModals = MantineModalsOverwritten['modals'];
@@ -55,4 +55,3 @@ export type MantineModals = MantineModalsOverwritten['modals'];
 export type MantineModal = keyof MantineModals;
 
 export const ModalsContext = createContext<ModalsContextProps>(null as any);
-ModalsContext.displayName = '@mantine/modals/ModalsContext';

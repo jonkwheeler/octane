@@ -9,7 +9,7 @@ interface UseDatesRangeInput<
 > extends PickerBaseProps<Type> {
   level: 'year' | 'month' | 'day';
   type: Type;
-  onMouseLeave?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseLeave?: (event: OctaneMouseEvent<HTMLDivElement>) => void;
 }
 
 export function useDatesState<Type extends DatePickerType = 'default'>({
@@ -101,7 +101,7 @@ export function useDatesState<Type extends DatePickerType = 'default'>({
 
   const onRootMouseLeave =
     type === 'range'
-      ? (event: React.MouseEvent<HTMLDivElement>) => {
+      ? (event: OctaneMouseEvent<HTMLDivElement>) => {
           onMouseLeave?.(event);
           setHoveredDate(null);
         }

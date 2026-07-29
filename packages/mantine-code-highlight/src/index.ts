@@ -3,34 +3,34 @@ import type {
   CodeHighlightFactory,
   CodeHighlightProps,
   CodeHighlightStylesNames,
-} from './CodeHighlight/CodeHighlight';
+} from './CodeHighlight/CodeHighlight.tsrx';
 import type { CodeHighlightContextValue } from './CodeHighlight/CodeHighlight.context';
-import type { CodeHighlightControlProps } from './CodeHighlight/CodeHighlightControl/CodeHighlightControl';
+import type { CodeHighlightControlProps } from './CodeHighlight/CodeHighlightControl/CodeHighlightControl.tsrx';
 import type {
   InlineCodeHighlightCssVariables,
   InlineCodeHighlightFactory,
   InlineCodeHighlightProps,
   InlineCodeHighlightStylesNames,
-} from './CodeHighlight/InlineCodeHighlight';
-import type { CodeHighlightAdapter } from './CodeHighlightProvider/CodeHighlightProvider';
+} from './CodeHighlight/InlineCodeHighlight.tsrx';
+import type { CodeHighlightAdapter } from './CodeHighlightProvider/CodeHighlightProvider.tsrx';
 import type {
   CodeHighlightDefaultLanguage,
   CodeHighlightTabsCode,
   CodeHighlightTabsFactory,
   CodeHighlightTabsProps,
   CodeHighlightTabsStylesNames,
-} from './CodeHighlightTabs/CodeHighlightTabs';
+} from './CodeHighlightTabs/CodeHighlightTabs.tsrx';
 
-export { CodeHighlight } from './CodeHighlight/CodeHighlight';
-export { InlineCodeHighlight } from './CodeHighlight/InlineCodeHighlight';
-export { CodeHighlightTabs } from './CodeHighlightTabs/CodeHighlightTabs';
-export { CodeHighlightControl } from './CodeHighlight/CodeHighlightControl/CodeHighlightControl';
+export { CodeHighlight } from './CodeHighlight/CodeHighlight.tsrx';
+export { InlineCodeHighlight } from './CodeHighlight/InlineCodeHighlight.tsrx';
+export { CodeHighlightTabs } from './CodeHighlightTabs/CodeHighlightTabs.tsrx';
+export { CodeHighlightControl } from './CodeHighlight/CodeHighlightControl/CodeHighlightControl.tsrx';
 export { useCodeHighlightContext } from './CodeHighlight/CodeHighlight.context';
 
 export {
   CodeHighlightAdapterProvider,
   useHighlight,
-} from './CodeHighlightProvider/CodeHighlightProvider';
+} from './CodeHighlightProvider/CodeHighlightProvider.tsrx';
 
 export { createHighlightJsAdapter } from './CodeHighlightProvider/adapters/highlight-js-adapter';
 export {

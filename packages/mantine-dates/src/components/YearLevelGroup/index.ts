@@ -1,6 +1,6 @@
-export { YearLevelGroup } from './YearLevelGroup';
+export { YearLevelGroup } from './YearLevelGroup.tsrx';
 export type {
   YearLevelGroupFactory,
   YearLevelGroupProps,
   YearLevelGroupStylesNames,
-} from './YearLevelGroup';
+} from './YearLevelGroup.tsrx';

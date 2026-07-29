@@ -23,7 +23,7 @@ export function useSlotDragSelect({ enabled = true, onDragEnd }: UseSlotDragSele
   const stableOnDragEnd = useEffectEvent(onDragEnd || (() => {}));
 
   const handleSlotPointerDown = useCallback(
-    (_event: React.PointerEvent<HTMLButtonElement>, index: number, group: string) => {
+    (_event: OctanePointerEvent<HTMLButtonElement>, index: number, group: string) => {
       if (!enabled) {
         return;
       }

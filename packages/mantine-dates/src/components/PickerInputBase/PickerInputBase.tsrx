@@ -48,7 +48,7 @@ export interface DateInputSharedProps
   clearSectionMode?: ClearSectionMode;
 
   /** Props passed down to the clear button */
-  clearButtonProps?: React.ComponentProps<'button'>;
+  clearButtonProps?: MantineIntrinsicProps<'button'>;
 
   /** If set, the component value cannot be changed by the user */
   readOnly?: boolean;
@@ -77,7 +77,7 @@ export interface PickerInputBaseProps
   classNames?: Partial<Record<string, string>>;
   styles?: Partial<Record<string, React.CSSProperties>>;
   __staticSelector?: string;
-  children: React.ReactNode;
+  children: OctaneNode;
   formattedValue: string | null | undefined;
   dropdownHandlers: ReturnType<typeof useDisclosure>[1];
   dropdownOpened: boolean;

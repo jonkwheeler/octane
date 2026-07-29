@@ -1,7 +1,7 @@
-export { MonthsList } from './MonthsList';
+export { MonthsList } from './MonthsList.tsrx';
 export type {
   MonthsListProps,
   MonthsListFactory,
   MonthsListSettings,
   MonthsListStylesNames,
-} from './MonthsList';
+} from './MonthsList.tsrx';

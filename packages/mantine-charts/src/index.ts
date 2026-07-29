@@ -1,3 +1,6 @@
+/// <reference path="../../mantine-core/src/env.d.ts" />
+/// <reference path="../../mantine-core/src/octane-types.d.ts" />
+
 export * from './ChartTooltip/index.js';
 export * from './ChartLegend/index.js';
 export * from './AreaChart/index.js';

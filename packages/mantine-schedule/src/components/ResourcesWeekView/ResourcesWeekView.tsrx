@@ -56,16 +56,16 @@ import {
   ResourcesGridControlsRef,
   toDateString,
 } from '../../utils';
-import { DragContext, DragContextValue } from '../DragContext/DragContext';
-import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents';
+import { DragContext, DragContextValue } from '../DragContext/DragContext.tsrx';
+import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents.tsrx';
 import { getOverlapClusters } from '../ResourcesDayView/get-overlap-clusters/get-overlap-clusters';
-import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import { getWeekLabel } from '../WeekView/get-week-label/get-week-label';
 import { getResourcesWeekViewEvents } from './get-resources-week-view-events/get-resources-week-view-events';
-import { ResourcesWeekViewRow } from './ResourcesWeekViewRow';
+import { ResourcesWeekViewRow } from './ResourcesWeekViewRow.tsrx';
 import classes from './ResourcesWeekView.module.css';
 
 export type ResourcesWeekViewStylesNames =
@@ -131,15 +131,15 @@ export interface ResourcesWeekViewProps
 
   withHeader?: boolean;
   onViewChange?: (view: ScheduleViewLevel) => void;
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;
   weekLabelFormat?: DateLabelFormat;
   renderWeekLabel?: (params: {
     weekStart: DateStringValue;
     weekEnd: DateStringValue;
-  }) => React.ReactNode;
+  }) => OctaneNode;
   events?: ScheduleEventData[];
   slotWidth?: React.CSSProperties['width'];
   rowHeight?: React.CSSProperties['height'];
@@ -148,13 +148,13 @@ export interface ResourcesWeekViewProps
   businessHours?: [string, string];
   renderEventBody?: RenderEventBody;
   renderEvent?: RenderEvent;
-  renderResourceLabel?: (resource: ScheduleResourceData) => React.ReactNode;
+  renderResourceLabel?: (resource: ScheduleResourceData) => OctaneNode;
 
   /** List of resource groups to display as a column to the left of resource labels */
   groups?: ScheduleResourceGroup[];
 
   /** Function to customize group label rendering */
-  renderGroupLabel?: (group: ScheduleResourceGroup) => React.ReactNode;
+  renderGroupLabel?: (group: ScheduleResourceGroup) => OctaneNode;
 
   /** Width of the group label column @default 80px */
   groupLabelWidth?: React.CSSProperties['width'];
@@ -173,10 +173,10 @@ export interface ResourcesWeekViewProps
   onTimeSlotClick?: (data: {
     slotStart: DateTimeStringValue;
     slotEnd: DateTimeStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
     resourceId?: string | number;
   }) => void;
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
   withDragSlotSelect?: boolean;
   onSlotDragEnd?: (data: {
     rangeStart: DateTimeStringValue;
@@ -407,8 +407,8 @@ export const ResourcesWeekView = factory<ResourcesWeekViewFactory>((_props) => {
   type DropTargetSlot = { resourceId: string | number; slotIndex: number };
 
   const handleExternalDrop = useCallback(
-    (e: React.DragEvent, target: DropTargetSlot) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, target: DropTargetSlot) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       const dayIndex = Math.floor(target.slotIndex / totalSlotsPerDay);
@@ -502,7 +502,7 @@ export const ResourcesWeekView = factory<ResourcesWeekViewFactory>((_props) => {
     resourceId: string | number,
     day: string,
     slotTime: string,
-    e: React.MouseEvent<HTMLButtonElement>
+    e: OctaneMouseEvent<HTMLButtonElement>
   ) => {
     if (!onTimeSlotClick) {
       return;
@@ -583,7 +583,7 @@ export const ResourcesWeekView = factory<ResourcesWeekViewFactory>((_props) => {
 
   const slotsRef: ResourcesGridControlsRef = useRef<HTMLButtonElement[][]>([]);
   const rowSlotsContainersRef = useRef<(HTMLDivElement | null)[]>([]);
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const mergedViewportRef = useMergedRef(viewportRef, scrollAreaProps?.viewportRef);
 
   const firstSlotIndex = { resourceIndex: 0, slotIndex: 0 };
@@ -622,12 +622,12 @@ export const ResourcesWeekView = factory<ResourcesWeekViewFactory>((_props) => {
     });
   }, []);
 
-  const getSlotIndexFromDragPoint = useCallback((event: React.DragEvent, resourceIndex: number) => {
+  const getSlotIndexFromDragPoint = useCallback((event: OctaneDragEvent<Element>, resourceIndex: number) => {
     return getIndexFromDragPoint(slotsRef.current[resourceIndex] ?? [], event.clientX);
   }, []);
 
   const handleSlotKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     resourceIndex: number,
     slotIndex: number
   ) => {
@@ -642,7 +642,7 @@ export const ResourcesWeekView = factory<ResourcesWeekViewFactory>((_props) => {
   const dayWidthPercent = 100 / weekdays.length;
 
   const rows = orderedResources.map((resource, resourceIndex) => {
-    const eventNodes: React.ReactNode[] = [];
+    const eventNodes: OctaneNode[] = [];
     const resourceAllDayBars = weekViewEvents.allDayBars[resource.id] ?? [];
     const maxAllDayCount = resourceAllDayBars.reduce((max, bar) => Math.max(max, bar.row + 1), 0);
 

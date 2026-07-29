@@ -44,7 +44,7 @@ export const SpotlightSearch = factory<SpotlightSearchFactory>((props) => {
   const inputStyles = ctx.getStyles('search');
   const [isComposing, setIsComposing] = useState(false); // IME
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: OctaneKeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event);
     if (isComposing) {
       return;

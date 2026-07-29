@@ -1,4 +1,4 @@
-interface IconProps extends React.ComponentProps<'svg'> {}
+interface IconProps extends MantineIntrinsicProps<'svg'> {}
 
 export function IconBase(props: IconProps) {
   return (

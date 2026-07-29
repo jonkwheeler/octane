@@ -32,7 +32,7 @@ import {
 import classes from '../grid-chart.module.css';
 
 function getDomain(data: Record<string, any>[], key: string) {
-  const values = data.map((item) => item[key]);
+  const values = data.map((item: any) => item[key]);
   return [Math.min(...values), Math.max(...values)];
 }
 
@@ -231,7 +231,7 @@ export const BubbleChart = factory<BubbleChartFactory>((_props) => {
               animationDuration={100}
               isAnimationActive={false}
               cursor={{ stroke: 'var(--chart-grid-color)', strokeWidth: 1, strokeDasharray: '3 3' }}
-              content={(payload) => (
+              content={(payload: any) => (
                 <BubbleChartTooltip
                   dataKey={dataKey}
                   active={payload.active}

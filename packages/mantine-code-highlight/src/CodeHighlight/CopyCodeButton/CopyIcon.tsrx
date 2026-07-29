@@ -1,4 +1,4 @@
-interface CopyIconProps extends React.ComponentProps<'svg'> {
+interface CopyIconProps extends MantineIntrinsicProps<'svg'> {
   copied: boolean;
 }
 

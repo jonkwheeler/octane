@@ -12,7 +12,7 @@ import {
   useProps,
   useStyles,
 } from '@octanejs/mantine-core';
-import { CodeHighlight } from './CodeHighlight';
+import { CodeHighlight } from './CodeHighlight.tsrx';
 import classes from '../CodeHighlight.module.css';
 
 export type InlineCodeHighlightStylesNames = 'inlineCodeHighlight';

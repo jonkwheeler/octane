@@ -1,5 +1,5 @@
-import type { TimeInputFactory, TimeInputProps } from './TimeInput';
+import type { TimeInputFactory, TimeInputProps } from './TimeInput.tsrx';
 
-export { TimeInput } from './TimeInput';
+export { TimeInput } from './TimeInput.tsrx';
 
 export type { TimeInputProps, TimeInputFactory };

@@ -3,7 +3,7 @@ import type {
   YearViewFactory,
   YearViewProps,
   YearViewStylesNames,
-} from './YearView';
+} from './YearView.tsrx';
 
-export { YearView } from './YearView';
+export { YearView } from './YearView.tsrx';
 export type { YearViewProps, YearViewFactory, YearViewStylesNames, YearViewCssVariables };

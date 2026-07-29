@@ -16,7 +16,7 @@ import {
 import { useDisclosure } from '@octanejs/mantine-hooks';
 import { getLabel, ScheduleLabelsOverride } from '../../labels';
 import { ScheduleEventData, ScheduleMode } from '../../types';
-import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent';
+import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
 import classes from './MoreEvents.module.css';
 
 export type MoreEventsDropdownType = 'popover' | 'modal';
@@ -62,7 +62,7 @@ export interface MoreEventsProps
   mode?: ScheduleMode;
 
   /** Called when an event inside the dropdown is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 }
 
 export type MoreEventsFactory = Factory<{

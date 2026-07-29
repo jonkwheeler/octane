@@ -70,7 +70,7 @@ export interface RadialBarChartProps
   radialBarProps?: Omit<RadialBarProps, 'ref'>;
 
   /** Props passed down to recharts RadarChartChart component */
-  radialBarChartProps?: React.ComponentProps<typeof ReChartsRadialBarChart>;
+  radialBarChartProps?: Record<string, any>;
 
   /** Props passed down to recharts Legend component */
   legendProps?: Omit<LegendProps, 'ref'>;
@@ -208,9 +208,9 @@ export const RadialBarChart = factory<RadialBarChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="bottom"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
-                  payload={payload.payload?.map((item) => ({
+                  payload={payload.payload?.map((item: any) => ({
                     ...item,
                     dataKey: (item.payload as any)?.name,
                     highlightKey: (item.payload as any)?.__segmentIndex,
@@ -234,7 +234,7 @@ export const RadialBarChart = factory<RadialBarChartFactory>((_props) => {
               animationDuration={0}
               isAnimationActive={false}
               cursor={{ stroke: 'var(--chart-cursor-color)' }}
-              content={({ payload }) => (
+              content={({ payload }: { payload: any }) => (
                 <Paper {...getStyles('tooltip')}>
                   <Group gap="sm">
                     <ColorSwatch color={payload?.[0]?.payload.fill} size={12} withShadow={false} />

@@ -1,2 +1,2 @@
-export { TimeValue } from './TimeValue';
-export type { TimeValueProps } from './TimeValue';
+export { TimeValue } from './TimeValue.tsrx';
+export type { TimeValueProps } from './TimeValue.tsrx';

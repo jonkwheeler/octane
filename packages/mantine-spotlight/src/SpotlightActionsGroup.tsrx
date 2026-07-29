@@ -7,6 +7,7 @@ import {
   Factory,
   useProps,
 } from '@octanejs/mantine-core';
+import type { OctaneNode } from 'octane';
 import { useSpotlightContext } from './Spotlight.context';
 import classes from './Spotlight.module.css';
 
@@ -15,7 +16,7 @@ export type SpotlightActionsGroupStylesNames = 'actionsGroup';
 export interface SpotlightActionsGroupProps
   extends BoxProps, CompoundStylesApiProps<SpotlightActionsGroupFactory>, ElementProps<'div'> {
   /** `Spotlight.Action` components */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Group label */
   label?: string;

@@ -1,6 +1,6 @@
-export { DecadeLevelGroup } from './DecadeLevelGroup';
+export { DecadeLevelGroup } from './DecadeLevelGroup.tsrx';
 export type {
   DecadeLevelGroupFactory,
   DecadeLevelGroupProps,
   DecadeLevelGroupStylesNames,
-} from './DecadeLevelGroup';
+} from './DecadeLevelGroup.tsrx';

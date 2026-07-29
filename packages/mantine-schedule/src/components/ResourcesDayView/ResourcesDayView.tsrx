@@ -53,15 +53,15 @@ import {
   ResourcesGridControlsRef,
   toDateString,
 } from '../../utils';
-import { DragContext, DragContextValue } from '../DragContext/DragContext';
-import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents';
-import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+import { DragContext, DragContextValue } from '../DragContext/DragContext.tsrx';
+import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents.tsrx';
+import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import { getOverlapClusters } from './get-overlap-clusters/get-overlap-clusters';
 import { getResourcesDayViewEvents } from './get-resources-day-view-events/get-resources-day-view-events';
-import { ResourcesDayViewRow } from './ResourcesDayViewColumn';
+import { ResourcesDayViewRow } from './ResourcesDayViewColumn.tsrx';
 import classes from './ResourcesDayView.module.css';
 
 export type ResourcesDayViewStylesNames =
@@ -153,13 +153,13 @@ export interface ResourcesDayViewProps
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous control */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next control */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to today control */
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to view level select */
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;
@@ -192,13 +192,13 @@ export interface ResourcesDayViewProps
   renderEvent?: RenderEvent;
 
   /** Function to customize resource label rendering */
-  renderResourceLabel?: (resource: ScheduleResourceData) => React.ReactNode;
+  renderResourceLabel?: (resource: ScheduleResourceData) => OctaneNode;
 
   /** List of resource groups to display as a column to the left of resource labels */
   groups?: ScheduleResourceGroup[];
 
   /** Function to customize group label rendering */
-  renderGroupLabel?: (group: ScheduleResourceGroup) => React.ReactNode;
+  renderGroupLabel?: (group: ScheduleResourceGroup) => OctaneNode;
 
   /** Width of the group label column @default 80px */
   groupLabelWidth?: React.CSSProperties['width'];
@@ -228,12 +228,12 @@ export interface ResourcesDayViewProps
   onTimeSlotClick?: (data: {
     slotStart: DateTimeStringValue;
     slotEnd: DateTimeStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
     resourceId?: string | number;
   }) => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select time slot ranges @default false */
   withDragSlotSelect?: boolean;
@@ -426,8 +426,8 @@ export const ResourcesDayView = factory<ResourcesDayViewFactory>((_props) => {
   type DropTargetSlot = { resourceId: string | number; slotIndex: number };
 
   const handleExternalDrop = useCallback(
-    (e: React.DragEvent, target: DropTargetSlot) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, target: DropTargetSlot) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       const slotDate = dayjs(date).format('YYYY-MM-DD');
@@ -506,7 +506,7 @@ export const ResourcesDayView = factory<ResourcesDayViewFactory>((_props) => {
   const handleTimeSlotClick = (
     resourceId: string | number,
     slotTime: string,
-    e: React.MouseEvent<HTMLButtonElement>
+    e: OctaneMouseEvent<HTMLButtonElement>
   ) => {
     if (!onTimeSlotClick) {
       return;
@@ -594,7 +594,7 @@ export const ResourcesDayView = factory<ResourcesDayViewFactory>((_props) => {
 
   const slotsRef: ResourcesGridControlsRef = useRef<HTMLButtonElement[][]>([]);
   const rowSlotsContainersRef = useRef<(HTMLDivElement | null)[]>([]);
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const mergedViewportRef = useMergedRef(viewportRef, scrollAreaProps?.viewportRef);
 
   const firstSlotIndex = { resourceIndex: 0, slotIndex: 0 };
@@ -629,12 +629,12 @@ export const ResourcesDayView = factory<ResourcesDayViewFactory>((_props) => {
     });
   }, []);
 
-  const getSlotIndexFromDragPoint = useCallback((event: React.DragEvent, resourceIndex: number) => {
+  const getSlotIndexFromDragPoint = useCallback((event: OctaneDragEvent<Element>, resourceIndex: number) => {
     return getIndexFromDragPoint(slotsRef.current[resourceIndex] ?? [], event.clientX);
   }, []);
 
   const handleSlotKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     resourceIndex: number,
     slotIndex: number
   ) => {

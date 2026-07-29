@@ -3,9 +3,9 @@ import type {
   ResourcesMonthViewFactory,
   ResourcesMonthViewProps,
   ResourcesMonthViewStylesNames,
-} from './ResourcesMonthView';
+} from './ResourcesMonthView.tsrx';
 
-export { ResourcesMonthView } from './ResourcesMonthView';
+export { ResourcesMonthView } from './ResourcesMonthView.tsrx';
 export type {
   ResourcesMonthViewProps,
   ResourcesMonthViewFactory,

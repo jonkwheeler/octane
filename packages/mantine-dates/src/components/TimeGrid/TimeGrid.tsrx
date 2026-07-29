@@ -21,7 +21,7 @@ import type { TimePickerAmPmLabels, TimePickerFormat } from '../TimePicker';
 import { isSameTime } from '../TimePicker/utils/is-same-time/is-same-time';
 import { isTimeAfter, isTimeBefore } from './compare-time';
 import { TimeGridProvider } from './TimeGrid.context';
-import { TimeGridControl } from './TimeGridControl';
+import { TimeGridControl } from './TimeGridControl.tsrx';
 import classes from './TimeGrid.module.css';
 
 export type TimeGridStylesNames = 'root' | 'control' | 'simpleGrid';
@@ -62,7 +62,7 @@ export interface TimeGridProps
   simpleGridProps?: SimpleGridProps;
 
   /** A function to pass props down to control based on the time value */
-  getControlProps?: (time: string) => React.ComponentProps<'button'> & DataAttributes;
+  getControlProps?: (time: string) => MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Key of `theme.radius` or any valid CSS value to set `border-radius` @default theme.defaultRadius */
   radius?: MantineRadius;

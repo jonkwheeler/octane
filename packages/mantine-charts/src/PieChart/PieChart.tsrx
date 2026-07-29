@@ -97,10 +97,10 @@ export interface PieChartProps
   tooltipDataSource?: 'segment' | 'all';
 
   /** Additional elements rendered inside `PieChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Props passed down to recharts `PieChart` component */
-  pieChartProps?: React.ComponentProps<typeof ReChartsPieChart>;
+  pieChartProps?: Record<string, any>;
 
   /** Controls labels position relative to the segment @default 'outside' */
   labelsPosition?: 'inside' | 'outside';
@@ -113,8 +113,8 @@ export interface PieChartProps
 
   /** Props passed down to each segment of the chart */
   cellProps?:
-    | ((series: PieChartCell) => Partial<Omit<React.SVGProps<SVGElement>, 'ref'>>)
-    | Partial<Omit<React.SVGProps<SVGElement>, 'ref'>>;
+    | ((series: PieChartCell) => Partial<Omit<MantineIntrinsicProps<'svg'>, 'ref'>>)
+    | Partial<Omit<MantineIntrinsicProps<'svg'>, 'ref'>>;
 
   /** Determines whether the chart should be keyboard-navigable with the recharts accessibility layer, `true` by default */
   accessibilityLayer?: boolean;
@@ -317,7 +317,7 @@ export const PieChart = factory<PieChartFactory>((_props) => {
             <Tooltip
               animationDuration={tooltipAnimationDuration}
               isAnimationActive={false}
-              content={({ payload }) => (
+              content={({ payload }: { payload: any }) => (
                 <ChartTooltip
                   payload={data}
                   classNames={resolvedClassNames}
@@ -339,9 +339,9 @@ export const PieChart = factory<PieChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="bottom"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
-                  payload={payload.payload?.map((item) => ({
+                  payload={payload.payload?.map((item: any) => ({
                     ...item,
                     dataKey: (item.payload as any)?.name,
                     highlightKey: (item.payload as any)?.__segmentIndex,

@@ -1,6 +1,7 @@
-import { useTimePickerContext } from '../TimePicker.context';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
 
-interface AmPmInputProps extends Omit<React.ComponentProps<'select'>, 'value' | 'onChange'> {
+interface AmPmInputProps
+  extends Omit<MantineIntrinsicProps<'select'>, 'value' | 'onChange' | 'onInput'> {
   labels: { am: string; pm: string };
   value: string | null;
   inputType: 'select' | 'input';
@@ -24,7 +25,7 @@ export function AmPmInput({
 }: AmPmInputProps) {
   const ctx = useTimePickerContext();
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLSelectElement>) => {
+  const handleKeyDown = (event: OctaneKeyboardEvent<HTMLSelectElement>) => {
     if (readOnly) {
       return;
     }
@@ -78,7 +79,7 @@ export function AmPmInput({
         {...ctx.getStyles('field', { className, style })}
         value={displayValue}
         size={inputSize}
-        onChange={(event) => !readOnly && onChange(event.target.value || null)}
+        onInput={(event) => !readOnly && onChange(event.currentTarget.value || null)}
         onClick={((event: any) => event.stopPropagation()) as any}
         onKeyDown={handleKeyDown as any}
         onMouseDown={(event) => {
@@ -95,7 +96,7 @@ export function AmPmInput({
     <select
       {...ctx.getStyles('field', { className, style })}
       value={value || ''}
-      onChange={(event) => !readOnly && onChange(event.target.value || null)}
+      onInput={(event) => !readOnly && onChange(event.currentTarget.value || null)}
       onClick={(event) => event.stopPropagation()}
       onKeyDown={handleKeyDown}
       onMouseDown={(event) => {

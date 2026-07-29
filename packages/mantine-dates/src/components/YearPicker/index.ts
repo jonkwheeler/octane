@@ -3,8 +3,8 @@ import type {
   YearPickerFactory,
   YearPickerProps,
   YearPickerStylesNames,
-} from './YearPicker';
+} from './YearPicker.tsrx';
 
-export { YearPicker } from './YearPicker';
+export { YearPicker } from './YearPicker.tsrx';
 
 export type { YearPickerProps, YearPickerBaseProps, YearPickerFactory, YearPickerStylesNames };

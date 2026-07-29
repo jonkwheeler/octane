@@ -17,8 +17,8 @@ import {
   CodeHighlight,
   CodeHighlightSettings,
   CodeHighlightStylesNames,
-} from '../CodeHighlight/CodeHighlight';
-import { FileIcon } from './FileIcon';
+} from '../CodeHighlight/CodeHighlight.tsrx';
+import { FileIcon } from './FileIcon.tsrx';
 import classes from '../CodeHighlight.module.css';
 
 /** Available shiki languages for default Mantine shiki instance.

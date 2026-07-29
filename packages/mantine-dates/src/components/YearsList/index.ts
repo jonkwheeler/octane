@@ -1,7 +1,7 @@
-export { YearsList } from './YearsList';
+export { YearsList } from './YearsList.tsrx';
 export type {
   YearsListFactory,
   YearsListProps,
   YearsListSettings,
   YearsListStylesNames,
-} from './YearsList';
+} from './YearsList.tsrx';

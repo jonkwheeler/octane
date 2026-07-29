@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { useCallback, useEffectEvent, useState } from 'octane';
-import { DragContextValue } from '../components/DragContext/DragContext';
+import { DragContextValue } from '../components/DragContext/DragContext.tsrx';
 import { DateTimeStringValue, ScheduleEventData, ScheduleMode } from '../types';
 import { useDragState } from './use-drag-state';
 
@@ -35,7 +35,7 @@ export interface UseDragDropHandlersOptions<T = any> {
   calculateDropTarget: (target: T, draggedEvent: ScheduleEventData) => { start: Date; end: Date };
 
   /** Called when an external item is dropped onto the schedule */
-  onExternalDrop?: (e: React.DragEvent, target: T) => void;
+  onExternalDrop?: (e: OctaneDragEvent<Element>, target: T) => void;
 }
 
 export interface DragDropHandlers<T = any> {
@@ -52,13 +52,13 @@ export interface DragDropHandlers<T = any> {
   handleDragEnd: () => void;
 
   /** Handle drag over event */
-  handleDragOver: (e: React.DragEvent, target: T) => void;
+  handleDragOver: (e: OctaneDragEvent<Element>, target: T) => void;
 
   /** Handle drag leave event */
   handleDragLeave: () => void;
 
   /** Handle drop event */
-  handleDrop: (e: React.DragEvent, target: T) => void;
+  handleDrop: (e: OctaneDragEvent<Element>, target: T) => void;
 
   /** Check if event is draggable */
   isDraggableEvent: (event: ScheduleEventData) => boolean;
@@ -113,14 +113,19 @@ export function useDragDropHandlers<T = any>(
   );
 
   const handleDragOver = useCallback(
-    (event: React.DragEvent, target: T) => {
+    (event: OctaneDragEvent<Element>, target: T) => {
       if (mode === 'static') {
+        return;
+      }
+
+      const { dataTransfer } = event;
+      if (!dataTransfer) {
         return;
       }
 
       let isInternalDrag = dragState.state.isDragging;
 
-      if (isInternalDrag && !event.dataTransfer.types.includes('application/json')) {
+      if (isInternalDrag && !dataTransfer.types.includes('application/json')) {
         handleDragEnd();
         isInternalDrag = false;
       }
@@ -134,7 +139,7 @@ export function useDragDropHandlers<T = any>(
       }
 
       event.preventDefault();
-      event.dataTransfer.dropEffect = isInternalDrag ? 'move' : 'copy';
+      dataTransfer.dropEffect = isInternalDrag ? 'move' : 'copy';
       setDropTarget(target);
     },
     [enabled, mode, dragState.state.isDragging, onExternalDrop, handleDragEnd]
@@ -145,11 +150,16 @@ export function useDragDropHandlers<T = any>(
   }, []);
 
   const handleDrop = useCallback(
-    (event: React.DragEvent, target: T) => {
+    (event: OctaneDragEvent<Element>, target: T) => {
       event.preventDefault();
 
+      const { dataTransfer } = event;
+      if (!dataTransfer) {
+        return;
+      }
+
       const isInternalDrag =
-        dragState.state.isDragging && event.dataTransfer.types.includes('application/json');
+        dragState.state.isDragging && dataTransfer.types.includes('application/json');
 
       if (isInternalDrag && enabled && dragState.state.draggedEvent && onEventDrop) {
         const { start, end } = calculateDropTarget(target, dragState.state.draggedEvent);

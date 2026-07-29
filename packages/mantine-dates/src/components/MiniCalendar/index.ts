@@ -3,9 +3,9 @@ import type {
   MiniCalendarFactory,
   MiniCalendarProps,
   MiniCalendarStylesNames,
-} from './MiniCalendar';
+} from './MiniCalendar.tsrx';
 
-export { MiniCalendar } from './MiniCalendar';
+export { MiniCalendar } from './MiniCalendar.tsrx';
 
 export type {
   MiniCalendarProps,

@@ -1,7 +1,7 @@
-export { Schedule } from './Schedule';
+export { Schedule } from './Schedule.tsrx';
 export type {
   ScheduleFactory,
   ScheduleLayout,
   ScheduleProps,
   ScheduleStylesNames,
-} from './Schedule';
+} from './Schedule.tsrx';

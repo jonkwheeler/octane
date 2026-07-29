@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'octane';
+import { useCallback, useEffect, useRef, useState, type OctaneNode } from 'octane';
 import {
   BasePortalProps,
   Box,
@@ -22,7 +22,7 @@ import {
   positions,
 } from './get-grouped-notifications/get-grouped-notifications';
 import { getNotificationStateStyles } from './get-notification-state-styles';
-import { NotificationContainer } from './NotificationContainer';
+import { NotificationContainer } from './NotificationContainer.tsrx';
 import {
   hideNotification,
   NotificationPosition,
@@ -35,11 +35,18 @@ import classes from './Notifications.module.css';
 
 type TransitionStatus = 'entering' | 'entered' | 'exiting' | 'exited' | 'unmounted';
 
-function Transition({ children }: { children: (state: TransitionStatus) => React.ReactNode }) {
+function Transition({
+  children,
+}: {
+  children: (state: TransitionStatus) => OctaneNode;
+  timeout?: number;
+  onEnter?: () => unknown;
+  nodeRef?: { current: HTMLDivElement };
+}) {
   return children('entered');
 }
 
-function TransitionGroup({ children }: { children?: React.ReactNode }) {
+function TransitionGroup({ children }: { children?: OctaneNode }) {
   return <>{children}</>;
 }
 
@@ -208,7 +215,7 @@ export const Notifications = factory<NotificationsFactory>((_props) => {
         >
           {(state: TransitionStatus) => (
             <NotificationContainer
-              ref={(node) => {
+              ref={(node: HTMLDivElement | null) => {
                 if (node) {
                   refs.current[notification.id!] = node;
                 } else {
@@ -216,7 +223,7 @@ export const Notifications = factory<NotificationsFactory>((_props) => {
                 }
               }}
               data={notification}
-              onHide={(id) => hideNotification(id, store)}
+              onHide={(id: string) => hideNotification(id, store)}
               autoClose={autoClose}
               transitionDuration={duration}
               allowDragDismiss={allowDragDismiss}
@@ -242,7 +249,7 @@ export const Notifications = factory<NotificationsFactory>((_props) => {
 
       return acc;
     },
-    {} as Record<NotificationPosition, React.ReactNode>
+    {} as Record<NotificationPosition, OctaneNode>
   );
 
   return (

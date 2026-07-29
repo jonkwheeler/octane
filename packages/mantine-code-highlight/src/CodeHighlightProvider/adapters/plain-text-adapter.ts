@@ -1,4 +1,4 @@
-import type { CodeHighlightAdapter } from '../CodeHighlightProvider';
+import type { CodeHighlightAdapter } from '../CodeHighlightProvider.tsrx';
 
 export const plainTextAdapter: CodeHighlightAdapter = {
   getHighlighter:

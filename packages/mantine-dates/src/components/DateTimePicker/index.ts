@@ -2,8 +2,8 @@ import type {
   DateTimePickerFactory,
   DateTimePickerProps,
   DateTimePickerStylesNames,
-} from './DateTimePicker';
+} from './DateTimePicker.tsrx';
 
-export { DateTimePicker } from './DateTimePicker';
+export { DateTimePicker } from './DateTimePicker.tsrx';
 
 export type { DateTimePickerProps, DateTimePickerStylesNames, DateTimePickerFactory };

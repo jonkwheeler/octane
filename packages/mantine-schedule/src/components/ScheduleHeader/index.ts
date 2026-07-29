@@ -1,8 +1,8 @@
-export { ScheduleHeader } from './ScheduleHeader';
+export { ScheduleHeader } from './ScheduleHeader.tsrx';
 export type {
   ScheduleHeaderProps,
   ScheduleHeaderFactory,
   ScheduleHeaderStylesNames,
   ScheduleHeaderCssVariables,
   CombinedScheduleHeaderStylesNames,
-} from './ScheduleHeader';
+} from './ScheduleHeader.tsrx';

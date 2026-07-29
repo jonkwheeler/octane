@@ -5,20 +5,20 @@ import type {
   SpotlightFilterFunction,
   SpotlightProps,
   SpotlightStylesNames,
-} from './Spotlight';
-import type { SpotlightActionProps, SpotlightActionStylesNames } from './SpotlightAction';
+} from './Spotlight.tsrx';
+import type { SpotlightActionProps, SpotlightActionStylesNames } from './SpotlightAction.tsrx';
 import type {
   SpotlightActionsGroupProps,
   SpotlightActionsGroupStylesNames,
-} from './SpotlightActionsGroup';
+} from './SpotlightActionsGroup.tsrx';
 import type {
   SpotlightActionsListProps,
   SpotlightActionsListStylesNames,
-} from './SpotlightActionsList';
-import type { SpotlightEmptyProps, SpotlightEmptyStylesNames } from './SpotlightEmpty';
-import type { SpotlightFooterProps, SpotlightFooterStylesNames } from './SpotlightFooter';
-import type { SpotlightRootProps, SpotlightRootStylesNames } from './SpotlightRoot';
-import type { SpotlightSearchProps, SpotlightSearchStylesNames } from './SpotlightSearch';
+} from './SpotlightActionsList.tsrx';
+import type { SpotlightEmptyProps, SpotlightEmptyStylesNames } from './SpotlightEmpty.tsrx';
+import type { SpotlightFooterProps, SpotlightFooterStylesNames } from './SpotlightFooter.tsrx';
+import type { SpotlightRootProps, SpotlightRootStylesNames } from './SpotlightRoot.tsrx';
+import type { SpotlightSearchProps, SpotlightSearchStylesNames } from './SpotlightSearch.tsrx';
 
 export {
   spotlight,
@@ -33,14 +33,14 @@ export type { SpotlightState, SpotlightStore } from './spotlight.store';
 
 export { isActionsGroup } from './is-actions-group';
 
-export { Spotlight } from './Spotlight';
-export { SpotlightRoot } from './SpotlightRoot';
-export { SpotlightAction } from './SpotlightAction';
-export { SpotlightActionsGroup } from './SpotlightActionsGroup';
-export { SpotlightActionsList } from './SpotlightActionsList';
-export { SpotlightEmpty } from './SpotlightEmpty';
-export { SpotlightFooter } from './SpotlightFooter';
-export { SpotlightSearch } from './SpotlightSearch';
+export { Spotlight } from './Spotlight.tsrx';
+export { SpotlightRoot } from './SpotlightRoot.tsrx';
+export { SpotlightAction } from './SpotlightAction.tsrx';
+export { SpotlightActionsGroup } from './SpotlightActionsGroup.tsrx';
+export { SpotlightActionsList } from './SpotlightActionsList.tsrx';
+export { SpotlightEmpty } from './SpotlightEmpty.tsrx';
+export { SpotlightFooter } from './SpotlightFooter.tsrx';
+export { SpotlightSearch } from './SpotlightSearch.tsrx';
 
 export type {
   SpotlightProps,

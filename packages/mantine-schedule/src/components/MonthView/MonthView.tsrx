@@ -42,14 +42,14 @@ import {
   isSameMonth,
   toDateString,
 } from '../../utils';
-import { AgendaView, AgendaViewStylesNames } from '../AgendaView/AgendaView';
-import { DragContext } from '../DragContext/DragContext';
-import { MoreEvents, MoreEventsProps } from '../MoreEvents/MoreEvents';
-import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent';
-import { MonthYearSelectProps } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+import { AgendaView, AgendaViewStylesNames } from '../AgendaView/AgendaView.tsrx';
+import { DragContext } from '../DragContext/DragContext.tsrx';
+import { MoreEvents, MoreEventsProps } from '../MoreEvents/MoreEvents.tsrx';
+import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { MonthYearSelectProps } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import { getRenderableMonthEventSegments } from './get-renderable-month-event-segments';
 import { clipSpanToVisibleColumns, getVisibleColumnMap } from './get-visible-columns';
 import { getMonthViewEvents } from './get-month-view-events/get-month-view-events';
@@ -114,10 +114,10 @@ export interface MonthViewProps
   getDayProps?: (date: DateStringValue) => Record<string, any>;
 
   /** Called when day is clicked */
-  onDayClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onDayClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called with first day of the week when week number is clicked */
-  onWeekNumberClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onWeekNumberClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, always renders 6 weeks in the month view @default true */
   consistentWeeks?: boolean;
@@ -141,13 +141,13 @@ export interface MonthViewProps
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous month control */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next month control */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to today control */
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to view level select */
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;
@@ -185,7 +185,7 @@ export interface MonthViewProps
   onEventDragEnd?: () => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select day ranges @default false */
   withDragSlotSelect?: boolean;
@@ -373,8 +373,8 @@ export const MonthView = factory<MonthViewFactory>((_props) => {
   });
 
   const handleExternalDrop = useCallback(
-    (e: React.DragEvent, day: string) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, day: string) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       onExternalEventDrop(e.dataTransfer, `${dayjs(day).format('YYYY-MM-DD')} 00:00:00`);
@@ -523,7 +523,7 @@ export const MonthView = factory<MonthViewFactory>((_props) => {
               withDragSlotSelect && mode !== 'static'
                 ? (e) =>
                     slotDragSelect.handleSlotPointerDown(
-                      e as React.PointerEvent<HTMLButtonElement>,
+                      e as OctanePointerEvent<HTMLButtonElement>,
                       flatIndex,
                       monthGroup
                     )

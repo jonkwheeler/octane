@@ -1,7 +1,7 @@
-export { CurrentTimeIndicator } from './CurrentTimeIndicator';
+export { CurrentTimeIndicator } from './CurrentTimeIndicator.tsrx';
 export type {
   CurrentTimeIndicatorProps,
   CurrentTimeIndicatorFactory,
   CurrentTimeIndicatorStylesNames,
   CurrentTimeIndicatorCssVariables,
-} from './CurrentTimeIndicator';
+} from './CurrentTimeIndicator.tsrx';

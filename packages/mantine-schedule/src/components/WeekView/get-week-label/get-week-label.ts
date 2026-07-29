@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import type { ReactNode } from 'octane';
 import { DateLabelFormat, DateStringValue } from '../../../types';
 import { formatDate } from '../../../utils';
 
@@ -7,7 +6,10 @@ interface GetWeekLabelInput {
   weekdays: Date[] | string[];
   locale: string;
   weekLabelFormat: DateLabelFormat;
-  renderWeekLabel?: (params: { weekStart: DateStringValue; weekEnd: DateStringValue }) => ReactNode;
+  renderWeekLabel?: (params: {
+    weekStart: DateStringValue;
+    weekEnd: DateStringValue;
+  }) => OctaneNode;
 }
 
 export function getWeekLabel({

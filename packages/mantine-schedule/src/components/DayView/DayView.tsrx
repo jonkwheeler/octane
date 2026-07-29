@@ -1,5 +1,10 @@
 import dayjs from 'dayjs';
-import { useCallback, useRef, useState } from 'octane';
+import { createElement, useCallback, useRef, useState } from 'octane';
+
+// tsrx-tsc emits these helper references for the nested spread templates below
+// without carrying their synthetic declarations into the typecheck view.
+declare const TSRXTemplate__spread_props1: Record<string, any>;
+declare const TSRXTemplate__spread_props2: Record<string, any>;
 import {
   Box,
   BoxProps,
@@ -48,23 +53,23 @@ import {
   isAllDayEvent,
   toDateString,
 } from '../../utils';
-import { AgendaView, AgendaViewStylesNames } from '../AgendaView/AgendaView';
+import { AgendaView, AgendaViewStylesNames } from '../AgendaView/AgendaView.tsrx';
 import {
   CurrentTimeIndicator,
   CurrentTimeIndicatorStylesNames,
-} from '../CurrentTimeIndicator/CurrentTimeIndicator';
-import { DragContext } from '../DragContext/DragContext';
-import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents';
+} from '../CurrentTimeIndicator/CurrentTimeIndicator.tsrx';
+import { DragContext } from '../DragContext/DragContext.tsrx';
+import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents.tsrx';
 import {
   RenderEvent,
   RenderEventBody,
   ScheduleEvent,
   ScheduleEventStylesNames,
-} from '../ScheduleEvent/ScheduleEvent';
-import { MonthYearSelectStylesNames } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+} from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { MonthYearSelectStylesNames } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import { getDayViewEvents } from './get-day-view-events/get-day-view-events';
 import classes from './DayView.module.css';
 
@@ -146,13 +151,13 @@ export interface DayViewProps
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous month control */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next month control */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to today control */
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to view level select */
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;
@@ -208,14 +213,14 @@ export interface DayViewProps
   onTimeSlotClick?: (data: {
     slotStart: DateTimeStringValue;
     slotEnd: DateTimeStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
   }) => void;
 
   /** Called when all-day slot is clicked */
-  onAllDaySlotClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onAllDaySlotClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select time slot ranges @default false */
   withDragSlotSelect?: boolean;
@@ -396,8 +401,8 @@ export const DayView = factory<DayViewFactory>((_props) => {
     withCurrentTimeIndicator ?? dayjs(date).isSame(resolveNow(), 'day');
   const slots = getDayTimeIntervals({ startTime, endTime, intervalMinutes });
   const slotsRef = useRef<HTMLButtonElement[]>([]);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const timeSlotsContainerRef = useRef<HTMLDivElement | null>(null);
   const mergedViewportRef = useMergedRef(viewportRef, scrollAreaProps?.viewportRef);
 
   useAutoScrollOnDrag({
@@ -425,7 +430,7 @@ export const DayView = factory<DayViewFactory>((_props) => {
     viewportRef.current.scrollTo({ left: 0, top: slotRect.top - viewportRect.top });
   }, []);
 
-  const getSlotIndexFromDragPoint = useCallback((event: React.DragEvent) => {
+  const getSlotIndexFromDragPoint = useCallback((event: OctaneDragEvent<Element>) => {
     const slotIndex = slotsRef.current.findIndex((slotNode) => {
       if (!slotNode) {
         return false;
@@ -460,7 +465,7 @@ export const DayView = factory<DayViewFactory>((_props) => {
     return null;
   }, []);
 
-  const handleSlotKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, slotIndex: number) => {
+  const handleSlotKeyDown = (event: OctaneKeyboardEvent<HTMLButtonElement>, slotIndex: number) => {
     const direction = event.key;
     if (direction === 'ArrowDown' && slotIndex < slots.length - 1) {
       event.preventDefault();
@@ -501,8 +506,8 @@ export const DayView = factory<DayViewFactory>((_props) => {
   });
 
   const handleExternalDrop = useCallback(
-    (e: React.DragEvent, slotIndex: number) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, slotIndex: number) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       const slotDate = dayjs(date).format('YYYY-MM-DD');
@@ -635,7 +640,7 @@ export const DayView = factory<DayViewFactory>((_props) => {
     const handleClick =
       mode === 'static'
         ? undefined
-        : (event: React.MouseEvent<HTMLButtonElement>) => {
+        : (event: OctaneMouseEvent<HTMLButtonElement>) => {
             onTimeSlotClick?.({
               slotStart,
               slotEnd,
@@ -681,7 +686,7 @@ export const DayView = factory<DayViewFactory>((_props) => {
     );
   });
 
-  const slotsLabels = slots.reduce<React.ReactNode[]>((acc, slot) => {
+  const slotsLabels = slots.reduce<OctaneNode[]>((acc, slot) => {
     if (slot.isHourStart) {
       const slotTime = dayjs(`${dayjs(date).format('YYYY-MM-DD')} ${slot.startTime}`);
       const label = formatDate({
@@ -776,6 +781,71 @@ export const DayView = factory<DayViewFactory>((_props) => {
     return <Box key={bgEventKey} {...restBgEventProps} />;
   });
 
+  const allDayMoreEventsProps = {
+    ...stylesApiProps,
+    ...moreEventsProps,
+  };
+  const handleAllDaySlotClick =
+    mode === 'static' || !onAllDaySlotClick
+      ? undefined
+      : (event: OctaneMouseEvent<HTMLButtonElement>) => {
+          onAllDaySlotClick(dayjs(date).format('YYYY-MM-DD'), event);
+        };
+  const handleTimeSlotsDragOver = withDragHandlers
+    ? (event: OctaneDragEvent<HTMLDivElement>) => {
+        const slotIndex = getSlotIndexFromDragPoint(event);
+        if (slotIndex !== null) {
+          dragDrop.handleDragOver(event, slotIndex);
+        }
+      }
+    : undefined;
+  const handleTimeSlotsDrop = withDragHandlers
+    ? (event: OctaneDragEvent<HTMLDivElement>) => {
+        const slotIndex = getSlotIndexFromDragPoint(event);
+        if (slotIndex !== null) {
+          dragDrop.handleDrop(event, slotIndex);
+        }
+      }
+    : undefined;
+  const handleTimeSlotsDragLeave = withDragHandlers ? dragDrop.handleDragLeave : undefined;
+  const allDayMoreEventsNode =
+    withAllDaySlot && allDayEventsCount.hiddenEventsCount > 0
+      ? createElement(MoreEvents, {
+          events: eventsData.allDayEvents,
+          moreEventsCount: allDayEventsCount.hiddenEventsCount,
+          renderEventBody,
+          renderEvent,
+          mode,
+          labels,
+          onEventClick,
+          ...allDayMoreEventsProps,
+        } as MoreEventsProps)
+      : null;
+  const allDaySlotButton = withAllDaySlot
+    ? createElement(
+        UnstyledButton as any,
+        Object.assign({}, getStyles('dayViewSlot'), {
+          mod: { 'all-day': true, static: mode === 'static' },
+          'aria-label': `${getLabel('timeSlot', labels)} ${getLabel('allDay', labels)}`,
+          onClick: handleAllDaySlotClick,
+        })
+      )
+    : null;
+  const allDayContainer = withAllDaySlot
+    ? createElement(
+        'div',
+        getStyles('dayViewAllDay'),
+        backgroundAllDayEventNodes,
+        createElement(
+          'div',
+          getStyles('dayViewAllDayEvents'),
+          allDayEventsNodes,
+          allDayMoreEventsNode
+        ),
+        allDaySlotButton
+      )
+    : null;
+
   const content = (
     <Box
       {...getStyles('dayView')}
@@ -847,64 +917,14 @@ export const DayView = factory<DayViewFactory>((_props) => {
             </div>
 
             <div {...getStyles('dayViewSlots')}>
-              {withAllDaySlot && (
-                <div {...getStyles('dayViewAllDay')}>
-                  {backgroundAllDayEventNodes}
-                  <div {...getStyles('dayViewAllDayEvents')}>
-                    {allDayEventsNodes}
-                    {allDayEventsCount.hiddenEventsCount > 0 && (
-                      <MoreEvents
-                        events={eventsData.allDayEvents}
-                        moreEventsCount={allDayEventsCount.hiddenEventsCount}
-                        renderEventBody={renderEventBody}
-                        renderEvent={renderEvent}
-                        mode={mode}
-                        labels={labels}
-                        onEventClick={onEventClick}
-                        {...stylesApiProps}
-                        {...moreEventsProps}
-                      />
-                    )}
-                  </div>
-                  <UnstyledButton
-                    {...getStyles('dayViewSlot')}
-                    mod={{ 'all-day': true, static: mode === 'static' }}
-                    aria-label={`${getLabel('timeSlot', labels)} ${getLabel('allDay', labels)}`}
-                    onClick={
-                      mode === 'static' || !onAllDaySlotClick
-                        ? undefined
-                        : (e) => {
-                            onAllDaySlotClick(dayjs(date).format('YYYY-MM-DD'), e);
-                          }
-                    }
-                  />
-                </div>
-              )}
+              {withAllDaySlot ? allDayContainer : null}
 
               <div
                 ref={timeSlotsContainerRef}
                 {...getStyles('dayViewTimeSlots')}
-                onDragOver={
-                  withDragHandlers
-                    ? (event) => {
-                        const slotIndex = getSlotIndexFromDragPoint(event);
-                        if (slotIndex !== null) {
-                          dragDrop.handleDragOver(event, slotIndex);
-                        }
-                      }
-                    : undefined
-                }
-                onDragLeave={withDragHandlers ? dragDrop.handleDragLeave : undefined}
-                onDrop={
-                  withDragHandlers
-                    ? (event) => {
-                        const slotIndex = getSlotIndexFromDragPoint(event);
-                        if (slotIndex !== null) {
-                          dragDrop.handleDrop(event, slotIndex);
-                        }
-                      }
-                    : undefined
-                }
+                onDragOver={handleTimeSlotsDragOver}
+                onDragLeave={handleTimeSlotsDragLeave}
+                onDrop={handleTimeSlotsDrop}
               >
                 {backgroundTimedEventNodes}
 

@@ -100,7 +100,7 @@ export interface AreaChartProps
   strokeWidth?: number;
 
   /** Props passed down to recharts `AreaChart` component */
-  areaChartProps?: React.ComponentProps<typeof ReChartsAreaChart>;
+  areaChartProps?: Record<string, any>;
 
   /** Controls fill opacity of all areas @default 0.2 */
   fillOpacity?: number;
@@ -115,7 +115,7 @@ export interface AreaChartProps
   connectNulls?: boolean;
 
   /** Additional components that are rendered inside recharts `AreaChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Props passed down to recharts `Area` component */
   areaProps?:
@@ -229,7 +229,7 @@ export const AreaChart = factory<AreaChartFactory>((_props) => {
   const stacked = type === 'stacked' || type === 'percent';
   const [highlightedArea, setHighlightedArea] = useState<string | number | null>(null);
   const shouldHighlight = highlightedArea !== null;
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = (event: OctaneMouseEvent<HTMLDivElement>) => {
     setHighlightedArea(null);
     onMouseLeave?.(event);
   };
@@ -254,7 +254,7 @@ export const AreaChart = factory<AreaChartFactory>((_props) => {
     varsResolver,
   });
 
-  const dotsAreas = series.map((item) => {
+  const dotsAreas = series.map((item: any) => {
     const color = getThemeColor(item.color, theme);
     const dimmed = shouldHighlight && highlightedArea !== item.name;
     return (
@@ -278,7 +278,7 @@ export const AreaChart = factory<AreaChartFactory>((_props) => {
     );
   });
 
-  const areas = series.map((item) => {
+  const areas = series.map((item: any) => {
     const id = `${baseId}-${item.color.replace(/[^a-zA-Z0-9]/g, '')}`;
     const color = getThemeColor(item.color, theme);
     const dimmed = shouldHighlight && highlightedArea !== item.name;
@@ -370,7 +370,7 @@ export const AreaChart = factory<AreaChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="top"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
                   payload={payload.payload}
                   onHighlight={setHighlightedArea}
@@ -468,7 +468,7 @@ export const AreaChart = factory<AreaChartFactory>((_props) => {
                 strokeWidth: 1,
                 strokeDasharray,
               }}
-              content={({ label, payload, labelFormatter }) => (
+              content={({ label, payload, labelFormatter }: { label: any; payload: any; labelFormatter: any }) => (
                 <ChartTooltip
                   label={labelFormatter && payload ? labelFormatter(label, payload) : label}
                   payload={payload}

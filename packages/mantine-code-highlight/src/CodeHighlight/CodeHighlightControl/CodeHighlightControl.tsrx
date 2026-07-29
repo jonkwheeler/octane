@@ -8,12 +8,13 @@ import {
   Tooltip,
   useProps,
 } from '@octanejs/mantine-core';
+import type { OctaneNode } from 'octane';
 import { useCodeHighlightContext } from '../CodeHighlight.context';
 
 export interface CodeHighlightControlProps
   extends BoxProps, StylesApiProps<CodeHighlightControlFactory> {
   /** Control icon */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Label displayed in the tooltip when the control is hovered */
   tooltipLabel?: string;

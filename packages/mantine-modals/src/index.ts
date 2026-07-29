@@ -1,4 +1,4 @@
-export { ModalsProvider } from './ModalsProvider';
+export { ModalsProvider } from './ModalsProvider.tsrx';
 export { useModals } from './use-modals/use-modals';
 export {
   openModal,
@@ -11,7 +11,7 @@ export {
   modals,
 } from './events';
 
-export type { ModalsProviderProps } from './ModalsProvider';
+export type { ModalsProviderProps } from './ModalsProvider.tsrx';
 export type {
   ContextModalProps,
   MantineModalsOverride,
@@ -21,4 +21,4 @@ export type {
   OpenConfirmModal,
   OpenContextModal,
 } from './context';
-export type { ConfirmModalProps } from './ConfirmModal';
+export type { ConfirmModalProps } from './ConfirmModal.tsrx';

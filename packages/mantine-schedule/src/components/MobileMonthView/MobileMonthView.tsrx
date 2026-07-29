@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React, { useRef } from 'octane';
+import { Fragment, useRef } from 'octane';
 import {
   AccordionChevron,
   Box,
@@ -43,7 +43,7 @@ import {
   handleMonthViewKeyDown,
   MonthViewControlsRef,
 } from '../MonthView/handle-month-view-key-down';
-import { RenderEvent } from '../ScheduleEvent/ScheduleEvent';
+import { RenderEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
 import { getMobileMonthViewEvents } from './get-mobile-month-view-events';
 import classes from './MobileMonthView.module.css';
 
@@ -80,7 +80,7 @@ export interface MobileMonthViewRenderHeaderInput {
   /** Current date displayed in the view */
   date: Date | string;
   /** Default header element */
-  defaultHeader: React.ReactNode;
+  defaultHeader: OctaneNode;
 }
 
 export interface MobileMonthViewProps
@@ -127,10 +127,10 @@ export interface MobileMonthViewProps
   getDayProps?: (date: DateStringValue) => Record<string, any>;
 
   /** Called when day is clicked */
-  onDayClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onDayClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called with first day of the week when week number is clicked */
-  onWeekNumberClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onWeekNumberClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, always renders 6 weeks in the month view @default true */
   consistentWeeks?: boolean;
@@ -163,10 +163,10 @@ export interface MobileMonthViewProps
   onYearClick?: () => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Custom header renderer, receives object with mode, date, and default header element */
-  renderHeader?: (input: MobileMonthViewRenderHeaderInput) => React.ReactNode;
+  renderHeader?: (input: MobileMonthViewRenderHeaderInput) => OctaneNode;
 
   /** Max number of generated recurring instances per recurring series @default 2000 */
   recurrenceExpansionLimit?: number;
@@ -321,14 +321,14 @@ export const MobileMonthView = factory<MobileMonthViewFactory>((_props) => {
         />
       ));
 
-      const handleDayClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      const handleDayClick = (event: OctaneMouseEvent<HTMLButtonElement>) => {
         const dateStr = dayjs(dayDate).format('YYYY-MM-DD');
         _setSelectedDate(dateStr);
         onDayClick?.(dateStr, event);
         dayProps.onClick?.(event);
       };
 
-      const handleDayKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+      const handleDayKeyDown = (event: OctaneKeyboardEvent<HTMLButtonElement>) => {
         handleMonthViewKeyDown({
           controlsRef: daysRef,
           weekIndex,
@@ -434,12 +434,12 @@ export const MobileMonthView = factory<MobileMonthViewFactory>((_props) => {
       </Box>
     );
 
-    const rootProps: React.ComponentPropsWithoutRef<'button'> & { children: React.ReactNode } = {
+    const rootProps: MantineIntrinsicProps<'button'> & { children: OctaneNode } = {
       ...getStyles('mobileMonthViewEvent'),
       onClick:
         mode === 'static'
           ? undefined
-          : (e: React.MouseEvent<HTMLButtonElement>) => {
+          : (e: OctaneMouseEvent<HTMLButtonElement>) => {
               onEventClick?.(event, e);
             },
       tabIndex: mode === 'static' ? -1 : 0,
@@ -447,7 +447,7 @@ export const MobileMonthView = factory<MobileMonthViewFactory>((_props) => {
     };
 
     if (typeof renderEvent === 'function') {
-      return <React.Fragment key={event.id}>{renderEvent(event, rootProps)}</React.Fragment>;
+      return <Fragment key={event.id}>{renderEvent(event, rootProps)}</Fragment>;
     }
 
     return <UnstyledButton {...rootProps} key={event.id} />;

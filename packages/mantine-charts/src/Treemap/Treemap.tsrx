@@ -84,7 +84,7 @@ export interface TreemapProps
   autoContrast?: boolean;
 
   /** Additional elements rendered inside `Treemap` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 }
 
 export type TreemapFactory = Factory<{
@@ -284,10 +284,10 @@ export const Treemap = factory<TreemapFactory>((_props) => {
             <Tooltip
               animationDuration={tooltipAnimationDuration}
               isAnimationActive={false}
-              content={({ payload }) => (
+              content={({ payload }: { payload: any }) => (
                 <ChartTooltip
                   payload={
-                    payload?.map((item) => ({
+                    payload?.map((item: any) => ({
                       name: item.name as string,
                       value: item.value as number,
                       color: resolvedColors[item.name as string] || 'var(--mantine-color-blue-6)',

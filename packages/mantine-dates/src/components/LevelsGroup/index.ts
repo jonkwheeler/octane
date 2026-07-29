@@ -1,2 +1,2 @@
-export { LevelsGroup } from './LevelsGroup';
-export type { LevelsGroupProps, LevelsGroupFactory, LevelsGroupStylesNames } from './LevelsGroup';
+export { LevelsGroup } from './LevelsGroup.tsrx';
+export type { LevelsGroupProps, LevelsGroupFactory, LevelsGroupStylesNames } from './LevelsGroup.tsrx';

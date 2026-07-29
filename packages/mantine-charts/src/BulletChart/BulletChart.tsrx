@@ -58,7 +58,7 @@ export interface BulletChartProps
   orientation?: 'horizontal' | 'vertical';
 
   /** Label displayed next to the chart */
-  label?: React.ReactNode;
+  label?: OctaneNode;
 
   /** Value formatter for tooltip/display and labels */
   valueFormatter?: (value: number) => string;
@@ -85,7 +85,7 @@ export interface BulletChartProps
   withTooltip?: boolean;
 
   /** Custom tooltip content */
-  getTooltipLabel?: (data: { value: number; target?: number }) => React.ReactNode;
+  getTooltipLabel?: (data: { value: number; target?: number }) => OctaneNode;
 }
 
 export type BulletChartFactory = Factory<{

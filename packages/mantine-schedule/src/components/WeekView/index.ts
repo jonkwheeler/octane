@@ -3,7 +3,7 @@ import type {
   WeekViewFactory,
   WeekViewProps,
   WeekViewStylesNames,
-} from './WeekView';
+} from './WeekView.tsrx';
 
-export { WeekView } from './WeekView';
+export { WeekView } from './WeekView.tsrx';
 export type { WeekViewProps, WeekViewFactory, WeekViewStylesNames, WeekViewCssVariables };

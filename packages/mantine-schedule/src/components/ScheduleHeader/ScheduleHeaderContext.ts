@@ -4,7 +4,6 @@ import type { ScheduleLabelsOverride } from '../../labels';
 export const ScheduleHeaderLabelsContext = createContext<ScheduleLabelsOverride | undefined>(
   undefined
 );
-ScheduleHeaderLabelsContext.displayName = '@mantine/schedule/ScheduleHeaderLabelsContext';
 
 export function useScheduleHeaderLabels(
   override?: ScheduleLabelsOverride

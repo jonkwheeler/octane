@@ -35,7 +35,7 @@ export interface MonthPickerPreset<Type extends DatePickerType> {
     : Type extends 'multiple'
       ? DateStringValue[]
       : DateStringValue | null;
-  label: React.ReactNode;
+  label: OctaneNode;
 }
 
 export type MonthPickerCssVariables = {

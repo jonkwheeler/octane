@@ -3,7 +3,7 @@ import type {
   TimePickerFactory,
   TimePickerProps,
   TimePickerStylesNames,
-} from './TimePicker';
+} from './TimePicker.tsrx';
 import type {
   TimePickerAmPmLabels,
   TimePickerFormat,
@@ -11,7 +11,7 @@ import type {
   TimePickerPresets,
 } from './TimePicker.types';
 
-export { TimePicker } from './TimePicker';
+export { TimePicker } from './TimePicker.tsrx';
 export { getTimeRange } from './utils/get-time-range/get-time-range';
 
 export type {

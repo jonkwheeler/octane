@@ -1,5 +1,5 @@
 import { ScrollArea, SimpleGrid } from '@octanejs/mantine-core';
-import { useTimePickerContext } from '../TimePicker.context';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
 import {
   TimePickerAmPmLabels,
   TimePickerFormat,
@@ -7,8 +7,8 @@ import {
   TimePickerPresets,
 } from '../TimePicker.types';
 import { isSameTime } from '../utils/is-same-time/is-same-time';
-import { TimePresetControl } from './TimePresetControl';
-import { TimePresetGroup } from './TimePresetGroup';
+import { TimePresetControl } from './TimePresetControl.tsrx';
+import { TimePresetGroup } from './TimePresetGroup.tsrx';
 
 interface TimePresetsProps {
   presets: TimePickerPresets;

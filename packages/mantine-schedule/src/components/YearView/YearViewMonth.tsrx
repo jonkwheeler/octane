@@ -11,7 +11,7 @@ import {
   isSameMonth,
 } from '../../utils';
 import { GroupedEvents } from './get-year-view-events/get-year-view-events';
-import type { YearViewFactory } from './YearView';
+import type { YearViewFactory } from './YearView.tsrx';
 
 export interface YearViewDayKeydownPayload {
   weekIndex: number;
@@ -48,13 +48,13 @@ export interface YearViewMonthSettings {
   getDayProps?: (date: DateStringValue) => Record<string, any>;
 
   /** Called when day is clicked */
-  onDayClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onDayClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called with first day of the week when week number is clicked */
-  onWeekNumberClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onWeekNumberClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called with the first day of the month when month label is clicked */
-  onMonthClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onMonthClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, highlights the current day @default true */
   highlightToday?: boolean;
@@ -84,7 +84,7 @@ export interface YearViewMonthProps extends YearViewMonthSettings {
 
   /** Called when any keydown event is registered on day, used for keyboard navigation */
   __onDayKeyDown?: (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     payload: YearViewDayKeydownPayload
   ) => void;
 

@@ -15,7 +15,7 @@ import { getSeriesLabels } from '../utils';
 import classes from './ChartTooltip.module.css';
 
 function updateChartTooltipPayload(payload: Record<string, any>[]): Record<string, any>[] {
-  return payload.map((item) => {
+  return payload.map((item: any) => {
     if (!item.payload || item.payload[item.name]) {
       return item;
     }
@@ -46,7 +46,7 @@ export function getFilteredChartTooltipPayload(
   segmentId?: string | number
 ) {
   const duplicatesFilter = updateChartTooltipPayload(
-    payload.filter((item) => item.fill !== 'none' || !item.color)
+    payload.filter((item: any) => item.fill !== 'none' || !item.color)
   );
 
   if (segmentId === undefined || segmentId === null) {
@@ -58,7 +58,7 @@ export function getFilteredChartTooltipPayload(
     return item ? [item] : [];
   }
 
-  return duplicatesFilter.filter((item) => item.name === segmentId);
+  return duplicatesFilter.filter((item: any) => item.name === segmentId);
 }
 
 function getData(item: Record<string, any>, type: 'area' | 'radial' | 'scatter') {
@@ -88,7 +88,7 @@ export type ChartTooltipStylesNames =
 export interface ChartTooltipProps
   extends BoxProps, StylesApiProps<ChartTooltipFactory>, ElementProps<'div'> {
   /** Main tooltip label */
-  label?: React.ReactNode;
+  label?: OctaneNode;
 
   /** Chart data provided by recharts */
   payload: readonly Record<string, any>[] | Record<string, any>[] | undefined;
@@ -106,7 +106,7 @@ export interface ChartTooltipProps
   series?: ChartSeries[];
 
   /** A function to format values */
-  valueFormatter?: (value: number) => React.ReactNode;
+  valueFormatter?: (value: number) => OctaneNode;
 
   /** Determines whether the color swatch should be visible @default true */
   showColor?: boolean;
@@ -168,7 +168,7 @@ export const ChartTooltip = factory<ChartTooltipFactory>((_props) => {
   const labels = getSeriesLabels(series);
   const _label = label || scatterLabel;
 
-  const items = filteredPayload.map((item, index) => (
+  const items = filteredPayload.map((item: any, index: number) => (
     <div key={item?.key ?? `${item.name}-${index}`} data-type={type} {...getStyles('tooltipItem')}>
       <div {...getStyles('tooltipItemBody')}>
         {showColor && (

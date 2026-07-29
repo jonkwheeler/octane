@@ -72,10 +72,10 @@ export interface CalendarSettings
   onMonthSelect?: (date: DateStringValue) => void;
 
   /** Called when mouse enters year control */
-  onYearMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
+  onYearMouseEnter?: (event: OctaneMouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 
   /** Called when mouse enters month control */
-  onMonthMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
+  onMonthMouseEnter?: (event: OctaneMouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 }
 
 export interface CalendarBaseProps {
@@ -350,7 +350,7 @@ export const Calendar = factory<CalendarFactory>((_props) => {
     setDate(nextDate);
   };
 
-  const calendarRef = useRef<HTMLDivElement>(null);
+  const calendarRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!enableKeyboardNavigation || isStatic) {

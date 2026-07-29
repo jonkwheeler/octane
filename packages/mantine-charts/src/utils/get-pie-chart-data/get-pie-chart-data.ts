@@ -11,8 +11,8 @@ interface GetPieChartDataInput<T extends PieChartDataItem> {
   strokeWidth: number | undefined;
   highlightedIndex: number | null;
   cellProps:
-    | ((item: T) => Partial<Omit<React.SVGProps<SVGElement>, 'ref'>>)
-    | Partial<Omit<React.SVGProps<SVGElement>, 'ref'>>
+    | ((item: T) => Partial<Omit<MantineIntrinsicProps<'svg'>, 'ref'>>)
+    | Partial<Omit<MantineIntrinsicProps<'svg'>, 'ref'>>
     | undefined;
 }
 

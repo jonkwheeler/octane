@@ -1,4 +1,3 @@
-import * as React from 'octane';
 import {
   Sankey as RechartsSankey,
   SankeyProps as RechartsSankeyProps,
@@ -99,7 +98,7 @@ export interface SankeyChartProps
   valueFormatter?: (value: number) => string;
 
   /** Additional elements rendered inside `Sankey` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 }
 
 export type SankeyChartFactory = Factory<{
@@ -374,7 +373,7 @@ export const SankeyChart = factory<SankeyChartFactory>((_props) => {
             <Tooltip
               animationDuration={tooltipAnimationDuration}
               isAnimationActive={false}
-              content={({ payload }) => {
+              content={({ payload }: { payload: any }) => {
                 const resolveColor = (item: any) => {
                   const nodeIndex = data.nodes.findIndex((n) => n.name === item.name);
                   if (nodeIndex !== -1) {
@@ -401,7 +400,7 @@ export const SankeyChart = factory<SankeyChartFactory>((_props) => {
                 return (
                   <ChartTooltip
                     payload={
-                      payload?.map((item) => ({
+                      payload?.map((item: any) => ({
                         name: item.name as string,
                         value: item.value as number,
                         color: resolveColor(item),

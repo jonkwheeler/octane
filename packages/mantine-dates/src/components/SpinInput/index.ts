@@ -1,1 +1,1 @@
-export { SpinInput } from './SpinInput';
+export { SpinInput } from './SpinInput.tsrx';

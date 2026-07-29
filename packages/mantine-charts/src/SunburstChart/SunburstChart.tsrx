@@ -85,7 +85,7 @@ export interface SunburstChartProps
   valueFormatter?: (value: number) => string;
 
   /** Additional elements rendered inside `SunburstChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 }
 
 export type SunburstChartFactory = Factory<{
@@ -121,7 +121,7 @@ function resolveData(
 ): { resolved: any[]; total: number } {
   let total = 0;
 
-  const resolved = data.map((item) => {
+  const resolved = data.map((item: any) => {
     const resolvedColor = item.color
       ? parseThemeColor({ color: item.color, theme }).value
       : parentFill;
@@ -239,10 +239,10 @@ export const SunburstChart = factory<SunburstChartFactory>((_props) => {
             <Tooltip
               animationDuration={tooltipAnimationDuration}
               isAnimationActive={false}
-              content={({ payload }) => (
+              content={({ payload }: { payload: any }) => (
                 <ChartTooltip
                   payload={
-                    payload?.map((item) => ({
+                    payload?.map((item: any) => ({
                       name: item.name as string,
                       value: item.value as number,
                       color: (item.payload as any)?.fill || 'var(--mantine-color-blue-6)',

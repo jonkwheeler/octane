@@ -1,6 +1,4 @@
-import { RefObject } from 'octane';
-
-type ControlsRef = RefObject<HTMLButtonElement[][][]>;
+type ControlsRef = { current: HTMLButtonElement[][][] | null };
 type Direction = 'up' | 'down' | 'left' | 'right';
 
 type NextIndexInput = Omit<ShiftFocusInput, 'controlsRef'>;
@@ -176,7 +174,7 @@ interface HandleControlKeyDownInput {
   levelIndex: number;
   rowIndex: number;
   cellIndex: number;
-  event: React.KeyboardEvent<HTMLButtonElement>;
+  event: OctaneKeyboardEvent<HTMLButtonElement>;
 }
 
 export function handleControlKeyDown({

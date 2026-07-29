@@ -1,8 +1,8 @@
 import { SimpleGrid } from '@octanejs/mantine-core';
-import { useTimePickerContext } from '../TimePicker.context';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
 import { TimePickerAmPmLabels, TimePickerFormat, TimePickerPresetGroup } from '../TimePicker.types';
 import { isSameTime } from '../utils/is-same-time/is-same-time';
-import { TimePresetControl } from './TimePresetControl';
+import { TimePresetControl } from './TimePresetControl.tsrx';
 
 interface TimePresetGroupProps {
   value: string;

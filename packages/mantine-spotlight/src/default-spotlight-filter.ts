@@ -3,7 +3,7 @@ import type {
   SpotlightActionGroupData,
   SpotlightActions,
   SpotlightFilterFunction,
-} from './Spotlight';
+} from './Spotlight.tsrx';
 
 function getKeywords(keywords: string | string[] | undefined) {
   if (Array.isArray(keywords)) {

@@ -15,9 +15,9 @@ import {
   useProps,
 } from '@octanejs/mantine-core';
 import { useDisclosure } from '@octanejs/mantine-hooks';
-import { IconCheck, IconCircleOff, IconColorPicker, IconPalette, IconX } from '../icons/Icons';
+import { IconCheck, IconCircleOff, IconColorPicker, IconPalette, IconX } from '../icons/Icons.tsrx';
 import { useRichTextEditorContext } from '../RichTextEditor.context';
-import { RichTextEditorControl } from './RichTextEditorControl';
+import { RichTextEditorControl } from './RichTextEditorControl.tsrx';
 
 export interface RichTextEditorColorPickerControlProps extends BoxProps, ElementProps<'button'> {
   /** Props added to Popover component */

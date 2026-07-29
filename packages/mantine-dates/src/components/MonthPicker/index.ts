@@ -3,8 +3,8 @@ import type {
   MonthPickerFactory,
   MonthPickerProps,
   MonthPickerStylesNames,
-} from './MonthPicker';
+} from './MonthPicker.tsrx';
 
-export { MonthPicker } from './MonthPicker';
+export { MonthPicker } from './MonthPicker.tsrx';
 
 export type { MonthPickerBaseProps, MonthPickerProps, MonthPickerStylesNames, MonthPickerFactory };

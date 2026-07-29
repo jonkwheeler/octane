@@ -110,7 +110,7 @@ export function useHorizontalEventResize({
       eventDate: string;
       dayIndex?: number;
       dayCount?: number;
-      pointerEvent: React.PointerEvent;
+      pointerEvent: OctanePointerEvent<Element>;
     }) => {
       if (!enabled || mode === 'static') {
         return;

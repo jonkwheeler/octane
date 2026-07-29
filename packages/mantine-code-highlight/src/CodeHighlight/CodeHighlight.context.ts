@@ -1,5 +1,5 @@
 import { createSafeContext, GetStylesApi } from '@octanejs/mantine-core';
-import type { CodeHighlightFactory } from './CodeHighlight';
+import type { CodeHighlightFactory } from './CodeHighlight.tsrx';
 
 export interface CodeHighlightContextValue {
   getStyles: GetStylesApi<CodeHighlightFactory>;

@@ -7,6 +7,12 @@
     "jsxImportSource": "octane",
     "noEmit": true,
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "octane": ["../octane/dist/index.d.ts"],
+      "octane/jsx-runtime": ["../octane/dist/jsx-runtime.d.ts"],
+      "@octanejs/recharts": ["../recharts/src/index.d.ts"]
+    },
     "noEmitOnError": true,
     "noErrorTruncation": true,
     "allowSyntheticDefaultImports": true,
@@ -15,8 +21,8 @@
     "checkJs": false,
     "skipLibCheck": true,
     "verbatimModuleSyntax": false,
-    "types": ["node", "react"],
-    "strict": false
+    "types": ["node"],
+    "strict": true
   },
   "include": ["./src/"],
   "exclude": ["node_modules", "dist", "tests", "typetests", "src/ChartBrush", "src/Treemap"]

@@ -17,7 +17,7 @@ function updateChartLegendPayload(
   payload: Record<string, any>[],
   splitNestedKeys: boolean
 ): Record<string, any>[] {
-  return payload.map((item) => {
+  return payload.map((item: any) => {
     const newDataKey = splitNestedKeys ? item.dataKey?.split('.').pop() : item.dataKey;
     return {
       ...item,
@@ -36,7 +36,7 @@ export function getFilteredChartLegendPayload(
   splitNestedKeys = true
 ) {
   return updateChartLegendPayload(
-    payload.filter((item) => item.color !== 'none'),
+    payload.filter((item: any) => item.color !== 'none'),
     splitNestedKeys
   );
 }
@@ -110,7 +110,7 @@ export const ChartLegend = factory<ChartLegendFactory>((_props) => {
   const filteredPayload = getFilteredChartLegendPayload(payload, series != null);
   const labels = getSeriesLabels(series);
 
-  const items = filteredPayload.map((item, index) => (
+  const items = filteredPayload.map((item: any, index: number) => (
     <div
       key={index}
       {...getStyles('legendItem')}

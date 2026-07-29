@@ -29,8 +29,8 @@ import {
   IconSuperscript,
   IconUnderline,
   IconUnlink,
-} from '../icons/Icons';
-import { createControl } from './RichTextEditorControl';
+} from '../icons/Icons.tsrx';
+import { createControl } from './RichTextEditorControl.tsrx';
 
 export const BoldControl = createControl({
   label: 'boldControlLabel',

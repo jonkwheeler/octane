@@ -1,5 +1,5 @@
 import { createSafeContext, GetStylesApi, ScrollAreaProps } from '@octanejs/mantine-core';
-import type { TimePickerFactory } from './TimePicker';
+import type { TimePickerFactory } from './TimePicker.tsrx';
 
 interface TimePickerContext {
   getStyles: GetStylesApi<TimePickerFactory>;

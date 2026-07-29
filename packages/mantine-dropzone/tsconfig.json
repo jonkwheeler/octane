@@ -1,1 +1,16 @@
-{"compilerOptions":{"module":"esnext","lib":["esnext","dom","dom.iterable"],"target":"esnext","jsx":"react-jsx","jsxImportSource":"octane","moduleResolution":"bundler","noEmit":true,"skipLibCheck":true,"types":["node","react"],"strict":true},"include":["src"]}
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "target": "esnext",
+    "jsx": "react-jsx",
+    "jsxImportSource": "octane",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "types": ["node", "react"],
+    "strict": true
+  },
+  "include": ["src"]
+}

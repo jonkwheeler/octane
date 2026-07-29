@@ -95,7 +95,7 @@ export const TimeInput = factory<TimeInputFactory>((_props) => {
     return 0;
   };
 
-  const onTimeBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+  const onTimeBlur = (event: OctaneFocusEvent<HTMLInputElement>) => {
     props.onBlur?.(event);
     if (minTime !== undefined || maxTime !== undefined) {
       const val = event.currentTarget.value;

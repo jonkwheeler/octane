@@ -1,8 +1,8 @@
-export { DecadeLevel } from './DecadeLevel';
+export { DecadeLevel } from './DecadeLevel.tsrx';
 export type {
   DecadeLevelBaseSettings,
   DecadeLevelFactory,
   DecadeLevelProps,
   DecadeLevelSettings,
   DecadeLevelStylesNames,
-} from './DecadeLevel';
+} from './DecadeLevel.tsrx';

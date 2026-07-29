@@ -24,7 +24,7 @@ import { pickCalendarProps } from '../Calendar';
 import { DatePicker, DatePickerBaseProps, DatePickerStylesNames } from '../DatePicker';
 import { useDatesContext } from '../DatesProvider';
 import { getMaxTime, getMinTime } from '../DateTimePicker/get-min-max-time/get-min-max-time';
-import { TimePicker, TimePickerProps } from '../TimePicker/TimePicker';
+import { TimePicker, TimePickerProps } from '../TimePicker/TimePicker.tsrx';
 import classes from './InlineDateTimePicker.module.css';
 
 export type InlineDateTimePickerStylesNames =
@@ -53,7 +53,7 @@ export interface InlineDateTimePickerProps<Type extends DatePickerType = 'defaul
   endTimePickerProps?: Omit<TimePickerProps, 'defaultValue' | 'value'>;
 
   /** Props passed down to the submit button */
-  submitButtonProps?: ActionIconProps & React.ComponentProps<'button'>;
+  submitButtonProps?: ActionIconProps & MantineIntrinsicProps<'button'>;
 
   /** Determines whether the seconds input should be displayed @default false */
   withSeconds?: boolean;
@@ -166,9 +166,9 @@ export const InlineDateTimePicker = genericFactory<InlineDateTimePickerFactory>(
   const _labelSeparator = ctx.getLabelSeparator(labelSeparator);
   const isRange = (type as string) === 'range';
 
-  const startTimePickerRef = useRef<HTMLInputElement>(null);
+  const startTimePickerRef = useRef<HTMLInputElement | null>(null);
   const startTimePickerRefMerged = useMergedRef(startTimePickerRef, timePickerProps?.hoursRef);
-  const endTimePickerRef = useRef<HTMLInputElement>(null);
+  const endTimePickerRef = useRef<HTMLInputElement | null>(null);
   const endTimePickerRefMerged = useMergedRef(endTimePickerRef, endTimePickerProps?.hoursRef);
 
   const {
@@ -270,7 +270,7 @@ export const InlineDateTimePicker = genericFactory<InlineDateTimePickerFactory>(
     }
   };
 
-  const handleTimeInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleTimeInputKeyDown = (event: OctaneKeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       __onEnter?.();

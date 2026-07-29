@@ -4,9 +4,9 @@ import type {
   CalendarHeaderProps,
   CalendarHeaderSettings,
   CalendarHeaderStylesNames,
-} from './CalendarHeader';
+} from './CalendarHeader.tsrx';
 
-export { CalendarHeader } from './CalendarHeader';
+export { CalendarHeader } from './CalendarHeader.tsrx';
 
 export type {
   CalendarHeaderProps,

@@ -1,7 +1,9 @@
-import type { ElementDescriptor, OctaneNode } from 'octane';
+import type { ElementDescriptor, OctaneNode as OctaneNodeType } from 'octane';
 import type { Octane } from 'octane/jsx-runtime';
 
 declare global {
+  type OctaneNode = OctaneNodeType;
+
   type OctaneComponent<Props = {}> = ((props: Props) => OctaneNode) & {
     displayName?: string;
   };

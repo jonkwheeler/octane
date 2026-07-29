@@ -1,9 +1,9 @@
 import { NativeSelect, StylesApiProps } from '@octanejs/mantine-core';
 import { getLabel, ScheduleLabelsOverride } from '../../labels';
 import { DateStringValue, ScheduleViewLevel } from '../../types';
-import { MonthYearSelectProps } from './MonthYearSelect/MonthYearSelect';
-import { ScheduleHeader } from './ScheduleHeader';
-import { ViewSelectProps } from './ViewSelect/ViewSelect';
+import { MonthYearSelectProps } from './MonthYearSelect/MonthYearSelect.tsrx';
+import { ScheduleHeader } from './ScheduleHeader.tsrx';
+import { ViewSelectProps } from './ViewSelect/ViewSelect.tsrx';
 import classes from './ScheduleHeader.module.css';
 
 interface NavigationHandlers {
@@ -19,7 +19,7 @@ interface NavigationHandlers {
 
 interface HeaderControlOptions {
   /** Title to render in a simple control (used by DayView, WeekView) */
-  title?: React.ReactNode;
+  title?: OctaneNode;
   /** MonthYearSelect props (used by MonthView, YearView) */
   monthYearSelect?: {
     yearValue: number;
@@ -52,13 +52,13 @@ export interface ScheduleHeaderBaseProps {
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous control button */
-  previousControlProps?: React.ComponentProps<'button'>;
+  previousControlProps?: MantineIntrinsicProps<'button'>;
 
   /** Props passed to next control button */
-  nextControlProps?: React.ComponentProps<'button'>;
+  nextControlProps?: MantineIntrinsicProps<'button'>;
 
   /** Props passed to today control button */
-  todayControlProps?: React.ComponentProps<'button'>;
+  todayControlProps?: MantineIntrinsicProps<'button'>;
 
   /** Props passed to view select */
   viewSelectProps?: Partial<ViewSelectProps>;

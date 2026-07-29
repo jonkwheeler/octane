@@ -1,5 +1,5 @@
-import { useTimePickerContext } from '../TimePicker.context';
-import { TimeControl } from './TimeControl';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
+import { TimeControl } from './TimeControl.tsrx';
 
 interface AmPmControlsListProps {
   value: string | null;

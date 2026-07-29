@@ -10,6 +10,7 @@ import {
   UnstyledButton,
   useProps,
 } from '@octanejs/mantine-core';
+import type { OctaneNode } from 'octane';
 import { useSpotlightContext } from './Spotlight.context';
 import { spotlightActions } from './spotlight.store';
 import classes from './Spotlight.module.css';
@@ -30,13 +31,13 @@ export interface SpotlightActionProps
   description?: string;
 
   /** Section displayed on the left side of the label, for example, icon */
-  leftSection?: React.ReactNode;
+  leftSection?: OctaneNode;
 
   /** Section displayed on the right side of the label, for example, hotkey */
-  rightSection?: React.ReactNode;
+  rightSection?: OctaneNode;
 
   /** Children override default action elements, if passed, label, description and sections are hidden */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Determines whether left and right sections should have dimmed styles @default true */
   dimmedSections?: boolean;

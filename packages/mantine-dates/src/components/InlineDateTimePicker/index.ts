@@ -3,9 +3,9 @@ import type {
   InlineDateTimePickerFactory,
   InlineDateTimePickerProps,
   InlineDateTimePickerStylesNames,
-} from './InlineDateTimePicker';
+} from './InlineDateTimePicker.tsrx';
 
-export { InlineDateTimePicker } from './InlineDateTimePicker';
+export { InlineDateTimePicker } from './InlineDateTimePicker.tsrx';
 
 export type {
   InlineDateTimePickerProps,

@@ -20,7 +20,7 @@ import { useDisclosure } from '@octanejs/mantine-hooks';
 import { getLabel, ScheduleLabelsOverride } from '../../../labels';
 import { DateLabelFormat } from '../../../types';
 import { formatDate, getMonthsList, getYearsList } from '../../../utils';
-import { HeaderControl } from '../HeaderControl/HeaderControl';
+import { HeaderControl } from '../HeaderControl/HeaderControl.tsrx';
 import { useScheduleHeaderLabels } from '../ScheduleHeaderContext';
 import classes from './MonthYearSelect.module.css';
 
@@ -73,10 +73,10 @@ export interface MonthYearSelectProps
   radius?: MantineRadius;
 
   /** Props passed down to year controls */
-  getYearControlProps?: (year: number) => React.ComponentProps<'button'> & DataAttributes;
+  getYearControlProps?: (year: number) => MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed down to month controls */
-  getMonthControlProps?: (month: number) => React.ComponentProps<'button'> & DataAttributes;
+  getMonthControlProps?: (month: number) => MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** If set to false, months are not displayed in the dropdown @default true */
   withMonths?: boolean;

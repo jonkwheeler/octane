@@ -71,10 +71,10 @@ export function useTimePicker({
     !disabled &&
     (hours !== null || minutes !== null || seconds !== null || amPm !== null);
 
-  const hoursRef = useRef<HTMLInputElement>(null);
-  const minutesRef = useRef<HTMLInputElement>(null);
-  const secondsRef = useRef<HTMLInputElement>(null);
-  const amPmRef = useRef<HTMLSelectElement>(null);
+  const hoursRef = useRef<HTMLInputElement | null>(null);
+  const minutesRef = useRef<HTMLInputElement | null>(null);
+  const secondsRef = useRef<HTMLInputElement | null>(null);
+  const amPmRef = useRef<HTMLSelectElement | null>(null);
 
   const focus = (field: 'hours' | 'minutes' | 'seconds' | 'amPm') => {
     if (field === 'hours') {
@@ -185,9 +185,9 @@ export function useTimePicker({
     focus('hours');
   };
 
-  const onPaste = (event: React.ClipboardEvent<any>) => {
+  const onPaste = (event: OctaneClipboardEvent<any>) => {
     event.preventDefault();
-    const pastedValue = event.clipboardData.getData('text');
+    const pastedValue = event.clipboardData?.getData('text') ?? '';
     const parsedTime = (pasteSplit || getParsedTime)({ time: pastedValue, format, amPmLabels });
     const timeString = getTimeString({ ...parsedTime, format, withSeconds, amPmLabels });
     if (timeString.valid) {

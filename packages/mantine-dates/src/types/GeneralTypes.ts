@@ -13,4 +13,4 @@ export interface ControlKeydownPayload {
   date: DateStringValue;
 }
 
-export type DateLabelFormat = string | ((date: DateStringValue) => React.ReactNode);
+export type DateLabelFormat = string | ((date: DateStringValue) => OctaneNode);

@@ -23,18 +23,18 @@ import {
   ResourcesDayView,
   ResourcesDayViewProps,
   ResourcesDayViewStylesNames,
-} from '../ResourcesDayView/ResourcesDayView';
+} from '../ResourcesDayView/ResourcesDayView.tsrx';
 import {
   ResourcesMonthView,
   ResourcesMonthViewProps,
   ResourcesMonthViewStylesNames,
-} from '../ResourcesMonthView/ResourcesMonthView';
+} from '../ResourcesMonthView/ResourcesMonthView.tsrx';
 import {
   ResourcesWeekView,
   ResourcesWeekViewProps,
   ResourcesWeekViewStylesNames,
-} from '../ResourcesWeekView/ResourcesWeekView';
-import { RenderEventBody } from '../ScheduleEvent/ScheduleEvent';
+} from '../ResourcesWeekView/ResourcesWeekView.tsrx';
+import { RenderEventBody } from '../ScheduleEvent/ScheduleEvent.tsrx';
 import classes from './ResourcesSchedule.module.css';
 
 export type ResourcesScheduleStylesNames =
@@ -117,7 +117,7 @@ export interface ResourcesScheduleProps
   renderEventBody?: RenderEventBody;
 
   /** Custom resource label renderer */
-  renderResourceLabel?: (resource: ScheduleResourceData) => React.ReactNode;
+  renderResourceLabel?: (resource: ScheduleResourceData) => OctaneNode;
 
   /** Enable drag and drop for events @default false */
   withEventsDragAndDrop?: boolean;
@@ -144,19 +144,19 @@ export interface ResourcesScheduleProps
   onTimeSlotClick?: (data: {
     slotStart: DateTimeStringValue;
     slotEnd: DateTimeStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
     resourceId?: string | number;
   }) => void;
 
   /** Called when day is clicked in month view */
   onDayClick?: (data: {
     date: DateStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
     resourceId?: string | number;
   }) => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select slot ranges @default false */
   withDragSlotSelect?: boolean;

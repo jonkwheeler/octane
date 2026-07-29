@@ -10,7 +10,7 @@ import {
   rem,
   useMantineTheme,
 } from '@octanejs/mantine-core';
-import type { CarouselProps } from '../Carousel';
+import type { CarouselProps } from '../Carousel.tsrx';
 
 interface CarouselVariablesProps extends CarouselProps {
   selector: string;

@@ -52,14 +52,14 @@ export interface MonthSettings {
   __preventFocus?: boolean;
 
   /** Called when day is clicked with click event and date */
-  __onDayClick?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
+  __onDayClick?: (event: OctaneMouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 
   /** Called when mouse enters day */
-  __onDayMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
+  __onDayMouseEnter?: (event: OctaneMouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 
   /** Called when any keydown event is registered on day, used for arrows navigation */
   __onDayKeyDown?: (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     payload: ControlKeydownPayload
   ) => void;
 

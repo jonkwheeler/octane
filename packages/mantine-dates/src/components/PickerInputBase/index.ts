@@ -1,7 +1,7 @@
-export { PickerInputBase } from './PickerInputBase';
+export { PickerInputBase } from './PickerInputBase.tsrx';
 export type {
   PickerInputBaseFactory,
   PickerInputBaseProps,
   PickerInputBaseStylesNames,
   DateInputSharedProps,
-} from './PickerInputBase';
+} from './PickerInputBase.tsrx';

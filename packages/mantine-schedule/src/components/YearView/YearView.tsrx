@@ -24,13 +24,13 @@ import {
   isSameMonth,
   toDateString,
 } from '../../utils';
-import { MonthYearSelectProps } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+import { MonthYearSelectProps } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import { getYearViewEvents } from './get-year-view-events/get-year-view-events';
 import { handleYearViewKeyDown, YearViewControlsRef } from './handle-year-view-key-down';
-import { YearViewMonth, YearViewMonthSettings } from './YearViewMonth';
+import { YearViewMonth, YearViewMonthSettings } from './YearViewMonth.tsrx';
 import classes from './YearView.module.css';
 
 export type YearViewStylesNames =
@@ -81,13 +81,13 @@ export interface YearViewProps
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous month control */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next month control */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to today control */
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to view level select */
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;

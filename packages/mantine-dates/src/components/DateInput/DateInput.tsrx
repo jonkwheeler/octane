@@ -74,7 +74,7 @@ export interface DateInputProps
   clearSectionMode?: ClearSectionMode;
 
   /** Props passed down to the clear button */
-  clearButtonProps?: React.ComponentProps<'button'>;
+  clearButtonProps?: MantineIntrinsicProps<'button'>;
 
   /** `dayjs` format to display input value, `"MMMM D, YYYY"` by default  */
   valueFormat?: string;
@@ -169,8 +169,8 @@ export const DateInput = factory<DateInputFactory>((_props) => {
     attributes: wrapperProps.attributes,
   });
 
-  const _wrapperRef = useRef<HTMLDivElement>(null);
-  const _dropdownRef = useRef<HTMLDivElement>(null);
+  const _wrapperRef = useRef<HTMLDivElement | null>(null);
+  const _dropdownRef = useRef<HTMLDivElement | null>(null);
   const [dropdownOpened, setDropdownOpened] = useState(false);
   const { calendarProps, others } = pickCalendarProps(rest);
   const ctx = useDatesContext();
@@ -214,7 +214,7 @@ export const DateInput = factory<DateInputFactory>((_props) => {
     setInputValue(formatValue(_value));
   }, [ctx.getLocale(locale)]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: OctaneChangeEvent<HTMLInputElement>) => {
     const val = event.currentTarget.value;
     setInputValue(val);
     setDropdownOpened(true);
@@ -230,23 +230,23 @@ export const DateInput = factory<DateInputFactory>((_props) => {
     }
   };
 
-  const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleInputBlur = (event: OctaneFocusEvent<HTMLInputElement>) => {
     onBlur?.(event);
     setDropdownOpened(false);
     fixOnBlur && setInputValue(formatValue(_value));
   };
 
-  const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleInputFocus = (event: OctaneFocusEvent<HTMLInputElement>) => {
     onFocus?.(event);
     setDropdownOpened(true);
   };
 
-  const handleInputClick = (event: React.MouseEvent<HTMLInputElement>) => {
+  const handleInputClick = (event: OctaneMouseEvent<HTMLInputElement>) => {
     onClick?.(event);
     setDropdownOpened(true);
   };
 
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeyDown = (event: OctaneKeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
       setDropdownOpened(false);
     }

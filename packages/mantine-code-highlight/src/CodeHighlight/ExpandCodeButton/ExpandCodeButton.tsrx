@@ -1,5 +1,5 @@
-import { CodeHighlightControl } from '../CodeHighlightControl/CodeHighlightControl';
-import { ExpandIcon } from './ExpandIcon';
+import { CodeHighlightControl } from '../CodeHighlightControl/CodeHighlightControl.tsrx';
+import { ExpandIcon } from './ExpandIcon.tsrx';
 
 interface ExpandCodeButtonProps {
   expanded: boolean;

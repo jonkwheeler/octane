@@ -52,20 +52,20 @@ import {
   previousWeek,
   toDateString,
 } from '../../utils';
-import { AgendaView, AgendaViewStylesNames } from '../AgendaView/AgendaView';
+import { AgendaView, AgendaViewStylesNames } from '../AgendaView/AgendaView.tsrx';
 import {
   CurrentTimeIndicator,
   CurrentTimeIndicatorStylesNames,
-} from '../CurrentTimeIndicator/CurrentTimeIndicator';
-import { DragContext, DragContextValue } from '../DragContext/DragContext';
-import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+} from '../CurrentTimeIndicator/CurrentTimeIndicator.tsrx';
+import { DragContext, DragContextValue } from '../DragContext/DragContext.tsrx';
+import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import { getWeekLabel } from './get-week-label/get-week-label';
 import { getWeekViewEvents } from './get-week-view-events/get-week-view-events';
 import { handleWeekViewKeyDown, WeekViewControlsRef } from './handle-week-view-key-down';
-import { WeekViewDay } from './WeekViewDay';
+import { WeekViewDay } from './WeekViewDay.tsrx';
 import classes from './WeekView.module.css';
 
 export type WeekViewStylesNames =
@@ -173,13 +173,13 @@ export interface WeekViewProps
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous month control */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next month control */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to today control */
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to view level select */
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;
@@ -235,14 +235,14 @@ export interface WeekViewProps
   onTimeSlotClick?: (data: {
     slotStart: DateTimeStringValue;
     slotEnd: DateTimeStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
   }) => void;
 
   /** Called when all-day slot is clicked */
-  onAllDaySlotClick?: (day: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onAllDaySlotClick?: (day: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select time slot ranges @default false */
   withDragSlotSelect?: boolean;
@@ -260,7 +260,7 @@ export interface WeekViewProps
   renderWeekLabel?: (params: {
     weekStart: DateStringValue;
     weekEnd: DateStringValue;
-  }) => React.ReactNode;
+  }) => OctaneNode;
 
   /** Called when an external item is dropped onto the schedule. Receives the `DataTransfer` object and the drop target datetime. */
   onExternalEventDrop?: (dataTransfer: DataTransfer, dropDateTime: DateTimeStringValue) => void;
@@ -437,7 +437,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   const [scrolled, setScrolled] = useState(false);
   const ctx = useDatesContext();
   const slots = getDayTimeIntervals({ startTime, endTime, intervalMinutes });
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
 
   useAutoScrollOnDrag({
     viewportRef,
@@ -447,8 +447,8 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   type DropTargetSlot = { day: string; slotIndex: number };
 
   const handleExternalDrop = useCallback(
-    (e: React.DragEvent, target: DropTargetSlot) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, target: DropTargetSlot) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       const slotDate = dayjs(target.day).format('YYYY-MM-DD');
@@ -458,8 +458,8 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   );
 
   const handleExternalAllDayDrop = useCallback(
-    (e: React.DragEvent, day: string) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, day: string) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       onExternalEventDrop(e.dataTransfer, `${dayjs(day).format('YYYY-MM-DD')} 00:00:00`);
@@ -530,7 +530,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   const handleTimeSlotClick = (
     day: string,
     slotTime: string,
-    e: React.MouseEvent<HTMLButtonElement>
+    e: OctaneMouseEvent<HTMLButtonElement>
   ) => {
     if (!onTimeSlotClick) {
       return;
@@ -577,7 +577,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
     withWeekendDays,
   });
 
-  const timeValues = slots.reduce<React.ReactNode[]>((acc, interval) => {
+  const timeValues = slots.reduce<OctaneNode[]>((acc, interval) => {
     if (!interval.isHourStart) {
       return acc;
     }
@@ -642,7 +642,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
     viewportRef.current.scrollTo({ left: 0, top: slotRect.top - viewportRect.top });
   }, []);
 
-  const getSlotIndexFromDragPoint = useCallback((event: React.DragEvent, dayIndex: number) => {
+  const getSlotIndexFromDragPoint = useCallback((event: OctaneDragEvent<Element>, dayIndex: number) => {
     const daySlots = slotsRef.current[dayIndex] ?? [];
     const slotIndex = daySlots.findIndex((slotNode) => {
       if (!slotNode) {
@@ -679,7 +679,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   }, []);
 
   const handleSlotKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     dayIndex: number,
     slotIndex: number
   ) => {
@@ -692,7 +692,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   };
 
   const handleAllDaySlotKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     dayIndex: number
   ) => {
     const direction = event.key;
@@ -709,7 +709,7 @@ export const WeekView = factory<WeekViewFactory>((_props) => {
   };
 
   const handleWeekdayKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     dayIndex: number
   ) => {
     const direction = event.key;

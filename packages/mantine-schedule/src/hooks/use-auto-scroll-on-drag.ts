@@ -4,7 +4,7 @@ const EDGE_THRESHOLD = 50;
 const MAX_SCROLL_SPEED = 8;
 
 interface UseAutoScrollOnDragOptions {
-  viewportRef: React.RefObject<HTMLDivElement | null>;
+  viewportRef: { current: HTMLDivElement | null };
   enabled: boolean;
 }
 

@@ -24,7 +24,7 @@ export interface DecadeLevelBaseSettings extends YearsListSettings {
   /** `dayjs` format for decade label or a function that returns decade label based on the date value @default "YYYY" */
   decadeLabelFormat?:
     | string
-    | ((startOfDecade: DateStringValue, endOfDecade: DateStringValue) => React.ReactNode);
+    | ((startOfDecade: DateStringValue, endOfDecade: DateStringValue) => OctaneNode);
 }
 
 export interface DecadeLevelSettings

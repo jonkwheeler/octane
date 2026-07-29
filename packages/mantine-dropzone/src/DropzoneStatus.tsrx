@@ -1,13 +1,13 @@
-import { cloneElement } from 'octane';
+import { cloneElement, type OctaneNode } from 'octane';
 import { isElement, useProps } from '@octanejs/mantine-core';
 import { upperFirst } from '@octanejs/mantine-hooks';
 import { DropzoneContextValue, useDropzoneContext } from './Dropzone.context';
 
 export interface DropzoneStatusProps {
-  children: React.ReactNode;
+  children: OctaneNode;
 }
 
-type DropzoneStatusComponent = React.FC<DropzoneStatusProps>;
+type DropzoneStatusComponent = OctaneComponent<DropzoneStatusProps>;
 
 function createDropzoneStatus(status: keyof DropzoneContextValue) {
   const Component: DropzoneStatusComponent = (props) => {
@@ -17,7 +17,7 @@ function createDropzoneStatus(status: keyof DropzoneContextValue) {
     const _children = isElement(children) ? children : <span>{children}</span>;
 
     if (ctx[status]) {
-      return cloneElement(_children as React.JSX.Element, others);
+      return cloneElement(_children as OctaneElement, others);
     }
 
     return null;

@@ -7,7 +7,7 @@ import {
   ResourceGroupInfo,
   ResourcesGridControlsRef,
 } from '../../utils';
-import type { ResourcesWeekViewFactory } from './ResourcesWeekView';
+import type { ResourcesWeekViewFactory } from './ResourcesWeekView.tsrx';
 
 export interface ResourcesWeekViewRowProps {
   resource: ScheduleResourceData;
@@ -15,19 +15,19 @@ export interface ResourcesWeekViewRowProps {
   weekdays: string[];
   slots: DayTimeInterval[];
   getStyles: GetStylesApi<ResourcesWeekViewFactory>;
-  children?: React.ReactNode;
+  children?: OctaneNode;
   labels?: ScheduleLabelsOverride;
   highlightBusinessHours?: boolean;
   businessHours?: [string, string];
   withEventsDragAndDrop?: boolean;
   onRowSlotsDragOver?: (
-    e: React.DragEvent<HTMLDivElement>,
+    e: OctaneDragEvent<HTMLDivElement>,
     resourceId: string | number,
     resourceIndex: number
   ) => void;
   onRowSlotsDragLeave?: () => void;
   onRowSlotsDrop?: (
-    e: React.DragEvent<HTMLDivElement>,
+    e: OctaneDragEvent<HTMLDivElement>,
     resourceId: string | number,
     resourceIndex: number
   ) => void;
@@ -35,27 +35,27 @@ export interface ResourcesWeekViewRowProps {
     resourceId: string | number,
     day: string,
     slotTime: string,
-    event: React.MouseEvent<HTMLButtonElement>
+    event: OctaneMouseEvent<HTMLButtonElement>
   ) => void;
   dropTargetSlotIndex?: number;
   mode?: ScheduleMode;
   slotsRef?: ResourcesGridControlsRef;
   firstSlotIndex?: { resourceIndex: number; slotIndex: number };
   onSlotKeyDown?: (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     resourceIndex: number,
     slotIndex: number
   ) => void;
   withDragSlotSelect?: boolean;
   onSlotPointerDown?: (
-    event: React.PointerEvent<HTMLButtonElement>,
+    event: OctanePointerEvent<HTMLButtonElement>,
     index: number,
     group: string
   ) => void;
   isSlotDragSelected?: (index: number, group: string) => boolean;
   rowSlotsContainerRef?: (node: HTMLDivElement | null) => void;
-  renderResourceLabel?: (resource: ScheduleResourceData) => React.ReactNode;
-  renderGroupLabel?: (group: ScheduleResourceGroup) => React.ReactNode;
+  renderResourceLabel?: (resource: ScheduleResourceData) => OctaneNode;
+  renderGroupLabel?: (group: ScheduleResourceGroup) => OctaneNode;
   scrolledX?: boolean;
   groupInfo?: ResourceGroupInfo | null;
   allDayCount?: number;

@@ -14,7 +14,7 @@ export function getWeekdaysNames({
   firstDayOfWeek = 1,
 }: GetWeekdaysNamesInput) {
   const baseDate = dayjs().day(firstDayOfWeek);
-  const labels: React.ReactNode[] = [];
+  const labels: OctaneNode[] = [];
 
   for (let i = 0; i < 7; i += 1) {
     labels.push(formatDate({ locale, date: baseDate.add(i, 'days'), format }));

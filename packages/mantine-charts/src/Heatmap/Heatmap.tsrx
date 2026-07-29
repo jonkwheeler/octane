@@ -94,7 +94,7 @@ export interface HeatmapProps
   fontSize?: number;
 
   /** A function to generate tooltip label based on the hovered rect date and value, required for the tooltip to be visible */
-  getTooltipLabel?: (input: HeatmapRectData) => React.ReactNode;
+  getTooltipLabel?: (input: HeatmapRectData) => OctaneNode;
 
   /** If set, tooltip is displayed on rect hover @default false */
   withTooltip?: boolean;
@@ -103,7 +103,7 @@ export interface HeatmapProps
   tooltipProps?: Partial<TooltipFloatingProps>;
 
   /** Props passed down to each rect depending on its date and associated value */
-  getRectProps?: (input: HeatmapRectData) => React.ComponentProps<'rect'>;
+  getRectProps?: (input: HeatmapRectData) => MantineIntrinsicProps<'rect'>;
 
   /** If set, inserts a spacer column between months @default false */
   splitMonths?: boolean;

@@ -15,26 +15,26 @@ import { RichTextEditorProvider } from './RichTextEditor.context';
 import {
   RichTextEditorContent,
   type RichTextEditorContentProps,
-} from './RichTextEditorContent/RichTextEditorContent';
+} from './RichTextEditorContent/RichTextEditorContent.tsrx';
 import * as controls from './RichTextEditorControl';
 import {
   RichTextEditorControl,
   type RichTextEditorControlProps,
-} from './RichTextEditorControl/RichTextEditorControl';
-import type { RichTextEditorColorControlProps } from './RichTextEditorControl/RichTextEditorColorControl';
-import type { RichTextEditorLinkControlProps } from './RichTextEditorControl/RichTextEditorLinkControl';
+} from './RichTextEditorControl/RichTextEditorControl.tsrx';
+import type { RichTextEditorColorControlProps } from './RichTextEditorControl/RichTextEditorColorControl.tsrx';
+import type { RichTextEditorLinkControlProps } from './RichTextEditorControl/RichTextEditorLinkControl.tsrx';
 import {
   RichTextEditorSourceCodeControl,
   type RichTextEditorSourceCodeControlProps,
-} from './RichTextEditorControl/RichTextEditorSourceCodeControl';
+} from './RichTextEditorControl/RichTextEditorSourceCodeControl.tsrx';
 import {
   RichTextEditorControlsGroup,
   type RichTextEditorControlsGroupProps,
-} from './RichTextEditorControlsGroup/RichTextEditorControlsGroup';
+} from './RichTextEditorControlsGroup/RichTextEditorControlsGroup.tsrx';
 import {
   RichTextEditorToolbar,
   type RichTextEditorToolbarProps,
-} from './RichTextEditorToolbar/RichTextEditorToolbar';
+} from './RichTextEditorToolbar/RichTextEditorToolbar.tsrx';
 import classes from './RichTextEditor.module.css';
 
 export type RichTextEditorVariant = 'default' | 'subtle';

@@ -29,8 +29,8 @@ import type {
   DropzoneFullScreenProps,
   DropzoneFullScreenStylesNames,
   DropzoneFullScreenType,
-} from './DropzoneFullScreen';
-import { DropzoneAccept, DropzoneIdle, DropzoneReject } from './DropzoneStatus';
+} from './DropzoneFullScreen.tsrx';
+import { DropzoneAccept, DropzoneIdle, DropzoneReject } from './DropzoneStatus.tsrx';
 import classes from './Dropzone.module.css';
 
 export type DropzoneStylesNames = 'root' | 'inner';
@@ -45,7 +45,10 @@ export type DropzoneCssVariables = {
 };
 
 export interface DropzoneProps
-  extends BoxProps, StylesApiProps<DropzoneFactory>, ElementProps<'div', 'onDrop'> {
+  extends
+    BoxProps,
+    StylesApiProps<DropzoneFactory>,
+    ElementProps<'div', 'onDrop' | 'onDragEnter' | 'onDragLeave' | 'onDragOver'> {
   /** Key of `theme.colors` or any valid CSS color to set colors of `Dropzone.Accept` @default theme.primaryColor */
   acceptColor?: MantineColor;
 
@@ -74,7 +77,7 @@ export interface DropzoneProps
   accept?: Accept | string[];
 
   /** A ref function which when called opens the file system file picker */
-  openRef?: React.Ref<() => void | undefined>;
+  openRef?: OctaneRef<() => void | undefined>;
 
   /** Determines whether multiple files can be dropped to the dropzone or selected from file system picker @default true */
   multiple?: boolean;
@@ -104,13 +107,13 @@ export interface DropzoneProps
   dragEventsBubbling?: boolean;
 
   /** Called when the `dragenter` event occurs */
-  onDragEnter?: (event: React.DragEvent<HTMLElement>) => void;
+  onDragEnter?: (event: DragEvent) => void;
 
   /** Called when the `dragleave` event occurs */
-  onDragLeave?: (event: React.DragEvent<HTMLElement>) => void;
+  onDragLeave?: (event: DragEvent) => void;
 
   /** Called when the `dragover` event occurs */
-  onDragOver?: (event: React.DragEvent<HTMLElement>) => void;
+  onDragOver?: (event: DragEvent) => void;
 
   /** Called when user closes the file selection dialog with no selection */
   onFileDialogCancel?: () => void;

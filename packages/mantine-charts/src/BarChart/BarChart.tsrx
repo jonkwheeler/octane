@@ -1,5 +1,4 @@
-import * as React from 'octane';
-import { useState } from 'octane';
+import { cloneElement, isValidElement, useState } from 'octane';
 import {
   Bar,
   BarProps,
@@ -80,10 +79,10 @@ export interface BarChartProps
   cursorFill?: MantineColor;
 
   /** Props passed down to recharts `BarChart` component */
-  barChartProps?: React.ComponentProps<typeof ReChartsBarChart>;
+  barChartProps?: Record<string, any>;
 
   /** Additional components that are rendered inside recharts `BarChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Props passed down to recharts `Bar` component */
   barProps?:
@@ -145,7 +144,7 @@ const varsResolver = createVarsResolver<BarChartFactory>(
 function calculateCumulativeTotal(waterfallData: Record<string, any>[], dataKey: string) {
   let start: number = 0;
   let end: number = 0;
-  return waterfallData.map((item) => {
+  return waterfallData.map((item: any) => {
     if (item.standalone) {
       for (const prop in item) {
         if (typeof item[prop] === 'number' && prop !== dataKey) {
@@ -237,7 +236,7 @@ export const BarChart = factory<BarChartFactory>((_props) => {
   const stacked = type === 'stacked' || type === 'percent';
   const tickFormatter = type === 'percent' ? valueToPercent : valueFormatter;
 
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = (event: OctaneMouseEvent<HTMLDivElement>) => {
     setHighlightedArea(null);
     onMouseLeave?.(event);
   };
@@ -263,11 +262,30 @@ export const BarChart = factory<BarChartFactory>((_props) => {
     varsResolver,
   });
 
-  const bars = series.map((item) => {
+  const bars = series.map((item: any) => {
     const color = getThemeColor(item.color, theme);
     const dimmed = shouldHighlight && highlightedArea !== item.name;
     const resolvedBarProps = typeof barProps === 'function' ? barProps(item) : barProps;
     const userShape = resolvedBarProps?.shape;
+    const renderBarShape = (shapeProps: BarShapeProps) => {
+      const entry = shapeProps.payload;
+      const cellColor = entry?.color
+        ? getThemeColor(entry.color, theme)
+        : typeof getBarColor === 'function'
+          ? getThemeColor(getBarColor(entry?.[item.name], item), theme)
+          : getBarFill(barProps, item) || color;
+      const coloredProps = { ...shapeProps, fill: cellColor };
+      if (typeof userShape === 'function') {
+        return (userShape as (props: BarShapeProps) => any)(coloredProps);
+      }
+      if (isValidElement(userShape)) {
+        return cloneElement(userShape, coloredProps as any);
+      }
+      if (typeof userShape === 'object' && userShape) {
+        return <Rectangle {...coloredProps} {...(userShape as any)} />;
+      }
+      return <Rectangle {...coloredProps} />;
+    };
 
     return (
       <Bar
@@ -284,25 +302,7 @@ export const BarChart = factory<BarChartFactory>((_props) => {
         yAxisId={item.yAxisId || undefined}
         minPointSize={minBarSize}
         {...resolvedBarProps}
-        shape={(shapeProps: BarShapeProps) => {
-          const entry = shapeProps.payload;
-          const cellColor = entry?.color
-            ? getThemeColor(entry.color, theme)
-            : typeof getBarColor === 'function'
-              ? getThemeColor(getBarColor(entry?.[item.name], item), theme)
-              : getBarFill(barProps, item) || color;
-          const coloredProps = { ...shapeProps, fill: cellColor };
-          if (typeof userShape === 'function') {
-            return (userShape as (props: BarShapeProps) => React.ReactElement)(coloredProps);
-          }
-          if (React.isValidElement(userShape)) {
-            return React.cloneElement(userShape, coloredProps as any);
-          }
-          if (typeof userShape === 'object' && userShape) {
-            return <Rectangle {...coloredProps} {...(userShape as any)} />;
-          }
-          return <Rectangle {...coloredProps} />;
-        }}
+        shape={renderBarShape}
       >
         {withBarValueLabel && (
           <LabelList
@@ -374,7 +374,7 @@ export const BarChart = factory<BarChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="top"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
                   payload={payload.payload}
                   onHighlight={setHighlightedArea}
@@ -474,7 +474,7 @@ export const BarChart = factory<BarChartFactory>((_props) => {
                 strokeDasharray,
                 fill: 'var(--chart-cursor-fill)',
               }}
-              content={({ label, payload, labelFormatter }) => (
+              content={({ label, payload, labelFormatter }: { label: any; payload: any; labelFormatter: any }) => (
                 <ChartTooltip
                   label={labelFormatter && payload ? labelFormatter(label, payload) : label}
                   payload={payload}
@@ -511,4 +511,3 @@ export const BarChart = factory<BarChartFactory>((_props) => {
 BarChart.displayName = '@mantine/charts/BarChart';
 BarChart.classes = classes;
 BarChart.varsResolver = varsResolver;
-

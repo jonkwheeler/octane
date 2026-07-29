@@ -7,7 +7,7 @@ export interface ScheduleResourceData {
   id: string | number;
 
   /** Resource display label */
-  label: React.ReactNode;
+  label: OctaneNode;
 
   /** Optional color for the resource */
   color?: MantineColor;
@@ -19,7 +19,7 @@ export interface ScheduleResourceData {
 /** Group definition for resource views, groups are displayed as a rowspan-style column */
 export interface ScheduleResourceGroup {
   /** Group display label */
-  label: React.ReactNode;
+  label: OctaneNode;
 
   /** Resource IDs that belong to this group */
   resourceIds: (string | number)[];

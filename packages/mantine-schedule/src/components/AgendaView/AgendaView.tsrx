@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React from 'octane';
+import { Fragment } from 'octane';
 import {
   Box,
   BoxProps,
@@ -27,7 +27,7 @@ import {
   isMultidayEvent,
   sortEvents,
 } from '../../utils';
-import { RenderEvent } from '../ScheduleEvent/ScheduleEvent';
+import { RenderEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
 import { getAgendaViewEvents } from './get-agenda-view-events';
 import classes from './AgendaView.module.css';
 
@@ -84,7 +84,7 @@ export interface AgendaViewProps
   headerFormat?: DateLabelFormat;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Max number of generated recurring instances per recurring series @default 2000 */
   recurrenceExpansionLimit?: number;
@@ -203,12 +203,12 @@ export const AgendaView = factory<AgendaViewFactory>((_props) => {
         </Box>
       );
 
-      const rootProps: React.ComponentPropsWithoutRef<'button'> & { children: React.ReactNode } = {
+      const rootProps: MantineIntrinsicProps<'button'> & { children: OctaneNode } = {
         ...getStyles('agendaViewEvent'),
         onClick:
           mode === 'static'
             ? undefined
-            : (e: React.MouseEvent<HTMLButtonElement>) => {
+            : (e: OctaneMouseEvent<HTMLButtonElement>) => {
                 onEventClick?.(event, e);
               },
         tabIndex: mode === 'static' ? -1 : 0,
@@ -216,7 +216,7 @@ export const AgendaView = factory<AgendaViewFactory>((_props) => {
       };
 
       if (typeof renderEvent === 'function') {
-        return <React.Fragment key={event.id}>{renderEvent(event, rootProps)}</React.Fragment>;
+        return <Fragment key={event.id}>{renderEvent(event, rootProps)}</Fragment>;
       }
 
       return <UnstyledButton {...rootProps} key={event.id} />;

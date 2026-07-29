@@ -16,9 +16,9 @@ import {
   useResolvedStylesApi,
 } from '@octanejs/mantine-core';
 import { useDisclosure, useInputState, useWindowEvent } from '@octanejs/mantine-hooks';
-import { IconExternalLink, IconLink } from '../icons/Icons';
+import { IconExternalLink, IconLink } from '../icons/Icons.tsrx';
 import { useRichTextEditorContext } from '../RichTextEditor.context';
-import { RichTextEditorControlBase, RichTextEditorControlBaseProps } from './RichTextEditorControl';
+import { RichTextEditorControlBase, RichTextEditorControlBaseProps } from './RichTextEditorControl.tsrx';
 import classes from '../RichTextEditor.module.css';
 
 export type RichTextEditorLinkControlStylesNames =
@@ -101,7 +101,7 @@ export const RichTextEditorLinkControl = factory<RichTextEditorLinkControlFactor
           .run();
   };
 
-  const handleInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeydown = (event: OctaneKeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       setLink();
@@ -153,7 +153,7 @@ export const RichTextEditorLinkControl = factory<RichTextEditorLinkControlFactor
             aria-label={ctx.labels.linkEditorInputLabel}
             type="url"
             value={url}
-            onChange={setUrl}
+            onInput={(event) => setUrl(event.currentTarget.value)}
             classNames={{ input: ctx.getStyles('linkEditorInput', stylesApiProps).className }}
             onKeyDown={handleInputKeydown}
             rightSection={

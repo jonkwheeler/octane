@@ -3,9 +3,9 @@ import type {
   ResourcesScheduleProps,
   ResourcesScheduleStylesNames,
   ResourcesScheduleViewLevel,
-} from './ResourcesSchedule';
+} from './ResourcesSchedule.tsrx';
 
-export { ResourcesSchedule } from './ResourcesSchedule';
+export { ResourcesSchedule } from './ResourcesSchedule.tsrx';
 export type {
   ResourcesScheduleProps,
   ResourcesScheduleFactory,

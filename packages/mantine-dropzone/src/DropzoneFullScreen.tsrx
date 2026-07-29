@@ -14,7 +14,7 @@ import {
   useStyles,
 } from '@octanejs/mantine-core';
 import { useDisclosure } from '@octanejs/mantine-hooks';
-import { Dropzone, DropzoneProps, DropzoneStylesNames, DropzoneVariant } from './Dropzone';
+import { Dropzone, DropzoneProps, DropzoneStylesNames, DropzoneVariant } from './Dropzone.tsrx';
 import classes from './Dropzone.module.css';
 
 export type DropzoneFullScreenStylesNames = DropzoneStylesNames | 'fullScreen';

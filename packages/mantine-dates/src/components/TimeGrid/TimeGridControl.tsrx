@@ -4,7 +4,7 @@ import type { TimePickerAmPmLabels, TimePickerFormat } from '../TimePicker';
 import { TimeValue } from '../TimeValue';
 import { useTimeGridContext } from './TimeGrid.context';
 
-interface TimeGridControlProps extends React.ComponentProps<'button'> {
+interface TimeGridControlProps extends MantineIntrinsicProps<'button'> {
   time: string;
   active: boolean;
   format: TimePickerFormat;

@@ -26,13 +26,13 @@ import { useDatesContext } from '../DatesProvider';
 import {
   InlineDateTimePicker,
   InlineDateTimePickerStylesNames,
-} from '../InlineDateTimePicker/InlineDateTimePicker';
+} from '../InlineDateTimePicker/InlineDateTimePicker.tsrx';
 import {
   DateInputSharedProps,
   PickerInputBase,
   PickerInputBaseStylesNames,
 } from '../PickerInputBase';
-import { TimePickerProps } from '../TimePicker/TimePicker';
+import { TimePickerProps } from '../TimePicker/TimePicker.tsrx';
 import classes from './DateTimePicker.module.css';
 
 export type DateTimePickerStylesNames =
@@ -76,7 +76,7 @@ export interface DateTimePickerProps<Type extends DatePickerType = 'default'>
   endTimePickerProps?: Omit<TimePickerProps, 'defaultValue' | 'value'>;
 
   /** Props passed down to the submit button */
-  submitButtonProps?: ActionIconProps & React.ComponentProps<'button'>;
+  submitButtonProps?: ActionIconProps & MantineIntrinsicProps<'button'>;
 
   /** Determines whether the seconds input should be displayed @default false */
   withSeconds?: boolean;

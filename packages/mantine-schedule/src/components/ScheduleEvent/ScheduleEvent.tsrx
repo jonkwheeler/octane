@@ -14,7 +14,7 @@ import {
   useStyles,
 } from '@octanejs/mantine-core';
 import { ScheduleEventData, ScheduleMode } from '../../types';
-import { DragContext } from '../DragContext/DragContext';
+import { DragContext } from '../DragContext/DragContext.tsrx';
 import classes from './ScheduleEvent.module.css';
 
 export type ScheduleEventStylesNames = 'event' | 'eventInner' | 'eventResizeHandle';
@@ -24,12 +24,12 @@ export type ScheduleEventCssVariables = {
   event: '--event-bg' | '--event-color' | '--event-radius' | '--event-hover';
 };
 
-export type RenderEventBody = (event: ScheduleEventData<any>) => React.ReactNode;
+export type RenderEventBody = (event: ScheduleEventData<any>) => OctaneNode;
 
 export type RenderEvent = (
   event: ScheduleEventData,
-  props: React.ComponentPropsWithoutRef<'button'> & { children: React.ReactNode }
-) => React.ReactElement;
+  props: MantineIntrinsicProps<'button'> & { children: OctaneNode }
+) => OctaneElement;
 
 export interface ScheduleEventProps
   extends BoxProps, StylesApiProps<ScheduleEventFactory>, ElementProps<'button'> {
@@ -78,7 +78,7 @@ export interface ScheduleEventProps
   withResize?: boolean;
 
   /** Called when resize starts on an edge */
-  onResizeStart?: (edge: 'top' | 'bottom', e: React.PointerEvent) => void;
+  onResizeStart?: (edge: 'top' | 'bottom', e: OctanePointerEvent<Element>) => void;
 
   /** If true, event is currently being resized @default false */
   isResizing?: boolean;
@@ -168,8 +168,8 @@ export const ScheduleEvent = factory<ScheduleEventFactory>((_props) => {
     rootSelector: 'event',
   });
 
-  const handleDragStart = (e: React.DragEvent<HTMLButtonElement>) => {
-    if (!draggable) {
+  const handleDragStart = (e: OctaneDragEvent<HTMLButtonElement>) => {
+    if (!draggable || !e.dataTransfer) {
       e.preventDefault();
       return;
     }
@@ -208,7 +208,7 @@ export const ScheduleEvent = factory<ScheduleEventFactory>((_props) => {
         <Box
           {...getStyles('eventResizeHandle')}
           mod={{ edge: 'top' }}
-          onPointerDown={(e: React.PointerEvent) => onResizeStart?.('top', e)}
+          onPointerDown={(e: OctanePointerEvent<Element>) => onResizeStart?.('top', e)}
         />
       )}
       <Box mod={{ nowrap, size, autoSize, hanging }} {...getStyles('eventInner')}>
@@ -218,7 +218,7 @@ export const ScheduleEvent = factory<ScheduleEventFactory>((_props) => {
         <Box
           {...getStyles('eventResizeHandle')}
           mod={{ edge: 'bottom' }}
-          onPointerDown={(e: React.PointerEvent) => onResizeStart?.('bottom', e)}
+          onPointerDown={(e: OctanePointerEvent<Element>) => onResizeStart?.('bottom', e)}
         />
       )}
     </>

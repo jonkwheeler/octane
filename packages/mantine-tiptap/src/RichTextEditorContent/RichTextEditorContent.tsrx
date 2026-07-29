@@ -35,7 +35,7 @@ export const RichTextEditorContent = factory<RichTextEditorContentFactory>((_pro
         unstyled={ctx.unstyled}
       >
         <Box
-          component={EditorContent}
+          component={EditorContent as any}
           editor={ctx.editor}
           {...ctx.getStyles('content', { classNames, styles })}
           {...others}
@@ -46,7 +46,7 @@ export const RichTextEditorContent = factory<RichTextEditorContentFactory>((_pro
 
   return (
     <Box
-      component={EditorContent}
+      component={EditorContent as any}
       editor={ctx.editor}
       {...ctx.getStyles('content', { classNames, styles, className, style })}
       {...others}

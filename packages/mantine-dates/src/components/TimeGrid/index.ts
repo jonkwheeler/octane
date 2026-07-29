@@ -3,9 +3,9 @@ import type {
   TimeGridFactory,
   TimeGridProps,
   TimeGridStylesNames,
-} from './TimeGrid';
+} from './TimeGrid.tsrx';
 
-export { TimeGrid } from './TimeGrid';
+export { TimeGrid } from './TimeGrid.tsrx';
 export { isTimeBefore, isTimeAfter } from './compare-time';
 
 export type { TimeGridProps, TimeGridStylesNames, TimeGridFactory, TimeGridCssVariables };

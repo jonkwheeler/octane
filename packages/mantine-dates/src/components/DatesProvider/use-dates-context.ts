@@ -1,6 +1,6 @@
 import { use, useCallback } from 'octane';
 import { DayOfWeek } from '../../types';
-import { DatesProviderContext } from './DatesProvider';
+import { DatesProviderContext } from './DatesProvider.tsrx';
 
 export function useDatesContext() {
   const ctx = use(DatesProviderContext);

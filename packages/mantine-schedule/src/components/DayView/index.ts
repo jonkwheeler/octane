@@ -3,7 +3,7 @@ import type {
   DayViewFactory,
   DayViewProps,
   DayViewStylesNames,
-} from './DayView';
+} from './DayView.tsrx';
 
-export { DayView } from './DayView';
+export { DayView } from './DayView.tsrx';
 export type { DayViewProps, DayViewFactory, DayViewStylesNames, DayViewCssVariables };

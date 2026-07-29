@@ -1,5 +1,5 @@
 import { UnstyledButton } from '@octanejs/mantine-core';
-import { useTimePickerContext } from '../TimePicker.context';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
 import { padTime } from '../utils/pad-time/pad-time';
 
 interface TimeControlProps {

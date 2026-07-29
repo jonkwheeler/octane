@@ -2,8 +2,8 @@ import type {
   MonthPickerInputFactory,
   MonthPickerInputProps,
   MonthPickerInputStylesNames,
-} from './MonthPickerInput';
+} from './MonthPickerInput.tsrx';
 
-export { MonthPickerInput } from './MonthPickerInput';
+export { MonthPickerInput } from './MonthPickerInput.tsrx';
 
 export type { MonthPickerInputProps, MonthPickerInputStylesNames, MonthPickerInputFactory };

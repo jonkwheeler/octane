@@ -35,10 +35,10 @@ export interface CalendarHeaderSettings {
   __stopPropagation?: boolean;
 
   /** Change next icon */
-  nextIcon?: React.ReactNode;
+  nextIcon?: OctaneNode;
 
   /** Change previous icon */
-  previousIcon?: React.ReactNode;
+  previousIcon?: OctaneNode;
 
   /** Next button `aria-label` */
   nextLabel?: string;
@@ -95,7 +95,7 @@ export interface CalendarHeaderProps
   __staticSelector?: string;
 
   /** Label displayed between next and previous buttons */
-  label: React.ReactNode;
+  label: OctaneNode;
 
   /** Level control `aria-label` */
   levelControlAriaLabel?: string;
@@ -200,7 +200,7 @@ export const CalendarHeader = factory<CalendarHeaderFactory>((_props) => {
   });
 
   const preventFocus = __preventFocus
-    ? (event: React.MouseEvent<HTMLElement>) => event.preventDefault()
+    ? (event: OctaneMouseEvent<HTMLElement>) => event.preventDefault()
     : undefined;
 
   const previousControl = withPrevious && (

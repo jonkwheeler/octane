@@ -106,10 +106,10 @@ export interface DonutChartProps
   chartLabel?: string | number;
 
   /** Additional elements rendered inside `PieChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Props passed down to recharts `PieChart` component */
-  pieChartProps?: React.ComponentProps<typeof ReChartsPieChart>;
+  pieChartProps?: Record<string, any>;
 
   /** Type of labels to display, `'value'` by default */
   labelsType?: 'value' | 'percent' | 'name';
@@ -119,8 +119,8 @@ export interface DonutChartProps
 
   /** Props passed down to each segment of the chart */
   cellProps?:
-    | ((series: DonutChartCell) => Partial<Omit<React.SVGProps<SVGElement>, 'ref'>>)
-    | Partial<Omit<React.SVGProps<SVGElement>, 'ref'>>;
+    | ((series: DonutChartCell) => Partial<Omit<MantineIntrinsicProps<'svg'>, 'ref'>>)
+    | Partial<Omit<MantineIntrinsicProps<'svg'>, 'ref'>>;
 
   /** Determines whether the chart should be keyboard-navigable with the recharts accessibility layer, `true` by default */
   accessibilityLayer?: boolean;
@@ -304,7 +304,7 @@ export const DonutChart = factory<DonutChartFactory>((_props) => {
             <Tooltip
               animationDuration={tooltipAnimationDuration}
               isAnimationActive={false}
-              content={({ payload }) => (
+              content={({ payload }: { payload: any }) => (
                 <ChartTooltip
                   payload={data}
                   classNames={resolvedClassNames}
@@ -326,9 +326,9 @@ export const DonutChart = factory<DonutChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="bottom"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
-                  payload={payload.payload?.map((item) => ({
+                  payload={payload.payload?.map((item: any) => ({
                     ...item,
                     dataKey: (item.payload as any)?.name,
                     highlightKey: (item.payload as any)?.__segmentIndex,

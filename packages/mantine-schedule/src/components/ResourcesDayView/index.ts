@@ -3,9 +3,9 @@ import type {
   ResourcesDayViewFactory,
   ResourcesDayViewProps,
   ResourcesDayViewStylesNames,
-} from './ResourcesDayView';
+} from './ResourcesDayView.tsrx';
 
-export { ResourcesDayView } from './ResourcesDayView';
+export { ResourcesDayView } from './ResourcesDayView.tsrx';
 export type {
   ResourcesDayViewProps,
   ResourcesDayViewFactory,

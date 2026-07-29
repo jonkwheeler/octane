@@ -87,7 +87,7 @@ export interface RadarChartProps
     | Partial<Omit<RadarProps, 'ref'>>;
 
   /** Props passed down to recharts RadarChart component */
-  radarChartProps?: React.ComponentProps<typeof ReChartsRadarChart>;
+  radarChartProps?: Record<string, any>;
 
   /** Props passed down to recharts PolarGrid component */
   polarGridProps?: Omit<PolarGridProps, 'ref'>;
@@ -120,7 +120,7 @@ export interface RadarChartProps
   activeDotProps?: MantineChartDotProps;
 
   /** Additional components that are rendered inside recharts `RadarChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Determines whether the chart should be keyboard-navigable with the recharts accessibility layer, `true` by default */
   accessibilityLayer?: boolean;
@@ -210,7 +210,7 @@ export const RadarChart = factory<RadarChartFactory>((_props) => {
     props,
   });
 
-  const radars = series.map((item, index) => (
+  const radars = series.map((item: any, index: number) => (
     <Radar
       key={index}
       name={item.name}
@@ -272,7 +272,7 @@ export const RadarChart = factory<RadarChartFactory>((_props) => {
                 stroke: 'var(--chart-grid-color)',
                 strokeWidth: 1,
               }}
-              content={({ label, payload, labelFormatter }) => (
+              content={({ label, payload, labelFormatter }: { label: any; payload: any; labelFormatter: any }) => (
                 <ChartTooltip
                   label={labelFormatter && payload ? labelFormatter(label, payload) : label}
                   payload={payload}
@@ -289,7 +289,7 @@ export const RadarChart = factory<RadarChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="bottom"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
                   payload={payload.payload}
                   onHighlight={setHighlightedArea}

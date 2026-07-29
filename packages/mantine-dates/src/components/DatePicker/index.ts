@@ -5,9 +5,9 @@ import type {
   DatePickerPreset,
   DatePickerProps,
   DatePickerStylesNames,
-} from './DatePicker';
+} from './DatePicker.tsrx';
 
-export { DatePicker } from './DatePicker';
+export { DatePicker } from './DatePicker.tsrx';
 
 export type {
   DatePickerProps,

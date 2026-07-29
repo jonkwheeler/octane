@@ -1,7 +1,8 @@
 import { clamp } from '@octanejs/mantine-hooks';
 import { padTime } from '../TimePicker/utils/pad-time/pad-time';
 
-interface SpinInputProps extends Omit<React.ComponentProps<'input'>, 'onChange' | 'value'> {
+interface SpinInputProps
+  extends Omit<MantineIntrinsicProps<'input'>, 'onChange' | 'onInput' | 'value'> {
   value: number | null;
   min: number;
   max: number;
@@ -62,7 +63,7 @@ export function SpinInput({
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: OctaneKeyboardEvent<HTMLInputElement>) => {
     if (readOnly) {
       return;
     }
@@ -134,7 +135,7 @@ export function SpinInput({
       inputMode="numeric"
       placeholder={placeholder}
       value={value === null ? '' : padTime(value)}
-      onChange={(event) => handleChange(event.currentTarget.value)}
+      onInput={(event) => handleChange(event.currentTarget.value)}
       onKeyDown={handleKeyDown}
       onFocus={(event) => {
         event.currentTarget.select();

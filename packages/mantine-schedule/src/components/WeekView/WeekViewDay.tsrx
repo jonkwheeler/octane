@@ -10,7 +10,7 @@ import {
   getBusinessHoursMod,
 } from '../../utils';
 import type { WeekViewControlsRef } from './handle-week-view-key-down';
-import type { WeekViewFactory } from './WeekView';
+import type { WeekViewFactory } from './WeekView.tsrx';
 
 export interface WeekViewDayProps {
   /** Date to display */
@@ -32,7 +32,7 @@ export interface WeekViewDayProps {
   weekendDays?: DayOfWeek[];
 
   /** Events list */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Labels override */
   labels?: ScheduleLabelsOverride;
@@ -47,16 +47,16 @@ export interface WeekViewDayProps {
   withEventsDragAndDrop?: boolean;
 
   /** Called when dragging over day slots container */
-  onDaySlotsDragOver?: (e: React.DragEvent<HTMLDivElement>, day: string, dayIndex: number) => void;
+  onDaySlotsDragOver?: (e: OctaneDragEvent<HTMLDivElement>, day: string, dayIndex: number) => void;
 
   /** Called when dragging leaves day slots container */
   onDaySlotsDragLeave?: () => void;
 
   /** Called when dropping on day slots container */
-  onDaySlotsDrop?: (e: React.DragEvent<HTMLDivElement>, day: string, dayIndex: number) => void;
+  onDaySlotsDrop?: (e: OctaneDragEvent<HTMLDivElement>, day: string, dayIndex: number) => void;
 
   /** Called when slot is clicked */
-  onSlotClick?: (day: string, slotTime: string, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onSlotClick?: (day: string, slotTime: string, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Index of the slot that is currently a drop target */
   dropTargetSlotIndex?: number;
@@ -72,7 +72,7 @@ export interface WeekViewDayProps {
 
   /** Keyboard event handler for slots */
   onSlotKeyDown?: (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     dayIndex: number,
     slotIndex: number
   ) => void;
@@ -85,7 +85,7 @@ export interface WeekViewDayProps {
 
   /** Called when pointer down on a slot for drag selection */
   onSlotPointerDown?: (
-    event: React.PointerEvent<HTMLButtonElement>,
+    event: OctanePointerEvent<HTMLButtonElement>,
     index: number,
     group: string
   ) => void;
@@ -151,7 +151,7 @@ export function WeekViewDay({
     const handleClick =
       mode === 'static'
         ? undefined
-        : (e: React.MouseEvent<HTMLButtonElement>) => {
+        : (e: OctaneMouseEvent<HTMLButtonElement>) => {
             onSlotClick?.(String(day), slot.startTime, e);
             externalOnClick?.(e);
           };

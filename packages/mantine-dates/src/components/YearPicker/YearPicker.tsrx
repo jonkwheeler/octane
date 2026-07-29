@@ -33,7 +33,7 @@ export interface YearPickerPreset<Type extends DatePickerType> {
     : Type extends 'multiple'
       ? DateStringValue[]
       : DateStringValue | null;
-  label: React.ReactNode;
+  label: OctaneNode;
 }
 
 export type YearPickerCssVariables = {

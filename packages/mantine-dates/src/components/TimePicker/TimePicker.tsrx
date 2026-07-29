@@ -24,10 +24,10 @@ import {
 } from '@octanejs/mantine-core';
 import { useId, useMergedRef } from '@octanejs/mantine-hooks';
 import { SpinInput } from '../SpinInput';
-import { AmPmInput } from './AmPmInput/AmPmInput';
-import { AmPmControlsList } from './TimeControlsList/AmPmControlsList';
-import { TimeControlsList } from './TimeControlsList/TimeControlsList';
-import { TimePickerProvider } from './TimePicker.context';
+import { AmPmInput } from './AmPmInput/AmPmInput.tsrx';
+import { AmPmControlsList } from './TimeControlsList/AmPmControlsList.tsrx';
+import { TimeControlsList } from './TimeControlsList/TimeControlsList.tsrx';
+import { TimePickerProvider } from './TimePicker.context.tsrx';
 import {
   TimePickerAmPmLabels,
   TimePickerFormat,
@@ -35,7 +35,7 @@ import {
   TimePickerPresets,
   TimePickerType,
 } from './TimePicker.types';
-import { TimePresets } from './TimePresets/TimePresets';
+import { TimePresets } from './TimePresets/TimePresets.tsrx';
 import { useTimePicker } from './use-time-picker';
 import { clampTime } from './utils/clamp-time/clamp-time';
 import { getParsedTime } from './utils/get-parsed-time/get-parsed-time';
@@ -67,7 +67,7 @@ export interface TimePickerProps
     BoxProps,
     __BaseInputProps,
     StylesApiProps<TimePickerFactory>,
-    ElementProps<'div', 'onChange' | 'defaultValue'> {
+    ElementProps<'div', 'onChange' | 'defaultValue' | 'onFocus' | 'onBlur'> {
   /** TimePicker type, `'time'` for regular time input, `'duration'` for duration input that allows values greater than 24 hours @default 'time' */
   type?: TimePickerType;
 
@@ -135,25 +135,25 @@ export interface TimePickerProps
   popoverProps?: PopoverProps;
 
   /** Called once when one of the inputs is focused, not called when focused is shifted between hours, minutes, seconds and am/pm inputs */
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: OctaneFocusEvent<HTMLInputElement>) => void;
 
   /** Called once when the focus is no longer on any of the inputs */
-  onBlur?: (event: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (event: OctaneFocusEvent<HTMLDivElement>) => void;
 
   /** Props passed down to clear button */
   clearButtonProps?: CloseButtonProps & ElementProps<'button'> & DataAttributes;
 
   /** Props passed down to hours input */
-  hoursInputProps?: React.ComponentProps<'input'> & DataAttributes;
+  hoursInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
 
   /** Props passed down to minutes input */
-  minutesInputProps?: React.ComponentProps<'input'> & DataAttributes;
+  minutesInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
 
   /** Props passed down to seconds input */
-  secondsInputProps?: React.ComponentProps<'input'> & DataAttributes;
+  secondsInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
 
   /** Props passed down to am/pm select */
-  amPmSelectProps?: React.ComponentProps<'select'> & DataAttributes;
+  amPmSelectProps?: MantineIntrinsicProps<'select'> & DataAttributes;
 
   /** If set, the value cannot be updated */
   readOnly?: boolean;
@@ -162,22 +162,22 @@ export interface TimePickerProps
   disabled?: boolean;
 
   /** Props passed down to the hidden input */
-  hiddenInputProps?: React.ComponentProps<'input'> & DataAttributes;
+  hiddenInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
 
   /** A function to transform paste values, by default time in 24h format can be parsed on paste for example `23:34:22` */
   pasteSplit?: TimePickerPasteSplit;
 
   /** A ref object to get node reference of the hours input */
-  hoursRef?: React.Ref<HTMLInputElement>;
+  hoursRef?: OctaneRef<HTMLInputElement>;
 
   /** A ref object to get node reference of the minutes input */
-  minutesRef?: React.Ref<HTMLInputElement>;
+  minutesRef?: OctaneRef<HTMLInputElement>;
 
   /** A ref object to get node reference of the seconds input */
-  secondsRef?: React.Ref<HTMLInputElement>;
+  secondsRef?: OctaneRef<HTMLInputElement>;
 
   /** A ref object to get node reference of the am/pm select */
-  amPmRef?: React.Ref<HTMLSelectElement>;
+  amPmRef?: OctaneRef<HTMLSelectElement>;
 
   /** Time presets to display in the dropdown */
   presets?: TimePickerPresets;
@@ -354,7 +354,7 @@ export const TimePicker = factory<TimePickerFactory>((_props) => {
   const hasFocusRef = useRef(false);
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
-  const handleFocus = (event: React.FocusEvent<any>) => {
+  const handleFocus = (event: OctaneFocusEvent<any>) => {
     if (!hasFocusRef.current) {
       hasFocusRef.current = true;
       onFocus?.(event);
@@ -370,8 +370,8 @@ export const TimePicker = factory<TimePickerFactory>((_props) => {
     }
   };
 
-  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
+  const handleBlur = (event: OctaneFocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
       const computedValue = controller.values;
       const timeString = getTimeString({
         ...computedValue,

@@ -16,7 +16,7 @@ interface NotificationContainerProps extends NotificationProps {
   paused: boolean;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
-  ref?: React.Ref<HTMLDivElement>;
+  ref?: OctaneRef<HTMLDivElement>;
 }
 
 export function NotificationContainer({
@@ -54,7 +54,7 @@ export function NotificationContainer({
   const autoCloseTimeout = useRef<number>(-1);
   const hideTimeout = useRef<number>(-1);
   const scrollDismissTimeout = useRef<number>(-1);
-  const notificationRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement | null>(null);
   const hoveredRef = useRef(false);
   const offsetRef = useRef(0);
   const isCloseDisabled = allowClose === false;

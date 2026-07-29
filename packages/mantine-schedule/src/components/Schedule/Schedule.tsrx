@@ -18,16 +18,16 @@ import {
   ScheduleMode,
   ScheduleViewLevel,
 } from '../../types';
-import { DayView, DayViewProps, DayViewStylesNames } from '../DayView/DayView';
+import { DayView, DayViewProps, DayViewStylesNames } from '../DayView/DayView.tsrx';
 import {
   MobileMonthView,
   MobileMonthViewProps,
   MobileMonthViewStylesNames,
-} from '../MobileMonthView/MobileMonthView';
-import { MonthView, MonthViewProps, MonthViewStylesNames } from '../MonthView/MonthView';
-import { RenderEventBody } from '../ScheduleEvent/ScheduleEvent';
-import { WeekView, WeekViewProps, WeekViewStylesNames } from '../WeekView/WeekView';
-import { YearView, YearViewProps, YearViewStylesNames } from '../YearView/YearView';
+} from '../MobileMonthView/MobileMonthView.tsrx';
+import { MonthView, MonthViewProps, MonthViewStylesNames } from '../MonthView/MonthView.tsrx';
+import { RenderEventBody } from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { WeekView, WeekViewProps, WeekViewStylesNames } from '../WeekView/WeekView.tsrx';
+import { YearView, YearViewProps, YearViewStylesNames } from '../YearView/YearView.tsrx';
 import classes from './Schedule.module.css';
 
 export type ScheduleStylesNames =
@@ -135,14 +135,14 @@ export interface ScheduleProps
   onTimeSlotClick?: (data: {
     slotStart: DateTimeStringValue;
     slotEnd: DateTimeStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
   }) => void;
 
   /** Called when all-day slot is clicked in DayView/WeekView */
-  onAllDaySlotClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onAllDaySlotClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Called when a day is clicked in MonthView and YearView */
-  onDayClick?: (date: DateStringValue, event: React.MouseEvent<HTMLButtonElement>) => void;
+  onDayClick?: (date: DateStringValue, event: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select slot ranges @default false */
   withDragSlotSelect?: boolean;
@@ -151,7 +151,7 @@ export interface ScheduleProps
   onSlotDragEnd?: (rangeStart: DateTimeStringValue, rangeEnd: DateTimeStringValue) => void;
 
   /** Called when event is clicked in any view */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** Interaction mode:
    * - `'default'` allows all interactions

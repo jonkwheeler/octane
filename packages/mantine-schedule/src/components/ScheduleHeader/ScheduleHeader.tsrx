@@ -16,10 +16,10 @@ import {
   ScheduleHeaderNext,
   ScheduleHeaderPrevious,
   ScheduleHeaderToday,
-} from './HeaderControl/HeaderControl';
-import { MonthYearSelect, MonthYearSelectStylesNames } from './MonthYearSelect/MonthYearSelect';
+} from './HeaderControl/HeaderControl.tsrx';
+import { MonthYearSelect, MonthYearSelectStylesNames } from './MonthYearSelect/MonthYearSelect.tsrx';
 import { ScheduleHeaderLabelsContext } from './ScheduleHeaderContext';
-import { ViewSelect, ViewSelectStylesNames } from './ViewSelect/ViewSelect';
+import { ViewSelect, ViewSelectStylesNames } from './ViewSelect/ViewSelect.tsrx';
 import classes from './ScheduleHeader.module.css';
 
 export type CombinedScheduleHeaderStylesNames =

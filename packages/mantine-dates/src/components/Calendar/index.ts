@@ -5,9 +5,9 @@ import type {
   CalendarProps,
   CalendarSettings,
   CalendarStylesNames,
-} from './Calendar';
+} from './Calendar.tsrx';
 
-export { Calendar } from './Calendar';
+export { Calendar } from './Calendar.tsrx';
 export { pickCalendarProps } from './pick-calendar-levels-props/pick-calendar-levels-props';
 
 export type {

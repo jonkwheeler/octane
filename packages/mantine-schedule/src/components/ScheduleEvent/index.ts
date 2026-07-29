@@ -1,4 +1,4 @@
-export { ScheduleEvent } from './ScheduleEvent';
+export { ScheduleEvent } from './ScheduleEvent.tsrx';
 export type {
   ScheduleEventProps,
   ScheduleEventFactory,
@@ -6,4 +6,4 @@ export type {
   ScheduleEventVariant,
   ScheduleEventCssVariables,
   RenderEventBody,
-} from './ScheduleEvent';
+} from './ScheduleEvent.tsrx';

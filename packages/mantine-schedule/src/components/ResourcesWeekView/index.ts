@@ -3,9 +3,9 @@ import type {
   ResourcesWeekViewFactory,
   ResourcesWeekViewProps,
   ResourcesWeekViewStylesNames,
-} from './ResourcesWeekView';
+} from './ResourcesWeekView.tsrx';
 
-export { ResourcesWeekView } from './ResourcesWeekView';
+export { ResourcesWeekView } from './ResourcesWeekView.tsrx';
 export type {
   ResourcesWeekViewProps,
   ResourcesWeekViewFactory,

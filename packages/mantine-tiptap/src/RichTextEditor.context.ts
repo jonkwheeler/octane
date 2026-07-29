@@ -1,7 +1,7 @@
 import { Editor } from '@octanejs/tiptap';
 import { createSafeContext, GetStylesApi } from '@octanejs/mantine-core';
 import { RichTextEditorLabels } from './labels';
-import type { RichTextEditorFactory } from './RichTextEditor';
+import type { RichTextEditorFactory } from './RichTextEditor.tsrx';
 
 interface RichTextEditorContext {
   getStyles: GetStylesApi<RichTextEditorFactory>;

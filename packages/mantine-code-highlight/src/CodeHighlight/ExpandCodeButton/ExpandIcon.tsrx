@@ -1,4 +1,4 @@
-interface ExpandIconProps extends React.ComponentProps<'svg'> {
+interface ExpandIconProps extends MantineIntrinsicProps<'svg'> {
   expanded: boolean;
 }
 

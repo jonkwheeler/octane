@@ -1,8 +1,8 @@
-export { MonthLevel } from './MonthLevel';
+export { MonthLevel } from './MonthLevel.tsrx';
 export type {
   MonthLevelBaseSettings,
   MonthLevelFactory,
   MonthLevelProps,
   MonthLevelSettings,
   MonthLevelStylesNames,
-} from './MonthLevel';
+} from './MonthLevel.tsrx';

@@ -1,6 +1,6 @@
 import { BoxProps, ColorSwatch, ElementProps, useProps } from '@octanejs/mantine-core';
 import { useRichTextEditorContext } from '../RichTextEditor.context';
-import { RichTextEditorControl } from './RichTextEditorControl';
+import { RichTextEditorControl } from './RichTextEditorControl.tsrx';
 
 export interface RichTextEditorColorControlProps extends BoxProps, ElementProps<'button'> {
   /** Color that will be set as text color, for example #ef457e */

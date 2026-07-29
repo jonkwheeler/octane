@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'octane';
 import { ScrollArea } from '@octanejs/mantine-core';
-import { useTimePickerContext } from '../TimePicker.context';
-import { TimeControl } from './TimeControl';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
+import { TimeControl } from './TimeControl.tsrx';
 
 function isElementVisibleInScrollContainer(
   element: HTMLElement | null | undefined,
@@ -50,7 +50,7 @@ export function TimeControlsList({
   reversed,
 }: TimeControlsListProps) {
   const ctx = useTimePickerContext();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const range = getValuesRange(min, max, step);
   const controls = (reversed ? range.reverse() : range).map((control) => (
     <TimeControl key={control} value={control} active={value === control} onSelect={onSelect} />

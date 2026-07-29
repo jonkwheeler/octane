@@ -1,4 +1,4 @@
-import { Children, useCallback, useEffect, useState } from 'octane';
+import { Children, createElement, useCallback, useEffect, useState, type OctaneNode } from 'octane';
 import type { EmblaCarouselType, EmblaOptionsType, EmblaPluginType } from 'embla-carousel';
 import { useEmblaCarousel } from './use-embla-carousel';
 import {
@@ -24,11 +24,11 @@ import {
 } from '@octanejs/mantine-core';
 import { clamp, useId } from '@octanejs/mantine-hooks';
 import { CarouselProvider, type CarouselContextValue } from './Carousel.context';
-import { CarouselSlide } from './CarouselSlide/CarouselSlide';
+import { CarouselSlide } from './CarouselSlide/CarouselSlide.tsrx';
 import {
   CarouselContainerVariables,
   CarouselVariables,
-} from './CarouselVariables/CarouselVariables';
+} from './CarouselVariables/CarouselVariables.tsrx';
 import { getChevronRotation } from './get-chevron-rotation';
 import classes from './Carousel.module.css';
 
@@ -52,7 +52,7 @@ export interface CarouselProps
   emblaOptions?: EmblaOptionsType;
 
   /** `Carousel.Slide` components */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Called when next slide is shown */
   onNextSlide?: () => void;
@@ -67,10 +67,10 @@ export interface CarouselProps
   getEmblaApi?: (embla: EmblaCarouselType) => void;
 
   /** Props passed down to next control */
-  nextControlProps?: React.ComponentProps<'button'>;
+  nextControlProps?: MantineIntrinsicProps<'button'>;
 
   /** Props passed down to previous control */
-  previousControlProps?: React.ComponentProps<'button'>;
+  previousControlProps?: MantineIntrinsicProps<'button'>;
 
   /** Controls size of the next and previous controls @default 26 */
   controlSize?: React.CSSProperties['width'];
@@ -109,10 +109,10 @@ export interface CarouselProps
   plugins?: EmblaPluginType[];
 
   /** Icon of the next control */
-  nextControlIcon?: React.ReactNode;
+  nextControlIcon?: OctaneNode;
 
   /** Icon of the previous control */
-  previousControlIcon?: React.ReactNode;
+  previousControlIcon?: OctaneNode;
 
   /** Determines whether arrow key should switch slides @default true */
   withKeyboardEvents?: boolean;
@@ -260,7 +260,7 @@ export const Carousel = factory<CarouselFactory>((_props) => {
   }, [embla]);
 
   const handleKeydown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: OctaneKeyboardEvent<HTMLDivElement>) => {
       if (withKeyboardEvents) {
         if (event.key === 'ArrowRight') {
           event.preventDefault();
@@ -315,7 +315,7 @@ export const Carousel = factory<CarouselFactory>((_props) => {
   const canScrollNext = embla?.canScrollNext() || false;
 
   const handleIndicatorKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    (event: OctaneKeyboardEvent<HTMLButtonElement>, index: number) => {
       const isHorizontal = orientation === 'horizontal';
       const nextKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
       const prevKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
@@ -357,134 +357,168 @@ export const Carousel = factory<CarouselFactory>((_props) => {
 
   const indicators = Array(slidesCount)
     .fill(0)
-    .map((_, index) => (
-      <UnstyledButton
-        {...getStyles('indicator')}
-        key={index}
-        role="tab"
-        aria-label={`Go to slide ${index + 1}`}
-        aria-selected={index === selected}
-        tabIndex={index === selected ? 0 : -1}
-        data-active={index === selected || undefined}
-        onClick={() => handleScroll(index)}
-        onKeyDown={(event) => handleIndicatorKeyDown(event, index)}
-        data-orientation={orientation}
-        onMouseDown={(event) => event.preventDefault()}
-        {...getIndicatorProps?.(index)}
-      />
-    ));
-
-  return (
-    <CarouselProvider value={{ getStyles, orientation }}>
-      {type === 'container' ? (
-        <CarouselContainerVariables {...props} selector={`.${responsiveClassName}`} />
-      ) : (
-        <CarouselVariables {...props} selector={`.${responsiveClassName}`} />
-      )}
-
-      <Box
-        role="region"
-        aria-roledescription="carousel"
-        {...getStyles('root', { className: responsiveClassName })}
-        {...others}
-        id={_id}
-        mod={[{ orientation, 'include-gap-in-size': includeGapInSize }, mod]}
-        onKeyDownCapture={handleKeydown}
-      >
-        <VisuallyHidden role="status" aria-live="polite" aria-atomic="true">
-          {slidesCount > 0 && `Slide ${selected + 1} of ${slidesCount}`}
-        </VisuallyHidden>
-
-        {withControls && (
-          <div {...getStyles('controls')} data-orientation={orientation}>
-            <UnstyledButton
-              aria-controls={_id}
-              aria-label="Previous slide"
-              aria-disabled={!canScrollPrev}
-              data-inactive={!canScrollPrev || undefined}
-              data-type="previous"
-              tabIndex={canScrollPrev ? 0 : -1}
-              {...previousControlProps}
-              {...getStyles('control', {
-                className: previousControlProps?.className,
-                style: previousControlProps?.style,
-              })}
-              onClick={(event) => {
-                handlePrevious();
-                previousControlProps?.onClick?.(event);
-              }}
-            >
-              {typeof previousControlIcon !== 'undefined' ? (
-                previousControlIcon
-              ) : (
-                <AccordionChevron
-                  style={{
-                    transform: `rotate(${getChevronRotation({
-                      dir,
-                      orientation,
-                      direction: 'previous',
-                    })}deg)`,
-                  }}
-                />
-              )}
-            </UnstyledButton>
-
-            <UnstyledButton
-              aria-controls={_id}
-              aria-label="Next slide"
-              aria-disabled={!canScrollNext}
-              data-inactive={!canScrollNext || undefined}
-              data-type="next"
-              tabIndex={canScrollNext ? 0 : -1}
-              {...getStyles('control', {
-                className: nextControlProps?.className,
-                style: nextControlProps?.style,
-              })}
-              {...nextControlProps}
-              onClick={(event) => {
-                handleNext();
-                nextControlProps?.onClick?.(event);
-              }}
-            >
-              {typeof nextControlIcon !== 'undefined' ? (
-                nextControlIcon
-              ) : (
-                <AccordionChevron
-                  style={{
-                    transform: `rotate(${getChevronRotation({
-                      dir,
-                      orientation,
-                      direction: 'next',
-                    })}deg)`,
-                  }}
-                />
-              )}
-            </UnstyledButton>
-          </div>
-        )}
-
-        <div {...getStyles('viewport')} ref={emblaRefElement} data-type={type}>
-          <div
-            {...getStyles('container', { className: responsiveClassName })}
-            data-orientation={orientation}
-          >
-            {children}
-          </div>
-        </div>
-
-        {withIndicators && (
-          <div
-            {...getStyles('indicators')}
-            role="tablist"
-            aria-label="Slides"
-            data-orientation={orientation}
-          >
-            {indicators}
-          </div>
-        )}
-      </Box>
-    </CarouselProvider>
+    .map((_, index) =>
+      createElement(
+        UnstyledButton as any,
+        Object.assign(
+          {},
+          getStyles('indicator'),
+          {
+            key: index,
+            role: 'tab',
+            'aria-label': `Go to slide ${index + 1}`,
+            'aria-selected': index === selected,
+            tabIndex: index === selected ? 0 : -1,
+            'data-active': index === selected || undefined,
+            onClick: () => handleScroll(index),
+            onKeyDown: (event: OctaneKeyboardEvent<HTMLButtonElement>) =>
+              handleIndicatorKeyDown(event, index),
+            'data-orientation': orientation,
+            onMouseDown: (event: OctaneMouseEvent<HTMLButtonElement>) => event.preventDefault(),
+          },
+          getIndicatorProps?.(index)
+        )
+      )
+    );
+  const previousChevronRotation = getChevronRotation({
+    dir,
+    orientation,
+    direction: 'previous',
+  });
+  const nextChevronRotation = getChevronRotation({
+    dir,
+    orientation,
+    direction: 'next',
+  });
+  const previousIcon =
+    typeof previousControlIcon !== 'undefined'
+      ? previousControlIcon
+      : createElement(AccordionChevron as any, {
+          style: { transform: `rotate(${previousChevronRotation}deg)` },
+        });
+  const nextIcon =
+    typeof nextControlIcon !== 'undefined'
+      ? nextControlIcon
+      : createElement(AccordionChevron as any, {
+          style: { transform: `rotate(${nextChevronRotation}deg)` },
+        });
+  const previousButtonProps = Object.assign(
+    {},
+    previousControlProps as any,
+    getStyles('control', {
+      className: previousControlProps?.className,
+      style: previousControlProps?.style,
+    })
   );
+  const nextButtonProps = Object.assign(
+    {},
+    getStyles('control', {
+      className: nextControlProps?.className,
+      style: nextControlProps?.style,
+    }),
+    nextControlProps as any
+  );
+  const previousButton = createElement(
+    UnstyledButton as any,
+    Object.assign({}, previousButtonProps, {
+      'aria-controls': _id,
+      'aria-label': 'Previous slide',
+      'aria-disabled': !canScrollPrev,
+      'data-inactive': !canScrollPrev || undefined,
+      'data-type': 'previous',
+      tabIndex: canScrollPrev ? 0 : -1,
+      onClick: (event: OctaneMouseEvent<HTMLButtonElement>) => {
+        handlePrevious();
+        previousControlProps?.onClick?.(event);
+      },
+      children: previousIcon,
+    })
+  );
+  const nextButton = createElement(
+    UnstyledButton as any,
+    Object.assign({}, nextButtonProps, {
+      'aria-controls': _id,
+      'aria-label': 'Next slide',
+      'aria-disabled': !canScrollNext,
+      'data-inactive': !canScrollNext || undefined,
+      'data-type': 'next',
+      tabIndex: canScrollNext ? 0 : -1,
+      onClick: (event: OctaneMouseEvent<HTMLButtonElement>) => {
+        handleNext();
+        nextControlProps?.onClick?.(event);
+      },
+      children: nextIcon,
+    })
+  );
+  const responsiveVariables = createElement(
+    (type === 'container' ? CarouselContainerVariables : CarouselVariables) as any,
+    Object.assign({}, props, { selector: `.${responsiveClassName}` })
+  );
+  const rootProps = Object.assign(
+    {
+      role: 'region',
+      'aria-roledescription': 'carousel',
+    },
+    getStyles('root', { className: responsiveClassName }),
+    others,
+    {
+      id: _id,
+      mod: [{ orientation, 'include-gap-in-size': includeGapInSize }, mod],
+      onKeyDownCapture: handleKeydown,
+    },
+  );
+  const status = createElement(VisuallyHidden as any, {
+    role: 'status',
+    'aria-live': 'polite',
+    'aria-atomic': 'true',
+    children: slidesCount > 0 && `Slide ${selected + 1} of ${slidesCount}`,
+  });
+  const controls = withControls
+    ? createElement(
+        'div',
+        Object.assign({}, getStyles('controls'), {
+          'data-orientation': orientation,
+          children: [previousButton, nextButton],
+        })
+      )
+    : null;
+  const container = createElement(
+    'div',
+    Object.assign({}, getStyles('container', { className: responsiveClassName }), {
+      'data-orientation': orientation,
+      children,
+    })
+  );
+  const viewport = createElement(
+    'div',
+    Object.assign({}, getStyles('viewport'), {
+      ref: emblaRefElement,
+      'data-type': type,
+      children: container,
+    })
+  );
+  const indicatorList = withIndicators
+    ? createElement(
+        'div',
+        Object.assign({}, getStyles('indicators'), {
+          role: 'tablist',
+          'aria-label': 'Slides',
+          'data-orientation': orientation,
+          children: indicators,
+        })
+      )
+    : null;
+  const root = createElement(
+    Box as any,
+    Object.assign({}, rootProps, {
+      children: [status, controls, viewport, indicatorList],
+    })
+  );
+
+  return createElement(CarouselProvider as any, {
+    value: { getStyles, orientation },
+    children: [responsiveVariables, root],
+  });
 });
 
 Carousel.classes = classes;

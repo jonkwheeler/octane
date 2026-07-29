@@ -1,5 +1,10 @@
 import dayjs from 'dayjs';
-import { useCallback, useMemo, useRef } from 'octane';
+import { createElement, useCallback, useMemo, useRef } from 'octane';
+
+// tsrx-tsc emits these helper references for the nested spread templates below
+// without carrying their synthetic declarations into the typecheck view.
+declare const TSRXTemplate__spread_props1: Record<string, any>;
+declare const TSRXTemplate__spread_props2: Record<string, any>;
 import {
   Box,
   BoxProps,
@@ -44,13 +49,13 @@ import {
   getOrderedResources,
   toDateString,
 } from '../../utils';
-import { DragContext } from '../DragContext/DragContext';
-import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents';
-import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent';
-import { MonthYearSelectProps } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect';
-import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader';
-import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase';
-import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect';
+import { DragContext } from '../DragContext/DragContext.tsrx';
+import { MoreEvents, MoreEventsProps, MoreEventsStylesNames } from '../MoreEvents/MoreEvents.tsrx';
+import { RenderEvent, RenderEventBody, ScheduleEvent } from '../ScheduleEvent/ScheduleEvent.tsrx';
+import { MonthYearSelectProps } from '../ScheduleHeader/MonthYearSelect/MonthYearSelect.tsrx';
+import { CombinedScheduleHeaderStylesNames } from '../ScheduleHeader/ScheduleHeader.tsrx';
+import { ScheduleHeaderBase } from '../ScheduleHeader/ScheduleHeaderBase.tsrx';
+import { ViewSelectProps } from '../ScheduleHeader/ViewSelect/ViewSelect.tsrx';
 import classes from './ResourcesMonthView.module.css';
 
 export type ResourcesMonthViewStylesNames =
@@ -111,7 +116,7 @@ export interface ResourcesMonthViewProps
   /** Called when a cell is clicked, includes resourceId */
   onDayClick?: (data: {
     date: DateStringValue;
-    nativeEvent: React.MouseEvent<HTMLButtonElement>;
+    nativeEvent: OctaneMouseEvent<HTMLButtonElement>;
     resourceId?: string | number;
   }) => void;
 
@@ -131,13 +136,13 @@ export interface ResourcesMonthViewProps
   onViewChange?: (view: ScheduleViewLevel) => void;
 
   /** Props passed to previous control */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next control */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to today control */
-  todayControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  todayControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to view level select */
   viewSelectProps?: Partial<ViewSelectProps> & DataAttributes;
@@ -158,13 +163,13 @@ export interface ResourcesMonthViewProps
   renderEvent?: RenderEvent;
 
   /** Function to customize resource label rendering */
-  renderResourceLabel?: (resource: ScheduleResourceData) => React.ReactNode;
+  renderResourceLabel?: (resource: ScheduleResourceData) => OctaneNode;
 
   /** List of resource groups to display as a column to the left of resource labels */
   groups?: ScheduleResourceGroup[];
 
   /** Function to customize group label rendering */
-  renderGroupLabel?: (group: ScheduleResourceGroup) => React.ReactNode;
+  renderGroupLabel?: (group: ScheduleResourceGroup) => OctaneNode;
 
   /** Width of the group label column @default 80px */
   groupLabelWidth?: React.CSSProperties['width'];
@@ -191,7 +196,7 @@ export interface ResourcesMonthViewProps
   onEventDragEnd?: () => void;
 
   /** Called when event is clicked */
-  onEventClick?: (event: ScheduleEventData, e: React.MouseEvent<HTMLButtonElement>) => void;
+  onEventClick?: (event: ScheduleEventData, e: OctaneMouseEvent<HTMLButtonElement>) => void;
 
   /** If set, enables drag-to-select day ranges @default false */
   withDragSlotSelect?: boolean;
@@ -419,11 +424,11 @@ export const ResourcesMonthView = factory<ResourcesMonthViewFactory>((_props) =>
     return days;
   }, [date, withWeekendDays, weekendDays, ctx]);
 
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const mergedViewportRef = useMergedRef(viewportRef, scrollAreaProps?.viewportRef);
   const dayLabelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const resourceLabelRef = useRef<HTMLDivElement>(null);
+  const resourceLabelRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToDay = useCallback(
     (targetDate: string) => {
@@ -621,8 +626,8 @@ export const ResourcesMonthView = factory<ResourcesMonthViewFactory>((_props) =>
   type DropTargetCell = { day: string; resourceId: string | number };
 
   const handleExternalDrop = useCallback(
-    (e: React.DragEvent, target: DropTargetCell) => {
-      if (!onExternalEventDrop) {
+    (e: OctaneDragEvent<Element>, target: DropTargetCell) => {
+      if (!onExternalEventDrop || !e.dataTransfer) {
         return;
       }
       onExternalEventDrop({
@@ -698,12 +703,12 @@ export const ResourcesMonthView = factory<ResourcesMonthViewFactory>((_props) =>
 
   const cellsRef = useRef<HTMLButtonElement[][]>([]);
 
-  const getDayIndexFromDragPoint = useCallback((event: React.DragEvent, resourceIndex: number) => {
+  const getDayIndexFromDragPoint = useCallback((event: OctaneDragEvent<Element>, resourceIndex: number) => {
     return getIndexFromDragPoint(cellsRef.current[resourceIndex] ?? [], event.clientX);
   }, []);
 
   const handleCellKeyDown = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
+    event: OctaneKeyboardEvent<HTMLButtonElement>,
     resourceIndex: number,
     dayIndex: number
   ) => {
@@ -738,8 +743,8 @@ export const ResourcesMonthView = factory<ResourcesMonthViewFactory>((_props) =>
     const dropTarget = dragDrop.dropTarget;
 
     const totalDays = monthDays.length;
-    const eventNodes: React.ReactNode[] = [];
-    const moreNodes: React.ReactNode[] = [];
+    const eventNodes: OctaneNode[] = [];
+    const moreNodes: OctaneNode[] = [];
 
     const cells = monthDays.map((day, dayIndex) => {
       const d = dayjs(day);
@@ -858,7 +863,7 @@ export const ResourcesMonthView = factory<ResourcesMonthViewFactory>((_props) =>
             withDragSlotSelect && mode !== 'static'
               ? (e) =>
                   slotDragSelect.handleSlotPointerDown(
-                    e as React.PointerEvent<HTMLButtonElement>,
+                    e as OctanePointerEvent<HTMLButtonElement>,
                     dayIndex,
                     slotGroup
                   )
@@ -940,50 +945,55 @@ export const ResourcesMonthView = factory<ResourcesMonthViewFactory>((_props) =>
         )
       ) : null;
 
-    return (
-      <div {...getStyles('resourcesMonthViewRow')} key={resource.id}>
-        {groupCell}
-        <div
-          {...getStyles('resourcesMonthViewResourceLabel')}
-          data-has-groups={hasGroups || undefined}
-        >
-          {renderResourceLabel ? renderResourceLabel(resource) : resource.label}
-        </div>
-        <div
-          {...getStyles('resourcesMonthViewRowSlots')}
-          onDragOver={
-            withDragHandlers
-              ? (e) => {
-                  const dayIndex = getDayIndexFromDragPoint(e, resourceIndex);
-                  if (dayIndex !== null && monthDays[dayIndex]) {
-                    dragDrop.handleDragOver(e, {
-                      day: monthDays[dayIndex],
-                      resourceId: resource.id,
-                    });
-                  }
-                }
-              : undefined
+    const handleRowDragOver = withDragHandlers
+      ? (event: OctaneDragEvent<HTMLDivElement>) => {
+          const dayIndex = getDayIndexFromDragPoint(event, resourceIndex);
+          if (dayIndex !== null && monthDays[dayIndex]) {
+            dragDrop.handleDragOver(event, {
+              day: monthDays[dayIndex],
+              resourceId: resource.id,
+            });
           }
-          onDragLeave={withDragHandlers ? dragDrop.handleDragLeave : undefined}
-          onDrop={
-            withDragHandlers
-              ? (e) => {
-                  const dayIndex = getDayIndexFromDragPoint(e, resourceIndex);
-                  if (dayIndex !== null && monthDays[dayIndex]) {
-                    dragDrop.handleDrop(e, {
-                      day: monthDays[dayIndex],
-                      resourceId: resource.id,
-                    });
-                  }
-                }
-              : undefined
+        }
+      : undefined;
+    const handleRowDrop = withDragHandlers
+      ? (event: OctaneDragEvent<HTMLDivElement>) => {
+          const dayIndex = getDayIndexFromDragPoint(event, resourceIndex);
+          if (dayIndex !== null && monthDays[dayIndex]) {
+            dragDrop.handleDrop(event, {
+              day: monthDays[dayIndex],
+              resourceId: resource.id,
+            });
           }
-        >
-          {eventNodes}
-          {moreNodes}
-          {cells}
-        </div>
-      </div>
+        }
+      : undefined;
+    const handleRowDragLeave = withDragHandlers ? dragDrop.handleDragLeave : undefined;
+
+    const resourceLabelNode = createElement(
+      'div',
+      Object.assign({}, getStyles('resourcesMonthViewResourceLabel'), {
+        'data-has-groups': hasGroups || undefined,
+      }),
+      renderResourceLabel ? renderResourceLabel(resource) : resource.label
+    );
+    const rowSlotsNode = createElement(
+      'div',
+      Object.assign({}, getStyles('resourcesMonthViewRowSlots'), {
+        onDragOver: handleRowDragOver,
+        onDragLeave: handleRowDragLeave,
+        onDrop: handleRowDrop,
+      }),
+      eventNodes,
+      moreNodes,
+      cells
+    );
+
+    return createElement(
+      'div',
+      Object.assign({}, getStyles('resourcesMonthViewRow'), { key: resource.id }),
+      groupCell,
+      resourceLabelNode,
+      rowSlotsNode
     );
   });
 

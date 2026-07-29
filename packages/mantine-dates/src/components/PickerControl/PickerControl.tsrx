@@ -24,7 +24,7 @@ export interface PickerControlProps
   __staticSelector?: string;
 
   /** Control children */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Disables control */
   disabled?: boolean;

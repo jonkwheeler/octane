@@ -56,10 +56,10 @@ export interface BarsListProps
   valueLabel?: string;
 
   /** Function to pass props down to the bar depending on the bar data payload */
-  getBarProps?: (data: BarsListBarData) => React.ComponentProps<'div'>;
+  getBarProps?: (data: BarsListBarData) => MantineIntrinsicProps<'div'>;
 
   /** Function to completely customize bar rendering */
-  renderBar?: (data: BarsListBarData, defaultBar: React.ReactNode) => React.ReactNode;
+  renderBar?: (data: BarsListBarData, defaultBar: OctaneNode) => OctaneNode;
 
   /** Controls gap between bars @default 5 */
   barGap?: MantineSpacing;
@@ -145,7 +145,7 @@ export const BarsList = factory<BarsListFactory>((_props) => {
     varsResolver,
   });
 
-  const maxValue = useMemo(() => Math.max(...data.map((item) => item.value), 0), [data]);
+  const maxValue = useMemo(() => Math.max(...data.map((item: any) => item.value), 0), [data]);
 
   const formatValue = (value: number) => {
     if (valueFormatter) {
@@ -154,7 +154,7 @@ export const BarsList = factory<BarsListFactory>((_props) => {
     return value.toString();
   };
 
-  const bars = data.map((item, index) => {
+  const bars = data.map((item: any, index: number) => {
     const percentage = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
     const barProps = getBarProps ? getBarProps(item) : {};
     const { style: barPropsStyle, className: barPropsClassName, ...restBarProps } = barProps;

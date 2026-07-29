@@ -1,16 +1,17 @@
+import { type OctaneNode } from 'octane';
 import { Box, Button, ButtonProps, Group, GroupProps } from '@octanejs/mantine-core';
 import { ConfirmLabels } from './context';
 import { useModals } from './use-modals/use-modals';
 
 export interface ConfirmModalProps {
   id?: string;
-  children?: React.ReactNode;
+  children?: OctaneNode;
   onCancel?: () => void;
   onConfirm?: () => void;
   closeOnConfirm?: boolean;
   closeOnCancel?: boolean;
-  cancelProps?: ButtonProps & React.ComponentProps<'button'> & Record<`data-${string}`, any>;
-  confirmProps?: ButtonProps & React.ComponentProps<'button'> & Record<`data-${string}`, any>;
+  cancelProps?: ButtonProps & MantineIntrinsicProps<'button'> & Record<`data-${string}`, any>;
+  confirmProps?: ButtonProps & MantineIntrinsicProps<'button'> & Record<`data-${string}`, any>;
   groupProps?: GroupProps;
   labels?: ConfirmLabels;
 }
@@ -30,13 +31,13 @@ export function ConfirmModal({
   const { cancel: cancelLabel, confirm: confirmLabel } = labels;
   const ctx = useModals();
 
-  const handleCancel = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCancel = (event: OctaneMouseEvent<HTMLButtonElement>) => {
     typeof cancelProps?.onClick === 'function' && cancelProps?.onClick(event);
     typeof onCancel === 'function' && onCancel();
     closeOnCancel && ctx.closeModal(id!);
   };
 
-  const handleConfirm = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleConfirm = (event: OctaneMouseEvent<HTMLButtonElement>) => {
     typeof confirmProps?.onClick === 'function' && confirmProps?.onClick(event);
     typeof onConfirm === 'function' && onConfirm();
     closeOnConfirm && ctx.closeModal(id!);

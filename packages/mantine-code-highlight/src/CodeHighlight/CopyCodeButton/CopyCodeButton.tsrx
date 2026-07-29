@@ -1,6 +1,6 @@
 import { useClipboard } from '@octanejs/mantine-hooks';
-import { CodeHighlightControl } from '../CodeHighlightControl/CodeHighlightControl';
-import { CopyIcon } from './CopyIcon';
+import { CodeHighlightControl } from '../CodeHighlightControl/CodeHighlightControl.tsrx';
+import { CopyIcon } from './CopyIcon.tsrx';
 
 interface CopyCodeButtonProps {
   code: string;

@@ -1,6 +1,6 @@
 import { UnstyledButton } from '@octanejs/mantine-core';
 import { TimeValue } from '../../TimeValue';
-import { useTimePickerContext } from '../TimePicker.context';
+import { useTimePickerContext } from '../TimePicker.context.tsrx';
 import { TimePickerAmPmLabels, TimePickerFormat } from '../TimePicker.types';
 
 interface TimePresetControlProps {

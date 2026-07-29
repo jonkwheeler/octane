@@ -1,5 +1,5 @@
 import { createSafeContext, GetStylesApi } from '@octanejs/mantine-core';
-import type { CarouselFactory } from './Carousel';
+import type { CarouselFactory } from './Carousel.tsrx';
 
 export interface CarouselContextValue {
   getStyles: GetStylesApi<CarouselFactory>;

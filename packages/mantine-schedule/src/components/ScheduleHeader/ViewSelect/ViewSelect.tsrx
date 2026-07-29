@@ -14,7 +14,7 @@ import {
 } from '@octanejs/mantine-core';
 import { getLabel, ScheduleLabels, ScheduleLabelsOverride } from '../../../labels';
 import { ScheduleViewLevel } from '../../../types';
-import { HeaderControl } from '../HeaderControl/HeaderControl';
+import { HeaderControl } from '../HeaderControl/HeaderControl.tsrx';
 import { useScheduleHeaderLabels } from '../ScheduleHeaderContext';
 import classes from './ViewSelect.module.css';
 
@@ -109,7 +109,7 @@ export const ViewSelect = factory<ViewSelectFactory>((_props) => {
     activatedWithKeyboardRef.current = false;
   }, []);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+  const handleKeyDown = (event: OctaneKeyboardEvent<HTMLButtonElement>, index: number) => {
     const isRtl = dir === 'rtl';
     const nextKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
     const prevKey = isRtl ? 'ArrowRight' : 'ArrowLeft';

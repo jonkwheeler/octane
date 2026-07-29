@@ -5,21 +5,21 @@ import type {
   DropzoneProps,
   DropzoneStylesNames,
   DropzoneVariant,
-} from './Dropzone';
-import { Dropzone as _Dropzone } from './Dropzone';
+} from './Dropzone.tsrx';
+import { Dropzone as _Dropzone } from './Dropzone.tsrx';
 import type {
   DropzoneFullScreenFactory,
   DropzoneFullScreenProps,
   DropzoneFullScreenStylesNames,
-} from './DropzoneFullScreen';
-import { DropzoneFullScreen } from './DropzoneFullScreen';
-import type { DropzoneAcceptProps, DropzoneIdleProps, DropzoneRejectProps } from './DropzoneStatus';
+} from './DropzoneFullScreen.tsrx';
+import { DropzoneFullScreen } from './DropzoneFullScreen.tsrx';
+import type { DropzoneAcceptProps, DropzoneIdleProps, DropzoneRejectProps } from './DropzoneStatus.tsrx';
 
 _Dropzone.FullScreen = DropzoneFullScreen;
 export const Dropzone = _Dropzone;
 
 export { DropzoneFullScreen };
-export { DropzoneAccept, DropzoneIdle, DropzoneReject } from './DropzoneStatus';
+export { DropzoneAccept, DropzoneIdle, DropzoneReject } from './DropzoneStatus.tsrx';
 export * from './mime-types';
 
 export type {

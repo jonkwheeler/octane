@@ -74,10 +74,10 @@ export interface MiniCalendarProps
   size?: MantineSize;
 
   /** Props passed to previous control button */
-  previousControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  previousControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** Props passed to next control button */
-  nextControlProps?: React.ComponentProps<'button'> & DataAttributes;
+  nextControlProps?: MantineIntrinsicProps<'button'> & DataAttributes;
 
   /** dayjs locale used for formatting */
   locale?: string;

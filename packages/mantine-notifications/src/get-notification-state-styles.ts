@@ -1,4 +1,4 @@
-import type { NotificationsProps } from './Notifications';
+import type { NotificationsProps } from './Notifications.tsrx';
 
 type TransitionStatus = 'entering' | 'entered' | 'exiting' | 'exited' | 'unmounted';
 

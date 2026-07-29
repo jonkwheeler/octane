@@ -23,7 +23,7 @@ export const DatesProviderContext = createContext(DATES_PROVIDER_DEFAULT_SETTING
 
 export interface DatesProviderProps {
   settings: DatesProviderSettings;
-  children?: React.ReactNode;
+  children?: OctaneNode;
 }
 
 export function DatesProvider({ settings, children }: DatesProviderProps) {

@@ -90,10 +90,10 @@ export interface FunnelChartProps
   tooltipDataSource?: 'segment' | 'all';
 
   /** Additional elements rendered inside `FunnelChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Props passed down to recharts `FunnelChart` component */
-  funnelChartProps?: React.ComponentProps<typeof RechartsFunnelChart>;
+  funnelChartProps?: Record<string, any>;
 
   /** Determines whether the chart should be keyboard-navigable with the recharts accessibility layer, `true` by default */
   accessibilityLayer?: boolean;
@@ -208,7 +208,7 @@ export const FunnelChart = factory<FunnelChartFactory>((_props) => {
                 stroke="none"
                 fontFamily="var(--mantine-font-family)"
                 fontSize={12}
-                dataKey={(entry) => {
+                dataKey={(entry: any) => {
                   return typeof valueFormatter === 'function'
                     ? valueFormatter(entry.value as number)
                     : entry.value;
@@ -221,7 +221,7 @@ export const FunnelChart = factory<FunnelChartFactory>((_props) => {
             <Tooltip
               animationDuration={tooltipAnimationDuration}
               isAnimationActive={false}
-              content={({ payload }) => (
+              content={({ payload }: { payload: any }) => (
                 <ChartTooltip
                   payload={data}
                   classNames={resolvedClassNames}
@@ -245,7 +245,7 @@ export const FunnelChart = factory<FunnelChartFactory>((_props) => {
               verticalAlign="bottom"
               content={() => (
                 <ChartLegend
-                  payload={data.map((item, index) => ({
+                  payload={data.map((item: any, index: number) => ({
                     value: item.name,
                     color: getThemeColor(item.color, theme),
                     dataKey: item.name,

@@ -100,7 +100,7 @@ export interface CompositeChartProps
   connectNulls?: boolean;
 
   /** Additional components that are rendered inside recharts `AreaChart` component */
-  children?: React.ReactNode;
+  children?: OctaneNode;
 
   /** Props passed down to recharts `Line` component */
   lineProps?:
@@ -130,7 +130,7 @@ export interface CompositeChartProps
   maxBarWidth?: number;
 
   /** Props passed down to recharts `AreaChart` component */
-  composedChartProps?: React.ComponentProps<typeof ReChartsCompositeChart>;
+  composedChartProps?: Record<string, any>;
 }
 
 export type CompositeChartFactory = Factory<{
@@ -226,7 +226,7 @@ export const CompositeChart = factory<CompositeChartFactory>((_props) => {
   const withYTickLine = gridAxis !== 'none' && (tickLine === 'y' || tickLine === 'xy');
   const [highlightedArea, setHighlightedArea] = useState<string | number | null>(null);
   const shouldHighlight = highlightedArea !== null;
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = (event: OctaneMouseEvent<HTMLDivElement>) => {
     setHighlightedArea(null);
     onMouseLeave?.(event);
   };
@@ -250,7 +250,7 @@ export const CompositeChart = factory<CompositeChartFactory>((_props) => {
     varsResolver,
   });
 
-  const lines = series.map((item) => {
+  const lines = series.map((item: any) => {
     const color = getThemeColor(item.color, theme);
     const dimmed = shouldHighlight && highlightedArea !== item.name;
 
@@ -418,7 +418,7 @@ export const CompositeChart = factory<CompositeChartFactory>((_props) => {
           {withLegend && (
             <Legend
               verticalAlign="top"
-              content={(payload) => (
+              content={(payload: any) => (
                 <ChartLegend
                   payload={payload.payload}
                   onHighlight={setHighlightedArea}
@@ -515,7 +515,7 @@ export const CompositeChart = factory<CompositeChartFactory>((_props) => {
                 strokeWidth: 1,
                 strokeDasharray,
               }}
-              content={({ label, payload, labelFormatter }) => (
+              content={({ label, payload, labelFormatter }: { label: any; payload: any; labelFormatter: any }) => (
                 <ChartTooltip
                   label={labelFormatter && payload ? labelFormatter(label, payload) : label}
                   payload={payload}

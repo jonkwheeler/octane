@@ -1,7 +1,5 @@
-import { RefObject } from 'octane';
-
 /** Reference to a 3D array of day buttons: [monthIndex][weekIndex][dayIndex] */
-export type YearViewControlsRef = RefObject<HTMLButtonElement[][][]>;
+export type YearViewControlsRef = { current: HTMLButtonElement[][][] };
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 
@@ -243,7 +241,7 @@ export interface HandleYearViewKeyDownInput {
   monthIndex: number;
   weekIndex: number;
   dayIndex: number;
-  event: React.KeyboardEvent<HTMLButtonElement>;
+  event: OctaneKeyboardEvent<HTMLButtonElement>;
 }
 
 export function handleYearViewKeyDown({

@@ -22,20 +22,20 @@ import { useUncontrolled } from '@octanejs/mantine-hooks';
 import {
   useHighlight,
   type CodeHighlightAdapter,
-} from '../CodeHighlightProvider/CodeHighlightProvider';
+} from '../CodeHighlightProvider/CodeHighlightProvider.tsrx';
 import type {
   CodeHighlightDefaultLanguage,
   CodeHighlightTabsCode,
   CodeHighlightTabsFactory,
   CodeHighlightTabsProps,
   CodeHighlightTabsStylesNames,
-} from '../CodeHighlightTabs/CodeHighlightTabs';
+} from '../CodeHighlightTabs/CodeHighlightTabs.tsrx';
 import type {
   InlineCodeHighlightCssVariables,
   InlineCodeHighlightFactory,
   InlineCodeHighlightProps,
   InlineCodeHighlightStylesNames,
-} from './InlineCodeHighlight';
+} from './InlineCodeHighlight.tsrx';
 import {
   CodeHighlightContextProvider,
   type CodeHighlightContextValue,
@@ -43,9 +43,9 @@ import {
 import {
   CodeHighlightControl,
   type CodeHighlightControlProps,
-} from './CodeHighlightControl/CodeHighlightControl';
-import { CopyCodeButton } from './CopyCodeButton/CopyCodeButton';
-import { ExpandCodeButton } from './ExpandCodeButton/ExpandCodeButton';
+} from './CodeHighlightControl/CodeHighlightControl.tsrx';
+import { CopyCodeButton } from './CopyCodeButton/CopyCodeButton.tsrx';
+import { ExpandCodeButton } from './ExpandCodeButton/ExpandCodeButton.tsrx';
 import classes from '../CodeHighlight.module.css';
 
 export type CodeHighlightStylesNames =
@@ -234,7 +234,7 @@ export const CodeHighlight = factory<CodeHighlightFactory>((_props) => {
     return (
       <Box
         component="code"
-        {...others}
+        {...(others as any)}
         {...highlightedCode.codeElementProps}
         {...getStyles('codeHighlight', {
           className: cx(highlightedCode.codeElementProps?.className, className),

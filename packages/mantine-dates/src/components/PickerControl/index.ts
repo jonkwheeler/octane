@@ -1,7 +1,7 @@
-export { PickerControl } from './PickerControl';
+export { PickerControl } from './PickerControl.tsrx';
 export type {
   PickerControlProps,
   PickerControlCssVariables,
   PickerControlFactory,
   PickerControlStylesNames,
-} from './PickerControl';
+} from './PickerControl.tsrx';

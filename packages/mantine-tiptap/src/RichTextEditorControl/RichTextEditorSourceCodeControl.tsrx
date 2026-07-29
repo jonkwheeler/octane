@@ -1,8 +1,8 @@
 import { useState } from 'octane';
 import { BoxProps, ElementProps, rem, useProps } from '@octanejs/mantine-core';
-import { IconBraces } from '../icons/Icons';
+import { IconBraces } from '../icons/Icons.tsrx';
 import { useRichTextEditorContext } from '../RichTextEditor.context';
-import { RichTextEditorControl } from './RichTextEditorControl';
+import { RichTextEditorControl } from './RichTextEditorControl.tsrx';
 
 export interface RichTextEditorSourceCodeControlProps extends BoxProps, ElementProps<'button'> {}
 
