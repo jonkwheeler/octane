@@ -5741,6 +5741,9 @@ importers:
       '@octanejs/sonner':
         specifier: workspace:*
         version: link:../../packages/sonner
+      '@octanejs/usehooks-ts':
+        specifier: workspace:*
+        version: link:../../packages/usehooks-ts
       class-variance-authority:
         specifier: catalog:default
         version: 0.7.1
