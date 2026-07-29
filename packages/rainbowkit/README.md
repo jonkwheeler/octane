@@ -1,0 +1,76 @@
+# @octanejs/rainbowkit
+
+An Octane-native wallet connection UI preserving RainbowKit's defining provider,
+connect-control, modal-hook, and theme contracts.
+
+```bash
+pnpm add @octanejs/rainbowkit @octanejs/wagmi @octanejs/tanstack-query viem
+```
+
+```tsrx
+import { QueryClient, QueryClientProvider } from '@octanejs/tanstack-query';
+import { WagmiProvider, createConfig, http } from '@octanejs/wagmi';
+import { injected } from '@octanejs/wagmi/connectors';
+import { mainnet } from '@octanejs/wagmi/chains';
+import {
+	ConnectButton,
+	RainbowKitProvider,
+	lightTheme,
+} from '@octanejs/rainbowkit';
+import '@octanejs/rainbowkit/styles.css';
+
+const config = createConfig({
+	chains: [mainnet],
+	connectors: [injected()],
+	transports: { [mainnet.id]: http() },
+});
+const queryClient = new QueryClient();
+
+function App() @{
+	<WagmiProvider config={config}>
+		<QueryClientProvider client={queryClient}>
+			<RainbowKitProvider theme={lightTheme()}>
+				<ConnectButton />
+			</RainbowKitProvider>
+		</QueryClientProvider>
+	</WagmiProvider>
+}
+```
+
+## Important Wagmi divergence
+
+This package is a compatibility adapter for RainbowKit 2.2.11's public UI
+contracts, not a repackaging of its React implementation. Upstream RainbowKit
+2.2.11 declares `wagmi ^2.9.0`; this package intentionally targets
+`@octanejs/wagmi` v3. It does not satisfy upstream RainbowKit's peer range and
+must not be presented as drop-in dependency parity.
+
+The adapter derives the familiar disconnected, connecting, connected, wrong
+network, and modal-open states directly from Wagmi v3. The supported cohort is
+`RainbowKitProvider`, `ConnectButton`, `ConnectButton.Custom`, `WalletButton`,
+`useConnectModal`, `useAccountModal`, `useChainModal`, and the light, dark, and
+rainbow theme factories.
+
+## Wallet catalogue and accessibility
+
+Wallet choices come from the connectors configured on the enclosing
+`WagmiProvider`. Applications configure injected/EIP-6963 and WalletConnect
+connectors themselves, including a WalletConnect project id. Connector entries
+are deduplicated by stable id and name while preserving configured/discovery
+order.
+
+The native dialog has an accessible name and description, initial focus, tab
+containment, Escape and outside dismissal, opener focus restoration, live
+status messages, scroll containment, 44px controls, a narrow single-column
+layout, and reduced-motion handling.
+
+## Deliberately unsupported
+
+The first cohort omits RainbowKit's wallet factory catalogue, authentication
+adapter, recent transactions, ENS/avatar resolution, cool mode, locale
+translations, pixel-identical themes, and React-only internals. Provider props
+for those upstream features are accepted only where harmless, but do not imply
+support. Supply vendor connector SDKs directly through Wagmi.
+
+SSR emits the deterministic disconnected control. Live connector state remains
+authoritative after hydration; persisted state never authorizes wallet actions.

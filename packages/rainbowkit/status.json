@@ -1,0 +1,41 @@
+{
+  "upstream": {
+    "package": "@rainbow-me/rainbowkit",
+    "version": "2.2.11"
+  },
+  "surface": "Octane-native RainbowKitProvider, ConnectButton and ConnectButton.Custom, WalletButton, connect/account/chain modal hooks, connector selection, account/chain actions, native accessible dialogs, and light/dark/rainbow themes.",
+  "divergences": [
+    "IMPORTANT: upstream RainbowKit 2.2.11 declares wagmi ^2.9.0. This adapter intentionally consumes @octanejs/wagmi v3 and is not drop-in dependency or peer-range parity.",
+    "The React DOM and vanilla-extract implementation is replaced by native Octane TSRX, DOM events, focus/scroll containment, and CSS custom properties.",
+    "The wallet list is the enclosing Wagmi v3 config's connector list, deduplicated by stable connector id and name. RainbowKit wallet factories, vendor SDKs, and WalletConnect project configuration remain application-owned.",
+    "Authentication, recent transactions, ENS/avatar resolution, localization, cool mode, and pixel-identical upstream themes are unsupported in the first cohort."
+  ],
+  "ssr": "The provider and controls emit deterministic disconnected markup without browser wallet access. Connector discovery and live Wagmi state become authoritative after hydration; no hydrated UI state authorizes wallet actions.",
+  "verified": "2026-07-29",
+  "provenance": {
+    "source": "https://github.com/rainbow-me/rainbowkit",
+    "license": "MIT"
+  },
+  "supportedExports": [
+    "RainbowKitProvider",
+    "ConnectButton",
+    "ConnectButton.Custom",
+    "WalletButton",
+    "useConnectModal",
+    "useAccountModal",
+    "useChainModal",
+    "lightTheme",
+    "darkTheme",
+    "rainbowTheme"
+  ],
+  "unsupported": [
+    "wallet factory catalogue",
+    "authentication adapter",
+    "recent transactions",
+    "ENS and avatar resolution",
+    "localization",
+    "cool mode",
+    "pixel-identical themes",
+    "React DOM internals"
+  ]
+}
