@@ -30,7 +30,7 @@ APIs. A blocked report exits with code `3`; malformed invocation exits with
 code `2`, and command failures use code `1`.
 
 For example, `mobx-react-lite` maps to `@octanejs/mobx`; Mantine Core, Hooks,
-Form, Charts, Code Highlight, Store, Notifications, Spotlight, Modals,
+Form, Charts, Carousel, Code Highlight, Store, Notifications, Spotlight, Modals,
 Navigation Progress, and Tiptap UI map to their corresponding
 `@octanejs/mantine-*` packages. Other Mantine extension packages remain blocked
 until their corresponding bindings exist. Supported dependencies inside that

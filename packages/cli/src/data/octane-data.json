@@ -188,6 +188,18 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/mantine-carousel",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/carousel", "version": "9.5.0" },
+      "surface": "Complete @mantine/carousel 9.5.0 component surface backed directly by Embla core.",
+      "divergences": [
+        "The Octane hook initializes embla-carousel directly instead of embla-carousel-react."
+      ],
+      "ssr": "Slides render as static markup; Embla initializes after the viewport mounts.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-charts",
       "version": "0.1.0",
       "category": "UI and interaction",
@@ -787,6 +799,7 @@
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
     "@lexical/react": "@octanejs/lexical",
+    "@mantine/carousel": "@octanejs/mantine-carousel",
     "@mantine/charts": "@octanejs/mantine-charts",
     "@mantine/code-highlight": "@octanejs/mantine-code-highlight",
     "@mantine/core": "@octanejs/mantine-core",

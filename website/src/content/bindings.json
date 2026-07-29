@@ -36,6 +36,7 @@
       "@octanejs/aria",
       "@octanejs/mantine-core",
       "@octanejs/mantine-charts",
+      "@octanejs/mantine-carousel",
       "@octanejs/mantine-code-highlight",
       "@octanejs/mantine-modals",
       "@octanejs/mantine-notifications",

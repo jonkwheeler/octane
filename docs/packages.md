@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**68 publishable package(s), including 56 framework binding(s).**
+**69 publishable package(s), including 57 framework binding(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
@@ -30,6 +30,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/jotai` | [`packages/jotai`](../packages/jotai) | framework binding | `0.1.15` | 7 |
 | `@octanejs/lexical` | [`packages/lexical`](../packages/lexical) | framework binding | `0.1.17` | 42 |
 | `@octanejs/lucide` | [`packages/lucide`](../packages/lucide) | framework binding | `0.1.13` | 4 |
+| `@octanejs/mantine-carousel` | [`packages/mantine-carousel`](../packages/mantine-carousel) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-charts` | [`packages/mantine-charts`](../packages/mantine-charts) | framework binding | `0.1.0` | 3 |
 | `@octanejs/mantine-code-highlight` | [`packages/mantine-code-highlight`](../packages/mantine-code-highlight) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-core` | [`packages/mantine-core`](../packages/mantine-core) | framework binding | `0.1.0` | 4 |
