@@ -1,0 +1,80 @@
+import { BoxProps, polymorphic, useProps } from '../../../core';
+import { usePaginationContext } from '../Pagination.context';
+import {
+  PaginationFirstIcon,
+  PaginationIconProps,
+  PaginationLastIcon,
+  PaginationNextIcon,
+  PaginationPreviousIcon,
+} from '../Pagination.icons.tsrx';
+import { PaginationControl } from '../PaginationControl/PaginationControl.tsrx';
+
+export interface CreateEdgeComponent {
+  icon: OctaneComponent<PaginationIconProps>;
+  name: string;
+  action: 'onNext' | 'onPrevious' | 'onFirst' | 'onLast';
+  type: 'next' | 'previous';
+}
+
+export interface PaginationEdgeProps extends BoxProps {
+  /** An icon component to replace the default icon */
+  icon?: OctaneComponent<PaginationIconProps>;
+}
+
+export function createEdgeComponent({ icon, name, action, type }: CreateEdgeComponent) {
+  const defaultProps = { icon } satisfies Partial<PaginationEdgeProps>;
+
+  const Component = (props: PaginationEdgeProps) => {
+    const { icon: Icon, ...others } = useProps(name, defaultProps, props);
+    const ctx = usePaginationContext();
+    const disabled = type === 'next' ? ctx.active === ctx.total : ctx.active === 1;
+
+    return (
+      <PaginationControl
+        disabled={ctx.disabled || disabled}
+        onClick={ctx[action]}
+        withPadding={false}
+        {...others}
+      >
+        <Icon
+          className="mantine-rotate-rtl"
+          style={{
+            width: 'calc(var(--pagination-control-size) / 1.8)',
+            height: 'calc(var(--pagination-control-size) / 1.8)',
+          }}
+        />
+      </PaginationControl>
+    );
+  };
+
+  Component.displayName = `@mantine/core/${name}`;
+  return polymorphic<'button', PaginationEdgeProps>(Component);
+}
+
+export const PaginationNext = createEdgeComponent({
+  icon: PaginationNextIcon,
+  name: 'PaginationNext',
+  action: 'onNext',
+  type: 'next',
+});
+
+export const PaginationPrevious = createEdgeComponent({
+  icon: PaginationPreviousIcon,
+  name: 'PaginationPrevious',
+  action: 'onPrevious',
+  type: 'previous',
+});
+
+export const PaginationFirst = createEdgeComponent({
+  icon: PaginationFirstIcon,
+  name: 'PaginationFirst',
+  action: 'onFirst',
+  type: 'previous',
+});
+
+export const PaginationLast = createEdgeComponent({
+  icon: PaginationLastIcon,
+  name: 'PaginationLast',
+  action: 'onLast',
+  type: 'next',
+});

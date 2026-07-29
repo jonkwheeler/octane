@@ -1,0 +1,60 @@
+import type { OctaneNode } from 'octane';
+import { useId } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  CompoundStylesApiProps,
+  ElementProps,
+  factory,
+  Factory,
+  useProps,
+} from '../../../core';
+import { useComboboxContext } from '../Combobox.context';
+import classes from '../Combobox.module.css';
+
+export type ComboboxGroupStylesNames = 'group' | 'groupLabel';
+
+export interface ComboboxGroupProps
+  extends BoxProps, CompoundStylesApiProps<ComboboxGroupFactory>, ElementProps<'div'> {
+  /** Group label */
+  label?: OctaneNode;
+}
+
+export type ComboboxGroupFactory = Factory<{
+  props: ComboboxGroupProps;
+  ref: HTMLDivElement;
+  stylesNames: ComboboxGroupStylesNames;
+  compound: true;
+}>;
+
+export const ComboboxGroup = factory<ComboboxGroupFactory>((props) => {
+  const { classNames, className, style, styles, vars, children, label, id, ...others } = useProps(
+    'ComboboxGroup',
+    null,
+    props
+  );
+
+  const ctx = useComboboxContext();
+  const _id = useId(id);
+
+  const hasLabel = label !== undefined && label !== null && label !== false && label !== '';
+
+  return (
+    <Box
+      role="group"
+      aria-labelledby={hasLabel ? _id : undefined}
+      {...ctx.getStyles('group', { className, classNames, style, styles })}
+      {...others}
+    >
+      {hasLabel && (
+        <div id={_id} {...ctx.getStyles('groupLabel', { classNames, styles })}>
+          {label}
+        </div>
+      )}
+      {children}
+    </Box>
+  );
+});
+
+ComboboxGroup.classes = classes;
+ComboboxGroup.displayName = '@mantine/core/ComboboxGroup';

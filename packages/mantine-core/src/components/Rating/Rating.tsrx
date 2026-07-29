@@ -1,0 +1,346 @@
+import type { OctaneNode } from 'octane';
+import { useRef, useState } from 'octane';
+import { clamp, useId, useMergedRef, useUncontrolled } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getSize,
+  getThemeColor,
+  MantineColor,
+  MantineSize,
+  StylesApiProps,
+  useDirection,
+  useProps,
+  useStyles,
+} from '../../core';
+import { RatingProvider } from './Rating.context';
+import { RatingItem } from './RatingItem/RatingItem.tsrx';
+import classes from './Rating.module.css';
+
+function roundValueTo(value: number, to: number) {
+  const rounded = Math.round(value / to) * to;
+  const precision = `${to}`.split('.')[1]?.length || 0;
+  return Number(rounded.toFixed(precision));
+}
+
+export type RatingStylesNames =
+  | 'root'
+  | 'starSymbol'
+  | 'input'
+  | 'label'
+  | 'symbolBody'
+  | 'symbolGroup';
+
+export type RatingCssVariables = {
+  root: '--rating-size' | '--rating-color';
+};
+
+export interface RatingProps
+  extends BoxProps, StylesApiProps<RatingFactory>, ElementProps<'div', 'onChange'> {
+  /** Uncontrolled component default value */
+  defaultValue?: number;
+
+  /** Controlled component value */
+  value?: number;
+
+  /** Called when value changes */
+  onChange?: (value: number) => void;
+
+  /** Icon displayed for unselected rating items. Can be a function that receives the rating value. */
+  emptySymbol?: OctaneNode | ((value: number) => OctaneNode);
+
+  /** Icon displayed for selected rating items. Can be a function that receives the rating value. */
+  fullSymbol?: OctaneNode | ((value: number) => OctaneNode);
+
+  /** Number of fractions each item can be divided into, default is 1 */
+  fractions?: number;
+
+  /** Controls component size @default 'sm' */
+  size?: MantineSize | number | (string & {});
+
+  /** Number of rating items (stars), default is 5 */
+  count?: number;
+
+  /** Called when rating item is hovered. Receives -1 when hover ends. */
+  onHover?: (value: number) => void;
+
+  /** Function to generate aria-label for each rating value. Receives the rating value as argument, default is (value) => String(value) */
+  getSymbolLabel?: (index: number) => string;
+
+  /** Name attribute for form submission. If not provided, a unique id will be generated. */
+  name?: string;
+
+  /** When true, rating cannot be changed by user interaction, default is false */
+  readOnly?: boolean;
+
+  /** When true, clicking the same rating value clears the rating to 0, default is false */
+  allowClear?: boolean;
+
+  /** When true, only the clicked rating item is highlighted, not all items up to the selected value, default is false */
+  highlightSelectedOnly?: boolean;
+
+  /** Key of theme.colors or any CSS color value, default is 'yellow' */
+  color?: MantineColor;
+}
+
+export type RatingFactory = Factory<{
+  props: RatingProps;
+  ref: HTMLDivElement;
+  stylesNames: RatingStylesNames;
+  vars: RatingCssVariables;
+}>;
+
+const defaultProps = {
+  size: 'sm',
+  getSymbolLabel: (value) => `${value}`,
+  count: 5,
+  fractions: 1,
+  color: 'yellow',
+} satisfies Partial<RatingProps>;
+
+const varsResolver = createVarsResolver<RatingFactory>((theme, { size, color }) => ({
+  root: {
+    '--rating-size': getSize(size, 'rating-size'),
+    '--rating-color': getThemeColor(color, theme),
+  },
+}));
+
+export const Rating = factory<RatingFactory>((_props) => {
+  const props = useProps('Rating', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    name,
+    id,
+    value,
+    defaultValue,
+    onChange,
+    fractions,
+    count,
+    onMouseEnter,
+    readOnly,
+    allowClear,
+    onMouseMove,
+    onHover,
+    onMouseLeave,
+    onTouchStart,
+    onTouchEnd,
+    size,
+    variant,
+    getSymbolLabel,
+    color,
+    emptySymbol,
+    fullSymbol,
+    highlightSelectedOnly,
+    attributes,
+    ref,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<RatingFactory>({
+    name: 'Rating',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  const { dir } = useDirection();
+
+  const _name = useId(name);
+  const _id = useId(id);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const [_value, setValue] = useUncontrolled({
+    value,
+    defaultValue,
+    finalValue: 0,
+    onChange,
+  });
+
+  const [hovered, setHovered] = useState(-1);
+  const [isOutside, setOutside] = useState(true);
+
+  const _fractions = Math.floor(fractions);
+  const _count = Math.floor(count);
+
+  const decimalUnit = 1 / _fractions;
+  const stableValueRounded = roundValueTo(_value, decimalUnit);
+  const finalValue = hovered !== -1 ? hovered : stableValueRounded;
+
+  const getRatingFromCoordinates = (x: number) => {
+    if (!rootRef.current) {
+      return 0;
+    }
+
+    const { left, right, width } = rootRef.current.getBoundingClientRect();
+    const symbolWidth = width / _count;
+
+    const hoverPosition = dir === 'rtl' ? right - x : x - left;
+    const hoverValue = hoverPosition / symbolWidth;
+
+    return clamp(roundValueTo(hoverValue + decimalUnit / 2, decimalUnit), decimalUnit, _count);
+  };
+
+  const handleMouseEnter = (event: OctaneMouseEvent<HTMLDivElement>) => {
+    onMouseEnter?.(event);
+    !readOnly && setOutside(false);
+  };
+
+  const handleMouseMove = (event: OctaneMouseEvent<HTMLDivElement>) => {
+    onMouseMove?.(event);
+
+    if (readOnly) {
+      return;
+    }
+
+    const rounded = getRatingFromCoordinates(event.clientX);
+
+    setHovered(rounded);
+    rounded !== hovered && onHover?.(rounded);
+  };
+
+  const handleMouseLeave = (event: OctaneMouseEvent<HTMLDivElement>) => {
+    onMouseLeave?.(event);
+
+    if (readOnly) {
+      return;
+    }
+
+    setHovered(-1);
+    setOutside(true);
+    hovered !== -1 && onHover?.(-1);
+  };
+
+  const handleTouchStart = (event: OctaneTouchEvent<HTMLDivElement>) => {
+    const { touches } = event;
+    if (touches.length !== 1) {
+      return;
+    }
+
+    if (!readOnly) {
+      const touch = touches[0];
+      setValue(getRatingFromCoordinates(touch.clientX));
+    }
+
+    onTouchStart?.(event);
+  };
+
+  const handleTouchEnd = (event: OctaneTouchEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    onTouchEnd?.(event);
+  };
+
+  const handleItemBlur = () => isOutside && setHovered(-1);
+
+  const handleInputChange = (event: OctaneChangeEvent<HTMLInputElement> | number) => {
+    if (!readOnly) {
+      if (typeof event === 'number') {
+        setHovered(event);
+      } else {
+        setHovered(parseFloat(event.currentTarget.value));
+      }
+    }
+  };
+
+  const handleChange = (event: OctaneChangeEvent<HTMLInputElement> | number) => {
+    if (!readOnly) {
+      const newValue = typeof event === 'number' ? event : parseFloat(event.currentTarget.value);
+
+      // If allowClear is true and clicking the same value, reset to 0
+      if (allowClear && newValue === stableValueRounded) {
+        setValue(0);
+      } else {
+        setValue(newValue);
+      }
+    }
+  };
+
+  const items = Array(_count)
+    .fill(0)
+    .map((_, index) => {
+      const integerValue = index + 1;
+      const fractionItems = Array.from(new Array(index === 0 ? _fractions + 1 : _fractions));
+      const isGroupActive = !readOnly && Math.ceil(hovered) === integerValue;
+
+      return (
+        <div
+          key={integerValue}
+          data-active={isGroupActive || undefined}
+          {...getStyles('symbolGroup')}
+        >
+          {fractionItems.map((__, fractionIndex) => {
+            const fractionValue = decimalUnit * (index === 0 ? fractionIndex : fractionIndex + 1);
+            const symbolValue = roundValueTo(integerValue - 1 + fractionValue, decimalUnit);
+
+            return (
+              <RatingItem
+                key={`${integerValue}-${symbolValue}`}
+                getSymbolLabel={getSymbolLabel}
+                emptyIcon={emptySymbol}
+                fullIcon={fullSymbol}
+                full={
+                  highlightSelectedOnly ? symbolValue === finalValue : symbolValue <= finalValue
+                }
+                active={symbolValue === finalValue}
+                checked={symbolValue === stableValueRounded}
+                readOnly={readOnly}
+                fractionValue={fractionValue}
+                value={symbolValue}
+                name={_name}
+                onChange={handleChange}
+                onBlur={handleItemBlur}
+                onInputChange={handleInputChange}
+                id={`${_id}-${index}-${fractionIndex}`}
+              />
+            );
+          })}
+        </div>
+      );
+    });
+
+  return (
+    <RatingProvider value={{ getStyles }}>
+      <Box
+        ref={useMergedRef(rootRef, ref)}
+        {...getStyles('root')}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        variant={variant}
+        size={size}
+        id={_id}
+        {...others}
+      >
+        {items}
+      </Box>
+    </RatingProvider>
+  );
+});
+
+Rating.classes = classes;
+Rating.varsResolver = varsResolver;
+Rating.displayName = '@mantine/core/Rating';
+
+export declare namespace Rating {
+  export type Props = RatingProps;
+  export type StylesNames = RatingStylesNames;
+  export type Factory = RatingFactory;
+}

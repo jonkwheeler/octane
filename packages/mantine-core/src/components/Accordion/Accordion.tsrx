@@ -1,0 +1,269 @@
+import type { OctaneNode } from 'octane';
+import { useId, useUncontrolled } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  Factory,
+  genericFactory,
+  getRadius,
+  getSafeId,
+  MantineRadius,
+  rem,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../core';
+import { AccordionProvider } from './Accordion.context';
+import { AccordionChevronPosition, AccordionHeadingOrder, AccordionValue } from './Accordion.types';
+import { AccordionChevron } from './AccordionChevron.tsrx';
+import { AccordionControl, type AccordionControlProps } from './AccordionControl/AccordionControl.tsrx';
+import { AccordionItem, type AccordionItemProps } from './AccordionItem/AccordionItem.tsrx';
+import { AccordionPanel, type AccordionPanelProps } from './AccordionPanel/AccordionPanel.tsrx';
+import classes from './Accordion.module.css';
+import type { AccordionItemContextValue } from './AccordionItem.context';
+export type AccordionStylesNames =
+  | 'root'
+  | 'content'
+  | 'item'
+  | 'panel'
+  | 'icon'
+  | 'chevron'
+  | 'label'
+  | 'itemTitle'
+  | 'control';
+
+export type AccordionVariant = 'default' | 'contained' | 'filled' | 'separated';
+export type AccordionCssVariables = {
+  root: '--accordion-transition-duration' | '--accordion-chevron-size' | '--accordion-radius';
+};
+
+export interface AccordionProps<Multiple extends boolean = false>
+  extends
+    BoxProps,
+    StylesApiProps<AccordionFactory>,
+    ElementProps<'div', 'value' | 'defaultValue' | 'onChange'> {
+  /** If set, multiple items can be opened at the same time @default false */
+  multiple?: Multiple;
+
+  /** Controlled component value */
+  value?: AccordionValue<Multiple>;
+
+  /** Uncontrolled component default value */
+  defaultValue?: AccordionValue<Multiple>;
+
+  /** Called when value changes, payload type depends on `multiple` prop */
+  onChange?: (value: AccordionValue<Multiple>) => void;
+
+  /** If set, arrow keys loop through items (first to last and last to first) @default true */
+  loop?: boolean;
+
+  /** Transition duration in ms @default 200 */
+  transitionDuration?: number;
+
+  /** If set, chevron rotation is disabled @default false */
+  disableChevronRotation?: boolean;
+
+  /** If set, the open item cannot be collapsed by clicking it again, so one item always stays open. Only applies when `multiple` is `false`. @default false */
+  disableCollapse?: boolean;
+
+  /** Position of the chevron relative to the item label @default right */
+  chevronPosition?: AccordionChevronPosition;
+
+  /** Size of the chevron icon container @default auto */
+  chevronSize?: number | string;
+
+  /** Size of the default chevron icon. Ignored when `chevron` prop is set. Use `chevronSize` instead when using custom chevron. @default 16 */
+  chevronIconSize?: number | string;
+
+  /** Sets heading level (h2-h6) for `Accordion.Control` elements. Wraps each control in the corresponding heading tag, recommended to meet WAI-ARIA accessibility requirements. Has no visual effect. */
+  order?: AccordionHeadingOrder;
+
+  /** Custom chevron icon */
+  chevron?: OctaneNode;
+
+  /** Key of `theme.radius` or any valid CSS value to set border-radius. Numbers are converted to rem. @default theme.defaultRadius */
+  radius?: MantineRadius;
+
+  /** If set to `false`, panels are unmounted when collapsed. By default, panels stay mounted when collapsed. @default true */
+  keepMounted?: boolean;
+
+  /** Controls how inactive panels content is hidden when `keepMounted` is `true`, `'activity'` – hidden with `Activity` component, `'display-none'` – hidden with `display: none` styles @default 'activity' */
+  keepMountedMode?: 'activity' | 'display-none';
+}
+
+export type AccordionFactory = Factory<{
+  props: AccordionProps;
+  ref: HTMLDivElement;
+  stylesNames: AccordionStylesNames;
+  vars: AccordionCssVariables;
+  variant: AccordionVariant;
+  signature: <Multiple extends boolean = false>(
+    props: AccordionProps<Multiple>
+  ) => OctaneNode;
+  staticComponents: {
+    Item: typeof AccordionItem;
+    Panel: typeof AccordionPanel;
+    Control: typeof AccordionControl;
+    Chevron: typeof AccordionChevron;
+  };
+}>;
+
+const defaultProps = {
+  multiple: false,
+  loop: true,
+  disableChevronRotation: false,
+  disableCollapse: false,
+  chevronPosition: 'right',
+  variant: 'default',
+  chevronSize: 'auto',
+  chevronIconSize: 16,
+  keepMountedMode: 'activity',
+} satisfies Partial<AccordionProps>;
+
+const varsResolver = createVarsResolver<AccordionFactory>(
+  (_, { transitionDuration, chevronSize, radius }) => ({
+    root: {
+      '--accordion-transition-duration':
+        transitionDuration === undefined ? undefined : `${transitionDuration}ms`,
+      '--accordion-chevron-size': chevronSize === undefined ? undefined : rem(chevronSize),
+      '--accordion-radius': radius === undefined ? undefined : getRadius(radius),
+    },
+  })
+);
+
+export const Accordion = genericFactory<AccordionFactory>((_props) => {
+  const props = useProps('Accordion', defaultProps as any, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    children,
+    multiple,
+    value,
+    defaultValue,
+    onChange,
+    id,
+    loop,
+    transitionDuration,
+    disableChevronRotation,
+    disableCollapse,
+    chevronPosition,
+    chevronSize,
+    order,
+    chevron,
+    variant,
+    radius,
+    chevronIconSize,
+    attributes,
+    keepMounted,
+    keepMountedMode,
+    ...others
+  } = props;
+
+  const uid = useId(id);
+  const [_value, handleChange] = useUncontrolled({
+    value,
+    defaultValue,
+    finalValue: multiple ? ([] as any) : null,
+    onChange,
+  });
+
+  const isItemActive = (itemValue: string) =>
+    Array.isArray(_value) ? _value.includes(itemValue) : itemValue === _value;
+
+  const handleItemChange = (itemValue: string) => {
+    if (!Array.isArray(_value) && disableCollapse && itemValue === _value) {
+      return;
+    }
+
+    const nextValue = Array.isArray(_value)
+      ? _value.includes(itemValue)
+        ? _value.filter((selectedValue) => selectedValue !== itemValue)
+        : [..._value, itemValue]
+      : itemValue === _value
+        ? null
+        : (itemValue as any);
+
+    handleChange(nextValue);
+  };
+
+  const getStyles = useStyles<AccordionFactory>({
+    name: 'Accordion',
+    classes,
+    props: props as AccordionProps,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  return (
+    <AccordionProvider
+      value={{
+        isItemActive,
+        onChange: handleItemChange,
+        getControlId: getSafeId(
+          `${uid}-control`,
+          'Accordion.Item component was rendered with invalid value or without value'
+        ),
+        getRegionId: getSafeId(
+          `${uid}-panel`,
+          'Accordion.Item component was rendered with invalid value or without value'
+        ),
+        chevron: chevron === null ? null : chevron || <AccordionChevron size={chevronIconSize} />,
+        transitionDuration,
+        disableChevronRotation,
+        chevronPosition,
+        order,
+        loop,
+        getStyles,
+        variant,
+        unstyled,
+        keepMounted,
+        keepMountedMode,
+      }}
+    >
+      <Box {...getStyles('root')} id={uid} {...others} variant={variant} data-accordion>
+        {children}
+      </Box>
+    </AccordionProvider>
+  );
+});
+
+Accordion.classes = classes;
+Accordion.varsResolver = varsResolver;
+Accordion.displayName = '@mantine/core/Accordion';
+Accordion.Item = AccordionItem;
+Accordion.Panel = AccordionPanel;
+Accordion.Control = AccordionControl;
+Accordion.Chevron = AccordionChevron;
+
+export declare namespace Accordion {
+  export type Props = AccordionProps;
+  export type StylesNames = AccordionStylesNames;
+  export type CssVariables = AccordionCssVariables;
+  export type Factory = AccordionFactory;
+  export type Variant = AccordionVariant;
+
+  export namespace Control {
+    export type Props = AccordionControlProps;
+  }
+
+  export namespace Item {
+    export type Props = AccordionItemProps;
+    export type Context = AccordionItemContextValue;
+  }
+
+  export namespace Panel {
+    export type Props = AccordionPanelProps;
+  }
+}

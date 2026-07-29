@@ -2648,6 +2648,68 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'mantine-core',
+					include: ['packages/mantine-core/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mantine-core$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-core/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-hooks/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/number-format$/,
+							replacement: resolve(import.meta.dirname, 'packages/number-format/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'mantine-core-ssr',
+					include: ['packages/mantine-core/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-core$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-core/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-hooks/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/number-format$/,
+							replacement: resolve(import.meta.dirname, 'packages/number-format/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'website-mcp-unit',
 					include: ['website-mcp/tests/**/*.test.ts'],
 					exclude: ['website-mcp/tests/built-handler.e2e.test.ts'],

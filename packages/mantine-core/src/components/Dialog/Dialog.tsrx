@@ -1,0 +1,150 @@
+import type { OctaneNode } from 'octane';
+import {
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getSize,
+  MantineSize,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../core';
+import { Affix, AffixBaseProps } from '../Affix';
+import { CloseButton } from '../CloseButton';
+import { Paper, PaperBaseProps } from '../Paper';
+import { Transition, TransitionOverride } from '../Transition';
+import classes from './Dialog.module.css';
+
+export type DialogStylesNames = 'root' | 'closeButton';
+export type DialogCssVariables = {
+  root: '--dialog-size';
+};
+
+export interface DialogProps
+  extends
+    BoxProps,
+    AffixBaseProps,
+    PaperBaseProps,
+    StylesApiProps<DialogFactory>,
+    ElementProps<'div'> {
+  /** If set, the component uses `display: none` to hide the root element instead of removing the DOM node @default false */
+  keepMounted?: boolean;
+
+  /** If set, displays the close button @default false */
+  withCloseButton?: boolean;
+
+  /** Called on close button click */
+  onClose?: () => void;
+
+  /** Dialog content */
+  children?: OctaneNode;
+
+  /** Opened state */
+  opened: boolean;
+
+  /** Props passed down to the underlying `Transition` component @default { transition: 'pop-top-right', duration: 200 } */
+  transitionProps?: TransitionOverride;
+
+  /** Controls `width` of the dialog @default 'md' */
+  size?: MantineSize | (string & {}) | number;
+}
+
+export type DialogFactory = Factory<{
+  props: DialogProps;
+  ref: HTMLDivElement;
+  stylesNames: DialogStylesNames;
+  vars: DialogCssVariables;
+}>;
+
+const defaultProps = {
+  shadow: 'md',
+  p: 'md',
+  withBorder: true,
+  transitionProps: { transition: 'pop-top-right', duration: 200 },
+  position: {
+    bottom: 30,
+    right: 30,
+  },
+} satisfies Partial<DialogProps>;
+
+const varsResolver = createVarsResolver<DialogFactory>((_, { size }) => ({
+  root: {
+    '--dialog-size': getSize(size, 'dialog-size'),
+  },
+}));
+
+export const Dialog = factory<DialogFactory>((_props) => {
+  const props = useProps('Dialog', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    zIndex,
+    position,
+    keepMounted,
+    opened,
+    transitionProps,
+    withCloseButton,
+    withinPortal,
+    children,
+    onClose,
+    portalProps,
+    attributes,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<DialogFactory>({
+    name: 'Dialog',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  return (
+    <Affix
+      zIndex={zIndex}
+      position={position}
+      withinPortal={withinPortal}
+      portalProps={portalProps}
+      unstyled={unstyled}
+    >
+      <Transition keepMounted={keepMounted} mounted={opened} {...transitionProps}>
+        {(transitionStyles) => (
+          <Paper
+            unstyled={unstyled}
+            {...getStyles('root', { style: transitionStyles })}
+            {...others}
+          >
+            {withCloseButton && (
+              <CloseButton onClick={onClose} unstyled={unstyled} {...getStyles('closeButton')} />
+            )}
+            {children}
+          </Paper>
+        )}
+      </Transition>
+    </Affix>
+  );
+});
+
+Dialog.classes = classes;
+Dialog.varsResolver = varsResolver;
+Dialog.displayName = '@mantine/core/Dialog';
+
+export declare namespace Dialog {
+  export type Props = DialogProps;
+  export type StylesNames = DialogStylesNames;
+  export type CssVariables = DialogCssVariables;
+  export type Factory = DialogFactory;
+}

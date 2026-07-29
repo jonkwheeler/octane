@@ -1,0 +1,83 @@
+import type { Octane } from 'octane/jsx-runtime';
+type NativeDivProps = MantineIntrinsicProps<'div'>;
+import { useEffect, useRef } from 'octane';
+import { useDebouncedCallback, useMergedRef } from '@octanejs/mantine-hooks';
+import { useScrollAreaContext } from '../ScrollArea.context';
+import { useScrollbarContext } from '../ScrollAreaScrollbar/Scrollbar.context';
+import { addUnlinkedScrollListener, composeEventHandlers } from '../utils';
+
+interface ThumbProps extends NativeDivProps {}
+
+export function Thumb(props: ThumbProps) {
+  const { style, ref: forwardedRef, ...others } = props;
+  const scrollAreaContext = useScrollAreaContext();
+  const scrollbarContext = useScrollbarContext();
+  const { onThumbPositionChange } = scrollbarContext;
+  const composedRef = useMergedRef(forwardedRef, scrollbarContext.onThumbChange);
+  const removeUnlinkedScrollListenerRef = useRef<(() => void) | undefined>(undefined);
+  const debounceScrollEnd = useDebouncedCallback(() => {
+    if (removeUnlinkedScrollListenerRef.current) {
+      removeUnlinkedScrollListenerRef.current();
+      removeUnlinkedScrollListenerRef.current = undefined;
+    }
+  }, 100);
+
+  useEffect(() => {
+    const { viewport } = scrollAreaContext;
+    if (viewport) {
+      const handleScroll = () => {
+        debounceScrollEnd();
+        if (!removeUnlinkedScrollListenerRef.current) {
+          const listener = addUnlinkedScrollListener(viewport, onThumbPositionChange);
+          removeUnlinkedScrollListenerRef.current = listener;
+          onThumbPositionChange();
+        }
+      };
+      onThumbPositionChange();
+      viewport.addEventListener('scroll', handleScroll);
+      return () => viewport.removeEventListener('scroll', handleScroll);
+    }
+
+    return undefined;
+  }, [scrollAreaContext.viewport, debounceScrollEnd, onThumbPositionChange]);
+
+  return (
+    <div
+      data-state={scrollbarContext.hasThumb ? 'visible' : 'hidden'}
+      {...others}
+      ref={composedRef}
+      style={{
+        width: 'var(--sa-thumb-width)',
+        height: 'var(--sa-thumb-height)',
+        ...style,
+      }}
+      onPointerDownCapture={composeEventHandlers(props.onPointerDownCapture, (event) => {
+        const thumb = event.target as HTMLElement;
+        const thumbRect = thumb.getBoundingClientRect();
+        const x = event.clientX - thumbRect.left;
+        const y = event.clientY - thumbRect.top;
+        scrollbarContext.onThumbPointerDown({ x, y });
+      })}
+      onPointerUp={composeEventHandlers(props.onPointerUp, scrollbarContext.onThumbPointerUp)}
+    />
+  );
+}
+
+Thumb.displayName = '@mantine/core/ScrollAreaThumb';
+
+interface ScrollAreaThumbProps extends ThumbProps {
+  forceMount?: true;
+}
+
+export function ScrollAreaThumb(props: ScrollAreaThumbProps) {
+  const { forceMount, ...thumbProps } = props;
+  const scrollbarContext = useScrollbarContext();
+
+  if (forceMount || scrollbarContext.hasThumb) {
+    return <Thumb {...thumbProps} />;
+  }
+
+  return null;
+}
+
+ScrollAreaThumb.displayName = '@mantine/core/ScrollAreaThumb';

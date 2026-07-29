@@ -1,0 +1,76 @@
+import { createContext } from 'octane';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getSpacing,
+  MantineSpacing,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../../core';
+import classes from '../Avatar.module.css';
+
+export interface AvatarGroupContextValue {
+  withinGroup: boolean;
+}
+
+export const AvatarGroupContext = createContext<AvatarGroupContextValue>({ withinGroup: false });
+
+export type AvatarGroupStylesNames = 'group';
+export type AvatarGroupCssVariables = {
+  group: '--ag-spacing';
+};
+
+export interface AvatarGroupProps
+  extends BoxProps, StylesApiProps<AvatarGroupFactory>, ElementProps<'div'> {
+  /** Negative space between Avatar components @default 'sm' */
+  spacing?: MantineSpacing;
+}
+
+export type AvatarGroupFactory = Factory<{
+  props: AvatarGroupProps;
+  ref: HTMLDivElement;
+  stylesNames: AvatarGroupStylesNames;
+  vars: AvatarGroupCssVariables;
+}>;
+
+const varsResolver = createVarsResolver<AvatarGroupFactory>((_, { spacing }) => ({
+  group: {
+    '--ag-spacing': getSpacing(spacing),
+  },
+}));
+
+export const AvatarGroup = factory<AvatarGroupFactory>((_props) => {
+  const props = useProps('AvatarGroup', null, _props);
+  const { classNames, className, style, styles, unstyled, vars, spacing, attributes, ...others } =
+    props;
+
+  const getStyles = useStyles<AvatarGroupFactory>({
+    name: 'AvatarGroup',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+    rootSelector: 'group',
+  });
+
+  return (
+    <AvatarGroupContext value={{ withinGroup: true }}>
+      <Box {...getStyles('group')} {...others} />
+    </AvatarGroupContext>
+  );
+});
+
+AvatarGroup.classes = classes;
+AvatarGroup.varsResolver = varsResolver;
+AvatarGroup.displayName = '@mantine/core/AvatarGroup';

@@ -1,0 +1,40 @@
+import { useState } from 'octane';
+import { useDebouncedCallback } from '@octanejs/mantine-hooks';
+import { useScrollAreaContext } from '../ScrollArea.context';
+import { useResizeObserver } from '../use-resize-observer';
+import {
+  ScrollAreaScrollbarVisible,
+  ScrollAreaScrollbarVisibleProps,
+} from './ScrollAreaScrollbarVisible.tsrx';
+
+export interface ScrollAreaScrollbarAutoProps extends ScrollAreaScrollbarVisibleProps {
+  forceMount?: true;
+}
+
+export function ScrollAreaScrollbarAuto(props: ScrollAreaScrollbarAutoProps) {
+  const context = useScrollAreaContext();
+  const { forceMount, ...scrollbarProps } = props;
+  const [visible, setVisible] = useState(false);
+  const isHorizontal = props.orientation === 'horizontal';
+
+  const handleResize = useDebouncedCallback(() => {
+    if (context.viewport) {
+      const isOverflowX = context.viewport.offsetWidth < context.viewport.scrollWidth;
+      const isOverflowY = context.viewport.offsetHeight < context.viewport.scrollHeight;
+      setVisible(isHorizontal ? isOverflowX : isOverflowY);
+    }
+  }, 10);
+
+  useResizeObserver(context.viewport, handleResize);
+  useResizeObserver(context.content, handleResize);
+
+  if (forceMount || visible) {
+    return (
+      <ScrollAreaScrollbarVisible data-state={visible ? 'visible' : 'hidden'} {...scrollbarProps} />
+    );
+  }
+
+  return null;
+}
+
+ScrollAreaScrollbarAuto.displayName = '@mantine/core/ScrollAreaScrollbarAuto';
