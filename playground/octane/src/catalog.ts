@@ -10,6 +10,7 @@ import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
+import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 
@@ -19,6 +20,7 @@ import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
+import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 
@@ -94,6 +96,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'shadcn/ui',
 				Component: ShadcnDemo,
 				source: shadcnSource,
+			},
+			{
+				id: 'phosphor-icons',
+				title: 'Phosphor Icons',
+				Component: PhosphorIconsDemo,
+				source: phosphorIconsSource,
 			},
 		],
 	},
