@@ -1,0 +1,55 @@
+{
+  "name": "@octanejs/solana-react",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
+  "description": "Octane-native reactive client, Wallet Standard, query, and transaction seams for Solana Kit 7.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/solana-react"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "status.json"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./query": "./src/query.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@solana/kit": "7.0.0",
+    "@octanejs/tanstack-query": "workspace:*",
+    "@tanstack/query-core": "catalog:default"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@solana/react": "7.0.0",
+    "@wallet-standard/react": "1.0.3",
+    "octane": "workspace:*",
+    "vitest": "catalog:default"
+  }
+}

@@ -726,6 +726,27 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'solana-react',
+					include: ['packages/solana-react/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/solana-react$/,
+							replacement: resolve(import.meta.dirname, 'packages/solana-react/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/solana-react\/query$/,
+							replacement: resolve(import.meta.dirname, 'packages/solana-react/src/query.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'seo',
 					include: ['packages/seo/tests/**/*.test.ts'],
 					exclude: [...configDefaults.exclude, 'packages/seo/tests/ssr/**/*.test.ts'],

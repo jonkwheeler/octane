@@ -10,6 +10,7 @@ export const KNOWN_BINDINGS = {
 	valtio: '@octanejs/valtio',
 	jotai: '@octanejs/jotai',
 	'@apollo/client': '@octanejs/apollo-client',
+	'@solana/react': '@octanejs/solana-react',
 	'@tanstack/ai-react': '@octanejs/tanstack-ai',
 	'@tanstack/react-devtools': '@octanejs/tanstack-devtools',
 	'@tanstack/react-form': '@octanejs/tanstack-form',
@@ -117,6 +118,7 @@ export const KNOWN_BINDING_PACKAGE_DIRS = new Set(
 
 export const KNOWN_VANILLA_CORES = {
 	'@apollo/client': '@apollo/client',
+	'@solana/react': '@solana/kit',
 	'@tanstack/react-query': '@tanstack/query-core',
 	'@tanstack/react-table': '@tanstack/table-core',
 	'@tanstack/react-virtual': '@tanstack/virtual-core',
