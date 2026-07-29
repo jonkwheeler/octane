@@ -367,7 +367,7 @@ function HorizontalStripes(props: CartesianGridInternalProps) {
 
 function VerticalStripes(props: CartesianGridInternalProps) {
   const { vertical = true, verticalFill, fillOpacity, x, y, width, height, verticalPoints } = props;
-  if (!vertical || !verticalFill || !verticalFill.length) {
+  if (!vertical || !verticalFill || !verticalFill.length || verticalPoints == null) {
     return null;
   }
 

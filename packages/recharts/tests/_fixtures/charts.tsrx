@@ -129,12 +129,14 @@ export function CartesianChartsApp() @{
 	</div>
 }
 
+const scatterAnimationData = [{ x: 10, y: 20 }];
+
 export function ScatterAnimationCallbacksApp({ onAnimationStart, onAnimationEnd }) @{
 	<ScatterChart width={500} height={300}>
 		<XAxis dataKey="x" type="number" />
 		<YAxis dataKey="y" type="number" />
 		<Scatter
-			data={[{ x: 10, y: 20 }]}
+			data={scatterAnimationData}
 			animationDuration={1}
 			onAnimationStart={onAnimationStart}
 			onAnimationEnd={onAnimationEnd}

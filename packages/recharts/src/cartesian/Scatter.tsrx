@@ -753,7 +753,7 @@ function SymbolsWithAnimation({
   return (
     <ScatterLabelListProvider showLabels={!isAnimating} points={points}>
       <AnimatedItems
-        animationInput={props}
+        animationInput={points}
         animationIdPrefix="recharts-scatter-"
         items={points}
         previousItemsRef={previousPointsRef}
