@@ -10,6 +10,8 @@ export const KNOWN_BINDINGS = {
 	valtio: '@octanejs/valtio',
 	jotai: '@octanejs/jotai',
 	'@mantine/hooks': '@octanejs/mantine-hooks',
+	'mobx-react-lite': '@octanejs/mobx',
+	'mobx-react': '@octanejs/mobx',
 	'@apollo/client': '@octanejs/apollo-client',
 	'@tanstack/ai-react': '@octanejs/tanstack-ai',
 	'@tanstack/react-devtools': '@octanejs/tanstack-devtools',
