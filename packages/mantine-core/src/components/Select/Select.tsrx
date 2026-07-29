@@ -1,0 +1,433 @@
+import type { Octane } from 'octane/jsx-runtime';
+import type { OctaneNode } from 'octane';
+import { useEffect, useMemo, useRef } from 'octane';
+import { useId, usePrevious, useUncontrolled } from '@octanejs/mantine-hooks';
+import {
+  BoxProps,
+  ElementProps,
+  Factory,
+  genericFactory,
+  MantineColor,
+  Primitive,
+  StylesApiProps,
+  useProps,
+  useResolvedStylesApi,
+} from '../../core';
+import {
+  Combobox,
+  ComboboxItem,
+  ComboboxLikeProps,
+  ComboboxLikeRenderOptionInput,
+  ComboboxLikeStylesNames,
+  getOptionsLockup,
+  getParsedComboboxData,
+  OptionsDropdown,
+  OptionsFilter,
+  useCombobox,
+} from '../Combobox';
+import {
+  __BaseInputProps,
+  __InputStylesNames,
+  ClearSectionMode,
+  InputClearButtonProps,
+  InputVariant,
+} from '../Input';
+import { InputBase } from '../InputBase';
+import { ScrollAreaProps } from '../ScrollArea';
+
+export type SelectStylesNames = __InputStylesNames | ComboboxLikeStylesNames;
+
+export interface SelectProps<Value extends Primitive = string>
+  extends
+    BoxProps,
+    __BaseInputProps,
+    ComboboxLikeProps<Value>,
+    StylesApiProps<SelectFactory>,
+    ElementProps<'input', 'onChange' | 'size' | 'value' | 'defaultValue'> {
+  /** Controlled component value */
+  value?: Value | null;
+
+  /** Uncontrolled component default value */
+  defaultValue?: Value | null;
+
+  /** Called when value changes */
+  onChange?: (value: Value | null, option: ComboboxItem<Value>) => void;
+
+  /** Called when the clear button is clicked */
+  onClear?: () => void;
+
+  /** Determines whether the select should be searchable @default false */
+  searchable?: boolean;
+
+  /** Displays check icon near the selected option label @default true */
+  withCheckIcon?: boolean;
+
+  /** Aligns unchecked labels with the checked one @default false */
+  withAlignedLabels?: boolean;
+
+  /** Position of the check icon relative to the option label @default 'left' */
+  checkIconPosition?: 'left' | 'right';
+
+  /** Message displayed when no options match the search query or when there is no data */
+  nothingFoundMessage?: OctaneNode;
+
+  /** Controlled search value */
+  searchValue?: string;
+
+  /** Default search value */
+  defaultSearchValue?: string;
+
+  /** Called when search changes */
+  onSearchChange?: (value: string) => void;
+
+  /** Allows deselecting the selected option by clicking it @default true */
+  allowDeselect?: boolean;
+
+  /** Displays clear button in the right section when component has value @default false */
+  clearable?: boolean;
+
+  /** Determines how the clear button and rightSection are rendered @default 'both' */
+  clearSectionMode?: ClearSectionMode;
+
+  /** Props passed down to the clear button */
+  clearButtonProps?: InputClearButtonProps;
+
+  /** Props passed down to the hidden input */
+  hiddenInputProps?: Omit<MantineIntrinsicProps<'input'>, 'value'>;
+
+  /** A function to render content of the option, replaces the default content of the option */
+  renderOption?: (item: ComboboxLikeRenderOptionInput<ComboboxItem<Value>>) => OctaneNode;
+
+  /** Props passed down to the underlying `ScrollArea` component in the dropdown */
+  scrollAreaProps?: ScrollAreaProps;
+
+  /** Controls color of the default chevron, by default depends on the color scheme */
+  chevronColor?: MantineColor;
+
+  /** Automatically selects the highlighted option when input loses focus @default false */
+  autoSelectOnBlur?: boolean;
+
+  /** Opens dropdown when input receives focus (requires searchable={true}) @default true */
+  openOnFocus?: boolean;
+}
+
+export type SelectFactory = Factory<{
+  props: SelectProps;
+  ref: HTMLInputElement;
+  stylesNames: SelectStylesNames;
+  variant: InputVariant;
+  signature: <Value extends Primitive = string>(props: SelectProps<Value>) => OctaneNode;
+}>;
+
+const defaultProps = {
+  size: 'sm',
+  withCheckIcon: true,
+  allowDeselect: true,
+  checkIconPosition: 'left',
+  openOnFocus: true,
+} satisfies Partial<SelectProps>;
+
+export const Select = genericFactory<SelectFactory>((_props) => {
+  const props = useProps(['Input', 'InputWrapper', 'Select'], defaultProps, _props);
+  const {
+    classNames,
+    styles,
+    unstyled,
+    vars,
+    dropdownOpened,
+    defaultDropdownOpened,
+    onDropdownClose,
+    onDropdownOpen,
+    onFocus,
+    onBlur,
+    onClick,
+    onChange,
+    data,
+    value,
+    defaultValue,
+    selectFirstOptionOnChange,
+    selectFirstOptionOnDropdownOpen,
+    onOptionSubmit,
+    comboboxProps,
+    readOnly,
+    disabled,
+    filter,
+    limit,
+    withScrollArea,
+    maxDropdownHeight,
+    floatingHeight,
+    size,
+    searchable,
+    rightSection,
+    checkIconPosition,
+    withCheckIcon,
+    withAlignedLabels,
+    nothingFoundMessage,
+    name,
+    form,
+    searchValue,
+    defaultSearchValue,
+    onSearchChange,
+    allowDeselect,
+    error,
+    rightSectionPointerEvents,
+    id,
+    clearable,
+    clearSectionMode,
+    clearButtonProps,
+    hiddenInputProps,
+    renderOption,
+    onClear,
+    autoComplete,
+    scrollAreaProps,
+    __defaultRightSection,
+    __clearSection,
+    __clearable,
+    chevronColor,
+    autoSelectOnBlur,
+    openOnFocus,
+    attributes,
+    ...others
+  } = props;
+
+  const parsedData = useMemo(() => getParsedComboboxData(data), [data]);
+  const retainedSelectedOptions = useRef<Record<string, ComboboxItem<Primitive>>>({});
+  const optionsLockup = useMemo(() => getOptionsLockup(parsedData), [parsedData]);
+  const _id = useId(id);
+
+  const [_value, setValue, controlled] = useUncontrolled({
+    value,
+    defaultValue,
+    finalValue: null,
+    onChange,
+  });
+
+  const selectedOption =
+    _value != null
+      ? `${_value}` in optionsLockup
+        ? optionsLockup[`${_value}`]
+        : retainedSelectedOptions.current[`${_value}`]
+      : undefined;
+  const previousSelectedOption = usePrevious(selectedOption);
+
+  const [search, setSearch, searchControlled] = useUncontrolled({
+    value: searchValue,
+    defaultValue: defaultSearchValue,
+    finalValue: selectedOption ? selectedOption.label : '',
+    onChange: onSearchChange,
+  });
+
+  const combobox = useCombobox({
+    opened: dropdownOpened,
+    defaultOpened: defaultDropdownOpened,
+    onDropdownOpen: () => {
+      onDropdownOpen?.();
+      if (selectFirstOptionOnDropdownOpen) {
+        combobox.selectFirstOption();
+      } else {
+        combobox.updateSelectedOptionIndex('active', { scrollIntoView: true });
+      }
+    },
+    onDropdownClose: () => {
+      onDropdownClose?.();
+      // Required for autoSelectOnBlur to work correctly
+      setTimeout(combobox.resetSelectedOption, 0);
+    },
+  });
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    combobox.resetSelectedOption();
+  };
+
+  const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<SelectFactory>({
+    props,
+    styles,
+    classNames,
+  });
+
+  useEffect(() => {
+    if (selectFirstOptionOnChange) {
+      combobox.selectFirstOption();
+    }
+  }, [selectFirstOptionOnChange, search]);
+
+  useEffect(() => {
+    if (value === null) {
+      handleSearchChange('');
+    }
+
+    if (
+      value != null &&
+      selectedOption &&
+      (previousSelectedOption?.value !== selectedOption.value ||
+        previousSelectedOption?.label !== selectedOption.label)
+    ) {
+      handleSearchChange(selectedOption.label);
+    }
+  }, [value, selectedOption]);
+
+  useEffect(() => {
+    if (!controlled && !searchControlled) {
+      handleSearchChange(
+        _value != null
+          ? `${_value}` in optionsLockup
+            ? optionsLockup[`${_value}`]?.label
+            : retainedSelectedOptions.current[`${_value}`]?.label || ''
+          : ''
+      );
+    }
+  }, [optionsLockup, _value]);
+
+  useEffect(() => {
+    if (_value) {
+      if (`${_value}` in optionsLockup) {
+        retainedSelectedOptions.current[`${_value}`] = optionsLockup[`${_value}`];
+      }
+    }
+  }, [optionsLockup, _value]);
+
+  const clearButton = (
+    <Combobox.ClearButton
+      {...clearButtonProps}
+      onClear={() => {
+        setValue(null, null);
+        handleSearchChange('');
+        onClear?.();
+      }}
+    />
+  );
+
+  const _clearable = clearable && _value != null && !disabled && !readOnly;
+
+  return (
+    <>
+      <Combobox
+        store={combobox}
+        __staticSelector="Select"
+        classNames={resolvedClassNames}
+        styles={resolvedStyles}
+        unstyled={unstyled}
+        readOnly={readOnly}
+        size={size}
+        attributes={attributes}
+        floatingHeight={floatingHeight}
+        keepMounted={autoSelectOnBlur}
+        onOptionSubmit={(val) => {
+          onOptionSubmit?.(val as any);
+          const optionLockup = allowDeselect
+            ? `${optionsLockup[val].value}` === `${_value}`
+              ? null
+              : optionsLockup[val]
+            : optionsLockup[val];
+
+          const nextValue = optionLockup ? optionLockup.value : null;
+
+          nextValue !== _value && setValue(nextValue as any, optionLockup);
+          !controlled && handleSearchChange(nextValue != null ? optionLockup?.label || '' : '');
+          combobox.closeDropdown();
+        }}
+        {...comboboxProps}
+      >
+        <Combobox.Target
+          targetType={searchable ? 'input' : 'button'}
+          autoComplete={autoComplete}
+          withExpandedAttribute
+        >
+          <InputBase
+            id={_id}
+            __defaultRightSection={
+              <Combobox.Chevron
+                size={size}
+                error={error}
+                unstyled={unstyled}
+                color={chevronColor}
+              />
+            }
+            __clearSection={clearButton}
+            __clearable={_clearable}
+            __clearSectionMode={clearSectionMode}
+            rightSection={rightSection}
+            rightSectionPointerEvents={rightSectionPointerEvents || 'none'}
+            {...others}
+            size={size}
+            __staticSelector="Select"
+            disabled={disabled}
+            readOnly={readOnly || !searchable}
+            value={search}
+            onChange={(event) => {
+              handleSearchChange(event.currentTarget.value);
+              combobox.openDropdown();
+              selectFirstOptionOnChange && combobox.selectFirstOption();
+            }}
+            onFocus={(event) => {
+              openOnFocus && !!searchable && combobox.openDropdown();
+              onFocus?.(event);
+            }}
+            onBlur={(event) => {
+              if (autoSelectOnBlur) {
+                combobox.clickSelectedOption();
+              }
+
+              !!searchable && combobox.closeDropdown();
+              const optionLockup =
+                _value != null &&
+                (`${_value}` in optionsLockup
+                  ? optionsLockup[`${_value}`]
+                  : retainedSelectedOptions.current[`${_value}`]);
+              handleSearchChange(optionLockup ? optionLockup.label || '' : '');
+              onBlur?.(event);
+            }}
+            onClick={(event) => {
+              searchable ? combobox.openDropdown() : combobox.toggleDropdown();
+              onClick?.(event);
+            }}
+            classNames={resolvedClassNames}
+            styles={resolvedStyles}
+            unstyled={unstyled}
+            pointer={!searchable}
+            error={error}
+            attributes={attributes}
+          />
+        </Combobox.Target>
+        <OptionsDropdown
+          data={parsedData as any}
+          hidden={readOnly || disabled}
+          filter={filter as OptionsFilter<Primitive> | undefined}
+          search={search}
+          limit={limit}
+          hiddenWhenEmpty={!nothingFoundMessage}
+          withScrollArea={withScrollArea}
+          maxDropdownHeight={maxDropdownHeight}
+          filterOptions={!!searchable && selectedOption?.label !== search}
+          value={_value}
+          checkIconPosition={checkIconPosition}
+          withCheckIcon={withCheckIcon}
+          withAlignedLabels={withAlignedLabels}
+          nothingFoundMessage={nothingFoundMessage}
+          unstyled={unstyled}
+          labelId={others.label ? `${_id}-label` : undefined}
+          aria-label={others.label ? undefined : others['aria-label']}
+          renderOption={renderOption}
+          scrollAreaProps={scrollAreaProps}
+        />
+      </Combobox>
+      <Combobox.HiddenInput
+        value={_value}
+        name={name}
+        form={form}
+        disabled={disabled}
+        {...hiddenInputProps}
+      />
+    </>
+  );
+});
+
+Select.classes = { ...InputBase.classes, ...Combobox.classes };
+Select.displayName = '@mantine/core/Select';
+
+export declare namespace Select {
+  export type Props<Value extends Primitive = string> = SelectProps<Value>;
+  export type StylesNames = SelectStylesNames;
+  export type Factory = SelectFactory;
+}

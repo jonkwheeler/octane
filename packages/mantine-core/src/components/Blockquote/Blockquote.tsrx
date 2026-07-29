@@ -1,0 +1,142 @@
+import type { OctaneNode } from 'octane';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getRadius,
+  getThemeColor,
+  MantineColor,
+  MantineRadius,
+  parseThemeColor,
+  rem,
+  rgba,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../core';
+import classes from './Blockquote.module.css';
+
+export type BlockquoteStylesNames = 'root' | 'icon' | 'cite';
+export type BlockquoteCssVariables = {
+  root:
+    | '--bq-bg-light'
+    | '--bq-bg-dark'
+    | '--bq-bd'
+    | '--bq-icon-size'
+    | '--bq-radius'
+    | '--bq-text-wrap';
+};
+
+export interface BlockquoteProps
+  extends BoxProps, StylesApiProps<BlockquoteFactory>, ElementProps<'blockquote', 'cite'> {
+  /** Blockquote icon, displayed at the top left side */
+  icon?: OctaneNode;
+
+  /** Controls icon `width` and `height`, numbers are converted to rem @default 40 */
+  iconSize?: number | string;
+
+  /** Key of `theme.colors` or any valid CSS color @default theme.primaryColor */
+  color?: MantineColor;
+
+  /** Key of `theme.radius` or any valid CSS value to set `border-radius` @default theme.defaultRadius */
+  radius?: MantineRadius;
+
+  /** Reference to a cited quote */
+  cite?: OctaneNode;
+
+  /** Controls `text-wrap` CSS property */
+  textWrap?: 'wrap' | 'nowrap' | 'balance' | 'pretty' | 'stable';
+}
+
+export type BlockquoteFactory = Factory<{
+  props: BlockquoteProps;
+  ref: HTMLQuoteElement;
+  stylesNames: BlockquoteStylesNames;
+  vars: BlockquoteCssVariables;
+}>;
+
+const defaultProps = {
+  iconSize: 48,
+} satisfies Partial<BlockquoteProps>;
+
+const varsResolver = createVarsResolver<BlockquoteFactory>(
+  (theme, { color, iconSize, radius, textWrap }) => {
+    const darkParsed = parseThemeColor({
+      color: color || theme.primaryColor,
+      theme,
+      colorScheme: 'dark',
+    });
+
+    const lightParsed = parseThemeColor({
+      color: color || theme.primaryColor,
+      theme,
+      colorScheme: 'light',
+    });
+
+    return {
+      root: {
+        '--bq-bg-light': rgba(lightParsed.value, 0.07),
+        '--bq-bg-dark': rgba(darkParsed.value, 0.06),
+        '--bq-bd': getThemeColor(color, theme),
+        '--bq-icon-size': rem(iconSize),
+        '--bq-radius': getRadius(radius),
+        '--bq-text-wrap': textWrap,
+      },
+    };
+  }
+);
+
+export const Blockquote = factory<BlockquoteFactory>((_props) => {
+  const props = useProps('Blockquote', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    children,
+    icon,
+    iconSize,
+    cite,
+    textWrap,
+    attributes,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<BlockquoteFactory>({
+    name: 'Blockquote',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  return (
+    <Box component="blockquote" {...getStyles('root')} {...others}>
+      {icon && <span {...getStyles('icon')}>{icon}</span>}
+      {children}
+      {cite && <cite {...getStyles('cite')}>{cite}</cite>}
+    </Box>
+  );
+});
+
+Blockquote.classes = classes;
+Blockquote.varsResolver = varsResolver;
+Blockquote.displayName = '@mantine/core/Blockquote';
+
+export declare namespace Blockquote {
+  export type Props = BlockquoteProps;
+  export type StylesNames = BlockquoteStylesNames;
+  export type CssVariables = BlockquoteCssVariables;
+  export type Factory = BlockquoteFactory;
+}

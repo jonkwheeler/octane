@@ -1,0 +1,109 @@
+import {
+  factory,
+  Factory,
+  MantineColor,
+  StylesApiProps,
+  useProps,
+  useResolvedStylesApi,
+} from '../../core';
+import { ProgressLabel, type ProgressLabelProps } from './ProgressLabel/ProgressLabel.tsrx';
+import {
+  __ProgressRootProps,
+  ProgressRoot,
+  ProgressRootCssVariables,
+  ProgressRootStylesNames,
+  type ProgressRootProps,
+} from './ProgressRoot/ProgressRoot.tsrx';
+import { ProgressSection, type ProgressSectionProps } from './ProgressSection/ProgressSection.tsrx';
+import classes from './Progress.module.css';
+import type { ProgressContextValue } from './Progress.context';
+export type ProgressStylesNames = ProgressRootStylesNames;
+
+export interface ProgressProps extends __ProgressRootProps, StylesApiProps<ProgressFactory> {
+  /** Value of the progress */
+  value: number;
+
+  /** Key of `theme.colors` or any valid CSS value @default theme.primaryColor */
+  color?: MantineColor;
+
+  /** If set, the section has stripes @default false */
+  striped?: boolean;
+
+  /** If set, the sections stripes are animated (automatically enables striped) @default false */
+  animated?: boolean;
+}
+
+export type ProgressFactory = Factory<{
+  props: ProgressProps;
+  ref: HTMLDivElement;
+  stylesNames: ProgressStylesNames;
+  vars: ProgressRootCssVariables;
+  staticComponents: {
+    Section: typeof ProgressSection;
+    Root: typeof ProgressRoot;
+    Label: typeof ProgressLabel;
+  };
+}>;
+
+export const Progress = factory<ProgressFactory>((_props) => {
+  const props = useProps('Progress', null, _props);
+  const {
+    value,
+    classNames,
+    styles,
+    vars,
+    color,
+    striped,
+    animated,
+    'aria-label': label,
+    ...others
+  } = props;
+
+  const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<ProgressFactory>({
+    classNames,
+    styles,
+    props,
+  });
+
+  return (
+    <ProgressRoot
+      classNames={resolvedClassNames}
+      styles={resolvedStyles}
+      vars={vars as any}
+      {...others}
+    >
+      <ProgressSection
+        value={value}
+        color={color}
+        striped={striped}
+        animated={animated}
+        aria-label={label}
+      />
+    </ProgressRoot>
+  );
+});
+
+Progress.classes = classes;
+Progress.displayName = '@mantine/core/Progress';
+Progress.Section = ProgressSection;
+Progress.Root = ProgressRoot;
+Progress.Label = ProgressLabel;
+
+export declare namespace Progress {
+  export type Props = ProgressProps;
+  export type Factory = ProgressFactory;
+  export type StylesNames = ProgressStylesNames;
+  export type ContextValue = ProgressContextValue;
+
+  export namespace Label {
+    export type Props = ProgressLabelProps;
+  }
+
+  export namespace Root {
+    export type Props = ProgressRootProps;
+  }
+
+  export namespace Section {
+    export type Props = ProgressSectionProps;
+  }
+}

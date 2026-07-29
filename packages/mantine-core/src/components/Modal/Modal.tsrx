@@ -1,0 +1,194 @@
+import type { OctaneNode } from 'octane';
+import { use, useEffect } from 'octane';
+import { factory, Factory, getDefaultZIndex, useProps } from '../../core';
+import { ModalBaseCloseButtonProps, ModalBaseOverlayProps } from '../ModalBase';
+import { ModalBody, type ModalBodyProps } from './ModalBody.tsrx';
+import { ModalCloseButton, type ModalCloseButtonProps } from './ModalCloseButton.tsrx';
+import { ModalContent, type ModalContentProps } from './ModalContent.tsrx';
+import { ModalHeader, type ModalHeaderProps } from './ModalHeader.tsrx';
+import { ModalOverlay, type ModalOverlayProps } from './ModalOverlay.tsrx';
+import {
+  ModalRoot,
+  ModalRootCssVariables,
+  ModalRootProps,
+  ModalRootStylesNames,
+} from './ModalRoot.tsrx';
+import { ModalStack, ModalStackContext, type ModalStackProps } from './ModalStack.tsrx';
+import { ModalTitle, type ModalTitleProps } from './ModalTitle.tsrx';
+import classes from './Modal.module.css';
+export type ModalStylesNames = ModalRootStylesNames;
+export type ModalCssVariables = ModalRootCssVariables;
+
+export interface ModalProps extends ModalRootProps {
+  __staticSelector?: string;
+
+  /** Modal title */
+  title?: OctaneNode;
+
+  /** If set, the overlay is rendered @default true */
+  withOverlay?: boolean;
+
+  /** Props passed down to the `Overlay` component, use to configure opacity, `background-color`, styles and other properties */
+  overlayProps?: ModalBaseOverlayProps;
+
+  /** Modal content */
+  children?: OctaneNode;
+
+  /** If set, the close button is rendered @default true */
+  withCloseButton?: boolean;
+
+  /** Props passed down to the close button */
+  closeButtonProps?: ModalBaseCloseButtonProps;
+
+  /** Id of the modal in the `Modal.Stack` */
+  stackId?: string;
+}
+
+export type ModalFactory = Factory<{
+  props: ModalProps;
+  ref: HTMLDivElement;
+  stylesNames: ModalStylesNames;
+  vars: ModalCssVariables;
+  staticComponents: {
+    Root: typeof ModalRoot;
+    Overlay: typeof ModalOverlay;
+    Content: typeof ModalContent;
+    Body: typeof ModalBody;
+    Header: typeof ModalHeader;
+    Title: typeof ModalTitle;
+    CloseButton: typeof ModalCloseButton;
+    Stack: typeof ModalStack;
+  };
+}>;
+
+const defaultProps = {
+  closeOnClickOutside: true,
+  withinPortal: true,
+  lockScroll: true,
+  trapFocus: true,
+  returnFocus: true,
+  closeOnEscape: true,
+  keepMounted: false,
+  zIndex: getDefaultZIndex('modal'),
+  transitionProps: { duration: 200, transition: 'fade-down' },
+  withOverlay: true,
+  withCloseButton: true,
+} satisfies Partial<ModalProps>;
+
+export const Modal = factory<ModalFactory>((_props) => {
+  const {
+    title,
+    withOverlay,
+    overlayProps,
+    withCloseButton,
+    closeButtonProps,
+    children,
+    radius,
+    opened,
+    stackId,
+    zIndex,
+    ...others
+  } = useProps('Modal', defaultProps, _props);
+  const ctx = use(ModalStackContext);
+  const hasHeader = !!title || withCloseButton;
+  const stackProps =
+    ctx && stackId
+      ? {
+          closeOnEscape: ctx.currentId === stackId,
+          trapFocus: ctx.currentId === stackId,
+          zIndex: ctx.getZIndex(stackId),
+        }
+      : {};
+
+  const overlayVisible =
+    withOverlay === false ? false : stackId && ctx ? ctx.currentId === stackId : opened;
+
+  useEffect(() => {
+    if (ctx && stackId) {
+      opened
+        ? ctx.addModal(stackId, zIndex || getDefaultZIndex('modal'))
+        : ctx.removeModal(stackId);
+    }
+  }, [opened, stackId, zIndex]);
+
+  return (
+    <ModalRoot
+      radius={radius}
+      opened={opened}
+      zIndex={ctx && stackId ? ctx.getZIndex(stackId) : zIndex}
+      {...others}
+      {...stackProps}
+    >
+      {withOverlay && (
+        <ModalOverlay
+          visible={overlayVisible}
+          transitionProps={ctx && stackId ? { duration: 0 } : undefined}
+          {...overlayProps}
+        />
+      )}
+      <ModalContent
+        radius={radius}
+        __hidden={ctx && stackId && opened ? stackId !== ctx.currentId : false}
+      >
+        {hasHeader && (
+          <ModalHeader>
+            {title && <ModalTitle>{title}</ModalTitle>}
+            {withCloseButton && <ModalCloseButton {...closeButtonProps} />}
+          </ModalHeader>
+        )}
+
+        <ModalBody>{children}</ModalBody>
+      </ModalContent>
+    </ModalRoot>
+  );
+});
+
+Modal.classes = classes;
+Modal.displayName = '@mantine/core/Modal';
+Modal.Root = ModalRoot;
+Modal.Overlay = ModalOverlay;
+Modal.Content = ModalContent;
+Modal.Body = ModalBody;
+Modal.Header = ModalHeader;
+Modal.Title = ModalTitle;
+Modal.CloseButton = ModalCloseButton;
+Modal.Stack = ModalStack;
+
+export declare namespace Modal {
+  export type Props = ModalProps;
+  export type StylesNames = ModalStylesNames;
+  export type CssVariables = ModalCssVariables;
+  export type Factory = ModalFactory;
+
+  export namespace Root {
+    export type Props = ModalRootProps;
+  }
+
+  export namespace Body {
+    export type Props = ModalBodyProps;
+  }
+
+  export namespace CloseButton {
+    export type Props = ModalCloseButtonProps;
+  }
+
+  export namespace Content {
+    export type Props = ModalContentProps;
+  }
+
+  export namespace Header {
+    export type Props = ModalHeaderProps;
+  }
+
+  export namespace Overlay {
+    export type Props = ModalOverlayProps;
+  }
+
+  export namespace Title {
+    export type Props = ModalTitleProps;
+  }
+
+  export namespace Stack {
+    export type Props = ModalStackProps;
+  }
+}

@@ -1,0 +1,118 @@
+import type { Octane } from 'octane/jsx-runtime';
+type NativeDivProps = MantineIntrinsicProps<'div'>;
+import type { OctaneNode } from 'octane';
+import { useRef, useState } from 'octane';
+import { createPortal } from 'octane';
+import { assignRef, useIsomorphicEffect } from '@octanejs/mantine-hooks';
+import { Factory, factory, useProps } from '../../core';
+
+function createPortalNode(props: MantineIntrinsicProps<'div'>) {
+  const node = document.createElement('div');
+  node.setAttribute('data-portal', 'true');
+  typeof props.className === 'string' &&
+    node.classList.add(...props.className.split(' ').filter(Boolean));
+  typeof props.style === 'object' && Object.assign(node.style, props.style);
+  typeof props.id === 'string' && node.setAttribute('id', props.id);
+  return node;
+}
+
+export interface BasePortalProps extends NativeDivProps {
+  /**
+   * Target element where portal should be rendered. Accepts:
+   * - HTMLElement: Renders portal inside this element
+   * - string: CSS selector - renders inside first matching element
+   * - undefined: Uses shared portal node or creates new one based on `reuseTargetNode`
+   *
+   * Note: If selector doesn't match any element, portal will not render
+   */
+  target?: HTMLElement | string;
+
+  /**
+   * When true and target is not specified, all Portal instances share a single
+   * container node appended to document.body. When false, each Portal creates
+   * its own container node.
+   *
+   * Has no effect when target is specified.
+   *
+   * @default true
+   */
+  reuseTargetNode?: boolean;
+}
+
+export interface PortalProps extends BasePortalProps {
+  /** Content to render inside the portal */
+  children: OctaneNode;
+}
+
+function getTargetNode({ target, reuseTargetNode, ...others }: BasePortalProps): HTMLElement {
+  if (target) {
+    if (typeof target === 'string') {
+      return document.querySelector<HTMLElement>(target) || createPortalNode(others);
+    }
+
+    return target;
+  }
+
+  if (reuseTargetNode) {
+    const existingNode = document.querySelector<HTMLElement>('[data-mantine-shared-portal-node]');
+
+    if (existingNode) {
+      return existingNode;
+    }
+
+    const node = createPortalNode(others);
+    node.setAttribute('data-mantine-shared-portal-node', 'true');
+    document.body.appendChild(node);
+    return node;
+  }
+
+  return createPortalNode(others);
+}
+
+export type PortalFactory = Factory<{
+  props: PortalProps;
+  ref: HTMLDivElement;
+}>;
+
+const defaultProps = {
+  reuseTargetNode: true,
+} satisfies Partial<PortalProps>;
+
+export const Portal = factory<PortalFactory>((props) => {
+  const { children, target, reuseTargetNode, ref, ...others } = useProps(
+    'Portal',
+    defaultProps,
+    props
+  );
+
+  const [mounted, setMounted] = useState(false);
+  const nodeRef = useRef<HTMLElement | null>(null);
+
+  useIsomorphicEffect(() => {
+    setMounted(true);
+    nodeRef.current = getTargetNode({ target, reuseTargetNode, ...others });
+    assignRef(ref, nodeRef.current);
+
+    if (!target && !reuseTargetNode && nodeRef.current) {
+      document.body.appendChild(nodeRef.current);
+    }
+
+    return () => {
+      if (!target && !reuseTargetNode && nodeRef.current) {
+        document.body.removeChild(nodeRef.current);
+      }
+    };
+  }, [target]);
+
+  if (!mounted || !nodeRef.current) {
+    return null;
+  }
+
+  return createPortal(<>{children}</>, nodeRef.current);
+});
+
+Portal.displayName = '@mantine/core/Portal';
+
+export declare namespace Portal {
+  export type Props = PortalProps;
+}

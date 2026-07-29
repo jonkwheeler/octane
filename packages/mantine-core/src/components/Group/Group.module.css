@@ -1,0 +1,16 @@
+.root {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: var(--group-wrap, wrap);
+  justify-content: var(--group-justify, flex-start);
+  align-items: var(--group-align, center);
+  gap: var(--group-gap, var(--mantine-spacing-md));
+
+  &:where([data-grow]) {
+    & > * {
+      flex-grow: 1;
+      flex-basis: 0;
+      max-width: var(--group-child-width);
+    }
+  }
+}

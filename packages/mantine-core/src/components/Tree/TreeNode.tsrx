@@ -1,0 +1,298 @@
+import { Activity as OctaneActivity, useRef } from 'octane';
+
+const Activity = OctaneActivity as any;
+import { Box, findElementAncestor, GetStylesApi } from '../../core';
+import { Loader } from '../Loader';
+import type { TreeDragDropPayload } from './move-tree-node/move-tree-node';
+import type { RenderNode, TreeDragState, TreeFactory, TreeNodeData } from './Tree.tsrx';
+import type { TreeController } from './use-tree';
+import { TreeAllowDrop, useTreeNodeDragDrop } from './use-tree-node-drag-drop';
+
+function getValuesRange(anchor: string | null, value: string | undefined, flatValues: string[]) {
+  if (!anchor || !value) {
+    return [];
+  }
+
+  const anchorIndex = flatValues.indexOf(anchor);
+  const valueIndex = flatValues.indexOf(value);
+  const start = Math.min(anchorIndex, valueIndex);
+  const end = Math.max(anchorIndex, valueIndex);
+
+  return flatValues.slice(start, end + 1);
+}
+
+function isVisibleTreeNode(node: HTMLElement, root: Element) {
+  for (let current: HTMLElement | null = node; current && current !== root;) {
+    if (current.style.display === 'none') {
+      return false;
+    }
+    current = current.parentElement;
+  }
+
+  return true;
+}
+
+interface TreeNodeProps {
+  node: TreeNodeData;
+  getStyles: GetStylesApi<TreeFactory>;
+  rootIndex: number | undefined;
+  controller: TreeController;
+  expandOnClick: boolean | undefined;
+  flatValues: string[];
+  isSubtree?: boolean;
+  level?: number;
+  renderNode: RenderNode | undefined;
+  selectOnClick: boolean | undefined;
+  allowRangeSelection: boolean | undefined;
+  expandOnSpace: boolean | undefined;
+  checkOnSpace: boolean | undefined;
+  keepMounted: boolean | undefined;
+  onDragDrop: ((payload: TreeDragDropPayload) => void) | undefined;
+  allowDrop: TreeAllowDrop | undefined;
+  withDragHandle: boolean | undefined;
+  dragStateRef: React.RefObject<TreeDragState>;
+  data: TreeNodeData[];
+}
+
+export function TreeNode({
+  node,
+  getStyles,
+  rootIndex,
+  controller,
+  expandOnClick,
+  selectOnClick,
+  isSubtree,
+  level = 1,
+  renderNode,
+  flatValues,
+  allowRangeSelection,
+  expandOnSpace,
+  checkOnSpace,
+  keepMounted,
+  onDragDrop,
+  allowDrop,
+  withDragHandle,
+  dragStateRef,
+  data,
+}: TreeNodeProps) {
+  const ref = useRef<HTMLLIElement | null>(null);
+  const hasLoadedChildren = Array.isArray(node.children) && node.children.length > 0;
+  const hasAsyncChildren = !!node.hasChildren && !hasLoadedChildren;
+  const hasChildren = hasLoadedChildren || hasAsyncChildren;
+  const isLoading = controller.isNodeLoading(node.value);
+  const loadError = controller.getNodeLoadError(node.value);
+  const isExpanded = controller.expandedState[node.value] || false;
+
+  const nested = (node.children || []).map((child) => (
+    <TreeNode
+      key={child.value}
+      node={child}
+      flatValues={flatValues}
+      getStyles={getStyles}
+      rootIndex={undefined}
+      level={level + 1}
+      controller={controller}
+      expandOnClick={expandOnClick}
+      isSubtree
+      renderNode={renderNode}
+      selectOnClick={selectOnClick}
+      allowRangeSelection={allowRangeSelection}
+      expandOnSpace={expandOnSpace}
+      checkOnSpace={checkOnSpace}
+      keepMounted={keepMounted}
+      onDragDrop={onDragDrop}
+      allowDrop={allowDrop}
+      withDragHandle={withDragHandle}
+      dragStateRef={dragStateRef}
+      data={data}
+    />
+  ));
+
+  const { elementProps: dragElementProps, dragHandleProps } = useTreeNodeDragDrop({
+    nodeValue: node.value,
+    hasChildren,
+    isExpanded,
+    data,
+    onDragDrop,
+    dragStateRef,
+    allowDrop,
+    withDragHandle,
+  });
+
+  const handleKeyDown = (event: OctaneKeyboardEvent) => {
+    if (event.code === 'ArrowRight') {
+      event.stopPropagation();
+      event.preventDefault();
+
+      if (isExpanded) {
+        const nextNode = event.currentTarget.querySelector<HTMLLIElement>('[role=treeitem]');
+        nextNode?.setAttribute('data-focus-ring', 'true');
+        nextNode?.focus();
+      } else {
+        controller.expand(node.value);
+      }
+    }
+
+    if (event.code === 'ArrowLeft') {
+      event.stopPropagation();
+      event.preventDefault();
+      if (isExpanded && hasChildren) {
+        controller.collapse(node.value);
+      } else if (isSubtree) {
+        const parentNode = findElementAncestor(
+          event.currentTarget as HTMLElement,
+          '[role=treeitem]'
+        );
+        parentNode?.setAttribute('data-focus-ring', 'true');
+        parentNode?.focus();
+      }
+    }
+
+    if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+      const root = findElementAncestor(event.currentTarget as HTMLElement, '[data-tree-root]');
+
+      if (!root) {
+        return;
+      }
+
+      event.stopPropagation();
+      event.preventDefault();
+      const nodes = Array.from(root.querySelectorAll<HTMLLIElement>('[role=treeitem]')).filter(
+        (treeNode) => isVisibleTreeNode(treeNode, root)
+      );
+      const index = nodes.indexOf(event.currentTarget as HTMLLIElement);
+
+      if (index === -1) {
+        return;
+      }
+
+      const nextIndex = event.code === 'ArrowDown' ? index + 1 : index - 1;
+      const nextNode = nodes[nextIndex];
+      nextNode?.setAttribute('data-focus-ring', 'true');
+      nextNode?.focus();
+
+      if (event.shiftKey) {
+        const selectNode = nodes[nextIndex];
+
+        if (selectNode) {
+          controller.setSelectedState(
+            getValuesRange(controller.anchorNode, selectNode.dataset.value, flatValues)
+          );
+        }
+      }
+    }
+
+    if (event.code === 'Space') {
+      if (expandOnSpace) {
+        event.stopPropagation();
+        event.preventDefault();
+        controller.toggleExpanded(node.value);
+      }
+
+      if (checkOnSpace) {
+        event.stopPropagation();
+        event.preventDefault();
+        controller.isNodeChecked(node.value)
+          ? controller.uncheckNode(node.value)
+          : controller.checkNode(node.value);
+      }
+    }
+  };
+
+  const handleNodeClick = (event: OctaneMouseEvent) => {
+    event.stopPropagation();
+
+    if (allowRangeSelection && event.shiftKey && controller.anchorNode) {
+      controller.setSelectedState(getValuesRange(controller.anchorNode, node.value, flatValues));
+      ref.current?.focus();
+    } else {
+      if (expandOnClick) {
+        controller.toggleExpanded(node.value);
+      }
+
+      selectOnClick && controller.select(node.value);
+      ref.current?.focus();
+    }
+  };
+
+  const selected = controller.selectedState.includes(node.value);
+  const elementProps = {
+    ...getStyles('label'),
+    onClick: handleNodeClick,
+    'data-selected': selected || undefined,
+    'data-value': node.value,
+    ...dragElementProps,
+  };
+
+  const withLoadingIndicator = isExpanded && isLoading && nested.length === 0;
+
+  return (
+    <li
+      {...getStyles('node', {
+        style: { '--label-offset': `calc(var(--level-offset) * ${level - 1})` },
+      })}
+      role="treeitem"
+      aria-selected={selected}
+      data-value={node.value}
+      data-selected={selected || undefined}
+      data-level={level}
+      tabIndex={rootIndex === 0 ? 0 : -1}
+      onKeyDown={handleKeyDown}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as HTMLElement)) {
+          event.currentTarget.removeAttribute('data-focus-ring');
+        }
+      }}
+      ref={ref}
+    >
+      {typeof renderNode === 'function' ? (
+        renderNode({
+          node,
+          level,
+          selected,
+          isRoot: level === 1,
+          tree: controller,
+          expanded: isExpanded,
+          hasChildren,
+          isLoading,
+          loadError,
+          elementProps,
+          dragHandleProps,
+        })
+      ) : (
+        <div {...elementProps}>{node.label}</div>
+      )}
+
+      {withLoadingIndicator && (
+        <Box component="ul" role="group" {...getStyles('subtree')} data-level={level}>
+          <li
+            {...getStyles('node', {
+              style: { '--label-offset': `calc(var(--level-offset) * ${level})` },
+            })}
+          >
+            <div {...getStyles('label')}>
+              <Loader size={16} style={{ marginInlineStart: 4 }} />
+            </div>
+          </li>
+        </Box>
+      )}
+
+      {keepMounted && nested.length > 0 ? (
+        <Activity mode={isExpanded ? 'visible' : 'hidden'}>
+          <Box component="ul" role="group" {...getStyles('subtree')} data-level={level}>
+            {nested}
+          </Box>
+        </Activity>
+      ) : (
+        isExpanded &&
+        nested.length > 0 && (
+          <Box component="ul" role="group" {...getStyles('subtree')} data-level={level}>
+            {nested}
+          </Box>
+        )
+      )}
+    </li>
+  );
+}
+
+TreeNode.displayName = '@mantine/core/TreeNode';

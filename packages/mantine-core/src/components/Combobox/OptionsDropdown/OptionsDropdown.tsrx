@@ -1,0 +1,200 @@
+import type { OctaneNode } from 'octane';
+import cx from 'clsx';
+import { Primitive } from '../../../core';
+import { CheckIcon } from '../../Checkbox';
+import { ScrollArea, ScrollAreaProps } from '../../ScrollArea/ScrollArea.tsrx';
+import { Combobox } from '../Combobox.tsrx';
+import { useComboboxContext } from '../Combobox.context';
+import { ComboboxItem, ComboboxLikeRenderOptionInput, ComboboxParsedItem } from '../Combobox.types';
+import { defaultOptionsFilter, FilterOptionsInput } from './default-options-filter';
+import { isEmptyComboboxData } from './is-empty-combobox-data';
+import { isOptionsGroup } from './is-options-group';
+import { validateOptions } from './validate-options';
+import classes from '../Combobox.module.css';
+
+export type OptionsFilter<Value extends Primitive = string> = (
+  input: FilterOptionsInput<Value>
+) => ComboboxParsedItem<Value>[];
+
+export interface OptionsGroup {
+  group: OctaneNode;
+  items: ComboboxItem<Primitive>[];
+}
+
+export type OptionsData = (ComboboxItem<Primitive> | OptionsGroup)[];
+
+interface OptionProps {
+  data: ComboboxItem<Primitive> | OptionsGroup;
+  withCheckIcon?: boolean;
+  withAlignedLabels?: boolean;
+  value?: Primitive | Primitive[] | null;
+  checkIconPosition?: 'left' | 'right';
+  unstyled: boolean | undefined;
+  renderOption?: (input: ComboboxLikeRenderOptionInput<any>) => OctaneNode;
+}
+
+function isValueChecked(value: Primitive | Primitive[] | undefined | null, optionValue: Primitive) {
+  return Array.isArray(value) ? value.includes(optionValue) : value === optionValue;
+}
+
+function Option({
+  data,
+  withCheckIcon,
+  withAlignedLabels,
+  value,
+  checkIconPosition,
+  unstyled,
+  renderOption,
+}: OptionProps) {
+  if (!isOptionsGroup(data)) {
+    const checked = isValueChecked(value, data.value);
+    const check =
+      withCheckIcon &&
+      (checked ? (
+        <CheckIcon className={classes.optionsDropdownCheckIcon} />
+      ) : withAlignedLabels ? (
+        <div className={classes.optionsDropdownCheckPlaceholder} />
+      ) : null);
+
+    const defaultContent = (
+      <>
+        {checkIconPosition === 'left' && check}
+        <span>{data.label}</span>
+        {checkIconPosition === 'right' && check}
+      </>
+    );
+
+    return (
+      <Combobox.Option
+        value={data.value}
+        disabled={data.disabled}
+        className={cx({ [classes.optionsDropdownOption]: !unstyled })}
+        data-reverse={checkIconPosition === 'right' || undefined}
+        data-checked={checked || undefined}
+        aria-selected={checked}
+        active={checked}
+      >
+        {typeof renderOption === 'function'
+          ? renderOption({ option: data, checked })
+          : defaultContent}
+      </Combobox.Option>
+    );
+  }
+
+  const options = data.items.map((item) => (
+    <Option
+      data={item}
+      value={value}
+      key={`${item.value}`}
+      unstyled={unstyled}
+      withCheckIcon={withCheckIcon}
+      withAlignedLabels={withAlignedLabels}
+      checkIconPosition={checkIconPosition}
+      renderOption={renderOption}
+    />
+  ));
+
+  return <Combobox.Group label={data.group}>{options}</Combobox.Group>;
+}
+
+export interface OptionsDropdownProps {
+  data: OptionsData;
+  filter: OptionsFilter<Primitive> | undefined;
+  search: string | undefined;
+  limit: number | undefined;
+  withScrollArea: boolean | undefined;
+  maxDropdownHeight: number | string | undefined;
+  /** Overrides `floatingHeight` from the `Combobox` context, used by `Combobox`-based components */
+  floatingHeight?: 'viewport';
+  hidden?: boolean;
+  hiddenWhenEmpty?: boolean;
+  filterOptions?: boolean;
+  withCheckIcon?: boolean;
+  withAlignedLabels?: boolean;
+  value?: Primitive | Primitive[] | null;
+  checkIconPosition?: 'left' | 'right';
+  nothingFoundMessage?: OctaneNode;
+  unstyled: boolean | undefined;
+  labelId: string | undefined;
+  'aria-label': string | undefined;
+  renderOption?: (input: ComboboxLikeRenderOptionInput<any>) => OctaneNode;
+  scrollAreaProps: ScrollAreaProps | undefined;
+}
+
+export function OptionsDropdown({
+  data,
+  hidden,
+  hiddenWhenEmpty,
+  filter,
+  search,
+  limit,
+  maxDropdownHeight,
+  floatingHeight,
+  withScrollArea = true,
+  filterOptions = true,
+  withCheckIcon = false,
+  withAlignedLabels = false,
+  value,
+  checkIconPosition,
+  nothingFoundMessage,
+  unstyled,
+  labelId,
+  renderOption,
+  scrollAreaProps,
+  'aria-label': ariaLabel,
+}: OptionsDropdownProps) {
+  const ctx = useComboboxContext();
+  validateOptions(data);
+
+  const shouldFilter = typeof search === 'string';
+  const filteredData = shouldFilter
+    ? (filter || defaultOptionsFilter)({
+        options: data,
+        search: filterOptions ? search : '',
+        limit: limit ?? Infinity,
+      })
+    : data;
+  const isEmpty = isEmptyComboboxData(filteredData);
+
+  const options = filteredData.map((item, index) => (
+    <Option
+      data={item}
+      key={
+        isOptionsGroup(item)
+          ? `group-${typeof item.group === 'string' ? item.group : index}`
+          : `${item.value}`
+      }
+      withCheckIcon={withCheckIcon}
+      withAlignedLabels={withAlignedLabels}
+      value={value}
+      checkIconPosition={checkIconPosition}
+      unstyled={unstyled}
+      renderOption={renderOption}
+    />
+  ));
+
+  return (
+    <Combobox.Dropdown hidden={hidden || (hiddenWhenEmpty && isEmpty)} data-composed>
+      <Combobox.Options labelledBy={labelId} aria-label={ariaLabel}>
+        {withScrollArea ? (
+          <ScrollArea.Autosize
+            mah={
+              (floatingHeight ?? ctx.floatingHeight) === 'viewport'
+                ? 'var(--combobox-floating-options-max-height)'
+                : (maxDropdownHeight ?? 220)
+            }
+            type="scroll"
+            scrollbarSize="var(--combobox-padding)"
+            offsetScrollbars="y"
+            {...scrollAreaProps}
+          >
+            {options}
+          </ScrollArea.Autosize>
+        ) : (
+          options
+        )}
+        {isEmpty && nothingFoundMessage && <Combobox.Empty>{nothingFoundMessage}</Combobox.Empty>}
+      </Combobox.Options>
+    </Combobox.Dropdown>
+  );
+}

@@ -1,0 +1,67 @@
+import { BoxProps, ElementProps, factory, Factory, StylesApiProps, useProps } from '../../core';
+import { ComboboxChevron, ComboboxStringGroupData, getParsedComboboxData } from '../Combobox';
+import { __BaseInputProps, __InputStylesNames } from '../Input';
+import { InputBase } from '../InputBase';
+import { NativeSelectOption } from './NativeSelectOption.tsrx';
+
+export interface NativeSelectProps
+  extends
+    BoxProps,
+    Omit<__BaseInputProps, 'pointer'>,
+    StylesApiProps<NativeSelectFactory>,
+    ElementProps<'select', 'size'> {
+  /**
+   * Data used to render options. Accepts strings, objects with label/value,
+   * or grouped options. If `children` prop is provided, `data` will be ignored.
+   */
+  data?: ComboboxStringGroupData;
+}
+
+export type NativeSelectFactory = Factory<{
+  props: NativeSelectProps;
+  ref: HTMLSelectElement;
+  stylesNames: __InputStylesNames;
+}>;
+
+const defaultProps = {
+  size: 'sm',
+  rightSectionPointerEvents: 'none',
+} satisfies Partial<NativeSelectProps>;
+
+export const NativeSelect = factory<NativeSelectFactory>((props) => {
+  const { data, children, size, error, rightSection, unstyled, ...others } = useProps(
+    ['Input', 'InputWrapper', 'NativeSelect'],
+    defaultProps,
+    props
+  );
+
+  const options = getParsedComboboxData<string>(data).map((item, index) => (
+    <NativeSelectOption key={index} data={item} />
+  ));
+
+  return (
+    <InputBase
+      component="select"
+      {...others}
+      __staticSelector="NativeSelect"
+      size={size}
+      pointer
+      error={error}
+      unstyled={unstyled}
+      rightSection={
+        rightSection || <ComboboxChevron size={size} error={error} unstyled={unstyled} />
+      }
+    >
+      {children || options}
+    </InputBase>
+  );
+});
+
+NativeSelect.classes = InputBase.classes;
+NativeSelect.displayName = '@mantine/core/NativeSelect';
+
+export declare namespace NativeSelect {
+  export type Props = NativeSelectProps;
+  export type Factory = NativeSelectFactory;
+  export type StylesNames = __InputStylesNames;
+}

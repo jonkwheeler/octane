@@ -1,0 +1,217 @@
+import type { OctaneNode } from 'octane';
+import { clamp } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getThemeColor,
+  MantineColor,
+  rem,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../core';
+import classes from './SemiCircleProgress.module.css';
+
+export type SemiCircleProgressStylesNames =
+  | 'root'
+  | 'svg'
+  | 'emptySegment'
+  | 'filledSegment'
+  | 'label';
+
+export type SemiCircleProgressCssVariables = {
+  root:
+    | '--scp-filled-segment-color'
+    | '--scp-empty-segment-color'
+    | '--scp-rotation'
+    | '--scp-transition-duration'
+    | '--scp-thickness';
+};
+
+export interface SemiCircleProgressProps
+  extends BoxProps, StylesApiProps<SemiCircleProgressFactory>, ElementProps<'div'> {
+  /** Progress value from `0` to `100` */
+  value: number;
+
+  /** Width of the component and diameter of the full circle in px. The visible SVG height will be size/2 @default 200 */
+  size?: number;
+
+  /** Stroke width of the circle segments in px @default 12 */
+  thickness?: number;
+
+  /** Orientation of the circle @default 'up' */
+  orientation?: 'up' | 'down';
+
+  /** Direction from which the circle is filled @default 'left-to-right' */
+  fillDirection?: 'right-to-left' | 'left-to-right';
+
+  /** Key of `theme.colors` or any valid CSS color value @default theme.primaryColor */
+  filledSegmentColor?: MantineColor;
+
+  /** Key of `theme.colors` or any valid CSS color value @default 'gray.2' in light mode, 'dark.4' in dark mode */
+  emptySegmentColor?: MantineColor;
+
+  /** Transition duration for the filled segment progress changes in ms. Does not affect color transitions @default 0 */
+  transitionDuration?: number;
+
+  /** Label rendered inside the circle */
+  label?: OctaneNode;
+
+  /** Label position relative to the circle center @default 'bottom' */
+  labelPosition?: 'center' | 'bottom';
+}
+
+export type SemiCircleProgressFactory = Factory<{
+  props: SemiCircleProgressProps;
+  ref: HTMLDivElement;
+  stylesNames: SemiCircleProgressStylesNames;
+  vars: SemiCircleProgressCssVariables;
+}>;
+
+const defaultProps = {
+  size: 200,
+  thickness: 12,
+  orientation: 'up',
+  fillDirection: 'left-to-right',
+  labelPosition: 'bottom',
+} satisfies Partial<SemiCircleProgressProps>;
+
+function getRotation({
+  orientation,
+  fillDirection,
+}: Pick<SemiCircleProgressProps, 'orientation' | 'fillDirection'>) {
+  if (orientation === 'down') {
+    if (fillDirection === 'right-to-left') {
+      return 'rotate(180deg) rotateY(180deg)';
+    }
+    return 'rotate(180deg)';
+  }
+  if (fillDirection === 'left-to-right') {
+    return 'rotateY(180deg)';
+  }
+
+  return undefined;
+}
+
+const varsResolver = createVarsResolver<SemiCircleProgressFactory>(
+  (
+    theme,
+    {
+      filledSegmentColor,
+      emptySegmentColor,
+      orientation,
+      fillDirection,
+      transitionDuration,
+      thickness,
+    }
+  ) => ({
+    root: {
+      '--scp-filled-segment-color': filledSegmentColor
+        ? getThemeColor(filledSegmentColor, theme)
+        : undefined,
+      '--scp-empty-segment-color': emptySegmentColor
+        ? getThemeColor(emptySegmentColor, theme)
+        : undefined,
+      '--scp-rotation': getRotation({ orientation, fillDirection }),
+      '--scp-transition-duration': transitionDuration ? `${transitionDuration}ms` : undefined,
+      '--scp-thickness': rem(thickness),
+    },
+  })
+);
+
+export const SemiCircleProgress = factory<SemiCircleProgressFactory>((_props) => {
+  const props = useProps('SemiCircleProgress', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    size,
+    thickness,
+    value,
+    orientation,
+    fillDirection,
+    filledSegmentColor,
+    emptySegmentColor,
+    transitionDuration,
+    label,
+    labelPosition,
+    attributes,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<SemiCircleProgressFactory>({
+    name: 'SemiCircleProgress',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  const coordinateForCircle = size / 2;
+  const radius = (size - 2 * thickness) / 2;
+  const circumference = Math.PI * radius;
+  const semiCirclePercentage = clamp(value, 0, 100) * (circumference / 100);
+
+  return (
+    <Box size={size} {...getStyles('root')} {...others}>
+      {label && (
+        <div {...getStyles('label')} data-position={labelPosition} data-orientation={orientation}>
+          {label}
+        </div>
+      )}
+
+      <svg width={size} height={size / 2} viewBox={`0 0 ${size} ${size / 2}`} {...getStyles('svg')}>
+        <circle
+          cx={coordinateForCircle}
+          cy={coordinateForCircle}
+          r={radius}
+          fill="none"
+          stroke="var(--scp-empty-segment-color)"
+          strokeWidth={thickness}
+          strokeDasharray={circumference}
+          {...getStyles('emptySegment', { style: { strokeDashoffset: circumference } })}
+        />
+
+        <circle
+          cx={coordinateForCircle}
+          cy={coordinateForCircle}
+          r={radius}
+          fill="none"
+          stroke="var(--scp-filled-segment-color)"
+          strokeWidth={thickness}
+          strokeDasharray={circumference}
+          {...getStyles('filledSegment', {
+            style: {
+              strokeDashoffset: semiCirclePercentage,
+              ...(semiCirclePercentage === 0 ? { strokeOpacity: 0 } : null),
+            },
+          })}
+        />
+      </svg>
+    </Box>
+  );
+});
+
+SemiCircleProgress.displayName = '@mantine/core/SemiCircleProgress';
+SemiCircleProgress.classes = classes;
+SemiCircleProgress.varsResolver = varsResolver;
+
+export declare namespace SemiCircleProgress {
+  export type Props = SemiCircleProgressProps;
+  export type StylesNames = SemiCircleProgressStylesNames;
+  export type CssVariables = SemiCircleProgressCssVariables;
+  export type Factory = SemiCircleProgressFactory;
+}
