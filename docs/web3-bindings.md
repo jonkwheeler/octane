@@ -63,6 +63,7 @@ The repository pins this integration in both environments:
   connection state, navigation, and exact teardown.
 - `packages/octane/tests/browser/react-hosted-web3/` resolves each source-published
   binding through its normal workspace package export map—without source
-  aliases—then runs that graph through a production Vite build and a real
-  Chromium journey. The host `.tsx` stays on React's JSX pipeline while the
-  island `.tsrx` is compiled by Octane.
+  aliases—then serves the production Vite build to a real Chromium journey. The
+  test asserts that Chromium receives the built, hashed asset rather than the
+  source entry. The host `.tsx` stays on React's JSX pipeline while the island
+  `.tsrx` is compiled by Octane.

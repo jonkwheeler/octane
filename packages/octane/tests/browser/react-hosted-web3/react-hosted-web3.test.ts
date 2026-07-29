@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { chromium, type Browser, type Page } from 'playwright';
-import { build, createServer, type UserConfig, type ViteDevServer } from 'vite';
+import { build, preview, type PreviewServer, type UserConfig } from 'vite';
 import { octane } from 'octane/compiler/vite';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -9,11 +9,12 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-let server: ViteDevServer;
+let server: PreviewServer;
 let browser: Browser;
 let page: Page;
 let baseUrl: string;
 let buildDirectory: string;
+let servedHtml: string;
 
 function fixtureConfig(): UserConfig {
 	return {
@@ -30,14 +31,15 @@ beforeAll(async () => {
 		...fixtureConfig(),
 		build: { outDir: buildDirectory, emptyOutDir: false },
 	});
-	server = await createServer({
+	server = await preview({
 		...fixtureConfig(),
-		server: { host: '127.0.0.1', port: 0 },
+		build: { outDir: buildDirectory },
+		preview: { host: '127.0.0.1', port: 0 },
 	});
-	await server.listen();
-	const address = server.httpServer!.address();
+	const address = server.httpServer.address();
 	if (!address || typeof address === 'string') throw new Error('Vite did not expose a TCP port');
 	baseUrl = `http://127.0.0.1:${address.port}`;
+	servedHtml = await fetch(baseUrl).then((response) => response.text());
 	browser = await chromium.launch({ headless: true });
 });
 
@@ -50,6 +52,11 @@ afterAll(async () => {
 
 describe('incremental React-hosted Web3 browser journey', () => {
 	it('builds the mixed React/TSRX graph and cleans up the connected island on navigation', async () => {
+		expect(servedHtml).toMatch(
+			/<script type="module" crossorigin src="\/assets\/[^"]+\.js"><\/script>/,
+		);
+		expect(servedHtml).not.toContain('/main.tsx');
+
 		const failures: string[] = [];
 		page = await browser.newPage();
 		page.on('pageerror', (error) => failures.push(`pageerror: ${error.message}`));
