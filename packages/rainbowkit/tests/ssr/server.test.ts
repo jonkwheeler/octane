@@ -21,6 +21,7 @@ describe('@octanejs/rainbowkit SSR', () => {
 
 		expect(html).toContain('Connect Wallet');
 		expect(html).toContain('disconnected');
+		expect(html).toContain('<span id="mounted">false</span>');
 		expect(html).not.toContain('role="dialog"');
 		expect(html).not.toContain('Waiting for wallet approval');
 	});

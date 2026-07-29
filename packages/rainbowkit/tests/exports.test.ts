@@ -12,7 +12,6 @@ describe('@octanejs/rainbowkit exports', () => {
 			'rainbowTheme',
 			'useAccountModal',
 			'useChainModal',
-			'useConnectButtonState',
 			'useConnectModal',
 		]);
 	});

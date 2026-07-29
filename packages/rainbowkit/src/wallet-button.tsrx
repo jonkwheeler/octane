@@ -11,9 +11,12 @@ export type WalletButtonProps = {
 export function WalletButton(props: WalletButtonProps) @{
 	const context = useContext(RainbowKitContext);
 	const mutation = useConnect();
-	const connector = context?.connectors.find(
-		(candidate) => candidate.id === props.wallet || candidate.name === props.wallet,
+	const entry = context?.wallets.find(
+		(candidate) =>
+			candidate.identity === props.wallet || candidate.id === props.wallet ||
+				candidate.name === props.wallet,
 	);
+	const connector = entry?.connector;
 	const ready = Boolean(connector);
 	const connect = () => connector && mutation.connect({ connector });
 	@if (props.children) {
@@ -22,7 +25,7 @@ export function WalletButton(props: WalletButtonProps) @{
 		}
 	} @else {
 		<button className="rk-wallet-button" disabled={!ready || mutation.isPending} onClick={connect}>
-			{connector?.name ?? props.wallet}
+			{entry?.name ?? props.wallet}
 		</button>
 	}
 }

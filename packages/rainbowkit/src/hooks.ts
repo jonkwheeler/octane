@@ -7,7 +7,7 @@ export function useConnectModal(): {
 } {
 	const context = useContext(RainbowKitContext);
 	return {
-		connectModalOpen: context?.activeModal === 'connect',
+		connectModalOpen: context?.activeModal?.kind === 'connect',
 		openConnectModal: context
 			? (event) =>
 					context.openModal('connect', event?.currentTarget as HTMLElement | null | undefined)
@@ -21,8 +21,8 @@ export function useAccountModal(): {
 } {
 	const context = useContext(RainbowKitContext);
 	return {
-		accountModalOpen: context?.activeModal === 'account',
-		openAccountModal: context
+		accountModalOpen: context?.activeModal?.kind === 'account',
+		openAccountModal: context?.connected
 			? (event) =>
 					context.openModal('account', event?.currentTarget as HTMLElement | null | undefined)
 			: undefined,
@@ -35,8 +35,8 @@ export function useChainModal(): {
 } {
 	const context = useContext(RainbowKitContext);
 	return {
-		chainModalOpen: context?.activeModal === 'chain',
-		openChainModal: context
+		chainModalOpen: context?.activeModal?.kind === 'chain',
+		openChainModal: context?.connected
 			? (event) =>
 					context.openModal('chain', event?.currentTarget as HTMLElement | null | undefined)
 			: undefined,

@@ -1,5 +1,5 @@
 import { useChainId, useChains, useConnection, useDisconnect } from '@octanejs/wagmi';
-import type { OctaneNode } from 'octane';
+import { useEffect, useState, type OctaneNode } from 'octane';
 import { useAccountModal, useChainModal, useConnectModal } from './hooks';
 
 export type ConnectButtonRendererProps = {
@@ -16,17 +16,15 @@ export type ConnectButtonRendererProps = {
 };
 
 export type ConnectButtonProps = {
-	accountStatus?: 'address' | 'avatar' | 'full';
-	chainStatus?: 'icon' | 'name' | 'none';
+	chainStatus?: 'name' | 'none';
 	label?: string;
-	showBalance?: boolean;
 };
 
 function formatAddress(address: string): string {
 	return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
-export function useConnectButtonState(): ConnectButtonRendererProps {
+function useConnectButtonState(): ConnectButtonRendererProps {
 	const connection = useConnection();
 	const chainId = useChainId();
 	const chains = useChains();
@@ -35,6 +33,8 @@ export function useConnectButtonState(): ConnectButtonRendererProps {
 	const connectModal = useConnectModal();
 	const chain = chains.find((candidate) => candidate.id === chainId);
 	const connected = connection.status === 'connected' && Boolean(connection.address);
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	return {
 		account: connected
 			? {
@@ -49,7 +49,7 @@ export function useConnectButtonState(): ConnectButtonRendererProps {
 			: undefined,
 		chainModalOpen: chainModal.chainModalOpen,
 		connectModalOpen: connectModal.connectModalOpen,
-		mounted: true,
+		mounted,
 		openAccountModal: accountModal.openAccountModal,
 		openChainModal: chainModal.openChainModal,
 		openConnectModal: connectModal.openConnectModal,

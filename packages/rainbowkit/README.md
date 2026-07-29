@@ -55,8 +55,28 @@ rainbow theme factories.
 
 Wallet choices come from the connectors configured on the enclosing
 `WagmiProvider`. Applications configure injected/EIP-6963 and WalletConnect
-connectors themselves, including a WalletConnect project id. Connector entries
-are deduplicated by stable id and name while preserving configured/discovery
+connectors themselves, including a WalletConnect project id. Pass `wallets` to
+`RainbowKitProvider` to order named entries or explain a configured wallet that
+is unavailable:
+
+```tsrx
+<RainbowKitProvider
+	wallets={[
+		{ id: 'injected', name: 'Browser wallet' },
+		{
+			id: 'walletConnect',
+			name: 'WalletConnect',
+			unavailableReason: 'WalletConnect projectId is required.',
+		},
+	]}
+>
+	<ConnectButton />
+</RainbowKitProvider>
+```
+
+Entries match the canonical connector `uid` when `connectorUid` is supplied,
+with explicit id/name matching as the convenience fallback. They are
+deduplicated by that canonical identity while preserving configured/discovery
 order.
 
 The native dialog has an accessible name and description, initial focus, tab
@@ -68,9 +88,9 @@ layout, and reduced-motion handling.
 
 The first cohort omits RainbowKit's wallet factory catalogue, authentication
 adapter, recent transactions, ENS/avatar resolution, cool mode, locale
-translations, pixel-identical themes, and React-only internals. Provider props
-for those upstream features are accepted only where harmless, but do not imply
-support. Supply vendor connector SDKs directly through Wagmi.
+translations, pixel-identical themes, account avatars/balances, and React-only
+internals. Unsupported upstream props are not accepted by the public types.
+Supply vendor connector SDKs directly through Wagmi.
 
 SSR emits the deterministic disconnected control. Live connector state remains
 authoritative after hydration; persisted state never authorizes wallet actions.

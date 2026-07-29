@@ -1,16 +1,18 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { createConfig, http } from '@wagmi/core';
 import { mock } from '@wagmi/connectors/mock';
-import { mainnet } from 'viem/chains';
+import { mainnet, sepolia } from 'viem/chains';
 import { QueryClient } from '@octanejs/tanstack-query';
 import { act } from 'octane';
 import { flushEffects, mount } from '../../octane/tests/_helpers';
-import { App, OutsideProvider } from './_fixtures/app.tsrx';
+import type { WalletDescriptor } from '@octanejs/rainbowkit';
+import { darkTheme } from '@octanejs/rainbowkit';
+import { App, OutsideProvider, TwoProviders } from './_fixtures/app.tsrx';
 
 const account = '0x0000000000000000000000000000000000000001' as const;
 let mounted: ReturnType<typeof mount> | undefined;
 
-function setup() {
+function setup(wallets?: readonly WalletDescriptor[]) {
 	const config = createConfig({
 		chains: [mainnet],
 		connectors: [mock({ accounts: [account] })],
@@ -19,8 +21,10 @@ function setup() {
 	mounted = mount(App, {
 		config,
 		queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		wallets,
 	});
 	flushEffects();
+	return config;
 }
 
 afterEach(() => {
@@ -41,7 +45,9 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		(document.querySelector('.rk-action') as HTMLButtonElement).click();
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
+			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
+		flushEffects();
 		expect(mounted!.find('#custom-status').textContent).toBe('connected');
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
 	});
@@ -55,8 +61,11 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.body.style.overflow).toBe('hidden');
 		expect(document.activeElement?.getAttribute('aria-label')).toBe('Close');
 		expect(opener.closest('[aria-hidden="true"]')).not.toBeNull();
+		expect(mounted!.find('#outside-provider').closest('[aria-hidden="true"]')).not.toBeNull();
 
-		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		act(() => {
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		});
 		flushEffects();
 		await Promise.resolve();
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
@@ -68,5 +77,273 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 	it('keeps modal hooks inert outside RainbowKitProvider', () => {
 		mounted = mount(OutsideProvider);
 		expect(mounted.find('#outside').textContent).toBe('true');
+	});
+
+	it('connects through WalletButton and renders connected account controls', async () => {
+		setup();
+		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted!.find('#custom-status').textContent).toBe('connected');
+		expect(document.querySelector('[data-rk]')?.textContent).toContain('0x0000…0001');
+		expect(document.querySelector('[data-rk]')?.textContent).toContain('Ethereum');
+		expect(document.querySelector('[data-rk]')?.textContent).toContain('Disconnect');
+	});
+
+	it('disconnects from the account modal and keeps failures actionable', async () => {
+		const config = setup();
+		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		const connector = config.connectors[0]!;
+		const disconnect = connector.disconnect?.bind(connector);
+		connector.disconnect = async () => {
+			throw new Error('Wallet refused disconnect');
+		};
+		const accountButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
+		).find((button) => button.textContent?.includes('0x0000'))!;
+		accountButton.click();
+		flushEffects();
+		(document.querySelector('.rk-dialog .rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(document.querySelector('[role="alert"]')?.textContent).toContain(
+			'Wallet refused disconnect',
+		);
+		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+		connector.disconnect = disconnect;
+		(document.querySelector('.rk-dialog .rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		flushEffects();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+	});
+
+	it('switches chains from the chain modal and reports a rejected switch', async () => {
+		const config = createConfig({
+			chains: [mainnet, sepolia],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http(), [sepolia.id]: http() },
+		});
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		});
+		flushEffects();
+		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		const chainButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
+		).find((button) => button.textContent?.includes('Ethereum'))!;
+		chainButton.click();
+		flushEffects();
+		const sepoliaButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-dialog .rk-action'),
+		).find((button) => button.textContent?.includes('Sepolia'))!;
+		sepoliaButton.click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(document.querySelector('[data-rk]')?.textContent).toContain('Sepolia');
+
+		const connector = config.connectors[0]!;
+		connector.switchChain = async () => {
+			throw new Error('Switch rejected');
+		};
+		const currentChainButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
+		).find((button) => button.textContent?.includes('Sepolia'))!;
+		currentChainButton.click();
+		flushEffects();
+		const mainnetButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-dialog .rk-action'),
+		).find((button) => button.textContent?.includes('Ethereum'))!;
+		mainnetButton.click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(document.querySelector('[role="alert"]')?.textContent).toContain('Switch rejected');
+		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+	});
+
+	it('dismisses only from the overlay and restores all isolation on unmount', () => {
+		setup();
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const dialog = document.querySelector('.rk-dialog') as HTMLElement;
+		dialog.click();
+		flushEffects();
+		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+		(document.querySelector('.rk-overlay') as HTMLElement).click();
+		flushEffects();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+
+		mounted!.click('#custom-connect');
+		flushEffects();
+		expect(document.body.style.overflow).toBe('hidden');
+		mounted!.unmount();
+		mounted = undefined;
+		flushEffects();
+		expect(document.body.style.overflow).toBe('');
+		expect(document.querySelector('[aria-hidden="true"]')).toBeNull();
+	});
+
+	it('contains forward and reverse Tab navigation', () => {
+		setup();
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const close = document.querySelector('.rk-close') as HTMLButtonElement;
+		const action = document.querySelector('.rk-action') as HTMLButtonElement;
+		action.focus();
+		document.dispatchEvent(
+			new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }),
+		);
+		expect(document.activeElement).toBe(close);
+		close.focus();
+		document.dispatchEvent(
+			new KeyboardEvent('keydown', {
+				key: 'Tab',
+				shiftKey: true,
+				bubbles: true,
+				cancelable: true,
+			}),
+		);
+		expect(document.activeElement).toBe(action);
+	});
+
+	it('applies explicit theme tokens to the provider boundary', () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient(),
+			theme: darkTheme({ accentColor: '#123456', borderRadius: 'small' }),
+		});
+		const root = document.querySelector('[data-rk]') as HTMLElement;
+		expect(root.style.getPropertyValue('--rk-accent')).toBe('#123456');
+		expect(root.style.getPropertyValue('--rk-modal-radius')).toBe('8px');
+	});
+
+	it('deduplicates by connector uid and explains configured unavailable wallets', () => {
+		const config = setup([
+			{ id: 'mock', name: 'Preferred mock' },
+			{
+				id: 'walletConnect',
+				name: 'WalletConnect',
+				unavailableReason: 'WalletConnect projectId is required.',
+			},
+		]);
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.rk-list button'));
+		expect(buttons.map((button) => button.textContent?.trim())).toEqual([
+			'Preferred mock',
+			'WalletConnect',
+		]);
+		expect(buttons[1]!.disabled).toBe(true);
+		expect(document.querySelector('.rk-list')?.textContent).toContain(
+			'WalletConnect projectId is required.',
+		);
+		expect(config.connectors[0]!.uid).toBeTruthy();
+	});
+
+	it('keeps a rejected connector actionable and retries only on another click', async () => {
+		const config = setup();
+		let attempts = 0;
+		config.connectors[0]!.connect = async () => {
+			attempts++;
+			throw new Error('User rejected request');
+		};
+		mounted!.click('#custom-connect');
+		flushEffects();
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(attempts).toBe(1);
+		expect(document.querySelector('[role="alert"]')?.textContent).toContain(
+			'User rejected request',
+		);
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(attempts).toBe(2);
+	});
+
+	it('coordinates topmost Escape and body locking across providers', async () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		mounted = mount(TwoProviders, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		});
+		flushEffects();
+		mounted.click('#first-provider');
+		flushEffects();
+		mounted.click('#second-provider');
+		flushEffects();
+		const dialogs = Array.from(document.querySelectorAll('[role="dialog"]'));
+		expect(dialogs).toHaveLength(2);
+		expect(dialogs[0]!.getAttribute('aria-labelledby')).not.toBe(
+			dialogs[1]!.getAttribute('aria-labelledby'),
+		);
+		expect(dialogs[1]!.closest('[inert]')).toBeNull();
+		act(() => {
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		});
+		flushEffects();
+		await Promise.resolve();
+		expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+		expect(document.body.style.overflow).toBe('hidden');
+		expect(document.activeElement).toBe(dialogs[0]);
+		act(() => {
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		});
+		flushEffects();
+		expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(0);
+		expect(document.body.style.overflow).toBe('');
+	});
+
+	it('does not let a stale connect success close a newer modal generation', async () => {
+		const config = setup();
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await gate;
+			return original(parameters);
+		};
+		mounted!.click('#custom-connect');
+		flushEffects();
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		flushEffects();
+		mounted!.click('#custom-connect');
+		flushEffects();
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
 	});
 });

@@ -3,9 +3,12 @@ import { WagmiProvider, type Config } from '@octanejs/wagmi';
 import {
 	ConnectButton,
 	RainbowKitProvider,
+	WalletButton,
 	useAccountModal,
 	useChainModal,
 	useConnectModal,
+	type Theme,
+	type WalletDescriptor,
 } from '@octanejs/rainbowkit';
 
 function CustomControl() @{
@@ -20,17 +23,43 @@ function CustomControl() @{
 						? 'modal-open'
 						: 'disconnected'}
 			</span>
+			<span id="mounted">{String(state.mounted)}</span>
 			<button id="custom-connect" onClick={state.openConnectModal}>Open wallets</button>
 		</div>}
 	</ConnectButton.Custom>
 }
 
-export function App(props: { config: Config; queryClient: unknown }) @{
+export function App(props: {
+	config: Config;
+	queryClient: unknown;
+	theme?: Theme;
+	wallets?: readonly WalletDescriptor[];
+}) @{
+	<WagmiProvider config={props.config} reconnectOnMount={false}>
+		<QueryClientProvider client={props.queryClient}>
+			<button id="outside-provider">Outside provider</button>
+			<RainbowKitProvider wallets={props.wallets} theme={props.theme}>
+				<ConnectButton />
+				<WalletButton wallet="mock" />
+				<CustomControl />
+			</RainbowKitProvider>
+		</QueryClientProvider>
+	</WagmiProvider>
+}
+
+function ModalOpener(props: { id: string }) @{
+	const modal = useConnectModal();
+	<button id={props.id} onClick={modal.openConnectModal}>Open {props.id}</button>
+}
+
+export function TwoProviders(props: { config: Config; queryClient: unknown }) @{
 	<WagmiProvider config={props.config} reconnectOnMount={false}>
 		<QueryClientProvider client={props.queryClient}>
 			<RainbowKitProvider>
-				<ConnectButton />
-				<CustomControl />
+				<ModalOpener id="first-provider" />
+			</RainbowKitProvider>
+			<RainbowKitProvider>
+				<ModalOpener id="second-provider" />
 			</RainbowKitProvider>
 		</QueryClientProvider>
 	</WagmiProvider>
