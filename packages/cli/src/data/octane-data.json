@@ -188,6 +188,20 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/mantine-hooks",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/hooks", "version": "9.5.0" },
+      "surface": "Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks.",
+      "divergences": [
+        "Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher.",
+        "DOM subscriptions receive native browser events.",
+        "React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime."
+      ],
+      "ssr": "Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering.",
+      "verified": "2026-07-28"
+    },
+    {
       "name": "@octanejs/mdx",
       "version": "0.1.16",
       "category": "Forms and content",
@@ -198,6 +212,20 @@
       ],
       "ssr": "Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`).",
       "verified": "2026-07-17"
+    },
+    {
+      "name": "@octanejs/mobx",
+      "version": "0.1.0",
+      "category": "Shared state",
+      "upstream": { "package": "mobx-react-lite", "version": "4.1.1", "core": "mobx@6.16.1" },
+      "surface": "The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias.",
+      "divergences": [
+        "React class components and the legacy mobx-react Provider/inject APIs are not included.",
+        "forwardRef compatibility options are omitted because Octane uses refs as props.",
+        "React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted."
+      ],
+      "ssr": "enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions.",
+      "verified": "2026-07-28"
     },
     {
       "name": "@octanejs/motion",
@@ -226,6 +254,20 @@
       ],
       "ssr": "The server entry (`@octanejs/nuqs/server`) is react-free and usable during SSR for parsing/serialising search params; the client hooks read `location.search` through `useSyncExternalStore` with an empty-search server snapshot (upstream parity). No dedicated SSR hydration tests yet.",
       "verified": "2026-07-20"
+    },
+    {
+      "name": "@octanejs/phosphor-icons",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": { "package": "@phosphor-icons/react", "version": "2.1.10" },
+      "surface": "All 1,512 canonical icons from @phosphor-icons/core@2.1.1, including the upstream deprecated Icon-suffixed aliases, six weights, IconContext, IconBase, root exports, and per-icon imports.",
+      "divergences": [
+        "Icon refs are normal Octane ref props rather than React forwardRef components.",
+        "Event callbacks receive native DOM events rather than React synthetic events.",
+        "The React package's SSR namespace is unnecessary because Octane icons use the same components on client and server."
+      ],
+      "ssr": "Supported and tested against @phosphor-icons/react/ssr for every weight; hydration adopts and updates server-rendered SVG hosts.",
+      "verified": "2026-07-29"
     },
     {
       "name": "@octanejs/radix",
@@ -627,7 +669,9 @@
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
     "@lexical/react": "@octanejs/lexical",
+    "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mdx-js/react": "@octanejs/mdx",
+    "@phosphor-icons/react": "@octanejs/phosphor-icons",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
     "@stylexjs/stylex": "@octanejs/stylex",
@@ -698,6 +742,8 @@
     "framer-motion": "@octanejs/motion",
     "jotai": "@octanejs/jotai",
     "lucide-react": "@octanejs/lucide",
+    "mobx-react": "@octanejs/mobx",
+    "mobx-react-lite": "@octanejs/mobx",
     "motion": "@octanejs/motion",
     "nuqs": "@octanejs/nuqs",
     "radix-ui": "@octanejs/radix",
