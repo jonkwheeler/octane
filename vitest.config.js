@@ -110,6 +110,20 @@ const VISX_ALIASES = [
 		replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
 	},
 ];
+const WEB3_HOSTED_ALIASES = [
+	{
+		find: /^@octanejs\/tanstack-query$/,
+		replacement: resolve(import.meta.dirname, 'packages/tanstack-query/src/index.ts'),
+	},
+	{
+		find: /^@octanejs\/wagmi$/,
+		replacement: resolve(import.meta.dirname, 'packages/wagmi/src/index.ts'),
+	},
+	{
+		find: /^@octanejs\/rainbowkit$/,
+		replacement: resolve(import.meta.dirname, 'packages/rainbowkit/src/index.ts'),
+	},
+];
 
 // Octane's template source map contains zero-width generated segments that are
 // valid in Vite but currently rejected by Vitest's Istanbul/V8 remappers. The
@@ -305,6 +319,7 @@ export default defineConfig({
 						},
 					}),
 				],
+				resolve: { alias: WEB3_HOSTED_ALIASES },
 			},
 			{
 				// The SAME octane test files compiled in PRODUCTION mode (`hmr: false`
@@ -380,6 +395,7 @@ export default defineConfig({
 						},
 					}),
 				],
+				resolve: { alias: WEB3_HOSTED_ALIASES },
 			},
 			{
 				test: {
