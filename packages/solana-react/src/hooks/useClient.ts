@@ -15,13 +15,14 @@ export function useClient<TClient extends object = object>(
 		[store],
 		subSlot(slot, 'subscribe'),
 	);
-	const snapshot = useCallback(() => store.getSnapshot(), [store], subSlot(slot, 'snapshot'));
-	return useSyncExternalStore(
+	const getVersion = useCallback(() => store.getVersion(), [store], subSlot(slot, 'version'));
+	useSyncExternalStore(
 		subscribe,
-		snapshot,
-		snapshot,
+		getVersion,
+		getVersion,
 		subSlot(slot, 'store'),
-	) as Client<TClient>;
+	);
+	return store.getSnapshot() as Client<TClient>;
 }
 
 export type UseClientCapabilityConfig = Readonly<{

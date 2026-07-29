@@ -2,7 +2,7 @@ import { QueryClient } from '@octanejs/tanstack-query';
 import { Query } from '@tanstack/query-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount, nextPaint } from '../../octane/tests/_helpers';
-import { RequestApp } from './_fixtures/query.tsrx';
+import { OmittedOptionsApp, RequestApp } from './_fixtures/query.tsrx';
 
 let client: QueryClient;
 
@@ -18,6 +18,20 @@ async function flush() {
 }
 
 describe('useRequestQuery', () => {
+	it('keeps omitted-options TSRX call sites independent', async () => {
+		const firstSource = vi.fn(async () => 'first');
+		const secondSource = vi.fn(async () => 'second');
+		const result = mount(OmittedOptionsApp, { client, firstSource, secondSource });
+
+		await flush();
+
+		expect(firstSource).toHaveBeenCalledOnce();
+		expect(secondSource).toHaveBeenCalledOnce();
+		expect(result.find('#first-status').textContent).toBe('data:first');
+		expect(result.find('#second-status').textContent).toBe('data:second');
+		result.unmount();
+	});
+
 	it('passes the query AbortSignal to a function source', async () => {
 		let receivedSignal: AbortSignal | undefined;
 		const source = vi.fn(async (signal: AbortSignal) => {

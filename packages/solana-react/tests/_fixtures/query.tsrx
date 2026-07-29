@@ -35,3 +35,28 @@ export function RequestApp(props: {
 		/>
 	</QueryClientProvider>
 }
+
+export function OmittedOptionsReader(props: {
+	firstSource: RequestSource<string>;
+	secondSource: RequestSource<string>;
+}) @{
+	const first = useRequestQuery(['first'], props.firstSource);
+	const second = useRequestQuery(['second'], props.secondSource);
+	<>
+		<span id="first-status">{(first.isPending ? 'pending' : `data:${first.data}`) as string}</span>
+		<span id="second-status">{(second.isPending ? 'pending' : `data:${second.data}`) as string}</span>
+	</>
+}
+
+export function OmittedOptionsApp(props: {
+	client: unknown;
+	firstSource: RequestSource<string>;
+	secondSource: RequestSource<string>;
+}) @{
+	<QueryClientProvider client={props.client}>
+		<OmittedOptionsReader
+			firstSource={props.firstSource}
+			secondSource={props.secondSource}
+		/>
+	</QueryClientProvider>
+}

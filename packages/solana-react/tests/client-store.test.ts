@@ -21,13 +21,25 @@ describe('client store', () => {
 		const store = createClientStore(first);
 		const listener = vi.fn();
 		store.subscribe(listener);
+		expect(store.getSnapshot()).toBe(first);
+		expect(store.getVersion()).toBe(0);
+
+		first.notify();
+		expect(store.getSnapshot()).toBe(first);
+		expect(store.getVersion()).toBe(1);
+		expect(listener).toHaveBeenCalledOnce();
+
 		store.setClient(second);
 		expect(first.unsubscribe).toHaveBeenCalledOnce();
-		expect(listener).toHaveBeenCalledOnce();
-		first.notify();
-		expect(listener).toHaveBeenCalledOnce();
-		second.notify();
+		expect(store.getSnapshot()).toBe(second);
+		expect(store.getVersion()).toBe(2);
 		expect(listener).toHaveBeenCalledTimes(2);
+		first.notify();
+		expect(store.getVersion()).toBe(2);
+		expect(listener).toHaveBeenCalledTimes(2);
+		second.notify();
+		expect(store.getVersion()).toBe(3);
+		expect(listener).toHaveBeenCalledTimes(3);
 		store.dispose();
 		expect(second.unsubscribe).toHaveBeenCalledOnce();
 	});

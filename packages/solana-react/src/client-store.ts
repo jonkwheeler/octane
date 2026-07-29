@@ -6,6 +6,7 @@ export type ReactiveClient<TClient> = TClient & {
 export interface ClientStore<TClient> {
 	dispose(): void;
 	getSnapshot(): TClient;
+	getVersion(): number;
 	setClient(client: TClient): void;
 	subscribe(listener: () => void): Cleanup;
 }
@@ -13,6 +14,7 @@ export interface ClientStore<TClient> {
 export function createClientStore<TClient>(initialClient: TClient): ClientStore<TClient> {
 	let client = initialClient;
 	let generation = 0;
+	let version = 0;
 	const listeners = new Set<() => void>();
 	let cleanup: Cleanup | undefined;
 
@@ -20,6 +22,7 @@ export function createClientStore<TClient>(initialClient: TClient): ClientStore<
 		const boundGeneration = ++generation;
 		const result = (client as ReactiveClient<TClient>).subscribe?.(() => {
 			if (boundGeneration !== generation) return;
+			version++;
 			for (const listener of listeners) listener();
 		});
 		cleanup =
@@ -35,11 +38,13 @@ export function createClientStore<TClient>(initialClient: TClient): ClientStore<
 			listeners.clear();
 		},
 		getSnapshot: () => client,
+		getVersion: () => version,
 		setClient(nextClient) {
 			if (Object.is(client, nextClient)) return;
 			generation++;
 			cleanup?.();
 			client = nextClient;
+			version++;
 			bind();
 			for (const listener of listeners) listener();
 		},

@@ -14,9 +14,14 @@ export function useRequestQuery<T, TError = Error, TData = T>(
 export function useRequestQuery(
 	key: QueryKey,
 	source: RequestSource<unknown> | null,
-	options?: Omit<UseQueryOptions<unknown, Error, unknown, QueryKey>, 'queryFn' | 'queryKey'>,
+	optionsOrSlot?:
+		| Omit<UseQueryOptions<unknown, Error, unknown, QueryKey>, 'queryFn' | 'queryKey'>
+		| symbol,
 	slot?: symbol,
 ) {
+	const options = typeof optionsOrSlot === 'symbol' ? undefined : optionsOrSlot;
+	const resolvedSlot = typeof optionsOrSlot === 'symbol' ? optionsOrSlot : slot;
+
 	return (useQuery as (...args: unknown[]) => unknown)(
 		{
 			...options,
@@ -26,6 +31,6 @@ export function useRequestQuery(
 				typeof source === 'function' ? source(signal) : source!.send({ abortSignal: signal }),
 		},
 		undefined,
-		slot,
+		resolvedSlot,
 	);
 }
