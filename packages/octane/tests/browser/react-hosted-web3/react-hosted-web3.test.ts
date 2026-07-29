@@ -4,11 +4,10 @@ import { build, createServer, type UserConfig, type ViteDevServer } from 'vite';
 import { octane } from 'octane/compiler/vite';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const repositoryRoot = resolve(HERE, '../../../../..');
 
 let server: ViteDevServer;
 let browser: Browser;
@@ -22,22 +21,6 @@ function fixtureConfig(): UserConfig {
 		root: HERE,
 		logLevel: 'error',
 		plugins: [octane({ requireDirective: true })],
-		resolve: {
-			alias: [
-				{
-					find: /^@octanejs\/tanstack-query$/,
-					replacement: resolve(repositoryRoot, 'packages/tanstack-query/src/index.ts'),
-				},
-				{
-					find: /^@octanejs\/wagmi$/,
-					replacement: resolve(repositoryRoot, 'packages/wagmi/src/index.ts'),
-				},
-				{
-					find: /^@octanejs\/rainbowkit$/,
-					replacement: resolve(repositoryRoot, 'packages/rainbowkit/src/index.ts'),
-				},
-			],
-		},
 	};
 }
 

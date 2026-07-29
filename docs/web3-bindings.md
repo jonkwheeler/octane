@@ -61,7 +61,8 @@ The repository pins this integration in both environments:
 - `packages/octane/tests/react-hosted/web3-island.test.ts` covers development
   and production compilation, React SSR hydration, rejected-request recovery,
   connection state, navigation, and exact teardown.
-- `packages/octane/tests/browser/react-hosted-web3/` runs the package-resolved
-  graph through a production Vite build and a real Chromium journey. The host
-  `.tsx` stays on React's JSX pipeline while the island `.tsrx` is compiled by
-  Octane.
+- `packages/octane/tests/browser/react-hosted-web3/` resolves each source-published
+  binding through its normal workspace package export map—without source
+  aliases—then runs that graph through a production Vite build and a real
+  Chromium journey. The host `.tsx` stays on React's JSX pipeline while the
+  island `.tsrx` is compiled by Octane.

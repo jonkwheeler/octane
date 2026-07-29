@@ -835,6 +835,15 @@ importers:
       '@changesets/cli':
         specifier: catalog:default
         version: 2.31.1(patch_hash=b2e3a2f8bfccf1ba042c15980245f5bc2ef7d4898e838d4cf5cab75b7b920b90)(@types/node@24.13.3)
+      '@octanejs/rainbowkit':
+        specifier: workspace:*
+        version: link:packages/rainbowkit
+      '@octanejs/tanstack-query':
+        specifier: workspace:*
+        version: link:packages/tanstack-query
+      '@octanejs/wagmi':
+        specifier: workspace:*
+        version: link:packages/wagmi
       '@tsrx/prettier-plugin':
         specifier: catalog:default
         version: 0.3.118(prettier@3.9.6)
