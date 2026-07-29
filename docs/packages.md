@@ -23,7 +23,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/devtools` | [`packages/devtools`](../packages/devtools) | framework binding | `0.0.7` | 1 |
 | `@octanejs/dexie` | [`packages/dexie`](../packages/dexie) | framework binding | `0.1.12` | 1 |
 | `@octanejs/dnd-kit` | [`packages/dnd-kit`](../packages/dnd-kit) | framework binding | `0.1.14` | 4 |
-| `@octanejs/docusaurus` | [`packages/docusaurus`](../packages/docusaurus) | metaframework | `0.0.3` | 5 |
+| `@octanejs/docusaurus` | [`packages/docusaurus`](../packages/docusaurus) | metaframework | `0.0.3` | 8 |
 | `@octanejs/floating-ui` | [`packages/floating-ui`](../packages/floating-ui) | framework binding | `0.1.18` | 1 |
 | `@octanejs/hook-form` | [`packages/hook-form`](../packages/hook-form) | framework binding | `0.1.16` | 1 |
 | `@octanejs/i18next` | [`packages/i18next`](../packages/i18next) | framework binding | `0.1.14` | 3 |
@@ -67,7 +67,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/visx` | [`packages/visx`](../packages/visx) | framework binding | `0.1.13` | 49 |
 | `@octanejs/vite-plugin` | [`packages/vite-plugin-octane`](../packages/vite-plugin-octane) | metaframework | `0.1.19` | 3 |
 | `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.18` | 5 |
-| `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.19` | 19 |
+| `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.19` | 20 |
 
 ## Private packages
 

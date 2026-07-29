@@ -92,15 +92,43 @@ are visible, the coordinator (Divergence #1) retries detached primaries to compl
 reveals their DOM plus ref/layout lifecycle in one batch. Independent per-swap WIPs also
 retain their old content until ready (`entangled-commit.test.ts`).
 
-**Remaining limitation:** this is still not a global WIP. During an ordinary synchronous
-transition, a same-identity parent can patch bindings outside a suspending `@try` before a
-descendant throws. octane then holds the old boundary content beside already-updated
-parent/sibling UI; React retains the whole prior screen. The async Action batching in #6
-prevents that tear while an Action is in flight, but does not close the synchronous case.
-Likewise, a pre-timeout live boundary retry can resolve one use() and then suspend on a
-later true dependency after an earlier staged sibling has started committing; preventing
-that requires the same absent global WIP. Fallback-visible retries are capture-safe and do
-not have this limitation.
+**Binding tear inside a held boundary — CLOSED (2026-07-29).** A same-identity parent used
+to patch its own bindings on the way down and only then have a descendant throw, so the
+boundary held old content beside already-updated markup of its own. A pre-timeout live
+retry had the same shape: resolve one use(), patch, then suspend on a later true
+dependency. Both now run inside a journal (`TRANSITION_JOURNAL` in runtime.ts) that records
+what each binding write replaced — plus the compiled bag that guards it, or the guard would
+skip the re-patch on resume — and replays it if the attempt suspends into a hold. The undo
+happens in the flush that made the change, so no intermediate state is ever painted.
+`benchmarks/async-composition` pins the update at zero exposed states, level with React;
+`transitions.test.ts` covers the in-place and replay shapes.
+
+Controlled `value`/`checked`/`selected` are covered as of 2026-07-29 as well. Each needs
+more than the node: the `default*` mirror and the per-element record of what was last
+projected go back with it, or the record would believe the new value had already landed and
+skip re-projecting it on resume.
+
+**Remaining limitation — one project, not two.** Content the same transition patched OUTSIDE
+a suspended boundary still keeps its new value, and so does a structural change above the
+boundary. These were previously filed as separate gaps; they are not. Both need the
+transition render to become a deferred commit unit, for two reasons found while attempting
+the first:
+
+1. *Reveal scope.* Reverting content outside the boundary strands it. The reveal path
+   re-renders the try block only, so a restored bag outside it is never re-patched and the
+   content stays on the old value permanently. The hold would have to record the block the
+   transition originated from and re-render that instead.
+2. *Destruction is not undoable.* A keyed removal disposes blocks, running user cleanups and
+   discarding hook state. Moves and inserts journal fine (`node`, `parent`, `nextSibling`),
+   but removals need disposals collected during the render and executed only on commit.
+
+Effects are the third piece: a rolled-back region outside a boundary would otherwise run
+effects against DOM that was reverted underneath them, so that region needs the same
+capture-and-splice treatment the resume path already uses.
+
+The async Action batching in #6 prevents the shell tear while an Action is in flight, but
+does not close the synchronous case. Fallback-visible retries are capture-safe and never had
+this limitation.
 Time-based cross-boundary fallback throttling is the separate Divergence #5.
 
 ---

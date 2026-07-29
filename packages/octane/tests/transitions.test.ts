@@ -16,6 +16,11 @@ import {
 	UrgentSupersedesTransition,
 	AsyncStartTransition,
 	AsyncTransitionKeepsDom,
+	TransitionAtomicity,
+	TransitionResumeAtomicity,
+	TransitionNamespacedAttr,
+	TransitionControlledInput,
+	TransitionRadioGroup,
 } from './_fixtures/transitions.tsrx';
 
 interface Deferred<T> {
@@ -553,6 +558,207 @@ describe('useTransition — async actions (React 19)', () => {
 		});
 		expect(r.find('#value').textContent).toBe('two');
 		expect(r.find('#pending').textContent).toBe('idle');
+		r.unmount();
+	});
+});
+
+describe('useTransition — the old screen stays whole', () => {
+	it('a parent that renders in place does not update before its suspended child', async () => {
+		const first = deferred<string>();
+		const second = deferred<string>();
+		const promises = [first.promise, second.promise];
+		const load = (version: number) => promises[version];
+
+		const r = mount(TransitionAtomicity, { load });
+		await act(() => {
+			first.resolve('one');
+		});
+		expect(r.find('#panel').getAttribute('data-version')).toBe('0');
+		expect(r.find('#heading').textContent).toBe('v0');
+		expect(r.find('#value').textContent).toBe('one');
+
+		// The transition bumps to v1 and the child suspends on the new promise.
+		// The panel is the same component, so today it patches its own attribute
+		// and heading on the way down and leaves them ahead of the held value.
+		r.click('#bump');
+		expect(r.find('#pending').textContent).toBe('pending');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(r.find('#value').textContent).toBe('one');
+		expect(r.find('#panel').getAttribute('data-version')).toBe('0');
+		expect(r.find('#heading').textContent).toBe('v0');
+
+		// Once the promise settles the whole screen moves to v1 together.
+		await act(() => {
+			second.resolve('two');
+		});
+		expect(r.find('#panel').getAttribute('data-version')).toBe('1');
+		expect(r.find('#heading').textContent).toBe('v1');
+		expect(r.find('#value').textContent).toBe('two');
+		expect(r.find('#pending').textContent).toBe('idle');
+		r.unmount();
+	});
+
+	it('a boundary replaying its body does not commit one resolved value beside an old one', async () => {
+		const entries = new Map<string, Deferred<string>>();
+		const load = (name: string, step: number) => {
+			const key = `${name}${step}`;
+			let entry = entries.get(key);
+			if (entry === undefined) {
+				entry = deferred<string>();
+				entries.set(key, entry);
+			}
+			return entry.promise;
+		};
+		load('a', 0);
+		load('b', 0);
+		entries.get('a0')!.resolve('a0');
+		entries.get('b0')!.resolve('b0');
+
+		const r = mount(TransitionResumeAtomicity, { load });
+		await act(() => {});
+		expect(r.find('#a').textContent).toBe('a0');
+		expect(r.find('#b').textContent).toBe('b0');
+
+		// Both leaves move to step 1 and both suspend, so the boundary holds.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(r.find('#a').textContent).toBe('a0');
+		expect(r.find('#b').textContent).toBe('b0');
+
+		// Only the first leaf's data arrives. The replay renders it and then
+		// suspends again on the second, which must leave the boundary untouched
+		// rather than showing the new value next to the old one.
+		await act(() => {
+			entries.get('a1')!.resolve('a1');
+		});
+		expect(r.find('#a').textContent).toBe('a0');
+		expect(r.find('#b').textContent).toBe('b0');
+		expect(r.find('#pending').textContent).toBe('pending');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+
+		// Second one lands and both step together.
+		await act(() => {
+			entries.get('b1')!.resolve('b1');
+		});
+		expect(r.find('#a').textContent).toBe('a1');
+		expect(r.find('#b').textContent).toBe('b1');
+		expect(r.find('#pending').textContent).toBe('idle');
+		r.unmount();
+	});
+
+	it('restores a namespaced attribute onto the same attribute, not a plain copy', async () => {
+		const XLINK = 'http://www.w3.org/1999/xlink';
+		const entries = new Map<number, Deferred<string>>();
+		const load = (step: number) => {
+			let entry = entries.get(step);
+			if (entry === undefined) {
+				entry = deferred<string>();
+				entries.set(step, entry);
+			}
+			return entry.promise;
+		};
+		load(0);
+		entries.get(0)!.resolve('zero');
+
+		const r = mount(TransitionNamespacedAttr, { load });
+		await act(() => {});
+		const use = r.find('#use-el');
+		expect(use.getAttributeNS(XLINK, 'href')).toBe('#icon-0');
+
+		// The transition patches the attribute and then the sibling suspends, so
+		// the undo has to put '#icon-0' back on the namespaced attribute itself.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(use.getAttributeNS(XLINK, 'href')).toBe('#icon-0');
+		expect(use.getAttribute('xlink:href')).toBe('#icon-0');
+		// A plain restore alongside the namespaced one would show up as a second
+		// attribute with a null namespace.
+		expect(use.attributes.length).toBe(2);
+		expect(use.getAttributeNode('xlink:href')!.namespaceURI).toBe(XLINK);
+
+		await act(() => {
+			entries.get(1)!.resolve('one');
+		});
+		expect(use.getAttributeNS(XLINK, 'href')).toBe('#icon-1');
+		expect(use.getAttributeNode('xlink:href')!.namespaceURI).toBe(XLINK);
+		expect(r.find('#value').textContent).toBe('one');
+		r.unmount();
+	});
+
+	it('holds a controlled input and checkbox, records included', async () => {
+		const entries = new Map<number, Deferred<string>>();
+		const load = (step: number) => {
+			let entry = entries.get(step);
+			if (entry === undefined) {
+				entry = deferred<string>();
+				entries.set(step, entry);
+			}
+			return entry.promise;
+		};
+		load(0);
+		entries.get(0)!.resolve('zero');
+
+		const r = mount(TransitionControlledInput, { load });
+		await act(() => {});
+		const text = r.find('#text') as HTMLInputElement;
+		const box = r.find('#box') as HTMLInputElement;
+		expect(text.value).toBe('step-0');
+		expect(box.checked).toBe(false);
+
+		// The transition projects step 1 onto both controls and then the sibling
+		// suspends, so both have to go back to step 0.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(text.value).toBe('step-0');
+		expect(text.defaultValue).toBe('step-0');
+		expect(box.checked).toBe(false);
+		expect(box.defaultChecked).toBe(false);
+
+		// The per-element record has to come back too. If it still believed it had
+		// projected 'step-1', re-projecting that same value would be skipped as
+		// unchanged and the input would stay on step-0 forever.
+		await act(() => {
+			entries.get(1)!.resolve('one');
+		});
+		expect(text.value).toBe('step-1');
+		expect(box.checked).toBe(true);
+		expect(r.find('#value').textContent).toBe('one');
+		r.unmount();
+	});
+
+	it('holds a radio group, including the cousin the platform cleared', async () => {
+		const entries = new Map<number, Deferred<string>>();
+		const load = (step: number) => {
+			let entry = entries.get(step);
+			if (entry === undefined) {
+				entry = deferred<string>();
+				entries.set(step, entry);
+			}
+			return entry.promise;
+		};
+		load(0);
+		entries.get(0)!.resolve('zero');
+
+		const r = mount(TransitionRadioGroup, { load });
+		await act(() => {});
+		const a = r.find('#r-a') as HTMLInputElement;
+		const b = r.find('#r-b') as HTMLInputElement;
+		expect(a.checked).toBe(false);
+		expect(b.checked).toBe(true);
+
+		// Step 1 checks a, which makes the platform clear b before b's own
+		// binding runs. The boundary then suspends, so the group has to go back
+		// to b — not to nothing selected.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(a.checked).toBe(false);
+		expect(b.checked).toBe(true);
+
+		await act(() => {
+			entries.get(1)!.resolve('one');
+		});
+		expect(a.checked).toBe(true);
+		expect(b.checked).toBe(false);
 		r.unmount();
 	});
 });
