@@ -565,10 +565,11 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
 
   const trapezoids = useAppSelector(state => selectFunnelTrapezoids(state, funnelSettings));
   const legendPayload = useMemo<ReadonlyArray<LegendPayload>>(() => {
-    if (hide || legendType === 'none' || !trapezoids) {
+    if (legendType === 'none' || !trapezoids) {
       return [];
     }
     return trapezoids.map(entry => ({
+      inactive: hide,
       value: entry.name,
       dataKey: props.dataKey,
       color: typeof entry.fill === 'string' ? entry.fill : fill,
@@ -578,7 +579,11 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
   }, [fill, hide, legendType, props.dataKey, trapezoids]);
 
   if (hide || !trapezoids || !trapezoids.length || !plotArea) {
-    return null;
+    return (
+      <CellsContext.Provider value={cellRegistry}>
+        <SetLegendPayload legendPayload={legendPayload} />
+      </CellsContext.Provider>
+    );
   }
   const { height, width } = plotArea;
 

@@ -105,10 +105,14 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		result.unmount();
 	});
 
-	it('does not register hidden Funnel segments or legendType none', async () => {
+	it('keeps hidden Funnel segments inactive in the legend and suppresses legendType none', async () => {
 		const hidden = mount(FunnelLegendApp, { hide: true });
 		await settle();
-		expect(hidden.container.querySelectorAll('.recharts-legend-item')).toHaveLength(0);
+		expect(hidden.container.querySelectorAll('.recharts-legend-item')).toHaveLength(2);
+		expect(hidden.container.textContent).toContain('Visitors');
+		expect(hidden.container.textContent).toContain('Customers');
+		expect(hidden.container.querySelectorAll('.recharts-funnel-trapezoid')).toHaveLength(0);
+		expect(hidden.container.innerHTML).toContain('#ccc');
 		hidden.unmount();
 
 		const none = mount(FunnelLegendApp, { legendType: 'none' });
