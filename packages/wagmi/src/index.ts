@@ -29,6 +29,4 @@ export {
 	serializeHydratedState,
 	ActionContextChangedError,
 	LiveConnectionRequiredError,
-	type GuardedActionResult,
-	type HydratedStateEnvelope,
 } from './security';

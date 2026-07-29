@@ -4,20 +4,6 @@ import { getConnection, type Config } from '@wagmi/core';
 export const HYDRATION_VERSION = 1;
 export const MAX_HYDRATION_BYTES = 16_384;
 
-export type HydratedStateEnvelope = {
-	version: typeof HYDRATION_VERSION;
-	state: State;
-};
-
-export type GuardedActionResult<T> =
-	| { status: 'success'; data: T }
-	| { status: 'cancelled'; reason: 'context-changed-before-dispatch' }
-	| {
-			status: 'indeterminate';
-			reason: 'context-changed-after-dispatch';
-			reconcile: () => Promise<unknown>;
-	  };
-
 export class LiveConnectionRequiredError extends Error {
 	override name = 'LiveConnectionRequiredError';
 	constructor() {

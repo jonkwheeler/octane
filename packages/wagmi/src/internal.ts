@@ -19,8 +19,3 @@ export function subSlot(slot: symbol | undefined, tag: string): symbol | undefin
 	}
 	return child;
 }
-
-export function splitSlot(rest: unknown[]): symbol | undefined {
-	const tail = rest.at(-1);
-	return typeof tail === 'symbol' ? tail : undefined;
-}

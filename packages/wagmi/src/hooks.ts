@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useSyncExternalStore } from 'octane';
+import { useCallback, useContext, useEffect, useRef, useSyncExternalStore } from 'octane';
 import {
 	getChainId,
 	getChains,
@@ -90,11 +90,12 @@ export function useConnection<config extends Config = ResolvedRegister['config']
 ) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	return useSnapshot(
-		(onChange) => watchConnection(config, { onChange }),
-		() => getConnection(config),
-		slot,
+	const subscribe = useCallback(
+		(onChange: () => void) => watchConnection(config, { onChange }),
+		[config],
+		subSlot(slot, 'subscribe'),
 	);
+	return useSnapshot(subscribe, () => getConnection(config), slot);
 }
 
 export function useChainId<config extends Config = ResolvedRegister['config']>(
@@ -103,11 +104,12 @@ export function useChainId<config extends Config = ResolvedRegister['config']>(
 ) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	return useSnapshot(
-		(onChange) => watchChainId(config, { onChange }),
-		() => getChainId(config),
-		slot,
+	const subscribe = useCallback(
+		(onChange: () => void) => watchChainId(config, { onChange }),
+		[config],
+		subSlot(slot, 'subscribe'),
 	);
+	return useSnapshot(subscribe, () => getChainId(config), slot);
 }
 
 export function useChains<config extends Config = ResolvedRegister['config']>(
@@ -116,11 +118,12 @@ export function useChains<config extends Config = ResolvedRegister['config']>(
 ) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	return useSnapshot(
-		(onChange) => watchChains(config, { onChange }),
-		() => getChains(config),
-		slot,
+	const subscribe = useCallback(
+		(onChange: () => void) => watchChains(config, { onChange }),
+		[config],
+		subSlot(slot, 'subscribe'),
 	);
+	return useSnapshot(subscribe, () => getChains(config), slot);
 }
 
 export function useConnectors<config extends Config = ResolvedRegister['config']>(
@@ -129,21 +132,23 @@ export function useConnectors<config extends Config = ResolvedRegister['config']
 ) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	return useSnapshot(
-		(onChange) => watchConnectors(config, { onChange }),
-		() => getConnectors(config),
-		slot,
+	const subscribe = useCallback(
+		(onChange: () => void) => watchConnectors(config, { onChange }),
+		[config],
+		subSlot(slot, 'subscribe'),
 	);
+	return useSnapshot(subscribe, () => getConnectors(config), slot);
 }
 
 export function useConnections(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	return useSnapshot(
-		(onChange) => watchConnections(config, { onChange }),
-		() => getConnections(config),
-		slot,
+	const subscribe = useCallback(
+		(onChange: () => void) => watchConnections(config, { onChange }),
+		[config],
+		subSlot(slot, 'subscribe'),
 	);
+	return useSnapshot(subscribe, () => getConnections(config), slot);
 }
 
 function useMutationWithAliases(
