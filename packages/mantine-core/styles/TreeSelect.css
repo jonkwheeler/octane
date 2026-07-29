@@ -1,0 +1,113 @@
+.m_529d33e8 {
+  --ts-level-offset: 20px;
+  --ts-line-width: calc(0.0625rem * var(--mantine-scale));
+  --ts-line-color: var(--mantine-color-default-border);
+  --ts-option-padding-y: 4px;
+  --ts-option-padding-x: 8px;
+}
+
+.m_28bb748 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  padding: var(--ts-option-padding-y) var(--ts-option-padding-x);
+  padding-inline-start: var(--ts-option-padding-x);
+}
+
+.m_aa3e3f86 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  --_ts-expand-icon-size: calc(1.45 * var(--combobox-option-fz, var(--mantine-font-size-sm)));
+  width: var(--_ts-expand-icon-size);
+  min-width: var(--_ts-expand-icon-size);
+  height: var(--_ts-expand-icon-size);
+  border-radius: var(--mantine-radius-sm);
+  cursor: pointer;
+  color: var(--mantine-color-dimmed);
+  transform: rotate(-90deg);
+}
+
+:where([data-combobox-selected]) .m_aa3e3f86 {
+    color: var(--mantine-color-white);
+  }
+
+:where([dir="rtl"]) .m_aa3e3f86 {
+    transform: rotate(90deg);
+}
+
+.m_aa3e3f86:where([data-expanded]) {
+    transform: rotate(0deg);
+  }
+
+@media (hover: hover) {
+    :where([data-mantine-color-scheme='light']) .m_aa3e3f86:hover {
+      background-color: var(--mantine-color-gray-1);
+  }
+
+    :where([data-mantine-color-scheme='dark']) .m_aa3e3f86:hover {
+      background-color: var(--mantine-color-dark-5);
+  }
+}
+
+@media (hover: none) {
+    :where([data-mantine-color-scheme='light']) .m_aa3e3f86:active {
+      background-color: var(--mantine-color-gray-1);
+  }
+
+    :where([data-mantine-color-scheme='dark']) .m_aa3e3f86:active {
+      background-color: var(--mantine-color-dark-5);
+  }
+}
+
+.m_eaa4cdee {
+  opacity: 0.4;
+  width: 0.8em;
+  min-width: 0.8em;
+  height: 0.8em;
+  margin-inline-start: auto;
+}
+
+:where([data-combobox-selected]) .m_eaa4cdee {
+    opacity: 1;
+  }
+
+.m_ffe3a9c1 {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tree lines */
+.m_57207d5d {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-inline-start: var(--ts-line-width) solid var(--ts-line-color);
+  pointer-events: none;
+}
+
+.m_41b9db0b {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-inline-start: var(--ts-line-width) solid var(--ts-line-color);
+  pointer-events: none;
+}
+
+.m_41b9db0b:where([data-last]) {
+    bottom: auto;
+    height: 50%;
+  }
+
+.m_1246e79 {
+  position: absolute;
+  top: 50%;
+  height: 0;
+  border-top: var(--ts-line-width) solid var(--ts-line-color);
+  pointer-events: none;
+}
