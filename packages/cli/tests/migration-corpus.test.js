@@ -24,7 +24,6 @@ function project(files) {
 }
 
 const MANTINE_PACKAGES = [
-	'@mantine/core',
 	'@mantine/form',
 	'@mantine/charts',
 	'@mantine/notifications',
@@ -60,7 +59,7 @@ describe('migration compatibility corpus', () => {
 		expect(report.blocked).toBe(false);
 	});
 
-	it('keeps the unported Mantine family blocked without hiding supported dependencies', () => {
+	it('keeps unported Mantine extensions blocked without hiding supported dependencies', () => {
 		let installedPackages = {};
 		for (const packageName of MANTINE_PACKAGES) {
 			installedPackages = {
@@ -90,6 +89,11 @@ describe('migration compatibility corpus', () => {
 		expect(bySpecifier.get('@mantine/hooks')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/mantine-hooks',
+			evidence: 'binding-catalog:react-package',
+		});
+		expect(bySpecifier.get('@mantine/core')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-core',
 			evidence: 'binding-catalog:react-package',
 		});
 		expect(bySpecifier.get('recharts')).toMatchObject({

@@ -1,6 +1,16 @@
 {
-  "upstream": "@mantine/core@9.5.0",
-  "status": "in-progress",
+  "upstream": {
+    "package": "@mantine/core",
+    "version": "9.5.0"
+  },
+  "surface": "Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports.",
+  "divergences": [
+    "Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned.",
+    "Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection.",
+    "Event callbacks receive native browser events through Octane's delegated event system."
+  ],
+  "ssr": "Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering.",
+  "verified": "2026-07-29",
   "notes": [
     "Preserves the upstream Mantine component and styles architecture.",
     "Uses Octane-native hooks and Floating UI bindings."

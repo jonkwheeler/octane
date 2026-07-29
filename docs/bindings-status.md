@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 45 `@octanejs/*` framework bindings.
+The central status table for the 47 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -31,10 +31,12 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/jotai`](#octanejsjotai) | `jotai@2.20.2` | Complete 1:1 port: the framework-agnostic vanilla core (`jotai/vanilla`, `/vanilla/utils`, `/vanilla/internals`) is reused verbatim; the React layer (`Provider`, `useStore`, `useAtom`, `useAtomValue`, `useSetAtom`) and `react/utils` (`useResetAtom`, `useReducerAtom`, `useAtomCallback`, `useHydrateAtoms`) are ported onto octane hooks, preserving upstream's useReducer force-update + effect-subscription implementation, async atoms via octane's `use()`. | `jotai/babel/*` (React-specific compile-time plugins) is not shipped | No SSR-specific surface; `useHydrateAtoms` is ported and usable for hydration seeding; no dedicated SSR tests. | 2026-07-21 |
 | [`@octanejs/lexical`](#octanejslexical) | `@lexical/react@0.46.0` | 35 of 39 `@lexical/react` modules ported: composer + contexts, the editable surface, plain/rich text, and the full plugin/menu set (history, lists + check-list, links, tables, markdown shortcuts, the typeahead/node-menu/context-menu family, draggable-block, character-limit, …) plus the `useLexical*` hooks. | Positioning uses `@floating-ui/dom` instead of `@floating-ui/react`; The class-based `LexicalErrorBoundary` becomes an octane error boundary; `forwardRef` becomes ref-as-prop | No dedicated SSR/hydration tests. | 2026-07-09 |
 | [`@octanejs/lucide`](#octanejslucide) | `lucide-react@1.24.0` | Complete against the published `lucide-react@1.24.0` runtime surface: every canonical icon and alias, the `icons` namespace, `Icon`, `createLucideIcon`, `LucideProvider`, `useLucideContext`, `DynamicIcon`, `iconNames`, `dynamicIconImports`, and per-icon subpath imports. | Icon refs are normal Octane `ref` props rather than React `forwardRef` components; Event callbacks receive native DOM events rather than React synthetic events | Supported and tested: icons and provider defaults render through `octane/server`, and client hydration adopts the server-rendered SVG element. | 2026-07-13 |
+| [`@octanejs/mantine-core`](#octanejsmantine-core) | `@mantine/core@9.5.0` | Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports. | Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned; Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection; Event callbacks receive native browser events through Octane's delegated event system | Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering. | 2026-07-29 |
 | [`@octanejs/mantine-hooks`](#octanejsmantine-hooks) | `@mantine/hooks@9.5.0` | Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks. | Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher; DOM subscriptions receive native browser events; React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime | Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering. | 2026-07-28 |
 | [`@octanejs/mdx`](#octanejsmdx) | `@mdx-js/mdx@3.1.1` | The full compile-don't-interpret pipeline: `.mdx`/`.md` → `@mdx-js/mdx` (reused verbatim) → octane compiler, via the `octaneMdx()` Vite plugin plus the `./compile` and `./server` entries; compiler warnings propagate through direct and Vite compile surfaces with authored `.mdx` ranges; `@mdx-js/react`'s provider layer (`MDXProvider`/`useMDXComponents`) is ported onto octane context. The octane website runs on it. | `useMDXComponents` drops upstream's `useMemo` referential-stability wrapper so the call is valid in both server and client runtimes (same observable mapping) | Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`). | 2026-07-17 |
 | [`@octanejs/mobx`](#octanejsmobx) | `mobx-react-lite@4.1.1` | The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias. | React class components and the legacy mobx-react Provider/inject APIs are not included; forwardRef compatibility options are omitted because Octane uses refs as props; React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted | enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions. | 2026-07-28 |
 | [`@octanejs/motion`](#octanejsmotion) | `motion@12.42.2` | Core surface: `motion.<tag>` (animate, gestures, variants with propagation/stagger, drag, layout basics), `AnimatePresence`, `MotionConfig`, and the motion-value hooks (`useMotionValue`, `useScroll`, `useTransform`, `useSpring`, `useAnimate`, `useMotionValueEvent`); motion-dom's animation engine and gesture primitives are reused verbatim. | Exit animations run via cleanup-before-detach instead of React's deferred-deletion machinery; `layout`/`layoutId` use single-element FLIP, not the full projection tree | No SSR-specific surface; no dedicated SSR tests. | 2026-07-21 |
+| [`@octanejs/number-format`](#octanejsnumber-format) | `react-number-format@5.4.5` | Complete React Number Format component and utility surface used by Mantine: NumberFormatBase, NumericFormat, PatternFormat, source-info helpers, caret utilities, and formatting/removal functions. | Input callbacks receive native browser events through Octane instead of React synthetic events; Refs are ordinary props and do not use React.forwardRef | Formatting is deterministic during server rendering; interactive caret correction activates only in the browser. | 2026-07-29 |
 | [`@octanejs/nuqs`](#octanejsnuqs) | `nuqs@2.9.1` | Full vendored port: the framework-agnostic core (`parsers`/`parseAs*`/`createParser`, `createSerializer`, `createLoader`, `createStandardSchemaV1`, the throttle/debounce update queues, sync emitter and URL encoding) is vendored verbatim from nuqs 2.9.1; the React layer (`useQueryState`, `useQueryStates`, the `useSyncExternalStores` helper and the adapter context) is ported onto octane's hooks — same `useState`/`useEffect`/`useSyncExternalStore` implementation shape as upstream, so re-render and URL-reconciliation behaviour matches nuqs on React. Adapters ported: `@octanejs/nuqs/adapters/react` (`NuqsAdapter`, `enableHistorySync`), `/adapters/custom` (`unstable_createAdapterProvider`), `/adapters/testing` (`NuqsTestingAdapter`, `withNuqsTestingAdapter`). Server surface (`@octanejs/nuqs/server`) exposes `createLoader`/`createSerializer`/parsers/`createStandardSchemaV1`. | Framework adapters that bind other React routers are NOT shipped: `nuqs/adapters/next`, `/adapters/remix`, `/adapters/react-router` and `/adapters/tanstack-router` (they require octane ports of those routers). Use `/adapters/react`, or `/adapters/custom` to wire a router; `createSearchParamsCache` (from `nuqs/server`) is not ported: it is built on React Server Components' `React.cache()`, which octane does not implement. Use `createLoader` for request-scoped parsing; `TransitionStartFunction` is declared locally in `defs.ts` rather than imported from `@types/react`, so the package carries no react type dependency; `NuqsTestingAdapter` resets the shared update queue once per mount (ref-guarded) instead of on every render as upstream does; the reset still runs during the first render (before child hooks read the queue), but a re-render no longer re-aborts in-flight/debounced URL writes | The server entry (`@octanejs/nuqs/server`) is react-free and usable during SSR for parsing/serialising search params; the client hooks read `location.search` through `useSyncExternalStore` with an empty-search server snapshot (upstream parity). No dedicated SSR hydration tests yet. | 2026-07-20 |
 | [`@octanejs/radix`](#octanejsradix) | `radix-ui@1.6.4` | Complete against the unified `radix-ui@1.6.4` component surface — all primitives (incl. Dialog, the Menu/DropdownMenu/ContextMenu family, Popover, Tooltip, Select, NavigationMenu, Toast, Menubar, Slider, the form controls, and OneTimePasswordField/PasswordToggleField) plus the composition/state/overlay foundations — verified by a differential suite (same fixtures through octane and the real radix-ui, byte-identical DOM). | `Slot`/`asChild` compose element descriptors (prop-position JSX, `createElement`, `.map()` returns), not children-position JSX; `forwardRef` becomes octane's ref-as-prop | SSR/hydration coverage for the overlay/portal components is still open (tracked in the migration plan). | 2026-07-21 |
 | [`@octanejs/recharts`](#octanejsrecharts) | `recharts@3.9.2` | Partial (phases 0–1 of 5): the static `BarChart`/`LineChart` pipeline end-to-end (`isAnimationActive={false}`), byte-identical to upstream in the differential rig; the Redux/RTK state layer, `Surface`/`Layer`, and the pure shape set are in place. | Chart events coordinate through octane's native delegated events rather than React's synthetic layer | Untested; text measurement (`getStringSize`) returns 0×0 under SSR. | 2026-07-07 |
@@ -305,6 +307,25 @@ Scope/evidence last checked: 2026-07-13.
 
 See also: [`docs/lucide-port-plan.md`](lucide-port-plan.md)
 
+## @octanejs/mantine-core
+
+[`packages/mantine-core`](../packages/mantine-core) `0.1.0` — ports `@mantine/core@9.5.0`. Status data: [`packages/mantine-core/status.json`](../packages/mantine-core/status.json).
+
+Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports.
+
+Known divergences:
+
+- Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned.
+- Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection.
+- Event callbacks receive native browser events through Octane's delegated event system.
+
+SSR / hydration: Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering.
+
+Scope/evidence last checked: 2026-07-29.
+
+- Preserves the upstream Mantine component and styles architecture.
+- Uses Octane-native hooks and Floating UI bindings.
+
 ## @octanejs/mantine-hooks
 
 [`packages/mantine-hooks`](../packages/mantine-hooks) `0.1.0` — ports `@mantine/hooks@9.5.0`. Status data: [`packages/mantine-hooks/status.json`](../packages/mantine-hooks/status.json).
@@ -369,6 +390,21 @@ SSR / hydration: No SSR-specific surface; no dedicated SSR tests.
 Scope/evidence last checked: 2026-07-21.
 
 - Not yet ported: nested/shared layout projection (incl. child scale correction and shared layout during drag), drag momentum + elastic physics, reduced-motion enforcement, the `useTransform` output-map form, and `when: 'beforeChildren' | 'afterChildren'` sequencing.
+
+## @octanejs/number-format
+
+[`packages/number-format`](../packages/number-format) `0.1.0` — ports `react-number-format@5.4.5`. Status data: [`packages/number-format/status.json`](../packages/number-format/status.json).
+
+Complete React Number Format component and utility surface used by Mantine: NumberFormatBase, NumericFormat, PatternFormat, source-info helpers, caret utilities, and formatting/removal functions.
+
+Known divergences:
+
+- Input callbacks receive native browser events through Octane instead of React synthetic events.
+- Refs are ordinary props and do not use React.forwardRef.
+
+SSR / hydration: Formatting is deterministic during server rendering; interactive caret correction activates only in the browser.
+
+Scope/evidence last checked: 2026-07-29.
 
 ## @octanejs/nuqs
 

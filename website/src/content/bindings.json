@@ -33,6 +33,7 @@
       "@octanejs/radix",
       "@octanejs/base-ui",
       "@octanejs/aria",
+      "@octanejs/mantine-core",
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",
@@ -51,6 +52,7 @@
     "packages": [
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
+      "@octanejs/number-format",
       "@octanejs/lexical",
       "@octanejs/tiptap",
       "@octanejs/mdx",

@@ -188,6 +188,20 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/mantine-core",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/core", "version": "9.5.0" },
+      "surface": "Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports.",
+      "divergences": [
+        "Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned.",
+        "Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection.",
+        "Event callbacks receive native browser events through Octane's delegated event system."
+      ],
+      "ssr": "Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-hooks",
       "version": "0.1.0",
       "category": "UI and interaction",
@@ -239,6 +253,19 @@
       ],
       "ssr": "No SSR-specific surface; no dedicated SSR tests.",
       "verified": "2026-07-21"
+    },
+    {
+      "name": "@octanejs/number-format",
+      "version": "0.1.0",
+      "category": "Forms and content",
+      "upstream": { "package": "react-number-format", "version": "5.4.5" },
+      "surface": "Complete React Number Format component and utility surface used by Mantine: NumberFormatBase, NumericFormat, PatternFormat, source-info helpers, caret utilities, and formatting/removal functions.",
+      "divergences": [
+        "Input callbacks receive native browser events through Octane instead of React synthetic events.",
+        "Refs are ordinary props and do not use React.forwardRef."
+      ],
+      "ssr": "Formatting is deterministic during server rendering; interactive caret correction activates only in the browser.",
+      "verified": "2026-07-29"
     },
     {
       "name": "@octanejs/nuqs",
@@ -655,6 +682,8 @@
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
     "@lexical/react": "@octanejs/lexical",
+    "@mantine/core": "@octanejs/mantine-core",
+    "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mdx-js/react": "@octanejs/mdx",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
@@ -734,6 +763,7 @@
     "react-aria-components": "@octanejs/aria",
     "react-hook-form": "@octanejs/hook-form",
     "react-i18next": "@octanejs/i18next",
+    "react-number-format": "@octanejs/number-format",
     "react-redux": "@octanejs/redux",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",

@@ -1,0 +1,14 @@
+{
+  "upstream": {
+    "package": "react-number-format",
+    "version": "5.4.5"
+  },
+  "surface": "Complete React Number Format component and utility surface used by Mantine: NumberFormatBase, NumericFormat, PatternFormat, source-info helpers, caret utilities, and formatting/removal functions.",
+  "divergences": [
+    "Input callbacks receive native browser events through Octane instead of React synthetic events.",
+    "Refs are ordinary props and do not use React.forwardRef."
+  ],
+  "ssr": "Formatting is deterministic during server rendering; interactive caret correction activates only in the browser.",
+  "verified": "2026-07-29",
+  "notes": []
+}

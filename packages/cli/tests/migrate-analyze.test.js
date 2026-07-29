@@ -74,7 +74,7 @@ describe('migration preflight', () => {
 		]);
 	});
 
-	it('blocks a React-bound Mantine package but labels vanilla packages only as candidates', () => {
+	it('recognizes the Mantine Core binding and labels vanilla packages only as candidates', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `
 				import { Button } from '@mantine/core';
@@ -91,8 +91,9 @@ describe('migration preflight', () => {
 			expect.arrayContaining([
 				expect.objectContaining({
 					specifier: '@mantine/core',
-					classification: 'blocked',
-					evidence: 'react-dependency',
+					classification: 'supported',
+					replacement: '@octanejs/mantine-core',
+					evidence: 'binding-catalog:react-package',
 				}),
 				expect.objectContaining({
 					specifier: 'vanilla-math',
@@ -101,7 +102,7 @@ describe('migration preflight', () => {
 				}),
 			]),
 		);
-		expect(report.blocked).toBe(true);
+		expect(report.blocked).toBe(false);
 	});
 
 	it('reports source blockers and unresolved computed imports without aborting the report', () => {
