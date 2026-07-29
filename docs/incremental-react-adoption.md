@@ -76,7 +76,9 @@ executable reference.
 
 React Router applications use this same boundary: keep the router, route
 modules, loaders, actions, and providers in React, then mount Octane below a
-route component. TanStack Start follows the same rule: keep file routes,
+route component. The committed
+[`react-router-islands` example](../examples/react-router-islands/README.md)
+builds this boundary. TanStack Start follows the same rule: keep file routes,
 server functions, hydration, and the root document React-owned; use Octane for
 client leaves below a route. Do not convert a route module itself.
 
