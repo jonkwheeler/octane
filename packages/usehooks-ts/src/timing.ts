@@ -87,7 +87,7 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 			value.isPending = () => pending;
 			return value;
 		},
-		[func, delay, options],
+		[func, delay, options?.leading, options?.trailing, options?.maxWait],
 		subSlot(slot, 'memo'),
 	);
 	useIsoLayoutEffect(() => () => wrapped.cancel(), [wrapped], subSlot(slot, 'cleanup'));

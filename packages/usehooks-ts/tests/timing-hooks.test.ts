@@ -152,4 +152,16 @@ describe('timing and lifecycle hooks', () => {
 		await act(() => vi.advanceTimersByTime(50));
 		expect(result.find('#value').textContent).toBe('-0');
 	});
+
+	it('preserves pending value updates across equivalent inline options', async () => {
+		const onPending = vi.fn();
+		const result = mount(DebounceValueProbe, { value: 0, onPending });
+		result.update(DebounceValueProbe, { value: 1, onPending });
+		result.update(DebounceValueProbe, { value: 1, onPending });
+
+		result.click('#pending');
+		expect(onPending).toHaveBeenLastCalledWith(true);
+		await act(() => vi.advanceTimersByTime(50));
+		expect(result.find('#value').textContent).toBe('1');
+	});
 });
