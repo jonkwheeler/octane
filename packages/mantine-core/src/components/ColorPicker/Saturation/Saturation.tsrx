@@ -47,7 +47,8 @@ export function Saturation({
         onScrubEnd?.();
       },
       onScrubStart,
-    }
+    },
+    'ltr'
   );
 
   useEffect(() => {

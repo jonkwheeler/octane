@@ -78,6 +78,8 @@ export function useFloatingWindow<T extends HTMLElement>(
 	const [isDragging, setIsDragging] = useState(false);
 	const isDraggingRef = useRef(false);
 	const initialized = useRef(false);
+	const previousUserSelect = useRef('');
+	const previousWebkitUserSelect = useRef('');
 	const enabledRef = useRefValue(options.enabled);
 	const onPositionChangeRef = useRefValue(options.onPositionChange);
 	const onDragStartRef = useRefValue(options.onDragStart);
@@ -147,6 +149,8 @@ export function useFloatingWindow<T extends HTMLElement>(
 			}
 
 			setDragging(true);
+			previousUserSelect.current = document.body.style.userSelect;
+			previousWebkitUserSelect.current = document.body.style.webkitUserSelect;
 			document.body.style.userSelect = 'none';
 			document.body.style.webkitUserSelect = 'none';
 
@@ -202,8 +206,8 @@ export function useFloatingWindow<T extends HTMLElement>(
 		const onEnd = () => {
 			if (isDraggingRef.current) {
 				setDragging(false);
-				document.body.style.userSelect = '';
-				document.body.style.webkitUserSelect = '';
+				document.body.style.userSelect = previousUserSelect.current;
+				document.body.style.webkitUserSelect = previousWebkitUserSelect.current;
 				onDragEndRef.current?.();
 			}
 		};
@@ -213,6 +217,11 @@ export function useFloatingWindow<T extends HTMLElement>(
 
 		return () => {
 			controller.abort();
+			if (isDraggingRef.current) {
+				isDraggingRef.current = false;
+				document.body.style.userSelect = previousUserSelect.current;
+				document.body.style.webkitUserSelect = previousWebkitUserSelect.current;
+			}
 		};
 	}, [
 		options.constrainToViewport,

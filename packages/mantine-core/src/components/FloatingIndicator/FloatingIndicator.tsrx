@@ -94,7 +94,7 @@ export const FloatingIndicator = factory<FloatingIndicatorFactory>((_props) => {
     ...others
   } = props;
 
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion(undefined, undefined);
 
   const getStyles = useStyles<FloatingIndicatorFactory>({
     name: 'FloatingIndicator',

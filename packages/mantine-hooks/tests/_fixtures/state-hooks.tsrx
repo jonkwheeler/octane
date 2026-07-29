@@ -1,4 +1,4 @@
-import { useCounter, useDisclosure, useListState } from '@octanejs/mantine-hooks';
+import { useCounter, useDisclosure, useFetch, useListState } from '@octanejs/mantine-hooks';
 
 export function StateHooks() @{
 	const [count, counter] = useCounter(1, { min: 0, max: 2 });
@@ -14,5 +14,15 @@ export function StateHooks() @{
 		</output>
 		<button id="append" onClick={() => itemsHandlers.append('Grace')}>append</button>
 		<output id="items">{items.join(',')}</output>
+	</section>
+}
+
+export function FetchHooks() @{
+	const { data, loading, refetch } = useFetch<{ value: string }>('/state', { autoInvoke: false });
+
+	<section>
+		<button id="fetch" onClick={() => void refetch()}>fetch</button>
+		<output id="loading">{loading ? 'loading' : 'idle'}</output>
+		<output id="data">{data?.value ?? 'none'}</output>
 	</section>
 }

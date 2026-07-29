@@ -130,7 +130,8 @@ export const ColorSlider = factory<ColorSliderFactory>((_props) => {
         onScrubEnd?.();
       },
       onScrubStart,
-    }
+    },
+    'ltr'
   );
 
   useDidUpdate(() => {

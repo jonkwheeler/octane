@@ -65,6 +65,7 @@ export function Leaf() {
 					<>
 						<textarea onChange={() => {}} />
 						<input type="email" onChange={() => {}} />
+						<input type={'email'} onChange={() => {}} />
 						<input type="file" onChange={() => {}} />
 						<input type="range" onChange={() => {}} />
 						<input type="date" onChange={() => {}} />
@@ -79,6 +80,7 @@ export function Leaf() {
 		expect(plan.blocked).toBe(false);
 		expect(plan.files[0].output).toContain('<textarea onInput=');
 		expect(plan.files[0].output).toContain('<input type="email" onInput=');
+		expect(plan.files[0].output).toContain("<input type={'email'} onInput=");
 		expect(plan.files[0].output).toContain('<input type="file" onChange=');
 		expect(plan.files[0].output).toContain('<input type="range" onChange=');
 		expect(plan.files[0].output).toContain('<input type="date" onChange=');

@@ -114,6 +114,8 @@ export const DropzoneFullScreen = factory<DropzoneFullScreenFactory>((_props) =>
 
   useEffect(() => {
     if (!active) {
+      close();
+      setCounter(0);
       return undefined;
     }
 

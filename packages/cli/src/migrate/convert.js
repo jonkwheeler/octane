@@ -85,6 +85,12 @@ function textInputOnChangeEdit(node) {
 		if (name === 'type') {
 			if (attribute.value?.type === 'Literal' || attribute.value?.type === 'StringLiteral') {
 				type = String(attribute.value.value).toLowerCase();
+			} else if (
+				attribute.value?.type === 'JSXExpressionContainer' &&
+				(attribute.value.expression?.type === 'Literal' ||
+					attribute.value.expression?.type === 'StringLiteral')
+			) {
+				type = String(attribute.value.expression.value).toLowerCase();
 			} else {
 				hasDynamicType = true;
 			}

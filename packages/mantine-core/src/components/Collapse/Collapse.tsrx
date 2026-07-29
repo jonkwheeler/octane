@@ -81,7 +81,7 @@ export const Collapse = factory<CollapseFactory>((props) => {
 
   const env = useMantineEnv();
   const theme = useMantineTheme();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion(undefined, undefined);
   const reduceMotion = theme.respectReducedMotion ? shouldReduceMotion : false;
   const duration = reduceMotion ? 0 : transitionDuration;
   const hook = orientation === 'horizontal' ? useHorizontalCollapse : useCollapse;

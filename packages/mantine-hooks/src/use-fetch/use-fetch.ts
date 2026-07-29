@@ -26,11 +26,13 @@ export function useFetch<T>(
 			controller.current.abort();
 		}
 
-		controller.current = new AbortController();
+		const request = new AbortController();
+		controller.current = request;
 
 		setLoading(true);
+		setError(null);
 
-		return fetch(url, { ...options, signal: controller.current.signal })
+		return fetch(url, { ...options, signal: request.signal })
 			.then((res) => {
 				if (!res.ok) {
 					throw new Error(`Request failed with status ${res.status}`);
@@ -38,15 +40,18 @@ export function useFetch<T>(
 				return res.json();
 			})
 			.then((res) => {
-				setData(res);
-				setLoading(false);
+				if (controller.current === request) {
+					setData(res);
+					setLoading(false);
+				}
 				return res as T;
 			})
 			.catch((err) => {
-				setLoading(false);
-
-				if (err.name !== 'AbortError') {
-					setError(err);
+				if (controller.current === request) {
+					setLoading(false);
+					if (err.name !== 'AbortError') {
+						setError(err);
+					}
 				}
 
 				return err;

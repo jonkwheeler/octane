@@ -19,8 +19,17 @@ export { ResponsiveContainer } from './component/ResponsiveContainer.tsrx';
 export type { Props as ResponsiveContainerProps } from './component/ResponsiveContainer.tsrx';
 export { Tooltip } from './component/Tooltip.tsrx';
 export type { TooltipProps } from './component/Tooltip.tsrx';
+export { DefaultTooltipContent } from './component/DefaultTooltipContent.tsrx';
+export type {
+	Props as DefaultTooltipContentProps,
+	Formatter as TooltipFormatter,
+	NameType,
+	ValueType,
+} from './component/DefaultTooltipContent.tsrx';
 export { Legend } from './component/Legend.tsrx';
 export type { Props as LegendProps } from './component/Legend.tsrx';
+export { DefaultLegendContent } from './component/DefaultLegendContent.tsrx';
+export type { Props as DefaultLegendContentProps } from './component/DefaultLegendContent.tsrx';
 export { Rectangle } from './shape/Rectangle.tsrx';
 export { Dot } from './shape/Dot.tsrx';
 export { Cross } from './shape/Cross.tsrx';
@@ -41,6 +50,8 @@ export { Scatter } from './cartesian/Scatter.tsrx';
 export { Funnel } from './cartesian/Funnel.tsrx';
 export { CartesianGrid } from './cartesian/CartesianGrid.tsrx';
 export { ReferenceLine } from './cartesian/ReferenceLine.tsrx';
+export { ErrorBar } from './cartesian/ErrorBar.tsrx';
+export type { Props as ErrorBarProps } from './cartesian/ErrorBar.tsrx';
 export { ZAxis } from './cartesian/ZAxis.tsrx';
 export { XAxis } from './cartesian/XAxis.tsrx';
 export { YAxis } from './cartesian/YAxis.tsrx';

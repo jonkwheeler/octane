@@ -40,13 +40,13 @@ describe('octane migrate analyze', () => {
 
 	it('uses the diagnostic exit code and human findings for a blocked package', async () => {
 		const project = fixture({
-			'src/Leaf.tsx': `import { Button } from '@mantine/core'; export const Leaf = () => <Button />;`,
-			...installed('@mantine/core', '8.0.0', { peerDependencies: { react: '^19' } }),
+			'src/Leaf.tsx': `import { DndProvider } from 'react-dnd'; export const Leaf = () => <DndProvider />;`,
+			...installed('react-dnd', '16.0.1', { peerDependencies: { react: '^19' } }),
 		});
 		const result = await runCli(['migrate', 'analyze', 'src/Leaf.tsx', '--cwd', project.root]);
 
 		expect(result.exitCode).toBe(3);
-		expect(result.stdout).toContain('@mantine/core has no supported Octane binding');
+		expect(result.stdout).toContain('react-dnd has no supported Octane binding');
 	});
 
 	it('does not change the existing analyze command or its help', async () => {

@@ -156,7 +156,7 @@ export const Notifications = factory<NotificationsFactory>((_props) => {
   const theme = useMantineTheme();
   const data = useNotifications(store);
   const forceUpdate = useForceUpdate();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion(undefined, undefined);
   const refs = useRef<Record<string, HTMLDivElement>>({});
   const previousLength = useRef<number>(0);
   const [hoveredCount, setHoveredCount] = useState(0);

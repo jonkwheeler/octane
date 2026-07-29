@@ -6,6 +6,9 @@ import {
 	Bar,
 	CartesianGrid,
 	ComposedChart,
+	DefaultLegendContent,
+	DefaultTooltipContent,
+	ErrorBar,
 	Funnel,
 	FunnelChart,
 	Line,
@@ -30,6 +33,10 @@ import {
 	YAxis,
 	ZAxis,
 } from '@octanejs/recharts';
+
+void DefaultLegendContent;
+void DefaultTooltipContent;
+void ErrorBar;
 
 // Phase 1 differential fixture: static BarChart + LineChart with axes
 // (isAnimationActive={false} — the animated path is Phase 5).
