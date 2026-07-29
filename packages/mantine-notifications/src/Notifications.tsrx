@@ -1,0 +1,300 @@
+import { useCallback, useEffect, useRef, useState, type OctaneNode } from 'octane';
+import {
+  BasePortalProps,
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getDefaultZIndex,
+  OptionalPortal,
+  rem,
+  RemoveScroll,
+  StylesApiProps,
+  useMantineTheme,
+  useProps,
+  useStyles,
+} from '@octanejs/mantine-core';
+import { useDidUpdate, useForceUpdate, useReducedMotion } from '@octanejs/mantine-hooks';
+import {
+  getGroupedNotifications,
+  positions,
+} from './get-grouped-notifications/get-grouped-notifications';
+import { getNotificationStateStyles } from './get-notification-state-styles';
+import { NotificationContainer } from './NotificationContainer.tsrx';
+import {
+  hideNotification,
+  NotificationPosition,
+  notifications,
+  NotificationsStore,
+  notificationsStore,
+  useNotifications,
+} from './notifications.store';
+import classes from './Notifications.module.css';
+
+type TransitionStatus = 'entering' | 'entered' | 'exiting' | 'exited' | 'unmounted';
+
+function Transition({
+  children,
+}: {
+  children: (state: TransitionStatus) => OctaneNode;
+  timeout?: number;
+  onEnter?: () => unknown;
+  nodeRef?: { current: HTMLDivElement };
+}) {
+  return children('entered');
+}
+
+function TransitionGroup({ children }: { children?: OctaneNode }) {
+  return <>{children}</>;
+}
+
+export type NotificationsStylesNames = 'root' | 'notification';
+export type NotificationsCssVariables = {
+  root: '--notifications-z-index' | '--notifications-container-width';
+};
+
+export interface NotificationsProps
+  extends BoxProps, StylesApiProps<NotificationsFactory>, ElementProps<'div'> {
+  /** Notifications default position @default 'bottom-right' */
+  position?: NotificationPosition;
+
+  /** Auto close timeout for all notifications in ms, `false` to disable auto close, can be overwritten for individual notifications in `notifications.show` function @default 4000 */
+  autoClose?: number | false;
+
+  /** Notification transition duration in ms @default 250 */
+  transitionDuration?: number;
+
+  /** Determines whether notifications can be dismissed by dragging left or right @default true */
+  allowDragDismiss?: boolean;
+
+  /** Determines whether notifications can be dismissed with horizontal scroll gesture while hovered @default true */
+  allowScrollDismiss?: boolean;
+
+  /** Notification width, cannot exceed 100% @default 440 */
+  containerWidth?: number | string;
+
+  /** Notification `max-height`, used for transitions @default 200 */
+  notificationMaxHeight?: number | string;
+
+  /** Maximum number of notifications displayed at a time, other new notifications will be added to queue @default 5 */
+  limit?: number;
+
+  /** Notifications container z-index @default 400 */
+  zIndex?: string | number;
+
+  /** Props passed down to the `Portal` component */
+  portalProps?: BasePortalProps;
+
+  /** Store for notifications state, can be used to create multiple instances of notifications system in your application */
+  store?: NotificationsStore;
+
+  /** Determines whether notifications container should be rendered inside `Portal` @default true */
+  withinPortal?: boolean;
+
+  /** Determines which notifications should pause auto close on hover, `'all'` – pauses auto close for all notifications when any notification is hovered, `'notification'` – pauses auto close only for the hovered notification @default 'all' */
+  pauseResetOnHover?: 'all' | 'notification';
+}
+
+export type NotificationsFactory = Factory<{
+  props: NotificationsProps;
+  ref: HTMLDivElement;
+  stylesNames: NotificationsStylesNames;
+  vars: NotificationsCssVariables;
+  staticComponents: {
+    show: typeof notifications.show;
+    hide: typeof notifications.hide;
+    update: typeof notifications.update;
+    clean: typeof notifications.clean;
+    cleanQueue: typeof notifications.cleanQueue;
+    updateState: typeof notifications.updateState;
+  };
+}>;
+
+const defaultProps = {
+  position: 'bottom-right',
+  autoClose: 4000,
+  transitionDuration: 250,
+  allowDragDismiss: true,
+  allowScrollDismiss: true,
+  containerWidth: 440,
+  notificationMaxHeight: 200,
+  limit: 5,
+  zIndex: getDefaultZIndex('overlay'),
+  store: notificationsStore,
+  withinPortal: true,
+  pauseResetOnHover: 'all',
+} satisfies Partial<NotificationsProps>;
+
+const varsResolver = createVarsResolver<NotificationsFactory>((_, { zIndex, containerWidth }) => ({
+  root: {
+    '--notifications-z-index': zIndex?.toString(),
+    '--notifications-container-width': rem(containerWidth),
+  },
+}));
+
+export const Notifications = factory<NotificationsFactory>((_props) => {
+  const props = useProps('Notifications', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    attributes,
+    position,
+    autoClose,
+    transitionDuration,
+    allowDragDismiss,
+    allowScrollDismiss,
+    containerWidth,
+    notificationMaxHeight,
+    limit,
+    zIndex,
+    store,
+    portalProps,
+    withinPortal,
+    pauseResetOnHover,
+    ...others
+  } = props;
+
+  const theme = useMantineTheme();
+  const data = useNotifications(store);
+  const forceUpdate = useForceUpdate();
+  const shouldReduceMotion = useReducedMotion(undefined, undefined);
+  const refs = useRef<Record<string, HTMLDivElement>>({});
+  const previousLength = useRef<number>(0);
+  const [hoveredCount, setHoveredCount] = useState(0);
+
+  const handleHoverStart = useCallback(() => setHoveredCount((c) => c + 1), []);
+  const handleHoverEnd = useCallback(() => setHoveredCount((c) => Math.max(0, c - 1)), []);
+
+  const reduceMotion = theme.respectReducedMotion ? shouldReduceMotion : false;
+  const duration = reduceMotion ? 1 : transitionDuration;
+
+  const getStyles = useStyles<NotificationsFactory>({
+    name: 'Notifications',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  useEffect(() => {
+    store?.updateState((current) => ({
+      ...current,
+      limit: limit || 5,
+      defaultPosition: position,
+    }));
+  }, [limit, position]);
+
+  useDidUpdate(() => {
+    if (data.notifications.length > previousLength.current) {
+      setTimeout(() => forceUpdate(), 0);
+    }
+    previousLength.current = data.notifications.length;
+  }, [data.notifications]);
+
+  const grouped = getGroupedNotifications(data.notifications, position);
+  const groupedComponents = positions.reduce(
+    (acc, pos) => {
+      acc[pos] = grouped[pos].map(({ style: notificationStyle, ...notification }) => (
+        <Transition
+          key={notification.id}
+          timeout={duration}
+          onEnter={() => refs.current[notification.id!].offsetHeight}
+          nodeRef={{ current: refs.current[notification.id!] }}
+        >
+          {(state: TransitionStatus) => (
+            <NotificationContainer
+              ref={(node: HTMLDivElement | null) => {
+                if (node) {
+                  refs.current[notification.id!] = node;
+                } else {
+                  delete refs.current[notification.id!];
+                }
+              }}
+              data={notification}
+              onHide={(id: string) => hideNotification(id, store)}
+              autoClose={autoClose}
+              transitionDuration={duration}
+              allowDragDismiss={allowDragDismiss}
+              allowScrollDismiss={allowScrollDismiss}
+              paused={pauseResetOnHover === 'all' ? hoveredCount > 0 : false}
+              onHoverStart={handleHoverStart}
+              onHoverEnd={handleHoverEnd}
+              {...getStyles('notification', {
+                style: {
+                  ...getNotificationStateStyles({
+                    state,
+                    position: pos,
+                    transitionDuration: duration,
+                    maxHeight: notificationMaxHeight,
+                  }),
+                  ...notificationStyle,
+                },
+              })}
+            />
+          )}
+        </Transition>
+      ));
+
+      return acc;
+    },
+    {} as Record<NotificationPosition, OctaneNode>
+  );
+
+  return (
+    <OptionalPortal withinPortal={withinPortal} {...portalProps}>
+      <Box {...getStyles('root')} data-position="top-center" {...others}>
+        <TransitionGroup>{groupedComponents['top-center']}</TransitionGroup>
+      </Box>
+
+      <Box {...getStyles('root')} data-position="top-left" {...others}>
+        <TransitionGroup>{groupedComponents['top-left']}</TransitionGroup>
+      </Box>
+
+      <Box
+        {...getStyles('root', { className: RemoveScroll.classNames.fullWidth })}
+        data-position="top-right"
+        {...others}
+      >
+        <TransitionGroup>{groupedComponents['top-right']}</TransitionGroup>
+      </Box>
+
+      <Box
+        {...getStyles('root', { className: RemoveScroll.classNames.fullWidth })}
+        data-position="bottom-right"
+        {...others}
+      >
+        <TransitionGroup>{groupedComponents['bottom-right']}</TransitionGroup>
+      </Box>
+
+      <Box {...getStyles('root')} data-position="bottom-left" {...others}>
+        <TransitionGroup>{groupedComponents['bottom-left']}</TransitionGroup>
+      </Box>
+
+      <Box {...getStyles('root')} data-position="bottom-center" {...others}>
+        <TransitionGroup>{groupedComponents['bottom-center']}</TransitionGroup>
+      </Box>
+    </OptionalPortal>
+  );
+});
+
+Notifications.classes = classes;
+Notifications.varsResolver = varsResolver;
+Notifications.displayName = '@mantine/notifications/Notifications';
+Notifications.show = notifications.show;
+Notifications.hide = notifications.hide;
+Notifications.update = notifications.update;
+Notifications.clean = notifications.clean;
+Notifications.cleanQueue = notifications.cleanQueue;
+Notifications.updateState = notifications.updateState;

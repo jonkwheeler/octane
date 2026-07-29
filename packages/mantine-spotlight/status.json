@@ -1,0 +1,10 @@
+{
+  "upstream": { "package": "@mantine/spotlight", "version": "9.5.0" },
+  "surface": "Complete @mantine/spotlight 9.5.0 runtime surface: compound Spotlight components, filtering, keyboard navigation, hotkeys, and independent stores.",
+  "divergences": [
+    "Keyboard and pointer callbacks receive native browser events."
+  ],
+  "ssr": "Store state and closed Spotlight roots render deterministically; DOM navigation activates on the client.",
+  "verified": "2026-07-29",
+  "notes": []
+}

@@ -1,0 +1,42 @@
+{
+  "name": "@octanejs/mantine-code-highlight",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Mantine code highlighting components for Octane.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/mantine-code-highlight"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": ["src", "README.md"],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --project mantine-code-highlight"
+  },
+  "dependencies": {
+    "@octanejs/mantine-core": "workspace:*",
+    "@octanejs/mantine-hooks": "workspace:*",
+    "clsx": "^2.1.1"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@mantine/code-highlight": "9.5.0",
+    "@types/react": "catalog:default",
+    "octane": "workspace:*",
+    "vitest": "catalog:default"
+  }
+}
