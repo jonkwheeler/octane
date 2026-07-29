@@ -21,10 +21,9 @@ export function WalletButton(props: WalletButtonProps) @{
 	const connect = () => {
 		if (!context?.mounted || !connector) return;
 		const token = context.beginConnecting();
-		mutation.connect({ connector }, {
-			onError: () => context.endConnecting(token),
-			onSuccess: () => context.endConnecting(token),
-		});
+		void mutation.connectAsync({ connector }).catch(() => {}).finally(
+			() => context.endConnecting(token),
+		);
 	};
 	@if (props.children) {
 		{

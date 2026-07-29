@@ -210,13 +210,9 @@ function Modal(props: {
 	const connectWallet = (entry: WalletEntry) => {
 		if (!entry.connector) return;
 		const pendingToken = props.beginConnecting();
-		connect.connect({ connector: entry.connector }, {
-			onError: () => props.endConnecting(pendingToken),
-			onSuccess: () => {
-				props.endConnecting(pendingToken);
-				props.close(props.token);
-			},
-		});
+		void connect.connectAsync({ connector: entry.connector }).then(
+			() => props.close(props.token),
+		).catch(() => {}).finally(() => props.endConnecting(pendingToken));
 	};
 
 	<div
@@ -341,16 +337,20 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 	>(null);
 	const connection = useConnection();
 	const [mounted, setMounted] = useState(false);
-	const [connectingToken, setConnectingToken] = useState<symbol | null>(null);
+	const connectingTokens = useRef(new Set<symbol>());
+	const [connectingCount, setConnectingCount] = useState(0);
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	useEffect(() => setMounted(true), []);
 	const beginConnecting = useCallback(() => {
 		const token = Symbol('rainbowkit-connect');
-		setConnectingToken(token);
+		connectingTokens.current.add(token);
+		setConnectingCount(connectingTokens.current.size);
 		return token;
 	}, []);
 	const endConnecting = useCallback((token: symbol) => {
-		setConnectingToken((current) => current === token ? null : current);
+		if (connectingTokens.current.delete(token)) {
+			setConnectingCount(connectingTokens.current.size);
+		}
 	}, []);
 	const connectors = useConnect().connectors;
 	const wallets = useMemo(() => walletEntries(connectors, props.wallets ?? []), [
@@ -396,7 +396,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			beginConnecting,
 			closeModal,
 			connected: connection.status === 'connected',
-			connecting: connectingToken !== null || connection.status === 'connecting' ||
+			connecting: connectingCount > 0 || connection.status === 'connecting' ||
 				connection.status === 'reconnecting',
 			endConnecting,
 			mounted,
@@ -407,7 +407,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			activeModal,
 			beginConnecting,
 			closeModal,
-			connectingToken,
+			connectingCount,
 			connection.status,
 			endConnecting,
 			mounted,

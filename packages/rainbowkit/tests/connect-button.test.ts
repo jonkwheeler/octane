@@ -340,6 +340,46 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		});
 	});
 
+	it('clears a pending modal connection after dismissal without reopening it', async () => {
+		const config = setup();
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await gate;
+			return original(parameters);
+		};
+		const opener = mounted!.find('#custom-connect') as HTMLButtonElement;
+		opener.focus();
+		opener.click();
+		flushEffects();
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+
+		act(() => {
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		});
+		flushEffects();
+		await Promise.resolve();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(document.activeElement).toBe(opener);
+
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted!.find('#connection-status').textContent).not.toBe('connecting');
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(document.activeElement).toBe(opener);
+	});
+
 	it('shares slow WalletButton connection state with Custom and default controls', async () => {
 		const config = setup();
 		let release!: () => void;
@@ -391,6 +431,34 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
+		expect(mounted!.find('#connection-status').textContent).not.toBe('connecting');
+	});
+
+	it('keeps the older WalletButton pending state when a newer request completes first', async () => {
+		const config = setup();
+		const releases: Array<() => void> = [];
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await new Promise<void>((resolve) => releases.push(resolve));
+			return original(parameters);
+		};
+		latestWalletConnect!();
+		latestWalletConnect!();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		releases[1]!();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		releases[0]!();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted!.find('#connection-status').textContent).not.toBe('connecting');
 	});
 
 	it('shows wrong-network controls and recovers through the chain modal', async () => {
