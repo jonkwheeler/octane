@@ -24,7 +24,6 @@ function project(files) {
 }
 
 const MANTINE_PACKAGES = [
-	'@mantine/tiptap',
 	'@mantine/dropzone',
 	'@mantine/carousel',
 	'@mantine/schedule',
@@ -122,6 +121,11 @@ describe('migration compatibility corpus', () => {
 		expect(bySpecifier.get('@mantine/code-highlight')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/mantine-code-highlight',
+			evidence: 'binding-catalog:react-package',
+		});
+		expect(bySpecifier.get('@mantine/tiptap')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-tiptap',
 			evidence: 'binding-catalog:react-package',
 		});
 		expect(bySpecifier.get('recharts')).toMatchObject({

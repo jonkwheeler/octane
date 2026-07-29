@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 55 `@octanejs/*` framework bindings.
+The central status table for the 56 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -41,6 +41,7 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/mantine-nprogress`](#octanejsmantine-nprogress) | `@mantine/nprogress@9.5.0` | Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions. | none known | The initial progress state renders deterministically; timers activate only when actions run on the client. | 2026-07-29 |
 | [`@octanejs/mantine-spotlight`](#octanejsmantine-spotlight) | `@mantine/spotlight@9.5.0` | Complete @mantine/spotlight 9.5.0 runtime surface: compound Spotlight components, filtering, keyboard navigation, hotkeys, and independent stores. | Keyboard and pointer callbacks receive native browser events | Store state and closed Spotlight roots render deterministically; DOM navigation activates on the client. | 2026-07-29 |
 | [`@octanejs/mantine-store`](#octanejsmantine-store) | `@mantine/store@9.5.0` | Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates. | useStore subscribes through Octane's useSyncExternalStore implementation | Store snapshots are deterministic during server rendering. | 2026-07-29 |
+| [`@octanejs/mantine-tiptap`](#octanejsmantine-tiptap) | `@mantine/tiptap@9.5.0` | Complete @mantine/tiptap 9.5.0 runtime surface: RichTextEditor, content, toolbar, control groups, formatting controls, link editing, color controls, source mode, labels, and Link and TaskList helpers. | The editor renderer and subscriptions use @octanejs/tiptap instead of @tiptap/react; Control callbacks receive native browser events | RichTextEditor follows @octanejs/tiptap's deferred editor construction and deterministic server shell. | 2026-07-29 |
 | [`@octanejs/mdx`](#octanejsmdx) | `@mdx-js/mdx@3.1.1` | The full compile-don't-interpret pipeline: `.mdx`/`.md` → `@mdx-js/mdx` (reused verbatim) → octane compiler, via the `octaneMdx()` Vite plugin plus the `./compile` and `./server` entries; compiler warnings propagate through direct and Vite compile surfaces with authored `.mdx` ranges; `@mdx-js/react`'s provider layer (`MDXProvider`/`useMDXComponents`) is ported onto octane context. The octane website runs on it. | `useMDXComponents` drops upstream's `useMemo` referential-stability wrapper so the call is valid in both server and client runtimes (same observable mapping) | Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`). | 2026-07-17 |
 | [`@octanejs/mobx`](#octanejsmobx) | `mobx-react-lite@4.1.1` | The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias. | React class components and the legacy mobx-react Provider/inject APIs are not included; forwardRef compatibility options are omitted because Octane uses refs as props; React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted | enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions. | 2026-07-28 |
 | [`@octanejs/motion`](#octanejsmotion) | `motion@12.42.2` | Core surface: `motion.<tag>` (animate, gestures, variants with propagation/stagger, drag, layout basics), `AnimatePresence`, `MotionConfig`, and the motion-value hooks (`useMotionValue`, `useScroll`, `useTransform`, `useSpring`, `useAnimate`, `useMotionValueEvent`); motion-dom's animation engine and gesture primitives are reused verbatim. | Exit animations run via cleanup-before-detach instead of React's deferred-deletion machinery; `layout`/`layoutId` use single-element FLIP, not the full projection tree | No SSR-specific surface; no dedicated SSR tests. | 2026-07-21 |
@@ -461,6 +462,21 @@ Known divergences:
 - useStore subscribes through Octane's useSyncExternalStore implementation.
 
 SSR / hydration: Store snapshots are deterministic during server rendering.
+
+Scope/evidence last checked: 2026-07-29.
+
+## @octanejs/mantine-tiptap
+
+[`packages/mantine-tiptap`](../packages/mantine-tiptap) `0.1.0` — ports `@mantine/tiptap@9.5.0`. Status data: [`packages/mantine-tiptap/status.json`](../packages/mantine-tiptap/status.json).
+
+Complete @mantine/tiptap 9.5.0 runtime surface: RichTextEditor, content, toolbar, control groups, formatting controls, link editing, color controls, source mode, labels, and Link and TaskList helpers.
+
+Known divergences:
+
+- The editor renderer and subscriptions use @octanejs/tiptap instead of @tiptap/react.
+- Control callbacks receive native browser events.
+
+SSR / hydration: RichTextEditor follows @octanejs/tiptap's deferred editor construction and deterministic server shell.
 
 Scope/evidence last checked: 2026-07-29.
 

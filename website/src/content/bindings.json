@@ -60,6 +60,7 @@
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
       "@octanejs/mantine-form",
+      "@octanejs/mantine-tiptap",
       "@octanejs/number-format",
       "@octanejs/lexical",
       "@octanejs/tiptap",

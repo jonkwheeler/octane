@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**67 publishable package(s), including 55 framework binding(s).**
+**68 publishable package(s), including 56 framework binding(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
@@ -40,6 +40,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/mantine-nprogress` | [`packages/mantine-nprogress`](../packages/mantine-nprogress) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-spotlight` | [`packages/mantine-spotlight`](../packages/mantine-spotlight) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mantine-store` | [`packages/mantine-store`](../packages/mantine-store) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-tiptap` | [`packages/mantine-tiptap`](../packages/mantine-tiptap) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mcp-server` | [`packages/octane-mcp-server`](../packages/octane-mcp-server) | agent tooling | `0.2.9` | 2 |
 | `@octanejs/mdx` | [`packages/mdx`](../packages/mdx) | framework binding | `0.1.15` | 4 |
 | `@octanejs/mobx` | [`packages/mobx`](../packages/mobx) | framework binding | `0.1.0` | 1 |

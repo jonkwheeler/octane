@@ -19,6 +19,7 @@ export const KNOWN_BINDINGS = {
 	'@mantine/nprogress': '@octanejs/mantine-nprogress',
 	'@mantine/spotlight': '@octanejs/mantine-spotlight',
 	'@mantine/store': '@octanejs/mantine-store',
+	'@mantine/tiptap': '@octanejs/mantine-tiptap',
 	'react-number-format': '@octanejs/number-format',
 	jotai: '@octanejs/jotai',
 	'@apollo/client': '@octanejs/apollo-client',

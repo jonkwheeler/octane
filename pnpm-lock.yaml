@@ -4565,6 +4565,37 @@ importers:
         specifier: catalog:default
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
+  packages/mantine-tiptap:
+    dependencies:
+      '@octanejs/mantine-core':
+        specifier: workspace:*
+        version: link:../mantine-core
+      '@octanejs/mantine-hooks':
+        specifier: workspace:*
+        version: link:../mantine-hooks
+      '@octanejs/tiptap':
+        specifier: workspace:*
+        version: link:../tiptap
+    devDependencies:
+      '@mantine/tiptap':
+        specifier: 9.5.0
+        version: 9.5.0(@mantine/core@9.5.0(@mantine/hooks@9.5.0(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@mantine/hooks@9.5.0(react@19.2.7))(@tiptap/extension-link@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/react@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@tiptap/extension-link':
+        specifier: 3.28.0
+        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+      '@tiptap/starter-kit':
+        specifier: 3.28.0
+        version: 3.28.0
+      '@types/react':
+        specifier: catalog:default
+        version: 19.2.17
+      octane:
+        specifier: workspace:*
+        version: link:../octane
+      vitest:
+        specifier: catalog:default
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
   packages/mdx:
     dependencies:
       '@jridgewell/remapping':
@@ -8712,6 +8743,16 @@ packages:
     resolution: {integrity: sha512-MeJybawnPCCIcfrpSjtbRERJXZWAdOKSp3afsl82e5HZZtKJepgvktD5lcS9hRrrAdGWywi7gcMduLT0bUHDzw==}
     peerDependencies:
       react: ^19.2.0
+
+  '@mantine/tiptap@9.5.0':
+    resolution: {integrity: sha512-ORJ9qD7jkJkH7jqZ8WECq378U6H7QYN6vxq2NAGyw/GUqj3Co15BJIutZ9HMEabHqarmWh2/LqehePf9v6drlw==}
+    peerDependencies:
+      '@mantine/core': 9.5.0
+      '@mantine/hooks': 9.5.0
+      '@tiptap/extension-link': '>=3.3.0'
+      '@tiptap/react': '>=3.3.0'
+      react: ^19.2.0
+      react-dom: ^19.2.0
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -22872,6 +22913,15 @@ snapshots:
   '@mantine/store@9.5.0(react@19.2.7)':
     dependencies:
       react: 19.2.7
+
+  '@mantine/tiptap@9.5.0(@mantine/core@9.5.0(@mantine/hooks@9.5.0(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@mantine/hooks@9.5.0(react@19.2.7))(@tiptap/extension-link@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/react@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@mantine/core': 9.5.0(@mantine/hooks@9.5.0(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@mantine/hooks': 9.5.0(react@19.2.7)
+      '@tiptap/extension-link': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+      '@tiptap/react': 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
 
   '@manypkg/find-root@1.1.0':
     dependencies:

@@ -8,9 +8,10 @@
 "@octanejs/mantine-nprogress": patch
 "@octanejs/mantine-spotlight": patch
 "@octanejs/mantine-store": patch
+"@octanejs/mantine-tiptap": patch
 "@octanejs/number-format": patch
 "@octanejs/cli": patch
 "@octanejs/mcp-server": patch
 ---
 
-Add the Mantine Core, Form, Charts, Code Highlight, Modals, Notifications, Navigation Progress, Spotlight, and Store 9.5.0 Octane bindings and teach incremental migration analysis and conversion to replace their upstream packages.
+Add the Mantine Core, Form, Charts, Code Highlight, Modals, Notifications, Navigation Progress, Spotlight, Store, and Tiptap UI 9.5.0 Octane bindings and teach incremental migration analysis and conversion to replace their upstream packages.
