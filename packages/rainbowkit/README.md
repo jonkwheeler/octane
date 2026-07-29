@@ -81,8 +81,10 @@ order.
 
 The native dialog has an accessible name and description, initial focus, tab
 containment, Escape and outside dismissal, opener focus restoration, live
-status messages, scroll containment, 44px controls, a narrow single-column
-layout, and reduced-motion handling.
+status messages, and document-scoped scroll/background containment. The
+included stylesheet provides the baseline responsive, touch-target, and
+reduced-motion presentation; applications remain responsible for validating
+their final composed CSS.
 
 ## Deliberately unsupported
 

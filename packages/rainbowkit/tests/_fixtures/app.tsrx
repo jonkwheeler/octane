@@ -1,5 +1,5 @@
 import { QueryClientProvider } from '@octanejs/tanstack-query';
-import { WagmiProvider, type Config } from '@octanejs/wagmi';
+import { WagmiProvider, type Config, type State } from '@octanejs/wagmi';
 import {
 	ConnectButton,
 	RainbowKitProvider,
@@ -24,25 +24,37 @@ function CustomControl() @{
 						: 'disconnected'}
 			</span>
 			<span id="mounted">{String(state.mounted)}</span>
-			<button id="custom-connect" onClick={state.openConnectModal}>Open wallets</button>
+			<span id="connection-status">{state.connectionStatus}</span>
+			<button type="button" id="custom-connect" onClick={state.openConnectModal}>
+				Open wallets
+			</button>
 		</div>}
 	</ConnectButton.Custom>
 }
 
 export function App(props: {
 	config: Config;
+	initialState?: State;
 	queryClient: unknown;
+	reconnectOnMount?: boolean;
+	onSubmit?: (event: SubmitEvent) => void;
 	theme?: Theme;
 	wallets?: readonly WalletDescriptor[];
 }) @{
-	<WagmiProvider config={props.config} reconnectOnMount={false}>
+	<WagmiProvider
+		config={props.config}
+		initialState={props.initialState}
+		reconnectOnMount={props.reconnectOnMount ?? false}
+	>
 		<QueryClientProvider client={props.queryClient}>
-			<button id="outside-provider">Outside provider</button>
-			<RainbowKitProvider wallets={props.wallets} theme={props.theme}>
-				<ConnectButton />
-				<WalletButton wallet="mock" />
-				<CustomControl />
-			</RainbowKitProvider>
+			<form id="controls-form" onSubmit={props.onSubmit}>
+				<button type="button" id="outside-provider">Outside provider</button>
+				<RainbowKitProvider wallets={props.wallets} theme={props.theme}>
+					<ConnectButton />
+					<WalletButton wallet="mock" />
+					<CustomControl />
+				</RainbowKitProvider>
+			</form>
 		</QueryClientProvider>
 	</WagmiProvider>
 }

@@ -1,6 +1,7 @@
-import { useChainId, useChains, useConnection, useDisconnect } from '@octanejs/wagmi';
-import { useEffect, useState, type OctaneNode } from 'octane';
+import { useChainId, useChains, useConnect, useConnection, useDisconnect } from '@octanejs/wagmi';
+import { useContext, useEffect, useState, type OctaneNode } from 'octane';
 import { useAccountModal, useChainModal, useConnectModal } from './hooks';
+import { RainbowKitContext } from './internal';
 
 export type ConnectButtonRendererProps = {
 	account?: { address: string; displayName: string };
@@ -9,6 +10,7 @@ export type ConnectButtonRendererProps = {
 	chain?: { id: number; name?: string; unsupported: boolean };
 	chainModalOpen: boolean;
 	connectModalOpen: boolean;
+	connectionStatus: 'connected' | 'connecting' | 'disconnected';
 	mounted: boolean;
 	openAccountModal?: (event?: Event) => void;
 	openChainModal?: (event?: Event) => void;
@@ -26,6 +28,8 @@ function formatAddress(address: string): string {
 
 function useConnectButtonState(): ConnectButtonRendererProps {
 	const connection = useConnection();
+	const connect = useConnect();
+	const rainbowKit = useContext(RainbowKitContext);
 	const chainId = useChainId();
 	const chains = useChains();
 	const accountModal = useAccountModal();
@@ -36,7 +40,7 @@ function useConnectButtonState(): ConnectButtonRendererProps {
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
 	return {
-		account: connected
+		account: mounted && connected
 			? {
 					address: connection.address!,
 					displayName: formatAddress(connection.address!),
@@ -44,15 +48,22 @@ function useConnectButtonState(): ConnectButtonRendererProps {
 			: undefined,
 		accountModalOpen: accountModal.accountModalOpen,
 		authenticationStatus: undefined,
-		chain: connected
+		chain: mounted && connected
 			? { id: chainId, name: chain?.name, unsupported: chain === undefined }
 			: undefined,
 		chainModalOpen: chainModal.chainModalOpen,
 		connectModalOpen: connectModal.connectModalOpen,
+		connectionStatus: !mounted
+			? 'disconnected'
+			: connect.isPending || rainbowKit?.connecting
+				? 'connecting'
+				: connected
+					? 'connected'
+					: 'disconnected',
 		mounted,
-		openAccountModal: accountModal.openAccountModal,
-		openChainModal: chainModal.openChainModal,
-		openConnectModal: connectModal.openConnectModal,
+		openAccountModal: mounted ? accountModal.openAccountModal : undefined,
+		openChainModal: mounted ? chainModal.openChainModal : undefined,
+		openConnectModal: mounted ? connectModal.openConnectModal : undefined,
 	};
 }
 
@@ -60,25 +71,34 @@ export function ConnectButton(props: ConnectButtonProps = {}) @{
 	const state = useConnectButtonState();
 	const disconnect = useDisconnect();
 	@if (!state.account) {
-		<button className="rk-connect-button" onClick={state.openConnectModal}>
+		<button
+			type="button"
+			className="rk-connect-button"
+			disabled={!state.mounted}
+			onClick={state.openConnectModal}
+		>
 			{props.label ?? 'Connect Wallet'}
 		</button>
 	} @else {
 		<div>
 			@if (state.chain?.unsupported) {
-				<button className="rk-connect-button" onClick={state.openChainModal}>Wrong network</button>
+				<button type="button" className="rk-connect-button" onClick={state.openChainModal}>
+					Wrong network
+				</button>
 			} @else {
 				@if (props.chainStatus !== 'none') {
-					<button className="rk-connect-button" onClick={state.openChainModal}>
+					<button type="button" className="rk-connect-button" onClick={state.openChainModal}>
 						{state.chain?.name ?? `Chain ${state.chain?.id}`}
 					</button>
 				}
 			}
 			<button
+				type="button"
 				className="rk-connect-button"
 				onClick={state.openAccountModal}
 			>{state.account.displayName}</button>
 			<button
+				type="button"
 				className="rk-connect-button"
 				disabled={disconnect.isPending}
 				onClick={() => disconnect.mutate(undefined)}

@@ -3,7 +3,7 @@ import { createConfig, http } from '@wagmi/core';
 import { mock } from '@wagmi/connectors/mock';
 import { mainnet, sepolia } from 'viem/chains';
 import { QueryClient } from '@octanejs/tanstack-query';
-import { act } from 'octane';
+import { act, createRoot, flushSync } from 'octane';
 import { flushEffects, mount } from '../../octane/tests/_helpers';
 import type { WalletDescriptor } from '@octanejs/rainbowkit';
 import { darkTheme } from '@octanejs/rainbowkit';
@@ -24,6 +24,7 @@ function setup(wallets?: readonly WalletDescriptor[]) {
 		wallets,
 	});
 	flushEffects();
+	flushSync(() => {});
 	return config;
 }
 
@@ -259,6 +260,22 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(config.connectors[0]!.uid).toBeTruthy();
 	});
 
+	it('keeps the connect modal useful when no compatible wallets exist', () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [],
+			transports: { [mainnet.id]: http() },
+		});
+		mounted = mount(App, { config, queryClient: new QueryClient() });
+		flushEffects();
+		flushSync(() => {});
+		(document.querySelector('.rk-connect-button') as HTMLButtonElement).click();
+		flushEffects();
+		expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
+			'No compatible wallets are available.',
+		);
+	});
+
 	it('keeps a rejected connector actionable and retries only on another click', async () => {
 		const config = setup();
 		let attempts = 0;
@@ -281,6 +298,96 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
 		expect(attempts).toBe(2);
+	});
+
+	it('announces awaiting approval and exposes Custom connecting state', async () => {
+		const config = setup();
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await gate;
+			return original(parameters);
+		};
+		mounted!.click('#custom-connect');
+		flushEffects();
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		expect(document.querySelector('[role="status"]')?.textContent).toContain(
+			'Waiting for wallet approval',
+		);
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+	});
+
+	it('shows wrong-network controls and recovers through the chain modal', async () => {
+		const config = createConfig({
+			chains: [mainnet, sepolia],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http(), [sepolia.id]: http() },
+		});
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		});
+		flushEffects();
+		flushSync(() => {});
+		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		act(() => {
+			config.setState((state) => ({ ...state, chainId: 999_999 }));
+		});
+		flushEffects();
+		expect(mounted.find('#custom-status').textContent).toBe('wrong-chain');
+		const wrong = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
+		).find((button) => button.textContent?.includes('Wrong network'))!;
+		wrong.click();
+		flushEffects();
+		const sepoliaButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-dialog .rk-action'),
+		).find((button) => button.textContent?.includes('Sepolia'))!;
+		sepoliaButton.click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(mounted.find('#custom-status').textContent).toBe('connected');
+	});
+
+	it('never submits an enclosing form from package controls or modal actions', () => {
+		let submits = 0;
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient(),
+			onSubmit: (event) => {
+				event.preventDefault();
+				submits++;
+			},
+		});
+		flushEffects();
+		flushSync(() => {});
+		(document.querySelector('.rk-connect-button') as HTMLButtonElement).click();
+		flushEffects();
+		(document.querySelector('.rk-close') as HTMLButtonElement).click();
+		flushEffects();
+		expect(submits).toBe(0);
 	});
 
 	it('coordinates topmost Escape and body locking across providers', async () => {
@@ -318,6 +425,49 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		flushEffects();
 		expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(0);
 		expect(document.body.style.overflow).toBe('');
+	});
+
+	it('coordinates modal stacks and body locks independently per ownerDocument', async () => {
+		const config = setup();
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const secondaryDocument = document.implementation.createHTMLDocument('secondary');
+		const secondaryContainer = secondaryDocument.createElement('div');
+		secondaryDocument.body.appendChild(secondaryContainer);
+		const secondaryConfig = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		const secondaryRoot = createRoot(secondaryContainer);
+		secondaryRoot.render(App, {
+			config: secondaryConfig,
+			queryClient: new QueryClient(),
+		});
+		flushSync(() => {});
+		flushEffects();
+		flushSync(() => {});
+		(secondaryContainer.querySelector('#custom-connect') as HTMLButtonElement).click();
+		flushSync(() => {});
+		flushEffects();
+		try {
+			expect(document.body.style.overflow).toBe('hidden');
+			expect(secondaryDocument.body.style.overflow).toBe('hidden');
+			expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+			expect(secondaryDocument.querySelectorAll('[role="dialog"]')).toHaveLength(1);
+			secondaryDocument.dispatchEvent(
+				new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+			);
+			flushSync(() => {});
+			flushEffects();
+			await Promise.resolve();
+			expect(secondaryDocument.querySelector('[role="dialog"]')).toBeNull();
+			expect(secondaryDocument.body.style.overflow).toBe('');
+			expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+			expect(document.body.style.overflow).toBe('hidden');
+		} finally {
+			secondaryRoot.unmount();
+		}
 	});
 
 	it('does not let a stale connect success close a newer modal generation', async () => {

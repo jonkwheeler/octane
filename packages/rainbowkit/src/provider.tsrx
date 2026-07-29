@@ -76,6 +76,7 @@ function errorMessage(error: unknown): string {
 }
 
 function isolatedBackground(dialog: HTMLElement): HTMLElement[] {
+	const ownerDocument = dialog.ownerDocument;
 	const elements = new Set<HTMLElement>();
 	let child: HTMLElement = dialog;
 	let parent = child.parentElement;
@@ -83,7 +84,7 @@ function isolatedBackground(dialog: HTMLElement): HTMLElement[] {
 		for (const sibling of Array.from(parent.children)) {
 			if (sibling !== child) elements.add(sibling as HTMLElement);
 		}
-		if (parent === document.body) break;
+		if (parent === ownerDocument.body) break;
 		child = parent;
 		parent = parent.parentElement;
 	}
@@ -91,9 +92,10 @@ function isolatedBackground(dialog: HTMLElement): HTMLElement[] {
 }
 
 function activateModalPath(dialog: HTMLElement) {
+	const ownerDocument = dialog.ownerDocument;
 	const state: { element: HTMLElement; ariaHidden: string | null; inert: boolean }[] = [];
 	let element: HTMLElement | null = dialog;
-	while (element && element !== document.body) {
+	while (element && element !== ownerDocument.body) {
 		state.push({
 			element,
 			ariaHidden: element.getAttribute('aria-hidden'),
@@ -113,6 +115,7 @@ function Modal(props: {
 	close: (token: ModalToken) => void;
 	titleId: string;
 	descriptionId: string;
+	setConnecting: (connecting: boolean) => void;
 }) @{
 	const connection = useConnection();
 	const connect = useConnect();
@@ -134,8 +137,10 @@ function Modal(props: {
 
 	useLayoutEffect(() => {
 		const dialog = dialogRef.current;
-		if (!dialog || typeof document === 'undefined') return;
-		lockBody();
+		if (!dialog) return;
+		const ownerDocument = dialog.ownerDocument;
+		pushModal(props.token, ownerDocument);
+		lockBody(ownerDocument);
 		registerModal(props.token, dialog);
 		const pathState = activateModalPath(dialog);
 		const backgroundState = isolatedBackground(dialog).map(
@@ -171,22 +176,22 @@ function Modal(props: {
 			}
 			const first = items[0]!;
 			const last = items.at(-1)!;
-			if (!dialog.contains(document.activeElement)) {
+			if (!dialog.contains(ownerDocument.activeElement)) {
 				event.preventDefault();
 				((event.shiftKey ? last : first)).focus();
-			} else if (event.shiftKey && document.activeElement === first) {
+			} else if (event.shiftKey && ownerDocument.activeElement === first) {
 				event.preventDefault();
 				last.focus();
-			} else if (!event.shiftKey && document.activeElement === last) {
+			} else if (!event.shiftKey && ownerDocument.activeElement === last) {
 				event.preventDefault();
 				first.focus();
 			}
 		};
-		document.addEventListener('keydown', onKeyDown);
+		ownerDocument.addEventListener('keydown', onKeyDown);
 		return () => {
-			document.removeEventListener('keydown', onKeyDown);
+			ownerDocument.removeEventListener('keydown', onKeyDown);
 			removeModal(props.token);
-			unlockBody();
+			unlockBody(ownerDocument);
 			for (const state of backgroundState) {
 				state.element.inert = state.inert;
 				if (state.ariaHidden === null) state.element.removeAttribute('aria-hidden');
@@ -197,13 +202,20 @@ function Modal(props: {
 				if (state.ariaHidden === null) state.element.removeAttribute('aria-hidden');
 				else state.element.setAttribute('aria-hidden', state.ariaHidden);
 			}
-			queueMicrotask(() => focusTopModal());
+			queueMicrotask(() => focusTopModal(ownerDocument));
 		};
 	}, [props.token]);
 
 	const connectWallet = (entry: WalletEntry) => {
 		if (!entry.connector) return;
-		connect.connect({ connector: entry.connector }, { onSuccess: () => props.close(props.token) });
+		props.setConnecting(true);
+		connect.connect({ connector: entry.connector }, {
+			onError: () => props.setConnecting(false),
+			onSuccess: () => {
+				props.setConnecting(false);
+				props.close(props.token);
+			},
+		});
 	};
 
 	<div
@@ -224,7 +236,12 @@ function Modal(props: {
 		>
 			<header className="rk-dialog-header">
 				<h2 id={props.titleId}>{title}</h2>
-				<button className="rk-close" aria-label="Close" onClick={() => props.close(props.token)}>
+				<button
+					type="button"
+					className="rk-close"
+					aria-label="Close"
+					onClick={() => props.close(props.token)}
+				>
 					×
 				</button>
 			</header>
@@ -247,6 +264,7 @@ function Modal(props: {
 							@for (const wallet of props.wallets; key wallet.identity) {
 								<li>
 									<button
+										type="button"
 										className="rk-action"
 										disabled={connect.isPending || !wallet.connector}
 										onClick={() => connectWallet(wallet)}
@@ -273,6 +291,7 @@ function Modal(props: {
 							@for (const chain of switchChain.chains; key chain.id) {
 								<li>
 									<button
+										type="button"
 										className="rk-action"
 										disabled={switchChain.isPending || connection.chainId === chain.id}
 										onClick={() => switchChain.mutate({ chainId: chain.id }, {
@@ -290,6 +309,7 @@ function Modal(props: {
 					<>
 						<p>{connection.address ?? 'No connected account'}</p>
 						<button
+							type="button"
 							className="rk-action"
 							disabled={disconnect.isPending || connection.status !== 'connected'}
 							onClick={() => disconnect.mutate(undefined, {
@@ -314,10 +334,12 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 				kind: ModalKind;
 				token: ModalToken;
 				opener: HTMLElement | null;
+				ownerDocument: Document | null;
 		  }
 		| null
 	>(null);
 	const connection = useConnection();
+	const [connecting, setConnecting] = useState(false);
 	const connectors = useConnect().connectors;
 	const wallets = useMemo(() => walletEntries(connectors, props.wallets ?? []), [
 		connectors,
@@ -330,8 +352,12 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			if (!current || token && current.token !== token) return current;
 			removeModal(current.token);
 			const returnTo = current.opener;
+			const ownerDocument = current.ownerDocument;
+			setConnecting(false);
 			queueMicrotask(() => {
-				if (!focusTopModal()) returnTo?.isConnected && returnTo.focus();
+				if (!ownerDocument || !focusTopModal(ownerDocument)) {
+					returnTo?.isConnected && returnTo.focus();
+				}
 			});
 			return null;
 		});
@@ -340,12 +366,14 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		setActiveModal((current) => {
 			if (current) removeModal(current.token);
 			const token = Symbol(`rainbowkit-modal-${providerId}`);
-			pushModal(token);
+			const ownerDocument =
+				nextOpener?.ownerDocument ?? (typeof document === 'undefined' ? null : document);
 			return {
 				kind,
 				token,
 				opener: nextOpener ??
 					(typeof document === 'undefined' ? null : document.activeElement as HTMLElement | null),
+				ownerDocument,
 			};
 		});
 	}, [providerId]);
@@ -354,10 +382,11 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			activeModal,
 			closeModal,
 			connected: connection.status === 'connected',
+			connecting,
 			openModal,
 			wallets,
 		}),
-		[activeModal, closeModal, connection.status, openModal, wallets],
+		[activeModal, closeModal, connecting, connection.status, openModal, wallets],
 	);
 
 	<div data-rk="" style={themeStyle(selectedTheme)}>
@@ -371,6 +400,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 					close={closeModal}
 					titleId={`${providerId}-title`}
 					descriptionId={`${providerId}-description`}
+					setConnecting={setConnecting}
 				/>
 			}
 		</RainbowKitContext.Provider>

@@ -24,7 +24,12 @@ export function WalletButton(props: WalletButtonProps) @{
 			props.children({ ready, connect });
 		}
 	} @else {
-		<button className="rk-wallet-button" disabled={!ready || mutation.isPending} onClick={connect}>
+		<button
+			type="button"
+			className="rk-wallet-button"
+			disabled={!ready || mutation.isPending}
+			onClick={connect}
+		>
 			{entry?.name ?? props.wallet}
 		</button>
 	}
