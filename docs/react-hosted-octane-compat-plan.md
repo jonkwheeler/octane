@@ -1,6 +1,9 @@
 # React-hosted Octane compatibility plan
 
-Status: **Phases 0–4 landed (client + SSR/hydration)** (2026-07-17). Phase 0's committed evidence lives
+Status: **Phases 0–4 landed (client + SSR/hydration), with a pinned Next.js
+webpack/Turbopack adoption fixture** (2026-07-28). The supported workflow is
+documented in
+[`incremental-react-adoption.md`](./incremental-react-adoption.md). Phase 0's committed evidence lives
 in `packages/octane/tests/react-hosted/`, `packages/octane/typetests/`
 (react-hosted-jsx.test-d.tsx), and `benchmarks/react-hosted-islands/`; measured
 findings are folded into §3, §5, §6.2, §8, §9 and §15 below and summarized
@@ -10,7 +13,7 @@ zero core-runtime changes; Phase 2 adds transparent React context (foreign
 `use()`/`useContext()` resolution, the production Fiber adapter, and the §6.3
 handshake) behind a cold-path-only core seam — see §14. Phase 3 closed its
 remaining failure-matrix breadth, and Phase 4 ships `octane/react/server` +
-island hydration (jsdom-provable scope; browser E2E precedes public release).
+island hydration, now covered by a real browser E2E in the pinned Next.js fixture.
 Selective events (Phase 5) and finalization (Phase 6) remain open.
 
 > Goal: allow a compiled Octane tree to live inside an existing React 19 tree

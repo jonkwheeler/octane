@@ -188,6 +188,184 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/mantine-carousel",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/carousel", "version": "9.5.0" },
+      "surface": "Complete @mantine/carousel 9.5.0 component surface backed directly by Embla core.",
+      "divergences": [
+        "The Octane hook initializes embla-carousel directly instead of embla-carousel-react."
+      ],
+      "ssr": "Slides render as static markup; Embla initializes after the viewport mounts.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-charts",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/charts", "version": "9.5.0" },
+      "surface": "Supported @mantine/charts 9.5.0 runtime surface for AreaChart, BarChart, LineChart, Sparkline, DonutChart, PieChart, RadarChart, ScatterChart, BubbleChart, CompositeChart, RadialBarChart, FunnelChart, Heatmap, BarsList, SankeyChart, SunburstChart, BulletChart, tooltips, legends, and shared chart types. ChartBrush and Treemap remain excluded until their stateful Recharts class implementations are converted.",
+      "divergences": [
+        "Chart callbacks receive native browser events through Octane instead of React synthetic events.",
+        "Type-only component namespaces are exported as direct named types because runtime TypeScript namespaces are not emitted by the TSRX compiler.",
+        "ChartBrush and Treemap are not exported in this release."
+      ],
+      "ssr": "Chart wrappers can render deterministic shells during server rendering; responsive SVG geometry is finalized after client measurement.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-code-highlight",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/code-highlight", "version": "9.5.0" },
+      "surface": "Complete @mantine/code-highlight 9.5.0 runtime surface: block, inline, tabs, copy and expand controls, provider, and plain-text, highlight.js, and Shiki adapter factories.",
+      "divergences": [
+        "Adapter libraries remain user-supplied, matching the upstream adapter contract."
+      ],
+      "ssr": "Synchronous adapters render deterministic markup; adapters with async contexts initially render their fallback and load on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-core",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/core", "version": "9.5.0" },
+      "surface": "Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports.",
+      "divergences": [
+        "Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned.",
+        "Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection.",
+        "Event callbacks receive native browser events through Octane's delegated event system."
+      ],
+      "ssr": "Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-dates",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/dates", "version": "9.5.0" },
+      "surface": "Complete @mantine/dates 9.5.0 exported component and utility surface.",
+      "divergences": ["Input and calendar callbacks receive native browser events."],
+      "ssr": "Calendars and inputs render deterministic date values; browser interactions activate on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-dropzone",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/dropzone", "version": "9.5.0" },
+      "surface": "Mantine Dropzone and FullScreen components with native input selection, drag and drop, accept, size, count, and custom validation.",
+      "divergences": [
+        "Uses an Octane-native drop hook instead of react-dropzone.",
+        "The File System Access API option falls back to the native hidden file input."
+      ],
+      "ssr": "The drop target and hidden input render deterministically; browser file APIs activate on interaction.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-form",
+      "version": "0.1.0",
+      "category": "Forms and content",
+      "upstream": { "package": "@mantine/form", "version": "9.5.0" },
+      "surface": "Complete @mantine/form 9.5.0 runtime and type surface: useForm, useField, providers, actions, validators, nested paths, list operations, sync/async validation, schemas, watchers, and controlled/uncontrolled input props.",
+      "divergences": [
+        "Hooks use Octane lifecycle and state primitives.",
+        "Input and submit callbacks receive native browser events instead of React synthetic events."
+      ],
+      "ssr": "Form state and validation are deterministic during server rendering; browser event attachment activates during hydration.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-hooks",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/hooks", "version": "9.5.0" },
+      "surface": "Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks.",
+      "divergences": [
+        "Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher.",
+        "DOM subscriptions receive native browser events.",
+        "React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime."
+      ],
+      "ssr": "Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering.",
+      "verified": "2026-07-28"
+    },
+    {
+      "name": "@octanejs/mantine-modals",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/modals", "version": "9.5.0" },
+      "surface": "Complete @mantine/modals 9.5.0 runtime surface: content, confirmation, and registered context modals; updates; stacking; and centralized close actions.",
+      "divergences": ["Button callbacks receive native browser events."],
+      "ssr": "The provider renders closed and deterministic until modal events are dispatched on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-notifications",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/notifications", "version": "9.5.0" },
+      "surface": "Complete @mantine/notifications 9.5.0 runtime surface: Notifications, stores, show, hide, update, clean, queueing, auto-close, hover pause, and drag or wheel dismissal.",
+      "divergences": [
+        "Enter and exit state styles are rendered directly by Octane instead of react-transition-group.",
+        "Pointer, drag, wheel, and close callbacks receive native browser events."
+      ],
+      "ssr": "Notification containers render deterministic store state; timers and dismissal listeners activate on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-nprogress",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/nprogress", "version": "9.5.0" },
+      "surface": "Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions.",
+      "divergences": [],
+      "ssr": "The initial progress state renders deterministically; timers activate only when actions run on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-schedule",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/schedule", "version": "9.5.0" },
+      "surface": "Complete @mantine/schedule 9.5.0 exported surface across day, week, month, year, agenda, mobile, resource, recurrence, drag, resize, and supporting components.",
+      "divergences": ["Schedule callbacks receive native browser events."],
+      "ssr": "Static schedules render deterministically; time indicators and drag interactions activate on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-spotlight",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/spotlight", "version": "9.5.0" },
+      "surface": "Complete @mantine/spotlight 9.5.0 runtime surface: compound Spotlight components, filtering, keyboard navigation, hotkeys, and independent stores.",
+      "divergences": ["Keyboard and pointer callbacks receive native browser events."],
+      "ssr": "Store state and closed Spotlight roots render deterministically; DOM navigation activates on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-store",
+      "version": "0.1.0",
+      "category": "Shared state",
+      "upstream": { "package": "@mantine/store", "version": "9.5.0" },
+      "surface": "Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates.",
+      "divergences": ["useStore subscribes through Octane's useSyncExternalStore implementation."],
+      "ssr": "Store snapshots are deterministic during server rendering.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-tiptap",
+      "version": "0.1.0",
+      "category": "Forms and content",
+      "upstream": { "package": "@mantine/tiptap", "version": "9.5.0" },
+      "surface": "Complete @mantine/tiptap 9.5.0 runtime surface: RichTextEditor, content, toolbar, control groups, formatting controls, link editing, color controls, source mode, labels, and Link and TaskList helpers.",
+      "divergences": [
+        "The editor renderer and subscriptions use @octanejs/tiptap instead of @tiptap/react.",
+        "Control callbacks receive native browser events."
+      ],
+      "ssr": "RichTextEditor follows @octanejs/tiptap's deferred editor construction and deterministic server shell.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mdx",
       "version": "0.1.16",
       "category": "Forms and content",
@@ -198,6 +376,20 @@
       ],
       "ssr": "Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`).",
       "verified": "2026-07-17"
+    },
+    {
+      "name": "@octanejs/mobx",
+      "version": "0.1.0",
+      "category": "Shared state",
+      "upstream": { "package": "mobx-react-lite", "version": "4.1.1", "core": "mobx@6.16.1" },
+      "surface": "The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias.",
+      "divergences": [
+        "React class components and the legacy mobx-react Provider/inject APIs are not included.",
+        "forwardRef compatibility options are omitted because Octane uses refs as props.",
+        "React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted."
+      ],
+      "ssr": "enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions.",
+      "verified": "2026-07-28"
     },
     {
       "name": "@octanejs/motion",
@@ -211,6 +403,19 @@
       ],
       "ssr": "No SSR-specific surface; no dedicated SSR tests.",
       "verified": "2026-07-21"
+    },
+    {
+      "name": "@octanejs/number-format",
+      "version": "0.1.0",
+      "category": "Forms and content",
+      "upstream": { "package": "react-number-format", "version": "5.4.5" },
+      "surface": "Complete React Number Format component and utility surface used by Mantine: NumberFormatBase, NumericFormat, PatternFormat, source-info helpers, caret utilities, and formatting/removal functions.",
+      "divergences": [
+        "Input callbacks receive native browser events through Octane instead of React synthetic events.",
+        "Refs are ordinary props and do not use React.forwardRef."
+      ],
+      "ssr": "Formatting is deterministic during server rendering; interactive caret correction activates only in the browser.",
+      "verified": "2026-07-29"
     },
     {
       "name": "@octanejs/nuqs",
@@ -245,12 +450,12 @@
       "version": "0.1.16",
       "category": "Data-heavy screens",
       "upstream": { "package": "recharts", "version": "3.9.2" },
-      "surface": "Partial (phases 0–1 of 5): the static `BarChart`/`LineChart` pipeline end-to-end (`isAnimationActive={false}`), byte-identical to upstream in the differential rig; the Redux/RTK state layer, `Surface`/`Layer`, and the pure shape set are in place.",
+      "surface": "Broad runtime support across cartesian, polar, hierarchical, tooltip, legend, responsive-container, shape, and chart-state surfaces. `Brush` and `Treemap` remain intentionally unsupported.",
       "divergences": [
         "Chart events coordinate through octane's native delegated events rather than React's synthetic layer."
       ],
       "ssr": "Untested; text measurement (`getStringSize`) returns 0×0 under SSR.",
-      "verified": "2026-07-07"
+      "verified": "2026-07-29"
     },
     {
       "name": "@octanejs/redux",
@@ -627,6 +832,21 @@
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
     "@lexical/react": "@octanejs/lexical",
+    "@mantine/carousel": "@octanejs/mantine-carousel",
+    "@mantine/charts": "@octanejs/mantine-charts",
+    "@mantine/code-highlight": "@octanejs/mantine-code-highlight",
+    "@mantine/core": "@octanejs/mantine-core",
+    "@mantine/dates": "@octanejs/mantine-dates",
+    "@mantine/dropzone": "@octanejs/mantine-dropzone",
+    "@mantine/form": "@octanejs/mantine-form",
+    "@mantine/hooks": "@octanejs/mantine-hooks",
+    "@mantine/modals": "@octanejs/mantine-modals",
+    "@mantine/notifications": "@octanejs/mantine-notifications",
+    "@mantine/nprogress": "@octanejs/mantine-nprogress",
+    "@mantine/schedule": "@octanejs/mantine-schedule",
+    "@mantine/spotlight": "@octanejs/mantine-spotlight",
+    "@mantine/store": "@octanejs/mantine-store",
+    "@mantine/tiptap": "@octanejs/mantine-tiptap",
     "@mdx-js/react": "@octanejs/mdx",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
@@ -698,6 +918,7 @@
     "framer-motion": "@octanejs/motion",
     "jotai": "@octanejs/jotai",
     "lucide-react": "@octanejs/lucide",
+    "mobx-react-lite": "@octanejs/mobx",
     "motion": "@octanejs/motion",
     "nuqs": "@octanejs/nuqs",
     "radix-ui": "@octanejs/radix",
@@ -705,6 +926,7 @@
     "react-aria-components": "@octanejs/aria",
     "react-hook-form": "@octanejs/hook-form",
     "react-i18next": "@octanejs/i18next",
+    "react-number-format": "@octanejs/number-format",
     "react-redux": "@octanejs/redux",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",

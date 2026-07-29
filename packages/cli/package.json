@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:default",
+    "@tsrx/core": "catalog:default",
     "picocolors": "catalog:default"
   },
   "devDependencies": {

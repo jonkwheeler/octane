@@ -1,0 +1,4 @@
+{
+  "title": "React Router islands",
+  "description": "Keep React Router in control while mounting compiled Octane TSRX leaves below routes."
+}

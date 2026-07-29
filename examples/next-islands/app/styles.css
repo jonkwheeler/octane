@@ -1,0 +1,41 @@
+:root {
+	font-family: system-ui, sans-serif;
+	color-scheme: light dark;
+}
+
+body {
+	margin: 0;
+}
+
+main {
+	max-width: 42rem;
+	margin: 5rem auto;
+	padding: 0 1.5rem;
+}
+
+.ownership {
+	color: #68717d;
+}
+
+.island {
+	margin-top: 2rem;
+	padding: 1.25rem;
+	border: 1px solid currentColor;
+	border-radius: 0.75rem;
+}
+
+.island svg {
+	max-width: 100%;
+}
+
+.ProseMirror {
+	min-height: 6rem;
+	margin-top: 1rem;
+	padding: 0.75rem;
+	border: 1px solid currentColor;
+	border-radius: 0.4rem;
+}
+
+button {
+	padding: 0.55rem 0.9rem;
+}

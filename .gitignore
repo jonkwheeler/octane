@@ -44,3 +44,6 @@ benchmarks/baselines/ratios.suggested.json
 
 # Codex session worktrees are local working copies, not repository content.
 .codex/worktrees/
+
+# Local feature worktrees created by repository workflows.
+.worktrees/
