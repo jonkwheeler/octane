@@ -37,6 +37,7 @@
       "@octanejs/mantine-core",
       "@octanejs/mantine-charts",
       "@octanejs/mantine-notifications",
+      "@octanejs/mantine-spotlight",
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",

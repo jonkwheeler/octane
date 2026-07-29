@@ -14,6 +14,7 @@ export const KNOWN_BINDINGS = {
 	'@mantine/form': '@octanejs/mantine-form',
 	'@mantine/hooks': '@octanejs/mantine-hooks',
 	'@mantine/notifications': '@octanejs/mantine-notifications',
+	'@mantine/spotlight': '@octanejs/mantine-spotlight',
 	'@mantine/store': '@octanejs/mantine-store',
 	'react-number-format': '@octanejs/number-format',
 	jotai: '@octanejs/jotai',

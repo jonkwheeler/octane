@@ -256,6 +256,16 @@
       "verified": "2026-07-29"
     },
     {
+      "name": "@octanejs/mantine-spotlight",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/spotlight", "version": "9.5.0" },
+      "surface": "Complete @mantine/spotlight 9.5.0 runtime surface: compound Spotlight components, filtering, keyboard navigation, hotkeys, and independent stores.",
+      "divergences": ["Keyboard and pointer callbacks receive native browser events."],
+      "ssr": "Store state and closed Spotlight roots render deterministically; DOM navigation activates on the client.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-store",
       "version": "0.1.0",
       "category": "Shared state",
@@ -737,6 +747,7 @@
     "@mantine/form": "@octanejs/mantine-form",
     "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mantine/notifications": "@octanejs/mantine-notifications",
+    "@mantine/spotlight": "@octanejs/mantine-spotlight",
     "@mantine/store": "@octanejs/mantine-store",
     "@mdx-js/react": "@octanejs/mdx",
     "@react-three/fiber": "@octanejs/three",
