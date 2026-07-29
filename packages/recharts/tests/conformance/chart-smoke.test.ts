@@ -11,6 +11,7 @@ import {
 	CartesianChartsApp,
 	LineChartApp,
 	OverlayChartApp,
+	PolarChartsApp,
 	ResponsiveChartApp,
 } from '../_fixtures/charts.tsrx';
 
@@ -86,6 +87,18 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelectorAll('.recharts-funnel-trapezoid').length).toBe(2);
 		expect(result.container.querySelector('.recharts-cartesian-grid')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-reference-line')).toBeTruthy();
+		result.unmount();
+	});
+
+	it('renders pie, radar, radial bar, and polar axes', async () => {
+		const result = mount(PolarChartsApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-pie-sector').length).toBe(2);
+		expect(result.container.querySelector('.recharts-radar-polygon')).toBeTruthy();
+		expect(result.container.querySelectorAll('.recharts-radial-bar-sector').length).toBe(2);
+		expect(result.container.querySelector('.recharts-polar-grid')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-polar-angle-axis')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-polar-radius-axis')).toBeTruthy();
 		result.unmount();
 	});
 });

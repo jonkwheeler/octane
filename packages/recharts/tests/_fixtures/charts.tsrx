@@ -10,6 +10,15 @@ import {
 	FunnelChart,
 	Line,
 	Legend,
+	Pie,
+	PieChart,
+	PolarAngleAxis,
+	PolarGrid,
+	PolarRadiusAxis,
+	Radar,
+	RadarChart,
+	RadialBar,
+	RadialBarChart,
 	ReferenceLine,
 	ResponsiveContainer,
 	Scatter,
@@ -108,5 +117,34 @@ export function CartesianChartsApp() @{
 				isAnimationActive={false}
 			/>
 		</FunnelChart>
+	</div>
+}
+
+export function PolarChartsApp() @{
+	<div>
+		<PieChart width={400} height={300}>
+			<Pie
+				dataKey="value"
+				data={[{ name: 'A', value: 100 }, { name: 'B', value: 60 }]}
+				isAnimationActive={false}
+			/>
+		</PieChart>
+		<RadarChart width={400} height={300} data={[
+			{ subject: 'A', value: 80 },
+			{ subject: 'B', value: 60 },
+			{ subject: 'C', value: 90 },
+		]}>
+			<PolarGrid />
+			<PolarAngleAxis dataKey="subject" />
+			<PolarRadiusAxis />
+			<Radar dataKey="value" fill="#8884d8" stroke="#8884d8" isAnimationActive={false} />
+		</RadarChart>
+		<RadialBarChart width={400} height={300} data={[
+			{ name: 'A', value: 80 },
+			{ name: 'B', value: 60 },
+		]}>
+			<PolarAngleAxis type="number" domain={[0, 100]} />
+			<RadialBar dataKey="value" fill="#82ca9d" isAnimationActive={false} />
+		</RadialBarChart>
 	</div>
 }
