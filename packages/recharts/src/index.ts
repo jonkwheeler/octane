@@ -15,6 +15,8 @@
 export { Surface } from './container/Surface.tsrx';
 export { Layer } from './container/Layer.tsrx';
 export { Cell } from './component/Cell';
+export { ResponsiveContainer } from './component/ResponsiveContainer.tsrx';
+export type { Props as ResponsiveContainerProps } from './component/ResponsiveContainer.tsrx';
 export { Rectangle } from './shape/Rectangle.tsrx';
 export { Dot } from './shape/Dot.tsrx';
 export { Cross } from './shape/Cross.tsrx';
