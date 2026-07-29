@@ -340,6 +340,55 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		});
 	});
 
+	it('labels only the selected wallet as pending and clears the label after rejection', async () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [
+				mock({ accounts: [account] }),
+				mock({ accounts: [account] }),
+			],
+			transports: { [mainnet.id]: http() },
+		});
+		const [first, second] = config.connectors;
+		let reject!: (error: Error) => void;
+		const gate = new Promise<never>((_, rejectPromise) => {
+			reject = rejectPromise;
+		});
+		first!.connect = async () => gate;
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+			wallets: [
+				{ id: 'first', name: 'First wallet', connectorUid: first!.uid },
+				{ id: 'second', name: 'Second wallet', connectorUid: second!.uid },
+			],
+		});
+		flushEffects();
+		flushSync(() => {});
+		mounted.click('#custom-connect');
+		flushEffects();
+		const walletButtons = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-action'),
+		);
+		walletButtons[0]!.click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(walletButtons[0]!.textContent).toBe('Waiting for First wallet');
+		expect(walletButtons[1]!.textContent).toBe('Second wallet');
+		expect(walletButtons[0]!.disabled).toBe(true);
+		expect(walletButtons[1]!.disabled).toBe(true);
+
+		reject(new Error('User rejected request'));
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(walletButtons[0]!.textContent).toBe('First wallet');
+		expect(walletButtons[1]!.textContent).toBe('Second wallet');
+		expect(walletButtons[0]!.disabled).toBe(false);
+		expect(walletButtons[1]!.disabled).toBe(false);
+	});
+
 	it('clears a pending modal connection after dismissal without reopening it', async () => {
 		const config = setup();
 		let release!: () => void;

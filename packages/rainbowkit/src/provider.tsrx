@@ -122,6 +122,7 @@ function Modal(props: {
 	const connect = useConnect();
 	const disconnect = useDisconnect();
 	const switchChain = useSwitchChain();
+	const [pendingWalletIdentity, setPendingWalletIdentity] = useState<string | null>(null);
 	const dialogRef = useRef<HTMLElement | null>(null);
 	const title =
 		props.kind === 'connect'
@@ -210,9 +211,13 @@ function Modal(props: {
 	const connectWallet = (entry: WalletEntry) => {
 		if (!entry.connector) return;
 		const pendingToken = props.beginConnecting();
+		setPendingWalletIdentity(entry.identity);
 		void connect.connectAsync({ connector: entry.connector }).then(
 			() => props.close(props.token),
-		).catch(() => {}).finally(() => props.endConnecting(pendingToken));
+		).catch(() => {}).finally(() => {
+			setPendingWalletIdentity(null);
+			props.endConnecting(pendingToken);
+		});
 	};
 
 	<div
@@ -266,7 +271,7 @@ function Modal(props: {
 										disabled={connect.isPending || !wallet.connector}
 										onClick={() => connectWallet(wallet)}
 									>
-										{connect.isPending && wallet.connector
+										{connect.isPending && pendingWalletIdentity === wallet.identity
 											? `Waiting for ${wallet.name}`
 											: wallet.name}
 									</button>
