@@ -610,6 +610,22 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
   );
 }
 
+function normalizeFunnelValue(value: unknown): {
+  value: number;
+  rangedNextValue: number | undefined;
+} {
+  if (typeof value === 'number') {
+    return { value, rangedNextValue: undefined };
+  }
+  if (Array.isArray(value)) {
+    return {
+      value: typeof value[0] === 'number' ? value[0] : 0,
+      rangedNextValue: typeof value[1] === 'number' ? value[1] : undefined,
+    };
+  }
+  return { value: 0, rangedNextValue: undefined };
+}
+
 export function computeFunnelTrapezoids({
   dataKey,
   nameKey,
@@ -632,56 +648,37 @@ export function computeFunnelTrapezoids({
   graphicalItemId: GraphicalItemId;
 }): ReadonlyArray<FunnelTrapezoidItem> {
   const { realHeight, realWidth, offsetX, offsetY } = getRealWidthHeight(customWidth, offset);
-  const values = displayedData.map((entry: unknown) => {
-    const val = getValueByDataKey(entry, dataKey, 0);
-    return typeof val === 'number' ? val : 0;
-  });
-  const maxValue = Math.max.apply(null, values);
+  const values = displayedData.map((entry: unknown) =>
+    normalizeFunnelValue(getValueByDataKey(entry, dataKey, 0)),
+  );
+  const maxValue = Math.max.apply(
+    null,
+    values.map(entry => entry.value),
+  );
   const len = displayedData.length;
   const rowHeight = realHeight / len;
   const parentViewBox = { x: offset.left, y: offset.top, width: offset.width, height: offset.height };
 
   let trapezoids: ReadonlyArray<FunnelTrapezoidItem> = displayedData.map(
     (entry: unknown, i: number): FunnelTrapezoidItem => {
-      // getValueByDataKey does not validate the output type
-      const rawVal: number | ReadonlyArray<number> = getValueByDataKey(entry, dataKey, 0);
       const name: string = String(getValueByDataKey(entry, nameKey, i));
-      let val = rawVal;
-      let nextVal: number | ReadonlyArray<number> | undefined;
+      const normalizedValue = values[i];
+      const val = normalizedValue.value;
+      let nextVal: number;
 
-      if (i !== len - 1) {
-        const nextDataValue = getValueByDataKey(displayedData[i + 1], dataKey, 0);
-        if (typeof nextDataValue === 'number') {
-          nextVal = nextDataValue;
-        } else if (Array.isArray(nextDataValue)) {
-          const [first, second] = nextDataValue;
-          if (typeof first === 'number') {
-            val = first;
-          }
-          if (typeof second === 'number') {
-            nextVal = second;
-          }
-        }
-      } else if (rawVal instanceof Array && rawVal.length === 2) {
-        const [first, second] = rawVal;
-        if (typeof first === 'number') {
-          val = first;
-        }
-        if (typeof second === 'number') {
-          nextVal = second;
-        }
+      if (normalizedValue.rangedNextValue !== undefined) {
+        nextVal = normalizedValue.rangedNextValue;
+      } else if (i !== len - 1) {
+        nextVal = values[i + 1].value;
       } else if (lastShapeType === 'rectangle') {
         nextVal = val;
       } else {
         nextVal = 0;
       }
 
-      // @ts-expect-error this is a problem if we have ranged values because `val` can be an array
       const x = maxValue === 0 ? offsetX : ((maxValue - val) * realWidth) / (2 * maxValue) + offsetX;
       const y = rowHeight * i + offsetY;
-      // @ts-expect-error getValueByDataKey does not validate the output type
       const upperWidth = maxValue === 0 ? 0 : (val / maxValue) * realWidth;
-      // @ts-expect-error nextVal could be an array
       const lowerWidth = maxValue === 0 ? 0 : (nextVal / maxValue) * realWidth;
 
       const tooltipPayload: TooltipPayload = [

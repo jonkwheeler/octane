@@ -335,7 +335,7 @@ function HorizontalStripes(props: CartesianGridInternalProps) {
   const roundedSortedHorizontalPoints = horizontalPoints.map(e => Math.round(e + y - y)).sort((a, b) => a - b);
   // Why is this condition `!==` instead of `<=` ?
   if (y !== roundedSortedHorizontalPoints[0]) {
-    roundedSortedHorizontalPoints.unshift(0);
+    roundedSortedHorizontalPoints.unshift(y);
   }
 
   const items = roundedSortedHorizontalPoints.map((entry, i) => {
@@ -374,7 +374,7 @@ function VerticalStripes(props: CartesianGridInternalProps) {
   const roundedSortedVerticalPoints = verticalPoints.map(e => Math.round(e + x - x)).sort((a, b) => a - b);
 
   if (x !== roundedSortedVerticalPoints[0]) {
-    roundedSortedVerticalPoints.unshift(0);
+    roundedSortedVerticalPoints.unshift(x);
   }
 
   const items = roundedSortedVerticalPoints.map((entry, i) => {
