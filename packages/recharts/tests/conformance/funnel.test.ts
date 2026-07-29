@@ -34,4 +34,69 @@ describe('computeFunnelTrapezoids', () => {
 			);
 		}
 	});
+
+	it('keeps computed geometry and metadata authoritative over colliding data props', () => {
+		const entry = {
+			label: 'Computed name',
+			value: 100,
+			fill: 'tomato',
+			x: 999,
+			y: 999,
+			width: 999,
+			height: 999,
+			upperWidth: 999,
+			lowerWidth: 999,
+			name: 'Clobbered name',
+			val: -1,
+			tooltipPayload: [],
+			tooltipPosition: { x: 999, y: 999 },
+			payload: 'clobbered payload',
+			parentViewBox: { x: 999, y: 999, width: 999, height: 999 },
+			labelViewBox: { x: 999, y: 999, width: 999, height: 999 },
+		};
+
+		const [trapezoid] = computeFunnelTrapezoids({
+			dataKey: 'value',
+			nameKey: 'label',
+			displayedData: [entry],
+			lastShapeType: 'rectangle',
+			reversed: false,
+			offset: { left: 10, top: 20, width: 200, height: 100 } as never,
+			customWidth: undefined,
+			graphicalItemId: 'funnel-collision-regression',
+		});
+
+		expect(trapezoid).toMatchObject({
+			fill: 'tomato',
+			x: 10,
+			y: 20,
+			width: 200,
+			height: 100,
+			upperWidth: 200,
+			lowerWidth: 200,
+			name: 'Computed name',
+			val: 100,
+			tooltipPosition: { x: 110, y: 70 },
+			parentViewBox: { x: 10, y: 20, width: 200, height: 100 },
+			labelViewBox: {
+				x: 10,
+				y: 20,
+				width: 200,
+				height: 100,
+				upperWidth: 200,
+				lowerWidth: 200,
+			},
+		});
+		expect(trapezoid.payload).toBe(entry);
+		expect(trapezoid.tooltipPayload).toEqual([
+			{
+				name: 'Computed name',
+				value: 100,
+				payload: entry,
+				dataKey: 'value',
+				type: undefined,
+				graphicalItemId: 'funnel-collision-regression',
+			},
+		]);
+	});
 });

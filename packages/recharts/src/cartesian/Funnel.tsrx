@@ -718,12 +718,12 @@ export function computeFunnelTrapezoids({
       };
 
       return {
+        ...(entry != null && typeof entry === 'object' ? omit(entry, ['width']) : {}),
         ...trapezoidViewBox,
         name,
         val,
         tooltipPayload,
         tooltipPosition,
-        ...(entry != null && typeof entry === 'object' ? omit(entry, ['width']) : {}),
         payload: entry,
         parentViewBox,
         labelViewBox: trapezoidViewBox,
