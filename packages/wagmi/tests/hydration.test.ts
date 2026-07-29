@@ -36,6 +36,40 @@ afterEach(() => {
 });
 
 describe('WagmiProvider SSR initial state', () => {
+	it('hydrates and runs the mount lifecycle only once when the provider rerenders', () => {
+		const client = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		const initialState = client.state;
+		client._internal.store.persist.hasHydrated = () => false;
+		Object.defineProperty(client, 'storage', { value: {} });
+		let hydrationCalls = 0;
+		let mountCalls = 0;
+		const setState = client.setState.bind(client);
+		client.setState = ((state: State | ((state: State) => State)) => {
+			if (typeof state === 'function') mountCalls++;
+			else hydrationCalls++;
+			return setState(state);
+		}) as typeof client.setState;
+		const log: string[] = [];
+		const props = {
+			config: client,
+			initialState,
+			reconnectOnMount: false,
+			log: (entry: string) => log.push(entry),
+		};
+
+		mounted = mount(HydrationApp, props);
+		flushEffects();
+		mounted.update(HydrationApp, props);
+		flushEffects();
+
+		expect(hydrationCalls).toBe(1);
+		expect(mountCalls).toBe(1);
+	});
+
 	it('renders the supplied connection before effects without a disconnected intermediate render', async () => {
 		const client = config();
 		const initialState = await connectedInitialState(client);
