@@ -196,6 +196,34 @@ describe('migration preflight', () => {
 		);
 	});
 
+	it('blocks unmapped React-package subpaths while preserving binding subpaths', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				import { NuqsAdapter } from 'nuqs/adapters/next';
+				import { createLoader } from '@octanejs/nuqs/server';
+				export const Leaf = () => <NuqsAdapter>{createLoader({})}</NuqsAdapter>;
+			`,
+		});
+
+		const report = analyzeMigration({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(report.packages).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					specifier: 'nuqs/adapters/next',
+					classification: 'blocked',
+					evidence: 'binding-catalog:unmapped-subpath',
+				}),
+				expect.objectContaining({
+					specifier: '@octanejs/nuqs/server',
+					classification: 'supported',
+					replacement: '@octanejs/nuqs/server',
+				}),
+			]),
+		);
+		expect(report.blocked).toBe(true);
+	});
+
 	it('follows local entrypoint re-exports when checking for React evidence', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `

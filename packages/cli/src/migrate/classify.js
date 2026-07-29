@@ -99,18 +99,32 @@ export function classifyPackageImport(root, specifier, importer) {
 			evidence: 'octane-runtime',
 		};
 	}
-	const mapped = resolveBinding(specifier) ?? resolveBinding(packageName(specifier));
-	if (mapped) {
+	const exactMapped = resolveBinding(specifier);
+	if (exactMapped) {
 		return {
 			specifier,
 			package: packageName(specifier),
 			classification: 'supported',
-			replacement: mapped.binding.name,
-			evidence: `binding-catalog:${mapped.via}`,
+			replacement: exactMapped.binding.name,
+			evidence: `binding-catalog:${exactMapped.via}`,
 		};
 	}
 
 	const name = packageName(specifier);
+	const rootMapped = resolveBinding(name);
+	if (rootMapped && specifier !== name) {
+		const isBindingSubpath = rootMapped.binding.name === name;
+		return {
+			specifier,
+			package: name,
+			classification: isBindingSubpath ? 'supported' : 'blocked',
+			replacement: isBindingSubpath ? specifier : null,
+			evidence: isBindingSubpath
+				? 'binding-catalog:binding-subpath'
+				: 'binding-catalog:unmapped-subpath',
+		};
+	}
+
 	const installed = readInstalled(importer ? path.dirname(importer) : root, name);
 	if (!installed) {
 		return {

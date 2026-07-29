@@ -126,6 +126,19 @@ export function Leaf() {
 		expect(plan.files[0].output).toContain("export type { ReactNode } from 'react'");
 	});
 
+	it('rewrites supported string-literal dynamic imports', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				export const loadSelector = () => import('react-redux');
+			`,
+		});
+
+		const plan = createConversionPlan({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(plan.blocked).toBe(false);
+		expect(plan.files[0].output).toContain("import('@octanejs/redux')");
+	});
+
 	it('adds a leading ownership pragma when the phrase appears only in code', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `

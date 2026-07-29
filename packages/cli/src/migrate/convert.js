@@ -133,6 +133,26 @@ function planFile(root, file) {
 	}
 
 	walk(ast, (node) => {
+		if (
+			node.type === 'ImportExpression' &&
+			typeof node.source?.value === 'string' &&
+			!node.source.value.startsWith('.') &&
+			!node.source.value.startsWith('/')
+		) {
+			const classified = classifyPackageImport(root, node.source.value, file);
+			if (
+				classified.classification === 'supported' &&
+				classified.replacement &&
+				classified.replacement !== node.source.value
+			) {
+				edits.push({
+					start: node.source.start + 1,
+					end: node.source.end - 1,
+					text: classified.replacement,
+					reason: 'supported-import',
+				});
+			}
+		}
 		const edit = textInputOnChangeEdit(node);
 		if (edit) edits.push(edit);
 	});
