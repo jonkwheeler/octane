@@ -11,14 +11,12 @@ import {
 } from '../util/RadialBarUtils';
 import { Props as SectorProps } from '../shape/Sector';
 import { Layer } from '../container/Layer';
-import { findAllByType } from '../util/ReactUtils';
 import {
 	ImplicitLabelListType,
 	LabelListFromLabelProp,
 	PolarLabelListContextProvider,
 	PolarLabelListEntry,
 } from '../component/LabelList';
-import { Cell } from '../component/Cell';
 import { interpolate, mathSign, noop } from '../util/DataUtils';
 import {
 	BarPositionPosition,
@@ -82,6 +80,7 @@ import { ZIndexable, ZIndexLayer } from '../zIndex/ZIndexLayer';
 import { DefaultZIndexes } from '../zIndex/DefaultZIndexes';
 import { getZIndexFromUnknown } from '../zIndex/getZIndexFromUnknown';
 import { usePolarChartLayout } from '../context/chartLayoutContext';
+import { CellsContext, useCellRegistry } from '../context/CellsContext';
 
 const STABLE_EMPTY_ARRAY: readonly RadialBarDataItem[] = [];
 
@@ -620,7 +619,7 @@ function RadialBarWithState(props: InternalProps) {
 	const { hide, sectors, className, background } = props;
 
 	if (hide) {
-		return null;
+		return props.children;
 	}
 
 	const layerClass = clsx('recharts-area', className);
@@ -640,7 +639,7 @@ function RadialBarWithState(props: InternalProps) {
 }
 
 function RadialBarImpl(props: WithIdRequired<PropsWithDefaults>) {
-	const cells = React.useMemo(() => findAllByType(props.children, Cell), [props.children]);
+	const [cells, cellRegistry] = useCellRegistry();
 
 	const radialBarSettings: RadialBarSettings = React.useMemo(
 		() => ({
@@ -678,7 +677,7 @@ function RadialBarImpl(props: WithIdRequired<PropsWithDefaults>) {
 			),
 		) ??
 			STABLE_EMPTY_ARRAY;
-	return <>
+	return <CellsContext.Provider value={cellRegistry}>
 		<SetRadialBarTooltipEntrySettings
 			dataKey={props.dataKey}
 			sectors={sectors}
@@ -692,7 +691,7 @@ function RadialBarImpl(props: WithIdRequired<PropsWithDefaults>) {
 			id={props.id}
 		/>
 		<RadialBarWithState {...props} sectors={sectors} />
-	</>;
+	</CellsContext.Provider>;
 }
 
 export const defaultRadialBarProps = {

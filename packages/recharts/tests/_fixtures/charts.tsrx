@@ -151,6 +151,17 @@ export function ScatterCellsApp() @{
 	</ScatterChart>
 }
 
+export function HiddenScatterCellsApp({ hide }) @{
+	<ScatterChart width={500} height={300}>
+		<XAxis dataKey="x" type="number" />
+		<YAxis dataKey="y" type="number" />
+		<Scatter data={scatterCellData} fill="#8884d8" hide={hide} isAnimationActive={false}>
+			<Cell fill="#ff0000" />
+			<Cell fill="#0000ff" />
+		</Scatter>
+	</ScatterChart>
+}
+
 const zeroErrorBarData = [
 	{ name: 'A', value: 50, error: 0 },
 ];
@@ -270,6 +281,39 @@ export function PolarChartsApp() @{
 		>
 			<PolarAngleAxis type="number" domain={[0, 100]} />
 			<RadialBar dataKey="value" fill="#82ca9d" isAnimationActive={false} />
+		</RadialBarChart>
+	</div>
+}
+
+export function PolarCellsApp() @{
+	<div>
+		<PieChart width={400} height={300}>
+			<Pie
+				dataKey="value"
+				data={[
+					{ name: 'A', value: 100 },
+					{ name: 'B', value: 60 },
+				]}
+				fill="#8884d8"
+				isAnimationActive={false}
+			>
+				<Cell fill="#ff0000" />
+				<Cell fill="#0000ff" />
+			</Pie>
+		</PieChart>
+		<RadialBarChart
+			width={400}
+			height={300}
+			data={[
+				{ name: 'A', value: 80 },
+				{ name: 'B', value: 60 },
+			]}
+		>
+			<PolarAngleAxis type="number" domain={[0, 100]} />
+			<RadialBar dataKey="value" fill="#82ca9d" isAnimationActive={false}>
+				<Cell fill="#ff0000" />
+				<Cell fill="#0000ff" />
+			</RadialBar>
 		</RadialBarChart>
 	</div>
 }

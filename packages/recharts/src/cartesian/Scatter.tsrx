@@ -926,7 +926,7 @@ function ScatterWithId(props: InternalProps) {
 	const { hide, points, className, needClip, xAxisId, yAxisId, id } = props;
 	const previousPointsRef = useRef<ReadonlyArray<ScatterPointItem> | null>(null);
 	if (hide) {
-		return null;
+		return props.children;
 	}
 	const layerClass = clsx('recharts-scatter', className);
 	const clipPathId = id;

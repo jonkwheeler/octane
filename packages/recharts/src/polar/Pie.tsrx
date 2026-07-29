@@ -9,8 +9,6 @@ import { Layer } from '../container/Layer';
 import { Curve, Props as CurveProps } from '../shape/Curve';
 import { Sector } from '../shape/Sector';
 import { Text } from '../component/Text';
-import { Cell } from '../component/Cell';
-import { findAllByType } from '../util/ReactUtils';
 import { getMaxRadius, polarToCartesian } from '../util/PolarUtils';
 import { getPercentValue, interpolate, isNumber, mathSign } from '../util/DataUtils';
 import { getTooltipNameProp, getValueByDataKey } from '../util/ChartUtils';
@@ -79,6 +77,7 @@ import { ChartData } from '../state/chartDataSlice';
 import { getClassNameFromUnknown } from '../util/getClassNameFromUnknown';
 import { WithIdRequired } from '../util/useUniqueId';
 import { usePolarChartLayout } from '../context/chartLayoutContext';
+import { CellsContext, useCellRegistry } from '../context/CellsContext';
 
 interface PieDef {
 	/**
@@ -458,10 +457,11 @@ export type PieCoordinate = {
 
 const defaultPieSectorShape = Sector;
 
-function SetPiePayloadLegend(props: { children?: ReactNode; id: GraphicalItemId }) {
-	const cells = useMemo(() => findAllByType(props.children, Cell), [props.children]);
-
-	const legendPayload = useAppSelector((state) => selectPieLegend(state, props.id, cells));
+function SetPiePayloadLegend(props: {
+	cells: ReadonlyArray<ReactElement> | undefined;
+	id: GraphicalItemId;
+}) {
+	const legendPayload = useAppSelector((state) => selectPieLegend(state, props.id, props.cells));
 	if (legendPayload == null) {
 		return null;
 	}
@@ -1126,7 +1126,7 @@ function PieImpl(props: WithIdRequired<PropsWithResolvedDefaults>) {
 	const { id, ...propsWithoutId } = props;
 	const { hide, className, rootTabIndex } = props;
 
-	const cells = useMemo(() => findAllByType(props.children, Cell), [props.children]);
+	const [cells, cellRegistry] = useCellRegistry();
 
 	const sectors = useAppSelector((state) => selectPieSectors(state, id, cells));
 
@@ -1136,37 +1136,44 @@ function PieImpl(props: WithIdRequired<PropsWithResolvedDefaults>) {
 
 	if (sectors == null) {
 		previousSectorsRef.current = null;
-		return <Layer tabIndex={rootTabIndex} className={layerClass} />;
+		return <CellsContext.Provider value={cellRegistry}>
+			<SetPiePayloadLegend cells={cells} id={id} />
+			<Layer tabIndex={rootTabIndex} className={layerClass}>{props.children}</Layer>
+		</CellsContext.Provider>;
 	}
 
 	if (hide) {
 		previousSectorsRef.current = null;
 	}
 
-	return <ZIndexLayer zIndex={props.zIndex}>
-		<SetPieTooltipEntrySettings
-			dataKey={props.dataKey}
-			nameKey={props.nameKey}
-			sectors={sectors}
-			stroke={props.stroke}
-			strokeWidth={props.strokeWidth}
-			fill={props.fill}
-			name={props.name}
-			hide={props.hide}
-			tooltipType={props.tooltipType}
-			formatter={props.formatter}
-			id={id}
-			activeShape={props.activeShape}
-		/>
-		<Layer tabIndex={rootTabIndex} className={layerClass}>
-			{!hide &&
-				<SectorsWithAnimation
-					props={{ ...propsWithoutId, sectors }}
-					previousSectorsRef={previousSectorsRef}
-					id={id}
-				/>}
-		</Layer>
-	</ZIndexLayer>;
+	return <CellsContext.Provider value={cellRegistry}>
+		<SetPiePayloadLegend cells={cells} id={id} />
+		<ZIndexLayer zIndex={props.zIndex}>
+			<SetPieTooltipEntrySettings
+				dataKey={props.dataKey}
+				nameKey={props.nameKey}
+				sectors={sectors}
+				stroke={props.stroke}
+				strokeWidth={props.strokeWidth}
+				fill={props.fill}
+				name={props.name}
+				hide={props.hide}
+				tooltipType={props.tooltipType}
+				formatter={props.formatter}
+				id={id}
+				activeShape={props.activeShape}
+			/>
+			<Layer tabIndex={rootTabIndex} className={layerClass}>
+				{!hide
+					? <SectorsWithAnimation
+							props={{ ...propsWithoutId, sectors }}
+							previousSectorsRef={previousSectorsRef}
+							id={id}
+						/>
+					: props.children}
+			</Layer>
+		</ZIndexLayer>
+	</CellsContext.Provider>;
 }
 
 type PropsWithResolvedDefaults = RequiresDefaultProps<Props, typeof defaultPieProps>;
@@ -1208,7 +1215,6 @@ function PieFn(outsideProps: Props) {
 				presentationProps={presentationProps}
 				maxRadius={props.maxRadius}
 			/>
-			<SetPiePayloadLegend {...propsWithoutId} id={id} />
 			<PieImpl {...propsWithoutId} id={id} />
 		</>}
 	</RegisterGraphicalItemId>;

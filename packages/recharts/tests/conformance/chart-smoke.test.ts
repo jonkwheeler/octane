@@ -12,11 +12,13 @@ import {
 	ErrorBarAnimationOriginApp,
 	FunnelAnimationStabilityApp,
 	FunnelLegendApp,
+	HiddenScatterCellsApp,
 	HiddenPieTooltipApp,
 	HierarchyChartsApp,
 	LineChartApp,
 	OverlayChartApp,
 	PolarAnimationStabilityApp,
+	PolarCellsApp,
 	PolarChartsApp,
 	ResponsiveChartApp,
 	ScatterAnimationCallbacksApp,
@@ -112,6 +114,20 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 			'#0000ff',
 		]);
 		result.unmount();
+	});
+
+	it('keeps hidden Scatter cells registered for the first visible commit', async () => {
+		const result = mount(HiddenScatterCellsApp, { hide: true });
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-scatter-symbol')).toHaveLength(0);
+
+		result.update(HiddenScatterCellsApp, { hide: false });
+		const symbols = result.container.querySelectorAll(
+			'.recharts-scatter-symbol path.recharts-symbols',
+		);
+		const fills = Array.from(symbols, (symbol) => symbol.getAttribute('fill'));
+		result.unmount();
+		expect(fills).toEqual(['#ff0000', '#0000ff']);
 	});
 
 	it('renders a zero-valued ErrorBar', async () => {
@@ -246,6 +262,20 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-polar-angle-axis')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-polar-radius-axis')).toBeTruthy();
 		result.unmount();
+	});
+
+	it('applies registered Cell presentation props to polar sectors', async () => {
+		const result = mount(PolarCellsApp, {});
+		await settle();
+		const pieSectors = result.container.querySelectorAll(
+			'.recharts-pie-sector path.recharts-sector',
+		);
+		const radialBarSectors = result.container.querySelectorAll('.recharts-radial-bar-sector');
+		const pieFills = Array.from(pieSectors, (sector) => sector.getAttribute('fill'));
+		const radialBarFills = Array.from(radialBarSectors, (sector) => sector.getAttribute('fill'));
+		result.unmount();
+		expect(pieFills).toEqual(['#ff0000', '#0000ff']);
+		expect(radialBarFills).toEqual(['#ff0000', '#0000ff']);
 	});
 
 	it('restarts polar animations only when their geometry changes', async () => {
