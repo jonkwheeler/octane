@@ -1,5 +1,6 @@
 import type { OctaneNode } from 'octane';
-import { Children, cloneElement } from 'octane';
+import { useLayoutEffect, useRef } from 'octane';
+import { useMergedRef } from '@octanejs/mantine-hooks';
 import {
   Box,
   BoxProps,
@@ -8,7 +9,6 @@ import {
   factory,
   Factory,
   getSpacing,
-  isElement,
   MantineSpacing,
   StylesApiProps,
   useProps,
@@ -63,6 +63,7 @@ export const Breadcrumbs = factory<BreadcrumbsFactory>((_props) => {
     separator,
     separatorMargin,
     attributes,
+    ref,
     ...others
   } = props;
 
@@ -80,34 +81,51 @@ export const Breadcrumbs = factory<BreadcrumbsFactory>((_props) => {
     varsResolver,
   });
 
-  const items = Children.toArray(children).reduce<OctaneNode[]>((acc, child, index, array) => {
-    const item = isElement(child) ? (
-      cloneElement(child, {
-        ...getStyles('breadcrumb', { className: (child.props as any)?.className }),
-        key: index,
-      })
-    ) : (
-      <div {...getStyles('breadcrumb')} key={index}>
-        {child}
-      </div>
-    );
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const mergedRef = useMergedRef(ref, rootRef);
 
-    acc.push(item);
-
-    if (index !== array.length - 1) {
-      acc.push(
-        <Box {...getStyles('separator')} key={`separator-${index}`}>
-          {separator}
-        </Box>
-      );
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
     }
 
-    return acc;
-  }, []);
+    root.querySelectorAll(':scope > [data-mantine-breadcrumb-separator]').forEach((node) => {
+      node.remove();
+    });
+
+    const childElements = Array.from(root.children);
+    const breadcrumbStyles = getStyles('breadcrumb');
+    const separatorStyles = getStyles('separator');
+    const separatorText =
+      typeof separator === 'string' || typeof separator === 'number' ? String(separator) : '';
+
+    childElements.forEach((child, index) => {
+      if (breadcrumbStyles.className) {
+        child.classList.add(...breadcrumbStyles.className.split(' ').filter(Boolean));
+      }
+      if (breadcrumbStyles.style && typeof breadcrumbStyles.style === 'object') {
+        Object.assign((child as HTMLElement).style, breadcrumbStyles.style);
+      }
+
+      if (index < childElements.length - 1) {
+        const separatorElement = document.createElement('div');
+        separatorElement.dataset.mantineBreadcrumbSeparator = 'true';
+        separatorElement.textContent = separatorText;
+        if (separatorStyles.className) {
+          separatorElement.className = separatorStyles.className;
+        }
+        if (separatorStyles.style && typeof separatorStyles.style === 'object') {
+          Object.assign(separatorElement.style, separatorStyles.style);
+        }
+        child.after(separatorElement);
+      }
+    });
+  }, [children, separator]);
 
   return (
-    <Box {...getStyles('root')} {...others}>
-      {items}
+    <Box {...getStyles('root')} {...others} ref={mergedRef}>
+      {children}
     </Box>
   );
 });

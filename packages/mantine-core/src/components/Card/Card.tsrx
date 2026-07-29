@@ -1,5 +1,6 @@
 import type { OctaneNode } from 'octane';
-import { Children, cloneElement } from 'octane';
+import { useLayoutEffect, useRef } from 'octane';
+import { useMergedRef } from '@octanejs/mantine-hooks';
 import {
   BoxProps,
   createVarsResolver,
@@ -76,6 +77,7 @@ export const Card = polymorphicFactory<CardFactory>((_props) => {
     padding,
     attributes,
     orientation,
+    ref,
     ...others
   } = props;
 
@@ -93,29 +95,42 @@ export const Card = polymorphicFactory<CardFactory>((_props) => {
     varsResolver,
   });
 
-  const _children = Children.toArray(children);
-  const content = _children.map((child, index) => {
-    if (
-      typeof child === 'object' &&
-      child &&
-      'type' in child &&
-      (child.type === CardSection ||
-        (child.type as any)?.displayName === '@mantine/core/CardSection')
-    ) {
-      return cloneElement(child, {
-        'data-orientation': orientation,
-        'data-first-section': index === 0 || undefined,
-        'data-last-section': index === _children.length - 1 || undefined,
-      } as any);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const mergedRef = useMergedRef(ref, rootRef);
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
     }
 
-    return child;
-  });
+    const sections = Array.from(
+      root.querySelectorAll<HTMLElement>(':scope > [data-mantine-card-section]'),
+    );
+    sections.forEach((section, index) => {
+      if (index === 0) {
+        section.setAttribute('data-first-section', 'true');
+      } else {
+        section.removeAttribute('data-first-section');
+      }
+      if (index === sections.length - 1) {
+        section.setAttribute('data-last-section', 'true');
+      } else {
+        section.removeAttribute('data-last-section');
+      }
+    });
+  }, [children]);
 
   return (
-    <CardProvider value={{ getStyles }}>
-      <Paper unstyled={unstyled} data-orientation={orientation} {...getStyles('root')} {...others}>
-        {content}
+    <CardProvider value={{ getStyles, orientation }}>
+      <Paper
+        unstyled={unstyled}
+        data-orientation={orientation}
+        {...getStyles('root')}
+        {...others}
+        ref={mergedRef}
+      >
+        {children}
       </Paper>
     </CardProvider>
   );

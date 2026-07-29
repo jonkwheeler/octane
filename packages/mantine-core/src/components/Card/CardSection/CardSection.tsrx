@@ -36,6 +36,8 @@ export const CardSection = polymorphicFactory<CardSectionFactory>((_props) => {
   return (
     <Box
       mod={[{ 'with-border': withBorder, 'inherit-padding': inheritPadding }, mod]}
+      data-mantine-card-section
+      data-orientation={ctx.orientation}
       {...ctx.getStyles('section', { className, style, styles, classNames })}
       {...others}
     />

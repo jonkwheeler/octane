@@ -3,6 +3,7 @@ import type { CardFactory } from './Card.tsrx';
 
 export interface CardContextValue {
   getStyles: GetStylesApi<CardFactory>;
+  orientation: 'horizontal' | 'vertical';
 }
 
 export const [CardProvider, useCardContext] = createSafeContext<CardContextValue>(
