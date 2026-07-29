@@ -1,4 +1,28 @@
 {
-  "title": "Vite React islands",
-  "description": "Incrementally mount compiled Octane TSRX leaves inside an existing React Vite application."
+  "$schema": "../example.schema.json",
+  "schemaVersion": 1,
+  "id": "vite-react-islands",
+  "title": "Vite React Islands",
+  "summary": "A Vite React shell incrementally hosting a stateful TSRX leaf through OctaneCompat.",
+  "status": "experimental",
+  "host": "react",
+  "renderModes": ["client"],
+  "dialects": ["tsrx", "tsx"],
+  "bindings": [],
+  "octaneFeatures": ["octane-compat", "react-host"],
+  "commands": {
+    "build": ["build"],
+    "typecheck": "typecheck",
+    "e2e": "test:e2e"
+  },
+  "journeys": [
+    {
+      "id": "react-shell-octane-leaf",
+      "title": "Mount an interactive Octane counter inside the existing Vite React shell",
+      "kind": "golden",
+      "spec": "e2e/adoption.spec.ts",
+      "critical": true
+    }
+  ],
+  "faultScenarios": []
 }

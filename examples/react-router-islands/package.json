@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "node ../../packages/octane/scripts/build.mjs && vite build",
-    "typecheck": "tsrx-tsc --noEmit"
+    "typecheck": "tsrx-tsc --noEmit",
+    "test:e2e": "node --test e2e/*.spec.ts"
   },
   "dependencies": {
     "octane": "workspace:*",
