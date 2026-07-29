@@ -47,7 +47,8 @@ pnpm exec octane migrate convert src/components/PriceBadge.tsx --apply
 The converter keeps TSX, adds the Octane JSX ownership pragma, rewrites only
 catalog-proven package imports, and changes standard text-entry edit handlers
 from React's synthetic `onChange` convention to native `onInput`. Select,
-checkbox, radio, and public component callbacks keep `onChange`.
+non-text input types, dynamically typed inputs, and public component callbacks
+keep `onChange`.
 
 Each write is guarded by the digest read during analysis. If the file differs
 when apply checks it, it is reported as a conflict and is not overwritten.

@@ -6,6 +6,24 @@ import { analyzeMigration } from './analyze.js';
 import { classifyPackageImport } from './classify.js';
 import { applyTextEdits } from './edits.js';
 
+const NATIVE_CHANGE_INPUT_TYPES = new Set([
+	'button',
+	'checkbox',
+	'color',
+	'date',
+	'datetime-local',
+	'file',
+	'hidden',
+	'image',
+	'month',
+	'radio',
+	'range',
+	'reset',
+	'submit',
+	'time',
+	'week',
+]);
+
 /**
  * @typedef {{
  *   file: string,
@@ -54,21 +72,29 @@ function jsxName(node) {
 
 /** @param {any} node @returns {import('./edits.js').TextEdit | null} */
 function textInputOnChangeEdit(node) {
-	if (node.type !== 'JSXOpeningElement' || jsxName(node.name) !== 'input') return null;
+	if (node.type !== 'JSXOpeningElement') return null;
+	const host = jsxName(node.name);
+	if (host !== 'input' && host !== 'textarea') return null;
 	let onChange = null;
 	let type = null;
+	let hasDynamicType = false;
 	for (const attribute of node.attributes ?? []) {
 		if (attribute.type !== 'JSXAttribute') continue;
 		const name = jsxName(attribute.name);
 		if (name === 'onChange') onChange = attribute.name;
-		if (
-			name === 'type' &&
-			(attribute.value?.type === 'Literal' || attribute.value?.type === 'StringLiteral')
-		) {
-			type = String(attribute.value.value).toLowerCase();
+		if (name === 'type') {
+			if (attribute.value?.type === 'Literal' || attribute.value?.type === 'StringLiteral') {
+				type = String(attribute.value.value).toLowerCase();
+			} else {
+				hasDynamicType = true;
+			}
 		}
 	}
-	if (!onChange || type === 'checkbox' || type === 'radio') return null;
+	if (
+		!onChange ||
+		(host === 'input' && (hasDynamicType || (type !== null && NATIVE_CHANGE_INPUT_TYPES.has(type))))
+	)
+		return null;
 	return { start: onChange.start, end: onChange.end, text: 'onInput', reason: 'native-text-input' };
 }
 

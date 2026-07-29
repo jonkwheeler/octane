@@ -58,6 +58,33 @@ export function Leaf() {
 		expect(result.diagnostics ?? []).toEqual([]);
 	});
 
+	it('rewrites textarea and text-entry inputs while preserving native change controls', () => {
+		const project = fixture({
+			'src/Leaf.tsx': `
+				export const Leaf = ({ type }) => (
+					<>
+						<textarea onChange={() => {}} />
+						<input type="email" onChange={() => {}} />
+						<input type="file" onChange={() => {}} />
+						<input type="range" onChange={() => {}} />
+						<input type="date" onChange={() => {}} />
+						<input type={type} onChange={() => {}} />
+					</>
+				);
+			`,
+		});
+
+		const plan = createConversionPlan({ root: project.root, entries: ['src/Leaf.tsx'] });
+
+		expect(plan.blocked).toBe(false);
+		expect(plan.files[0].output).toContain('<textarea onInput=');
+		expect(plan.files[0].output).toContain('<input type="email" onInput=');
+		expect(plan.files[0].output).toContain('<input type="file" onChange=');
+		expect(plan.files[0].output).toContain('<input type="range" onChange=');
+		expect(plan.files[0].output).toContain('<input type="date" onChange=');
+		expect(plan.files[0].output).toContain('<input type={type} onChange=');
+	});
+
 	it('adds a leading ownership pragma when the phrase appears only in code', () => {
 		const project = fixture({
 			'src/Leaf.tsx': `
