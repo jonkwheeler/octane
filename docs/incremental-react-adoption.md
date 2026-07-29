@@ -30,11 +30,10 @@ APIs. A blocked report exits with code `3`; malformed invocation exits with
 code `2`, and command failures use code `1`.
 
 For example, `mobx-react-lite` maps to `@octanejs/mobx`; Mantine Core, Hooks,
-Form, Charts, Carousel, Code Highlight, Dropzone, Store, Notifications, Spotlight, Modals,
-Navigation Progress, and Tiptap UI map to their corresponding
-`@octanejs/mantine-*` packages. Other Mantine extension packages remain blocked
-until their corresponding bindings exist. Supported dependencies inside that
-graph do not make an unported parent Mantine extension portable.
+Form, Charts, Carousel, Code Highlight, Dates, Dropzone, Store, Notifications,
+Spotlight, Modals, Navigation Progress, Schedule, and Tiptap UI map to their
+corresponding `@octanejs/mantine-*` packages. Supported dependencies inside a
+graph do not make an unported parent extension portable.
 
 ## 2. Preview the conversion
 

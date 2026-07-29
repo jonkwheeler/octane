@@ -1,0 +1,1 @@
+{"upstream":{"package":"@mantine/dates","version":"9.5.0"},"surface":"Complete @mantine/dates 9.5.0 exported component and utility surface.","divergences":["Input and calendar callbacks receive native browser events."],"ssr":"Calendars and inputs render deterministic date values; browser interactions activate on the client.","verified":"2026-07-29","notes":[]}

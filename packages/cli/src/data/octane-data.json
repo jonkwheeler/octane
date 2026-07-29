@@ -240,6 +240,16 @@
       "verified": "2026-07-29"
     },
     {
+      "name": "@octanejs/mantine-dates",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/dates", "version": "9.5.0" },
+      "surface": "Complete @mantine/dates 9.5.0 exported component and utility surface.",
+      "divergences": ["Input and calendar callbacks receive native browser events."],
+      "ssr": "Calendars and inputs render deterministic date values; browser interactions activate on the client.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-dropzone",
       "version": "0.1.0",
       "category": "UI and interaction",
@@ -310,6 +320,16 @@
       "surface": "Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions.",
       "divergences": [],
       "ssr": "The initial progress state renders deterministically; timers activate only when actions run on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-schedule",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/schedule", "version": "9.5.0" },
+      "surface": "Complete @mantine/schedule 9.5.0 exported surface across day, week, month, year, agenda, mobile, resource, recurrence, drag, resize, and supporting components.",
+      "divergences": ["Schedule callbacks receive native browser events."],
+      "ssr": "Static schedules render deterministically; time indicators and drag interactions activate on the client.",
       "verified": "2026-07-29"
     },
     {
@@ -816,12 +836,14 @@
     "@mantine/charts": "@octanejs/mantine-charts",
     "@mantine/code-highlight": "@octanejs/mantine-code-highlight",
     "@mantine/core": "@octanejs/mantine-core",
+    "@mantine/dates": "@octanejs/mantine-dates",
     "@mantine/dropzone": "@octanejs/mantine-dropzone",
     "@mantine/form": "@octanejs/mantine-form",
     "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mantine/modals": "@octanejs/mantine-modals",
     "@mantine/notifications": "@octanejs/mantine-notifications",
     "@mantine/nprogress": "@octanejs/mantine-nprogress",
+    "@mantine/schedule": "@octanejs/mantine-schedule",
     "@mantine/spotlight": "@octanejs/mantine-spotlight",
     "@mantine/store": "@octanejs/mantine-store",
     "@mantine/tiptap": "@octanejs/mantine-tiptap",

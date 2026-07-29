@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 58 `@octanejs/*` framework bindings.
+The central status table for the 60 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -35,12 +35,14 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/mantine-charts`](#octanejsmantine-charts) | `@mantine/charts@9.5.0` | Supported @mantine/charts 9.5.0 runtime surface for AreaChart, BarChart, LineChart, Sparkline, DonutChart, PieChart, RadarChart, ScatterChart, BubbleChart, CompositeChart, RadialBarChart, FunnelChart, Heatmap, BarsList, SankeyChart, SunburstChart, BulletChart, tooltips, legends, and shared chart types. ChartBrush and Treemap remain excluded until their stateful Recharts class implementations are converted. | Chart callbacks receive native browser events through Octane instead of React synthetic events; Type-only component namespaces are exported as direct named types because runtime TypeScript namespaces are not emitted by the TSRX compiler; ChartBrush and Treemap are not exported in this release | Chart wrappers can render deterministic shells during server rendering; responsive SVG geometry is finalized after client measurement. | 2026-07-29 |
 | [`@octanejs/mantine-code-highlight`](#octanejsmantine-code-highlight) | `@mantine/code-highlight@9.5.0` | Complete @mantine/code-highlight 9.5.0 runtime surface: block, inline, tabs, copy and expand controls, provider, and plain-text, highlight.js, and Shiki adapter factories. | Adapter libraries remain user-supplied, matching the upstream adapter contract | Synchronous adapters render deterministic markup; adapters with async contexts initially render their fallback and load on the client. | 2026-07-29 |
 | [`@octanejs/mantine-core`](#octanejsmantine-core) | `@mantine/core@9.5.0` | Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports. | Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned; Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection; Event callbacks receive native browser events through Octane's delegated event system | Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering. | 2026-07-29 |
+| [`@octanejs/mantine-dates`](#octanejsmantine-dates) | `@mantine/dates@9.5.0` | Complete @mantine/dates 9.5.0 exported component and utility surface. | Input and calendar callbacks receive native browser events | Calendars and inputs render deterministic date values; browser interactions activate on the client. | 2026-07-29 |
 | [`@octanejs/mantine-dropzone`](#octanejsmantine-dropzone) | `@mantine/dropzone@9.5.0` | Mantine Dropzone and FullScreen components with native input selection, drag and drop, accept, size, count, and custom validation. | Uses an Octane-native drop hook instead of react-dropzone; The File System Access API option falls back to the native hidden file input | The drop target and hidden input render deterministically; browser file APIs activate on interaction. | 2026-07-29 |
 | [`@octanejs/mantine-form`](#octanejsmantine-form) | `@mantine/form@9.5.0` | Complete @mantine/form 9.5.0 runtime and type surface: useForm, useField, providers, actions, validators, nested paths, list operations, sync/async validation, schemas, watchers, and controlled/uncontrolled input props. | Hooks use Octane lifecycle and state primitives; Input and submit callbacks receive native browser events instead of React synthetic events | Form state and validation are deterministic during server rendering; browser event attachment activates during hydration. | 2026-07-29 |
 | [`@octanejs/mantine-hooks`](#octanejsmantine-hooks) | `@mantine/hooks@9.5.0` | Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks. | Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher; DOM subscriptions receive native browser events; React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime | Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering. | 2026-07-28 |
 | [`@octanejs/mantine-modals`](#octanejsmantine-modals) | `@mantine/modals@9.5.0` | Complete @mantine/modals 9.5.0 runtime surface: content, confirmation, and registered context modals; updates; stacking; and centralized close actions. | Button callbacks receive native browser events | The provider renders closed and deterministic until modal events are dispatched on the client. | 2026-07-29 |
 | [`@octanejs/mantine-notifications`](#octanejsmantine-notifications) | `@mantine/notifications@9.5.0` | Complete @mantine/notifications 9.5.0 runtime surface: Notifications, stores, show, hide, update, clean, queueing, auto-close, hover pause, and drag or wheel dismissal. | Enter and exit state styles are rendered directly by Octane instead of react-transition-group; Pointer, drag, wheel, and close callbacks receive native browser events | Notification containers render deterministic store state; timers and dismissal listeners activate on the client. | 2026-07-29 |
 | [`@octanejs/mantine-nprogress`](#octanejsmantine-nprogress) | `@mantine/nprogress@9.5.0` | Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions. | none known | The initial progress state renders deterministically; timers activate only when actions run on the client. | 2026-07-29 |
+| [`@octanejs/mantine-schedule`](#octanejsmantine-schedule) | `@mantine/schedule@9.5.0` | Complete @mantine/schedule 9.5.0 exported surface across day, week, month, year, agenda, mobile, resource, recurrence, drag, resize, and supporting components. | Schedule callbacks receive native browser events | Static schedules render deterministically; time indicators and drag interactions activate on the client. | 2026-07-29 |
 | [`@octanejs/mantine-spotlight`](#octanejsmantine-spotlight) | `@mantine/spotlight@9.5.0` | Complete @mantine/spotlight 9.5.0 runtime surface: compound Spotlight components, filtering, keyboard navigation, hotkeys, and independent stores. | Keyboard and pointer callbacks receive native browser events | Store state and closed Spotlight roots render deterministically; DOM navigation activates on the client. | 2026-07-29 |
 | [`@octanejs/mantine-store`](#octanejsmantine-store) | `@mantine/store@9.5.0` | Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates. | useStore subscribes through Octane's useSyncExternalStore implementation | Store snapshots are deterministic during server rendering. | 2026-07-29 |
 | [`@octanejs/mantine-tiptap`](#octanejsmantine-tiptap) | `@mantine/tiptap@9.5.0` | Complete @mantine/tiptap 9.5.0 runtime surface: RichTextEditor, content, toolbar, control groups, formatting controls, link editing, color controls, source mode, labels, and Link and TaskList helpers. | The editor renderer and subscriptions use @octanejs/tiptap instead of @tiptap/react; Control callbacks receive native browser events | RichTextEditor follows @octanejs/tiptap's deferred editor construction and deterministic server shell. | 2026-07-29 |
@@ -383,6 +385,20 @@ Scope/evidence last checked: 2026-07-29.
 - Preserves the upstream Mantine component and styles architecture.
 - Uses Octane-native hooks and Floating UI bindings.
 
+## @octanejs/mantine-dates
+
+[`packages/mantine-dates`](../packages/mantine-dates) `0.1.0` — ports `@mantine/dates@9.5.0`. Status data: [`packages/mantine-dates/status.json`](../packages/mantine-dates/status.json).
+
+Complete @mantine/dates 9.5.0 exported component and utility surface.
+
+Known divergences:
+
+- Input and calendar callbacks receive native browser events.
+
+SSR / hydration: Calendars and inputs render deterministic date values; browser interactions activate on the client.
+
+Scope/evidence last checked: 2026-07-29.
+
 ## @octanejs/mantine-dropzone
 
 [`packages/mantine-dropzone`](../packages/mantine-dropzone) `0.1.0` — ports `@mantine/dropzone@9.5.0`. Status data: [`packages/mantine-dropzone/status.json`](../packages/mantine-dropzone/status.json).
@@ -465,6 +481,20 @@ Scope/evidence last checked: 2026-07-29.
 Complete @mantine/nprogress 9.5.0 runtime surface: NavigationProgress, independent stores, and start, stop, reset, set, increment, decrement, complete, and cleanup actions.
 
 SSR / hydration: The initial progress state renders deterministically; timers activate only when actions run on the client.
+
+Scope/evidence last checked: 2026-07-29.
+
+## @octanejs/mantine-schedule
+
+[`packages/mantine-schedule`](../packages/mantine-schedule) `0.1.0` — ports `@mantine/schedule@9.5.0`. Status data: [`packages/mantine-schedule/status.json`](../packages/mantine-schedule/status.json).
+
+Complete @mantine/schedule 9.5.0 exported surface across day, week, month, year, agenda, mobile, resource, recurrence, drag, resize, and supporting components.
+
+Known divergences:
+
+- Schedule callbacks receive native browser events.
+
+SSR / hydration: Static schedules render deterministically; time indicators and drag interactions activate on the client.
 
 Scope/evidence last checked: 2026-07-29.
 

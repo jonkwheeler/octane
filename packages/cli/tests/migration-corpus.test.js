@@ -24,6 +24,13 @@ function project(files) {
 }
 
 const MANTINE_PACKAGES = [
+	'@mantine/spotlight',
+	'@mantine/code-highlight',
+	'@mantine/tiptap',
+	'@mantine/dropzone',
+	'@mantine/carousel',
+	'@mantine/nprogress',
+	'@mantine/modals',
 	'@mantine/schedule',
 ];
 
@@ -49,7 +56,7 @@ describe('migration compatibility corpus', () => {
 		expect(report.blocked).toBe(false);
 	});
 
-	it('keeps unported Mantine extensions blocked without hiding supported dependencies', () => {
+	it('recognizes the complete supported Mantine extension corpus', () => {
 		let installedPackages = {};
 		for (const packageName of MANTINE_PACKAGES) {
 			installedPackages = {
@@ -70,12 +77,6 @@ describe('migration compatibility corpus', () => {
 		const report = analyzeMigration({ root: fixture.root, entries: ['src/Leaf.tsx'] });
 		const bySpecifier = new Map(report.packages.map((entry) => [entry.specifier, entry]));
 
-		for (const packageName of MANTINE_PACKAGES) {
-			expect(bySpecifier.get(packageName)).toMatchObject({
-				classification: 'blocked',
-				evidence: 'react-dependency',
-			});
-		}
 		expect(bySpecifier.get('@mantine/hooks')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/mantine-hooks',
@@ -136,6 +137,11 @@ describe('migration compatibility corpus', () => {
 			replacement: '@octanejs/mantine-dropzone',
 			evidence: 'binding-catalog:react-package',
 		});
+		expect(bySpecifier.get('@mantine/schedule')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-schedule',
+			evidence: 'binding-catalog:react-package',
+		});
 		expect(bySpecifier.get('recharts')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/recharts',
@@ -144,7 +150,7 @@ describe('migration compatibility corpus', () => {
 			classification: 'supported',
 			replacement: '@octanejs/tiptap',
 		});
-		expect(report.blocked).toBe(true);
+		expect(report.blocked).toBe(false);
 	});
 
 	it('returns deterministic corpus reports', () => {
