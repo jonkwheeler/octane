@@ -1,6 +1,7 @@
 import type * as React from 'react';
 import type { CSSProperties } from 'react';
 import { flushSync, useEffectEvent, useRef, useState } from 'octane';
+import type { Octane } from 'octane/jsx-runtime';
 import { useDidUpdate } from '../use-did-update/use-did-update';
 import { mergeRefs } from '../use-merged-ref/use-merged-ref';
 
@@ -38,14 +39,14 @@ export interface UseCollapseInput {
 
 interface GetCollapsePropsInput {
 	style?: CSSProperties;
-	ref?: React.Ref<HTMLDivElement>;
+	ref?: Octane.Ref<HTMLDivElement>;
 }
 
 interface GetCollapsePropsReturnValue {
 	'aria-hidden': boolean;
 	inert: boolean;
 	ref: React.RefCallback<HTMLDivElement>;
-	onTransitionEnd: (event: React.TransitionEvent<Element>) => void;
+	onTransitionEnd: (event: TransitionEvent & { currentTarget: Element & EventTarget }) => void;
 	style: React.CSSProperties;
 }
 
@@ -119,7 +120,7 @@ export function useCollapse({
 		}
 	}, [expanded]);
 
-	const handleTransitionEnd = (event: React.TransitionEvent): void => {
+	const handleTransitionEnd = (event: TransitionEvent): void => {
 		if (event.target !== elementRef.current || event.propertyName !== 'height') {
 			return;
 		}

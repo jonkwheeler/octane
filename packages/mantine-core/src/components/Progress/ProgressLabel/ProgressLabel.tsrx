@@ -1,0 +1,38 @@
+import {
+  Box,
+  BoxProps,
+  CompoundStylesApiProps,
+  ElementProps,
+  factory,
+  Factory,
+  useProps,
+} from '../../../core';
+import { useProgressContext } from '../Progress.context';
+import classes from '../Progress.module.css';
+
+export type ProgressLabelStylesNames = 'label';
+
+export interface ProgressLabelProps
+  extends BoxProps, CompoundStylesApiProps<ProgressLabelFactory>, ElementProps<'div'> {}
+
+export type ProgressLabelFactory = Factory<{
+  props: ProgressLabelProps;
+  ref: HTMLDivElement;
+  stylesNames: ProgressLabelStylesNames;
+  compound: true;
+}>;
+
+export const ProgressLabel = factory<ProgressLabelFactory>((props) => {
+  const { classNames, className, style, styles, vars, ...others } = useProps(
+    'ProgressLabel',
+    null,
+    props
+  );
+
+  const ctx = useProgressContext();
+
+  return <Box {...ctx.getStyles('label', { className, style, classNames, styles })} {...others} />;
+});
+
+ProgressLabel.classes = classes;
+ProgressLabel.displayName = '@mantine/core/ProgressLabel';

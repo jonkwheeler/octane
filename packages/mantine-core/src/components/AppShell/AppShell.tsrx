@@ -1,0 +1,225 @@
+import { useId } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  ElementProps,
+  factory,
+  Factory,
+  getDefaultZIndex,
+  MantineSpacing,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../core';
+import { AppShellProvider } from './AppShell.context';
+import {
+  AppShellAsideConfiguration,
+  AppShellFooterConfiguration,
+  AppShellHeaderConfiguration,
+  AppShellNavbarConfiguration,
+  AppShellResponsiveSize,
+} from './AppShell.types';
+import { AppShellAside, type AppShellAsideProps } from './AppShellAside/AppShellAside.tsrx';
+import { AppShellFooter, type AppShellFooterProps } from './AppShellFooter/AppShellFooter.tsrx';
+import { AppShellHeader, type AppShellHeaderProps } from './AppShellHeader/AppShellHeader.tsrx';
+import { AppShellMain, type AppShellMainProps } from './AppShellMain/AppShellMain.tsrx';
+import { AppShellMediaStyles } from './AppShellMediaStyles/AppShellMediaStyles.tsrx';
+import { AppShellNavbar, type AppShellNavbarProps } from './AppShellNavbar/AppShellNavbar.tsrx';
+import { AppShellSection, type AppShellSectionProps } from './AppShellSection/AppShellSection.tsrx';
+import { useResizing } from './use-resizing/use-resizing.tsrx';
+import classes from './AppShell.module.css';
+export type AppShellStylesNames =
+  | 'root'
+  | 'navbar'
+  | 'main'
+  | 'header'
+  | 'footer'
+  | 'aside'
+  | 'section';
+
+export type AppShellCssVariables = {
+  root: '--app-shell-transition-duration' | '--app-shell-transition-timing-function';
+};
+
+export interface AppShellProps
+  extends BoxProps, StylesApiProps<AppShellFactory>, ElementProps<'div'> {
+  /** If set, the associated components have a border @default true */
+  withBorder?: boolean;
+
+  /** Padding of the main section. Important: use `padding` prop instead of `p`. @default 0 */
+  padding?: MantineSpacing | AppShellResponsiveSize;
+
+  /** `Navbar` configuration, controls width, breakpoints and collapsed state. Required if you use `Navbar` component. */
+  navbar?: AppShellNavbarConfiguration;
+
+  /** `Aside` configuration, controls width, breakpoints and collapsed state. Required if you use `Aside` component. */
+  aside?: AppShellAsideConfiguration;
+
+  /** `Header` configuration, controls height, offset and collapsed state. Required if you use `Header` component. */
+  header?: AppShellHeaderConfiguration;
+
+  /** `Footer` configuration, controls height, offset and collapsed state. Required if you use `Footer` component. */
+  footer?: AppShellFooterConfiguration;
+
+  /** Duration of all transitions in ms @default 200 */
+  transitionDuration?: number;
+
+  /** Timing function of all transitions @default ease */
+  transitionTimingFunction?: React.CSSProperties['transitionTimingFunction'];
+
+  /** `z-index` of all associated elements @default 100 */
+  zIndex?: string | number;
+
+  /** Determines how `Navbar`/`Aside` are arranged relative to `Header`/`Footer` */
+  layout?: 'default' | 'alt';
+
+  /** If set, `Navbar`, `Aside`, `Header` and `Footer` components are hidden */
+  disabled?: boolean;
+
+  /** If set, `Header` and `Footer` components include styles to offset scrollbars. Based on `react-remove-scroll`. @default true */
+  offsetScrollbars?: boolean;
+
+  /** Determines positioning mode of all sections @default 'fixed' */
+  mode?: 'fixed' | 'static';
+}
+
+export type AppShellFactory = Factory<{
+  props: AppShellProps;
+  ref: HTMLDivElement;
+  stylesNames: AppShellStylesNames;
+  vars: AppShellCssVariables;
+  staticComponents: {
+    Navbar: typeof AppShellNavbar;
+    Header: typeof AppShellHeader;
+    Main: typeof AppShellMain;
+    Aside: typeof AppShellAside;
+    Footer: typeof AppShellFooter;
+    Section: typeof AppShellSection;
+  };
+}>;
+
+const defaultProps = {
+  withBorder: true,
+  padding: 0,
+  transitionDuration: 200,
+  transitionTimingFunction: 'ease',
+  zIndex: getDefaultZIndex('app'),
+  mode: 'fixed',
+} satisfies Partial<AppShellProps>;
+
+const varsResolver = createVarsResolver<AppShellFactory>(
+  (_, { transitionDuration, transitionTimingFunction }) => ({
+    root: {
+      '--app-shell-transition-duration': `${transitionDuration}ms`,
+      '--app-shell-transition-timing-function': transitionTimingFunction,
+    },
+  })
+);
+
+export const AppShell = factory<AppShellFactory>((_props) => {
+  const props = useProps('AppShell', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    navbar,
+    withBorder,
+    padding,
+    transitionDuration,
+    transitionTimingFunction,
+    header,
+    zIndex,
+    layout,
+    disabled,
+    aside,
+    footer,
+    offsetScrollbars = true,
+    mode,
+    mod,
+    attributes,
+    id,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<AppShellFactory>({
+    name: 'AppShell',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  const resizing = useResizing({ disabled, transitionDuration });
+  const _id = useId(id);
+
+  return (
+    <AppShellProvider value={{ getStyles, withBorder, zIndex, disabled, offsetScrollbars, mode }}>
+      <AppShellMediaStyles
+        navbar={navbar}
+        header={header}
+        aside={aside}
+        footer={footer}
+        padding={padding}
+        mode={mode}
+        selector={mode === 'static' ? `#${_id}` : undefined}
+      />
+      <Box
+        {...getStyles('root')}
+        id={_id}
+        mod={[{ resizing, layout, disabled, mode }, mod]}
+        {...others}
+      />
+    </AppShellProvider>
+  );
+});
+
+AppShell.classes = classes;
+AppShell.varsResolver = varsResolver;
+AppShell.displayName = '@mantine/core/AppShell';
+AppShell.Navbar = AppShellNavbar;
+AppShell.Header = AppShellHeader;
+AppShell.Main = AppShellMain;
+AppShell.Aside = AppShellAside;
+AppShell.Footer = AppShellFooter;
+AppShell.Section = AppShellSection;
+
+export declare namespace AppShell {
+  export type Props = AppShellProps;
+  export type StylesNames = AppShellStylesNames;
+  export type CssVariables = AppShellCssVariables;
+  export type Factory = AppShellFactory;
+
+  export namespace Section {
+    export type Props = AppShellSectionProps;
+  }
+
+  export namespace Header {
+    export type Props = AppShellHeaderProps;
+  }
+
+  export namespace Footer {
+    export type Props = AppShellFooterProps;
+  }
+
+  export namespace Navbar {
+    export type Props = AppShellNavbarProps;
+  }
+
+  export namespace Aside {
+    export type Props = AppShellAsideProps;
+  }
+
+  export namespace Main {
+    export type Props = AppShellMainProps;
+  }
+}

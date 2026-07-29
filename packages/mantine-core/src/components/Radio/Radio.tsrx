@@ -1,0 +1,293 @@
+import type { Octane } from 'octane/jsx-runtime';
+import type { OctaneNode } from 'octane';
+import { use } from 'octane';
+import { useId } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  createVarsResolver,
+  DataAttributes,
+  ElementProps,
+  extractStyleProps,
+  factory,
+  Factory,
+  getAutoContrastValue,
+  getContrastColor,
+  getRadius,
+  getSize,
+  getThemeColor,
+  MantineColor,
+  MantineRadius,
+  MantineSize,
+  parseThemeColor,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '../../core';
+import { InlineInput, InlineInputStylesNames } from '../../utils/InlineInput';
+import {
+  RadioCard,
+  type RadioCardProps,
+  type RadioCardStylesNames,
+  type RadioCardFactory,
+  type RadioCardCssVariables,
+  type RadioCardContextValue,
+} from './RadioCard/RadioCard.tsrx';
+import {
+  RadioGroup,
+  RadioGroupContext,
+  type RadioGroupProps,
+  type RadioGroupStylesNames,
+  type RadioGroupFactory,
+  type RadioGroupContextValue,
+} from './RadioGroup/RadioGroup.tsrx';
+import { RadioIcon, RadioIconProps } from './RadioIcon.tsrx';
+import {
+  RadioIndicator,
+  type RadioIndicatorProps,
+  type RadioIndicatorStylesNames,
+  type RadioIndicatorFactory,
+  type RadioIndicatorCssVariables,
+  type RadioIndicatorVariant,
+} from './RadioIndicator/RadioIndicator.tsrx';
+import classes from './Radio.module.css';
+export type RadioVariant = 'filled' | 'outline';
+export type RadioStylesNames = InlineInputStylesNames | 'inner' | 'radio' | 'icon';
+export type RadioCssVariables = {
+  root:
+    | '--radio-size'
+    | '--radio-radius'
+    | '--radio-color'
+    | '--radio-icon-color'
+    | '--radio-icon-size';
+};
+
+export interface RadioProps
+  extends BoxProps, StylesApiProps<RadioFactory>, ElementProps<'input', 'size' | 'children'> {
+  /** Content of the `label` associated with the radio */
+  label?: OctaneNode;
+
+  /** Key of theme.colors or any valid CSS color to set radio background color in checked state @default theme.primaryColor */
+  color?: MantineColor;
+
+  /** Controls size of the component @default 'sm' */
+  size?: MantineSize | (string & {});
+
+  /** A component that replaces the default radio icon (centered dot) */
+  icon?: OctaneComponent<RadioIconProps>;
+
+  /** Props passed down to the root element */
+  wrapperProps?: MantineIntrinsicProps<'div'> & DataAttributes;
+
+  /** Position of the label relative to the input @default 'right' */
+  labelPosition?: 'left' | 'right';
+
+  /** Description displayed below the label */
+  description?: OctaneNode;
+
+  /** Error displayed below the label */
+  error?: OctaneNode;
+
+  /** Key of `theme.radius` or any valid CSS value to set `border-radius` @default 'xl' */
+  radius?: MantineRadius;
+
+  /** Assigns ref of the root element */
+  rootRef?: OctaneRef<HTMLDivElement>;
+
+  /** Key of theme.colors or any valid CSS color to set icon color. When not set, icon color is determined automatically based on theme.autoContrast setting */
+  iconColor?: MantineColor;
+
+  /** If set, adjusts text color based on background color for `filled` variant */
+  autoContrast?: boolean;
+
+  /** If set, applies error styles to the radio when `error` prop is set @default true */
+  withErrorStyles?: boolean;
+}
+
+export type RadioFactory = Factory<{
+  props: RadioProps;
+  ref: HTMLInputElement;
+  stylesNames: RadioStylesNames;
+  vars: RadioCssVariables;
+  variant: RadioVariant;
+  staticComponents: {
+    Group: typeof RadioGroup;
+    Card: typeof RadioCard;
+    Indicator: typeof RadioIndicator;
+  };
+}>;
+
+const defaultProps = {
+  labelPosition: 'right',
+  withErrorStyles: true,
+} satisfies Partial<RadioProps>;
+
+const varsResolver = createVarsResolver<RadioFactory>(
+  (theme, { size, radius, color, iconColor, variant, autoContrast }) => {
+    const parsedColor = parseThemeColor({ color: color || theme.primaryColor, theme });
+    const outlineColor =
+      parsedColor.isThemeColor && parsedColor.shade === undefined
+        ? `var(--mantine-color-${parsedColor.color}-outline)`
+        : parsedColor.color;
+
+    return {
+      root: {
+        '--radio-size': getSize(size, 'radio-size'),
+        '--radio-radius': radius === undefined ? undefined : getRadius(radius),
+        '--radio-color': variant === 'outline' ? outlineColor : getThemeColor(color, theme),
+        '--radio-icon-color': iconColor
+          ? getThemeColor(iconColor, theme)
+          : getAutoContrastValue(autoContrast, theme)
+            ? getContrastColor({ color, theme, autoContrast })
+            : undefined,
+        '--radio-icon-size': getSize(size, 'radio-icon-size'),
+      },
+    };
+  }
+);
+
+export const Radio = factory<RadioFactory>((_props) => {
+  const props = useProps('Radio', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    id,
+    size,
+    label,
+    labelPosition,
+    description,
+    error,
+    radius,
+    color,
+    variant,
+    disabled,
+    wrapperProps,
+    icon: Icon = RadioIcon,
+    rootRef,
+    iconColor,
+    onChange,
+    mod,
+    attributes,
+    withErrorStyles,
+    checked,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<RadioFactory>({
+    name: 'Radio',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  const ctx = use(RadioGroupContext);
+
+  const contextSize = ctx?.size ?? size;
+  const componentSize = props.size ? size : contextSize;
+
+  const { styleProps, rest } = extractStyleProps(others);
+  const uuid = useId(id);
+  const descriptionId = description ? `${uuid}-description` : undefined;
+  const errorId = error && typeof error !== 'boolean' ? `${uuid}-error` : undefined;
+  const describedBy =
+    [descriptionId, errorId, rest['aria-describedby']].filter(Boolean).join(' ') || undefined;
+
+  const contextChecked = ctx ? ctx.value === rest.value : undefined;
+
+  const withContextProps = {
+    checked: contextChecked ?? checked,
+    name: rest.name ?? ctx?.name,
+    onChange: (event: OctaneChangeEvent<HTMLInputElement>) => {
+      ctx?.onChange(event);
+      onChange?.(event);
+    },
+    disabled: ctx?.disabled ?? disabled,
+  };
+
+  return (
+    <InlineInput
+      {...getStyles('root')}
+      __staticSelector="Radio"
+      __stylesApiProps={props}
+      id={uuid}
+      size={componentSize}
+      labelPosition={labelPosition}
+      label={label}
+      description={description}
+      error={error}
+      disabled={withContextProps.disabled}
+      classNames={classNames}
+      styles={styles}
+      unstyled={unstyled}
+      data-checked={(contextChecked ?? checked) || undefined}
+      variant={variant}
+      ref={rootRef}
+      mod={mod}
+      attributes={attributes}
+      {...styleProps}
+      {...wrapperProps}
+    >
+      <Box {...getStyles('inner')} mod={{ 'label-position': labelPosition }}>
+        <Box
+          {...getStyles('radio', { focusable: true, variant })}
+          {...rest}
+          {...withContextProps}
+          component="input"
+          mod={{ error: !!error, 'with-error-styles': withErrorStyles }}
+          id={uuid}
+          type="radio"
+          aria-describedby={describedBy}
+        />
+        <Icon {...getStyles('icon')} aria-hidden />
+      </Box>
+    </InlineInput>
+  );
+});
+
+Radio.classes = classes;
+Radio.varsResolver = varsResolver;
+Radio.displayName = '@mantine/core/Radio';
+Radio.Group = RadioGroup;
+Radio.Card = RadioCard;
+Radio.Indicator = RadioIndicator;
+
+export declare namespace Radio {
+  export type Props = RadioProps;
+  export type StylesNames = RadioStylesNames;
+  export type Factory = RadioFactory;
+  export type Variant = RadioVariant;
+
+  export namespace Group {
+    export type Props = RadioGroupProps;
+    export type StylesNames = RadioGroupStylesNames;
+    export type Factory = RadioGroupFactory;
+    export type ContextValue = RadioGroupContextValue;
+  }
+
+  export namespace Card {
+    export type Props = RadioCardProps;
+    export type StylesNames = RadioCardStylesNames;
+    export type Factory = RadioCardFactory;
+    export type CssVariables = RadioCardCssVariables;
+    export type ContextValue = RadioCardContextValue;
+  }
+
+  export namespace Indicator {
+    export type Props = RadioIndicatorProps;
+    export type StylesNames = RadioIndicatorStylesNames;
+    export type Factory = RadioIndicatorFactory;
+    export type CssVariables = RadioIndicatorCssVariables;
+    export type Variant = RadioIndicatorVariant;
+  }
+}

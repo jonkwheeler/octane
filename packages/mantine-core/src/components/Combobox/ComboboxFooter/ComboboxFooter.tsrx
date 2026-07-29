@@ -1,0 +1,46 @@
+import {
+  Box,
+  BoxProps,
+  CompoundStylesApiProps,
+  ElementProps,
+  factory,
+  Factory,
+  useProps,
+} from '../../../core';
+import { useComboboxContext } from '../Combobox.context';
+import classes from '../Combobox.module.css';
+
+export type ComboboxFooterStylesNames = 'footer';
+
+export interface ComboboxFooterProps
+  extends BoxProps, CompoundStylesApiProps<ComboboxFooterFactory>, ElementProps<'div'> {}
+
+export type ComboboxFooterFactory = Factory<{
+  props: ComboboxFooterProps;
+  ref: HTMLDivElement;
+  stylesNames: ComboboxFooterStylesNames;
+  compound: true;
+}>;
+
+export const ComboboxFooter = factory<ComboboxFooterFactory>((props) => {
+  const { classNames, className, style, styles, vars, ...others } = useProps(
+    'ComboboxFooter',
+    null,
+    props
+  );
+
+  const ctx = useComboboxContext();
+
+  return (
+    <Box
+      {...ctx.getStyles('footer', { className, classNames, style, styles })}
+      {...others}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
+    />
+  );
+});
+
+ComboboxFooter.classes = classes;
+ComboboxFooter.displayName = '@mantine/core/ComboboxFooter';

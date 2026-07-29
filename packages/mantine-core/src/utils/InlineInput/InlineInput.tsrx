@@ -1,0 +1,138 @@
+import type { OctaneNode } from 'octane';
+import { Input } from '../../components/Input';
+import {
+  Box,
+  BoxProps,
+  ElementProps,
+  Factory,
+  getFontSize,
+  getSize,
+  MantineSize,
+  StylesApiProps,
+  useStyles,
+} from '../../core';
+import classes from './InlineInput.module.css';
+
+export const InlineInputClasses = classes;
+
+export type InlineInputStylesNames =
+  | 'root'
+  | 'body'
+  | 'labelWrapper'
+  | 'label'
+  | 'description'
+  | 'error';
+
+export interface InlineInputProps
+  extends BoxProps, StylesApiProps<InlineInputFactory>, ElementProps<'div'> {
+  __staticSelector: string;
+  __stylesApiProps: Record<string, any>;
+  label: OctaneNode;
+  description: OctaneNode;
+  id: string;
+  disabled: boolean | undefined;
+  error: OctaneNode;
+  size: MantineSize | (string & {}) | undefined;
+  labelPosition?: 'left' | 'right';
+  bodyElement?: any;
+  labelElement?: any;
+}
+
+export type InlineInputFactory = Factory<{
+  props: any;
+  stylesNames: InlineInputStylesNames;
+}>;
+
+export function InlineInput({
+  __staticSelector,
+  __stylesApiProps,
+  className,
+  classNames,
+  styles,
+  unstyled,
+  children,
+  label,
+  description,
+  id,
+  disabled,
+  error,
+  size,
+  labelPosition = 'left',
+  bodyElement = 'div',
+  labelElement = 'label',
+  variant,
+  style,
+  vars,
+  mod,
+  attributes,
+  ...others
+}: InlineInputProps) {
+  const getStyles = useStyles<InlineInputFactory>({
+    name: __staticSelector,
+    props: __stylesApiProps,
+    className,
+    style,
+    classes,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+  });
+
+  const descriptionId = description ? `${id}-description` : undefined;
+  const errorId = error && typeof error !== 'boolean' ? `${id}-error` : undefined;
+
+  return (
+    <Box
+      {...getStyles('root')}
+      __vars={{
+        '--label-fz': getFontSize(size),
+        '--label-lh': getSize(size, 'label-lh'),
+      }}
+      mod={[{ 'label-position': labelPosition }, mod]}
+      variant={variant}
+      size={size}
+      {...others}
+    >
+      <Box
+        component={bodyElement}
+        htmlFor={bodyElement === 'label' ? id : undefined}
+        {...getStyles('body')}
+      >
+        {children}
+
+        <div {...getStyles('labelWrapper')} data-disabled={disabled || undefined}>
+          {label && (
+            <Box
+              component={labelElement}
+              htmlFor={labelElement === 'label' ? id : undefined}
+              {...getStyles('label')}
+              data-disabled={disabled || undefined}
+            >
+              {label}
+            </Box>
+          )}
+
+          {description && (
+            <Input.Description
+              id={descriptionId}
+              size={size}
+              __inheritStyles={false}
+              {...getStyles('description')}
+            >
+              {description}
+            </Input.Description>
+          )}
+
+          {error && typeof error !== 'boolean' && (
+            <Input.Error id={errorId} size={size} __inheritStyles={false} {...getStyles('error')}>
+              {error}
+            </Input.Error>
+          )}
+        </div>
+      </Box>
+    </Box>
+  );
+}
+
+InlineInput.displayName = '@mantine/core/InlineInput';

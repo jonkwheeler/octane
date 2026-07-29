@@ -1,0 +1,57 @@
+import { useEffect } from 'octane';
+import { useId } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  CompoundStylesApiProps,
+  ElementProps,
+  factory,
+  Factory,
+  useProps,
+} from '../../../core';
+import { useComboboxContext } from '../Combobox.context';
+import classes from '../Combobox.module.css';
+
+export type ComboboxOptionsStylesNames = 'options';
+
+export interface ComboboxOptionsProps
+  extends BoxProps, CompoundStylesApiProps<ComboboxOptionsFactory>, ElementProps<'div'> {
+  /** Id of the element that labels the options list */
+  labelledBy?: string;
+}
+
+export type ComboboxOptionsFactory = Factory<{
+  props: ComboboxOptionsProps;
+  ref: HTMLDivElement;
+  stylesNames: ComboboxOptionsStylesNames;
+  compound: true;
+}>;
+
+export const ComboboxOptions = factory<ComboboxOptionsFactory>((_props) => {
+  const props = useProps('ComboboxOptions', null, _props);
+  const { classNames, className, style, styles, id, onMouseDown, labelledBy, ...others } = props;
+  const ctx = useComboboxContext();
+  const _id = useId(id);
+
+  useEffect(() => {
+    ctx.store.setListId(_id);
+  }, [_id]);
+
+  return (
+    // eslint-disable-next-line jsx-a11y/interactive-supports-focus -- Combobox uses aria-activedescendant pattern: focus stays on the target, options are highlighted via aria-activedescendant rather than DOM focus
+    <Box
+      {...ctx.getStyles('options', { className, style, classNames, styles })}
+      {...others}
+      id={_id}
+      role="listbox"
+      aria-labelledby={labelledBy}
+      onMouseDown={(event) => {
+        event.preventDefault();
+        onMouseDown?.(event);
+      }}
+    />
+  );
+});
+
+ComboboxOptions.classes = classes;
+ComboboxOptions.displayName = '@mantine/core/ComboboxOptions';

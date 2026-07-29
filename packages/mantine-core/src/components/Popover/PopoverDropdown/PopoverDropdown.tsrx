@@ -1,0 +1,157 @@
+import { useFocusReturn, useMergedRef } from '@octanejs/mantine-hooks';
+import {
+  Box,
+  BoxProps,
+  closeOnEscape,
+  CompoundStylesApiProps,
+  ElementProps,
+  factory,
+  Factory,
+  rem,
+  useDirection,
+  useProps,
+} from '../../../core';
+import { FloatingArrow, getArrowMergeDropdownStyles } from '../../../utils/Floating';
+import { FocusTrap } from '../../FocusTrap';
+import { OptionalPortal } from '../../Portal';
+import { Transition } from '../../Transition';
+import type { PopoverStylesNames } from '../Popover.tsrx';
+import { usePopoverContext } from '../Popover.context';
+import classes from '../Popover.module.css';
+
+export interface PopoverDropdownProps
+  extends BoxProps, CompoundStylesApiProps<PopoverDropdownFactory>, ElementProps<'div'> {}
+
+export type PopoverDropdownFactory = Factory<{
+  props: PopoverDropdownProps;
+  ref: HTMLDivElement;
+  stylesNames: PopoverStylesNames;
+  compound: true;
+}>;
+
+export const PopoverDropdown = factory<PopoverDropdownFactory>((_props) => {
+  const props = useProps('PopoverDropdown', null, _props);
+  const {
+    className,
+    style,
+    vars,
+    children,
+    onKeyDownCapture,
+    variant,
+    classNames,
+    styles,
+    ref,
+    ...others
+  } = props;
+
+  const ctx = usePopoverContext();
+  const { dir } = useDirection();
+
+  const mergeStyles =
+    ctx.arrowPosition === 'merge' && ctx.withArrow
+      ? getArrowMergeDropdownStyles({ position: ctx.placement, dir })
+      : undefined;
+
+  const returnFocus = useFocusReturn({
+    opened: ctx.opened,
+    shouldReturnFocus: ctx.returnFocus,
+  });
+
+  const accessibleProps = ctx.withRoles
+    ? {
+        'aria-labelledby': ctx.getTargetId(),
+        id: ctx.getDropdownId(),
+        role: 'dialog',
+        tabIndex: -1,
+      }
+    : {};
+
+  const mergedRef = useMergedRef(ref, ctx.floating);
+
+  if (ctx.disabled) {
+    return null;
+  }
+
+  return (
+    <OptionalPortal {...ctx.portalProps} withinPortal={ctx.withinPortal}>
+      <Transition
+        mounted={ctx.opened}
+        {...ctx.transitionProps}
+        transition={ctx.transitionProps?.transition || 'fade'}
+        duration={ctx.transitionProps?.duration ?? 150}
+        keepMounted={ctx.keepMounted}
+        keepMountedMode={ctx.keepMountedMode}
+        exitDuration={
+          typeof ctx.transitionProps?.exitDuration === 'number'
+            ? ctx.transitionProps.exitDuration
+            : ctx.transitionProps?.duration
+        }
+      >
+        {(transitionStyles) => (
+          <FocusTrap active={ctx.trapFocus && ctx.opened} innerRef={mergedRef}>
+            <Box
+              {...accessibleProps}
+              {...others}
+              variant={variant}
+              onKeyDownCapture={closeOnEscape(
+                () => {
+                  ctx.onClose?.();
+                  ctx.onDismiss?.();
+                },
+                {
+                  active: ctx.closeOnEscape,
+                  onTrigger: returnFocus,
+                  onKeyDown: onKeyDownCapture,
+                }
+              )}
+              data-position={ctx.placement}
+              data-fixed={ctx.floatingStrategy === 'fixed' || undefined}
+              {...ctx.getStyles('dropdown', {
+                className,
+                props,
+                classNames,
+                styles,
+                style: [
+                  {
+                    ...transitionStyles,
+                    ...mergeStyles,
+                    zIndex: ctx.zIndex as React.CSSProperties['zIndex'],
+                    top: ctx.y ?? 0,
+                    left: ctx.x ?? 0,
+                    width: ctx.width === 'target' ? undefined : rem(ctx.width),
+                    ...(ctx.referenceHidden ? { display: 'none' } : null),
+                  },
+                  ctx.resolvedStyles?.dropdown,
+                  styles?.dropdown,
+                  style,
+                ],
+              })}
+            >
+              {children}
+
+              <FloatingArrow
+                ref={ctx.arrowRef}
+                arrowX={ctx.arrowX}
+                arrowY={ctx.arrowY}
+                visible={ctx.withArrow}
+                position={ctx.placement}
+                arrowSize={ctx.arrowSize}
+                arrowRadius={ctx.arrowRadius}
+                arrowOffset={ctx.arrowOffset}
+                arrowPosition={ctx.arrowPosition}
+                {...ctx.getStyles('arrow', {
+                  props,
+                  classNames,
+                  styles,
+                })}
+              />
+            </Box>
+          </FocusTrap>
+        )}
+      </Transition>
+    </OptionalPortal>
+  );
+});
+
+PopoverDropdown.classes = classes;
+PopoverDropdown.displayName = '@mantine/core/PopoverDropdown';

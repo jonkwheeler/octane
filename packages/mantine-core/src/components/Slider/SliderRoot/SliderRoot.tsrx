@@ -1,0 +1,46 @@
+import type { OctaneNode } from 'octane';
+import {
+  Box,
+  BoxProps,
+  ElementProps,
+  MantineColor,
+  MantineRadius,
+  MantineSize,
+} from '../../../core';
+import { useSliderContext } from '../Slider.context';
+
+export interface SliderRootProps extends BoxProps, ElementProps<'div'> {
+  size: MantineSize | (string & {}) | number;
+  children: OctaneNode;
+  color?: MantineColor;
+  disabled: boolean | undefined;
+  variant?: string;
+  thumbSize?: string | number;
+  radius?: MantineRadius;
+  orientation?: 'horizontal' | 'vertical';
+}
+
+export function SliderRoot({
+  size,
+  disabled,
+  variant,
+  color,
+  thumbSize,
+  radius,
+  orientation,
+  ...others
+}: SliderRootProps) {
+  const { getStyles } = useSliderContext();
+  return (
+    <Box
+      tabIndex={-1}
+      variant={variant}
+      size={size}
+      {...getStyles('root')}
+      mod={{ orientation }}
+      {...others}
+    />
+  );
+}
+
+SliderRoot.displayName = '@mantine/core/SliderRoot';
