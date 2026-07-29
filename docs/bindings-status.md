@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 44 `@octanejs/*` framework bindings.
+The central status table for the 46 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -31,11 +31,13 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/jotai`](#octanejsjotai) | `jotai@2.20.2` | Complete 1:1 port: the framework-agnostic vanilla core (`jotai/vanilla`, `/vanilla/utils`, `/vanilla/internals`) is reused verbatim; the React layer (`Provider`, `useStore`, `useAtom`, `useAtomValue`, `useSetAtom`) and `react/utils` (`useResetAtom`, `useReducerAtom`, `useAtomCallback`, `useHydrateAtoms`) are ported onto octane hooks, preserving upstream's useReducer force-update + effect-subscription implementation, async atoms via octane's `use()`. | `jotai/babel/*` (React-specific compile-time plugins) is not shipped | No SSR-specific surface; `useHydrateAtoms` is ported and usable for hydration seeding; no dedicated SSR tests. | 2026-07-21 |
 | [`@octanejs/lexical`](#octanejslexical) | `@lexical/react@0.46.0` | 35 of 39 `@lexical/react` modules ported: composer + contexts, the editable surface, plain/rich text, and the full plugin/menu set (history, lists + check-list, links, tables, markdown shortcuts, the typeahead/node-menu/context-menu family, draggable-block, character-limit, …) plus the `useLexical*` hooks. | Positioning uses `@floating-ui/dom` instead of `@floating-ui/react`; The class-based `LexicalErrorBoundary` becomes an octane error boundary; `forwardRef` becomes ref-as-prop | No dedicated SSR/hydration tests. | 2026-07-09 |
 | [`@octanejs/lucide`](#octanejslucide) | `lucide-react@1.24.0` | Complete against the published `lucide-react@1.24.0` runtime surface: every canonical icon and alias, the `icons` namespace, `Icon`, `createLucideIcon`, `LucideProvider`, `useLucideContext`, `DynamicIcon`, `iconNames`, `dynamicIconImports`, and per-icon subpath imports. | Icon refs are normal Octane `ref` props rather than React `forwardRef` components; Event callbacks receive native DOM events rather than React synthetic events | Supported and tested: icons and provider defaults render through `octane/server`, and client hydration adopts the server-rendered SVG element. | 2026-07-13 |
+| [`@octanejs/mantine-hooks`](#octanejsmantine-hooks) | `@mantine/hooks@9.5.0` | Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks. | Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher; DOM subscriptions receive native browser events; React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime | Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering. | 2026-07-28 |
 | [`@octanejs/mdx`](#octanejsmdx) | `@mdx-js/mdx@3.1.1` | The full compile-don't-interpret pipeline: `.mdx`/`.md` → `@mdx-js/mdx` (reused verbatim) → octane compiler, via the `octaneMdx()` Vite plugin plus the `./compile` and `./server` entries; compiler warnings propagate through direct and Vite compile surfaces with authored `.mdx` ranges; `@mdx-js/react`'s provider layer (`MDXProvider`/`useMDXComponents`) is ported onto octane context. The octane website runs on it. | `useMDXComponents` drops upstream's `useMemo` referential-stability wrapper so the call is valid in both server and client runtimes (same observable mapping) | Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`). | 2026-07-17 |
+| [`@octanejs/mobx`](#octanejsmobx) | `mobx-react-lite@4.1.1` | The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias. | React class components and the legacy mobx-react Provider/inject APIs are not included; forwardRef compatibility options are omitted because Octane uses refs as props; React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted | enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions. | 2026-07-28 |
 | [`@octanejs/motion`](#octanejsmotion) | `motion@12.42.2` | Core surface: `motion.<tag>` (animate, gestures, variants with propagation/stagger, drag, layout basics), `AnimatePresence`, `MotionConfig`, and the motion-value hooks (`useMotionValue`, `useScroll`, `useTransform`, `useSpring`, `useAnimate`, `useMotionValueEvent`); motion-dom's animation engine and gesture primitives are reused verbatim. | Exit animations run via cleanup-before-detach instead of React's deferred-deletion machinery; `layout`/`layoutId` use single-element FLIP, not the full projection tree | No SSR-specific surface; no dedicated SSR tests. | 2026-07-21 |
 | [`@octanejs/nuqs`](#octanejsnuqs) | `nuqs@2.9.1` | Full vendored port: the framework-agnostic core (`parsers`/`parseAs*`/`createParser`, `createSerializer`, `createLoader`, `createStandardSchemaV1`, the throttle/debounce update queues, sync emitter and URL encoding) is vendored verbatim from nuqs 2.9.1; the React layer (`useQueryState`, `useQueryStates`, the `useSyncExternalStores` helper and the adapter context) is ported onto octane's hooks — same `useState`/`useEffect`/`useSyncExternalStore` implementation shape as upstream, so re-render and URL-reconciliation behaviour matches nuqs on React. Adapters ported: `@octanejs/nuqs/adapters/react` (`NuqsAdapter`, `enableHistorySync`), `/adapters/custom` (`unstable_createAdapterProvider`), `/adapters/testing` (`NuqsTestingAdapter`, `withNuqsTestingAdapter`). Server surface (`@octanejs/nuqs/server`) exposes `createLoader`/`createSerializer`/parsers/`createStandardSchemaV1`. | Framework adapters that bind other React routers are NOT shipped: `nuqs/adapters/next`, `/adapters/remix`, `/adapters/react-router` and `/adapters/tanstack-router` (they require octane ports of those routers). Use `/adapters/react`, or `/adapters/custom` to wire a router; `createSearchParamsCache` (from `nuqs/server`) is not ported: it is built on React Server Components' `React.cache()`, which octane does not implement. Use `createLoader` for request-scoped parsing; `TransitionStartFunction` is declared locally in `defs.ts` rather than imported from `@types/react`, so the package carries no react type dependency; `NuqsTestingAdapter` resets the shared update queue once per mount (ref-guarded) instead of on every render as upstream does; the reset still runs during the first render (before child hooks read the queue), but a re-render no longer re-aborts in-flight/debounced URL writes | The server entry (`@octanejs/nuqs/server`) is react-free and usable during SSR for parsing/serialising search params; the client hooks read `location.search` through `useSyncExternalStore` with an empty-search server snapshot (upstream parity). No dedicated SSR hydration tests yet. | 2026-07-20 |
 | [`@octanejs/radix`](#octanejsradix) | `radix-ui@1.6.4` | Complete against the unified `radix-ui@1.6.4` component surface — all primitives (incl. Dialog, the Menu/DropdownMenu/ContextMenu family, Popover, Tooltip, Select, NavigationMenu, Toast, Menubar, Slider, the form controls, and OneTimePasswordField/PasswordToggleField) plus the composition/state/overlay foundations — verified by a differential suite (same fixtures through octane and the real radix-ui, byte-identical DOM). | `Slot`/`asChild` compose element descriptors (prop-position JSX, `createElement`, `.map()` returns), not children-position JSX; `forwardRef` becomes octane's ref-as-prop | SSR/hydration coverage for the overlay/portal components is still open (tracked in the migration plan). | 2026-07-21 |
-| [`@octanejs/recharts`](#octanejsrecharts) | `recharts@3.9.2` | Partial (phases 0–1 of 5): the static `BarChart`/`LineChart` pipeline end-to-end (`isAnimationActive={false}`), byte-identical to upstream in the differential rig; the Redux/RTK state layer, `Surface`/`Layer`, and the pure shape set are in place. | Chart events coordinate through octane's native delegated events rather than React's synthetic layer | Untested; text measurement (`getStringSize`) returns 0×0 under SSR. | 2026-07-07 |
+| [`@octanejs/recharts`](#octanejsrecharts) | `recharts@3.9.2` | Broad runtime support across cartesian, polar, hierarchical, tooltip, legend, responsive-container, shape, and chart-state surfaces. `Brush` and `Treemap` remain intentionally unsupported. | Chart events coordinate through octane's native delegated events rather than React's synthetic layer | Untested; text measurement (`getStringSize`) returns 0×0 under SSR. | 2026-07-29 |
 | [`@octanejs/redux`](#octanejsredux) | `react-redux@9.3.0` | The hooks + `Provider` surface of react-redux 9.3.0 (`useSelector`, `useDispatch`, `useStore`, and the custom-context factory variants) on octane's `useSyncExternalStore`; works with any Redux 5 / Redux Toolkit store. Export parity is pinned by test. | `connect()` (the legacy HOC surface) intentionally throws — the hooks API is the supported surface; Error messages are octane-branded | No SSR-specific surface; no dedicated SSR tests. | 2026-07-08 |
 | [`@octanejs/redux-toolkit`](#octanejsredux-toolkit) | `@reduxjs/toolkit@2.12.0` | Complete four-entry-point port: the framework-agnostic Toolkit and RTK Query core are re-exported verbatim; `/query/react` provides generated query, lazy-query, mutation, infinite-query, prefetch hooks and `ApiProvider`; `/react` provides the dynamic-middleware dispatch-hook integration. | The compatibility `/react` subpaths and `reactHooksModule` names are retained, but use octane and `@octanejs/redux` internally; `useDebugValue` is octane's no-op compatibility hook; observable query behavior is unchanged | Preloaded RTK Query state renders through the traditional @octanejs/redux Provider; effects and browser listeners remain client-only. Dedicated SSR and hydration tests are included. | 2026-07-13 |
 | [`@octanejs/remix-router`](#octanejsremix-router) | `react-router@8.2.0` | COMPLETE port (all phases shipped — full export parity, EXPECTED_MISSING is empty): the framework-agnostic router core (lib/router/* + framework-free helpers, ~12k lines) is vendored byte-close and validated by 161 ported upstream router tests plus four focused v8.2 regression pins; the data-mode React layer (createMemoryRouter, RouterProvider incl. the /dom flushSync variant, Outlet, Await, RenderErrorBoundary/errorElement, Link + useLinkClickHandler, and the full read-hook family) and the declarative layer (MemoryRouter, Routes/Route in BOTH children forms — descriptor children walked upstream-style, .tsrx block children via a registration collector — Navigate, createRoutesFromChildren/Elements, the UNSAFE_With*Props wrappers) and the DOM layer (createBrowserRouter/createHashRouter with __staticRouterHydrationData parsing, BrowserRouter/HashRouter/unstable_HistoryRouter, Link + NavLink incl. the isActive/isPending render props, useLinkClickHandler, useSearchParams) and the mutation layer (Form on octane's native delegated submit event, useSubmit incl. JSON encTypes, useFormAction with ?index resolution, useFetcher/useFetchers incl. fetcher.Form/load/submit/reset and shared keys), the guard/scroll layer (useBlocker, unstable_usePrompt, ScrollRestoration/UNSAFE_useScrollRestoration, useBeforeUnload, useViewTransitionState, unstable_useRoute/unstable_useRouterState), static SSR (StaticRouter, StaticRouterProvider, createStaticHandler/createStaticRouter rendering through octane/server — markup byte-identical to react-dom/server after marker stripping, hydration payload identical), and the vendored cookie/session server runtime (createCookie/createSession/createCookieSessionStorage/createMemorySessionStorage) are transcribed onto octane and differential-verified against real react-router. Framework-mode + RSC names (Meta/Links/Scripts, createRequestHandler, UNSAFE_ internals) exist as THROWING STUBS so parity is honest. | Refs are props (octane has no forwardRef) — Link's forwardRef becomes a `ref` prop; Error-boundary reset on location change / revalidation-idle happens in a layout effect one commit after upstream's render-phase derivation — same observable outcome; octane's flushSync inside an ambient flush degrades to a plain call drained at that flush's boundary (sync scroll/navigation notifies from within event handlers land at the flush boundary instead of nested) — consumer-invisible, conformance-pinned; Form's onSubmit is a NATIVE delegated submit listener (octane has no synthetic events): `event.submitter` is read directly off the SubmitEvent where React reads `event.nativeEvent.submitter` — same value, differential-verified; Block-children `<Routes>` collects `<Route>`s by registration (mount order) instead of upstream's element-children walk (source order) — a conditionally-mounted `<Route>` between static siblings registers after them, which only affects matchRoutes score TIES; conformance-pinned | Shipped: StaticRouter/StaticRouterProvider/createStaticHandler/createStaticRouter render through octane/server (remix-router-ssr vitest project compiles the whole graph in server mode; markup matches react-dom/server byte-for-byte after framework-marker stripping). Block-children <Routes> is CLIENT-only (the registration collector runs in layout effects) — use descriptor children or route objects for SSR. | 2026-07-13 |
@@ -304,6 +306,22 @@ Scope/evidence last checked: 2026-07-13.
 
 See also: [`docs/lucide-port-plan.md`](lucide-port-plan.md)
 
+## @octanejs/mantine-hooks
+
+[`packages/mantine-hooks`](../packages/mantine-hooks) `0.1.0` — ports `@mantine/hooks@9.5.0`. Status data: [`packages/mantine-hooks/status.json`](../packages/mantine-hooks/status.json).
+
+Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks.
+
+Known divergences:
+
+- Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher.
+- DOM subscriptions receive native browser events.
+- React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime.
+
+SSR / hydration: Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering.
+
+Scope/evidence last checked: 2026-07-28.
+
 ## @octanejs/mdx
 
 [`packages/mdx`](../packages/mdx) `0.1.16` — ports `@mdx-js/mdx@3.1.1`. Status data: [`packages/mdx/status.json`](../packages/mdx/status.json).
@@ -319,6 +337,22 @@ SSR / hydration: Full SSR + hydration coverage — server-compiled documents ren
 Scope/evidence last checked: 2026-07-17.
 
 See also: [`docs/mdx-migration-plan.md`](mdx-migration-plan.md)
+
+## @octanejs/mobx
+
+[`packages/mobx`](../packages/mobx) `0.1.0` — ports `mobx-react-lite@4.1.1`. Status data: [`packages/mobx/status.json`](../packages/mobx/status.json).
+
+The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias.
+
+Known divergences:
+
+- React class components and the legacy mobx-react Provider/inject APIs are not included.
+- forwardRef compatibility options are omitted because Octane uses refs as props.
+- React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted.
+
+SSR / hydration: enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions.
+
+Scope/evidence last checked: 2026-07-28.
 
 ## @octanejs/motion
 
@@ -375,7 +409,7 @@ See also: [`docs/radix-migration-plan.md`](radix-migration-plan.md)
 
 [`packages/recharts`](../packages/recharts) `0.1.16` — ports `recharts@3.9.2`. Status data: [`packages/recharts/status.json`](../packages/recharts/status.json).
 
-Partial (phases 0–1 of 5): the static `BarChart`/`LineChart` pipeline end-to-end (`isAnimationActive={false}`), byte-identical to upstream in the differential rig; the Redux/RTK state layer, `Surface`/`Layer`, and the pure shape set are in place.
+Broad runtime support across cartesian, polar, hierarchical, tooltip, legend, responsive-container, shape, and chart-state surfaces. `Brush` and `Treemap` remain intentionally unsupported.
 
 Known divergences:
 
@@ -383,9 +417,9 @@ Known divergences:
 
 SSR / hydration: Untested; text measurement (`getStringSize`) returns 0×0 under SSR.
 
-Scope/evidence last checked: 2026-07-07.
+Scope/evidence last checked: 2026-07-29.
 
-- Planned next (phases 2–5): `Tooltip`/`Legend`/`ResponsiveContainer`, the remaining cartesian charts, polar charts, and animation + chart sync. Target surface: 97 runtime + 78 type exports.
+- Known gaps: `Brush` and `Treemap`; SSR text measurement still reports zero dimensions.
 
 See also: [`docs/recharts-port-plan.md`](recharts-port-plan.md)
 

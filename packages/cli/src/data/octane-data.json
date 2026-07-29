@@ -188,6 +188,20 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/mantine-hooks",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/hooks", "version": "9.5.0" },
+      "surface": "Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks.",
+      "divergences": [
+        "Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher.",
+        "DOM subscriptions receive native browser events.",
+        "React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime."
+      ],
+      "ssr": "Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering.",
+      "verified": "2026-07-28"
+    },
+    {
       "name": "@octanejs/mdx",
       "version": "0.1.16",
       "category": "Forms and content",
@@ -198,6 +212,20 @@
       ],
       "ssr": "Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`).",
       "verified": "2026-07-17"
+    },
+    {
+      "name": "@octanejs/mobx",
+      "version": "0.1.0",
+      "category": "Shared state",
+      "upstream": { "package": "mobx-react-lite", "version": "4.1.1", "core": "mobx@6.16.1" },
+      "surface": "The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias.",
+      "divergences": [
+        "React class components and the legacy mobx-react Provider/inject APIs are not included.",
+        "forwardRef compatibility options are omitted because Octane uses refs as props.",
+        "React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted."
+      ],
+      "ssr": "enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions.",
+      "verified": "2026-07-28"
     },
     {
       "name": "@octanejs/motion",
@@ -245,12 +273,12 @@
       "version": "0.1.16",
       "category": "Data-heavy screens",
       "upstream": { "package": "recharts", "version": "3.9.2" },
-      "surface": "Partial (phases 0–1 of 5): the static `BarChart`/`LineChart` pipeline end-to-end (`isAnimationActive={false}`), byte-identical to upstream in the differential rig; the Redux/RTK state layer, `Surface`/`Layer`, and the pure shape set are in place.",
+      "surface": "Broad runtime support across cartesian, polar, hierarchical, tooltip, legend, responsive-container, shape, and chart-state surfaces. `Brush` and `Treemap` remain intentionally unsupported.",
       "divergences": [
         "Chart events coordinate through octane's native delegated events rather than React's synthetic layer."
       ],
       "ssr": "Untested; text measurement (`getStringSize`) returns 0×0 under SSR.",
-      "verified": "2026-07-07"
+      "verified": "2026-07-29"
     },
     {
       "name": "@octanejs/redux",
@@ -645,6 +673,7 @@
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
     "@lexical/react": "@octanejs/lexical",
+    "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mdx-js/react": "@octanejs/mdx",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
@@ -716,6 +745,8 @@
     "framer-motion": "@octanejs/motion",
     "jotai": "@octanejs/jotai",
     "lucide-react": "@octanejs/lucide",
+    "mobx-react": "@octanejs/mobx",
+    "mobx-react-lite": "@octanejs/mobx",
     "motion": "@octanejs/motion",
     "nuqs": "@octanejs/nuqs",
     "radix-ui": "@octanejs/radix",
