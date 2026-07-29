@@ -1,0 +1,11 @@
+{
+  "upstream": { "package": "@mantine/tiptap", "version": "9.5.0" },
+  "surface": "Complete @mantine/tiptap 9.5.0 runtime surface: RichTextEditor, content, toolbar, control groups, formatting controls, link editing, color controls, source mode, labels, and Link and TaskList helpers.",
+  "divergences": [
+    "The editor renderer and subscriptions use @octanejs/tiptap instead of @tiptap/react.",
+    "Control callbacks receive native browser events."
+  ],
+  "ssr": "RichTextEditor follows @octanejs/tiptap's deferred editor construction and deterministic server shell.",
+  "verified": "2026-07-29",
+  "notes": []
+}

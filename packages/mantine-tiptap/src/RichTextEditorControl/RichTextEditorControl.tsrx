@@ -1,0 +1,162 @@
+import { useEditorState } from '@octanejs/tiptap';
+import {
+  BoxProps,
+  CompoundStylesApiProps,
+  ElementProps,
+  factory,
+  Factory,
+  UnstyledButton,
+  useProps,
+} from '@octanejs/mantine-core';
+import { RichTextEditorLabels } from '../labels';
+import { useRichTextEditorContext } from '../RichTextEditor.context';
+import classes from '../RichTextEditor.module.css';
+
+export type RichTextEditorControlStylesNames = 'control';
+
+export interface RichTextEditorControlProps
+  extends BoxProps, CompoundStylesApiProps<RichTextEditorControlFactory>, ElementProps<'button'> {
+  /** Determines whether the control should have active state @default false */
+  active?: boolean;
+
+  /** Determines whether the control can be interacted with, set `false` to make the control to act as a label */
+  interactive?: boolean;
+}
+
+export type RichTextEditorControlFactory = Factory<{
+  props: RichTextEditorControlProps;
+  ref: HTMLButtonElement;
+  stylesNames: RichTextEditorControlStylesNames;
+  compound: true;
+}>;
+
+const defaultProps = {
+  interactive: true,
+} satisfies Partial<RichTextEditorControlProps>;
+
+export const RichTextEditorControl = factory<RichTextEditorControlFactory>((_props) => {
+  const props = useProps('RichTextEditorControl', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    vars,
+    interactive,
+    active,
+    onMouseDown,
+    disabled,
+    ...others
+  } = props;
+  const ctx = useRichTextEditorContext();
+
+  return (
+    <UnstyledButton
+      {...others}
+      {...ctx.getStyles('control', { className, style, classNames, styles })}
+      disabled={disabled}
+      data-rich-text-editor-control
+      tabIndex={interactive ? 0 : -1}
+      data-interactive={interactive || undefined}
+      data-disabled={disabled || undefined}
+      data-active={active || undefined}
+      aria-pressed={(active && interactive) || undefined}
+      aria-hidden={!interactive || undefined}
+      unstyled={ctx.unstyled}
+      variant={ctx.variant || 'default'}
+      onMouseDown={(event) => {
+        event.preventDefault();
+        onMouseDown?.(event);
+      }}
+    />
+  );
+});
+
+RichTextEditorControl.classes = classes;
+RichTextEditorControl.displayName = '@mantine/tiptap/RichTextEditorControl';
+
+export interface RichTextEditorControlBaseProps extends RichTextEditorControlProps {
+  icon?: React.FC<{ style: React.CSSProperties }>;
+}
+
+export function RichTextEditorControlBase({
+  className,
+  icon: Icon,
+  ...others
+}: RichTextEditorControlBaseProps & { icon: React.FC<{ style: React.CSSProperties }> }) {
+  const ctx = useRichTextEditorContext();
+
+  return (
+    <RichTextEditorControl {...others}>
+      <Icon {...ctx.getStyles('controlIcon')} />
+    </RichTextEditorControl>
+  );
+}
+
+RichTextEditorControlBase.displayName = '@mantine/tiptap/RichTextEditorControlBase';
+
+export interface CreateControlProps {
+  label: keyof RichTextEditorLabels;
+  icon: React.FC<{ style: React.CSSProperties }>;
+  isActive?: { name: string; attributes?: Record<string, any> | string };
+  isDisabled?: (editor: any) => boolean;
+  operation: { name: string; attributes?: Record<string, any> | string };
+}
+
+export function createControl({
+  label,
+  isActive,
+  operation,
+  icon,
+  isDisabled,
+}: CreateControlProps) {
+  const Control = (props: RichTextEditorControlBaseProps) => {
+    const { editor, labels } = useRichTextEditorContext();
+    const _label = labels[label] as string;
+    const editorState = useEditorState({
+      editor: editor ?? null,
+      selector: (ctx) => {
+        // `ctx.editor` is `null` on the first render before `useEditor()` produces an
+        // instance, and `editor.commandManager` is set to `null` by `editor.destroy()`.
+        // Either state would make `isDisabled?.(ctx.editor)` (which typically calls
+        // `editor.can()`) throw, taking down the surrounding tree.
+        const safeEditor = ctx.editor && !ctx.editor.isDestroyed ? ctx.editor : null;
+        return {
+          active:
+            safeEditor && isActive?.name
+              ? safeEditor.isActive(isActive.name, isActive.attributes)
+              : false,
+          // Without a usable editor the operation cannot run, so the control must
+          // appear disabled regardless of whether a user-provided `isDisabled` exists.
+          disabled: safeEditor ? (isDisabled?.(safeEditor) ?? false) : true,
+        };
+      },
+    });
+
+    const active = editorState?.active ?? false;
+    const disabled = editorState?.disabled ?? true;
+
+    return (
+      <RichTextEditorControlBase
+        aria-label={_label}
+        title={_label}
+        active={active}
+        icon={props.icon || icon}
+        disabled={disabled}
+        {...props}
+        onClick={() => {
+          // Mirror the selector's guard so a click landing during teardown does not
+          // invoke commands on a `null`/destroyed editor.
+          if (!editor || editor.isDestroyed) {
+            return;
+          }
+          (editor as any).chain().focus()[operation.name](operation.attributes).run();
+        }}
+      />
+    );
+  };
+
+  Control.displayName = `@mantine/tiptap/${label}`;
+
+  return Control;
+}
