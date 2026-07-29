@@ -1,0 +1,47 @@
+{
+  "name": "@octanejs/mantine-form",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Mantine form management for the Octane renderer.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/mantine-form"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": ["src", "README.md"],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --project mantine-form --project mantine-form-ssr"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "catalog:default",
+    "fast-deep-equal": "3.1.3",
+    "klona": "2.0.6"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@mantine/form": "9.5.0",
+    "@types/react": "catalog:default",
+    "octane": "workspace:*",
+    "react": "catalog:default",
+    "vitest": "catalog:default"
+  }
+}

@@ -558,6 +558,44 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'mantine-form',
+					include: ['packages/mantine-form/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mantine-form$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-form/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'mantine-form-ssr',
+					include: ['packages/mantine-form/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-form$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-form/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-core-ssr',
 					include: ['packages/mantine-core/tests/ssr/**/*.test.ts'],
 					environment: 'node',

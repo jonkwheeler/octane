@@ -52,6 +52,7 @@
     "packages": [
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
+      "@octanejs/mantine-form",
       "@octanejs/number-format",
       "@octanejs/lexical",
       "@octanejs/tiptap",

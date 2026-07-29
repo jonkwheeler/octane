@@ -24,7 +24,6 @@ function project(files) {
 }
 
 const MANTINE_PACKAGES = [
-	'@mantine/form',
 	'@mantine/charts',
 	'@mantine/notifications',
 	'@mantine/spotlight',
@@ -94,6 +93,11 @@ describe('migration compatibility corpus', () => {
 		expect(bySpecifier.get('@mantine/core')).toMatchObject({
 			classification: 'supported',
 			replacement: '@octanejs/mantine-core',
+			evidence: 'binding-catalog:react-package',
+		});
+		expect(bySpecifier.get('@mantine/form')).toMatchObject({
+			classification: 'supported',
+			replacement: '@octanejs/mantine-form',
 			evidence: 'binding-catalog:react-package',
 		});
 		expect(bySpecifier.get('recharts')).toMatchObject({

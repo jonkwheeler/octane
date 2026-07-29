@@ -1,8 +1,9 @@
 ---
 "@octanejs/mantine-core": patch
+"@octanejs/mantine-form": patch
 "@octanejs/number-format": patch
 "@octanejs/cli": patch
 "@octanejs/mcp-server": patch
 ---
 
-Add the Mantine Core 9.5.0 Octane binding and teach incremental migration analysis and conversion to replace `@mantine/core` with `@octanejs/mantine-core`.
+Add the Mantine Core and Form 9.5.0 Octane bindings and teach incremental migration analysis and conversion to replace their upstream packages.
