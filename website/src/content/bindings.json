@@ -37,6 +37,7 @@
       "@octanejs/motion",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
+      "@octanejs/react-error-boundary",
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",

@@ -2605,6 +2605,53 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-error-boundary',
+					include: [
+						'packages/react-error-boundary/tests/**/*.test.ts',
+						'!packages/react-error-boundary/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-error-boundary$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-error-boundary/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-error-boundary-ssr',
+					include: ['packages/react-error-boundary/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-error-boundary\/server$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-error-boundary/src/server.tsrx',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mobx',
 					include: ['packages/mobx/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
