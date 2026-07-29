@@ -12,3 +12,10 @@ export function ServerHooks() @{
 		wide ? 'wide' : 'narrow'
 	}`}</output>
 }
+
+export function ExplicitInitialMediaQuery() @{
+	const matches = useMediaQuery('(min-width: 60rem)', true, { getInitialValueInEffect: false });
+	<output>
+		{matches ? 'wide' : 'narrow'}
+	</output>
+}

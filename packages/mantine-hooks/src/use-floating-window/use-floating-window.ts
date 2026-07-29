@@ -125,7 +125,7 @@ export function useFloatingWindow<T extends HTMLElement>(
 	]);
 
 	useEffect(() => {
-		const el = ref.current;
+		const el = element;
 		if (!el) {
 			return;
 		}
@@ -254,7 +254,7 @@ export function useFloatingWindow<T extends HTMLElement>(
 		return () => {
 			observer.disconnect();
 		};
-	}, [options.constrainToViewport, options.constrainOffset]);
+	}, [element, options.constrainToViewport, options.constrainOffset]);
 
 	const setPosition = useCallback(
 		(position: FloatingWindowPositionConfig) => {
