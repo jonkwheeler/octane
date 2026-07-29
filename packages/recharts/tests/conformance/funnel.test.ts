@@ -18,12 +18,14 @@ describe('computeFunnelTrapezoids', () => {
 		});
 
 		expect(trapezoids[0]).toMatchObject({
+			value: 100,
 			val: 100,
 			upperWidth: 200,
 			lowerWidth: 160,
 		});
 		expect(trapezoids[0].tooltipPayload[0].value).toBe(100);
 		expect(trapezoids[1]).toMatchObject({
+			value: 60,
 			val: 60,
 			upperWidth: 120,
 			lowerWidth: 0,
@@ -33,6 +35,21 @@ describe('computeFunnelTrapezoids', () => {
 				true,
 			);
 		}
+	});
+
+	it('exposes the normalized public value when dataKey uses another field', () => {
+		const [trapezoid] = computeFunnelTrapezoids({
+			dataKey: 'amount',
+			nameKey: 'name',
+			displayedData: [{ name: 'A', amount: 40 }],
+			lastShapeType: 'rectangle',
+			reversed: false,
+			offset: { left: 0, top: 0, width: 200, height: 100 } as never,
+			customWidth: undefined,
+			graphicalItemId: 'funnel-public-value',
+		});
+
+		expect(trapezoid.value).toBe(40);
 	});
 
 	it('keeps computed geometry and metadata authoritative over colliding data props', () => {

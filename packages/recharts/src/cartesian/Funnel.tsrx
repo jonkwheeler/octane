@@ -771,6 +771,7 @@ export function computeFunnelTrapezoids({
 			...trapezoidViewBox,
 			name,
 			val,
+			value: val,
 			tooltipPayload,
 			tooltipPosition,
 			payload: entry,

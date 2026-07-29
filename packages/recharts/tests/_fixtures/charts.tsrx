@@ -37,7 +37,6 @@ import {
 
 void DefaultLegendContent;
 void DefaultTooltipContent;
-void ErrorBar;
 
 // Phase 1 differential fixture: static BarChart + LineChart with axes
 // (isAnimationActive={false} — the animated path is Phase 5).
@@ -134,6 +133,50 @@ export function CartesianChartsApp() @{
 			/>
 		</FunnelChart>
 	</div>
+}
+
+const scatterCellData = [
+	{ x: 10, y: 20 },
+	{ x: 30, y: 40 },
+];
+
+export function ScatterCellsApp() @{
+	<ScatterChart width={500} height={300}>
+		<XAxis dataKey="x" type="number" />
+		<YAxis dataKey="y" type="number" />
+		<Scatter data={scatterCellData} fill="#8884d8" isAnimationActive={false}>
+			<Cell fill="#ff0000" />
+			<Cell fill="#0000ff" />
+		</Scatter>
+	</ScatterChart>
+}
+
+const zeroErrorBarData = [
+	{ name: 'A', value: 50, error: 0 },
+];
+
+export function ZeroErrorBarApp() @{
+	<BarChart width={400} height={300} data={zeroErrorBarData}>
+		<XAxis dataKey="name" />
+		<YAxis domain={[0, 100]} />
+		<Bar dataKey="value" isAnimationActive={false}>
+			<ErrorBar dataKey="error" isAnimationActive={false} />
+		</Bar>
+	</BarChart>
+}
+
+const animatedErrorBarData = [
+	{ name: 'A', value: 50, error: 10 },
+];
+
+export function ErrorBarAnimationOriginApp() @{
+	<BarChart width={400} height={300} data={animatedErrorBarData}>
+		<XAxis dataKey="name" />
+		<YAxis domain={[0, 100]} />
+		<Bar dataKey="value" isAnimationActive={false}>
+			<ErrorBar dataKey="error" isAnimationActive animationBegin={0} animationDuration={1} />
+		</Bar>
+	</BarChart>
 }
 
 export function FunnelLegendApp({ legendType, hide }) @{

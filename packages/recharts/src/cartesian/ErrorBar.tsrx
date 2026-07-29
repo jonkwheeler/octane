@@ -155,7 +155,7 @@ function ErrorBarImpl(props: ErrorBarInternalProps) {
 	const errorBars = data.map((entry: any, dataIndex: number) => {
 		const { x, y, value, errorVal } = dataPointFormatter(entry, dataKey, direction);
 
-		if (!errorVal || x == null || y == null) {
+		if (errorVal == null || x == null || y == null) {
 			return null;
 		}
 
@@ -216,7 +216,8 @@ function ErrorBarImpl(props: ErrorBarInternalProps) {
 		const scaleDirection: string =
 			direction === 'x' ? 'scaleX' : 'scaleY';
 
-		const transformOrigin = `${x + offset}px ${y + offset}px`;
+		const transformOrigin =
+			direction === 'x' ? `${x}px ${y + offset}px` : `${x + offset}px ${y}px`;
 
 		return <Layer
 			className="recharts-errorBar"

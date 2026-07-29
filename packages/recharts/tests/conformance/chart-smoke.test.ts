@@ -9,6 +9,7 @@ import { mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
 	CartesianChartsApp,
+	ErrorBarAnimationOriginApp,
 	FunnelAnimationStabilityApp,
 	FunnelLegendApp,
 	HiddenPieTooltipApp,
@@ -19,6 +20,8 @@ import {
 	PolarChartsApp,
 	ResponsiveChartApp,
 	ScatterAnimationCallbacksApp,
+	ScatterCellsApp,
+	ZeroErrorBarApp,
 } from '../_fixtures/charts.tsrx';
 import { HiddenFunnelRegistrationsApp } from '../_fixtures/hidden-funnel-registrations.tsrx';
 
@@ -94,6 +97,43 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelectorAll('.recharts-funnel-trapezoid').length).toBe(2);
 		expect(result.container.querySelector('.recharts-cartesian-grid')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-reference-line')).toBeTruthy();
+		result.unmount();
+	});
+
+	it('applies registered Cell presentation props to Scatter points', async () => {
+		const result = mount(ScatterCellsApp, {});
+		await settle();
+		const symbols = result.container.querySelectorAll(
+			'.recharts-scatter-symbol path.recharts-symbols',
+		);
+		expect(symbols).toHaveLength(2);
+		expect(Array.from(symbols, (symbol) => symbol.getAttribute('fill'))).toEqual([
+			'#ff0000',
+			'#0000ff',
+		]);
+		result.unmount();
+	});
+
+	it('renders a zero-valued ErrorBar', async () => {
+		const result = mount(ZeroErrorBarApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-errorBar line')).toHaveLength(3);
+		result.unmount();
+	});
+
+	it('pivots ErrorBar animation around the rendered whisker center', async () => {
+		const result = mount(ErrorBarAnimationOriginApp, {});
+		await settle();
+		const lines = result.container.querySelectorAll<SVGLineElement>('.recharts-errorBar line');
+		expect(lines).toHaveLength(3);
+		const middleLine = lines[1];
+		const x = Number(middleLine.getAttribute('x1'));
+		const y = (Number(middleLine.getAttribute('y1')) + Number(middleLine.getAttribute('y2'))) / 2;
+		const [originX, originY] = middleLine.style.transformOrigin
+			.split(/\s+/)
+			.map((value) => Number.parseFloat(value));
+		expect(originX).toBeCloseTo(x);
+		expect(originY).toBeCloseTo(y);
 		result.unmount();
 	});
 

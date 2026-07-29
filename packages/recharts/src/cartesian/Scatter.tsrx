@@ -9,10 +9,8 @@ import {
 	ImplicitLabelListType,
 	LabelListFromLabelProp,
 } from '../component/LabelList';
-import { findAllByType } from '../util/ReactUtils';
 import { Curve, CurveType, Props as CurveProps } from '../shape/Curve';
 import { ErrorBarDataItem, ErrorBarDataPointFormatter, ErrorBarDirection } from './ErrorBar';
-import { Cell } from '../component/Cell';
 import { getLinearRegression, interpolate, isNullish } from '../util/DataUtils';
 import { getCateCoordinateOfLine, getTooltipNameProp, getValueByDataKey } from '../util/ChartUtils';
 import {
@@ -82,6 +80,7 @@ import { ZIndexable, ZIndexLayer } from '../zIndex/ZIndexLayer';
 import { DefaultZIndexes } from '../zIndex/DefaultZIndexes';
 import { propsAreEqual } from '../util/propsAreEqual';
 import { ChartData } from '../state/chartDataSlice';
+import { CellsContext, useCellRegistry } from '../context/CellsContext';
 
 export interface ScatterPointNode {
 	x?: number | string;
@@ -996,19 +995,16 @@ function ScatterImpl(props: WithIdRequired<Props>) {
 	} = resolveDefaultProps(props, defaultScatterProps);
 
 	const { needClip } = useNeedsClip(xAxisId, yAxisId);
-	const cells = useMemo(() => findAllByType(props.children, Cell), [props.children]);
+	const [cells, cellRegistry] = useCellRegistry();
 	const isPanorama = useIsPanorama();
 
 	const points = useAppSelector((state) => {
 		return selectScatterPoints(state, xAxisId, yAxisId, zAxisId, props.id, cells, isPanorama);
 	});
-	if (needClip == null) {
-		return null;
+	if (needClip == null || points == null) {
+		return <CellsContext.Provider value={cellRegistry}>{props.children}</CellsContext.Provider>;
 	}
-	if (points == null) {
-		return null;
-	}
-	return <>
+	return <CellsContext.Provider value={cellRegistry}>
 		<SetScatterTooltipEntrySettings
 			dataKey={props.dataKey}
 			points={points}
@@ -1038,7 +1034,7 @@ function ScatterImpl(props: WithIdRequired<Props>) {
 			points={points}
 			needClip={needClip}
 		/>
-	</>;
+	</CellsContext.Provider>;
 }
 
 function ScatterFn(outsideProps: Props) {
