@@ -7,7 +7,13 @@ import { act, createRoot, flushSync } from 'octane';
 import { flushEffects, mount } from '../../octane/tests/_helpers';
 import type { WalletDescriptor } from '@octanejs/rainbowkit';
 import { darkTheme } from '@octanejs/rainbowkit';
-import { App, OutsideProvider, TwoProviders } from './_fixtures/app.tsrx';
+import {
+	App,
+	OutsideProvider,
+	ProgrammaticProvider,
+	TwoProviders,
+	latestWalletConnect,
+} from './_fixtures/app.tsrx';
 
 const account = '0x0000000000000000000000000000000000000001' as const;
 let mounted: ReturnType<typeof mount> | undefined;
@@ -85,6 +91,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
+			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
 		expect(mounted!.find('#custom-status').textContent).toBe('connected');
 		expect(document.querySelector('[data-rk]')?.textContent).toContain('0x0000…0001');
@@ -137,10 +144,14 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
 		});
 		flushEffects();
+		flushSync(() => {});
 		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
+			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
+		flushEffects();
+		flushSync(() => {});
 		const chainButton = Array.from(
 			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
 		).find((button) => button.textContent?.includes('Ethereum'))!;
@@ -329,6 +340,59 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		});
 	});
 
+	it('shares slow WalletButton connection state with Custom and default controls', async () => {
+		const config = setup();
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await gate;
+			return original(parameters);
+		};
+		const wallet = document.querySelector('.rk-wallet-button') as HTMLButtonElement;
+		wallet.click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		expect(wallet.disabled).toBe(true);
+		expect((document.querySelector('.rk-connect-button') as HTMLButtonElement).disabled).toBe(true);
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+	});
+
+	it('keeps newer WalletButton pending state when an older request completes first', async () => {
+		const config = setup();
+		const releases: Array<() => void> = [];
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await new Promise<void>((resolve) => releases.push(resolve));
+			return original(parameters);
+		};
+		latestWalletConnect!();
+		latestWalletConnect!();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		releases[0]!();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		releases[1]!();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+	});
+
 	it('shows wrong-network controls and recovers through the chain modal', async () => {
 		const config = createConfig({
 			chains: [mainnet, sepolia],
@@ -440,14 +504,14 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			transports: { [mainnet.id]: http() },
 		});
 		const secondaryRoot = createRoot(secondaryContainer);
-		secondaryRoot.render(App, {
+		secondaryRoot.render(ProgrammaticProvider, {
 			config: secondaryConfig,
 			queryClient: new QueryClient(),
 		});
 		flushSync(() => {});
 		flushEffects();
 		flushSync(() => {});
-		(secondaryContainer.querySelector('#custom-connect') as HTMLButtonElement).click();
+		(secondaryContainer.querySelector('#programmatic-open') as HTMLButtonElement).click();
 		flushSync(() => {});
 		flushEffects();
 		try {

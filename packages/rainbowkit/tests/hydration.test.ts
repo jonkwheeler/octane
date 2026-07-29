@@ -35,13 +35,19 @@ describe('@octanejs/rainbowkit hydration', () => {
 		document.body.appendChild(container);
 		const button = container.querySelector('#custom-connect');
 		const mounted = container.querySelector('#mounted');
+		const wallet = container.querySelector('.rk-wallet-button') as HTMLButtonElement;
+		expect(wallet.disabled).toBe(true);
+		wallet.click();
+		expect(config.state.status).toBe('disconnected');
 		const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
 		const root = hydrateRoot(container, App, { config, queryClient });
 		try {
 			await settle();
 			expect(container.querySelector('#custom-connect')).toBe(button);
 			expect(container.querySelector('#mounted')).toBe(mounted);
+			expect(container.querySelector('.rk-wallet-button')).toBe(wallet);
 			expect(mounted?.textContent).toBe('true');
+			expect(wallet.disabled).toBe(false);
 			(button as HTMLButtonElement).click();
 			await settle();
 			expect(container.querySelector('[role="dialog"]')).not.toBeNull();
@@ -100,6 +106,7 @@ describe('@octanejs/rainbowkit hydration', () => {
 			expect(container.querySelector('[role="dialog"]')).toBeNull();
 			await settle();
 			expect(container.querySelector('#mounted')?.textContent).toBe('true');
+			expect(container.querySelector('#connection-status')?.textContent).toBe('connecting');
 			control.click();
 			await settle();
 			expect(container.querySelector('[role="dialog"]')).not.toBeNull();

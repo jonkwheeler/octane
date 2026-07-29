@@ -17,8 +17,15 @@ export function WalletButton(props: WalletButtonProps) @{
 				candidate.name === props.wallet,
 	);
 	const connector = entry?.connector;
-	const ready = Boolean(connector);
-	const connect = () => connector && mutation.connect({ connector });
+	const ready = Boolean(context?.mounted && connector);
+	const connect = () => {
+		if (!context?.mounted || !connector) return;
+		const token = context.beginConnecting();
+		mutation.connect({ connector }, {
+			onError: () => context.endConnecting(token),
+			onSuccess: () => context.endConnecting(token),
+		});
+	};
 	@if (props.children) {
 		{
 			props.children({ ready, connect });
@@ -27,7 +34,7 @@ export function WalletButton(props: WalletButtonProps) @{
 		<button
 			type="button"
 			className="rk-wallet-button"
-			disabled={!ready || mutation.isPending}
+			disabled={!ready || context?.connecting || mutation.isPending}
 			onClick={connect}
 		>
 			{entry?.name ?? props.wallet}

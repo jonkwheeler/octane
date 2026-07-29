@@ -32,6 +32,17 @@ function CustomControl() @{
 	</ConnectButton.Custom>
 }
 
+export let latestWalletConnect: (() => void) | undefined;
+
+function WalletRaceProbe() @{
+	<WalletButton wallet="mock">
+		{({ connect }) => {
+			latestWalletConnect = connect;
+			return <span id="wallet-race-ready">ready</span>;
+		}}
+	</WalletButton>
+}
+
 export function App(props: {
 	config: Config;
 	initialState?: State;
@@ -52,6 +63,7 @@ export function App(props: {
 				<RainbowKitProvider wallets={props.wallets} theme={props.theme}>
 					<ConnectButton />
 					<WalletButton wallet="mock" />
+					<WalletRaceProbe />
 					<CustomControl />
 				</RainbowKitProvider>
 			</form>
@@ -72,6 +84,23 @@ export function TwoProviders(props: { config: Config; queryClient: unknown }) @{
 			</RainbowKitProvider>
 			<RainbowKitProvider>
 				<ModalOpener id="second-provider" />
+			</RainbowKitProvider>
+		</QueryClientProvider>
+	</WagmiProvider>
+}
+
+function ProgrammaticOpener() @{
+	const modal = useConnectModal();
+	<button type="button" id="programmatic-open" onClick={() => modal.openConnectModal?.()}>
+		Programmatic open
+	</button>
+}
+
+export function ProgrammaticProvider(props: { config: Config; queryClient: unknown }) @{
+	<WagmiProvider config={props.config} reconnectOnMount={false}>
+		<QueryClientProvider client={props.queryClient}>
+			<RainbowKitProvider>
+				<ProgrammaticOpener />
 			</RainbowKitProvider>
 		</QueryClientProvider>
 	</WagmiProvider>

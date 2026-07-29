@@ -1,5 +1,5 @@
 import { useChainId, useChains, useConnect, useConnection, useDisconnect } from '@octanejs/wagmi';
-import { useContext, useEffect, useState, type OctaneNode } from 'octane';
+import { useContext, type OctaneNode } from 'octane';
 import { useAccountModal, useChainModal, useConnectModal } from './hooks';
 import { RainbowKitContext } from './internal';
 
@@ -37,8 +37,7 @@ function useConnectButtonState(): ConnectButtonRendererProps {
 	const connectModal = useConnectModal();
 	const chain = chains.find((candidate) => candidate.id === chainId);
 	const connected = connection.status === 'connected' && Boolean(connection.address);
-	const [mounted, setMounted] = useState(false);
-	useEffect(() => setMounted(true), []);
+	const mounted = rainbowKit?.mounted ?? false;
 	return {
 		account: mounted && connected
 			? {
@@ -74,7 +73,7 @@ export function ConnectButton(props: ConnectButtonProps = {}) @{
 		<button
 			type="button"
 			className="rk-connect-button"
-			disabled={!state.mounted}
+			disabled={!state.mounted || state.connectionStatus === 'connecting'}
 			onClick={state.openConnectModal}
 		>
 			{props.label ?? 'Connect Wallet'}

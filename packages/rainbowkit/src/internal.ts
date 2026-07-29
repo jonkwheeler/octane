@@ -18,9 +18,12 @@ export type WalletEntry = WalletDescriptor & {
 
 export type RainbowKitContextValue = {
 	activeModal: { kind: ModalKind; token: ModalToken } | null;
+	beginConnecting: () => symbol;
 	closeModal: (token?: ModalToken) => void;
 	connected: boolean;
 	connecting: boolean;
+	endConnecting: (token: symbol) => void;
+	mounted: boolean;
 	openModal: (kind: ModalKind, opener?: HTMLElement | null) => void;
 	wallets: readonly WalletEntry[];
 };

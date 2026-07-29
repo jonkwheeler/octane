@@ -1,4 +1,4 @@
-import { useCallback, useId, useLayoutEffect, useMemo, useRef, useState } from 'octane';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'octane';
 import { useConnect, useConnection, useDisconnect, useSwitchChain } from '@octanejs/wagmi';
 import type { OctaneNode } from 'octane';
 import type { Connector } from '@wagmi/core';
@@ -115,7 +115,8 @@ function Modal(props: {
 	close: (token: ModalToken) => void;
 	titleId: string;
 	descriptionId: string;
-	setConnecting: (connecting: boolean) => void;
+	beginConnecting: () => symbol;
+	endConnecting: (token: symbol) => void;
 }) @{
 	const connection = useConnection();
 	const connect = useConnect();
@@ -208,11 +209,11 @@ function Modal(props: {
 
 	const connectWallet = (entry: WalletEntry) => {
 		if (!entry.connector) return;
-		props.setConnecting(true);
+		const pendingToken = props.beginConnecting();
 		connect.connect({ connector: entry.connector }, {
-			onError: () => props.setConnecting(false),
+			onError: () => props.endConnecting(pendingToken),
 			onSuccess: () => {
-				props.setConnecting(false);
+				props.endConnecting(pendingToken);
 				props.close(props.token);
 			},
 		});
@@ -339,7 +340,18 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		| null
 	>(null);
 	const connection = useConnection();
-	const [connecting, setConnecting] = useState(false);
+	const [mounted, setMounted] = useState(false);
+	const [connectingToken, setConnectingToken] = useState<symbol | null>(null);
+	const rootRef = useRef<HTMLDivElement | null>(null);
+	useEffect(() => setMounted(true), []);
+	const beginConnecting = useCallback(() => {
+		const token = Symbol('rainbowkit-connect');
+		setConnectingToken(token);
+		return token;
+	}, []);
+	const endConnecting = useCallback((token: symbol) => {
+		setConnectingToken((current) => current === token ? null : current);
+	}, []);
 	const connectors = useConnect().connectors;
 	const wallets = useMemo(() => walletEntries(connectors, props.wallets ?? []), [
 		connectors,
@@ -353,7 +365,6 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			removeModal(current.token);
 			const returnTo = current.opener;
 			const ownerDocument = current.ownerDocument;
-			setConnecting(false);
 			queueMicrotask(() => {
 				if (!ownerDocument || !focusTopModal(ownerDocument)) {
 					returnTo?.isConnected && returnTo.focus();
@@ -366,13 +377,15 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		setActiveModal((current) => {
 			if (current) removeModal(current.token);
 			const token = Symbol(`rainbowkit-modal-${providerId}`);
+			const fallbackDocument = rootRef.current?.ownerDocument;
 			const ownerDocument =
-				nextOpener?.ownerDocument ?? (typeof document === 'undefined' ? null : document);
+				nextOpener?.ownerDocument ?? fallbackDocument ??
+					(typeof document === 'undefined' ? null : document);
 			return {
 				kind,
 				token,
-				opener: nextOpener ??
-					(typeof document === 'undefined' ? null : document.activeElement as HTMLElement | null),
+				opener: nextOpener ?? ownerDocument?.activeElement as HTMLElement | null | undefined ??
+					null,
 				ownerDocument,
 			};
 		});
@@ -380,16 +393,30 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 	const context = useMemo(
 		() => ({
 			activeModal,
+			beginConnecting,
 			closeModal,
 			connected: connection.status === 'connected',
-			connecting,
+			connecting: connectingToken !== null || connection.status === 'connecting' ||
+				connection.status === 'reconnecting',
+			endConnecting,
+			mounted,
 			openModal,
 			wallets,
 		}),
-		[activeModal, closeModal, connecting, connection.status, openModal, wallets],
+		[
+			activeModal,
+			beginConnecting,
+			closeModal,
+			connectingToken,
+			connection.status,
+			endConnecting,
+			mounted,
+			openModal,
+			wallets,
+		],
 	);
 
-	<div data-rk="" style={themeStyle(selectedTheme)}>
+	<div data-rk="" ref={rootRef} style={themeStyle(selectedTheme)}>
 		<RainbowKitContext.Provider value={context}>
 			{props.children}
 			@if (activeModal) {
@@ -400,7 +427,8 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 					close={closeModal}
 					titleId={`${providerId}-title`}
 					descriptionId={`${providerId}-description`}
-					setConnecting={setConnecting}
+					beginConnecting={beginConnecting}
+					endConnecting={endConnecting}
 				/>
 			}
 		</RainbowKitContext.Provider>
