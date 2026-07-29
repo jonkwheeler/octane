@@ -19,6 +19,13 @@ import {
 	TransitionAtomicity,
 	TransitionResumeAtomicity,
 	TransitionNamespacedAttr,
+	TransitionControlledInput,
+	TransitionRadioGroup,
+	TransitionKeyedRemoval,
+	TransitionListToEmpty,
+	TransitionKeyedAddition,
+	TransitionKeyedEmptyFill,
+	TransitionArrayModeExit,
 } from './_fixtures/transitions.tsrx';
 
 interface Deferred<T> {
@@ -681,5 +688,255 @@ describe('useTransition — the old screen stays whole', () => {
 		expect(use.getAttributeNode('xlink:href')!.namespaceURI).toBe(XLINK);
 		expect(r.find('#value').textContent).toBe('one');
 		r.unmount();
+	});
+
+	it('holds a controlled input and checkbox, records included', async () => {
+		const entries = new Map<number, Deferred<string>>();
+		const load = (step: number) => {
+			let entry = entries.get(step);
+			if (entry === undefined) {
+				entry = deferred<string>();
+				entries.set(step, entry);
+			}
+			return entry.promise;
+		};
+		load(0);
+		entries.get(0)!.resolve('zero');
+
+		const r = mount(TransitionControlledInput, { load });
+		await act(() => {});
+		const text = r.find('#text') as HTMLInputElement;
+		const box = r.find('#box') as HTMLInputElement;
+		expect(text.value).toBe('step-0');
+		expect(box.checked).toBe(false);
+
+		// The transition projects step 1 onto both controls and then the sibling
+		// suspends, so both have to go back to step 0.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(text.value).toBe('step-0');
+		expect(text.defaultValue).toBe('step-0');
+		expect(box.checked).toBe(false);
+		expect(box.defaultChecked).toBe(false);
+
+		// The per-element record has to come back too. If it still believed it had
+		// projected 'step-1', re-projecting that same value would be skipped as
+		// unchanged and the input would stay on step-0 forever.
+		await act(() => {
+			entries.get(1)!.resolve('one');
+		});
+		expect(text.value).toBe('step-1');
+		expect(box.checked).toBe(true);
+		expect(r.find('#value').textContent).toBe('one');
+		r.unmount();
+	});
+
+	it('holds a radio group, including the cousin the platform cleared', async () => {
+		const entries = new Map<number, Deferred<string>>();
+		const load = (step: number) => {
+			let entry = entries.get(step);
+			if (entry === undefined) {
+				entry = deferred<string>();
+				entries.set(step, entry);
+			}
+			return entry.promise;
+		};
+		load(0);
+		entries.get(0)!.resolve('zero');
+
+		const r = mount(TransitionRadioGroup, { load });
+		await act(() => {});
+		const a = r.find('#r-a') as HTMLInputElement;
+		const b = r.find('#r-b') as HTMLInputElement;
+		expect(a.checked).toBe(false);
+		expect(b.checked).toBe(true);
+
+		// Step 1 checks a, which makes the platform clear b before b's own
+		// binding runs. The boundary then suspends, so the group has to go back
+		// to b — not to nothing selected.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(a.checked).toBe(false);
+		expect(b.checked).toBe(true);
+
+		await act(() => {
+			entries.get(1)!.resolve('one');
+		});
+		expect(a.checked).toBe(true);
+		expect(b.checked).toBe(false);
+		r.unmount();
+	});
+
+	it('brings back a keyed row the transition dropped before the boundary held', async () => {
+		// Step 0 is a pre-fulfilled thenable so the FIRST mount commits without
+		// suspending: the rows' effects must actually mount for the cleanup
+		// assertion below to mean anything. (A first mount that suspends loses
+		// those mount effects today — that is a separate pre-existing bug.)
+		const step1 = deferred<string>();
+		const fulfilled = { status: 'fulfilled', value: 'zero', then: (cb: any) => cb('zero') };
+		const load = (step: number) => (step === 0 ? fulfilled : step1.promise);
+		const log = createLog();
+		const ids = () => r.findAll('#list li').map((li) => li.id);
+
+		const r = mount(TransitionKeyedRemoval, { load, log: log.push });
+		await act(() => {});
+		expect(ids()).toEqual(['row-a', 'row-b', 'row-c']);
+		expect(r.find('#row-b').textContent).toBe('b!');
+		expect(log.drain()).toEqual(['mount:a', 'mount:b', 'mount:c']);
+
+		// The list drops b, then the sibling suspends and the boundary holds. The
+		// row has to come back, keep the state it had, and not have torn down.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(ids()).toEqual(['row-a', 'row-b', 'row-c']);
+		expect(r.find('#row-b').textContent).toBe('b!');
+		expect(log.drain()).toEqual([]);
+
+		// Once the sibling settles the removal goes through for real.
+		await act(() => {
+			step1.resolve('one');
+		});
+		expect(ids()).toEqual(['row-a', 'row-c']);
+		await act(() => {});
+		expect(log.drain()).toEqual(['cleanup:b']);
+		r.unmount();
+	});
+
+	it('holds a list that emptied, and swaps to @empty only on commit', async () => {
+		const step1 = deferred<string>();
+		const fulfilled = { status: 'fulfilled', value: 'zero', then: (cb: any) => cb('zero') };
+		const load = (step: number) => (step === 0 ? fulfilled : step1.promise);
+		const log = createLog();
+
+		const r = mount(TransitionListToEmpty, { load, log: log.push });
+		await act(() => {});
+		expect(r.findAll('#list li').map((li) => li.id)).toEqual(['row-a', 'row-b']);
+		expect(log.drain()).toEqual(['mount:a', 'mount:b']);
+
+		// The whole list clears and @empty mounts, then the sibling suspends. The
+		// rows come back and the empty branch goes — with no cleanups run.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(r.findAll('#list li').map((li) => li.id)).toEqual(['row-a', 'row-b']);
+		expect(r.findAll('#empty')).toHaveLength(0);
+		expect(log.drain()).toEqual([]);
+
+		await act(() => {
+			step1.resolve('one');
+		});
+		expect(r.findAll('#list li').map((li) => li.id)).toEqual(['empty']);
+		expect(r.find('#empty').textContent).toBe('nothing');
+		await act(() => {});
+		expect(log.drain()).toEqual(['cleanup:a', 'cleanup:b']);
+		r.unmount();
+	});
+
+	it('tears down a row the aborted attempt freshly mounted, effects unfired', async () => {
+		// Step 0 unwraps synchronously so the FIRST mount never suspends — this
+		// test is about the transition's aborted attempt, not initial mount.
+		const fulfilled = {
+			status: 'fulfilled',
+			value: 'zero',
+			then: (fn: (v: string) => void) => void fn('zero'),
+		} as unknown as Promise<string>;
+		const d1 = deferred<string>();
+		const load = (step: number) => (step === 0 ? fulfilled : d1.promise);
+		const log = createLog();
+		const ids = () => r.findAll('#list li').map((li) => li.id);
+
+		const r = mount(TransitionKeyedAddition, { load, log: log.push });
+		await act(() => {});
+		expect(ids()).toEqual(['row-a']);
+		expect(log.drain()).toEqual(['mount:a']);
+
+		// The attempt mounts d, then the sibling suspends and the boundary holds.
+		// d's DOM comes out — and its queued mount effect must go with it, or it
+		// fires for a row that is not on screen and can never be cleaned up.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(ids()).toEqual(['row-a']);
+		await act(() => {});
+		expect(log.drain()).toEqual([]);
+
+		// The real commit mounts d fresh, exactly once.
+		await act(() => {
+			d1.resolve('one');
+		});
+		expect(ids()).toEqual(['row-a', 'row-d']);
+		expect(log.drain()).toEqual(['mount:d']);
+
+		r.unmount();
+		await act(() => {});
+		expect(log.drain()).toEqual(['cleanup:a', 'cleanup:d']);
+	});
+
+	it('holds an empty list empty when the attempt filled it before suspending', async () => {
+		const fulfilled = {
+			status: 'fulfilled',
+			value: 'zero',
+			then: (fn: (v: string) => void) => void fn('zero'),
+		} as unknown as Promise<string>;
+		const d1 = deferred<string>();
+		const load = (step: number) => (step === 0 ? fulfilled : d1.promise);
+		const log = createLog();
+		const ids = () => r.findAll('#list li').map((li) => li.id);
+
+		const r = mount(TransitionKeyedEmptyFill, { load, log: log.push });
+		await act(() => {});
+		expect(ids()).toEqual([]);
+
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(ids()).toEqual([]);
+		await act(() => {});
+		expect(log.drain()).toEqual([]);
+
+		await act(() => {
+			d1.resolve('one');
+		});
+		expect(ids()).toEqual(['row-d']);
+		expect(log.drain()).toEqual(['mount:d']);
+		r.unmount();
+	});
+
+	it('a slot leaving array mode tears its rows down inline, not deferred past the attempt', async () => {
+		const fulfilled = {
+			status: 'fulfilled',
+			value: 'zero',
+			then: (fn: (v: string) => void) => void fn('zero'),
+		} as unknown as Promise<string>;
+		const d1 = deferred<string>();
+		const load = (step: number) => (step === 0 ? fulfilled : d1.promise);
+		const log = createLog();
+
+		const r = mount(TransitionArrayModeExit, { load, log: log.push });
+		await act(() => {});
+		expect(r.findAll('#host li').map((li) => li.id)).toEqual(['row-a', 'row-b']);
+		expect(log.drain()).toEqual(['render:tail:0', 'mount:a', 'mount:b']);
+
+		// The flip discards the slot itself, so a hold has nothing to restore the
+		// rows into. Their teardown belongs to the attempt that removed them —
+		// layout cleanups fire before the tail's render, the pre-parking order —
+		// rather than parking them as deferred-but-unrestorable.
+		r.click('#bump');
+		expect(r.findAll('#fallback')).toHaveLength(0);
+		expect(log.drain()).toEqual(['cleanup:a', 'cleanup:b', 'render:tail:1']);
+		// The flipped-in text stays: a slot kind flip is not journaled (the
+		// retained per-swap limitation in SUSPENSE_DIVERGENCE.md #4), while the
+		// tail below it holds its prior value.
+		expect(r.find('#host').textContent).toBe('plain');
+		expect(r.find('#value').textContent).toBe('zero');
+
+		await act(() => {
+			d1.resolve('one');
+		});
+		expect(r.find('#host').textContent).toBe('plain');
+		expect(r.find('#value').textContent).toBe('one');
+		expect(log.drain()).toEqual(['render:tail:1']);
+
+		// Exactly-once: the rows were torn down by the flip and never again.
+		r.unmount();
+		await act(() => {});
+		expect(log.drain()).toEqual([]);
 	});
 });

@@ -1081,15 +1081,18 @@ let deferringStagedRevealEffects = false;
 // never reappear. The first write into a bag therefore snapshots the whole bag
 // next to the DOM entry.
 //
-// Controlled `value`/`checked` stay out. They are browser-owned state tracked
-// alongside the DOM in a per-element controlled record, and putting the node back
-// without that record would leave the two disagreeing about what the user last
-// typed. An input inside a boundary can therefore still show its new value early.
+// Controlled `value`/`checked`/`selected` are covered too, but need more than the
+// node: each carries a `default*` mirror and a per-element record of what was
+// last projected. All three go back together — restoring the node alone would
+// leave the record believing it had already projected the new value, so
+// re-projecting it on resume would be skipped as unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const JOURNAL_TEXT = 0;
 const JOURNAL_ATTR = 1;
 const JOURNAL_BAG = 2;
+const JOURNAL_PROP = 3;
+const JOURNAL_FOR = 4;
 /** Flat undo log, four slots per entry: kind, target, a, b. */
 let TRANSITION_JOURNAL: any[] | null = null;
 /** Bags already captured in the open window, so each is snapshotted once. */
@@ -1114,13 +1117,274 @@ function journalBag(): void {
 	if (scope === null) return;
 	const bag = scope.slots[0];
 	if (bag === null || typeof bag !== 'object' || (bag as any).__kind !== undefined) return;
+	journalObjectOnce(bag);
+}
+
+/** Record every own value of `obj`, once per window, so it can be put back. */
+function journalObjectOnce(obj: object): void {
 	const seen = TRANSITION_JOURNAL_BAGS!;
-	if (seen.has(bag)) return;
-	seen.add(bag);
-	const keys = Object.keys(bag);
+	if (seen.has(obj)) return;
+	seen.add(obj);
+	const keys = Object.keys(obj);
 	const values: any[] = [];
-	for (let i = 0; i < keys.length; i++) values.push((bag as any)[keys[i]]);
-	TRANSITION_JOURNAL!.push(JOURNAL_BAG, bag, keys, values);
+	for (let i = 0; i < keys.length; i++) values.push((obj as any)[keys[i]]);
+	TRANSITION_JOURNAL!.push(JOURNAL_BAG, obj, keys, values);
+}
+
+/**
+ * A controlled input keeps three things in step: the live DOM property, the
+ * `default*` mirror that form.reset() and SSR compare against, and the
+ * per-element record of what was last projected. Undoing one without the others
+ * would leave the record and the node disagreeing about what the user last
+ * typed, so all three go into the log together.
+ *
+ * Called once the element is armed (so the record exists) and before the write
+ * touches any of them.
+ */
+function journalControlled(el: Element, prop: string, defaultProp: string): void {
+	const log = TRANSITION_JOURNAL!;
+	log.push(JOURNAL_PROP, el, prop, (el as any)[prop]);
+	log.push(JOURNAL_PROP, el, defaultProp, (el as any)[defaultProp]);
+	const ctrl = (el as any).$$ctrl;
+	if (ctrl !== undefined) journalObjectOnce(ctrl);
+	const input = el as HTMLInputElement;
+	if (prop === 'checked' && input.type === 'radio' && input.name !== '') journalRadioCousins(input);
+	journalBag();
+}
+
+/**
+ * Record the cousin a radio write is about to clear.
+ *
+ * Checking a radio makes the platform uncheck its same-name siblings as a side
+ * effect, so a cousin cannot record its own prior state: by the time its binding
+ * runs it has already been cleared, and an uncontrolled cousin never records at
+ * all. Only a currently-checked cousin can be cleared, and a well-formed group
+ * has at most one, so this scans the group but adds at most one entry.
+ *
+ * Group scope mirrors restoreRadioCousins: same non-empty name, same form owner
+ * when there is one. Re-recording a cousin across several writes in one window
+ * is harmless — the replay runs newest-first, so the earliest value is the one
+ * left standing.
+ */
+function journalRadioCousins(input: HTMLInputElement): void {
+	const name = input.name;
+	const group: ArrayLike<Node> =
+		input.form !== null
+			? input.form.elements
+			: typeof document !== 'undefined'
+				? document.getElementsByName(name)
+				: [];
+	for (let i = 0; i < group.length; i++) {
+		const other = group[i] as HTMLInputElement;
+		if (
+			other === input ||
+			!other.checked ||
+			other.localName !== 'input' ||
+			other.type !== 'radio' ||
+			other.name !== name
+		) {
+			continue;
+		}
+		TRANSITION_JOURNAL!.push(JOURNAL_PROP, other, 'checked', true);
+	}
+}
+
+function journalControlledOption(option: HTMLOptionElement, withDefault: boolean): void {
+	TRANSITION_JOURNAL!.push(JOURNAL_PROP, option, 'selected', option.selected);
+	if (withDefault)
+		TRANSITION_JOURNAL!.push(JOURNAL_PROP, option, 'defaultSelected', option.defaultSelected);
+}
+
+/**
+ * Item blocks a keyed list dropped while a hold was still possible.
+ *
+ * A removal cannot wait for the hold decision: the reconciler needs the nodes
+ * out of the way to finish, and whether the boundary holds is only known once
+ * the render is further along. So the DOM detach happens immediately and is
+ * undoable, while the part that CANNOT be undone — the scope teardown, the user
+ * cleanups, the `disposed` stamp — is what waits here. If the attempt survives,
+ * these tear down for real; if it unwinds, the rows go back with their state and
+ * their cleanups never having run.
+ */
+interface ParkedItem {
+	block: Block;
+	nodes: Node[];
+}
+let PARKED_ITEMS: ParkedItem[] | null = null;
+
+/** Detach an item's node range without touching its scope, keeping the nodes. */
+function parkItemForHold(block: Block): void {
+	const nodes: Node[] = [];
+	const start = block.startMarker;
+	const end = block.endMarker;
+	if (start && end) {
+		const parent = start.parentNode;
+		if (parent !== null) {
+			const exclusive = block.exclusiveMarkers;
+			let n: Node | null = exclusive ? start.nextSibling : start;
+			const stop = exclusive ? end : end.nextSibling;
+			while (n !== null && n !== stop) {
+				const next: Node | null = getNextSibling(n);
+				parent.removeChild(n);
+				nodes.push(n);
+				n = next;
+			}
+		}
+	}
+	(PARKED_ITEMS ??= []).push({ block, nodes });
+}
+
+/** True while a keyed removal must be undoable rather than final. */
+function itemRemovalDefers(): boolean {
+	return TRANSITION_JOURNAL !== null;
+}
+
+/**
+ * True when rows removed from `state` may defer their teardown for a possible
+ * hold. Parking is only sound when this list's shape went into the journal:
+ * restoreForSlot is the only thing that brings parked rows back, and it can
+ * only find them through a JOURNAL_FOR entry. A caller tearing rows down
+ * OUTSIDE the journal's knowledge — a value-position slot leaving array mode
+ * discards the slot itself — must remove immediately, as it always did:
+ * parking there would strand the rows as deferred-but-unrestorable and push
+ * their cleanups past the rest of the attempt.
+ */
+function forSlotParkable(state: ForSlot): boolean {
+	return TRANSITION_JOURNAL !== null && TRANSITION_JOURNAL_BAGS!.has(state);
+}
+
+/**
+ * Record a keyed list's shape before a reconcile that may have to be undone.
+ *
+ * The list is restored as a whole rather than per operation: the chain, the key
+ * map and the counts all move together, and rebuilding the DOM from the restored
+ * chain puts moved survivors back as well as dropped rows. Once per list per
+ * window — the first record is the pre-render one, which is the one to go back
+ * to.
+ */
+function journalForSlot(state: ForSlot): void {
+	const seen = TRANSITION_JOURNAL_BAGS!;
+	if (seen.has(state)) return;
+	seen.add(state);
+	const chain: Array<[Block, Block | null, Block | null]> = [];
+	for (let b: Block | null = state.head; b !== null; b = b.nextSibling) {
+		chain.push([b, b.nextSibling, b.prevSibling]);
+	}
+	TRANSITION_JOURNAL!.push(
+		JOURNAL_FOR,
+		state,
+		{
+			head: state.head,
+			tail: state.tail,
+			size: state.size,
+			empty: state.emptyBlock,
+			entries: [...state.items],
+		},
+		chain,
+	);
+}
+
+/** Put a keyed list back the way it was, rows and order together. */
+function restoreForSlot(
+	state: ForSlot,
+	snapshot: any,
+	chain: Array<[Block, Block | null, Block | null]>,
+): void {
+	// Rows the aborted attempt freshly mounted are not in the snapshot, so
+	// restoring the old chain would simply forget them. Their DOM goes with the
+	// range clear below, but the scope has to go NOW, before the overwrite makes
+	// them unreachable: the disposed stamp is what keeps their queued mount
+	// effects and ref attaches from firing for a row that never reached the
+	// screen, and it runs the render-time cleanups they registered. Parked rows
+	// are never on the chain, so this reaches exactly the fresh mounts.
+	const kept = new Set<Block>();
+	for (let i = 0; i < chain.length; i++) kept.add(chain[i][0]);
+	for (let b: Block | null = state.head; b !== null; b = b.nextSibling) {
+		if (!kept.has(b)) unmountBlock(b, false);
+	}
+	// Those teardowns dispatch their cleanup errors immediately, and an error
+	// routed to the enclosing boundary flips it to @catch — disposing this
+	// slot's whole range out from under the restore. Same mid-render teardown
+	// invariant as renderReturnedValue's disposed check: stop here, and let
+	// flushParkedItems finish off whatever stayed parked.
+	if (state.end.parentNode === null) return;
+	state.head = snapshot.head;
+	state.tail = snapshot.tail;
+	state.size = snapshot.size;
+	state.items.clear();
+	for (let i = 0; i < snapshot.entries.length; i++) {
+		state.items.set(snapshot.entries[i][0], snapshot.entries[i][1]);
+	}
+	for (let i = 0; i < chain.length; i++) {
+		chain[i][0].nextSibling = chain[i][1];
+		chain[i][0].prevSibling = chain[i][2];
+	}
+	// Collect each row's nodes BEFORE touching the DOM: a dropped row has them
+	// parked, a surviving one still has them in place, and clearing first would
+	// throw the survivors away.
+	const parent = state.end.parentNode!;
+	const ranges: Node[][] = [];
+	for (let b: Block | null = state.head; b !== null; b = b.nextSibling) {
+		ranges.push(takeParkedItem(b) ?? collectBlockRange(b));
+	}
+	// Anything the aborted render left between the markers goes, including rows
+	// it created that the list no longer contains.
+	let n: Node | null = state.start.nextSibling;
+	while (n !== null && n !== state.end) {
+		const next: Node | null = n.nextSibling;
+		parent.removeChild(n);
+		n = next;
+	}
+	// One walk in chain order restores membership and order together, so moved
+	// survivors come back to where they were as well as dropped rows.
+	for (let i = 0; i < ranges.length; i++) {
+		const nodes = ranges[i];
+		for (let k = 0; k < nodes.length; k++) parent.insertBefore(nodes[k], state.end);
+	}
+	// The @empty branch swaps with the rows, so it rolls back with them. A
+	// branch the aborted render mounted is scope-only torn down (its DOM went
+	// with the range clear above); one it parked comes back like a row.
+	if (state.emptyBlock !== snapshot.empty) {
+		if (state.emptyBlock !== null) unmountBlock(state.emptyBlock, false);
+		state.emptyBlock = snapshot.empty;
+	}
+	// The @empty teardown above can dispose the range the same way the orphan
+	// walk can; re-check before inserting into it.
+	if (snapshot.empty !== null && state.end.parentNode !== null) {
+		const parkedEmpty = takeParkedItem(snapshot.empty);
+		const nodes = parkedEmpty ?? collectBlockRange(snapshot.empty);
+		for (let k = 0; k < nodes.length; k++) parent.insertBefore(nodes[k], state.end);
+	}
+}
+
+/** Remove and return a block's parked nodes, or null if it is not parked. */
+function takeParkedItem(block: Block): Node[] | null {
+	const parked = PARKED_ITEMS;
+	if (parked === null) return null;
+	for (let i = 0; i < parked.length; i++) {
+		if (parked[i].block === block) {
+			const nodes = parked[i].nodes;
+			parked.splice(i, 1);
+			return nodes;
+		}
+	}
+	return null;
+}
+
+/** The nodes a still-attached block currently owns, in order. */
+function collectBlockRange(block: Block): Node[] {
+	const nodes: Node[] = [];
+	const start = block.startMarker;
+	const end = block.endMarker;
+	if (!start || !end || start.parentNode === null) return nodes;
+	const exclusive = block.exclusiveMarkers;
+	let n: Node | null = exclusive ? start.nextSibling : start;
+	const stop = exclusive ? end : end.nextSibling;
+	while (n !== null && n !== stop) {
+		nodes.push(n);
+		n = getNextSibling(n);
+	}
+	return nodes;
 }
 
 function journalText(node: Text): void {
@@ -1177,7 +1441,21 @@ function disarmTransitionJournal(checkpoint: number): void {
 	if (--TRANSITION_JOURNAL_DEPTH === 0) {
 		TRANSITION_JOURNAL = null;
 		TRANSITION_JOURNAL_BAGS = null;
+		flushParkedItems();
 	}
+}
+
+/**
+ * Tear down the rows still parked when the last window closes. Anything a
+ * rollback put back has already been taken off this list, so what is left is
+ * genuinely gone and its cleanups are due. The DOM is already detached, so the
+ * teardown is scope-only.
+ */
+function flushParkedItems(): void {
+	const parked = PARKED_ITEMS;
+	if (parked === null) return;
+	PARKED_ITEMS = null;
+	for (let i = 0; i < parked.length; i++) unmountBlock(parked[i].block, false);
 }
 
 /** Undo every binding write recorded since `checkpoint`, newest first. */
@@ -1196,6 +1474,13 @@ function rollbackTransitionJournal(checkpoint: number): void {
 			case JOURNAL_ATTR:
 				if (b === null) (target as Element).removeAttribute(a);
 				else (target as Element).setAttribute(a, b);
+				break;
+			case JOURNAL_PROP:
+				(target as any)[a] = b;
+				break;
+			case JOURNAL_FOR:
+				restoreForSlot(target as ForSlot, a, b);
+				TRANSITION_JOURNAL_BAGS!.delete(target);
 				break;
 			default:
 				for (let k = 0; k < a.length; k++) target[a[k]] = b[k];
@@ -12666,6 +12951,7 @@ function setNativeChangeDiagnosticMetadata(el: Element, value: unknown): void {
 export function setValue(el: Element, value: unknown): void {
 	const input = el as HTMLInputElement | HTMLTextAreaElement;
 	const ctrl = armControlled(el);
+	if (TRANSITION_JOURNAL !== null) journalControlled(el, 'value', 'defaultValue');
 	const first = !ctrl.sawV;
 	ctrl.sawV = true;
 	if (value == null) {
@@ -12774,7 +13060,9 @@ function inActivationWindow(input: HTMLInputElement): boolean {
 }
 
 export function setChecked(el: Element, value: unknown): void {
-	setCheckedState(el as HTMLInputElement, value, armControlled(el));
+	const ctrl = armControlled(el);
+	if (TRANSITION_JOURNAL !== null) journalControlled(el, 'checked', 'defaultChecked');
+	setCheckedState(el as HTMLInputElement, value, ctrl);
 }
 
 /**
@@ -12783,7 +13071,9 @@ export function setChecked(el: Element, value: unknown): void {
  * and event restoration contract, but cannot need text-composition listeners.
  */
 export function setCheckedCheckable(el: Element, value: unknown): void {
-	setCheckedState(el as HTMLInputElement, value, armControlledBase(el));
+	const ctrl = armControlledBase(el);
+	if (TRANSITION_JOURNAL !== null) journalControlled(el, 'checked', 'defaultChecked');
+	setCheckedState(el as HTMLInputElement, value, ctrl);
 }
 
 /**
@@ -12796,6 +13086,10 @@ export function setCheckedCheckable(el: Element, value: unknown): void {
 export function setSelectValue(el: Element, value: unknown): void {
 	const sel = el as HTMLSelectElement;
 	const ctrl = armControlled(el);
+	if (TRANSITION_JOURNAL !== null) {
+		journalObjectOnce(ctrl);
+		journalBag();
+	}
 	const first = !ctrl.sawV;
 	ctrl.sawV = true;
 	if (value == null) {
@@ -12857,6 +13151,13 @@ function projectSelectValue(
 	setDefaultSelected: boolean,
 ): void {
 	const options = sel.options;
+	// The selection lives on the options, not the select, so each one that can
+	// move has to be recorded before the projection walks over it.
+	if (TRANSITION_JOURNAL !== null) {
+		for (let i = 0; i < options.length; i++) {
+			journalControlledOption(options[i], setDefaultSelected);
+		}
+	}
 	if (typeof sv !== 'string') {
 		for (let i = 0; i < options.length; i++) {
 			const selected = sv.has(options[i].value);
@@ -21393,10 +21694,12 @@ function detachDeoptTreeRefs(
  * slots so the setups re-fire on reactivation. Used by activityBlock on hide
  * AND by the tryBlock suspense-hide path (hideTryContentAndMountPending):
  * Activity disconnects layout + passive effects. Suspense passes
- * `disconnectPassive=false`: layout effects disconnect, while passive effects
- * remain subscribed until actual deletion, matching React's hidden-primary
- * lifetime. State, DOM, and blocks stay alive in either case. Refs remain
- * attached for Activity; Suspense cycles them separately via detachSubtreeRefs.
+ * `disconnectPassive=false`: layout effects disconnect, while CONNECTED passive
+ * effects remain subscribed until actual deletion, matching React's
+ * hidden-primary lifetime. A passive effect that never connected is not part of
+ * that hidden primary and resets like a layout one (see below). State, DOM, and
+ * blocks stay alive in either case. Refs remain attached for Activity; Suspense
+ * cycles them separately via detachSubtreeRefs.
  */
 function deactivateScope(scope: Scope, disconnectPassive: boolean = true): void {
 	const hooks = scope.hooks;
@@ -21409,7 +21712,24 @@ function deactivateScope(scope: Scope, disconnectPassive: boolean = true): void 
 				// reveal re-render doesn't re-fire them. They own injected styles
 				// that must persist while a tree is merely hidden; only a real
 				// unmount (unmountScope's effect-slot walk) tears them down.
-				if (e.phase === INSERTION || (!disconnectPassive && e.phase === PASSIVE)) continue;
+				//
+				// Suspense's `disconnectPassive=false` spares passive effects for the
+				// same reason — but only ones that ACTUALLY connected. `connectedFn` is
+				// set exclusively by runEffectBody, so a null one has never run: it
+				// belongs to a subtree the boundary rendered but never committed —
+				// siblings ahead of the call that suspended, or children introduced by a
+				// later attempt. There is no subscription to preserve, and its deps are
+				// already stamped from that aborted attempt, so sparing it would let the
+				// reveal re-render compare equal deps and skip the enqueue, stranding the
+				// mount effect — and its cleanup — forever. React fires every mount effect
+				// in the subtree when a suspended mount finally commits, so an
+				// unconnected passive slot resets exactly like a layout one.
+				if (
+					e.phase === INSERTION ||
+					(!disconnectPassive && e.phase === PASSIVE && e.connectedFn !== null)
+				) {
+					continue;
+				}
 				if (typeof e.cleanup === 'function') {
 					const cleanup = e.cleanup;
 					// Clear it BEFORE firing so unmountScope's effect-slot walk sees
@@ -21703,7 +22023,12 @@ export function forBlock<T>(
 	// mounted, tear it down before reconciling so its DOM doesn't sit alongside
 	// the freshly-mounted items.
 	if (state.emptyBlock) {
-		unmountBlock(state.emptyBlock);
+		// While a hold is possible the swap has to be reversible, exactly like a
+		// row removal: keep the branch's nodes and defer its teardown.
+		if (itemRemovalDefers()) {
+			journalForSlot(state);
+			parkItemForHold(state.emptyBlock);
+		} else unmountBlock(state.emptyBlock);
 		state.emptyBlock = null;
 	}
 	// Hydrating + the SERVER rendered the @empty body (the node right after `start` is NOT an
@@ -21922,6 +22247,12 @@ function mountItemsLinear<T>(
 ): void {
 	const newLen = items.length;
 	if (newLen === 0) return;
+	// Every 0 -> N fill funnels through here (forBlock, the value-position array
+	// path, and reconcileKeyed's own empty branch). An empty list is still a
+	// shape to go back to: a fill during a render that may yet hold must come
+	// back out — rows, scopes and queued effects together — or the held boundary
+	// shows fresh rows with their bindings half rolled back underneath them.
+	if (TRANSITION_JOURNAL !== null) journalForSlot(state);
 	const oldItems = state.items;
 	const parentNode = state.end.parentNode!;
 	// Pure-host → blocks upgrade adoption (childSlot arms `state.adopt`): the
@@ -22006,6 +22337,11 @@ function reconcileKeyed<T>(
 	const oldSize = state.size;
 	const newLen = items.length;
 	const parentNode = state.end.parentNode!;
+	// Record the list's shape while a hold is still possible, so a boundary that
+	// suspends later in this render can put it back whole. The 0 -> N fast path
+	// journals inside mountItemsLinear, which also covers the callers that
+	// dispatch to it directly.
+	if (oldSize > 0 && TRANSITION_JOURNAL !== null) journalForSlot(state);
 
 	// Fast path: empty → fill — the linear first-fill pass (callers on the
 	// first-mount path dispatch to it directly and skip this function entirely).
@@ -22113,7 +22449,8 @@ function reconcileKeyed<T>(
 		let removed = 0;
 		while (cur !== afterMiddle) {
 			const next: Block | null = cur!.nextSibling!;
-			unmountBlock(cur!);
+			if (itemRemovalDefers()) parkItemForHold(cur!);
+			else unmountBlock(cur!);
 			oldItems.delete(cur!.key);
 			cur = next;
 			removed++;
@@ -22200,7 +22537,8 @@ function reconcileKeyed<T>(
 		const next: Block | null = cur!.nextSibling!;
 		const newRelIdx = newKeysToIdx.get(cur!.key);
 		if (newRelIdx === undefined) {
-			unmountBlock(cur!);
+			if (itemRemovalDefers()) parkItemForHold(cur!);
+			else unmountBlock(cur!);
 			oldItems.delete(cur!.key);
 			state.size--;
 		} else {
@@ -22481,6 +22819,20 @@ const RANGE_CLEAR_MIN_ITEMS = 512;
  * template rows (the common bulk-clear case) hit only the three-field guard.
  */
 function batchClearItems(state: ForSlot, oldItems: Map<any, Block>): void {
+	// The bulk paths below drop the nodes wholesale, which cannot be undone.
+	// While a hold is still possible AND this list's shape is journaled (see
+	// forSlotParkable — reconcileKeyed and the @empty flip journal before they
+	// clear; teardownChildForSlot never does), take each row individually so
+	// its nodes are kept and its teardown waits for the outcome.
+	if (forSlotParkable(state)) {
+		let next: Block | null;
+		for (let b: Block | null = state.head; b !== null; b = next) {
+			next = b.nextSibling;
+			parkItemForHold(b);
+		}
+		oldItems.clear();
+		return;
+	}
 	const p = state.start.parentNode!;
 	if (state.start.previousSibling === null && state.end.nextSibling === null) {
 		// forBlock owns the parent — nuke everything in one DOM op, then re-add markers.
