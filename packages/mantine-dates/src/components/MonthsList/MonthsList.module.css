@@ -1,0 +1,17 @@
+.monthsList {
+  border-collapse: collapse;
+  border-width: 0;
+  cursor: pointer;
+
+  &[data-full-width] {
+    width: 100%;
+  }
+}
+
+.monthsListCell {
+  padding: 0;
+
+  &:where([data-with-spacing]) {
+    padding: 0.5px;
+  }
+}

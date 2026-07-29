@@ -1,0 +1,663 @@
+import { useRef, useState } from 'octane';
+import {
+  __BaseInputProps,
+  __InputStylesNames,
+  BoxProps,
+  ClearSectionMode,
+  CloseButton,
+  CloseButtonProps,
+  createVarsResolver,
+  DataAttributes,
+  ElementProps,
+  factory,
+  Factory,
+  getFontSize,
+  InputBase,
+  InputVariant,
+  Popover,
+  PopoverProps,
+  ScrollAreaProps,
+  StylesApiProps,
+  useProps,
+  useResolvedStylesApi,
+  useStyles,
+} from '@octanejs/mantine-core';
+import { useId, useMergedRef } from '@octanejs/mantine-hooks';
+import { SpinInput } from '../SpinInput';
+import { AmPmInput } from './AmPmInput/AmPmInput.tsrx';
+import { AmPmControlsList } from './TimeControlsList/AmPmControlsList.tsrx';
+import { TimeControlsList } from './TimeControlsList/TimeControlsList.tsrx';
+import { TimePickerProvider } from './TimePicker.context.tsrx';
+import {
+  TimePickerAmPmLabels,
+  TimePickerFormat,
+  TimePickerPasteSplit,
+  TimePickerPresets,
+  TimePickerType,
+} from './TimePicker.types';
+import { TimePresets } from './TimePresets/TimePresets.tsrx';
+import { useTimePicker } from './use-time-picker';
+import { clampTime } from './utils/clamp-time/clamp-time';
+import { getParsedTime } from './utils/get-parsed-time/get-parsed-time';
+import { getTimeString } from './utils/get-time-string/get-time-string';
+import { padTime } from './utils/pad-time/pad-time';
+import classes from './TimePicker.module.css';
+
+export type TimePickerStylesNames =
+  | 'fieldsRoot'
+  | 'fieldsGroup'
+  | 'field'
+  | 'controlsList'
+  | 'controlsListGroup'
+  | 'control'
+  | 'dropdown'
+  | 'presetsRoot'
+  | 'presetsGroup'
+  | 'presetsGroupLabel'
+  | 'presetControl'
+  | 'scrollarea'
+  | __InputStylesNames;
+
+export type TimePickerCssVariables = {
+  dropdown: '--control-font-size';
+};
+
+export interface TimePickerProps
+  extends
+    BoxProps,
+    __BaseInputProps,
+    StylesApiProps<TimePickerFactory>,
+    ElementProps<'div', 'onChange' | 'defaultValue' | 'onFocus' | 'onBlur'> {
+  /** TimePicker type, `'time'` for regular time input, `'duration'` for duration input that allows values greater than 24 hours @default 'time' */
+  type?: TimePickerType;
+
+  /** Controlled component value */
+  value?: string;
+
+  /** Uncontrolled component default value */
+  defaultValue?: string;
+
+  /** Called when the value changes */
+  onChange?: (value: string) => void;
+
+  /** Determines whether the clear button should be displayed @default false */
+  clearable?: boolean;
+
+  /** Determines how the clear button and rightSection are rendered @default 'both' */
+  clearSectionMode?: ClearSectionMode;
+
+  /** `name` prop passed down to the hidden input */
+  name?: string;
+
+  /** `form` prop passed down to the hidden input */
+  form?: string;
+
+  /** Min possible time value in `hh:mm:ss` format */
+  min?: string;
+
+  /** Max possible time value in `hh:mm:ss` format */
+  max?: string;
+
+  /** Time format, `'24h'` by default */
+  format?: TimePickerFormat;
+
+  /** Number by which hours are incremented/decremented @default 1 */
+  hoursStep?: number;
+
+  /** Number by which minutes are incremented/decremented @default 1 */
+  minutesStep?: number;
+
+  /** Number by which seconds are incremented/decremented @default 1 */
+  secondsStep?: number;
+
+  /** Determines whether the seconds input should be displayed @default false */
+  withSeconds?: boolean;
+
+  /** `aria-label` of hours input */
+  hoursInputLabel?: string;
+
+  /** `aria-label` of minutes input */
+  minutesInputLabel?: string;
+
+  /** `aria-label` of seconds input */
+  secondsInputLabel?: string;
+
+  /** `aria-label` of am/pm input */
+  amPmInputLabel?: string;
+
+  /** Labels used for am/pm values @default { am: 'AM', pm: 'PM' } */
+  amPmLabels?: TimePickerAmPmLabels;
+
+  /** Determines whether the dropdown with time controls list should be visible when the input has focus @default false */
+  withDropdown?: boolean;
+
+  /** Props passed down to `Popover` component */
+  popoverProps?: PopoverProps;
+
+  /** Called once when one of the inputs is focused, not called when focused is shifted between hours, minutes, seconds and am/pm inputs */
+  onFocus?: (event: OctaneFocusEvent<HTMLInputElement>) => void;
+
+  /** Called once when the focus is no longer on any of the inputs */
+  onBlur?: (event: OctaneFocusEvent<HTMLDivElement>) => void;
+
+  /** Props passed down to clear button */
+  clearButtonProps?: CloseButtonProps & ElementProps<'button'> & DataAttributes;
+
+  /** Props passed down to hours input */
+  hoursInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
+
+  /** Props passed down to minutes input */
+  minutesInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
+
+  /** Props passed down to seconds input */
+  secondsInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
+
+  /** Props passed down to am/pm select */
+  amPmSelectProps?: MantineIntrinsicProps<'select'> & DataAttributes;
+
+  /** If set, the value cannot be updated */
+  readOnly?: boolean;
+
+  /** If set, the component becomes disabled */
+  disabled?: boolean;
+
+  /** Props passed down to the hidden input */
+  hiddenInputProps?: MantineIntrinsicProps<'input'> & DataAttributes;
+
+  /** A function to transform paste values, by default time in 24h format can be parsed on paste for example `23:34:22` */
+  pasteSplit?: TimePickerPasteSplit;
+
+  /** A ref object to get node reference of the hours input */
+  hoursRef?: OctaneRef<HTMLInputElement>;
+
+  /** A ref object to get node reference of the minutes input */
+  minutesRef?: OctaneRef<HTMLInputElement>;
+
+  /** A ref object to get node reference of the seconds input */
+  secondsRef?: OctaneRef<HTMLInputElement>;
+
+  /** A ref object to get node reference of the am/pm select */
+  amPmRef?: OctaneRef<HTMLSelectElement>;
+
+  /** Time presets to display in the dropdown */
+  presets?: TimePickerPresets;
+
+  /** If set, the dropdown is closed when a value is selected from the presets list @default false */
+  closeDropdownOnPresetSelect?: boolean;
+
+  /** Maximum height of the content displayed in the dropdown in px @default 200 */
+  maxDropdownContentHeight?: number;
+
+  /** Props passed down to all underlying `ScrollArea` components */
+  scrollAreaProps?: ScrollAreaProps;
+
+  /** If set, the time controls list are reversed, @default false */
+  reverseTimeControlsList?: boolean;
+
+  /** Hours input placeholder, @default -- */
+  hoursPlaceholder?: string;
+
+  /** Minutes input placeholder, @default -- */
+  minutesPlaceholder?: string;
+
+  /** Seconds input placeholder, @default -- */
+  secondsPlaceholder?: string;
+
+  /** Minimum number of digits displayed in the hours input, applicable only when `type="duration"` is set @default 2 */
+  minHoursDigits?: number;
+}
+
+export type TimePickerFactory = Factory<{
+  props: TimePickerProps;
+  ref: HTMLDivElement;
+  stylesNames: TimePickerStylesNames;
+  vars: TimePickerCssVariables;
+  variant: InputVariant;
+}>;
+
+const defaultProps = {
+  type: 'time',
+  hoursStep: 1,
+  minutesStep: 1,
+  secondsStep: 1,
+  format: '24h',
+  amPmLabels: { am: 'AM', pm: 'PM' },
+  pasteSplit: getParsedTime,
+  maxDropdownContentHeight: 200,
+  hoursPlaceholder: '--',
+  minutesPlaceholder: '--',
+  secondsPlaceholder: '--',
+  minHoursDigits: 2,
+} satisfies Partial<TimePickerProps>;
+
+const varsResolver = createVarsResolver<TimePickerFactory>((_theme, { size }) => ({
+  dropdown: {
+    '--control-font-size': getFontSize(size),
+  },
+}));
+
+const DURATION_HOURS_MAX = Infinity;
+
+export const TimePicker = factory<TimePickerFactory>((_props) => {
+  const props = useProps(['Input', 'InputWrapper', 'TimePicker'], defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    onClick,
+    type,
+    format: _format,
+    value,
+    defaultValue,
+    onChange,
+    hoursStep,
+    minutesStep,
+    secondsStep,
+    withSeconds,
+    hoursInputLabel,
+    minutesInputLabel,
+    secondsInputLabel,
+    amPmInputLabel,
+    amPmLabels,
+    clearable,
+    clearSectionMode,
+    onMouseDown,
+    onFocusCapture,
+    onBlurCapture,
+    min,
+    max,
+    popoverProps,
+    withDropdown,
+    rightSection,
+    onFocus,
+    onBlur,
+    clearButtonProps,
+    hoursInputProps,
+    minutesInputProps,
+    secondsInputProps,
+    amPmSelectProps,
+    readOnly,
+    disabled,
+    size,
+    name,
+    form,
+    hiddenInputProps,
+    labelProps,
+    pasteSplit,
+    hoursRef,
+    minutesRef,
+    secondsRef,
+    amPmRef,
+    presets,
+    closeDropdownOnPresetSelect,
+    maxDropdownContentHeight,
+    scrollAreaProps,
+    attributes,
+    reverseTimeControlsList,
+    hoursPlaceholder,
+    minutesPlaceholder,
+    secondsPlaceholder,
+    minHoursDigits,
+    ...others
+  } = props;
+
+  const isDuration = type === 'duration';
+  const format = isDuration ? '24h' : _format!;
+  const resolvedHoursPlaceholder =
+    isDuration && hoursPlaceholder === '--' ? '-'.repeat(minHoursDigits!) : hoursPlaceholder;
+
+  const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<TimePickerFactory>({
+    classNames,
+    styles,
+    props,
+  });
+
+  const getStyles = useStyles<TimePickerFactory>({
+    name: 'TimePicker',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+    varsResolver,
+  });
+
+  const controller = useTimePicker({
+    value,
+    defaultValue,
+    onChange,
+    format,
+    amPmLabels,
+    withSeconds,
+    min,
+    max,
+    clearable,
+    disabled,
+    readOnly,
+    pasteSplit,
+    type: type!,
+  });
+
+  const _hoursRef = useMergedRef(controller.refs.hours, hoursRef);
+  const _minutesRef = useMergedRef(controller.refs.minutes, minutesRef);
+  const _secondsRef = useMergedRef(controller.refs.seconds, secondsRef);
+  const _amPmRef = useMergedRef(controller.refs.amPm, amPmRef);
+
+  const hoursInputId = useId();
+  const hasFocusRef = useRef(false);
+  const [dropdownOpened, setDropdownOpened] = useState(false);
+
+  const handleFocus = (event: OctaneFocusEvent<any>) => {
+    if (!hasFocusRef.current) {
+      hasFocusRef.current = true;
+      onFocus?.(event);
+    }
+  };
+
+  const handlePresetSelect = (timeString: string) => {
+    controller.setTimeString(timeString);
+
+    if (closeDropdownOnPresetSelect) {
+      setDropdownOpened(false);
+      popoverProps?.onChange?.(false);
+    }
+  };
+
+  const handleBlur = (event: OctaneFocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      const computedValue = controller.values;
+      const timeString = getTimeString({
+        ...computedValue,
+        format,
+        amPmLabels,
+        withSeconds: !!withSeconds,
+      });
+
+      if (timeString.valid && (min || max)) {
+        const clamped = clampTime(timeString.value, min, max, !!withSeconds);
+
+        if (clamped.timeString !== timeString.value) {
+          controller.setTimeString(clamped.timeString);
+        }
+      }
+      hasFocusRef.current = false;
+      onBlur?.(event);
+    }
+  };
+
+  return (
+    <TimePickerProvider value={{ getStyles, scrollAreaProps, maxDropdownContentHeight }}>
+      <Popover
+        opened={dropdownOpened}
+        transitionProps={{ duration: 0 }}
+        position="bottom-start"
+        withRoles={false}
+        disabled={disabled || readOnly || !withDropdown || isDuration}
+        {...popoverProps}
+      >
+        <Popover.Target>
+          <InputBase
+            component="div"
+            size={size}
+            disabled={disabled}
+            onClick={(event) => {
+              onClick?.(event);
+              controller.focus('hours');
+              if (!disabled) {
+                setDropdownOpened(true);
+              }
+            }}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              onMouseDown?.(event);
+            }}
+            onFocusCapture={(event) => {
+              setDropdownOpened(true);
+              onFocusCapture?.(event);
+            }}
+            onBlurCapture={(event) => {
+              setDropdownOpened(false);
+              onBlurCapture?.(event);
+            }}
+            rightSection={rightSection}
+            __clearSection={
+              <CloseButton
+                {...clearButtonProps}
+                size={size}
+                onClick={(event) => {
+                  controller.clear();
+                  clearButtonProps?.onClick?.(event);
+                }}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  clearButtonProps?.onMouseDown?.(event);
+                }}
+              />
+            }
+            __clearable={controller.isClearable}
+            __clearSectionMode={clearSectionMode}
+            labelProps={{ htmlFor: hoursInputId, ...labelProps }}
+            style={style}
+            className={className}
+            classNames={resolvedClassNames}
+            styles={resolvedStyles}
+            attributes={attributes}
+            __staticSelector="TimePicker"
+            {...others}
+          >
+            <div {...getStyles('fieldsRoot')} dir="ltr">
+              <div {...getStyles('fieldsGroup')} onBlur={handleBlur}>
+                <SpinInput
+                  id={hoursInputId}
+                  {...hoursInputProps}
+                  {...getStyles('field', {
+                    className: hoursInputProps?.className,
+                    style: isDuration
+                      ? {
+                          width: `calc(${Math.max(minHoursDigits!, padTime(controller.values.hours ?? 0).length)}ch + 0.3em)`,
+                          ...hoursInputProps?.style,
+                        }
+                      : hoursInputProps?.style,
+                  })}
+                  value={controller.values.hours}
+                  onChange={controller.setHours}
+                  onNextInput={() => controller.focus('minutes')}
+                  min={format === '12h' ? 1 : 0}
+                  max={isDuration ? DURATION_HOURS_MAX : format === '12h' ? 12 : 23}
+                  allowTemporaryZero={format === '12h'}
+                  disableAutoAdvance={isDuration}
+                  focusable
+                  step={hoursStep}
+                  ref={_hoursRef}
+                  aria-label={hoursInputLabel}
+                  readOnly={readOnly}
+                  disabled={disabled}
+                  onPaste={controller.onPaste}
+                  onFocus={(event) => {
+                    handleFocus(event);
+                    hoursInputProps?.onFocus?.(event);
+                  }}
+                  onBlur={(event) => {
+                    const actualInputValue = event.currentTarget.value;
+                    const numericValue = actualInputValue ? parseInt(actualInputValue, 10) : null;
+
+                    if (format === '12h' && numericValue === 0) {
+                      controller.setHours(12);
+                    }
+                    hoursInputProps?.onBlur?.(event);
+                  }}
+                  placeholder={resolvedHoursPlaceholder}
+                />
+                <span>:</span>
+                <SpinInput
+                  {...minutesInputProps}
+                  {...getStyles('field', {
+                    className: minutesInputProps?.className,
+                    style: minutesInputProps?.style,
+                  })}
+                  value={controller.values.minutes}
+                  onChange={controller.setMinutes}
+                  min={0}
+                  max={59}
+                  focusable
+                  step={minutesStep}
+                  ref={_minutesRef}
+                  onPreviousInput={() => controller.focus('hours')}
+                  onNextInput={() =>
+                    withSeconds ? controller.focus('seconds') : controller.focus('amPm')
+                  }
+                  aria-label={minutesInputLabel}
+                  tabIndex={-1}
+                  readOnly={readOnly}
+                  disabled={disabled}
+                  onPaste={controller.onPaste}
+                  onFocus={(event) => {
+                    handleFocus(event);
+                    minutesInputProps?.onFocus?.(event);
+                  }}
+                  placeholder={minutesPlaceholder}
+                />
+
+                {withSeconds && (
+                  <>
+                    <span>:</span>
+                    <SpinInput
+                      {...secondsInputProps}
+                      {...getStyles('field', {
+                        className: secondsInputProps?.className,
+                        style: secondsInputProps?.style,
+                      })}
+                      value={controller.values.seconds}
+                      onChange={controller.setSeconds}
+                      min={0}
+                      max={59}
+                      focusable
+                      step={secondsStep}
+                      ref={_secondsRef}
+                      onPreviousInput={() => controller.focus('minutes')}
+                      onNextInput={() => controller.focus('amPm')}
+                      aria-label={secondsInputLabel}
+                      tabIndex={-1}
+                      readOnly={readOnly}
+                      disabled={disabled}
+                      onPaste={controller.onPaste}
+                      onFocus={(event) => {
+                        handleFocus(event);
+                        secondsInputProps?.onFocus?.(event);
+                      }}
+                      placeholder={secondsPlaceholder}
+                    />
+                  </>
+                )}
+
+                {format === '12h' && !isDuration && (
+                  <AmPmInput
+                    {...amPmSelectProps}
+                    inputType={withDropdown ? 'input' : 'select'}
+                    labels={amPmLabels}
+                    value={controller.values.amPm}
+                    onChange={controller.setAmPm}
+                    ref={_amPmRef}
+                    aria-label={amPmInputLabel}
+                    onPreviousInput={() =>
+                      withSeconds ? controller.focus('seconds') : controller.focus('minutes')
+                    }
+                    readOnly={readOnly}
+                    disabled={disabled}
+                    tabIndex={-1}
+                    onPaste={controller.onPaste}
+                    onFocus={(event) => {
+                      handleFocus(event);
+                      amPmSelectProps?.onFocus?.(event);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            <input
+              type="hidden"
+              name={name}
+              form={form}
+              value={controller.hiddenInputValue}
+              {...hiddenInputProps}
+            />
+          </InputBase>
+        </Popover.Target>
+        <Popover.Dropdown
+          {...getStyles('dropdown')}
+          onMouseDown={(event) => event.preventDefault()}
+        >
+          {presets ? (
+            <TimePresets
+              value={controller.hiddenInputValue}
+              onChange={handlePresetSelect}
+              format={format}
+              presets={presets}
+              amPmLabels={amPmLabels}
+              withSeconds={withSeconds || false}
+            />
+          ) : (
+            <div {...getStyles('controlsListGroup')}>
+              <TimeControlsList
+                min={format === '12h' ? 1 : 0}
+                max={format === '12h' ? 12 : 23}
+                step={hoursStep}
+                value={controller.values.hours}
+                onSelect={controller.setHours}
+                reversed={reverseTimeControlsList}
+              />
+              <TimeControlsList
+                min={0}
+                max={59}
+                step={minutesStep}
+                value={controller.values.minutes}
+                onSelect={controller.setMinutes}
+                reversed={reverseTimeControlsList}
+              />
+              {withSeconds && (
+                <TimeControlsList
+                  min={0}
+                  max={59}
+                  step={secondsStep}
+                  value={controller.values.seconds}
+                  onSelect={controller.setSeconds}
+                  reversed={reverseTimeControlsList}
+                />
+              )}
+              {format === '12h' && (
+                <AmPmControlsList
+                  labels={amPmLabels}
+                  value={controller.values.amPm}
+                  onSelect={controller.setAmPm}
+                />
+              )}
+            </div>
+          )}
+        </Popover.Dropdown>
+      </Popover>
+    </TimePickerProvider>
+  );
+});
+
+TimePicker.displayName = '@mantine/dates/TimePicker';
+TimePicker.classes = classes;
+TimePicker.varsResolver = varsResolver;
+
+export declare namespace TimePicker {
+  export type Props = TimePickerProps;
+  export type StylesNames = TimePickerStylesNames;
+  export type Factory = TimePickerFactory;
+  export type CssVariables = TimePickerCssVariables;
+  export type Format = TimePickerFormat;
+  export type AmPmLabels = TimePickerAmPmLabels;
+  export type PasteSplit = TimePickerPasteSplit;
+  export type Presets = TimePickerPresets;
+}

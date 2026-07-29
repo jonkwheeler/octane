@@ -1,0 +1,205 @@
+import {
+  Box,
+  BoxProps,
+  ElementProps,
+  factory,
+  Factory,
+  getThemeColor,
+  StylesApiProps,
+  useMantineTheme,
+  useProps,
+  useStyles,
+} from '@octanejs/mantine-core';
+import { ChartSeries } from '../types';
+import { getSeriesLabels } from '../utils';
+import classes from './ChartTooltip.module.css';
+
+function updateChartTooltipPayload(payload: Record<string, any>[]): Record<string, any>[] {
+  return payload.map((item: any) => {
+    if (!item.payload || item.payload[item.name]) {
+      return item;
+    }
+    const matchFound = item.name.search(/\./);
+    if (matchFound >= 0) {
+      const newDataKey = item.name.substring(0, matchFound);
+      const nestedPayload = { ...item.payload[newDataKey] };
+      const shallowPayload = Object.entries(item.payload).reduce((acc, current) => {
+        const [k, v] = current;
+        return k === newDataKey ? acc : { ...acc, [k]: v };
+      }, {});
+
+      return {
+        ...item,
+        name: item.name.substring(matchFound + 1),
+        payload: {
+          ...shallowPayload,
+          ...nestedPayload,
+        },
+      };
+    }
+    return item;
+  });
+}
+
+export function getFilteredChartTooltipPayload(
+  payload: readonly Record<string, any>[] | Record<string, any>[],
+  segmentId?: string | number
+) {
+  const duplicatesFilter = updateChartTooltipPayload(
+    payload.filter((item: any) => item.fill !== 'none' || !item.color)
+  );
+
+  if (segmentId === undefined || segmentId === null) {
+    return duplicatesFilter;
+  }
+
+  if (typeof segmentId === 'number') {
+    const item = duplicatesFilter[segmentId];
+    return item ? [item] : [];
+  }
+
+  return duplicatesFilter.filter((item: any) => item.name === segmentId);
+}
+
+function getData(item: Record<string, any>, type: 'area' | 'radial' | 'scatter') {
+  if (type === 'radial' || type === 'scatter') {
+    if (Array.isArray(item.value)) {
+      return item.value[1] - item.value[0];
+    }
+    return item.value;
+  }
+
+  if (Array.isArray(item.payload[item.dataKey])) {
+    return item.payload[item.dataKey][1] - item.payload[item.dataKey][0];
+  }
+  return item.payload[item.name];
+}
+
+export type ChartTooltipStylesNames =
+  | 'tooltip'
+  | 'tooltipItem'
+  | 'tooltipItemBody'
+  | 'tooltipItemColor'
+  | 'tooltipItemName'
+  | 'tooltipItemData'
+  | 'tooltipLabel'
+  | 'tooltipBody';
+
+export interface ChartTooltipProps
+  extends BoxProps, StylesApiProps<ChartTooltipFactory>, ElementProps<'div'> {
+  /** Main tooltip label */
+  label?: OctaneNode;
+
+  /** Chart data provided by recharts */
+  payload: readonly Record<string, any>[] | Record<string, any>[] | undefined;
+
+  /** Data units, provided by parent component */
+  unit?: string;
+
+  /** Tooltip type that determines the content and styles, `area` for LineChart, AreaChart and BarChart, `radial` for DonutChart and PieChart @default 'area' */
+  type?: 'area' | 'radial' | 'scatter';
+
+  /** Segment to display data for, identified by its index in the data array (preferred, isolates duplicate names) or by its name. Only applicable when `type="radial"`. If not set, all data is rendered. */
+  segmentId?: string | number;
+
+  /** Chart series data, applicable only for `area` type */
+  series?: ChartSeries[];
+
+  /** A function to format values */
+  valueFormatter?: (value: number) => OctaneNode;
+
+  /** Determines whether the color swatch should be visible @default true */
+  showColor?: boolean;
+}
+
+export type ChartTooltipFactory = Factory<{
+  props: ChartTooltipProps;
+  ref: HTMLDivElement;
+  stylesNames: ChartTooltipStylesNames;
+}>;
+
+const defaultProps = {
+  type: 'area',
+  showColor: true,
+} satisfies Partial<ChartTooltipProps>;
+
+export const ChartTooltip = factory<ChartTooltipFactory>((_props) => {
+  const props = useProps('ChartTooltip', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    payload,
+    label,
+    unit,
+    type,
+    segmentId,
+    mod,
+    series,
+    valueFormatter,
+    showColor,
+    attributes,
+    ...others
+  } = props;
+
+  const theme = useMantineTheme();
+
+  const getStyles = useStyles<ChartTooltipFactory>({
+    name: 'ChartTooltip',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+  });
+
+  if (!payload) {
+    return null;
+  }
+
+  const filteredPayload = getFilteredChartTooltipPayload(payload, segmentId);
+  const scatterLabel = type === 'scatter' ? payload[0]?.payload?.name : null;
+  const labels = getSeriesLabels(series);
+  const _label = label || scatterLabel;
+
+  const items = filteredPayload.map((item: any, index: number) => (
+    <div key={item?.key ?? `${item.name}-${index}`} data-type={type} {...getStyles('tooltipItem')}>
+      <div {...getStyles('tooltipItemBody')}>
+        {showColor && (
+          <svg {...getStyles('tooltipItemColor')}>
+            <circle
+              r={6}
+              fill={getThemeColor(item.color, theme)}
+              width={12}
+              height={12}
+              cx={6}
+              cy={6}
+            />
+          </svg>
+        )}
+        <div {...getStyles('tooltipItemName')}>{labels[item.name] || item.name}</div>
+      </div>
+      <div {...getStyles('tooltipItemData')}>
+        {typeof valueFormatter === 'function'
+          ? valueFormatter(getData(item, type))
+          : getData(item, type)}
+        {unit || item.unit}
+      </div>
+    </div>
+  ));
+
+  return (
+    <Box {...getStyles('tooltip')} mod={[{ type }, mod]} {...others}>
+      {_label && <div {...getStyles('tooltipLabel')}>{_label}</div>}
+      <div {...getStyles('tooltipBody')}>{items}</div>
+    </Box>
+  );
+});
+
+ChartTooltip.displayName = '@mantine/charts/ChartTooltip';
