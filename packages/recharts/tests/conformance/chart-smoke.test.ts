@@ -6,7 +6,15 @@
  */
 import { describe, it, expect } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
-import { BarChartApp, LineChartApp } from '../_fixtures/charts.tsrx';
+import {
+	BarChartApp,
+	CartesianChartsApp,
+	HierarchyChartsApp,
+	LineChartApp,
+	OverlayChartApp,
+	PolarChartsApp,
+	ResponsiveChartApp,
+} from '../_fixtures/charts.tsrx';
 
 async function settle() {
 	// The chart pipeline is multi-pass: size lands via effect, axes/items
@@ -50,5 +58,57 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		const dots = r.container.querySelectorAll('.recharts-line-dots circle');
 		expect(dots.length).toBe(12);
 		r.unmount();
+	});
+
+	it('provides fixed responsive dimensions without a measurement pass', async () => {
+		const result = mount(ResponsiveChartApp, {});
+		await settle();
+		const surface = result.container.querySelector('.recharts-surface');
+		expect(surface?.getAttribute('width')).toBe('420');
+		expect(surface?.getAttribute('height')).toBe('240');
+		result.unmount();
+	});
+
+	it('renders registered legend and active tooltip content through chart portals', async () => {
+		const result = mount(OverlayChartApp, {});
+		await settle();
+		expect(result.container.querySelector('.recharts-legend-wrapper')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-default-legend')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-tooltip-wrapper')).toBeTruthy();
+		expect(result.container.textContent).toContain('UV');
+		result.unmount();
+	});
+
+	it('renders area, composed, scatter, funnel, grid, and reference primitives', async () => {
+		const result = mount(CartesianChartsApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('path.recharts-area-area').length).toBe(2);
+		expect(result.container.querySelector('path.recharts-line-curve')).toBeTruthy();
+		expect(result.container.querySelectorAll('.recharts-scatter-symbol').length).toBe(2);
+		expect(result.container.querySelectorAll('.recharts-funnel-trapezoid').length).toBe(2);
+		expect(result.container.querySelector('.recharts-cartesian-grid')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-reference-line')).toBeTruthy();
+		result.unmount();
+	});
+
+	it('renders pie, radar, radial bar, and polar axes', async () => {
+		const result = mount(PolarChartsApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-pie-sector').length).toBe(2);
+		expect(result.container.querySelector('.recharts-radar-polygon')).toBeTruthy();
+		expect(result.container.querySelectorAll('.recharts-radial-bar-sector').length).toBe(2);
+		expect(result.container.querySelector('.recharts-polar-grid')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-polar-angle-axis')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-polar-radius-axis')).toBeTruthy();
+		result.unmount();
+	});
+
+	it('renders sankey and sunburst hierarchy charts', async () => {
+		const result = mount(HierarchyChartsApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-sankey-node').length).toBe(3);
+		expect(result.container.querySelectorAll('.recharts-sankey-link').length).toBe(2);
+		expect(result.container.querySelectorAll('.recharts-sunburst path.recharts-sector').length).toBe(2);
+		result.unmount();
 	});
 });
