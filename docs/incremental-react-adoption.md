@@ -56,7 +56,31 @@ Each write is guarded by the digest read during analysis. If the file differs
 when apply checks it, it is reported as a conflict and is not overwritten.
 Running conversion again is idempotent.
 
-## 3. Add the Next.js build boundary
+## 3. Add a Vite build boundary
+
+Vite can compile the existing React shell and Octane leaves in one graph:
+
+```ts
+import react from '@vitejs/plugin-react';
+import { defineConfig, octane } from '@octanejs/vite-plugin';
+
+export default defineConfig({
+  plugins: [react(), octane()],
+});
+```
+
+Keep React-owned files as `.tsx` and name converted Octane leaves `.tsrx`.
+Mount them through `OctaneCompat` as shown below. The committed
+[`vite-react-islands` example](../examples/vite-react-islands/README.md) is the
+executable reference.
+
+React Router applications use this same boundary: keep the router, route
+modules, loaders, actions, and providers in React, then mount Octane below a
+route component. TanStack Start follows the same rule: keep file routes,
+server functions, hydration, and the root document React-owned; use Octane for
+client leaves below a route. Do not convert a route module itself.
+
+## 4. Add the Next.js build boundary
 
 Install the compiler loader and configure both supported Next.js paths:
 
@@ -98,7 +122,7 @@ Next build and disable only Next's duplicate typecheck. The committed
 [`next-islands` example](../examples/next-islands/README.md) is the executable
 reference and pins the tested Next and React versions.
 
-## 4. Mount the island
+## 5. Mount the island
 
 Keep the App Router boundary as a React Client Component. Import the compiled
 Octane leaf and render it below `OctaneCompat`:

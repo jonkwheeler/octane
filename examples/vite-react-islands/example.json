@@ -1,0 +1,4 @@
+{
+  "title": "Vite React islands",
+  "description": "Incrementally mount compiled Octane TSRX leaves inside an existing React Vite application."
+}
