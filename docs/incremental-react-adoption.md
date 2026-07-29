@@ -29,14 +29,11 @@ imports, framework route/layout files, computed imports, and unsupported React
 APIs. A blocked report exits with code `3`; malformed invocation exits with
 code `2`, and command failures use code `1`.
 
-For example, `mobx-react-lite` maps to `@octanejs/mobx`, `@mantine/hooks` maps
-to `@octanejs/mantine-hooks`, and `@mantine/core` maps to
-`@octanejs/mantine-core`, and `@mantine/form` maps to
-`@octanejs/mantine-form`, while `@mantine/charts` maps to
-`@octanejs/mantine-charts`. Other Mantine extension packages remain blocked
-until their corresponding bindings exist. Supported Core, Hooks, Form,
-Recharts, Charts, or Tiptap dependencies inside that graph do not make an
-unported parent Mantine extension portable.
+For example, `mobx-react-lite` maps to `@octanejs/mobx`; Mantine Core, Hooks,
+Form, Charts, Store, and Notifications map to their corresponding
+`@octanejs/mantine-*` packages. Other Mantine extension packages remain blocked
+until their corresponding bindings exist. Supported dependencies inside that
+graph do not make an unported parent Mantine extension portable.
 
 ## 2. Preview the conversion
 

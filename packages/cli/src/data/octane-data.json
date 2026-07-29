@@ -243,6 +243,29 @@
       "verified": "2026-07-28"
     },
     {
+      "name": "@octanejs/mantine-notifications",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/notifications", "version": "9.5.0" },
+      "surface": "Complete @mantine/notifications 9.5.0 runtime surface: Notifications, stores, show, hide, update, clean, queueing, auto-close, hover pause, and drag or wheel dismissal.",
+      "divergences": [
+        "Enter and exit state styles are rendered directly by Octane instead of react-transition-group.",
+        "Pointer, drag, wheel, and close callbacks receive native browser events."
+      ],
+      "ssr": "Notification containers render deterministic store state; timers and dismissal listeners activate on the client.",
+      "verified": "2026-07-29"
+    },
+    {
+      "name": "@octanejs/mantine-store",
+      "version": "0.1.0",
+      "category": "Shared state",
+      "upstream": { "package": "@mantine/store", "version": "9.5.0" },
+      "surface": "Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates.",
+      "divergences": ["useStore subscribes through Octane's useSyncExternalStore implementation."],
+      "ssr": "Store snapshots are deterministic during server rendering.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mdx",
       "version": "0.1.15",
       "category": "Forms and content",
@@ -713,6 +736,8 @@
     "@mantine/core": "@octanejs/mantine-core",
     "@mantine/form": "@octanejs/mantine-form",
     "@mantine/hooks": "@octanejs/mantine-hooks",
+    "@mantine/notifications": "@octanejs/mantine-notifications",
+    "@mantine/store": "@octanejs/mantine-store",
     "@mdx-js/react": "@octanejs/mdx",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",

@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 49 `@octanejs/*` framework bindings.
+The central status table for the 51 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -35,6 +35,8 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/mantine-core`](#octanejsmantine-core) | `@mantine/core@9.5.0` | Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports. | Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned; Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection; Event callbacks receive native browser events through Octane's delegated event system | Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering. | 2026-07-29 |
 | [`@octanejs/mantine-form`](#octanejsmantine-form) | `@mantine/form@9.5.0` | Complete @mantine/form 9.5.0 runtime and type surface: useForm, useField, providers, actions, validators, nested paths, list operations, sync/async validation, schemas, watchers, and controlled/uncontrolled input props. | Hooks use Octane lifecycle and state primitives; Input and submit callbacks receive native browser events instead of React synthetic events | Form state and validation are deterministic during server rendering; browser event attachment activates during hydration. | 2026-07-29 |
 | [`@octanejs/mantine-hooks`](#octanejsmantine-hooks) | `@mantine/hooks@9.5.0` | Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks. | Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher; DOM subscriptions receive native browser events; React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime | Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering. | 2026-07-28 |
+| [`@octanejs/mantine-notifications`](#octanejsmantine-notifications) | `@mantine/notifications@9.5.0` | Complete @mantine/notifications 9.5.0 runtime surface: Notifications, stores, show, hide, update, clean, queueing, auto-close, hover pause, and drag or wheel dismissal. | Enter and exit state styles are rendered directly by Octane instead of react-transition-group; Pointer, drag, wheel, and close callbacks receive native browser events | Notification containers render deterministic store state; timers and dismissal listeners activate on the client. | 2026-07-29 |
+| [`@octanejs/mantine-store`](#octanejsmantine-store) | `@mantine/store@9.5.0` | Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates. | useStore subscribes through Octane's useSyncExternalStore implementation | Store snapshots are deterministic during server rendering. | 2026-07-29 |
 | [`@octanejs/mdx`](#octanejsmdx) | `@mdx-js/mdx@3.1.1` | The full compile-don't-interpret pipeline: `.mdx`/`.md` → `@mdx-js/mdx` (reused verbatim) → octane compiler, via the `octaneMdx()` Vite plugin plus the `./compile` and `./server` entries; compiler warnings propagate through direct and Vite compile surfaces with authored `.mdx` ranges; `@mdx-js/react`'s provider layer (`MDXProvider`/`useMDXComponents`) is ported onto octane context. The octane website runs on it. | `useMDXComponents` drops upstream's `useMemo` referential-stability wrapper so the call is valid in both server and client runtimes (same observable mapping) | Full SSR + hydration coverage — server-compiled documents render via `renderToString` and hydrate byte-for-byte (`ssr.test.ts`, `hydration.test.ts`). | 2026-07-17 |
 | [`@octanejs/mobx`](#octanejsmobx) | `mobx-react-lite@4.1.1` | The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias. | React class components and the legacy mobx-react Provider/inject APIs are not included; forwardRef compatibility options are omitted because Octane uses refs as props; React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted | enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions. | 2026-07-28 |
 | [`@octanejs/motion`](#octanejsmotion) | `motion@12.42.2` | Core surface: `motion.<tag>` (animate, gestures, variants with propagation/stagger, drag, layout basics), `AnimatePresence`, `MotionConfig`, and the motion-value hooks (`useMotionValue`, `useScroll`, `useTransform`, `useSpring`, `useAnimate`, `useMotionValueEvent`); motion-dom's animation engine and gesture primitives are reused verbatim. | Exit animations run via cleanup-before-detach instead of React's deferred-deletion machinery; `layout`/`layoutId` use single-element FLIP, not the full projection tree | No SSR-specific surface; no dedicated SSR tests. | 2026-07-21 |
@@ -376,6 +378,35 @@ Known divergences:
 SSR / hydration: Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering.
 
 Scope/evidence last checked: 2026-07-28.
+
+## @octanejs/mantine-notifications
+
+[`packages/mantine-notifications`](../packages/mantine-notifications) `0.1.0` — ports `@mantine/notifications@9.5.0`. Status data: [`packages/mantine-notifications/status.json`](../packages/mantine-notifications/status.json).
+
+Complete @mantine/notifications 9.5.0 runtime surface: Notifications, stores, show, hide, update, clean, queueing, auto-close, hover pause, and drag or wheel dismissal.
+
+Known divergences:
+
+- Enter and exit state styles are rendered directly by Octane instead of react-transition-group.
+- Pointer, drag, wheel, and close callbacks receive native browser events.
+
+SSR / hydration: Notification containers render deterministic store state; timers and dismissal listeners activate on the client.
+
+Scope/evidence last checked: 2026-07-29.
+
+## @octanejs/mantine-store
+
+[`packages/mantine-store`](../packages/mantine-store) `0.1.0` — ports `@mantine/store@9.5.0`. Status data: [`packages/mantine-store/status.json`](../packages/mantine-store/status.json).
+
+Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates.
+
+Known divergences:
+
+- useStore subscribes through Octane's useSyncExternalStore implementation.
+
+SSR / hydration: Store snapshots are deterministic during server rendering.
+
+Scope/evidence last checked: 2026-07-29.
 
 ## @octanejs/mdx
 

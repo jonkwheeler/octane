@@ -9,7 +9,8 @@
       "@octanejs/jotai",
       "@octanejs/redux",
       "@octanejs/redux-toolkit",
-      "@octanejs/tanstack-store"
+      "@octanejs/tanstack-store",
+      "@octanejs/mantine-store"
     ]
   },
   {
@@ -35,6 +36,7 @@
       "@octanejs/aria",
       "@octanejs/mantine-core",
       "@octanejs/mantine-charts",
+      "@octanejs/mantine-notifications",
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",

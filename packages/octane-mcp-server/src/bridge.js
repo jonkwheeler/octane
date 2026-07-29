@@ -13,6 +13,8 @@ export const KNOWN_BINDINGS = {
 	'@mantine/charts': '@octanejs/mantine-charts',
 	'@mantine/form': '@octanejs/mantine-form',
 	'@mantine/hooks': '@octanejs/mantine-hooks',
+	'@mantine/notifications': '@octanejs/mantine-notifications',
+	'@mantine/store': '@octanejs/mantine-store',
 	'react-number-format': '@octanejs/number-format',
 	jotai: '@octanejs/jotai',
 	'@apollo/client': '@octanejs/apollo-client',

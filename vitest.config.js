@@ -575,6 +575,60 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'mantine-store',
+					include: ['packages/mantine-store/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mantine-store$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-store/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'mantine-notifications',
+					include: ['packages/mantine-notifications/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mantine-notifications$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-notifications/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-store$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-store/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-core$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-core/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-hooks/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/number-format$/,
+							replacement: resolve(import.meta.dirname, 'packages/number-format/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-charts',
 					include: ['packages/mantine-charts/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
