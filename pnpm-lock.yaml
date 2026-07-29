@@ -4337,9 +4337,6 @@ importers:
       clsx:
         specifier: catalog:default
         version: 2.1.1
-      react-remove-scroll:
-        specifier: ^2.7.2
-        version: 2.7.2(@types/react@19.2.17)(react@19.2.7)
       type-fest:
         specifier: catalog:default
         version: 5.8.0

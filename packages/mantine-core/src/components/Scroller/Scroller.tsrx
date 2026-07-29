@@ -24,51 +24,42 @@ export type ScrollerCssVariables = {
   root: '--scroller-control-size' | '--scroller-background-color';
 };
 
-export interface ScrollerProps
-  extends BoxProps, StylesApiProps<ScrollerFactory>, ElementProps<'div'> {
+export interface ScrollerProps extends BoxProps, StylesApiProps<ScrollerFactory>, ElementProps<
+  'div'
+> {
   /** Content to display */
   children: OctaneNode;
-
   /** Amount of pixels to scroll when clicking the control buttons, `200` by default */
   scrollAmount?: number;
-
   /** Size of the control buttons, @default 60px */
   controlSize?: string | number;
-
   /** Background color for the gradient fade on controls, `'var(--mantine-color-body)'` by default */
   edgeGradientColor?: string;
-
   /** Props passed to the start control button */
   startControlProps?: MantineIntrinsicProps<'button'>;
-
   /** Props passed to the end control button */
   endControlProps?: MantineIntrinsicProps<'button'>;
-
   /** Icon component for the start control, AccordionChevron by default */
   startControlIcon?: OctaneNode;
-
   /** Icon component for the end control, AccordionChevron by default */
   endControlIcon?: OctaneNode;
-
   /** Determines whether start control should always be visible regardless of scroll position, `false` by default */
   showStartControl?: boolean;
-
   /** Determines whether end control should always be visible regardless of scroll position, `false` by default */
   showEndControl?: boolean;
-
   /** Determines whether content can be scrolled by dragging with mouse, `true` by default */
   draggable?: boolean;
-
   /** Ref for the scroll container element */
   ref?: Ref<HTMLDivElement>;
 }
 
-export type ScrollerFactory = Factory<{
-  props: ScrollerProps;
-  ref: HTMLDivElement;
-  stylesNames: ScrollerStylesNames;
-  vars: ScrollerCssVariables;
-}>;
+export type ScrollerFactory =
+  Factory<{
+    props: ScrollerProps;
+    ref: HTMLDivElement;
+    stylesNames: ScrollerStylesNames;
+    vars: ScrollerCssVariables;
+  }>;
 
 const defaultProps: Partial<ScrollerProps> = {
   scrollAmount: 200,
@@ -83,7 +74,7 @@ const varsResolver = createVarsResolver<ScrollerFactory>(
         ? getThemeColor(edgeGradientColor, theme)
         : undefined,
     },
-  })
+  }),
 );
 
 export const Scroller = factory<ScrollerFactory>((_props) => {
@@ -133,44 +124,42 @@ export const Scroller = factory<ScrollerFactory>((_props) => {
 
   const showStart = showStartControl || scroller.canScrollStart;
   const showEnd = showEndControl || scroller.canScrollEnd;
+  const rootProps = Object.assign({}, getStyles('root'), others);
+  const startProps = Object.assign({}, getStyles('control'), startControlProps);
+  const endProps = Object.assign({}, getStyles('control'), endControlProps);
+  const containerProps = Object.assign({}, getStyles('container'), scroller.dragHandlers);
+  const contentStyles = getStyles('content');
+  const startIcon = startControlIcon || <AccordionChevron {...getStyles('chevron')} />;
+  const endIcon = endControlIcon || <AccordionChevron {...getStyles('chevron')} />;
+  const startButtonProps = Object.assign({}, startProps, {
+    onClick: scroller.scrollStart,
+    'data-position': 'start',
+    'data-hidden': !showStart || undefined,
+    'aria-label': 'Scroll left',
+    tabIndex: showStart ? 0 : -1,
+  });
+  const endButtonProps = Object.assign({}, endProps, {
+    onClick: scroller.scrollEnd,
+    'data-position': 'end',
+    'data-hidden': !showEnd || undefined,
+    'aria-label': 'Scroll right',
+    tabIndex: showEnd ? 0 : -1,
+  });
+  const scrollContainerProps: any = Object.assign({}, containerProps, {
+    ref: scroller.ref,
+    role: 'presentation',
+    'data-draggable': draggable || undefined,
+  });
 
-  return (
-    <Box {...getStyles('root')} ref={ref} mod={mod} {...others}>
-      <UnstyledButton
-        {...getStyles('control')}
-        onClick={scroller.scrollStart}
-        data-position="start"
-        data-hidden={!showStart || undefined}
-        aria-label="Scroll left"
-        tabIndex={showStart ? 0 : -1}
-        {...startControlProps}
-      >
-        {startControlIcon || <AccordionChevron {...getStyles('chevron')} />}
-      </UnstyledButton>
+  return <Box {...rootProps} ref={ref} mod={mod}>
+    <UnstyledButton {...startButtonProps}>{startIcon}</UnstyledButton>
 
-      <div
-        {...getStyles('container')}
-        ref={scroller.ref}
-        role="presentation"
-        data-draggable={draggable || undefined}
-        {...scroller.dragHandlers}
-      >
-        <div {...getStyles('content')}>{children}</div>
-      </div>
+    <div {...scrollContainerProps}>
+      <div {...contentStyles}>{children}</div>
+    </div>
 
-      <UnstyledButton
-        {...getStyles('control')}
-        onClick={scroller.scrollEnd}
-        data-position="end"
-        data-hidden={!showEnd || undefined}
-        aria-label="Scroll right"
-        tabIndex={showEnd ? 0 : -1}
-        {...endControlProps}
-      >
-        {endControlIcon || <AccordionChevron {...getStyles('chevron')} />}
-      </UnstyledButton>
-    </Box>
-  );
+    <UnstyledButton {...endButtonProps}>{endIcon}</UnstyledButton>
+  </Box>;
 });
 
 Scroller.classes = classes;

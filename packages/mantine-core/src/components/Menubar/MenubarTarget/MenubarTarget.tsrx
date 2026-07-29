@@ -12,13 +12,11 @@ import { useMenubarContext, useMenubarMenuContext } from '../Menubar.context';
 
 export interface MenubarTargetProps extends ElementProps<'button'> {
   'data-disabled'?: boolean;
-
+  className?: string;
   /** Target label */
   children: OctaneNode;
-
   /** Inline styles applied to the target button */
   style?: MantineStyleProp;
-
   /** Key of the prop used to get element ref, useful for forwarding refs to custom components @default 'ref' */
   refProp?: string;
 }
@@ -28,9 +26,8 @@ const defaultProps = {
 } satisfies Partial<MenubarTargetProps>;
 
 function isPrintableKey(event: OctaneKeyboardEvent) {
-  return (
-    event.key.length === 1 && event.key !== ' ' && !event.ctrlKey && !event.metaKey && !event.altKey
-  );
+  return event.key.length === 1 && event.key !== ' ' && !event.ctrlKey && !event.metaKey &&
+    !event.altKey;
 }
 
 function getTargetLabel(node: HTMLElement) {
@@ -91,10 +88,8 @@ export function MenubarTarget(props: MenubarTargetProps) {
       const index = (menuCtx.index + offset) % targets.length;
       const node = targets[index];
       if (
-        node &&
-        !node.disabled &&
-        !node.hasAttribute('data-disabled') &&
-        getTargetLabel(node).startsWith(char)
+        node && !node.disabled && !node.hasAttribute('data-disabled') &&
+          getTargetLabel(node).startsWith(char)
       ) {
         event.preventDefault();
         ctx.setActiveIndex(index);
@@ -148,8 +143,10 @@ export function MenubarTarget(props: MenubarTargetProps) {
     if (isDisabled) {
       return;
     }
-    const forwardKey = dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
-    const backKey = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+    const forwardKey =
+      dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
+    const backKey =
+      dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
 
     if (event.key === forwardKey) {
       event.preventDefault();
@@ -191,30 +188,26 @@ export function MenubarTarget(props: MenubarTargetProps) {
     }
   });
 
-  return (
-    <Popover.Target refProp={refProp} popupType="menu">
-      <UnstyledButton
-        {...others}
-        unstyled={ctx.unstyled}
-        role="menuitem"
-        tabIndex={isActive || isUnresolvedTabStop ? 0 : -1}
-        disabled={disabled}
-        data-menubar-target
-        data-menubar-id={menuCtx.id}
-        data-disabled={dataDisabled || undefined}
-        data-expanded={menuCtx.opened || undefined}
-        data-mantine-stop-propagation={menuCtx.opened || undefined}
-        {...ctx.getStyles('target', { className, style })}
-        onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onFocus={handleFocus}
-        onKeyDown={handleKeyDown}
-      >
-        {children}
-      </UnstyledButton>
-    </Popover.Target>
-  );
+  return <Popover.Target refProp={refProp} popupType="menu">
+    <UnstyledButton
+      {...others}
+      unstyled={ctx.unstyled}
+      role="menuitem"
+      tabIndex={isActive || isUnresolvedTabStop ? 0 : -1}
+      disabled={disabled}
+      data-menubar-target
+      data-menubar-id={menuCtx.id}
+      data-disabled={dataDisabled || undefined}
+      data-expanded={menuCtx.opened || undefined}
+      data-mantine-stop-propagation={menuCtx.opened || undefined}
+      {...ctx.getStyles('target', { className, style })}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleFocus}
+      onKeyDown={handleKeyDown}
+    >{children}</UnstyledButton>
+  </Popover.Target>;
 }
 
 MenubarTarget.displayName = '@mantine/core/MenubarTarget';

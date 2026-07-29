@@ -58,7 +58,7 @@ function getPopoverMiddlewares(
   options: UsePopoverOptions,
   getFloating: () => UseFloatingReturn<Element>,
   disableFlip: boolean,
-  lockEnabled: boolean
+  lockEnabled: boolean,
 ) {
   const middlewaresOptions = getDefaultMiddlewares(options.middlewares);
   const middlewares: Middleware[] = [offset(options.offset), hide()];
@@ -84,13 +84,13 @@ function getPopoverMiddlewares(
           ...(options.width === 'target' && isVerticalPlacement ? { mainAxis: false } : null),
           ...shiftOptions,
         };
-      })
+      }),
     );
   }
 
   if (middlewaresOptions.inline) {
     middlewares.push(
-      typeof middlewaresOptions.inline === 'boolean' ? inline() : inline(middlewaresOptions.inline)
+      typeof middlewaresOptions.inline === 'boolean' ? inline() : inline(middlewaresOptions.inline),
     );
   }
 
@@ -122,7 +122,7 @@ function getPopoverMiddlewares(
             });
           }
         },
-      })
+      }),
     );
   }
 
@@ -164,7 +164,7 @@ export function usePopover(options: UsePopoverOptions) {
     }
   };
 
-  const floating: UseFloatingReturn<Element> = useMantineFloating({
+  const floating = useMantineFloating({
     open: _opened,
     strategy: options.strategy,
     placement: lockEnabled ? (lockedPlacement ?? options.position) : options.position,
@@ -172,10 +172,10 @@ export function usePopover(options: UsePopoverOptions) {
       options,
       () => floating,
       lockEnabled && lockedPlacement !== null,
-      lockEnabled
+      lockEnabled,
     ),
     whileElementsMounted: !options.keepMounted ? autoUpdate : undefined,
-  });
+  }) as UseFloatingReturn<Element>;
 
   useEffect(() => {
     if (!options.keepMounted) {

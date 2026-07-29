@@ -23,7 +23,7 @@ export interface TreeDragHandleProps {
 function isDescendantOf(
   data: TreeNodeData[],
   ancestorValue: string,
-  descendantValue: string
+  descendantValue: string,
 ): boolean {
   const ancestor = findTreeNode(ancestorValue, data);
   if (!ancestor || !ancestor.children) {
@@ -51,7 +51,7 @@ function getDragDropPosition(
   event: OctaneDragEvent,
   element: HTMLElement,
   hasChildren: boolean,
-  isExpanded: boolean
+  isExpanded: boolean,
 ): TreeDragDropPosition {
   const rect = element.getBoundingClientRect();
   const y = event.clientY - rect.top;
@@ -123,8 +123,12 @@ export function useTreeNodeDragDrop({
     }
 
     event.stopPropagation();
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', nodeValue);
+    const dataTransfer = event.dataTransfer;
+    if (!dataTransfer) {
+      return;
+    }
+    dataTransfer.effectAllowed = 'move';
+    dataTransfer.setData('text/plain', nodeValue);
     dragStateRef.current.draggedValue = nodeValue;
 
     const target = event.currentTarget as HTMLElement;
@@ -163,7 +167,9 @@ export function useTreeNodeDragDrop({
 
     event.preventDefault();
     event.stopPropagation();
-    event.dataTransfer.dropEffect = 'move';
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
 
     const prevTarget = dragStateRef.current.currentDropTarget;
     if (prevTarget && prevTarget !== target) {

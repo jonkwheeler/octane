@@ -137,8 +137,12 @@ export function usePillsReorder<T>({ value, onChange, enabled }: UsePillsReorder
       },
       onDragStart: (event) => {
         event.stopPropagation();
-        event.dataTransfer.effectAllowed = 'move';
-        event.dataTransfer.setData('text/plain', String(index));
+        const dataTransfer = event.dataTransfer;
+        if (!dataTransfer) {
+          return;
+        }
+        dataTransfer.effectAllowed = 'move';
+        dataTransfer.setData('text/plain', String(index));
         dragStateRef.current.draggedIndex = index;
 
         const target = event.currentTarget;
@@ -153,7 +157,7 @@ export function usePillsReorder<T>({ value, onChange, enabled }: UsePillsReorder
         ghost.style.height = `${rect.height}px`;
         ghost.style.pointerEvents = 'none';
         document.body.appendChild(ghost);
-        event.dataTransfer.setDragImage(ghost, event.clientX - rect.left, event.clientY - rect.top);
+        dataTransfer.setDragImage(ghost, event.clientX - rect.left, event.clientY - rect.top);
 
         setTimeout(() => ghost.parentNode?.removeChild(ghost), 0);
 
@@ -176,7 +180,9 @@ export function usePillsReorder<T>({ value, onChange, enabled }: UsePillsReorder
 
         event.preventDefault();
         event.stopPropagation();
-        event.dataTransfer.dropEffect = 'move';
+        if (event.dataTransfer) {
+          event.dataTransfer.dropEffect = 'move';
+        }
 
         const prevTarget = dragStateRef.current.currentDropTarget;
         if (prevTarget && prevTarget !== target) {

@@ -15,14 +15,15 @@ export function returnTrue() {
 
 export function memoizeOnce<T extends unknown[], R extends unknown>(cb: (...args: T) => R) {
   let lastArgs: T | undefined;
-  let lastValue: R = undefined;
+  let lastValue: R | undefined;
   return (...args: T) => {
+    const previousArgs = lastArgs;
     if (
-      lastArgs &&
-      args.length === lastArgs.length &&
-      args.every((value, index) => value === lastArgs[index])
+      previousArgs &&
+      args.length === previousArgs.length &&
+      args.every((value, index) => value === previousArgs[index])
     ) {
-      return lastValue;
+      return lastValue as R;
     }
     lastArgs = args;
     lastValue = cb(...args);
@@ -470,18 +471,19 @@ export function useInternalValues(
   const getValues = (
     value: string | number | null | undefined,
     valueIsNumericString: boolean,
-  ) => {
-      let formattedValue, numAsString;
-      if (isNotValidValue(value)) {
-        numAsString = '';
-        formattedValue = '';
-      } else if (typeof value === 'number' || valueIsNumericString) {
-        numAsString = typeof value === 'number' ? toNumericString(value) : value;
-        formattedValue = format(numAsString);
-      } else {
-        numAsString = removeFormatting(value, undefined);
-        formattedValue = format(numAsString);
-      }
+  ): Values => {
+    let formattedValue: string;
+    let numAsString: string;
+    if (value == null || isNotValidValue(value)) {
+      numAsString = '';
+      formattedValue = '';
+    } else if (typeof value === 'number' || valueIsNumericString) {
+      numAsString = typeof value === 'number' ? toNumericString(value) : value;
+      formattedValue = format(numAsString);
+    } else {
+      numAsString = removeFormatting?.(value, undefined) ?? value;
+      formattedValue = format(numAsString);
+    }
 
     return { formattedValue, numAsString };
   };

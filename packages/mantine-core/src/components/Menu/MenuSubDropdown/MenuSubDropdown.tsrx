@@ -17,15 +17,17 @@ import classes from '../Menu.module.css';
 
 export type MenuSubDropdownStylesNames = 'dropdown';
 
-export interface MenuSubDropdownProps
-  extends BoxProps, CompoundStylesApiProps<MenuSubDropdownFactory>, ElementProps<'div'> {}
+export interface MenuSubDropdownProps extends BoxProps, CompoundStylesApiProps<
+  MenuSubDropdownFactory
+>, ElementProps<'div'> {}
 
-export type MenuSubDropdownFactory = Factory<{
-  props: MenuSubDropdownProps;
-  ref: HTMLDivElement;
-  stylesNames: MenuSubDropdownStylesNames;
-  compound: true;
-}>;
+export type MenuSubDropdownFactory =
+  Factory<{
+    props: MenuSubDropdownProps;
+    ref: HTMLDivElement;
+    stylesNames: MenuSubDropdownStylesNames;
+    compound: true;
+  }>;
 
 export const MenuSubDropdown = factory<MenuSubDropdownFactory>((props) => {
   const {
@@ -57,44 +59,39 @@ export const MenuSubDropdown = factory<MenuSubDropdownFactory>((props) => {
   const handleKeyDown = createEventHandler<any>(onKeyDown, (event) => {
     typeAhead(event);
     if (
-      !event.ctrlKey &&
-      !event.metaKey &&
-      !event.altKey &&
-      event.key.length === 1 &&
-      event.key !== ' '
+      !event.ctrlKey && !event.metaKey && !event.altKey && event.key.length === 1 &&
+        event.key !== ' '
     ) {
       event.stopPropagation();
     }
   });
 
-  const floatingProps = subCtx?.getFloatingProps({
-    onMouseEnter,
-    onMouseLeave,
-    onPointerEnter,
-    onPointerLeave,
-  });
-
-  return (
-    <Popover.Dropdown
-      {...others}
-      {...floatingProps}
-      role="menu"
-      aria-orientation="vertical"
-      ref={useMergedRef(ref, wrapperRef, subCtx?.setFloating)}
-      {...ctx.getStyles('dropdown', {
-        className,
-        style,
-        styles,
-        classNames,
-        withStaticClass: false,
-      })}
-      tabIndex={-1}
-      data-menu-dropdown
-      onKeyDown={handleKeyDown}
-    >
-      {children}
-    </Popover.Dropdown>
+  const floatingProps = subCtx?.getFloatingProps(
+    {
+      onMouseEnter,
+      onMouseLeave,
+      onPointerEnter,
+      onPointerLeave,
+    } as any,
   );
+
+  return <Popover.Dropdown
+    {...others}
+    {...floatingProps}
+    role="menu"
+    aria-orientation="vertical"
+    ref={useMergedRef(ref, wrapperRef, subCtx?.setFloating)}
+    {...ctx.getStyles('dropdown', {
+      className,
+      style,
+      styles,
+      classNames,
+      withStaticClass: false,
+    })}
+    tabIndex={-1}
+    data-menu-dropdown
+    onKeyDown={handleKeyDown}
+  >{children}</Popover.Dropdown>;
 });
 
 MenuSubDropdown.classes = classes;

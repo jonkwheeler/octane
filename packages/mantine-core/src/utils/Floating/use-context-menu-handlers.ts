@@ -65,7 +65,7 @@ export function useContextMenuHandlers({
       if (event.button === 2) {
         event.stopPropagation();
       }
-    }
+    },
   );
 
   const onContextMenu = createEventHandler<any>(
@@ -86,7 +86,7 @@ export function useContextMenuHandlers({
       if (touchActiveRef.current) {
         gestureHandledRef.current = true;
       }
-    }
+    },
   );
 
   const longPressHandlers = useLongPress(
@@ -95,7 +95,7 @@ export function useContextMenuHandlers({
         return;
       }
 
-      const touchEvent = event as OctaneTouchEvent<HTMLElement>;
+      const touchEvent = event as unknown as OctaneTouchEvent<HTMLElement>;
       const touch = touchEvent.touches[0] ?? touchEvent.changedTouches[0];
       if (!touch) {
         return;
@@ -124,21 +124,21 @@ export function useContextMenuHandlers({
         touchActiveRef.current = false;
         gestureHandledRef.current = false;
       },
-    }
+    },
   );
 
   const onTouchStart = createEventHandler<any>(
     childProps.onTouchStart,
-    longPressHandlers.onTouchStart
+    longPressHandlers.onTouchStart,
   );
   const onTouchEnd = createEventHandler<any>(childProps.onTouchEnd, longPressHandlers.onTouchEnd);
   const onTouchCancel = createEventHandler<any>(
     childProps.onTouchCancel,
-    longPressHandlers.onTouchCancel
+    longPressHandlers.onTouchCancel,
   );
   const onTouchMove = createEventHandler<any>(
     childProps.onTouchMove,
-    longPressHandlers.onTouchMove
+    longPressHandlers.onTouchMove,
   );
 
   return {

@@ -67,12 +67,12 @@ export function removeFormatting<BaseType = InputAttributes>(
   }
 
   /**
-   * if user paste the whole formatted text in an empty input or doing select all and paste, check if matches to the pattern
-   * and remove the format characters, if there is a mismatch on the pattern, do plane number extract
-   */
+ * if user paste the whole formatted text in an empty input or doing select all and paste, check if matches to the pattern
+ * and remove the format characters, if there is a mismatch on the pattern, do plane number extract
+ */
   if (
     (lastValue === '' || from.end - from.start === lastValue.length) &&
-    value.length === format.length
+      value.length === format.length
   ) {
     let str = '';
     for (let i = 0; i < value.length; i++) {
@@ -90,19 +90,19 @@ export function removeFormatting<BaseType = InputAttributes>(
   }
 
   /**
-   * For partial change,
-   * where ever there is a change on the input, we can break the number in three parts
-   * 1st: left part which is unchanged
-   * 2nd: middle part which is changed
-   * 3rd: right part which is unchanged
-   *
-   * The first and third section will be same as last value, only the middle part will change
-   * We can consider on the change part all the new characters are non format characters.
-   * And on the first and last section it can have partial format characters.
-   *
-   * We pick first and last section from the lastValue (as that has 1-1 mapping with format)
-   * and middle one from the update value.
-   */
+ * For partial change,
+ * where ever there is a change on the input, we can break the number in three parts
+ * 1st: left part which is unchanged
+ * 2nd: middle part which is changed
+ * 3rd: right part which is unchanged
+ *
+ * The first and third section will be same as last value, only the middle part will change
+ * We can consider on the change part all the new characters are non format characters.
+ * And on the first and last section it can have partial format characters.
+ *
+ * We pick first and last section from the lastValue (as that has 1-1 mapping with format)
+ * and middle one from the update value.
+ */
 
   const firstSection = lastValue.substring(0, from.start);
   const middleSection = value.substring(to.start, to.end);
@@ -161,7 +161,8 @@ function validateProps<BaseType = InputAttributes>(props: PatternFormatProps<Bas
   const { mask } = props;
 
   if (mask) {
-    const maskAsStr = mask === 'string' ? mask : mask.toString();
+    const maskAsStr =
+      mask === 'string' ? mask : mask.toString();
     if (maskAsStr.match(/\d/g)) {
       throw new Error(`Mask ${mask} should not contain numeric character;`);
     }
@@ -203,7 +204,9 @@ export function usePatternFormat<BaseType = InputAttributes>(
   const _onKeyDown = (e: NumberFormatKeyboardEvent<HTMLInputElement>) => {
     const { key } = e;
     const el = e.target as HTMLInputElement;
-    const { selectionStart, selectionEnd, value } = el;
+    const selectionStart = el.selectionStart ?? 0;
+    const selectionEnd = el.selectionEnd ?? selectionStart;
+    const value = el.value;
 
     // if multiple characters are selected and user hits backspace, no need to handle anything manually
     if (selectionStart !== selectionEnd) {
@@ -233,9 +236,7 @@ export function usePatternFormat<BaseType = InputAttributes>(
 
       caretPos = getCaretPosInBoundary(value, caretPos, _getCaretBoundary(value), direction);
     } else if (
-      formatProp[caretPos] !== patternChar &&
-      key !== 'ArrowLeft' &&
-      key !== 'ArrowRight'
+      formatProp[caretPos] !== patternChar && key !== 'ArrowLeft' && key !== 'ArrowRight'
     ) {
       // if user is typing on format character position, bring user to next allowed caret position
       caretPos = getCaretPosInBoundary(value, caretPos + 1, _getCaretBoundary(value), 'right');
@@ -256,14 +257,17 @@ export function usePatternFormat<BaseType = InputAttributes>(
   const _props = { ...props, valueIsNumericString: isValueNumericString };
 
   return {
-    ...(restProps as NumberFormatBaseProps<BaseType>),
+    ...restProps as NumberFormatBaseProps<BaseType>,
     value,
     defaultValue,
     valueIsNumericString: isValueNumericString,
     inputMode,
     format: (numStr: string) => format(numStr, _props),
-    removeFormatting: (inputValue: string, changeMeta: ChangeMeta) =>
-      removeFormatting(inputValue, changeMeta, _props),
+    removeFormatting: (inputValue: string, changeMeta: ChangeMeta) => removeFormatting(
+      inputValue,
+      changeMeta,
+      _props,
+    ),
     getCaretBoundary: _getCaretBoundary,
     onKeyDown: _onKeyDown,
   };

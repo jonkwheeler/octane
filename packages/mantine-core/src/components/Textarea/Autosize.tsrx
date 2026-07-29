@@ -1,8 +1,7 @@
-import type React from 'react';
 import { useEffect, useLayoutEffect, useRef } from 'octane';
 import { useMergedRef } from '@octanejs/mantine-hooks';
 
-type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+type TextareaProps = MantineIntrinsicProps<'textarea'>;
 
 export interface TextareaAutosizeProps extends Omit<TextareaProps, 'style'> {
   ref?: OctaneRef<HTMLTextAreaElement>;
@@ -96,7 +95,7 @@ function calculateNodeHeight(
   sizingData: SizingData,
   value: string,
   minRows = 1,
-  maxRows = Infinity
+  maxRows = Infinity,
 ): [number, number] {
   if (!hiddenTextarea) {
     hiddenTextarea = document.createElement('textarea');
@@ -127,10 +126,9 @@ function calculateNodeHeight(
 
   // Double set and calc due to Firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1795904
   hiddenTextarea.value = value;
-  height =
-    boxSizing === 'border-box'
-      ? hiddenTextarea.scrollHeight + borderSize
-      : hiddenTextarea.scrollHeight - paddingSize;
+  height = boxSizing === 'border-box'
+    ? hiddenTextarea.scrollHeight + borderSize
+    : hiddenTextarea.scrollHeight - paddingSize;
 
   hiddenTextarea.value = 'x';
   const rowHeight = hiddenTextarea.scrollHeight - paddingSize;
@@ -180,7 +178,7 @@ export function TextareaAutosize({
       nodeSizingData,
       node.value || node.placeholder || 'x',
       minRows,
-      maxRows
+      maxRows,
     );
 
     if (heightRef.current !== height) {

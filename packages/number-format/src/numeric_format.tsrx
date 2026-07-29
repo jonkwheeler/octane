@@ -49,12 +49,12 @@ export function format<BaseType = InputAttributes>(
   const { thousandSeparator, decimalSeparator } = getSeparators(props);
 
   /**
-   * Keep the decimal separator
-   * when decimalScale is not defined or non zero and the numStr has decimal in it
-   * Or if decimalScale is > 0 and fixeDecimalScale is true (even if numStr has no decimal)
-   */
+ * Keep the decimal separator
+ * when decimalScale is not defined or non zero and the numStr has decimal in it
+ * Or if decimalScale is > 0 and fixeDecimalScale is true (even if numStr has no decimal)
+ */
   const hasDecimalSeparator =
-    (decimalScale !== 0 && numStr.indexOf('.') !== -1) || (decimalScale && fixedDecimalScale);
+    decimalScale !== 0 && numStr.indexOf('.') !== -1 || decimalScale && fixedDecimalScale;
 
   let { beforeDecimal, afterDecimal, addNegation } = splitDecimal(numStr, allowNegative); // eslint-disable-line prefer-const
 
@@ -74,7 +74,7 @@ export function format<BaseType = InputAttributes>(
   //restore negation sign
   if (addNegation) beforeDecimal = '-' + beforeDecimal;
 
-  numStr = beforeDecimal + ((hasDecimalSeparator && decimalSeparator) || '') + afterDecimal;
+  numStr = beforeDecimal + (hasDecimalSeparator && decimalSeparator || '') + afterDecimal;
 
   return numStr;
 }
@@ -128,9 +128,8 @@ function isNumericString(
   // for empty value we can always treat it as numeric string
   if (val === '') return true;
 
-  return (
-    !prefix?.match(/\d/) && !suffix?.match(/\d/) && typeof val === 'string' && !isNaN(Number(val))
-  );
+  return !prefix?.match(/\d/) && !suffix?.match(/\d/) && typeof val === 'string' &&
+    !isNaN(Number(val));
 }
 
 export function removeFormatting<BaseType = InputAttributes>(
@@ -146,29 +145,28 @@ export function removeFormatting<BaseType = InputAttributes>(
   const isBeforeDecimalSeparator = value[end] === decimalSeparator;
 
   /**
-   * If only a number is added on empty input which matches with the prefix or suffix,
-   * then don't remove it, just return the same
-   */
+ * If only a number is added on empty input which matches with the prefix or suffix,
+ * then don't remove it, just return the same
+ */
   if (
-    charIsNumber(value) &&
-    (value === prefix || value === suffix) &&
-    changeMeta.lastValue === ''
+    charIsNumber(value) && (value === prefix || value === suffix) && changeMeta.lastValue === ''
   ) {
     return value;
   }
 
   /** Check for any allowed decimal separator is added in the numeric format and replace it with decimal separator */
   if (end - start === 1 && allowedDecimalSeparators.indexOf(value[start]) !== -1) {
-    const separator = decimalScale === 0 ? '' : decimalSeparator;
+    const separator =
+      decimalScale === 0 ? '' : decimalSeparator;
     value = value.substring(0, start) + separator + value.substring(start + 1, value.length);
   }
 
   const stripNegation = (value: string, start: number, end: number) => {
     /**
-     * if prefix starts with - we don't allow negative number to avoid confusion
-     * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
-     * In other cases, if the value starts with - then it is a negation
-     */
+ * if prefix starts with - we don't allow negative number to avoid confusion
+ * if suffix starts with - and the value length is same as suffix length, then the - sign is from the suffix
+ * In other cases, if the value starts with - then it is a negation
+ */
     let hasNegation = false;
     let hasDoubleNegation = false;
 
@@ -202,30 +200,29 @@ export function removeFormatting<BaseType = InputAttributes>(
   const { hasNegation } = toMetadata;
   ({ value, start, end } = toMetadata);
 
-  const {
-    start: fromStart,
-    end: fromEnd,
-    value: lastValue,
-  } = stripNegation(changeMeta.lastValue, from.start, from.end);
+  const { start: fromStart, end: fromEnd, value: lastValue } = stripNegation(
+    changeMeta.lastValue,
+    from.start,
+    from.end,
+  );
 
   // if only prefix and suffix part is updated reset the value to last value
   // if the changed range is from suffix in the updated value, and the the suffix starts with the same characters, allow the change
   const updatedSuffixPart = value.substring(start, end);
   if (
-    value.length &&
-    lastValue.length &&
-    (fromStart > lastValue.length - suffix.length || fromEnd < prefix.length) &&
-    !(updatedSuffixPart && suffix.startsWith(updatedSuffixPart))
+    value.length && lastValue.length &&
+      (fromStart > lastValue.length - suffix.length || fromEnd < prefix.length) &&
+      !(updatedSuffixPart && suffix.startsWith(updatedSuffixPart))
   ) {
     value = lastValue;
   }
 
   /**
-   * remove prefix
-   * Remove whole prefix part if its present on the value
-   * If the prefix is partially deleted (in which case change start index will be less the prefix length)
-   * Remove only partial part of prefix.
-   */
+ * remove prefix
+ * Remove whole prefix part if its present on the value
+ * If the prefix is partially deleted (in which case change start index will be less the prefix length)
+ * Remove only partial part of prefix.
+ */
   let startIndex = 0;
   if (value.startsWith(prefix)) startIndex += prefix.length;
   else if (start < prefix.length) startIndex = start;
@@ -235,24 +232,24 @@ export function removeFormatting<BaseType = InputAttributes>(
   end -= startIndex;
 
   /**
-   * Remove suffix
-   * Remove whole suffix part if its present on the value
-   * If the suffix is partially deleted (in which case change end index will be greater than the suffixStartIndex)
-   * remove the partial part of suffix
-   */
+ * Remove suffix
+ * Remove whole suffix part if its present on the value
+ * If the suffix is partially deleted (in which case change end index will be greater than the suffixStartIndex)
+ * remove the partial part of suffix
+ */
   let endIndex = value.length;
   const suffixStartIndex = value.length - suffix.length;
 
   if (value.endsWith(suffix)) endIndex = suffixStartIndex;
-  // if the suffix is removed from the end
-  else if (end > suffixStartIndex) endIndex = end;
-  // if the suffix is removed from start
-  else if (end > value.length - suffix.length) endIndex = end;
+  else // if the suffix is removed from the end
+  if (end > suffixStartIndex) endIndex = end;
+  else // if the suffix is removed from start
+  if (end > value.length - suffix.length) endIndex = end;
 
   value = value.substring(0, endIndex);
 
   // add the negation back and handle for double negation
-  value = handleNegation(hasNegation ? `-${value}` : value, allowNegative);
+  value = handleNegation(hasNegation ? `-${value}` : value, Boolean(allowNegative));
 
   // remove non numeric characters
   value = (value.match(getNumberRegex(decimalSeparator, true)) || []).join('');
@@ -269,10 +266,8 @@ export function removeFormatting<BaseType = InputAttributes>(
 
   //clear only if something got deleted before decimal (cursor is before decimal)
   if (
-    to.end - to.start < from.end - from.start &&
-    beforeDecimal === '' &&
-    isBeforeDecimalSeparator &&
-    !parseFloat(afterDecimal)
+    to.end - to.start < from.end - from.start && beforeDecimal === '' && isBeforeDecimalSeparator &&
+      !parseFloat(afterDecimal)
   ) {
     value = addNegation ? '-' : '';
   }
@@ -320,11 +315,13 @@ function validateAndUpdateProps<BaseType = InputAttributes>(props: NumericFormat
 
   if (prefix.startsWith('-') && allowNegative) {
     // TODO: throw error in next major version
-    console.error(`
+    console.error(
+      `
       Prefix can't start with '-' when allowNegative is true.
       prefix: ${prefix}
       allowNegative: ${allowNegative}
-    `);
+    `,
+    );
 
     allowNegative = false;
   }
@@ -368,8 +365,11 @@ export function useNumericFormat<BaseType = InputAttributes>(
 
   const _format: FormatInputValueFunction = (numStr) => format(numStr, props);
 
-  const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) =>
-    removeFormatting(inputValue, changeMeta, props);
+  const _removeFormatting: RemoveFormattingFunction = (inputValue, changeMeta) => removeFormatting(
+    inputValue,
+    changeMeta,
+    props,
+  );
 
   const _value = isNil(value) ? defaultValue : value;
 
@@ -390,11 +390,11 @@ export function useNumericFormat<BaseType = InputAttributes>(
     }
 
     /**
-     * only round numeric or float string values coming through props,
-     * we don't need to do it for onChange events, as we want to prevent typing there
-     */
+ * only round numeric or float string values coming through props,
+ * we don't need to do it for onChange events, as we want to prevent typing there
+ */
     if (_valueIsNumericString && typeof decimalScale === 'number') {
-      return roundToPrecision(value, decimalScale, Boolean(fixedDecimalScale));
+      return roundToPrecision(value ?? '', decimalScale, Boolean(fixedDecimalScale));
     }
 
     return value;
@@ -412,16 +412,16 @@ export function useNumericFormat<BaseType = InputAttributes>(
   const _onKeyDown: InputAttributes['onKeyDown'] = (e) => {
     const el = e.target as HTMLInputElement;
     const { key } = e;
-    const { selectionStart, selectionEnd, value = '' } = el;
+    const selectionStart = el.selectionStart ?? 0;
+    const selectionEnd = el.selectionEnd ?? selectionStart;
+    const value = el.value ?? '';
 
     // if user tries to delete partial prefix then ignore it
     // Exception: when value is just '-' (negation-only, no prefix shown yet), the cursor
     // is at position 1 which is < prefix.length for multi-char prefixes — we must allow
     // backspace to delete the lone negation sign in this state
     if (
-      (key === 'Backspace' || key === 'Delete') &&
-      selectionEnd < prefix.length &&
-      value !== '-'
+      (key === 'Backspace' || key === 'Delete') && selectionEnd < prefix.length && value !== '-'
     ) {
       e.preventDefault();
       return;
@@ -435,10 +435,8 @@ export function useNumericFormat<BaseType = InputAttributes>(
 
     // if user hits backspace, while the cursor is before prefix, and the input has negation, remove the negation
     if (
-      key === 'Backspace' &&
-      value[0] === '-' &&
-      selectionStart === prefix.length + 1 &&
-      allowNegative
+      key === 'Backspace' && value[0] === '-' && selectionStart === prefix.length + 1 &&
+        allowNegative
     ) {
       // bring the cursor to after negation
       setCaretPosition(el, 1);
@@ -459,15 +457,16 @@ export function useNumericFormat<BaseType = InputAttributes>(
       setCaretPosition(el, selectionStart + 1);
     }
 
-    const _thousandSeparator = thousandSeparator === true ? ',' : thousandSeparator;
+    const _thousandSeparator =
+      thousandSeparator === true ? ',' : thousandSeparator;
 
     // move cursor when delete or backspace is pressed before/after thousand separator
-    if (key === 'Backspace' && value[(selectionStart as number) - 1] === _thousandSeparator) {
-      setCaretPosition(el, (selectionStart as number) - 1);
+    if (key === 'Backspace' && value[selectionStart - 1] === _thousandSeparator) {
+      setCaretPosition(el, selectionStart - 1);
     }
 
-    if (key === 'Delete' && value[selectionStart as number] === _thousandSeparator) {
-      setCaretPosition(el, (selectionStart as number) + 1);
+    if (key === 'Delete' && value[selectionStart] === _thousandSeparator) {
+      setCaretPosition(el, selectionStart + 1);
     }
 
     onKeyDown(e);
@@ -525,10 +524,10 @@ export function useNumericFormat<BaseType = InputAttributes>(
     const newChar = formattedValue[formattedValueIndex];
 
     /**
-     * NOTE: as thousand separator and allowedDecimalSeparators can be same, we need to check on
-     * typed range if we have typed any character from allowedDecimalSeparators, in that case we
-     * consider different characters like , and . same within the range of updated value.
-     */
+ * NOTE: as thousand separator and allowedDecimalSeparators can be same, we need to check on
+ * typed range if we have typed any character from allowedDecimalSeparators, in that case we
+ * consider different characters like , and . same within the range of updated value.
+ */
     const typedRange = findChangeRange(lastValue, currentValue);
     const { to } = typedRange;
 
@@ -539,22 +538,18 @@ export function useNumericFormat<BaseType = InputAttributes>(
     };
 
     if (
-      value === 0 &&
-      fixedDecimalScale &&
-      decimalScale &&
-      currentValue[to.start] === decimalSeparator &&
-      getDecimalSeparatorIndex(currentValue) < currentValueIndex &&
-      getDecimalSeparatorIndex(formattedValue) > formattedValueIndex
+      value === 0 && fixedDecimalScale && decimalScale &&
+        currentValue[to.start] === decimalSeparator &&
+        getDecimalSeparatorIndex(currentValue) < currentValueIndex &&
+        getDecimalSeparatorIndex(formattedValue) > formattedValueIndex
     ) {
       return false;
     }
 
     if (
-      currentValueIndex >= to.start &&
-      currentValueIndex < to.end &&
-      allowedDecimalSeparators &&
-      allowedDecimalSeparators.includes(curChar) &&
-      newChar === decimalSeparator
+      currentValueIndex >= to.start && currentValueIndex < to.end && allowedDecimalSeparators &&
+        allowedDecimalSeparators.includes(curChar) &&
+        newChar === decimalSeparator
     ) {
       return true;
     }
@@ -563,7 +558,7 @@ export function useNumericFormat<BaseType = InputAttributes>(
   };
 
   return {
-    ...(restProps as NumberFormatBaseProps<BaseType>),
+    ...restProps as NumberFormatBaseProps<BaseType>,
     value: formattedValue,
     valueIsNumericString: false,
     isValidInputCharacter,

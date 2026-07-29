@@ -34,107 +34,82 @@ export type PinInputCssVariables = {
   root: '--pin-input-size';
 };
 
-export interface PinInputProps
-  extends BoxProps, StylesApiProps<PinInputFactory>, ElementProps<'div', 'onChange' | 'ref'> {
+export interface PinInputProps extends BoxProps, StylesApiProps<PinInputFactory>, ElementProps<
+  'div',
+  'onChange' | 'ref'
+> {
   ref?: OctaneRef<HTMLInputElement>;
-
   /** Hidden input `name` attribute */
   name?: string;
-
   /** Hidden input `form` attribute */
   form?: string;
-
   /** Key of `theme.spacing` or any valid CSS value to set `gap` between inputs, numbers are converted to rem @default 'md' */
   gap?: MantineSpacing;
-
   /** Key of `theme.radius` or any valid CSS value to set `border-radius`, numbers are converted to rem @default theme.defaultRadius */
   radius?: MantineRadius;
-
   /** Controls inputs `width` and `height` @default 'sm' */
   size?: MantineSize;
-
   /** If set, the first input is focused when component is mounted @default false */
   autoFocus?: boolean;
-
   /** Controlled component value */
   value?: string;
-
   /** Uncontrolled component default value */
   defaultValue?: string;
-
   /** Called when value changes */
   onChange?: (value: string) => void;
-
   /** Called when all inputs have value */
   onComplete?: (value: string) => void;
-
   /** Inputs placeholder @default '○' */
   placeholder?: string;
-
   /** Determines whether focus should be moved automatically to the next input once filled @default true */
   manageFocus?: boolean;
-
   /** Determines whether `autocomplete="one-time-code"` attribute should be set on all inputs @default true */
   oneTimeCode?: boolean;
-
   /** Base id used to generate unique ids for inputs */
   id?: string;
-
   /** Adds disabled attribute to all inputs */
   disabled?: boolean;
-
   /** Sets `aria-invalid` attribute and applies error styles to all inputs */
   error?: boolean;
-
   /** Applies success styles to all inputs */
   success?: boolean;
-
   /** Determines which values can be entered @default 'alphanumeric' */
   type?: 'alphanumeric' | 'number' | RegExp;
-
   /** Changes input type to `"password"` @default false */
   mask?: boolean;
-
   /** Number of inputs @default 4 */
   length?: number;
-
   /** If set, the user cannot edit the value */
   readOnly?: boolean;
-
   /** Inputs `type` attribute, inferred from the `type` prop if not specified */
   inputType?: React.HTMLInputTypeAttribute;
-
   /** `inputmode` attribute, inferred from the `type` prop if not specified */
-  inputMode?:
-    | 'none'
-    | 'text'
-    | 'tel'
-    | 'url'
-    | 'email'
-    | 'numeric'
-    | 'decimal'
-    | 'search'
-    | undefined;
-
+  inputMode?: | 'none'
+  | 'text'
+  | 'tel'
+  | 'url'
+  | 'email'
+  | 'numeric'
+  | 'decimal'
+  | 'search'
+  | undefined;
   /** `aria-label` attribute */
   ariaLabel?: string;
-
   /** Props passed down to the hidden input */
   hiddenInputProps?: MantineIntrinsicProps<'input'>;
-
   /** Assigns ref of the root element */
   rootRef?: OctaneRef<HTMLDivElement>;
-
   /** Props added to the input element depending on its index */
   getInputProps?: (index: number) => InputProps & ElementProps<'input', 'size'> & DataAttributes;
 }
 
-export type PinInputFactory = Factory<{
-  props: PinInputProps;
-  ref: HTMLDivElement;
-  stylesNames: PinInputStylesNames;
-  vars: PinInputCssVariables;
-}>;
+export type PinInputFactory =
+  Factory<{
+    props: PinInputProps;
+    ref: HTMLDivElement;
+    stylesNames: PinInputStylesNames;
+    vars: PinInputCssVariables;
+  }>;
 
 const defaultProps = {
   gap: 'sm',
@@ -147,11 +122,13 @@ const defaultProps = {
   size: 'sm',
 } satisfies Partial<PinInputProps>;
 
-const varsResolver = createVarsResolver<PinInputFactory>((_, { size }) => ({
-  root: {
-    '--pin-input-size': getSize(size ?? 'sm', 'pin-input-size'),
-  },
-}));
+const varsResolver = createVarsResolver<PinInputFactory>(
+  (_, { size }) => ({
+    root: {
+      '--pin-input-size': getSize(size ?? 'sm', 'pin-input-size'),
+    },
+  }),
+);
 
 export const PinInput = factory<PinInputFactory>((props) => {
   const {
@@ -244,7 +221,12 @@ export const PinInput = factory<PinInputFactory>((props) => {
   const _valueToString = currentValue.join('').trim();
 
   const validate = (code: string) => {
-    const re = type instanceof RegExp ? type : type && type in regex ? regex[type] : null;
+    const re =
+      type instanceof RegExp
+        ? type
+        : type && type in regex
+          ? regex[type]
+          : null;
     return re?.test(code);
   };
 
@@ -388,7 +370,7 @@ export const PinInput = factory<PinInputFactory>((props) => {
 
   const handlePaste = (event: OctaneClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
-    const pasteData = event.clipboardData.getData('text/plain').replace(/[\n\r\s]+/g, '');
+    const pasteData = (event.clipboardData?.getData('text/plain') ?? '').replace(/[\n\r\s]+/g, '');
     const isValid = validate(pasteData.trim());
 
     if (isValid) {
@@ -403,69 +385,65 @@ export const PinInput = factory<PinInputFactory>((props) => {
     }
   };
 
-  return (
-    <>
-      <Group
-        {...others}
-        {...getStyles('root')}
-        ref={rootRef}
-        role="group"
-        id={uuid}
-        gap={gap}
-        unstyled={unstyled}
-        wrap="nowrap"
+  return <>
+    <Group
+      {...others}
+      {...getStyles('root')}
+      ref={rootRef}
+      role="group"
+      id={uuid}
+      gap={gap}
+      unstyled={unstyled}
+      wrap="nowrap"
+      variant={variant}
+      __size={size}
+      dir="ltr"
+    >{currentValue.map(
+      (char: string, index: number) => <Input
+        component="input"
+        {...getStyles('pinInput', {
+          style: {
+            '--input-padding': '0',
+            '--input-text-align': 'center',
+          } as React.CSSProperties,
+        })}
+        classNames={resolvedClassNames}
+        styles={resolvedStyles}
+        size={size}
+        __staticSelector="PinInput"
+        id={`${uuid}-${index + 1}`}
+        key={`${uuid}-${index}`}
+        inputMode={inputMode || (type === 'number' ? 'numeric' : 'text')}
+        onChange={(event) => handleChange(event, index)}
+        onKeyDown={(event) => handleKeyDown(event, index)}
+        onFocus={(event) => handleFocus(event, index)}
+        onBlur={handleBlur}
+        onPaste={handlePaste}
+        type={inputType || (mask ? 'password' : type === 'number' ? 'tel' : 'text')}
+        radius={radius}
+        error={error}
+        success={success}
         variant={variant}
-        __size={size}
-        dir="ltr"
-      >
-        {currentValue.map((char: string, index: number) => (
-          <Input
-            component="input"
-            {...getStyles('pinInput', {
-              style: {
-                '--input-padding': '0',
-                '--input-text-align': 'center',
-              } as React.CSSProperties,
-            })}
-            classNames={resolvedClassNames}
-            styles={resolvedStyles}
-            size={size}
-            __staticSelector="PinInput"
-            id={`${uuid}-${index + 1}`}
-            key={`${uuid}-${index}`}
-            inputMode={inputMode || (type === 'number' ? 'numeric' : 'text')}
-            onChange={(event) => handleChange(event, index)}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-            onFocus={(event) => handleFocus(event, index)}
-            onBlur={handleBlur}
-            onPaste={handlePaste}
-            type={inputType || (mask ? 'password' : type === 'number' ? 'tel' : 'text')}
-            radius={radius}
-            error={error}
-            success={success}
-            variant={variant}
-            disabled={disabled}
-            ref={(node) => {
-              if (node) {
-                index === 0 && assignRef(ref, node);
-                inputsRef.current[index] = node;
-              }
-            }}
-            autoComplete={oneTimeCode ? 'one-time-code' : 'off'}
-            placeholder={focusedIndex === index ? '' : placeholder}
-            value={char}
-            autoFocus={autoFocus && index === 0}
-            unstyled={unstyled}
-            aria-label={ariaLabel}
-            readOnly={readOnly}
-            {...getInputProps?.(index)}
-          />
-        ))}
-      </Group>
+        disabled={disabled}
+        ref={(node) => {
+          if (node) {
+            index === 0 && assignRef(ref, node);
+            inputsRef.current[index] = node;
+          }
+        }}
+        autoComplete={oneTimeCode ? 'one-time-code' : 'off'}
+        placeholder={focusedIndex === index ? '' : placeholder}
+        value={char}
+        autoFocus={autoFocus && index === 0}
+        unstyled={unstyled}
+        aria-label={ariaLabel}
+        readOnly={readOnly}
+        {...getInputProps?.(index)}
+      />,
+    )}</Group>
 
-      <input type="hidden" name={name} form={form} value={_valueToString} {...hiddenInputProps} />
-    </>
-  );
+    <input type="hidden" name={name} form={form} value={_valueToString} {...hiddenInputProps} />
+  </>;
 });
 
 PinInput.classes = { ...classes, ...InputBase.classes };

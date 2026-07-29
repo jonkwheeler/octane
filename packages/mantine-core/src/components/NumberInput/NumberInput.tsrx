@@ -60,7 +60,7 @@ function canStep(value: number | string) {
     return value < Number.MAX_SAFE_INTEGER;
   }
 
-  return value === '' || (isNumberString(value) && Number(value) < Number.MAX_SAFE_INTEGER);
+  return value === '' || isNumberString(value) && Number(value) < Number.MAX_SAFE_INTEGER;
 }
 
 function isValidBigIntString(value: string, allowNegative: boolean) {
@@ -130,14 +130,12 @@ function getTotalDigits(inputValue: string | number): number {
 }
 
 function isValidNumber(floatValue: number | undefined, value: string): floatValue is number {
-  return (
-    (typeof floatValue === 'number'
-      ? floatValue < Number.MAX_SAFE_INTEGER
-      : !Number.isNaN(Number(floatValue))) &&
+  return (typeof floatValue === 'number'
+    ? floatValue < Number.MAX_SAFE_INTEGER
+    : !Number.isNaN(Number(floatValue))) &&
     !Number.isNaN(floatValue) &&
     getTotalDigits(value) < 14 &&
-    value !== ''
-  );
+    value !== '';
 }
 
 function isInRange(value: number | undefined, min: number | undefined, max: number | undefined) {
@@ -156,112 +154,79 @@ export type NumberInputCssVariables = {
   controls: '--ni-chevron-size';
 };
 
-export interface NumberInputProps<T extends NumberInputNumericType = number>
-  extends
-    BoxProps,
-    Omit<__BaseInputProps, 'pointer'>,
-    StylesApiProps<NumberInputFactory>,
-    ElementProps<
-      'input',
-      'size' | 'type' | 'onChange' | 'value' | 'defaultValue' | 'min' | 'max' | 'step'
-    > {
+export interface NumberInputProps<T extends NumberInputNumericType = number> extends BoxProps, Omit<
+  __BaseInputProps,
+  'pointer'
+>, StylesApiProps<NumberInputFactory>, ElementProps<
+  'input',
+  'size' | 'type' | 'onChange' | 'value' | 'defaultValue' | 'min' | 'max' | 'step'
+> {
   /** Controlled component value */
   value?: NumberInputValue<T>;
-
   /** Uncontrolled component default value */
   defaultValue?: NumberInputValue<T>;
-
   /** Called when value changes */
   onChange?: (value: NumberInputValue<T>) => void;
-
   /** Called when value changes with `react-number-format` payload */
   onValueChange?: OnValueChange;
-
   /** Determines whether leading zeros are allowed during input. If `false`, leading zeros are removed as you type (e.g., typing `007` results in `7`). Works in conjunction with `trimLeadingZeroesOnBlur`. @default true */
   allowLeadingZeros?: boolean;
-
   /** Determines whether negative numbers are allowed. If `false`, the input will not accept negative values, and the decrement button will stop at `0` (when `min` is not set). @default true */
   allowNegative?: boolean;
-
   /** Characters which when pressed result in a decimal separator. These characters will be replaced by the `decimalSeparator` in the input value. @default ['.', ','] */
   allowedDecimalSeparators?: string[];
-
   /** Limits the number of digits that can be entered after the decimal point @default Infinity */
   decimalScale?: number;
-
   /** Character used as a decimal separator. Generally used with `allowedDecimalSeparators` prop. @default '.' */
   decimalSeparator?: string;
-
   /** If `true`, automatically pads the decimal part with zeros to match `decimalScale` (e.g., with `decimalScale={2}`, typing `5.1` displays as `5.10`). Requires `decimalScale` to be set. @default false */
   fixedDecimalScale?: boolean;
-
   /** Prefix added before the input value */
   prefix?: string;
-
   /** Suffix added after the input value */
   suffix?: string;
-
   /** Defines the thousand grouping style. 'thousand' (1,000), 'lakh' (1,00,000), 'wan' (1,0000), 'none'. */
   thousandsGroupStyle?: 'thousand' | 'lakh' | 'wan' | 'none';
-
   /** A function to validate the input value. If this function returns `false`, the `onChange` will not be called and the input value will not change. */
   isAllowed?: (values: NumberFormatValues) => boolean;
-
   /** Advanced: Set to `true` if you're passing numeric strings (e.g., `"12345"`) and using formatting props like `prefix` or `suffix`. In most cases, you don't need this prop. See [react-number-format docs](https://www.npmjs.com/package/react-number-format) for details. @default false */
   valueIsNumericString?: boolean;
-
   /** Controls input `type` attribute @default 'text' */
   type?: 'text' | 'tel' | 'password';
-
   /** A character used to separate thousands */
   thousandSeparator?: string | boolean;
-
   /** Minimum possible value */
   min?: NumberInputNumericValue<T>;
-
   /** Maximum possible value */
   max?: NumberInputNumericValue<T>;
-
   /** Number by which value will be incremented/decremented with up/down controls and keyboard arrows @default 1 */
   step?: NumberInputNumericValue<T>;
-
   /** If set, the up/down controls are hidden @default false */
   hideControls?: boolean;
-
   /** Controls how values are clamped to the `min`/`max` range:
-   * - `'blur'` (default): User can type any value, but it's clamped when the input loses focus
-   * - `'strict'`: User cannot type values outside the range
-   * - `'none'`: No clamping; `min`/`max` only apply to increment/decrement controls and arrow keys
-   */
+ * - `'blur'` (default): User can type any value, but it's clamped when the input loses focus
+ * - `'strict'`: User cannot type values outside the range
+ * - `'none'`: No clamping; `min`/`max` only apply to increment/decrement controls and arrow keys
+ */
   clampBehavior?: 'strict' | 'blur' | 'none';
-
   /** If set, decimal values are allowed @default true */
   allowDecimal?: boolean;
-
   /** Increment/decrement handlers */
   handlersRef?: OctaneRef<NumberInputHandlers | undefined>;
-
   /** Value used when incrementing/decrementing an empty input. If `min` is set and `startValue < min`, `min` is used instead. @default 0 */
   startValue?: NumberInputNumericValue<T>;
-
   /** Interval in milliseconds between value steps when increment/decrement button is held down. Can be a number or a function `(stepCount) => number` for dynamic intervals. Requires `stepHoldDelay` to be set. @default undefined */
   stepHoldInterval?: number | ((stepCount: number) => number);
-
   /** Initial delay in milliseconds before stepping the value. */
   stepHoldDelay?: number;
-
   /** If set, up/down keyboard events increment/decrement value @default true */
   withKeyboardEvents?: boolean;
-
   /** If set, leading zeros are removed on blur. For example, `00100` -> `100` @default true */
   trimLeadingZeroesOnBlur?: boolean;
-
   /** If set, all text is selected when the input receives focus @default false */
   selectAllOnFocus?: boolean;
-
   /** Called when the increment button or arrow up key is pressed and the value has reached the maximum */
   onMinReached?: () => void;
-
   /** Called when the decrement button or arrow down key is pressed and the value has reached the minimum */
   onMaxReached?: () => void;
 }
@@ -290,11 +255,13 @@ const defaultProps = {
   allowedDecimalSeparators: ['.', ','],
 } satisfies Partial<NumberInputProps<number | bigint>>;
 
-const varsResolver = createVarsResolver<NumberInputFactory>((_, { size }) => ({
-  controls: {
-    '--ni-chevron-size': getSize(size, 'ni-chevron-size'),
-  },
-}));
+const varsResolver = createVarsResolver<NumberInputFactory>(
+  (_, { size }) => ({
+    controls: {
+      '--ni-chevron-size': getSize(size, 'ni-chevron-size'),
+    },
+  }),
+);
 
 function clampAndSanitizeInput(sanitizedValue: string | number, max?: number, min?: number) {
   const stringValue = sanitizedValue.toString();
@@ -323,7 +290,7 @@ function clampAndSanitizeInput(sanitizedValue: string | number, max?: number, mi
 
 function clampAndSanitizeBigIntInput(
   sanitizedValue: string,
-  options: { min?: bigint; max?: bigint; clampBehavior: NumberInputProps['clampBehavior'] }
+  options: { min?: bigint; max?: bigint; clampBehavior: NumberInputProps['clampBehavior'] },
 ) {
   if (sanitizedValue === '' || sanitizedValue === '-') {
     return sanitizedValue;
@@ -343,7 +310,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
     const props = useProps(
       ['Input', 'InputWrapper', 'NumberInput'],
       defaultProps as Partial<NumberInputProps>,
-      _props as unknown as NumberInputProps
+      _props as unknown as NumberInputProps,
     );
     const {
       className,
@@ -411,7 +378,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
     });
 
     const valueModeRef = useRef<NumberInputMode>(
-      isBigIntValue(value) || isBigIntValue(defaultValue) ? 'bigint' : 'number'
+      isBigIntValue(value) || isBigIntValue(defaultValue) ? 'bigint' : 'number',
     );
 
     if (isBigIntValue(value)) {
@@ -434,10 +401,14 @@ export const NumberInput = genericFactory<NumberInputFactory>(
     const onStepTimeoutRef = useRef<number | null>(null);
     const stepCountRef = useRef<number>(0);
 
-    const minNumber = typeof min === 'number' ? min : undefined;
-    const maxNumber = typeof max === 'number' ? max : undefined;
-    const stepNumber = typeof step === 'number' ? step : defaultProps.step;
-    const startValueNumber = typeof startValue === 'number' ? startValue : defaultProps.startValue;
+    const minNumber =
+      typeof min === 'number' ? min : undefined;
+    const maxNumber =
+      typeof max === 'number' ? max : undefined;
+    const stepNumber =
+      typeof step === 'number' ? step : defaultProps.step;
+    const startValueNumber =
+      typeof startValue === 'number' ? startValue : defaultProps.startValue;
 
     const minBigInt = toBigIntOrUndefined(min);
     const maxBigInt = toBigIntOrUndefined(max);
@@ -447,7 +418,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
     const parseBigIntOrString = (inputValue: string): bigint | string => {
       if (
         !isValidBigIntString(inputValue, allowNegativeResolved) ||
-        (allowLeadingZerosResolved && leadingZerosPattern.test(inputValue))
+          allowLeadingZerosResolved && leadingZerosPattern.test(inputValue)
       ) {
         return inputValue;
       }
@@ -468,12 +439,12 @@ export const NumberInput = genericFactory<NumberInputFactory>(
         } else {
           setValue(
             isValidNumber(payload.floatValue, payload.value) &&
-              !leadingDecimalZeroPattern.test(payload.value) &&
-              !(allowLeadingZerosResolved ? leadingZerosPattern.test(payload.value) : false) &&
-              !trailingZerosPattern.test(payload.value) &&
-              !trailingDecimalSeparatorPattern.test(payload.value)
+            !leadingDecimalZeroPattern.test(payload.value) &&
+            !((allowLeadingZerosResolved ? leadingZerosPattern.test(payload.value) : false)) &&
+            !trailingZerosPattern.test(payload.value) &&
+            !trailingDecimalSeparatorPattern.test(payload.value)
               ? payload.floatValue
-              : payload.value
+              : payload.value,
           );
         }
       }
@@ -509,8 +480,9 @@ export const NumberInput = genericFactory<NumberInputFactory>(
           if (maxBigInt !== undefined && incrementedValue > maxBigInt) {
             onMaxReached?.();
           }
-          val =
-            maxBigInt !== undefined && incrementedValue > maxBigInt ? maxBigInt : incrementedValue;
+          val = maxBigInt !== undefined && incrementedValue > maxBigInt
+            ? maxBigInt
+            : incrementedValue;
         } else if (typeof currentValue === 'string' && currentValue !== '') {
           const parsed = parseBigIntFromString(currentValue);
           if (parsed === null) {
@@ -521,8 +493,9 @@ export const NumberInput = genericFactory<NumberInputFactory>(
           if (maxBigInt !== undefined && incrementedValue > maxBigInt) {
             onMaxReached?.();
           }
-          val =
-            maxBigInt !== undefined && incrementedValue > maxBigInt ? maxBigInt : incrementedValue;
+          val = maxBigInt !== undefined && incrementedValue > maxBigInt
+            ? maxBigInt
+            : incrementedValue;
         } else {
           val = clampBigInt(startValueBigInt, minBigInt, maxBigInt);
         }
@@ -531,7 +504,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
         setValue(val);
         onValueChange?.(
           { floatValue: getBigIntFloatValue(val), formattedValue, value: formattedValue },
-          { source: 'increment' as any }
+          { source: 'increment' as any },
         );
         setTimeout(() => adjustCursor(inputRef.current?.value.length), 0);
         return;
@@ -564,7 +537,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
       setValue(parseFloat(formattedValue));
       onValueChange?.(
         { floatValue: parseFloat(formattedValue), formattedValue, value: formattedValue },
-        { source: 'increment' as any }
+        { source: 'increment' as any },
       );
       setTimeout(() => adjustCursor(inputRef.current?.value.length), 0);
     };
@@ -578,7 +551,11 @@ export const NumberInput = genericFactory<NumberInputFactory>(
 
         let val: bigint;
         const minValue =
-          minBigInt !== undefined ? minBigInt : !allowNegativeResolved ? BigInt(0) : undefined;
+          minBigInt !== undefined
+            ? minBigInt
+            : !allowNegativeResolved
+              ? BigInt(0)
+              : undefined;
         const currentValue = _value;
 
         if (typeof currentValue === 'bigint') {
@@ -606,7 +583,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
         setValue(val);
         onValueChange?.(
           { floatValue: getBigIntFloatValue(val), formattedValue, value: formattedValue },
-          { source: 'decrement' as any }
+          { source: 'decrement' as any },
         );
         setTimeout(() => adjustCursor(inputRef.current?.value.length), 0);
         return;
@@ -618,13 +595,17 @@ export const NumberInput = genericFactory<NumberInputFactory>(
 
       let val: number;
       const minValue =
-        minNumber !== undefined ? minNumber : !allowNegativeResolved ? 0 : Number.MIN_SAFE_INTEGER;
+        minNumber !== undefined
+          ? minNumber
+          : !allowNegativeResolved
+            ? 0
+            : Number.MIN_SAFE_INTEGER;
       const currentValuePrecision = getDecimalPlaces(_value as number | string);
       const stepPrecision = getDecimalPlaces(stepNumber);
       const maxPrecision = Math.max(currentValuePrecision, stepPrecision);
       const factor = 10 ** maxPrecision;
 
-      if ((!isNumberString(_value) && typeof _value !== 'number') || Number.isNaN(_value)) {
+      if (!isNumberString(_value) && typeof _value !== 'number' || Number.isNaN(_value)) {
         val = clamp(startValueNumber, minValue, maxNumber);
       } else {
         const decrementedValue =
@@ -639,16 +620,16 @@ export const NumberInput = genericFactory<NumberInputFactory>(
       setValue(parseFloat(formattedValue));
       onValueChange?.(
         { floatValue: parseFloat(formattedValue), formattedValue, value: formattedValue },
-        { source: 'decrement' as any }
+        { source: 'decrement' as any },
       );
       setTimeout(() => adjustCursor(inputRef.current?.value.length), 0);
     };
 
     const handlePaste = (event: OctaneClipboardEvent<HTMLInputElement>) => {
-      const pastedText = event.clipboardData.getData('text');
+      const pastedText = event.clipboardData?.getData('text') ?? '';
       const _decimalSeparator = others.decimalSeparator || '.';
       const separatorsToReplace = (allowedDecimalSeparators || ['.', ',']).filter(
-        (s) => s !== _decimalSeparator
+        (s) => s !== _decimalSeparator,
       );
 
       if (separatorsToReplace.some((s) => pastedText.includes(s))) {
@@ -668,7 +649,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
 
           const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
             window.HTMLInputElement.prototype,
-            'value'
+            'value',
           )?.set;
           nativeInputValueSetter?.call(input, newValue);
           input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -738,9 +719,8 @@ export const NumberInput = genericFactory<NumberInputFactory>(
         }
 
         if (
-          trimLeadingZeroesOnBlur &&
-          typeof sanitizedValue === 'string' &&
-          getDecimalPlaces(sanitizedValue) < 15
+          trimLeadingZeroesOnBlur && typeof sanitizedValue === 'string' &&
+            getDecimalPlaces(sanitizedValue) < 15
         ) {
           sanitizedValue = clampAndSanitizeInput(sanitizedValue, maxNumber, minNumber);
         }
@@ -778,7 +758,7 @@ export const NumberInput = genericFactory<NumberInputFactory>(
 
     const onStep = (
       event: OctaneMouseEvent<HTMLElement> | OctaneKeyboardEvent<HTMLElement>,
-      isIncrement: boolean
+      isIncrement: boolean,
     ) => {
       event.preventDefault();
       inputRef.current?.focus();
@@ -796,118 +776,110 @@ export const NumberInput = genericFactory<NumberInputFactory>(
       stepCountRef.current = 0;
     };
 
-    const controls = (
-      <div {...getStyles('controls')}>
-        <UnstyledButton
-          {...getStyles('control')}
-          tabIndex={-1}
-          aria-hidden
-          disabled={
-            disabled ||
-            (typeof _value === 'number' && maxNumber !== undefined && _value >= maxNumber) ||
-            (typeof _value === 'bigint' && maxBigInt !== undefined && _value >= maxBigInt)
-          }
-          mod={{ direction: 'up' }}
-          onMouseDown={(event) => event.preventDefault()}
-          onPointerDown={(event) => {
-            onStep(event, true);
-          }}
-          onPointerUp={onStepDone}
-          onPointerLeave={onStepDone}
-        >
-          <NumberInputChevron direction="up" />
-        </UnstyledButton>
-        <UnstyledButton
-          {...getStyles('control')}
-          tabIndex={-1}
-          aria-hidden
-          disabled={
-            disabled ||
-            (typeof _value === 'number' && minNumber !== undefined && _value <= minNumber) ||
-            (typeof _value === 'bigint' && minBigInt !== undefined && _value <= minBigInt)
-          }
-          mod={{ direction: 'down' }}
-          onMouseDown={(event) => event.preventDefault()}
-          onPointerDown={(event) => {
-            onStep(event, false);
-          }}
-          onPointerUp={onStepDone}
-          onPointerLeave={onStepDone}
-        >
-          <NumberInputChevron direction="down" />
-        </UnstyledButton>
-      </div>
-    );
-
-    return (
-      <InputBase
-        component={NumericFormat}
-        allowNegative={allowNegative}
-        className={cx(classes.root, className)}
-        size={size}
-        {...others}
-        inputMode={isBigIntMode ? 'numeric' : 'decimal'}
-        readOnly={readOnly}
-        disabled={disabled}
-        value={typeof _value === 'bigint' ? _value.toString() : _value}
-        getInputRef={useMergedRef(ref, inputRef)}
-        onValueChange={handleValueChange}
-        rightSection={
-          hideControls ||
-          readOnly ||
-          !(isBigIntMode
-            ? canStepBigInt(_value as bigint | string, allowNegativeResolved)
-            : canStep(_value as number | string))
-            ? rightSection
-            : rightSection || controls
-        }
-        classNames={resolvedClassNames}
-        styles={resolvedStyles}
-        unstyled={unstyled}
-        __staticSelector="NumberInput"
-        decimalScale={isBigIntMode ? 0 : allowDecimal ? decimalScale : 0}
-        onPaste={handlePaste}
-        onFocus={handleFocus}
-        onKeyDown={handleKeyDown}
-        onKeyDownCapture={handleKeyDownCapture}
-        rightSectionPointerEvents={rightSectionPointerEvents ?? (disabled ? 'none' : undefined)}
-        rightSectionWidth={rightSectionWidth ?? `var(--ni-right-section-width-${size || 'sm'})`}
-        allowLeadingZeros={allowLeadingZeros}
-        allowedDecimalSeparators={allowedDecimalSeparators}
-        onBlur={handleBlur}
-        attributes={attributes}
-        isAllowed={(val) => {
-          const userAllowed = isAllowed ? isAllowed(val) : true;
-          if (!userAllowed) {
-            return false;
-          }
-
-          if (clampBehavior !== 'strict') {
-            return true;
-          }
-
-          if (!isBigIntMode) {
-            return isInRange(val.floatValue, minNumber, maxNumber);
-          }
-
-          if (val.value === '' || val.value === '-') {
-            return true;
-          }
-
-          const parsed = parseBigIntFromString(val.value);
-
-          if (parsed === null) {
-            return true;
-          }
-
-          return (
-            (minBigInt === undefined || parsed >= minBigInt) &&
-            (maxBigInt === undefined || parsed <= maxBigInt)
-          );
+    const controls = <div {...getStyles('controls')}>
+      <UnstyledButton
+        {...getStyles('control')}
+        tabIndex={-1}
+        aria-hidden
+        disabled={disabled ||
+          typeof _value === 'number' && maxNumber !== undefined && _value >= maxNumber ||
+          typeof _value === 'bigint' && maxBigInt !== undefined && _value >= maxBigInt}
+        mod={{ direction: 'up' }}
+        onMouseDown={(event) => event.preventDefault()}
+        onPointerDown={(event) => {
+          onStep(event, true);
         }}
-      />
-    );
-  }
+        onPointerUp={onStepDone}
+        onPointerLeave={onStepDone}
+      >
+        <NumberInputChevron direction="up" />
+      </UnstyledButton>
+      <UnstyledButton
+        {...getStyles('control')}
+        tabIndex={-1}
+        aria-hidden
+        disabled={disabled ||
+          typeof _value === 'number' && minNumber !== undefined && _value <= minNumber ||
+          typeof _value === 'bigint' && minBigInt !== undefined && _value <= minBigInt}
+        mod={{ direction: 'down' }}
+        onMouseDown={(event) => event.preventDefault()}
+        onPointerDown={(event) => {
+          onStep(event, false);
+        }}
+        onPointerUp={onStepDone}
+        onPointerLeave={onStepDone}
+      >
+        <NumberInputChevron direction="down" />
+      </UnstyledButton>
+    </div>;
+
+    return <InputBase
+      component={NumericFormat}
+      allowNegative={allowNegative}
+      className={cx(classes.root, className)}
+      size={size}
+      {...others}
+      inputMode={isBigIntMode ? 'numeric' : 'decimal'}
+      readOnly={readOnly}
+      disabled={disabled}
+      value={typeof _value === 'bigint' ? _value.toString() : _value}
+      getInputRef={useMergedRef(ref, inputRef)}
+      onValueChange={handleValueChange}
+      rightSection={hideControls || readOnly ||
+      !((isBigIntMode
+        ? canStepBigInt(_value as bigint | string, allowNegativeResolved)
+        : canStep(_value as number | string)))
+        ? rightSection
+        : rightSection || controls}
+      classNames={resolvedClassNames}
+      styles={resolvedStyles}
+      unstyled={unstyled}
+      __staticSelector="NumberInput"
+      decimalScale={isBigIntMode
+        ? 0
+        : allowDecimal
+          ? decimalScale
+          : 0}
+      onPaste={handlePaste}
+      onFocus={handleFocus}
+      onKeyDown={handleKeyDown}
+      onKeyDownCapture={handleKeyDownCapture}
+      rightSectionPointerEvents={rightSectionPointerEvents ?? (disabled ? 'none' : undefined)}
+      rightSectionWidth={rightSectionWidth ?? `var(--ni-right-section-width-${size || 'sm'})`}
+      allowLeadingZeros={allowLeadingZeros}
+      allowedDecimalSeparators={allowedDecimalSeparators}
+      onBlur={handleBlur}
+      attributes={attributes}
+      isAllowed={(val) => {
+        const userAllowed =
+          isAllowed ? isAllowed(val) : true;
+        if (!userAllowed) {
+          return false;
+        }
+
+        if (clampBehavior !== 'strict') {
+          return true;
+        }
+
+        if (!isBigIntMode) {
+          return isInRange(val.floatValue, minNumber, maxNumber);
+        }
+
+        if (val.value === '' || val.value === '-') {
+          return true;
+        }
+
+        const parsed = parseBigIntFromString(val.value);
+
+        if (parsed === null) {
+          return true;
+        }
+
+        return (minBigInt === undefined || parsed >= minBigInt) &&
+          (maxBigInt === undefined || parsed <= maxBigInt);
+      }}
+    />;
+  },
 );
 
 NumberInput.classes = { ...InputBase.classes, ...classes };
