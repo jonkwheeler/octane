@@ -1,11 +1,16 @@
 import {
   Breadcrumbs,
   Card,
+  EmptyState,
+  FocusTrap,
   Group,
   MantineProvider,
   Menu,
+  Select,
+  Splitter,
   Stepper,
   Timeline,
+  Tooltip,
 } from '@octanejs/mantine-core';
 import { useState } from 'octane';
 
@@ -44,6 +49,28 @@ export function CompiledChildren() @{
       <button id="group-one">One</button>
       <button id="group-two">Two</button>
     </Group>
+
+    <EmptyState id="empty-state" title="Nothing here">
+      <EmptyState.Description id="empty-description">Try another filter</EmptyState.Description>
+      <EmptyState.Actions id="empty-actions">
+        <button>Reset</button>
+      </EmptyState.Actions>
+    </EmptyState>
+
+    <Splitter id="splitter">
+      <Splitter.Pane defaultSize={40} id="splitter-one">First pane</Splitter.Pane>
+      <Splitter.Pane defaultSize={60} id="splitter-two">Second pane</Splitter.Pane>
+    </Splitter>
+
+    <FocusTrap active={false}>
+      <div id="focus-content"><button>Focusable</button></div>
+    </FocusTrap>
+
+    <Tooltip.Floating label="Floating label" withinPortal={false}>
+      <button id="floating-target">Hover target</button>
+    </Tooltip.Floating>
+
+    <Select id="compiled-select" data={['Alpha', 'Beta']} />
 
     <Menu withinPortal={false}>
       <Menu.Target>

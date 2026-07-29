@@ -1,6 +1,5 @@
-import { cloneElement, use } from 'octane';
-import { useMergedRef } from '@octanejs/mantine-hooks';
-import { createEventHandler, getRefProp, getSingleElementChild, useProps } from '../../../core';
+import { use } from 'octane';
+import { useProps } from '../../../core';
 import { Popover, PopoverTargetProps } from '../../Popover';
 import { useHoverCardContext } from '../HoverCard.context';
 import { HoverCardGroupContext } from '../HoverCardGroup/HoverCardGroup.tsrx';
@@ -26,45 +25,33 @@ export function HoverCardTarget(props: HoverCardTargetProps) {
     props
   );
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      'HoverCard.Target component children should be an element or a component that accepts ref. Fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
   const ctx = useHoverCardContext();
   const groupContext = use(HoverCardGroupContext);
-  const targetRef = useMergedRef(getRefProp(child), ctx.assignTarget);
 
   if (groupContext.withinGroup && ctx.getReferenceProps && ctx.reference) {
     const referenceProps = ctx.getReferenceProps();
+    const wrapperProps: any = Object.assign({}, referenceProps, {
+      ref: ctx.reference,
+      style: { display: 'inline-flex', ...(referenceProps as any).style },
+    });
 
     return (
       <Popover.Target refProp={refProp} {...others}>
-        {cloneElement(
-          child,
-          eventPropsWrapperName
-            ? { [eventPropsWrapperName]: { ...referenceProps, ref: ctx.reference } }
-            : { ...referenceProps, ref: ctx.reference }
-        )}
+        <span {...wrapperProps}>{children}</span>
       </Popover.Target>
     );
   }
 
-  const onMouseEnter = createEventHandler((child.props as any).onMouseEnter, ctx.openDropdown);
-  const onMouseLeave = createEventHandler((child.props as any).onMouseLeave, ctx.closeDropdown);
-
-  const eventListeners = { onMouseEnter, onMouseLeave };
-
-  const clonedProps: any = {
-    ...(eventPropsWrapperName ? { [eventPropsWrapperName]: eventListeners } : eventListeners),
-    ref: targetRef,
+  const wrapperProps: any = {
+    onMouseEnter: ctx.openDropdown,
+    onMouseLeave: ctx.closeDropdown,
+    ref: ctx.assignTarget,
+    style: { display: 'inline-flex' },
   };
 
   return (
     <Popover.Target refProp={refProp} {...others}>
-      {cloneElement(child, clonedProps)}
+      <span {...wrapperProps}>{children}</span>
     </Popover.Target>
   );
 }

@@ -1,4 +1,3 @@
-import { cloneElement } from 'octane';
 import { useMergedRef } from '@octanejs/mantine-hooks';
 import {
   Box,
@@ -7,8 +6,6 @@ import {
   Factory,
   getDefaultZIndex,
   getRadius,
-  getRefProp,
-  getSingleElementChild,
   getStyleObject,
   getThemeColor,
   useMantineTheme,
@@ -101,24 +98,14 @@ export const TooltipFloating = factory<TooltipFloatingFactory>((_props) => {
     defaultOpened,
   });
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      '[@mantine/core] Tooltip.Floating component children should be an element or a component that accepts ref, fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
-  const targetRef = useMergedRef(boundaryRef, getRefProp(child), ref);
-  const childProps = child.props as any;
+  const targetRef = useMergedRef(boundaryRef, ref);
 
   const onMouseEnter = (event: OctaneMouseEvent<unknown, MouseEvent>) => {
-    childProps.onMouseEnter?.(event);
     handleMouseMove(event);
     setOpened(true);
   };
 
   const onMouseLeave = (event: OctaneMouseEvent<unknown, MouseEvent>) => {
-    childProps.onMouseLeave?.(event);
     setOpened(false);
   };
 
@@ -144,12 +131,14 @@ export const TooltipFloating = factory<TooltipFloatingFactory>((_props) => {
         </Box>
       </OptionalPortal>
 
-      {cloneElement(child, {
-        ...childProps,
-        [refProp]: targetRef,
-        onMouseEnter,
-        onMouseLeave,
-      })}
+      <span
+        ref={targetRef}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        style={{ display: 'inline-flex' }}
+      >
+        {children}
+      </span>
     </>
   );
 });

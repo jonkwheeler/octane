@@ -1,5 +1,5 @@
-import type { OctaneNode, ElementDescriptor } from 'octane';
-import { Children, cloneElement, useImperativeHandle } from 'octane';
+import type { OctaneNode } from 'octane';
+import { useImperativeHandle, useRef, useState } from 'octane';
 import {
   SplitterPaneSize,
   SplitterStep,
@@ -7,6 +7,7 @@ import {
   useSplitter,
   UseSplitterRedistributeFn,
   UseSplitterReturnValue,
+  UseSplitterPanel,
 } from '@octanejs/mantine-hooks';
 import {
   Box,
@@ -157,23 +158,24 @@ export const Splitter = factory<SplitterFactory>((_props) => {
 
   const { dir } = useDirection();
 
-  const paneChildren = Children.toArray(children) as ElementDescriptor<SplitterPaneProps>[];
-
-  const panels = paneChildren.map(
-    (child) => ({
-      defaultSize: child.props.defaultSize,
-      min: child.props.min,
-      max: child.props.max,
-      collapsible: child.props.collapsible,
-      collapseThreshold: child.props.collapseThreshold,
-    }),
-  );
+  const registeredPanels = useRef<UseSplitterPanel[]>([]);
+  const paneIndex = useRef(0);
+  const [panelsRevision, setPanelsRevision] = useState(0);
+  const [runtimeSizes, setRuntimeSizes] = useState<SplitterPaneSize[]>([]);
+  const panels = registeredPanels.current.slice();
+  const defaultSizes = panels.map((panel) => panel.defaultSize);
+  const effectiveSizes =
+    controlledSizes ??
+    (runtimeSizes.length === panels.length ? runtimeSizes : defaultSizes);
 
   const splitter = useSplitter({
     panels,
     orientation,
-    sizes: controlledSizes,
-    onSizeChange,
+    sizes: effectiveSizes,
+    onSizeChange: (nextSizes) => {
+      setRuntimeSizes(nextSizes);
+      onSizeChange?.(nextSizes);
+    },
     onResizeStart,
     onResizeEnd,
     onCollapseChange,
@@ -213,31 +215,29 @@ export const Splitter = factory<SplitterFactory>((_props) => {
     handleIcon !== undefined ? handleIcon : defaultIcon;
   const SplitterBox = Box as any;
 
-  const items: OctaneNode[] = [];
-
-  paneChildren.forEach((child, index) => {
-    if (index > 0) {
-      const handleProps = splitter.getHandleProps({ index: index - 1 });
-      const isActive = splitter.activeHandle === index - 1;
-      items.push(
-        <SplitterBox {...getStyles('handle')} key={`handle-${index - 1}`} {...handleProps}>
-          {withHandle &&
-            <div
-              {...getStyles('thumb')}
-              data-orientation={orientation}
-              data-active={isActive || undefined}
-            >{thumbIcon}</div>}
-        </SplitterBox>,
-      );
+  paneIndex.current = 0;
+  const registerPane = (index: number, panel: UseSplitterPanel) => {
+    registeredPanels.current[index] = panel;
+  };
+  const syncPanes = () => setPanelsRevision((value) => value + 1);
+  const renderHandle = (index: number) => {
+    if (index <= 0 || splitter.sizes.length <= index) {
+      return null;
     }
-
-    items.push(
-      cloneElement(child, {
-        key: `pane-${index}`,
-        __index: index,
-      }),
+    const handleIndex = index - 1;
+    const handleProps = splitter.getHandleProps({ index: handleIndex });
+    const isActive = splitter.activeHandle === handleIndex;
+    return (
+      <SplitterBox {...getStyles('handle')} {...handleProps}>
+        {withHandle &&
+          <div
+            {...getStyles('thumb')}
+            data-orientation={orientation}
+            data-active={isActive || undefined}
+          >{thumbIcon}</div>}
+      </SplitterBox>
     );
-  });
+  };
 
   return <SplitterProvider
     value={{
@@ -246,6 +246,10 @@ export const Splitter = factory<SplitterFactory>((_props) => {
       collapsed: splitter.collapsed,
       orientation: orientation!,
       getPaneStyle,
+      registerPane,
+      getNextPaneIndex: () => paneIndex.current++,
+      syncPanes,
+      renderHandle,
     }}
   >
     <Box
@@ -253,7 +257,7 @@ export const Splitter = factory<SplitterFactory>((_props) => {
       {...getStyles('root')}
       mod={[{ orientation }, mod]}
       {...others}
-    >{items}</Box>
+    >{children}</Box>
   </SplitterProvider>;
 });
 

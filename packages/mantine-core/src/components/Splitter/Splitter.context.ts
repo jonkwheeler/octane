@@ -1,4 +1,8 @@
-import type { SplitterPaneSize } from '@octanejs/mantine-hooks';
+import type {
+  SplitterPaneSize,
+  UseSplitterPanel,
+} from '@octanejs/mantine-hooks';
+import type { OctaneNode } from 'octane';
 import { createSafeContext, GetStylesApi } from '../../core';
 import type { SplitterFactory } from './Splitter.tsrx';
 
@@ -8,6 +12,10 @@ export interface SplitterContextValue {
   collapsed: boolean[];
   orientation: 'horizontal' | 'vertical';
   getPaneStyle: (index: number) => React.CSSProperties;
+  registerPane: (index: number, panel: UseSplitterPanel) => void;
+  getNextPaneIndex: () => number;
+  syncPanes: () => void;
+  renderHandle: (paneIndex: number) => OctaneNode;
 }
 
 export const [SplitterProvider, useSplitterContext] = createSafeContext<SplitterContextValue>(

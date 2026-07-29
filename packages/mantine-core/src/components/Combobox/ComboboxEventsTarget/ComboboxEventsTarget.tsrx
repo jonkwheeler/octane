@@ -1,7 +1,6 @@
 import type { OctaneNode } from 'octane';
-import { cloneElement } from 'octane';
 import { useMergedRef } from '@octanejs/mantine-hooks';
-import { factory, Factory, getRefProp, getSingleElementChild, useProps } from '../../../core';
+import { factory, Factory, useProps } from '../../../core';
 import { useComboboxContext } from '../Combobox.context';
 import { useComboboxTargetProps } from '../use-combobox-target-props/use-combobox-target-props';
 
@@ -59,29 +58,22 @@ export const ComboboxEventsTarget = factory<ComboboxEventsTargetFactory>((props)
     ...others
   } = useProps('ComboboxEventsTarget', defaultProps, props);
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      'Combobox.EventsTarget component children should be an element or a component that accepts ref. Fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
   const ctx = useComboboxContext();
   const targetProps = useComboboxTargetProps({
     targetType,
     withAriaAttributes,
     withKeyboardNavigation,
     withExpandedAttribute,
-    onKeyDown: (child.props as any).onKeyDown,
-    onClick: (child.props as any).onClick,
+    onKeyDown: undefined,
+    onClick: undefined,
     autoComplete,
   });
-
-  return cloneElement(child, {
-    ...targetProps,
-    ...others,
-    [refProp]: useMergedRef(ref, ctx.store.targetRef, getRefProp(child)),
+  const wrapperProps: any = Object.assign({}, targetProps, others, {
+    ref: useMergedRef(ref, ctx.store.targetRef),
+    style: { display: 'inline-flex', ...(others as any).style },
   });
+
+  return <span {...wrapperProps}>{children}</span>;
 });
 
 ComboboxEventsTarget.displayName = '@mantine/core/ComboboxEventsTarget';

@@ -10,6 +10,11 @@ describe('@octanejs/mantine-core compiled children', () => {
         addEventListener() {},
         removeEventListener() {},
       }) as unknown as MediaQueryList;
+    globalThis.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    } as typeof ResizeObserver;
     const result = mount(CompiledChildren, {});
 
     const breadcrumbs = result.find('#breadcrumbs');
@@ -39,6 +44,29 @@ describe('@octanejs/mantine-core compiled children', () => {
     expect(timeline.hasAttribute('data-opposite')).toBe(true);
 
     expect(result.find('#group').querySelectorAll('button')).toHaveLength(2);
+    expect(result.find('#empty-description').textContent).toBe('Try another filter');
+    expect(result.find('#empty-actions').textContent).toContain('Reset');
+
+    await nextPaint();
+    const splitter = result.find('#splitter');
+    expect(splitter.querySelectorAll('.mantine-Splitter-pane')).toHaveLength(2);
+    expect(splitter.querySelectorAll('[role="separator"]')).toHaveLength(1);
+    expect(result.find('#splitter-one').style.flexBasis).toBe('40%');
+    expect(result.find('#splitter-two').style.flexBasis).toBe('60%');
+
+    expect(result.find('#focus-content').querySelector('button')?.textContent).toBe('Focusable');
+
+    result
+      .find('#floating-target')
+      .parentElement?.dispatchEvent(new MouseEvent('mouseenter', { bubbles: false }));
+    await nextPaint();
+    expect(result.find('#floating-target').parentElement?.style.display).toBe('inline-flex');
+    expect(document.body.textContent).toContain('Floating label');
+
+    result.click('#compiled-select');
+    await nextPaint();
+    expect(document.body.textContent).toContain('Alpha');
+    expect(document.body.textContent).toContain('Beta');
 
     result.click('#menu-target');
     await nextPaint();

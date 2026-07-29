@@ -1,7 +1,6 @@
 import type { OctaneNode } from 'octane';
-import { cloneElement } from 'octane';
 import { useMergedRef } from '@octanejs/mantine-hooks';
-import { factory, Factory, getSingleElementChild, useProps } from '../../../core';
+import { factory, Factory, useProps } from '../../../core';
 import { Popover } from '../../Popover';
 import { useComboboxContext } from '../Combobox.context';
 import { useComboboxTargetProps } from '../use-combobox-target-props/use-combobox-target-props';
@@ -60,13 +59,6 @@ export const ComboboxTarget = factory<ComboboxTargetFactory>((props) => {
     ...others
   } = useProps('ComboboxTarget', defaultProps, props);
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      'Combobox.Target component children should be an element or a component that accepts ref. Fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
   const ctx = useComboboxContext();
 
   const targetProps = useComboboxTargetProps({
@@ -74,19 +66,17 @@ export const ComboboxTarget = factory<ComboboxTargetFactory>((props) => {
     withAriaAttributes,
     withKeyboardNavigation,
     withExpandedAttribute,
-    onKeyDown: (child.props as any).onKeyDown,
-    onClick: (child.props as any).onClick,
+    onKeyDown: undefined,
+    onClick: undefined,
     autoComplete,
   });
-
-  const clonedElement = cloneElement(child, {
-    ...targetProps,
-    ...others,
+  const wrapperProps: any = Object.assign({}, targetProps, others, {
+    style: { display: 'inline-flex', ...(others as any).style },
   });
 
   return (
     <Popover.Target refProp={refProp} ref={useMergedRef(ref, ctx.store.targetRef)}>
-      {clonedElement}
+      <span {...wrapperProps}>{children}</span>
     </Popover.Target>
   );
 });

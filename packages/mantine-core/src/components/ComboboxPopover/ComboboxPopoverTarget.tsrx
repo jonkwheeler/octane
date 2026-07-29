@@ -1,7 +1,6 @@
 import type { OctaneNode } from 'octane';
-import { cloneElement } from 'octane';
 import { useMergedRef } from '@octanejs/mantine-hooks';
-import { factory, Factory, getRefProp, getSingleElementChild, useProps } from '../../core';
+import { factory, Factory, useProps } from '../../core';
 import { useComboboxContext } from '../Combobox/Combobox.context';
 import { useComboboxTargetProps } from '../Combobox/use-combobox-target-props/use-combobox-target-props';
 import { Popover } from '../Popover';
@@ -30,36 +29,30 @@ export const ComboboxPopoverTarget = factory<ComboboxPopoverTargetFactory>((prop
     props
   );
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      'ComboboxPopover.Target component children should be an element or a component that accepts ref. Fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
   const ctx = useComboboxContext();
-  const targetRef = useMergedRef(ref, ctx.store.targetRef, getRefProp(child));
+  const targetRef = useMergedRef(ref, ctx.store.targetRef);
 
   const targetProps = useComboboxTargetProps({
     targetType: 'button',
     withAriaAttributes: true,
     withKeyboardNavigation: true,
     withExpandedAttribute: true,
-    onKeyDown: (child.props as any).onKeyDown,
+    onKeyDown: undefined,
     onClick: (event) => {
       ctx.store.toggleDropdown();
-      (child.props as any).onClick?.(event);
     },
     autoComplete: 'off',
   });
 
-  const clonedElement = cloneElement(child, {
-    ...targetProps,
-    ...others,
-    [refProp!]: targetRef,
-  } as any);
+  const wrapperProps: any = Object.assign({}, targetProps, others, {
+    style: { display: 'inline-flex', ...(others as any).style },
+  });
 
-  return <Popover.Target refProp={refProp}>{clonedElement}</Popover.Target>;
+  return (
+    <Popover.Target refProp={refProp} ref={targetRef}>
+      <span {...wrapperProps}>{children}</span>
+    </Popover.Target>
+  );
 });
 
 ComboboxPopoverTarget.displayName = '@mantine/core/ComboboxPopoverTarget';

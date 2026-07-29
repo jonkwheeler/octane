@@ -1,8 +1,6 @@
 import type { Octane } from 'octane/jsx-runtime';
 import type { ElementDescriptor } from 'octane';
-import { cloneElement } from 'octane';
 import { useFocusTrap, useMergedRef } from '@octanejs/mantine-hooks';
-import { getSingleElementChild } from '../../core';
 import { VisuallyHidden } from '../VisuallyHidden';
 
 export interface FocusTrapProps {
@@ -28,12 +26,11 @@ export function FocusTrap({
   const focusTrapRef = useFocusTrap(active);
   const ref = useMergedRef(focusTrapRef, innerRef);
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    return children;
-  }
-
-  return cloneElement(child, { [refProp]: ref });
+  return (
+    <div ref={ref} style={{ display: 'contents' }}>
+      {children}
+    </div>
+  );
 }
 
 export function FocusTrapInitialFocus(props: MantineIntrinsicProps<'span'>) {

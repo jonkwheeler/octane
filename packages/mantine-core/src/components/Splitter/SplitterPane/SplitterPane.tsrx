@@ -1,4 +1,5 @@
 import type { OctaneNode } from 'octane';
+import { useEffect } from 'octane';
 import type { SplitterPaneSize } from '@octanejs/mantine-hooks';
 import {
   Box,
@@ -65,24 +66,32 @@ export const SplitterPane = factory<SplitterPaneFactory>((_props) => {
   } = props;
 
   const ctx = useSplitterContext();
-  const isCollapsed = ctx.collapsed[__index!];
+  const index = __index ?? ctx.getNextPaneIndex();
+  ctx.registerPane(index, { defaultSize, min, max, collapsible, collapseThreshold });
+  useEffect(() => ctx.syncPanes(), [defaultSize, min, max, collapsible, collapseThreshold]);
+  const isCollapsed = ctx.collapsed[index];
 
-  const sizeStyle = ctx.getPaneStyle(__index!);
+  const sizeStyle = ctx.sizes[index] == null
+    ? { flexBasis: typeof defaultSize === 'number' ? `${defaultSize}%` : defaultSize }
+    : ctx.getPaneStyle(index);
 
   return (
-    <Box
-      {...ctx.getStyles('pane', {
-        className,
-        classNames,
-        style: [sizeStyle, style],
-        styles,
-        props,
-      })}
-      mod={[{ collapsed: isCollapsed || undefined }, mod]}
-      {...others}
-    >
-      {children}
-    </Box>
+    <>
+      {ctx.renderHandle(index)}
+      <Box
+        {...ctx.getStyles('pane', {
+          className,
+          classNames,
+          style: [sizeStyle, style],
+          styles,
+          props,
+        })}
+        mod={[{ collapsed: isCollapsed || undefined }, mod]}
+        {...others}
+      >
+        {children}
+      </Box>
+    </>
   );
 });
 

@@ -1,6 +1,5 @@
 import type { OctaneNode } from 'octane';
-import { cloneElement } from 'octane';
-import { getSingleElementChild, useProps } from '../../../core';
+import { useProps } from '../../../core';
 import { useContextMenuHandlers } from '../../../utils/Floating/use-context-menu-handlers';
 import { usePopoverContext } from '../Popover.context';
 
@@ -18,17 +17,10 @@ export interface PopoverContextMenuProps {
 export function PopoverContextMenu(props: PopoverContextMenuProps) {
   const { children, disabled, longPressDelay } = useProps('PopoverContextMenu', null, props);
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      'Popover.ContextMenu component children should be an element or a component that accepts ref. Fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
   const ctx = usePopoverContext();
 
   const handlers = useContextMenuHandlers({
-    childProps: child.props as any,
+    childProps: {},
     disabled: disabled || ctx.disabled,
     opened: ctx.opened,
     longPressDelay,
@@ -40,7 +32,8 @@ export function PopoverContextMenu(props: PopoverContextMenuProps) {
     },
   });
 
-  return cloneElement(child, handlers as any);
+  const wrapperProps: any = Object.assign({}, handlers, { style: { display: 'contents' } });
+  return <span {...wrapperProps}>{children}</span>;
 }
 
 PopoverContextMenu.displayName = '@mantine/core/PopoverContextMenu';

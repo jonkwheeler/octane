@@ -1,5 +1,4 @@
 import type { OctaneNode } from 'octane';
-import { Children, Fragment, isValidElement } from 'octane';
 import {
   Box,
   BoxProps,
@@ -110,23 +109,6 @@ const defaultProps = {
   align: 'center',
 } satisfies Partial<EmptyStateProps>;
 
-function flattenChildren(children: OctaneNode): OctaneNode[] {
-  const flat: OctaneNode[] = [];
-
-  const collect = (nodes: OctaneNode) => {
-    Children.forEach(nodes, (child) => {
-      if (isValidElement(child) && child.type === Fragment) {
-        collect((child.props as { children?: OctaneNode }).children);
-      } else {
-        flat.push(child);
-      }
-    });
-  };
-
-  collect(children);
-  return Children.toArray(flat);
-}
-
 const varsResolver = createVarsResolver<EmptyStateFactory>((theme, { size, variant, color }) => {
   const colors = variant
     ? theme.variantColorResolver({ color: color || theme.primaryColor, theme, variant })
@@ -180,23 +162,8 @@ export const EmptyState = factory<EmptyStateFactory>((_props) => {
     varsResolver,
   });
 
-  const bodyChildren: OctaneNode[] = [];
-  let childrenIndicator: OctaneNode = null;
-
-  flattenChildren(children).forEach((child) => {
-    if (
-      isValidElement(child) &&
-      (child.type === EmptyStateIndicator ||
-        (child.type as any)?.displayName === '@mantine/core/EmptyStateIndicator')
-    ) {
-      childrenIndicator = child;
-    } else {
-      bodyChildren.push(child);
-    }
-  });
-
-  const indicator = icon ? <EmptyStateIndicator>{icon}</EmptyStateIndicator> : childrenIndicator;
-  const hasBody = title != null || description != null || bodyChildren.length > 0;
+  const indicator = icon ? <EmptyStateIndicator>{icon}</EmptyStateIndicator> : null;
+  const hasBody = title != null || description != null || children != null;
 
   return (
     <EmptyStateProvider
@@ -208,7 +175,7 @@ export const EmptyState = factory<EmptyStateFactory>((_props) => {
           <div {...getStyles('body')}>
             {title && <EmptyStateTitle>{title}</EmptyStateTitle>}
             {description && <EmptyStateDescription>{description}</EmptyStateDescription>}
-            {bodyChildren}
+            {children}
           </div>
         )}
       </Box>

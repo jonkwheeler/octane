@@ -1,6 +1,5 @@
 import type { OctaneNode } from 'octane';
-import { cloneElement } from 'octane';
-import { getSingleElementChild, useProps } from '../../../core';
+import { useProps } from '../../../core';
 import { useContextMenuHandlers } from '../../../utils/Floating/use-context-menu-handlers';
 import { usePopoverContext } from '../../Popover';
 import { useMenuContext } from '../Menu.context';
@@ -19,18 +18,11 @@ export interface MenuContextMenuProps {
 export function MenuContextMenu(props: MenuContextMenuProps) {
   const { children, disabled, longPressDelay } = useProps('MenuContextMenu', null, props);
 
-  const child = getSingleElementChild(children);
-  if (!child) {
-    throw new Error(
-      'Menu.ContextMenu component children should be an element or a component that accepts ref. Fragments, strings, numbers and other primitive values are not supported'
-    );
-  }
-
   const ctx = useMenuContext();
   const popoverCtx = usePopoverContext();
 
   const handlers = useContextMenuHandlers({
-    childProps: child.props as any,
+    childProps: {},
     disabled: disabled || popoverCtx.disabled,
     opened: ctx.opened,
     longPressDelay,
@@ -38,7 +30,8 @@ export function MenuContextMenu(props: MenuContextMenuProps) {
     open: () => ctx.openDropdown(),
   });
 
-  return cloneElement(child, handlers as any);
+  const wrapperProps: any = Object.assign({}, handlers, { style: { display: 'contents' } });
+  return <span {...wrapperProps}>{children}</span>;
 }
 
 MenuContextMenu.displayName = '@mantine/core/MenuContextMenu';
