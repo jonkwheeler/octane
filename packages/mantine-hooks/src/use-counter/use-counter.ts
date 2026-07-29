@@ -21,10 +21,16 @@ export interface UseCounterHandlers {
 
 export type UseCounterReturnValue = [number, UseCounterHandlers];
 
+function withoutSlot<T>(value: T | symbol): T | undefined {
+	return typeof value === 'symbol' ? undefined : value;
+}
+
 export function useCounter(initialValue = 0, options?: UseCounterOptions): UseCounterReturnValue {
-	const { min, max, step: _step = 1 } = { ...DEFAULT_OPTIONS, ...options };
+	const normalizedInitialValue = withoutSlot(initialValue) ?? 0;
+	const normalizedOptions = withoutSlot(options);
+	const { min, max, step: _step = 1 } = { ...DEFAULT_OPTIONS, ...normalizedOptions };
 	const step = Math.abs(_step);
-	const [count, setCount] = useState<number>(clamp(initialValue, min, max));
+	const [count, setCount] = useState<number>(clamp(normalizedInitialValue, min, max));
 
 	const increment = useCallback(
 		() => setCount((current) => clamp(current + step, min, max)),
@@ -39,8 +45,8 @@ export function useCounter(initialValue = 0, options?: UseCounterOptions): UseCo
 	const set = useCallback((value: number) => setCount(clamp(value, min, max)), [min, max]);
 
 	const reset = useCallback(
-		() => setCount(clamp(initialValue, min, max)),
-		[initialValue, min, max],
+		() => setCount(clamp(normalizedInitialValue, min, max)),
+		[normalizedInitialValue, min, max],
 	);
 
 	return [count, { increment, decrement, set, reset }];

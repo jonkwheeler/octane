@@ -7,6 +7,10 @@ export { getHotkeyHandler };
 
 export type HotkeyItem = [string, (event: KeyboardEvent) => void, HotkeyItemOptions?];
 
+function withoutSlot<T>(value: T | symbol): T | undefined {
+	return typeof value === 'symbol' ? undefined : value;
+}
+
 function shouldFireEvent(
 	event: KeyboardEvent,
 	tagsToIgnore: string[],
@@ -28,12 +32,15 @@ export function useHotkeys(
 	tagsToIgnore: string[] = ['INPUT', 'TEXTAREA', 'SELECT'],
 	triggerOnContentEditable = false,
 ) {
+	const ignoredTags = withoutSlot(tagsToIgnore) ?? ['INPUT', 'TEXTAREA', 'SELECT'];
+	const allowContentEditable = withoutSlot(triggerOnContentEditable) ?? false;
+
 	const handleKeydown = useEffectEvent((event: KeyboardEvent) => {
 		hotkeys.forEach(
 			([hotkey, handler, options = { preventDefault: true, usePhysicalKeys: false }]) => {
 				if (
 					getHotkeyMatcher(hotkey, options.usePhysicalKeys)(event) &&
-					shouldFireEvent(event, tagsToIgnore, triggerOnContentEditable)
+					shouldFireEvent(event, ignoredTags, allowContentEditable)
 				) {
 					if (options.preventDefault) {
 						event.preventDefault();

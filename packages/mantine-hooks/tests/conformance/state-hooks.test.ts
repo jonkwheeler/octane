@@ -1,8 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
-import { FetchHooks, StateHooks } from '../_fixtures/state-hooks.tsrx';
+import { CounterWithOmittedOptions, FetchHooks, StateHooks } from '../_fixtures/state-hooks.tsrx';
 
 describe('@octanejs/mantine-hooks state hooks', () => {
+	it('uses counter defaults when TSRX omits options', () => {
+		const result = mount(CounterWithOmittedOptions, {});
+		expect(result.find('#optional-counter').textContent).toBe('1');
+		expect(result.find('#default-counter').textContent).toBe('0');
+		result.click('#optional-counter');
+		expect(result.find('#optional-counter').textContent).toBe('2');
+		result.unmount();
+	});
+
 	it('preserves Mantine state hook behavior through Octane renders', () => {
 		const result = mount(StateHooks, {});
 

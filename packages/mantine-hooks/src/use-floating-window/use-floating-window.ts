@@ -310,7 +310,7 @@ export function useFloatingWindow<T extends HTMLElement>(
 // -------------------------------------------------------
 
 function px(v: string) {
-	return v.endsWith('px') ? parseFloat(v) : 0;
+	return v.endsWith('px') ? parseFloat(v) : undefined;
 }
 
 function calculateInitialPosition(
@@ -335,7 +335,9 @@ function calculateInitialPosition(
 	} else if (right != null) {
 		x = winW - rect.width - right;
 	} else {
-		x = px(style.left) || winW - rect.width - px(style.right) || offset;
+		const styleLeft = px(style.left);
+		const styleRight = px(style.right);
+		x = styleLeft ?? (styleRight == null ? offset : winW - rect.width - styleRight);
 	}
 
 	if (top != null) {
@@ -343,7 +345,9 @@ function calculateInitialPosition(
 	} else if (bottom != null) {
 		y = winH - rect.height - bottom;
 	} else {
-		y = px(style.top) || winH - rect.height - px(style.bottom) || offset;
+		const styleTop = px(style.top);
+		const styleBottom = px(style.bottom);
+		y = styleTop ?? (styleBottom == null ? offset : winH - rect.height - styleBottom);
 	}
 
 	return options.constrainToViewport

@@ -5,34 +5,43 @@ export function useEventListener<K extends keyof HTMLElementEventMap, T extends 
 	listener: (this: T, ev: HTMLElementEventMap[K]) => any,
 	options?: boolean | AddEventListenerOptions,
 ): React.RefCallback<T | null> {
-	const previousListener = useRef<Function | null>(null);
-	const previousNode = useRef<T | null>(null);
+	const attachment = useRef<{
+		node: T;
+		type: K;
+		listener: (this: T, ev: HTMLElementEventMap[K]) => any;
+		options?: boolean | AddEventListenerOptions;
+	} | null>(null);
+
+	const detach = useCallback(() => {
+		const current = attachment.current;
+		if (current) {
+			current.node.removeEventListener(current.type, current.listener as any, current.options);
+			attachment.current = null;
+		}
+	}, []);
 
 	const callbackRef: React.RefCallback<T | null> = useCallback(
 		(node) => {
+			detach();
 			if (!node) {
-				return;
-			}
-
-			if (previousNode.current && previousListener.current) {
-				previousNode.current.removeEventListener(type, previousListener.current as any, options);
+				return undefined;
 			}
 
 			node.addEventListener(type, listener as any, options);
-			previousNode.current = node;
-			previousListener.current = listener;
+			const current = { node, type, listener, options };
+			attachment.current = current;
+
+			return () => {
+				// A stale ref cleanup must not detach a replacement node.
+				if (attachment.current === current) {
+					detach();
+				}
+			};
 		},
-		[type, listener, options],
+		[type, listener, options, detach],
 	);
 
-	useEffect(
-		() => () => {
-			if (previousNode.current && previousListener.current) {
-				previousNode.current.removeEventListener(type, previousListener.current as any, options);
-			}
-		},
-		[type, options],
-	);
+	useEffect(() => () => detach(), [detach]);
 
 	return callbackRef;
 }

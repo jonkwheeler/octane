@@ -49,33 +49,37 @@ export function useFocusWithin<T extends HTMLElement = any>({
 		}
 	}, []);
 
+	const detach = useCallback(() => {
+		const node = previousNode.current;
+		if (node) {
+			node.removeEventListener('focusin', handleFocusIn);
+			node.removeEventListener('focusout', handleFocusOut);
+			previousNode.current = null;
+		}
+	}, [handleFocusIn, handleFocusOut]);
+
 	const callbackRef: React.RefCallback<T | null> = useCallback(
 		(node) => {
+			detach();
 			if (!node) {
-				return;
-			}
-
-			if (previousNode.current) {
-				previousNode.current.removeEventListener('focusin', handleFocusIn);
-				previousNode.current.removeEventListener('focusout', handleFocusOut);
+				return undefined;
 			}
 
 			node.addEventListener('focusin', handleFocusIn);
 			node.addEventListener('focusout', handleFocusOut);
 			previousNode.current = node;
+
+			return () => {
+				// A stale ref cleanup must not detach a replacement node.
+				if (previousNode.current === node) {
+					detach();
+				}
+			};
 		},
-		[handleFocusIn, handleFocusOut],
+		[handleFocusIn, handleFocusOut, detach],
 	);
 
-	useEffect(
-		() => () => {
-			if (previousNode.current) {
-				previousNode.current.removeEventListener('focusin', handleFocusIn);
-				previousNode.current.removeEventListener('focusout', handleFocusOut);
-			}
-		},
-		[],
-	);
+	useEffect(() => () => detach(), [detach]);
 
 	return { ref: callbackRef, focused };
 }

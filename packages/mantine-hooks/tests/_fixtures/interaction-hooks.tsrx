@@ -1,4 +1,11 @@
-import { useDrag, useHover, useLongPress, type UseDragState } from '@octanejs/mantine-hooks';
+import {
+	useClickOutside,
+	useDrag,
+	useHotkeys,
+	useHover,
+	useLongPress,
+	type UseDragState,
+} from '@octanejs/mantine-hooks';
 
 export function HoverHarness() @{
 	const { ref, hovered } = useHover<HTMLButtonElement>();
@@ -19,4 +26,10 @@ export function LongPressHarness({
 export function DragHarness({ onDrag }: { onDrag: (state: UseDragState) => void }) @{
 	const { ref } = useDrag<HTMLButtonElement>(onDrag);
 	<button id="drag" ref={ref}>drag</button>
+}
+
+export function OmittedInteractionOptionsHarness({ onOutside, onHotkey }) @{
+	const ref = useClickOutside<HTMLButtonElement>(onOutside);
+	useHotkeys([['K', onHotkey]]);
+	<button id="optional-interaction" ref={ref}>inside</button>
 }

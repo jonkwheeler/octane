@@ -17,6 +17,15 @@ export function StateHooks() @{
 	</section>
 }
 
+export function CounterWithOmittedOptions() @{
+	const [count, counter] = useCounter(1);
+	const [defaultCount] = useCounter();
+	<div>
+		<button id="optional-counter" onClick={counter.increment}>{count as string}</button>
+		<output id="default-counter">{defaultCount as string}</output>
+	</div>
+}
+
 export function FetchHooks() @{
 	const { data, loading, refetch } = useFetch<{ value: string }>('/state', { autoInvoke: false });
 

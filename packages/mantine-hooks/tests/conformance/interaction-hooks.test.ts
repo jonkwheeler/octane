@@ -1,10 +1,31 @@
 import { describe, expect, it, vi } from 'vitest';
 import { type UseDragState } from '../../src';
 import { getInputOnChange } from '../../src/use-input-state/use-input-state';
-import { mount } from '../_helpers';
-import { DragHarness, HoverHarness, LongPressHarness } from '../_fixtures/interaction-hooks.tsrx';
+import { mount, nextPaint } from '../_helpers';
+import {
+	DragHarness,
+	HoverHarness,
+	LongPressHarness,
+	OmittedInteractionOptionsHarness,
+} from '../_fixtures/interaction-hooks.tsrx';
 
 describe('@octanejs/mantine-hooks interaction hooks', () => {
+	it('uses interaction defaults when TSRX omits optional arguments', async () => {
+		const onOutside = vi.fn();
+		const onHotkey = vi.fn();
+		const result = mount(OmittedInteractionOptionsHarness, { onOutside, onHotkey });
+		await nextPaint();
+
+		document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+		document.documentElement.dispatchEvent(
+			new KeyboardEvent('keydown', { bubbles: true, key: 'k' }),
+		);
+
+		expect(onOutside).toHaveBeenCalledOnce();
+		expect(onHotkey).toHaveBeenCalledOnce();
+		result.unmount();
+	});
+
 	it('removes useHover listeners when its ref is cleaned up', () => {
 		const removeEventListener = vi.spyOn(HTMLElement.prototype, 'removeEventListener');
 		const result = mount(HoverHarness, {});
