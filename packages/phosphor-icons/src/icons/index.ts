@@ -17,9 +17,15 @@ export { Alien, AlienIcon } from './alien';
 export { AlignBottom, AlignBottomIcon } from './align-bottom';
 export { AlignBottomSimple, AlignBottomSimpleIcon } from './align-bottom-simple';
 export { AlignCenterHorizontal, AlignCenterHorizontalIcon } from './align-center-horizontal';
-export { AlignCenterHorizontalSimple, AlignCenterHorizontalSimpleIcon } from './align-center-horizontal-simple';
+export {
+	AlignCenterHorizontalSimple,
+	AlignCenterHorizontalSimpleIcon,
+} from './align-center-horizontal-simple';
 export { AlignCenterVertical, AlignCenterVerticalIcon } from './align-center-vertical';
-export { AlignCenterVerticalSimple, AlignCenterVerticalSimpleIcon } from './align-center-vertical-simple';
+export {
+	AlignCenterVerticalSimple,
+	AlignCenterVerticalSimpleIcon,
+} from './align-center-vertical-simple';
 export { AlignLeft, AlignLeftIcon } from './align-left';
 export { AlignLeftSimple, AlignLeftSimpleIcon } from './align-left-simple';
 export { AlignRight, AlignRightIcon } from './align-right';
@@ -509,7 +515,10 @@ export { DotsThree, DotsThreeIcon } from './dots-three';
 export { DotsThreeCircle, DotsThreeCircleIcon } from './dots-three-circle';
 export { DotsThreeCircleVertical, DotsThreeCircleVerticalIcon } from './dots-three-circle-vertical';
 export { DotsThreeOutline, DotsThreeOutlineIcon } from './dots-three-outline';
-export { DotsThreeOutlineVertical, DotsThreeOutlineVerticalIcon } from './dots-three-outline-vertical';
+export {
+	DotsThreeOutlineVertical,
+	DotsThreeOutlineVerticalIcon,
+} from './dots-three-outline-vertical';
 export { DotsThreeVertical, DotsThreeVerticalIcon } from './dots-three-vertical';
 export { Download, DownloadIcon } from './download';
 export { DownloadSimple, DownloadSimpleIcon } from './download-simple';
@@ -587,7 +596,11 @@ export { FileJpg, FileJpgIcon } from './file-jpg';
 export { FileJs, FileJsIcon } from './file-js';
 export { FileJsx, FileJsxIcon } from './file-jsx';
 export { FileLock, FileLockIcon } from './file-lock';
-export { FileMagnifyingGlass, FileMagnifyingGlassIcon, FileSearchIcon } from './file-magnifying-glass';
+export {
+	FileMagnifyingGlass,
+	FileMagnifyingGlassIcon,
+	FileSearchIcon,
+} from './file-magnifying-glass';
 export { FileMd, FileMdIcon } from './file-md';
 export { FileMinus, FileMinusIcon } from './file-minus';
 export { FilePdf, FilePdfIcon } from './file-pdf';
@@ -647,7 +660,11 @@ export { FolderMinus, FolderMinusIcon, FolderNotchMinusIcon } from './folder-min
 export { FolderOpen, FolderOpenIcon, FolderNotchOpenIcon } from './folder-open';
 export { FolderPlus, FolderPlusIcon, FolderNotchPlusIcon } from './folder-plus';
 export { FolderSimple, FolderSimpleIcon } from './folder-simple';
-export { FolderSimpleDashed, FolderSimpleDashedIcon, FolderSimpleDottedIcon } from './folder-simple-dashed';
+export {
+	FolderSimpleDashed,
+	FolderSimpleDashedIcon,
+	FolderSimpleDottedIcon,
+} from './folder-simple-dashed';
 export { FolderSimpleLock, FolderSimpleLockIcon } from './folder-simple-lock';
 export { FolderSimpleMinus, FolderSimpleMinusIcon } from './folder-simple-minus';
 export { FolderSimplePlus, FolderSimplePlusIcon } from './folder-simple-plus';
@@ -847,7 +864,10 @@ export { LinkBreak, LinkBreakIcon } from './link-break';
 export { LinkSimple, LinkSimpleIcon } from './link-simple';
 export { LinkSimpleBreak, LinkSimpleBreakIcon } from './link-simple-break';
 export { LinkSimpleHorizontal, LinkSimpleHorizontalIcon } from './link-simple-horizontal';
-export { LinkSimpleHorizontalBreak, LinkSimpleHorizontalBreakIcon } from './link-simple-horizontal-break';
+export {
+	LinkSimpleHorizontalBreak,
+	LinkSimpleHorizontalBreakIcon,
+} from './link-simple-horizontal-break';
 export { LinkedinLogo, LinkedinLogoIcon } from './linkedin-logo';
 export { LinktreeLogo, LinktreeLogoIcon } from './linktree-logo';
 export { LinuxLogo, LinuxLogoIcon } from './linux-logo';
