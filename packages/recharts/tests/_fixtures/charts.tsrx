@@ -3,7 +3,9 @@ import {
 	LineChart,
 	Bar,
 	Line,
+	Legend,
 	ResponsiveContainer,
+	Tooltip,
 	XAxis,
 	YAxis,
 } from '@octanejs/recharts';
@@ -52,4 +54,14 @@ export function ResponsiveChartApp() @{
 			<Line dataKey="uv" isAnimationActive={false} />
 		</LineChart>
 	</ResponsiveContainer>
+}
+
+export function OverlayChartApp() @{
+	<BarChart width={500} height={300} data={data}>
+		<XAxis dataKey="name" />
+		<YAxis />
+		<Tooltip active defaultIndex={0} isAnimationActive={false} />
+		<Legend />
+		<Bar dataKey="uv" name="UV" fill="#8884d8" isAnimationActive={false} />
+	</BarChart>
 }

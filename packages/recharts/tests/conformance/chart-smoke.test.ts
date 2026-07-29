@@ -6,7 +6,12 @@
  */
 import { describe, it, expect } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
-import { BarChartApp, LineChartApp, ResponsiveChartApp } from '../_fixtures/charts.tsrx';
+import {
+	BarChartApp,
+	LineChartApp,
+	OverlayChartApp,
+	ResponsiveChartApp,
+} from '../_fixtures/charts.tsrx';
 
 async function settle() {
 	// The chart pipeline is multi-pass: size lands via effect, axes/items
@@ -58,6 +63,16 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		const surface = result.container.querySelector('.recharts-surface');
 		expect(surface?.getAttribute('width')).toBe('420');
 		expect(surface?.getAttribute('height')).toBe('240');
+		result.unmount();
+	});
+
+	it('renders registered legend and active tooltip content through chart portals', async () => {
+		const result = mount(OverlayChartApp, {});
+		await settle();
+		expect(result.container.querySelector('.recharts-legend-wrapper')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-default-legend')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-tooltip-wrapper')).toBeTruthy();
+		expect(result.container.textContent).toContain('UV');
 		result.unmount();
 	});
 });
