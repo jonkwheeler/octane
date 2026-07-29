@@ -10,6 +10,7 @@ function ConnectionProbe() @{
 			{connect.isPending ? 'connecting' : connection.status}
 		</span>
 		<span id="address">{connection.address ?? '-'}</span>
+		<span id="connect-mutation-status">{connect.status}</span>
 		<button
 			id="connect"
 			disabled={!connector || connect.isPending}

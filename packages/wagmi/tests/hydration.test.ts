@@ -1,9 +1,13 @@
-import { describe, expect, it } from 'vitest';
-import { connect, createConfig, getConnection, http, hydrate } from '@wagmi/core';
+import { afterEach, describe, expect, it } from 'vitest';
+import { connect, createConfig, http, type Config, type State } from '@wagmi/core';
 import { mock } from '@wagmi/connectors/mock';
 import { mainnet } from 'viem/chains';
+import { act } from 'octane';
+import { flushEffects, mount } from '../../octane/tests/_helpers';
+import { HydrationApp } from './_fixtures/hydration.tsrx';
 
 const account = '0x0000000000000000000000000000000000000001' as const;
+let mounted: ReturnType<typeof mount> | undefined;
 
 function config() {
 	return createConfig({
@@ -14,31 +18,78 @@ function config() {
 	});
 }
 
-describe('SSR initial state', () => {
-	it('installs the connected snapshot before mount without a disconnected intermediate state', async () => {
-		const server = config();
-		await connect(server, { connector: server.connectors[0]! });
-		const initialState = server.state;
+async function connectedInitialState(client: Config): Promise<State> {
+	await connect(client, { connector: client.connectors[0]! });
+	const initialState = client.state;
+	client.setState((state) => ({
+		...state,
+		connections: new Map(),
+		current: null,
+		status: 'disconnected',
+	}));
+	return initialState;
+}
 
+afterEach(() => {
+	mounted?.unmount();
+	mounted = undefined;
+});
+
+describe('WagmiProvider SSR initial state', () => {
+	it('renders the supplied connection before effects without a disconnected intermediate render', async () => {
 		const client = config();
-		const statuses: string[] = [];
-		const unsubscribe = client.subscribe(
-			(state) => state.status,
-			(status) => statuses.push(status),
-		);
-		const { onMount } = hydrate(client, {
+		const initialState = await connectedInitialState(client);
+		client.connectors[0]!.isAuthorized = async () => true;
+		const log: string[] = [];
+		mounted = mount(HydrationApp, {
+			config: client,
 			initialState,
 			reconnectOnMount: true,
+			log: (entry) => log.push(entry),
 		});
 
-		expect(getConnection(client)).toMatchObject({
-			address: account,
-			chainId: mainnet.id,
-			status: 'reconnecting',
+		expect(mounted.find('#status').textContent).toBe('reconnecting');
+		expect(mounted.find('#address').textContent).toBe(account);
+		expect(log).toEqual([`render:reconnecting:${account}`]);
+
+		flushEffects();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
-		expect(statuses).toEqual(['reconnecting']);
-		await onMount();
-		expect(statuses).not.toContain('disconnected');
-		unsubscribe();
+
+		expect(log[1]).toBe(`effect:reconnecting:${account}`);
+		expect(log).not.toContain('render:disconnected:-');
+		expect(mounted.find('#status').textContent).not.toBe('disconnected');
+	});
+
+	it('does not reconnect on mount when reconnectOnMount is false', async () => {
+		const client = config();
+		const initialState = await connectedInitialState(client);
+		let reconnectAttempts = 0;
+		const connector = client.connectors[0]!;
+		const connectorConnect = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			reconnectAttempts++;
+			return connectorConnect(parameters);
+		};
+		const log: string[] = [];
+		mounted = mount(HydrationApp, {
+			config: client,
+			initialState,
+			reconnectOnMount: false,
+			log: (entry) => log.push(entry),
+		});
+
+		expect(log).toEqual(['render:disconnected:-']);
+		expect(mounted.find('#status').textContent).toBe('disconnected');
+		expect(mounted.find('#address').textContent).toBe('-');
+
+		flushEffects();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+
+		expect(log).toEqual(['render:disconnected:-', 'effect:disconnected:-']);
+		expect(reconnectAttempts).toBe(0);
 	});
 });

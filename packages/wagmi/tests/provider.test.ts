@@ -51,6 +51,60 @@ describe('WagmiProvider connection lifecycle', () => {
 		expect(mounted.find('#address').textContent).toBe(account);
 	});
 
+	it('disables connect retries even when QueryClient mutation defaults enable them', async () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		let attempts = 0;
+		const connector = config.connectors[0]!;
+		connector.connect = async () => {
+			attempts++;
+			throw new Error('wallet rejected');
+		};
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: 3 } } }),
+		});
+		flushEffects();
+		mounted.click('#connect');
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(attempts).toBe(1);
+		expect(mounted.find('#connect-mutation-status').textContent).toBe('error');
+	});
+
+	it('resets the connect mutation after connected → disconnected', async () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		});
+		flushEffects();
+		mounted.click('#connect');
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted.find('#connect-mutation-status').textContent).toBe('success');
+		act(() => {
+			config.setState((state) => ({
+				...state,
+				connections: new Map(),
+				current: null,
+				status: 'disconnected',
+			}));
+		});
+		flushEffects();
+		expect(mounted.find('#status').textContent).toBe('disconnected');
+		expect(mounted.find('#connect-mutation-status').textContent).toBe('idle');
+	});
+
 	it('removes every component-owned config watcher on unmount', () => {
 		const config = createConfig({
 			chains: [mainnet],

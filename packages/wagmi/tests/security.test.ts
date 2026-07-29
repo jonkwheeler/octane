@@ -10,7 +10,19 @@ import {
 } from '@octanejs/wagmi';
 import { connect, createConfig, disconnect, http } from '@wagmi/core';
 import { mock } from '@wagmi/connectors/mock';
-import { mainnet } from 'viem/chains';
+import { mainnet, optimism, sepolia } from 'viem/chains';
+
+function updateCurrentConnection(
+	config: ReturnType<typeof createConfig>,
+	update: Record<string, unknown>,
+) {
+	config.setState((state) => {
+		const connections = new Map(state.connections);
+		const current = state.current!;
+		connections.set(current, { ...connections.get(current)!, ...update } as any);
+		return { ...state, connections };
+	});
+}
 
 describe('hydration security boundary', () => {
 	it('fails closed for malformed, unknown-version, and oversized hints', () => {
@@ -121,7 +133,124 @@ describe('hydration security boundary', () => {
 		expect(error).toBeInstanceOf(ActionContextChangedError);
 		expect(error).toMatchObject({
 			phase: 'after-dispatch',
-			quarantinedResult: '0xlate-signature',
+		});
+		expect(error).not.toHaveProperty('quarantinedResult');
+	});
+
+	it('accepts the expected chain change but quarantines an unrelated identity change', async () => {
+		const account = '0x0000000000000000000000000000000000000001';
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		await connect(config, { connector: config.connectors[0]! });
+		const accepted = secureMutationOptions(
+			config,
+			{
+				mutationFn: async ({ chainId }: { chainId: number }) => {
+					updateCurrentConnection(config, { chainId });
+					return { id: chainId };
+				},
+			},
+			undefined,
+			'switchChain',
+		);
+		await expect(accepted.mutationFn({ chainId: optimism.id })).resolves.toEqual({
+			id: optimism.id,
+		});
+
+		const quarantined = secureMutationOptions(
+			config,
+			{
+				mutationFn: async ({ chainId }: { chainId: number }) => {
+					updateCurrentConnection(config, {
+						accounts: ['0x0000000000000000000000000000000000000002'],
+						chainId,
+					});
+					return { id: chainId };
+				},
+			},
+			undefined,
+			'switchChain',
+		);
+		await expect(quarantined.mutationFn({ chainId: sepolia.id })).rejects.toMatchObject({
+			phase: 'after-dispatch',
+		});
+	});
+
+	it('accepts the requested connection switch and validates the returned connection', async () => {
+		const first = mock({ accounts: ['0x0000000000000000000000000000000000000001'] });
+		const second = mock({ accounts: ['0x0000000000000000000000000000000000000002'] });
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [first, second],
+			transports: { [mainnet.id]: http() },
+		});
+		await connect(config, { connector: config.connectors[0]! });
+		const target = config.connectors[1]!;
+		const options = secureMutationOptions(
+			config,
+			{
+				mutationFn: async () => {
+					updateCurrentConnection(config, {
+						accounts: ['0x0000000000000000000000000000000000000002'],
+						connector: target,
+					});
+					return {
+						accounts: ['0x0000000000000000000000000000000000000002'],
+						chainId: 1,
+					};
+				},
+			},
+			undefined,
+			'switchConnection',
+		);
+		await expect(options.mutationFn({ connector: target })).resolves.toMatchObject({ chainId: 1 });
+	});
+
+	it('rejects per-call connector and account overrides that differ from the live connection', async () => {
+		const account = '0x0000000000000000000000000000000000000001';
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		await connect(config, { connector: config.connectors[0]! });
+		let dispatched = false;
+		const options = secureMutationOptions(config, {
+			mutationFn: async () => {
+				dispatched = true;
+			},
+		});
+		await expect(
+			options.mutationFn({ account: '0x0000000000000000000000000000000000000002' }),
+		).rejects.toMatchObject({ phase: 'before-dispatch' });
+		await expect(options.mutationFn({ connector: { uid: 'not-live' } })).rejects.toMatchObject({
+			phase: 'before-dispatch',
+		});
+		expect(dispatched).toBe(false);
+	});
+
+	it('allows a connector-free local chain switch while disconnected', async () => {
+		const config = createConfig({
+			chains: [mainnet, sepolia],
+			connectors: [],
+			transports: { [mainnet.id]: http(), [sepolia.id]: http() },
+		});
+		const options = secureMutationOptions(
+			config,
+			{
+				mutationFn: async ({ chainId }: { chainId: number }) => {
+					config.setState((state) => ({ ...state, chainId }));
+					return { id: chainId };
+				},
+			},
+			undefined,
+			'switchChain',
+		);
+		await expect(options.mutationFn({ chainId: sepolia.id })).resolves.toEqual({
+			id: sepolia.id,
 		});
 	});
 });

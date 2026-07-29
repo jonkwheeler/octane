@@ -3,6 +3,12 @@ export { WagmiContext } from './internal';
 export { WagmiProvider, type WagmiProviderProps } from './context.tsrx';
 export {
 	WagmiProviderNotFoundError,
+	type UseBalanceParameters,
+	type UseBalanceReturnType,
+	type UseConnectParameters,
+	type UseConnectReturnType,
+	type UseSignMessageParameters,
+	type UseSignMessageReturnType,
 	useBalance,
 	useChainId,
 	useChains,

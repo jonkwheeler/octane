@@ -10,7 +10,10 @@ import {
 	watchConnections,
 	watchConnectors,
 	type Config,
+	type ConnectErrorType,
+	type GetBalanceErrorType,
 	type ResolvedRegister,
+	type SignMessageErrorType,
 } from '@wagmi/core';
 import { deepEqual, watchChains } from '@wagmi/core/internal';
 import {
@@ -25,8 +28,27 @@ import {
 	switchConnectionMutationOptions,
 	waitForTransactionReceiptQueryOptions,
 	writeContractMutationOptions,
+	type ConnectData,
+	type ConnectMutate,
+	type ConnectMutateAsync,
+	type ConnectOptions,
+	type ConnectVariables,
+	type GetBalanceData,
+	type GetBalanceOptions,
+	type SignMessageData,
+	type SignMessageMutate,
+	type SignMessageMutateAsync,
+	type SignMessageOptions,
+	type SignMessageVariables,
 } from '@wagmi/core/query';
-import { useMutation, useQuery } from '@octanejs/tanstack-query';
+import {
+	useMutation,
+	useQuery,
+	type UseMutationOptions,
+	type UseMutationResult,
+	type UseQueryOptions,
+	type UseQueryResult,
+} from '@octanejs/tanstack-query';
 import { WagmiContext, subSlot } from './internal';
 import { secureMutationOptions } from './security';
 
@@ -35,8 +57,31 @@ type ParametersWithConfig<config extends Config = Config> = {
 	[key: string]: unknown;
 };
 
-const useOctaneMutation = useMutation as (...args: any[]) => any;
-const useOctaneQuery = useQuery as (...args: any[]) => any;
+const useMutationWithSlot = useMutation as unknown as <data, error, variables, context>(
+	options: UseMutationOptions<data, error, variables, context>,
+	queryClient: undefined,
+	slot: symbol | undefined,
+) => UseMutationResult<data, error, variables, context>;
+
+const useQueryWithSlot = useQuery as unknown as <queryData, error, data>(
+	options: UseQueryOptions<queryData, error, data>,
+	queryClient: undefined,
+	slot: symbol | undefined,
+) => UseQueryResult<data, error>;
+
+function useOctaneMutation<data, error, variables, context>(
+	options: UseMutationOptions<data, error, variables, context>,
+	slot: symbol | undefined,
+): UseMutationResult<data, error, variables, context> {
+	return useMutationWithSlot(options, undefined, slot);
+}
+
+function useOctaneQuery<queryData, error, data>(
+	options: UseQueryOptions<queryData, error, data>,
+	slot: symbol | undefined,
+): UseQueryResult<data, error> {
+	return useQueryWithSlot(options, undefined, slot);
+}
 
 function argumentsAndSlot(
 	parameters: ParametersWithConfig | symbol | undefined,
@@ -152,35 +197,70 @@ export function useConnections(parameters: ParametersWithConfig | symbol = {}, .
 }
 
 function useMutationWithAliases(
-	factory: (config: Config, parameters: any) => any,
+	factory: unknown,
 	parameters: ParametersWithConfig | symbol | undefined,
 	rest: unknown[],
 	aliases: string[],
 	privileged = false,
+	securityAction: 'privileged' | 'switchChain' | 'switchConnection' = 'privileged',
 ) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	const mutationOptions = factory(config, options);
+	const mutationOptions = (
+		factory as (
+			config: Config,
+			parameters: ParametersWithConfig,
+		) => UseMutationOptions<unknown, unknown, unknown, unknown>
+	)(config, options);
 	const mutation = useOctaneMutation(
-		privileged ? secureMutationOptions(config, mutationOptions) : mutationOptions,
-		undefined,
+		privileged
+			? secureMutationOptions(config, mutationOptions, undefined, securityAction)
+			: mutationOptions,
 		subSlot(slot, 'mutation'),
 	);
-	const result = { ...mutation };
+	const result: Record<string, unknown> & typeof mutation = { ...mutation };
 	for (const alias of aliases) {
 		result[alias] = alias.endsWith('Async') ? mutation.mutateAsync : mutation.mutate;
 	}
 	return result;
 }
 
+export type UseConnectParameters<
+	config extends Config = Config,
+	context = unknown,
+> = ConnectOptions<config, context> & { config?: config };
+
+export type UseConnectReturnType<config extends Config = Config, context = unknown> = Omit<
+	UseMutationResult<
+		ConnectData<config, config['connectors'][number], boolean>,
+		ConnectErrorType,
+		ConnectVariables<config, config['connectors'][number], boolean>,
+		context
+	>,
+	'mutate' | 'mutateAsync'
+> & {
+	mutate: ConnectMutate<config, context>;
+	mutateAsync: ConnectMutateAsync<config, context>;
+	connect: ConnectMutate<config, context>;
+	connectAsync: ConnectMutateAsync<config, context>;
+	connectors: config['connectors'];
+};
+
+export function useConnect<config extends Config = ResolvedRegister['config'], context = unknown>(
+	parameters?: UseConnectParameters<config, context> | symbol,
+	...rest: unknown[]
+): UseConnectReturnType<config, context>;
 export function useConnect(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
+	const mutationOptions = connectMutationOptions(
+		config,
+		options as UseConnectParameters<typeof config>,
+	);
 	const mutation = useOctaneMutation(
-		connectMutationOptions(config, options as any),
-		undefined,
+		{ ...mutationOptions, retry: false },
 		subSlot(slot, 'mutation'),
-	) as any;
+	);
 	useEffect(
 		() =>
 			config.subscribe(
@@ -197,7 +277,7 @@ export function useConnect(parameters: ParametersWithConfig | symbol = {}, ...re
 		connect: mutation.mutate,
 		connectAsync: mutation.mutateAsync,
 		connectors: useConnectors({ config }, subSlot(slot, 'connectors')),
-	};
+	} as UseConnectReturnType<typeof config>;
 }
 
 export function useDisconnect(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
@@ -225,6 +305,7 @@ export function useSwitchConnection(
 		rest,
 		['switchConnection', 'switchConnectionAsync'],
 		true,
+		'switchConnection',
 	);
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
@@ -243,6 +324,7 @@ export function useSwitchChain(parameters: ParametersWithConfig | symbol = {}, .
 		rest,
 		['switchChain', 'switchChainAsync'],
 		true,
+		'switchChain',
 	);
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
@@ -250,7 +332,7 @@ export function useSwitchChain(parameters: ParametersWithConfig | symbol = {}, .
 }
 
 function useCoreQuery(
-	factory: (config: Config, parameters: any) => any,
+	factory: unknown,
 	parameters: ParametersWithConfig | symbol | undefined,
 	rest: unknown[],
 	options: { account?: boolean; chain?: boolean } = {},
@@ -261,7 +343,12 @@ function useCoreQuery(
 	const connection = options.account
 		? useConnection({ config }, subSlot(slot, 'connection'))
 		: undefined;
-	const queryOptions = factory(config, {
+	const queryOptions = (
+		factory as (
+			config: Config,
+			parameters: ParametersWithConfig,
+		) => UseQueryOptions<unknown, unknown, unknown>
+	)(config, {
 		...input,
 		...(options.account
 			? {
@@ -271,9 +358,25 @@ function useCoreQuery(
 			: {}),
 		...(options.chain ? { chainId: input.chainId ?? chainId } : {}),
 	});
-	return useOctaneQuery(queryOptions, undefined, subSlot(slot, 'query'));
+	return useOctaneQuery(queryOptions, subSlot(slot, 'query'));
 }
 
+export type UseBalanceParameters<
+	config extends Config = Config,
+	selectData = GetBalanceData,
+> = GetBalanceOptions<config, selectData> & { config?: config };
+export type UseBalanceReturnType<selectData = GetBalanceData> = UseQueryResult<
+	selectData,
+	GetBalanceErrorType
+>;
+
+export function useBalance<
+	config extends Config = ResolvedRegister['config'],
+	selectData = GetBalanceData,
+>(
+	parameters?: UseBalanceParameters<config, selectData> | symbol,
+	...rest: unknown[]
+): UseBalanceReturnType<selectData>;
 export function useBalance(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
 	return useCoreQuery(getBalanceQueryOptions, parameters, rest, { chain: true });
 }
@@ -328,12 +431,28 @@ export function useSendTransaction(
 	);
 }
 
-export function useSignMessage(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
+export type UseSignMessageParameters<context = unknown> = SignMessageOptions<context> & {
+	config?: Config;
+};
+export type UseSignMessageReturnType<context = unknown> = Omit<
+	UseMutationResult<SignMessageData, SignMessageErrorType, SignMessageVariables, context>,
+	'mutate' | 'mutateAsync'
+> & {
+	mutate: SignMessageMutate<context>;
+	mutateAsync: SignMessageMutateAsync<context>;
+	signMessage: SignMessageMutate<context>;
+	signMessageAsync: SignMessageMutateAsync<context>;
+};
+
+export function useSignMessage<context = unknown>(
+	parameters: UseSignMessageParameters<context> | symbol = {},
+	...rest: unknown[]
+): UseSignMessageReturnType<context> {
 	return useMutationWithAliases(
 		signMessageMutationOptions,
-		parameters,
+		parameters as ParametersWithConfig | symbol,
 		rest,
 		['signMessage', 'signMessageAsync'],
 		true,
-	);
+	) as unknown as UseSignMessageReturnType<context>;
 }
