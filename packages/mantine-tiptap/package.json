@@ -1,0 +1,45 @@
+{
+  "name": "@octanejs/mantine-tiptap",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Mantine rich text editor components for Octane and Tiptap.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/mantine-tiptap"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": ["src", "README.md"],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --project mantine-tiptap"
+  },
+  "dependencies": {
+    "@octanejs/mantine-core": "workspace:*",
+    "@octanejs/mantine-hooks": "workspace:*",
+    "@octanejs/tiptap": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tiptap/extension-link": ">=3.3.0",
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@mantine/tiptap": "9.5.0",
+    "@tiptap/extension-link": "3.28.0",
+    "@tiptap/starter-kit": "3.28.0",
+    "@types/react": "catalog:default",
+    "octane": "workspace:*",
+    "vitest": "catalog:default"
+  }
+}
