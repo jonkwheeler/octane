@@ -188,6 +188,20 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/mantine-charts",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@mantine/charts", "version": "9.5.0" },
+      "surface": "Supported @mantine/charts 9.5.0 runtime surface for AreaChart, BarChart, LineChart, Sparkline, DonutChart, PieChart, RadarChart, ScatterChart, BubbleChart, CompositeChart, RadialBarChart, FunnelChart, Heatmap, BarsList, SankeyChart, SunburstChart, BulletChart, tooltips, legends, and shared chart types. ChartBrush and Treemap remain excluded until their stateful Recharts class implementations are converted.",
+      "divergences": [
+        "Chart callbacks receive native browser events through Octane instead of React synthetic events.",
+        "Type-only component namespaces are exported as direct named types because runtime TypeScript namespaces are not emitted by the TSRX compiler.",
+        "ChartBrush and Treemap are not exported in this release."
+      ],
+      "ssr": "Chart wrappers can render deterministic shells during server rendering; responsive SVG geometry is finalized after client measurement.",
+      "verified": "2026-07-29"
+    },
+    {
       "name": "@octanejs/mantine-core",
       "version": "0.1.0",
       "category": "UI and interaction",
@@ -695,6 +709,7 @@
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
     "@lexical/react": "@octanejs/lexical",
+    "@mantine/charts": "@octanejs/mantine-charts",
     "@mantine/core": "@octanejs/mantine-core",
     "@mantine/form": "@octanejs/mantine-form",
     "@mantine/hooks": "@octanejs/mantine-hooks",

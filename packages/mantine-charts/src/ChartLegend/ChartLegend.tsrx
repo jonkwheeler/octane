@@ -1,0 +1,146 @@
+import {
+  Box,
+  BoxProps,
+  ColorSwatch,
+  ElementProps,
+  factory,
+  Factory,
+  StylesApiProps,
+  useProps,
+  useStyles,
+} from '@octanejs/mantine-core';
+import { ChartSeries } from '../types';
+import { getSeriesLabels } from '../utils';
+import classes from './ChartLegend.module.css';
+
+function updateChartLegendPayload(
+  payload: Record<string, any>[],
+  splitNestedKeys: boolean
+): Record<string, any>[] {
+  return payload.map((item) => {
+    const newDataKey = splitNestedKeys ? item.dataKey?.split('.').pop() : item.dataKey;
+    return {
+      ...item,
+      dataKey: newDataKey,
+      payload: {
+        ...item.payload,
+        name: newDataKey,
+        dataKey: newDataKey,
+      },
+    };
+  });
+}
+
+export function getFilteredChartLegendPayload(
+  payload: readonly Record<string, any>[],
+  splitNestedKeys = true
+) {
+  return updateChartLegendPayload(
+    payload.filter((item) => item.color !== 'none'),
+    splitNestedKeys
+  );
+}
+
+export type ChartLegendStylesNames = 'legendItem' | 'legendItemColor' | 'legendItemName' | 'legend';
+
+export interface ChartLegendProps
+  extends BoxProps, StylesApiProps<ChartLegendFactory>, ElementProps<'div'> {
+  /** Chart data provided by recharts */
+  payload: readonly Record<string, any>[] | undefined;
+
+  /** Function called when mouse enters/leaves one of the legend items */
+  onHighlight: (area: string | number | null) => void;
+
+  /** Position of the legend relative to the chart, used to apply margin on the corresponding side */
+  legendPosition: 'top' | 'bottom' | 'middle';
+
+  /** Data used for labels, only applicable for area charts: AreaChart, LineChart, BarChart */
+  series?: ChartSeries[];
+
+  /** Determines whether color swatch should be shown next to the label @default true */
+  showColor?: boolean;
+
+  /** Determines whether the legend should be centered @default false */
+  centered?: boolean;
+}
+
+export type ChartLegendFactory = Factory<{
+  props: ChartLegendProps;
+  ref: HTMLDivElement;
+  stylesNames: ChartLegendStylesNames;
+}>;
+
+export const ChartLegend = factory<ChartLegendFactory>((_props) => {
+  const props = useProps('ChartLegend', null, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    payload,
+    onHighlight,
+    legendPosition,
+    mod,
+    series,
+    showColor,
+    centered,
+    attributes,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<ChartLegendFactory>({
+    name: 'ChartLegend',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    rootSelector: 'legend',
+  });
+
+  if (!payload) {
+    return null;
+  }
+
+  const filteredPayload = getFilteredChartLegendPayload(payload, series != null);
+  const labels = getSeriesLabels(series);
+
+  const items = filteredPayload.map((item, index) => (
+    <div
+      key={index}
+      {...getStyles('legendItem')}
+      onMouseEnter={() => onHighlight(item.highlightKey ?? item.dataKey)}
+      data-without-color={showColor === false || undefined}
+    >
+      <ColorSwatch
+        color={item.color}
+        size={12}
+        {...getStyles('legendItemColor')}
+        withShadow={false}
+      />
+      <p {...getStyles('legendItemName')}>{labels[item.dataKey] || item.dataKey}</p>
+    </div>
+  ));
+
+  return (
+    <Box
+      mod={[{ position: legendPosition, centered }, mod]}
+      {...getStyles('legend')}
+      {...others}
+      onMouseLeave={(event) => {
+        others.onMouseLeave?.(event);
+        onHighlight(null);
+      }}
+    >
+      {items}
+    </Box>
+  );
+});
+
+ChartLegend.displayName = '@mantine/charts/ChartLegend';
+ChartLegend.classes = classes;

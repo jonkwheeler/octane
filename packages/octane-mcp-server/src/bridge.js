@@ -10,6 +10,7 @@ export const KNOWN_BINDINGS = {
 	valtio: '@octanejs/valtio',
 	'mobx-react-lite': '@octanejs/mobx',
 	'@mantine/core': '@octanejs/mantine-core',
+	'@mantine/charts': '@octanejs/mantine-charts',
 	'@mantine/form': '@octanejs/mantine-form',
 	'@mantine/hooks': '@octanejs/mantine-hooks',
 	'react-number-format': '@octanejs/number-format',

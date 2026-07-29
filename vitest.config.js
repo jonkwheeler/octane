@@ -575,6 +575,44 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'mantine-charts',
+					include: ['packages/mantine-charts/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+					testTimeout: 30_000,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mantine-charts$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-charts/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-core$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-core/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/mantine-hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/mantine-hooks/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/recharts$/,
+							replacement: resolve(import.meta.dirname, 'packages/recharts/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/number-format$/,
+							replacement: resolve(import.meta.dirname, 'packages/number-format/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-form-ssr',
 					include: ['packages/mantine-form/tests/ssr/**/*.test.ts'],
 					environment: 'node',

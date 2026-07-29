@@ -34,6 +34,7 @@
       "@octanejs/base-ui",
       "@octanejs/aria",
       "@octanejs/mantine-core",
+      "@octanejs/mantine-charts",
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",

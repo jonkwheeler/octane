@@ -1,0 +1,68 @@
+.root {
+  display: block;
+  width: 100%;
+
+  --chart-bar-label-color: var(--mantine-color-dimmed);
+
+  svg {
+    overflow: visible;
+    outline: 0;
+  }
+
+  :where(svg *) {
+    outline: 0;
+  }
+
+  svg:focus-visible {
+    outline: 2px solid var(--mantine-primary-color-filled);
+    outline-offset: 2px;
+  }
+
+  @mixin where-light {
+    --chart-grid-color: rgba(173, 181, 189, 0.6);
+    --chart-cursor-fill: rgba(173, 181, 189, 0.15);
+  }
+
+  @mixin where-dark {
+    --chart-cursor-fill: rgba(105, 105, 105, 0.15);
+    --chart-grid-color: rgba(105, 105, 105, 0.6);
+  }
+
+  & :where(text) {
+    font-family: var(--mantine-font-family);
+    color: var(--chart-text-color, var(--mantine-color-dimmed));
+  }
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+}
+
+.grid {
+  stroke: var(--chart-grid-color);
+}
+
+.axis {
+  color: var(--chart-grid-color);
+}
+
+.axisLabel {
+  color: var(--chart-text-color, var(--mantine-color-dimmed));
+}
+
+.tooltip {
+  min-width: 200px;
+  background-color: var(--mantine-color-body);
+  box-shadow: var(--mantine-shadow-md);
+  border-radius: var(--mantine-radius-default);
+  padding: var(--mantine-spacing-sm);
+
+  @mixin where-light {
+    border: 1px solid var(--mantine-color-gray-3);
+  }
+
+  @mixin where-dark {
+    border: 1px solid var(--mantine-color-dark-4);
+  }
+}

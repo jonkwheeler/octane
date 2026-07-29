@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 48 `@octanejs/*` framework bindings.
+The central status table for the 49 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -31,6 +31,7 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/jotai`](#octanejsjotai) | `jotai@2.20.2` | Complete 1:1 port: the framework-agnostic vanilla core (`jotai/vanilla`, `/vanilla/utils`, `/vanilla/internals`) is reused verbatim; the React layer (`Provider`, `useStore`, `useAtom`, `useAtomValue`, `useSetAtom`) and `react/utils` (`useResetAtom`, `useReducerAtom`, `useAtomCallback`, `useHydrateAtoms`) are ported onto octane hooks, preserving upstream's useReducer force-update + effect-subscription implementation, async atoms via octane's `use()`. | `jotai/babel/*` (React-specific compile-time plugins) is not shipped | No SSR-specific surface; `useHydrateAtoms` is ported and usable for hydration seeding; no dedicated SSR tests. | 2026-07-21 |
 | [`@octanejs/lexical`](#octanejslexical) | `@lexical/react@0.46.0` | 35 of 39 `@lexical/react` modules ported: composer + contexts, the editable surface, plain/rich text, and the full plugin/menu set (history, lists + check-list, links, tables, markdown shortcuts, the typeahead/node-menu/context-menu family, draggable-block, character-limit, …) plus the `useLexical*` hooks. | Positioning uses `@floating-ui/dom` instead of `@floating-ui/react`; The class-based `LexicalErrorBoundary` becomes an octane error boundary; `forwardRef` becomes ref-as-prop | No dedicated SSR/hydration tests. | 2026-07-09 |
 | [`@octanejs/lucide`](#octanejslucide) | `lucide-react@1.24.0` | Complete against the published `lucide-react@1.24.0` runtime surface: every canonical icon and alias, the `icons` namespace, `Icon`, `createLucideIcon`, `LucideProvider`, `useLucideContext`, `DynamicIcon`, `iconNames`, `dynamicIconImports`, and per-icon subpath imports. | Icon refs are normal Octane `ref` props rather than React `forwardRef` components; Event callbacks receive native DOM events rather than React synthetic events | Supported and tested: icons and provider defaults render through `octane/server`, and client hydration adopts the server-rendered SVG element. | 2026-07-13 |
+| [`@octanejs/mantine-charts`](#octanejsmantine-charts) | `@mantine/charts@9.5.0` | Supported @mantine/charts 9.5.0 runtime surface for AreaChart, BarChart, LineChart, Sparkline, DonutChart, PieChart, RadarChart, ScatterChart, BubbleChart, CompositeChart, RadialBarChart, FunnelChart, Heatmap, BarsList, SankeyChart, SunburstChart, BulletChart, tooltips, legends, and shared chart types. ChartBrush and Treemap remain excluded until their stateful Recharts class implementations are converted. | Chart callbacks receive native browser events through Octane instead of React synthetic events; Type-only component namespaces are exported as direct named types because runtime TypeScript namespaces are not emitted by the TSRX compiler; ChartBrush and Treemap are not exported in this release | Chart wrappers can render deterministic shells during server rendering; responsive SVG geometry is finalized after client measurement. | 2026-07-29 |
 | [`@octanejs/mantine-core`](#octanejsmantine-core) | `@mantine/core@9.5.0` | Complete @mantine/core 9.5.0 source and style surface, including compound components, overlays, forms, layout, navigation, data display, and utility exports. | Target components use transparent or inline-flex DOM wrappers to attach refs, accessibility attributes, and native event handlers because compiled TSRX child blocks are opaque and cannot be cloned; Compound components that depend on source order use render-time registration or post-render DOM metadata instead of React.Children descriptor inspection; Event callbacks receive native browser events through Octane's delegated event system | Provider, styles, compound children, overlays, Stepper, and hydration are covered. DOM-only positioning and focus effects remain inert during server rendering. | 2026-07-29 |
 | [`@octanejs/mantine-form`](#octanejsmantine-form) | `@mantine/form@9.5.0` | Complete @mantine/form 9.5.0 runtime and type surface: useForm, useField, providers, actions, validators, nested paths, list operations, sync/async validation, schemas, watchers, and controlled/uncontrolled input props. | Hooks use Octane lifecycle and state primitives; Input and submit callbacks receive native browser events instead of React synthetic events | Form state and validation are deterministic during server rendering; browser event attachment activates during hydration. | 2026-07-29 |
 | [`@octanejs/mantine-hooks`](#octanejsmantine-hooks) | `@mantine/hooks@9.5.0` | Complete @mantine/hooks 9.5.0 runtime export surface: state, timing, storage, viewport, input, focus, pointer, observer, hotkey, scrolling, collapse, drag, splitter, mask, and utility hooks. | Hooks use Octane's compiler-injected hook slots and runtime lifecycle instead of React's dispatcher; DOM subscriptions receive native browser events; React is retained only as a source-compatibility type vocabulary for refs, events, actions, and CSS properties; it is not loaded at runtime | Dedicated Node-mode coverage verifies deterministic state-hook output and guarded media-query initial values without a browser. DOM-only effects remain inert during server rendering. | 2026-07-28 |
@@ -307,6 +308,24 @@ Scope/evidence last checked: 2026-07-13.
 - Generation checks pin the React export, alias, and dynamic-name surfaces and reject stale generated files.
 
 See also: [`docs/lucide-port-plan.md`](lucide-port-plan.md)
+
+## @octanejs/mantine-charts
+
+[`packages/mantine-charts`](../packages/mantine-charts) `0.1.0` — ports `@mantine/charts@9.5.0`. Status data: [`packages/mantine-charts/status.json`](../packages/mantine-charts/status.json).
+
+Supported @mantine/charts 9.5.0 runtime surface for AreaChart, BarChart, LineChart, Sparkline, DonutChart, PieChart, RadarChart, ScatterChart, BubbleChart, CompositeChart, RadialBarChart, FunnelChart, Heatmap, BarsList, SankeyChart, SunburstChart, BulletChart, tooltips, legends, and shared chart types. ChartBrush and Treemap remain excluded until their stateful Recharts class implementations are converted.
+
+Known divergences:
+
+- Chart callbacks receive native browser events through Octane instead of React synthetic events.
+- Type-only component namespaces are exported as direct named types because runtime TypeScript namespaces are not emitted by the TSRX compiler.
+- ChartBrush and Treemap are not exported in this release.
+
+SSR / hydration: Chart wrappers can render deterministic shells during server rendering; responsive SVG geometry is finalized after client measurement.
+
+Scope/evidence last checked: 2026-07-29.
+
+- Client conformance covers Cartesian, polar, funnel, Sankey, and Sunburst wrappers through Mantine Core and Octane Recharts.
 
 ## @octanejs/mantine-core
 

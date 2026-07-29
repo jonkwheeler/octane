@@ -1,0 +1,400 @@
+import { useMemo, useState } from 'octane';
+import {
+  Box,
+  BoxProps,
+  ElementProps,
+  factory,
+  Factory,
+  StylesApiProps,
+  Tooltip,
+  TooltipFloatingProps,
+  useProps,
+  useStyles,
+} from '@octanejs/mantine-core';
+import { getBoundaries } from './get-boundaries/get-boundaries';
+import { getColumns, getFirstMonthColumnIndex, HeatmapColumn } from './get-columns/get-columns';
+import { getDatesRange } from './get-dates-range/get-dates-range';
+import { getMonthsRange } from './get-months-range/get-months-range';
+import { HeatmapSplitWeeks } from './HeatmapSplitWeeks.tsrx';
+import { HeatmapWeeks } from './HeatmapWeeks.tsrx';
+import { rotateWeekdaysNames } from './rotate-weekdays-names/rotate-weekdays-names';
+import classes from './Heatmap.module.css';
+
+export type HeatmapStylesNames =
+  | 'root'
+  | 'rect'
+  | 'weekdayLabel'
+  | 'monthLabel'
+  | 'legend'
+  | 'legendLabel'
+  | 'legendRect';
+
+interface HeatmapRectData {
+  date: string;
+  value: number | null;
+}
+
+export interface HeatmapProps
+  extends
+    BoxProps,
+    StylesApiProps<HeatmapFactory>,
+    ElementProps<'svg', 'display' | 'opacity' | 'viewBox' | 'width' | 'height'> {
+  /** Heatmap data, key is date in `YYYY-MM-DD` format (interpreted as a UTC calendar day) */
+  data: Record<string, number>;
+
+  /** Heatmap domain, array of 2 numbers, min and max values, calculated from data by default */
+  domain?: [number, number];
+
+  /** Heatmap start date. Current date - 1 year by default. Date is normalized to UTC midnight of the intended calendar day. */
+  startDate?: Date | string;
+
+  /** Heatmap end date. Current date by default. Date is normalized to UTC midnight of the intended calendar day. */
+  endDate?: Date | string;
+
+  /** If set, month labels are displayed @default false */
+  withMonthLabels?: boolean;
+
+  /** Month labels position relative to the heatmap @default 'top' */
+  monthLabelsPosition?: 'top' | 'bottom';
+
+  /** Month labels, array of 12 elements, can be used for localization */
+  monthLabels?: string[];
+
+  /** If set, weekday labels are displayed @default false */
+  withWeekdayLabels?: boolean;
+
+  /** Weekday labels, array of 7 elements, can be used for localization */
+  weekdayLabels?: string[];
+
+  /** If set, trailing dates that do not fall into the given `startDate` – `endDate` range are displayed to fill empty space. @default true */
+  withOutsideDates?: boolean;
+
+  /** First day of week, 0 – Sunday, 1 – Monday. @default 1 – Monday */
+  firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+  /** Size of day rect in px @default 10 */
+  rectSize?: number;
+
+  /** Gap between rects in px @default 1 */
+  gap?: number;
+
+  /** Rect radius in px @default 2 */
+  rectRadius?: number;
+
+  /** Colors array, used to calculate color for each value, by default 4 shades of green colors are used */
+  colors?: string[];
+
+  /** Width of weekday labels column @default 30 */
+  weekdaysLabelsWidth?: number;
+
+  /** Height of month labels row @default 30 */
+  monthsLabelsHeight?: number;
+
+  /** Font size of month and weekday labels @default 12 */
+  fontSize?: number;
+
+  /** A function to generate tooltip label based on the hovered rect date and value, required for the tooltip to be visible */
+  getTooltipLabel?: (input: HeatmapRectData) => React.ReactNode;
+
+  /** If set, tooltip is displayed on rect hover @default false */
+  withTooltip?: boolean;
+
+  /** Props passed down to the `Tooltip.Floating` component */
+  tooltipProps?: Partial<TooltipFloatingProps>;
+
+  /** Props passed down to each rect depending on its date and associated value */
+  getRectProps?: (input: HeatmapRectData) => React.ComponentProps<'rect'>;
+
+  /** If set, inserts a spacer column between months @default false */
+  splitMonths?: boolean;
+
+  /** If set, legend with color levels is displayed below the heatmap @default false */
+  withLegend?: boolean;
+
+  /** Legend labels, array of 2 elements: [min label, max label] @default ['Less', 'More'] */
+  legendLabels?: [string, string];
+}
+
+export type HeatmapFactory = Factory<{
+  props: HeatmapProps;
+  ref: SVGSVGElement;
+  stylesNames: HeatmapStylesNames;
+}>;
+
+const defaultProps = {
+  monthLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  weekdayLabels: ['Sun', 'Mon', '', 'Wed', '', 'Fri', ''],
+  monthLabelsPosition: 'top',
+  withOutsideDates: true,
+  firstDayOfWeek: 1,
+  rectSize: 10,
+  weekdaysLabelsWidth: 30,
+  monthsLabelsHeight: 14,
+  gap: 1,
+  rectRadius: 2,
+  fontSize: 12,
+  colors: [
+    'var(--heatmap-level-1)',
+    'var(--heatmap-level-2)',
+    'var(--heatmap-level-3)',
+    'var(--heatmap-level-4)',
+  ],
+  legendLabels: ['Less', 'More'] as [string, string],
+} satisfies Partial<HeatmapProps>;
+
+export const Heatmap = factory<HeatmapFactory>((_props) => {
+  const props = useProps('Heatmap', defaultProps, _props);
+  const {
+    classNames,
+    className,
+    style,
+    styles,
+    unstyled,
+    vars,
+    data,
+    startDate,
+    endDate,
+    withMonthLabels,
+    monthLabelsPosition,
+    withWeekdayLabels,
+    weekdayLabels,
+    withOutsideDates,
+    monthLabels,
+    firstDayOfWeek,
+    rectSize = 10,
+    gap = 1,
+    rectRadius,
+    domain,
+    colors,
+    weekdaysLabelsWidth,
+    monthsLabelsHeight,
+    fontSize,
+    getTooltipLabel,
+    withTooltip,
+    tooltipProps,
+    getRectProps,
+    splitMonths,
+    withLegend,
+    legendLabels,
+    attributes,
+    ...others
+  } = props;
+
+  const getStyles = useStyles<HeatmapFactory>({
+    name: 'Heatmap',
+    classes,
+    props,
+    className,
+    style,
+    classNames,
+    styles,
+    unstyled,
+    attributes,
+    vars,
+  });
+
+  const [hoveredRect, setHoveredRect] = useState<HeatmapRectData | null>(null);
+  const rectSizeWithGap = rectSize + gap;
+  const weekdaysOffset = withWeekdayLabels ? weekdaysLabelsWidth : 0;
+  const monthsLabelAtTop = withMonthLabels && monthLabelsPosition === 'top';
+  const monthsLabelAtBottom = withMonthLabels && monthLabelsPosition === 'bottom';
+  const monthsOffset = monthsLabelAtTop ? monthsLabelsHeight : 0;
+  const monthsBottomHeight = monthsLabelAtBottom ? monthsLabelsHeight : 0;
+  const [min, max] = getBoundaries({ data, domain });
+  const rotatedWeekdayLabels = useMemo(
+    () => rotateWeekdaysNames(weekdayLabels, firstDayOfWeek),
+    [weekdayLabels, firstDayOfWeek]
+  );
+
+  const datesRange = getDatesRange({
+    startDate,
+    endDate,
+    withOutsideDates,
+    firstDayOfWeek,
+  });
+
+  // Calculate months range for labels and optional split between months
+  const monthsRange = withMonthLabels || splitMonths ? getMonthsRange(datesRange) : [];
+
+  // Shared props for weeks rendering components
+  const weeksProps = {
+    data,
+    datesRange,
+    rectSize,
+    gap,
+    rectRadius,
+    min,
+    max,
+    colors,
+    withTooltip,
+    setHoveredRect,
+    getRectProps,
+    getStyles,
+  };
+
+  // Use different rendering logic based on splitMonths
+  const weeks = splitMonths ? (
+    <HeatmapSplitWeeks {...weeksProps} />
+  ) : (
+    <HeatmapWeeks {...weeksProps} />
+  );
+
+  // Calculate total columns based on whether splitMonths is enabled
+  const totalColumns = splitMonths ? getColumns(datesRange, splitMonths).length : datesRange.length;
+
+  const computeMonthLabelX = (monthPosition: number, monthIndex: number) => {
+    if (!splitMonths) {
+      return monthPosition * rectSizeWithGap + gap + weekdaysOffset;
+    }
+
+    // For split months, find the first column index that has this month and shift label by 1 column
+    const firstMonth = monthsRange[monthIndex];
+    const columns: HeatmapColumn[] = getColumns(datesRange, splitMonths);
+    const i = getFirstMonthColumnIndex(columns, firstMonth.month);
+    const base = i >= 0 ? i : monthPosition;
+    // shift right by one column
+    return (base + 1) * rectSizeWithGap + gap + weekdaysOffset;
+  };
+
+  const monthsLabelsNodes =
+    withMonthLabels && monthLabels
+      ? monthsRange.map((month, monthIndex) => {
+          // For non-split months, use original logic with minimum size of 3
+          // For split months, use minimum size of 2
+          const minSize = splitMonths ? 2 : 3;
+          if (month.size < minSize) {
+            return null;
+          }
+
+          const monthLabel = monthLabels[month.month];
+
+          const monthLabelY = monthsLabelAtBottom
+            ? rectSizeWithGap * 7 + gap + monthsLabelsHeight - 4
+            : monthsLabelsHeight - 4;
+
+          return (
+            <text
+              key={monthIndex}
+              x={computeMonthLabelX(month.position, monthIndex)}
+              y={monthLabelY}
+              width={month.size * rectSizeWithGap}
+              fontSize={fontSize}
+              {...getStyles('monthLabel')}
+            >
+              {monthLabel}
+            </text>
+          );
+        })
+      : null;
+
+  const weekdayLabelsNodes =
+    withWeekdayLabels && weekdayLabels
+      ? rotatedWeekdayLabels.map((weekdayLabel, dayIndex) => (
+          <text
+            key={dayIndex}
+            x={0}
+            y={(dayIndex + 1) * rectSizeWithGap - gap + monthsOffset}
+            width={weekdaysLabelsWidth}
+            fontSize={fontSize}
+            {...getStyles('weekdayLabel')}
+          >
+            {weekdayLabel}
+          </text>
+        ))
+      : null;
+
+  const label = getTooltipLabel && hoveredRect && withTooltip ? getTooltipLabel(hoveredRect) : null;
+
+  const legendPadding = 10;
+  const legendHeight = withLegend ? legendPadding + rectSize : 0;
+  const svgWidth = rectSizeWithGap * totalColumns + gap + weekdaysOffset;
+  const svgHeight = rectSizeWithGap * 7 + gap + monthsOffset + monthsBottomHeight + legendHeight;
+
+  const legendNode = withLegend
+    ? (() => {
+        const lessLabel = legendLabels![0];
+        const moreLabel = legendLabels![1];
+        const textGap = 6;
+        const charWidth = fontSize! * 0.6;
+        const lessWidth = lessLabel.length * charWidth;
+        const allColors = [undefined, ...(colors || [])];
+        const rectsWidth = allColors.length * rectSize + (allColors.length - 1) * gap;
+        const moreWidth = moreLabel.length * charWidth;
+        const totalLegendWidth = lessWidth + textGap + rectsWidth + textGap + moreWidth;
+
+        const legendX = svgWidth - totalLegendWidth;
+        const legendY =
+          rectSizeWithGap * 7 + gap + monthsOffset + monthsBottomHeight + legendPadding;
+
+        return (
+          <g
+            transform={`translate(${legendX}, ${legendY})`}
+            data-id="legend"
+            {...getStyles('legend')}
+          >
+            <text
+              x={0}
+              y={rectSize / 2}
+              fontSize={fontSize}
+              dominantBaseline="central"
+              {...getStyles('legendLabel')}
+            >
+              {lessLabel}
+            </text>
+            {allColors.map((color, i) => (
+              <rect
+                key={i}
+                x={lessWidth + textGap + i * (rectSize + gap)}
+                y={0}
+                width={rectSize}
+                height={rectSize}
+                rx={rectRadius}
+                fill={color}
+                data-empty={color === undefined || undefined}
+                {...getStyles('legendRect')}
+              />
+            ))}
+            <text
+              x={lessWidth + textGap + rectsWidth + textGap}
+              y={rectSize / 2}
+              fontSize={fontSize}
+              dominantBaseline="central"
+              {...getStyles('legendLabel')}
+            >
+              {moreLabel}
+            </text>
+          </g>
+        );
+      })()
+    : null;
+
+  return (
+    <Box component="svg" width={svgWidth} height={svgHeight} {...getStyles('root')} {...others}>
+      <Tooltip.Floating
+        label={label}
+        disabled={!withTooltip || !label}
+        position="top"
+        {...tooltipProps}
+      >
+        <g transform={`translate(${weekdaysOffset}, ${monthsOffset})`} data-id="all-weeks">
+          {/* Required for tooltip to remain visible while gaps between rects are hovered */}
+          {withTooltip && (
+            <rect
+              fill="transparent"
+              width={rectSizeWithGap * totalColumns + gap}
+              height={rectSizeWithGap * 7 + gap}
+            />
+          )}
+          {weeks}
+        </g>
+      </Tooltip.Floating>
+      {weekdayLabelsNodes}
+      {monthsLabelsNodes}
+      {legendNode}
+    </Box>
+  );
+});
+
+Heatmap.displayName = '@mantine/charts/Heatmap';
+Heatmap.classes = classes;
+
