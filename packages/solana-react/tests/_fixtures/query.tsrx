@@ -44,7 +44,9 @@ export function OmittedOptionsReader(props: {
 	const second = useRequestQuery(['second'], props.secondSource);
 	<>
 		<span id="first-status">{(first.isPending ? 'pending' : `data:${first.data}`) as string}</span>
-		<span id="second-status">{(second.isPending ? 'pending' : `data:${second.data}`) as string}</span>
+		<span id="second-status">{(second.isPending
+			? 'pending'
+			: `data:${second.data}`) as string}</span>
 	</>
 }
 
@@ -54,9 +56,6 @@ export function OmittedOptionsApp(props: {
 	secondSource: RequestSource<string>;
 }) @{
 	<QueryClientProvider client={props.client}>
-		<OmittedOptionsReader
-			firstSource={props.firstSource}
-			secondSource={props.secondSource}
-		/>
+		<OmittedOptionsReader firstSource={props.firstSource} secondSource={props.secondSource} />
 	</QueryClientProvider>
 }

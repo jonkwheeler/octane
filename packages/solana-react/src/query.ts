@@ -15,8 +15,7 @@ export function useRequestQuery(
 	key: QueryKey,
 	source: RequestSource<unknown> | null,
 	optionsOrSlot?:
-		| Omit<UseQueryOptions<unknown, Error, unknown, QueryKey>, 'queryFn' | 'queryKey'>
-		| symbol,
+		Omit<UseQueryOptions<unknown, Error, unknown, QueryKey>, 'queryFn' | 'queryKey'> | symbol,
 	slot?: symbol,
 ) {
 	const options = typeof optionsOrSlot === 'symbol' ? undefined : optionsOrSlot;

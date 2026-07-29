@@ -16,12 +16,7 @@ export function useClient<TClient extends object = object>(
 		subSlot(slot, 'subscribe'),
 	);
 	const getVersion = useCallback(() => store.getVersion(), [store], subSlot(slot, 'version'));
-	useSyncExternalStore(
-		subscribe,
-		getVersion,
-		getVersion,
-		subSlot(slot, 'store'),
-	);
+	useSyncExternalStore(subscribe, getVersion, getVersion, subSlot(slot, 'store'));
 	return store.getSnapshot() as Client<TClient>;
 }
 
