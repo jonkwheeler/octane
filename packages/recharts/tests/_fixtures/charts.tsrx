@@ -193,6 +193,18 @@ export function PolarChartsApp() @{
 	</div>
 }
 
+export function HiddenPieTooltipApp() @{
+	<PieChart width={400} height={300}>
+		<Tooltip active defaultIndex={0} includeHidden isAnimationActive={false} />
+		<Pie
+			dataKey="value"
+			data={[{ name: 'Hidden slice', value: 100 }]}
+			hide
+			isAnimationActive={false}
+		/>
+	</PieChart>
+}
+
 export function HierarchyChartsApp() @{
 	<div>
 		<Sankey

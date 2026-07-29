@@ -10,6 +10,7 @@ import {
 	BarChartApp,
 	CartesianChartsApp,
 	FunnelLegendApp,
+	HiddenPieTooltipApp,
 	HierarchyChartsApp,
 	LineChartApp,
 	OverlayChartApp,
@@ -17,6 +18,7 @@ import {
 	ResponsiveChartApp,
 	ScatterAnimationCallbacksApp,
 } from '../_fixtures/charts.tsrx';
+import { HiddenFunnelRegistrationsApp } from '../_fixtures/hidden-funnel-registrations.tsrx';
 
 async function settle() {
 	// The chart pipeline is multi-pass: size lands via effect, axes/items
@@ -105,14 +107,26 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		result.unmount();
 	});
 
-	it('keeps hidden Funnel segments inactive in the legend and suppresses legendType none', async () => {
-		const hidden = mount(FunnelLegendApp, { hide: true });
+	it('keeps hidden Funnel cells and tooltip settings registered without rendering shapes', async () => {
+		let tooltipSettings: ReadonlyArray<any> = [];
+		const hidden = mount(HiddenFunnelRegistrationsApp, {
+			onTooltipSettings(settings: ReadonlyArray<any>) {
+				tooltipSettings = settings;
+			},
+		});
 		await settle();
-		expect(hidden.container.querySelectorAll('.recharts-legend-item')).toHaveLength(2);
 		expect(hidden.container.textContent).toContain('Visitors');
 		expect(hidden.container.textContent).toContain('Customers');
 		expect(hidden.container.querySelectorAll('.recharts-funnel-trapezoid')).toHaveLength(0);
-		expect(hidden.container.innerHTML).toContain('#ccc');
+		expect(hidden.container.querySelector('.funnel-legend-payload')?.textContent).toBe(
+			'#0000ff:Customers|#ff0000:Visitors',
+		);
+		expect(tooltipSettings).toHaveLength(1);
+		expect(tooltipSettings[0].settings).toMatchObject({
+			dataKey: 'value',
+			hide: true,
+			graphicalItemId: expect.any(String),
+		});
 		hidden.unmount();
 
 		const none = mount(FunnelLegendApp, { legendType: 'none' });
@@ -152,6 +166,16 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-polar-grid')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-polar-angle-axis')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-polar-radius-axis')).toBeTruthy();
+		result.unmount();
+	});
+
+	it('registers hidden Pie tooltip data without rendering sectors', async () => {
+		const result = mount(HiddenPieTooltipApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('.recharts-pie-sector')).toHaveLength(0);
+		expect(result.container.querySelector('.recharts-tooltip-wrapper')).toBeTruthy();
+		expect(result.container.textContent).toContain('Hidden slice');
+		expect(result.container.textContent).toContain('100');
 		result.unmount();
 	});
 

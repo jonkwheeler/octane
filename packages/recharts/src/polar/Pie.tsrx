@@ -1055,9 +1055,13 @@ function PieImpl(props: WithIdRequired<PropsWithResolvedDefaults>) {
 
   const layerClass = clsx('recharts-pie', className);
 
-  if (hide || sectors == null) {
+  if (sectors == null) {
     previousSectorsRef.current = null;
     return <Layer tabIndex={rootTabIndex} className={layerClass} />;
+  }
+
+  if (hide) {
+    previousSectorsRef.current = null;
   }
 
   return (
@@ -1077,7 +1081,13 @@ function PieImpl(props: WithIdRequired<PropsWithResolvedDefaults>) {
         activeShape={props.activeShape}
       />
       <Layer tabIndex={rootTabIndex} className={layerClass}>
-        <SectorsWithAnimation props={{ ...propsWithoutId, sectors }} previousSectorsRef={previousSectorsRef} id={id} />
+        {!hide && (
+          <SectorsWithAnimation
+            props={{ ...propsWithoutId, sectors }}
+            previousSectorsRef={previousSectorsRef}
+            id={id}
+          />
+        )}
       </Layer>
     </ZIndexLayer>
   );

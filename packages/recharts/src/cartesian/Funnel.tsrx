@@ -582,6 +582,21 @@ function FunnelImpl(props: WithIdRequired<RequiresDefaultProps<Props, typeof def
     return (
       <CellsContext.Provider value={cellRegistry}>
         <SetLegendPayload legendPayload={legendPayload} />
+        <SetFunnelTooltipEntrySettings
+          dataKey={props.dataKey}
+          nameKey={props.nameKey}
+          stroke={props.stroke}
+          strokeWidth={props.strokeWidth}
+          fill={props.fill}
+          name={props.name}
+          hide={props.hide}
+          tooltipType={props.tooltipType}
+          formatter={props.formatter}
+          data={props.data}
+          trapezoids={trapezoids}
+          id={id}
+        />
+        {props.children}
       </CellsContext.Provider>
     );
   }
