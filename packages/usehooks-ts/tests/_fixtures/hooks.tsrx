@@ -67,8 +67,9 @@ export function TimingProbe(props: {
 export function DebounceControlsProbe(props: {
 	onDebounce(value: string): void;
 	onPending(value: boolean): void;
+	options?: { leading?: boolean; trailing?: boolean };
 }) @{
-	const debounced = useDebounceCallback(props.onDebounce, 50);
+	const debounced = useDebounceCallback(props.onDebounce, 50, props.options);
 	<div>
 		<button id="queue" onClick={() => debounced('queued')}>queue</button>
 		<button id="cancel" onClick={debounced.cancel}>cancel</button>

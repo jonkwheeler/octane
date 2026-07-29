@@ -115,6 +115,24 @@ describe('timing and lifecycle hooks', () => {
 		]);
 	});
 
+	it('clears pending state after a leading-only debounce cooldown', () => {
+		const onDebounce = vi.fn();
+		const onPending = vi.fn();
+		const result = mount(DebounceControlsProbe, {
+			onDebounce,
+			onPending,
+			options: { leading: true, trailing: false },
+		});
+		result.click('#queue');
+		result.click('#queue');
+		result.click('#pending');
+		expect(onPending).toHaveBeenLastCalledWith(true);
+		vi.advanceTimersByTime(50);
+		result.click('#pending');
+		expect(onPending).toHaveBeenLastCalledWith(false);
+		expect(onDebounce).toHaveBeenCalledOnce();
+	});
+
 	it('uses strict equality by default for NaN and signed zero', () => {
 		const onPending = vi.fn();
 		const result = mount(DebounceValueProbe, { value: Number.NaN, onPending });

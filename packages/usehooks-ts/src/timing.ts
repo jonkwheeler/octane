@@ -64,9 +64,15 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 	const wrapped = useMemo(
 		() => {
 			let pending = false;
+			let pendingTimer: ReturnType<typeof setTimeout> | undefined;
+			const clearPending = () => {
+				pending = false;
+				if (pendingTimer !== undefined) clearTimeout(pendingTimer);
+				pendingTimer = undefined;
+			};
 			const instance = debounce(
 				(...callArgs: Parameters<T>) => {
-					pending = false;
+					clearPending();
 					return func(...callArgs);
 				},
 				delay,
@@ -74,14 +80,17 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 			);
 			const value = ((...callArgs: Parameters<T>) => {
 				pending = true;
-				return instance(...callArgs);
+				const result = instance(...callArgs);
+				if (pendingTimer !== undefined) clearTimeout(pendingTimer);
+				pendingTimer = setTimeout(clearPending, delay);
+				return result;
 			}) as DebouncedState<T>;
 			value.cancel = () => {
-				pending = false;
+				clearPending();
 				instance.cancel();
 			};
 			value.flush = () => {
-				pending = false;
+				clearPending();
 				instance.flush();
 			};
 			value.isPending = () => pending;
