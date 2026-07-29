@@ -38,6 +38,17 @@ describe('@octanejs/mantine-core compiled children', () => {
     expect(timelineItems[1]?.hasAttribute('data-active')).toBe(true);
     expect(timeline.hasAttribute('data-opposite')).toBe(true);
 
+    expect(result.find('#group').querySelectorAll('button')).toHaveLength(2);
+
+    result.click('#menu-target');
+    await nextPaint();
+    await nextPaint();
+    await nextPaint();
+    expect(
+      result.find('#menu-target').closest('[aria-haspopup="menu"]')?.getAttribute('aria-expanded'),
+    ).toBe('true');
+    expect(document.querySelector('#menu-item')?.textContent).toBe('Action');
+
     result.unmount();
   });
 });

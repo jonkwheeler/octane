@@ -11,7 +11,6 @@ import {
   useProps,
   useStyles,
 } from '../../core';
-import { filterFalsyChildren } from './filter-falsy-children/filter-falsy-children';
 import classes from './Group.module.css';
 
 export type GroupStylesNames = 'root';
@@ -101,12 +100,7 @@ export const Group = factory<GroupFactory>((_props) => {
     ...others
   } = props;
 
-  const filteredChildren = filterFalsyChildren(children);
-  const childrenCount = filteredChildren.length;
-  const resolvedGap = getSpacing(gap ?? 'md');
-  const childWidth = `calc(${
-    100 / childrenCount
-  }% - (${resolvedGap} - ${resolvedGap} / ${childrenCount}))`;
+  const childWidth = '100%';
 
   const stylesCtx: GroupStylesCtx = { childWidth };
 
@@ -127,7 +121,7 @@ export const Group = factory<GroupFactory>((_props) => {
 
   return (
     <Box {...getStyles('root')} variant={variant} mod={[{ grow }, mod]} size={__size} {...others}>
-      {filteredChildren}
+      {children}
     </Box>
   );
 });

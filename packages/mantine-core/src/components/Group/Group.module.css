@@ -9,6 +9,7 @@
   &:where([data-grow]) {
     & > * {
       flex-grow: 1;
+      flex-basis: 0;
       max-width: var(--group-child-width);
     }
   }

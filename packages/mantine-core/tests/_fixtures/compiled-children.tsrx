@@ -1,7 +1,9 @@
 import {
   Breadcrumbs,
   Card,
+  Group,
   MantineProvider,
+  Menu,
   Stepper,
   Timeline,
 } from '@octanejs/mantine-core';
@@ -10,7 +12,7 @@ import { useState } from 'octane';
 export function CompiledChildren() @{
   const [active, setActive] = useState(1);
 
-  <MantineProvider>
+  <MantineProvider env="test">
     <Breadcrumbs id="breadcrumbs" separator="→">
       <a href="/one">One</a>
       <a href="/two">Two</a>
@@ -37,5 +39,19 @@ export function CompiledChildren() @{
       <Timeline.Item title="First event">First body</Timeline.Item>
       <Timeline.Item title="Second event" opposite="10:00">Second body</Timeline.Item>
     </Timeline>
+
+    <Group id="group" grow>
+      <button id="group-one">One</button>
+      <button id="group-two">Two</button>
+    </Group>
+
+    <Menu withinPortal={false}>
+      <Menu.Target>
+        <button id="menu-target">Open menu</button>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item id="menu-item">Action</Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   </MantineProvider>
 }
