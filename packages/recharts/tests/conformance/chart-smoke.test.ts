@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
+	CartesianChartsApp,
 	LineChartApp,
 	OverlayChartApp,
 	ResponsiveChartApp,
@@ -73,6 +74,18 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-default-legend')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-tooltip-wrapper')).toBeTruthy();
 		expect(result.container.textContent).toContain('UV');
+		result.unmount();
+	});
+
+	it('renders area, composed, scatter, funnel, grid, and reference primitives', async () => {
+		const result = mount(CartesianChartsApp, {});
+		await settle();
+		expect(result.container.querySelectorAll('path.recharts-area-area').length).toBe(2);
+		expect(result.container.querySelector('path.recharts-line-curve')).toBeTruthy();
+		expect(result.container.querySelectorAll('.recharts-scatter-symbol').length).toBe(2);
+		expect(result.container.querySelectorAll('.recharts-funnel-trapezoid').length).toBe(2);
+		expect(result.container.querySelector('.recharts-cartesian-grid')).toBeTruthy();
+		expect(result.container.querySelector('.recharts-reference-line')).toBeTruthy();
 		result.unmount();
 	});
 });

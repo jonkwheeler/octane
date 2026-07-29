@@ -1,13 +1,23 @@
 import {
+	Area,
+	AreaChart,
 	BarChart,
 	LineChart,
 	Bar,
+	CartesianGrid,
+	ComposedChart,
+	Funnel,
+	FunnelChart,
 	Line,
 	Legend,
+	ReferenceLine,
 	ResponsiveContainer,
+	Scatter,
+	ScatterChart,
 	Tooltip,
 	XAxis,
 	YAxis,
+	ZAxis,
 } from '@octanejs/recharts';
 
 // Phase 1 differential fixture: static BarChart + LineChart with axes
@@ -64,4 +74,39 @@ export function OverlayChartApp() @{
 		<Legend />
 		<Bar dataKey="uv" name="UV" fill="#8884d8" isAnimationActive={false} />
 	</BarChart>
+}
+
+export function CartesianChartsApp() @{
+	<div>
+		<AreaChart width={500} height={300} data={data}>
+			<CartesianGrid />
+			<XAxis dataKey="name" />
+			<YAxis />
+			<ReferenceLine y={400} />
+			<Area dataKey="uv" fill="#8884d8" stroke="#8884d8" isAnimationActive={false} />
+		</AreaChart>
+		<ComposedChart width={500} height={300} data={data}>
+			<XAxis dataKey="name" />
+			<YAxis />
+			<Area dataKey="pv" fill="#82ca9d" stroke="#82ca9d" isAnimationActive={false} />
+			<Line dataKey="uv" isAnimationActive={false} />
+		</ComposedChart>
+		<ScatterChart width={500} height={300}>
+			<XAxis dataKey="x" type="number" />
+			<YAxis dataKey="y" type="number" />
+			<ZAxis dataKey="z" />
+			<Scatter
+				data={[{ x: 10, y: 20, z: 100 }, { x: 30, y: 40, z: 200 }]}
+				fill="#8884d8"
+				isAnimationActive={false}
+			/>
+		</ScatterChart>
+		<FunnelChart width={500} height={300}>
+			<Funnel
+				dataKey="value"
+				data={[{ name: 'A', value: 100 }, { name: 'B', value: 60 }]}
+				isAnimationActive={false}
+			/>
+		</FunnelChart>
+	</div>
 }
