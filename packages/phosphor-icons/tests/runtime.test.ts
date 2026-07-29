@@ -2,8 +2,23 @@ import { createElement } from 'octane';
 import { describe, expect, it } from 'vitest';
 import { mount } from '../../octane/tests/_helpers.js';
 import { Camera, IconContext } from '@octanejs/phosphor-icons';
+import { __iconWeights as cameraWeights } from '@octanejs/phosphor-icons/icons/camera';
 
 describe('@octanejs/phosphor-icons — runtime behavior', () => {
+	it('renders the upstream defaults', () => {
+		const mounted = mount(Camera, { id: 'default' });
+		const camera = mounted.find('#default');
+
+		expect(camera.getAttribute('width')).toBe('1em');
+		expect(camera.getAttribute('height')).toBe('1em');
+		expect(camera.getAttribute('fill')).toBe('currentColor');
+		expect(camera.getAttribute('transform')).toBe(null);
+		expect(camera.querySelectorAll('path')).toHaveLength(cameraWeights.regular.length);
+		expect(camera.querySelector('path')?.getAttribute('d')).toBe(cameraWeights.regular[0][1].d);
+
+		mounted.unmount();
+	});
+
 	it('applies defaults, local props, accessibility, children, refs, and native events', () => {
 		const refs: (SVGSVGElement | null)[] = [];
 		const clicks: MouseEvent[] = [];
@@ -69,12 +84,14 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 		expect(provided.getAttribute('transform')).toBe('scale(-1, 1)');
 		expect(provided.getAttribute('class')).toBe('provided');
 		expect(provided.getAttribute('data-source')).toBe('context');
+		expect(provided.querySelector('path')?.getAttribute('d')).toBe(cameraWeights.bold[0][1].d);
 
 		const local = mounted.find('#local');
 		expect(local.getAttribute('fill')).toBe('navy');
 		expect(local.getAttribute('width')).toBe('18');
-		expect(local.getAttribute('transform')).toBe(null);
+		expect(local.getAttribute('transform')).toBe('scale(-1, 1)');
 		expect(local.getAttribute('class')).toBe('local');
+		expect(local.querySelector('path')?.getAttribute('d')).toBe(cameraWeights.thin[0][1].d);
 
 		mounted.unmount();
 	});
