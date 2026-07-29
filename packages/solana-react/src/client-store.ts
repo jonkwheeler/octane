@@ -28,29 +28,34 @@ export function createClientStore<TClient>(initialClient: TClient): ClientStore<
 		cleanup =
 			typeof result === 'function' ? result : result ? () => result.unsubscribe() : undefined;
 	};
-	bind();
+	const unbind = () => {
+		generation++;
+		cleanup?.();
+		cleanup = undefined;
+	};
 
 	return {
 		dispose() {
-			generation++;
-			cleanup?.();
-			cleanup = undefined;
+			unbind();
 			listeners.clear();
 		},
 		getSnapshot: () => client,
 		getVersion: () => version,
 		setClient(nextClient) {
 			if (Object.is(client, nextClient)) return;
-			generation++;
-			cleanup?.();
+			unbind();
 			client = nextClient;
 			version++;
-			bind();
+			if (listeners.size > 0) bind();
 			for (const listener of listeners) listener();
 		},
 		subscribe(listener) {
+			if (listeners.size === 0) bind();
 			listeners.add(listener);
-			return () => listeners.delete(listener);
+			return () => {
+				listeners.delete(listener);
+				if (listeners.size === 0) unbind();
+			};
 		},
 	};
 }

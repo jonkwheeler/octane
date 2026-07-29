@@ -15,6 +15,17 @@ function client() {
 }
 
 describe('client store', () => {
+	it('binds reactive clients only while the store has consumers', () => {
+		const reactive = client();
+		const store = createClientStore(reactive);
+		expect(reactive.unsubscribe).not.toHaveBeenCalled();
+
+		const unsubscribe = store.subscribe(() => {});
+		expect(reactive.unsubscribe).not.toHaveBeenCalled();
+		unsubscribe();
+		expect(reactive.unsubscribe).toHaveBeenCalledOnce();
+	});
+
 	it('replaces a client, cleans up the old subscription, and ignores its generation', () => {
 		const first = client();
 		const second = client();
