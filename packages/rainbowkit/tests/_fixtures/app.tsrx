@@ -32,6 +32,17 @@ function CustomControl() @{
 	</ConnectButton.Custom>
 }
 
+function NaturalChildren() @{
+	<div>
+		<ConnectButton.Custom>
+			<span id="custom-natural-child">Custom natural child</span>
+		</ConnectButton.Custom>
+		<WalletButton wallet="mock">
+			<span id="wallet-natural-child">Wallet natural child</span>
+		</WalletButton>
+	</div>
+}
+
 export let latestWalletConnect: (() => void) | undefined;
 
 function WalletRaceProbe() @{
@@ -65,6 +76,7 @@ export function App(props: {
 					<WalletButton wallet="mock" />
 					<WalletRaceProbe />
 					<CustomControl />
+					<NaturalChildren />
 				</RainbowKitProvider>
 			</form>
 		</QueryClientProvider>

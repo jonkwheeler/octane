@@ -1,5 +1,5 @@
 import { useChainId, useChains, useConnect, useConnection, useDisconnect } from '@octanejs/wagmi';
-import { useContext, type OctaneNode } from 'octane';
+import { isChildrenBlock, useContext, type OctaneNode } from 'octane';
 import { useAccountModal, useChainModal, useConnectModal } from './hooks';
 import { RainbowKitContext } from './internal';
 
@@ -109,7 +109,10 @@ export function ConnectButton(props: ConnectButtonProps = {}) @{
 }
 
 ConnectButton.Custom = function ConnectButtonCustom(props: {
-	children: (state: ConnectButtonRendererProps) => OctaneNode;
+	children: OctaneNode | ((state: ConnectButtonRendererProps) => OctaneNode);
 }) {
-	return props.children(useConnectButtonState());
+	const state = useConnectButtonState();
+	return typeof props.children === 'function' && !isChildrenBlock(props.children)
+		? props.children(state)
+		: props.children;
 };
