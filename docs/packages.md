@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**57 publishable package(s), including 45 framework binding(s).**
+**58 publishable package(s), including 46 framework binding(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
