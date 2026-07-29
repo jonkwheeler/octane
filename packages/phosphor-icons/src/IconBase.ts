@@ -17,7 +17,6 @@ export function IconBase(props: IconBaseProps) {
 	} = useContext(IconContext);
 
 	return createElement('svg', {
-		ref,
 		xmlns: 'http://www.w3.org/2000/svg',
 		width: size ?? contextSize,
 		height: size ?? contextSize,
@@ -26,6 +25,7 @@ export function IconBase(props: IconBaseProps) {
 		transform: mirrored || contextMirrored ? 'scale(-1, 1)' : undefined,
 		...contextRest,
 		...rest,
+		ref,
 		children: [
 			...(alt ? [createElement('title', { children: alt })] : []),
 			...(Array.isArray(children) ? children : children == null ? [] : [children]),

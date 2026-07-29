@@ -97,7 +97,15 @@ for (const icon of icons) {
 	if (icon.alias) names.push(`${icon.alias.pascal_name}Icon`);
 	exports.push(`export { ${names.join(', ')} } from './${icon.name}';`);
 }
-expected.set(join(ICONS_OUT, 'index.ts'), header + exports.join('\n') + '\n');
+expected.set(
+	join(ICONS_OUT, 'index.ts'),
+	await format(header + exports.join('\n') + '\n', {
+		parser: 'typescript',
+		useTabs: true,
+		singleQuote: true,
+		printWidth: 100,
+	}),
+);
 
 function walk(directory) {
 	if (!existsSync(directory)) return [];

@@ -663,6 +663,7 @@ describe('manifest-declared manual hook slots', () => {
 			'mdx',
 			'mobx',
 			'motion',
+			'phosphor-icons',
 			'radix',
 			'remix-router',
 			'styled-components',

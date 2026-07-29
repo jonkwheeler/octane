@@ -54,6 +54,8 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 	});
 
 	it('inherits context defaults and lets local props override them', () => {
+		const contextRefs: (SVGSVGElement | null)[] = [];
+		const localRefs: (SVGSVGElement | null)[] = [];
 		const App = () =>
 			createElement(IconContext.Provider, {
 				value: {
@@ -63,6 +65,7 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 					mirrored: true,
 					className: 'provided',
 					'data-source': 'context',
+					ref: (node) => contextRefs.push(node),
 				},
 				children: [
 					createElement(Camera, { id: 'provided' }),
@@ -73,6 +76,7 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 						weight: 'thin',
 						mirrored: false,
 						className: 'local',
+						ref: (node) => localRefs.push(node),
 					}),
 				],
 			});
@@ -92,7 +96,11 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 		expect(local.getAttribute('transform')).toBe('scale(-1, 1)');
 		expect(local.getAttribute('class')).toBe('local');
 		expect(local.querySelector('path')?.getAttribute('d')).toBe(cameraWeights.thin[0][1].d);
+		expect(contextRefs).toEqual([]);
+		expect(localRefs).toEqual([local]);
 
 		mounted.unmount();
+		expect(contextRefs).toEqual([]);
+		expect(localRefs.at(-1)).toBe(null);
 	});
 });
