@@ -15,6 +15,7 @@ import {
 	HierarchyChartsApp,
 	LineChartApp,
 	OverlayChartApp,
+	PolarAnimationStabilityApp,
 	PolarChartsApp,
 	ResponsiveChartApp,
 	ScatterAnimationCallbacksApp,
@@ -207,6 +208,40 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		result.unmount();
 	});
 
+	it('restarts polar animations only when their geometry changes', async () => {
+		let frameTime = performance.now();
+		vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
+			setTimeout(() => callback((frameTime += 16)), 0),
+		);
+		vi.stubGlobal('cancelAnimationFrame', (handle: number) => clearTimeout(handle));
+		const starts: string[] = [];
+		const ends: string[] = [];
+		const props = {
+			changed: false,
+			onAnimationStart: () => starts.push('start'),
+			onAnimationEnd: () => ends.push('end'),
+		};
+		try {
+			const result = mount(PolarAnimationStabilityApp, props);
+			await settle();
+			expect(starts).toHaveLength(3);
+			expect(ends).toHaveLength(3);
+
+			result.update(PolarAnimationStabilityApp, { ...props });
+			await settle();
+			expect(starts).toHaveLength(3);
+			expect(ends).toHaveLength(3);
+
+			result.update(PolarAnimationStabilityApp, { ...props, changed: true });
+			await settle();
+			expect(starts).toHaveLength(6);
+			expect(ends).toHaveLength(6);
+			result.unmount();
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	});
+
 	it('registers hidden Pie tooltip data without rendering sectors', async () => {
 		const result = mount(HiddenPieTooltipApp, {});
 		await settle();
@@ -222,7 +257,9 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		await settle();
 		expect(result.container.querySelectorAll('.recharts-sankey-node').length).toBe(3);
 		expect(result.container.querySelectorAll('.recharts-sankey-link').length).toBe(2);
-		expect(result.container.querySelectorAll('.recharts-sunburst path.recharts-sector').length).toBe(2);
+		expect(
+			result.container.querySelectorAll('.recharts-sunburst path.recharts-sector').length,
+		).toBe(2);
 		result.unmount();
 	});
 });

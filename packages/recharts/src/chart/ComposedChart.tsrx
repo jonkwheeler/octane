@@ -10,15 +10,13 @@ const allowedTooltipTypes: ReadonlyArray<TooltipEventType> = ['axis'];
  * @provides CartesianChartContext
  */
 export function ComposedChart(props: CartesianChartProps<unknown>) {
-  const { ref, ...rest } = props;
-  return (
-    <CartesianChart
-      chartName="ComposedChart"
-      defaultTooltipEventType="axis"
-      validateTooltipEventTypes={allowedTooltipTypes}
-      tooltipPayloadSearcher={arrayTooltipSearcher}
-      categoricalChartProps={rest}
-      ref={ref}
-    />
-  );
+	const { ref, ...rest } = props;
+	return <CartesianChart
+		chartName="ComposedChart"
+		defaultTooltipEventType="axis"
+		validateTooltipEventTypes={allowedTooltipTypes}
+		tooltipPayloadSearcher={arrayTooltipSearcher}
+		categoricalChartProps={rest}
+		ref={ref}
+	/>;
 }

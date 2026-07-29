@@ -6,10 +6,10 @@ import { resolveDefaultProps } from '../util/resolveDefaultProps';
 const allowedTooltipTypes: ReadonlyArray<TooltipEventType> = ['item'];
 
 export const defaultPieChartProps = {
-  ...defaultPolarChartProps,
-  layout: 'centric',
-  startAngle: 0,
-  endAngle: 360,
+	...defaultPolarChartProps,
+	layout: 'centric',
+	startAngle: 0,
+	endAngle: 360,
 } as const satisfies Partial<PolarChartProps<never>>;
 
 /**
@@ -18,16 +18,14 @@ export const defaultPieChartProps = {
  * @provides PolarChartContext
  */
 export function PieChart(props: PolarChartProps<unknown>) {
-  const { ref, ...rest } = props;
-  const propsWithDefaults = resolveDefaultProps(rest, defaultPieChartProps);
-  return (
-    <PolarChart
-      chartName="PieChart"
-      defaultTooltipEventType="item"
-      validateTooltipEventTypes={allowedTooltipTypes}
-      tooltipPayloadSearcher={arrayTooltipSearcher}
-      categoricalChartProps={propsWithDefaults}
-      ref={ref}
-    />
-  );
+	const { ref, ...rest } = props;
+	const propsWithDefaults = resolveDefaultProps(rest, defaultPieChartProps);
+	return <PolarChart
+		chartName="PieChart"
+		defaultTooltipEventType="item"
+		validateTooltipEventTypes={allowedTooltipTypes}
+		tooltipPayloadSearcher={arrayTooltipSearcher}
+		categoricalChartProps={propsWithDefaults}
+		ref={ref}
+	/>;
 }

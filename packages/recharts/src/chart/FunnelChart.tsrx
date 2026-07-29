@@ -10,15 +10,13 @@ const allowedTooltipTypes: ReadonlyArray<TooltipEventType> = ['item'];
  * @provides CartesianChartContext
  */
 export function FunnelChart(props: CartesianChartProps<unknown>) {
-  const { ref, ...rest } = props;
-  return (
-    <CartesianChart
-      chartName="FunnelChart"
-      defaultTooltipEventType="item"
-      validateTooltipEventTypes={allowedTooltipTypes}
-      tooltipPayloadSearcher={arrayTooltipSearcher}
-      categoricalChartProps={rest}
-      ref={ref}
-    />
-  );
+	const { ref, ...rest } = props;
+	return <CartesianChart
+		chartName="FunnelChart"
+		defaultTooltipEventType="item"
+		validateTooltipEventTypes={allowedTooltipTypes}
+		tooltipPayloadSearcher={arrayTooltipSearcher}
+		categoricalChartProps={rest}
+		ref={ref}
+	/>;
 }

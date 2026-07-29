@@ -10,15 +10,13 @@ const allowedTooltipTypes: ReadonlyArray<TooltipEventType> = ['axis'];
  * @provides CartesianChartContext
  */
 export function AreaChart(props: CartesianChartProps<unknown>) {
-  const { ref, ...rest } = props;
-  return (
-    <CartesianChart
-      chartName="AreaChart"
-      defaultTooltipEventType="axis"
-      validateTooltipEventTypes={allowedTooltipTypes}
-      tooltipPayloadSearcher={arrayTooltipSearcher}
-      categoricalChartProps={rest}
-      ref={ref}
-    />
-  );
+	const { ref, ...rest } = props;
+	return <CartesianChart
+		chartName="AreaChart"
+		defaultTooltipEventType="axis"
+		validateTooltipEventTypes={allowedTooltipTypes}
+		tooltipPayloadSearcher={arrayTooltipSearcher}
+		categoricalChartProps={rest}
+		ref={ref}
+	/>;
 }

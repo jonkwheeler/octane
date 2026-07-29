@@ -115,7 +115,10 @@ export function CartesianChartsApp() @{
 			<YAxis dataKey="y" type="number" />
 			<ZAxis dataKey="z" />
 			<Scatter
-				data={[{ x: 10, y: 20, z: 100 }, { x: 30, y: 40, z: 200 }]}
+				data={[
+					{ x: 10, y: 20, z: 100 },
+					{ x: 30, y: 40, z: 200 },
+				]}
 				fill="#8884d8"
 				isAnimationActive={false}
 			/>
@@ -123,7 +126,10 @@ export function CartesianChartsApp() @{
 		<FunnelChart width={500} height={300}>
 			<Funnel
 				dataKey="value"
-				data={[{ name: 'A', value: 100 }, { name: 'B', value: 60 }]}
+				data={[
+					{ name: 'A', value: 100 },
+					{ name: 'B', value: 60 },
+				]}
 				isAnimationActive={false}
 			/>
 		</FunnelChart>
@@ -168,7 +174,9 @@ export function FunnelAnimationStabilityApp({ fill, onAnimationStart, onAnimatio
 	</FunnelChart>
 }
 
-const scatterAnimationData = [{ x: 10, y: 20 }];
+const scatterAnimationData = [
+	{ x: 10, y: 20 },
+];
 
 export function ScatterAnimationCallbacksApp({ onAnimationStart, onAnimationEnd }) @{
 	<ScatterChart width={500} height={300}>
@@ -188,26 +196,108 @@ export function PolarChartsApp() @{
 		<PieChart width={400} height={300}>
 			<Pie
 				dataKey="value"
-				data={[{ name: 'A', value: 100 }, { name: 'B', value: 60 }]}
+				data={[
+					{ name: 'A', value: 100 },
+					{ name: 'B', value: 60 },
+				]}
 				isAnimationActive={false}
 			/>
 		</PieChart>
-		<RadarChart width={400} height={300} data={[
-			{ subject: 'A', value: 80 },
-			{ subject: 'B', value: 60 },
-			{ subject: 'C', value: 90 },
-		]}>
+		<RadarChart
+			width={400}
+			height={300}
+			data={[
+				{ subject: 'A', value: 80 },
+				{ subject: 'B', value: 60 },
+				{ subject: 'C', value: 90 },
+			]}
+		>
 			<PolarGrid />
 			<PolarAngleAxis dataKey="subject" />
 			<PolarRadiusAxis />
 			<Radar dataKey="value" fill="#8884d8" stroke="#8884d8" isAnimationActive={false} />
 		</RadarChart>
-		<RadialBarChart width={400} height={300} data={[
-			{ name: 'A', value: 80 },
-			{ name: 'B', value: 60 },
-		]}>
+		<RadialBarChart
+			width={400}
+			height={300}
+			data={[
+				{ name: 'A', value: 80 },
+				{ name: 'B', value: 60 },
+			]}
+		>
 			<PolarAngleAxis type="number" domain={[0, 100]} />
 			<RadialBar dataKey="value" fill="#82ca9d" isAnimationActive={false} />
+		</RadialBarChart>
+	</div>
+}
+
+const pieAnimationData = [
+	{ name: 'A', value: 100 },
+	{ name: 'B', value: 60 },
+];
+const changedPieAnimationData = [
+	{ name: 'A', value: 110 },
+	{ name: 'B', value: 50 },
+];
+const radarAnimationData = [
+	{ subject: 'A', value: 80 },
+	{ subject: 'B', value: 60 },
+	{ subject: 'C', value: 90 },
+];
+const changedRadarAnimationData = [
+	{ subject: 'A', value: 90 },
+	{ subject: 'B', value: 50 },
+	{ subject: 'C', value: 70 },
+];
+const radialBarAnimationData = [
+	{ name: 'A', value: 80 },
+	{ name: 'B', value: 60 },
+];
+const changedRadialBarAnimationData = [
+	{ name: 'A', value: 70 },
+	{ name: 'B', value: 90 },
+];
+
+export function PolarAnimationStabilityApp({ changed, onAnimationStart, onAnimationEnd }) @{
+	<div>
+		<PieChart width={400} height={300}>
+			<Pie
+				dataKey="value"
+				data={changed ? changedPieAnimationData : pieAnimationData}
+				animationBegin={0}
+				animationDuration={1}
+				onAnimationStart={onAnimationStart}
+				onAnimationEnd={onAnimationEnd}
+			/>
+		</PieChart>
+		<RadarChart
+			width={400}
+			height={300}
+			data={changed ? changedRadarAnimationData : radarAnimationData}
+		>
+			<PolarAngleAxis dataKey="subject" />
+			<PolarRadiusAxis />
+			<Radar
+				dataKey="value"
+				animationBegin={0}
+				animationDuration={1}
+				onAnimationStart={onAnimationStart}
+				onAnimationEnd={onAnimationEnd}
+			/>
+		</RadarChart>
+		<RadialBarChart
+			width={400}
+			height={300}
+			data={changed ? changedRadialBarAnimationData : radialBarAnimationData}
+		>
+			<PolarAngleAxis type="number" domain={[0, 100]} />
+			<RadialBar
+				dataKey="value"
+				animationBegin={0}
+				animationDuration={1}
+				onAnimationStart={onAnimationStart}
+				onAnimationEnd={onAnimationEnd}
+			/>
 		</RadialBarChart>
 	</div>
 }
@@ -217,7 +307,9 @@ export function HiddenPieTooltipApp() @{
 		<Tooltip active defaultIndex={0} includeHidden isAnimationActive={false} />
 		<Pie
 			dataKey="value"
-			data={[{ name: 'Hidden slice', value: 100 }]}
+			data={[
+				{ name: 'Hidden slice', value: 100 },
+			]}
 			hide
 			isAnimationActive={false}
 		/>

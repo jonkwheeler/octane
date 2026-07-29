@@ -10,15 +10,13 @@ const allowedTooltipTypes: ReadonlyArray<TooltipEventType> = ['item'];
  * @provides CartesianChartContext
  */
 export function ScatterChart(props: CartesianChartProps<unknown>) {
-  const { ref, ...rest } = props;
-  return (
-    <CartesianChart
-      chartName="ScatterChart"
-      defaultTooltipEventType="item"
-      validateTooltipEventTypes={allowedTooltipTypes}
-      tooltipPayloadSearcher={arrayTooltipSearcher}
-      categoricalChartProps={rest}
-      ref={ref}
-    />
-  );
+	const { ref, ...rest } = props;
+	return <CartesianChart
+		chartName="ScatterChart"
+		defaultTooltipEventType="item"
+		validateTooltipEventTypes={allowedTooltipTypes}
+		tooltipPayloadSearcher={arrayTooltipSearcher}
+		categoricalChartProps={rest}
+		ref={ref}
+	/>;
 }

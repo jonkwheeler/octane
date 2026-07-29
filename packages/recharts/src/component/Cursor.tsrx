@@ -2,12 +2,12 @@ import * as React from 'octane';
 import { cloneElement, createElement, isValidElement, ReactElement, SVGProps } from 'octane';
 import { clsx } from 'clsx';
 import {
-  ChartOffsetInternal,
-  Coordinate,
-  isPolarCoordinate,
-  LayoutType,
-  PolarCoordinate,
-  TooltipEventType,
+	ChartOffsetInternal,
+	Coordinate,
+	isPolarCoordinate,
+	LayoutType,
+	PolarCoordinate,
+	TooltipEventType,
 } from '../util/types';
 import { Curve } from '../shape/Curve';
 import { Cross } from '../shape/Cross';
@@ -32,93 +32,101 @@ import { DefaultZIndexes } from '../zIndex/DefaultZIndexes';
 export type CursorDefinition = boolean | ReactElement | SVGProps<SVGElement>;
 
 export interface CursorProps extends ZIndexable {
-  cursor: CursorDefinition;
-  tooltipEventType: TooltipEventType;
-  coordinate: Coordinate | PolarCoordinate | undefined;
-  payload: TooltipPayload;
-  index: TooltipIndex | undefined;
+	cursor: CursorDefinition;
+	tooltipEventType: TooltipEventType;
+	coordinate: Coordinate | PolarCoordinate | undefined;
+	payload: TooltipPayload;
+	index: TooltipIndex | undefined;
 }
 
-export type CursorConnectedProps = CursorProps & {
-  tooltipAxisBandSize: number;
-  layout: LayoutType;
-  offset: ChartOffsetInternal;
-  chartName: string;
-};
+export type CursorConnectedProps =
+	CursorProps & {
+		tooltipAxisBandSize: number;
+		layout: LayoutType;
+		offset: ChartOffsetInternal;
+		chartName: string;
+	};
 
 function RenderCursor({
-  cursor,
-  cursorComp,
-  cursorProps,
+	cursor,
+	cursorComp,
+	cursorProps,
 }: {
-  cursor: CursorDefinition;
-  cursorComp: React.ComponentType<any>;
-  cursorProps: any;
+	cursor: CursorDefinition;
+	cursorComp: React.ComponentType<any>;
+	cursorProps: any;
 }) {
-  if (isValidElement(cursor)) {
-    return cloneElement(cursor, cursorProps);
-  }
-  return createElement(cursorComp, cursorProps);
+	if (isValidElement(cursor)) {
+		return cloneElement(cursor, cursorProps);
+	}
+	return createElement(cursorComp, cursorProps);
 }
 
 export function CursorInternal(props: CursorConnectedProps) {
-  const { coordinate, payload, index, offset, tooltipAxisBandSize, layout, cursor, tooltipEventType, chartName } =
-    props;
+	const {
+		coordinate,
+		payload,
+		index,
+		offset,
+		tooltipAxisBandSize,
+		layout,
+		cursor,
+		tooltipEventType,
+		chartName,
+	} = props;
 
-  // The cursor is a part of the Tooltip, and it should be shown (by default) when the Tooltip is active.
-  const activeCoordinate = coordinate;
-  const activePayload = payload;
-  const activeTooltipIndex = index;
-  if (!cursor || !activeCoordinate || (chartName !== 'ScatterChart' && tooltipEventType !== 'axis')) {
-    return null;
-  }
-  let restProps, cursorComp: React.ComponentType<any>, preferredZIndex: number;
+	// The cursor is a part of the Tooltip, and it should be shown (by default) when the Tooltip is active.
+	const activeCoordinate = coordinate;
+	const activePayload = payload;
+	const activeTooltipIndex = index;
+	if (!cursor || !activeCoordinate || chartName !== 'ScatterChart' && tooltipEventType !== 'axis') {
+		return null;
+	}
+	let restProps, cursorComp: React.ComponentType<any>, preferredZIndex: number;
 
-  if (chartName === 'ScatterChart') {
-    restProps = activeCoordinate;
-    cursorComp = Cross;
-    preferredZIndex = DefaultZIndexes.cursorLine;
-  } else if (chartName === 'BarChart') {
-    restProps = getCursorRectangle(layout, activeCoordinate, offset, tooltipAxisBandSize);
-    cursorComp = Rectangle;
-    preferredZIndex = DefaultZIndexes.cursorRectangle;
-  } else if (layout === 'radial' && isPolarCoordinate(activeCoordinate)) {
-    const { cx, cy, radius, startAngle, endAngle } = getRadialCursorPoints(activeCoordinate);
-    restProps = {
-      cx,
-      cy,
-      startAngle,
-      endAngle,
-      innerRadius: radius,
-      outerRadius: radius,
-    };
-    cursorComp = Sector;
-    preferredZIndex = DefaultZIndexes.cursorLine;
-  } else {
-    restProps = { points: getCursorPoints(layout, activeCoordinate, offset) };
-    cursorComp = Curve;
-    preferredZIndex = DefaultZIndexes.cursorLine;
-  }
+	if (chartName === 'ScatterChart') {
+		restProps = activeCoordinate;
+		cursorComp = Cross;
+		preferredZIndex = DefaultZIndexes.cursorLine;
+	} else if (chartName === 'BarChart') {
+		restProps = getCursorRectangle(layout, activeCoordinate, offset, tooltipAxisBandSize);
+		cursorComp = Rectangle;
+		preferredZIndex = DefaultZIndexes.cursorRectangle;
+	} else if (layout === 'radial' && isPolarCoordinate(activeCoordinate)) {
+		const { cx, cy, radius, startAngle, endAngle } = getRadialCursorPoints(activeCoordinate);
+		restProps = {
+			cx,
+			cy,
+			startAngle,
+			endAngle,
+			innerRadius: radius,
+			outerRadius: radius,
+		};
+		cursorComp = Sector;
+		preferredZIndex = DefaultZIndexes.cursorLine;
+	} else {
+		restProps = { points: getCursorPoints(layout, activeCoordinate, offset) };
+		cursorComp = Curve;
+		preferredZIndex = DefaultZIndexes.cursorLine;
+	}
 
-  const extraClassName: string | undefined =
-    typeof cursor === 'object' && 'className' in cursor ? cursor.className : undefined;
+	const extraClassName: string | undefined =
+		typeof cursor === 'object' && 'className' in cursor ? cursor.className : undefined;
 
-  const cursorProps = {
-    stroke: '#ccc',
-    pointerEvents: 'none',
-    ...offset,
-    ...restProps,
-    ...svgPropertiesNoEventsFromUnknown(cursor),
-    payload: activePayload,
-    payloadIndex: activeTooltipIndex,
-    className: clsx('recharts-tooltip-cursor', extraClassName),
-  };
+	const cursorProps = {
+		stroke: '#ccc',
+		pointerEvents: 'none',
+		...offset,
+		...restProps,
+		...svgPropertiesNoEventsFromUnknown(cursor),
+		payload: activePayload,
+		payloadIndex: activeTooltipIndex,
+		className: clsx('recharts-tooltip-cursor', extraClassName),
+	};
 
-  return (
-    <ZIndexLayer zIndex={props.zIndex ?? preferredZIndex}>
-      <RenderCursor cursor={cursor} cursorComp={cursorComp} cursorProps={cursorProps} />
-    </ZIndexLayer>
-  );
+	return <ZIndexLayer zIndex={props.zIndex ?? preferredZIndex}>
+		<RenderCursor cursor={cursor} cursorComp={cursorComp} cursorProps={cursorProps} />
+	</ZIndexLayer>;
 }
 
 /*
@@ -130,22 +138,20 @@ export function CursorInternal(props: CursorConnectedProps) {
  * to emphasise which part of the chart does the tooltip refer to.
  */
 export function Cursor(props: CursorProps) {
-  const tooltipAxisBandSize = useTooltipAxisBandSize();
-  const offset = useOffsetInternal();
-  const layout = useChartLayout();
-  const chartName = useChartName();
+	const tooltipAxisBandSize = useTooltipAxisBandSize();
+	const offset = useOffsetInternal();
+	const layout = useChartLayout();
+	const chartName = useChartName();
 
-  if (tooltipAxisBandSize == null || offset == null || layout == null || chartName == null) {
-    return null;
-  }
+	if (tooltipAxisBandSize == null || offset == null || layout == null || chartName == null) {
+		return null;
+	}
 
-  return (
-    <CursorInternal
-      {...props}
-      offset={offset}
-      layout={layout}
-      tooltipAxisBandSize={tooltipAxisBandSize}
-      chartName={chartName}
-    />
-  );
+	return <CursorInternal
+		{...props}
+		offset={offset}
+		layout={layout}
+		tooltipAxisBandSize={tooltipAxisBandSize}
+		chartName={chartName}
+	/>;
 }

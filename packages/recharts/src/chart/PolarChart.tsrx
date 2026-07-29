@@ -17,20 +17,20 @@ const defaultMargin: Margin = { top: 5, right: 5, bottom: 5, left: 5 };
  * These default props are the same for all PolarChart components.
  */
 export const defaultPolarChartProps = {
-  accessibilityLayer: true,
-  stackOffset: 'none',
-  barCategoryGap: '10%',
-  barGap: 4,
-  margin: defaultMargin,
-  reverseStackOrder: false,
-  syncMethod: 'index',
-  layout: 'radial',
-  responsive: false,
-  cx: '50%',
-  cy: '50%',
-  innerRadius: 0,
-  outerRadius: '80%',
-  ...initialEventSettingsState,
+	accessibilityLayer: true,
+	stackOffset: 'none',
+	barCategoryGap: '10%',
+	barGap: 4,
+	margin: defaultMargin,
+	reverseStackOrder: false,
+	syncMethod: 'index',
+	layout: 'radial',
+	responsive: false,
+	cx: '50%',
+	cy: '50%',
+	innerRadius: 0,
+	outerRadius: '80%',
+	...initialEventSettingsState,
 } as const satisfies Partial<PolarChartProps<never>>;
 
 /**
@@ -41,14 +41,15 @@ export const defaultPolarChartProps = {
  * We can't have the defaults in this file because each of those convenience components
  * have their own opinions about what they should be.
  */
-type PolarChartPropsWithDefaults = PolarChartProps & {
-  cx: NonNullable<PolarChartProps['cx']>;
-  cy: NonNullable<PolarChartProps['cy']>;
-  startAngle: NonNullable<PolarChartProps['startAngle']>;
-  endAngle: NonNullable<PolarChartProps['endAngle']>;
-  innerRadius: NonNullable<PolarChartProps['innerRadius']>;
-  outerRadius: NonNullable<PolarChartProps['outerRadius']>;
-};
+type PolarChartPropsWithDefaults =
+	PolarChartProps & {
+		cx: NonNullable<PolarChartProps['cx']>;
+		cy: NonNullable<PolarChartProps['cy']>;
+		startAngle: NonNullable<PolarChartProps['startAngle']>;
+		endAngle: NonNullable<PolarChartProps['endAngle']>;
+		innerRadius: NonNullable<PolarChartProps['innerRadius']>;
+		outerRadius: NonNullable<PolarChartProps['outerRadius']>;
+	};
 
 /**
  * These are one-time, immutable options that decide the chart's behavior.
@@ -56,59 +57,65 @@ type PolarChartPropsWithDefaults = PolarChartProps & {
  * but usually we would expect that they use one of the convenience components like PieChart, RadarChart, etc.
  */
 export type PolarChartOptions = {
-  chartName: string;
-  defaultTooltipEventType: TooltipEventType;
-  validateTooltipEventTypes: ReadonlyArray<TooltipEventType>;
-  tooltipPayloadSearcher: TooltipPayloadSearcher;
-  categoricalChartProps: PolarChartPropsWithDefaults;
+	chartName: string;
+	defaultTooltipEventType: TooltipEventType;
+	validateTooltipEventTypes: ReadonlyArray<TooltipEventType>;
+	tooltipPayloadSearcher: TooltipPayloadSearcher;
+	categoricalChartProps: PolarChartPropsWithDefaults;
 };
 
 export function PolarChart(props: PolarChartOptions & { ref?: unknown }) {
-  const { ref } = props;
-  const polarChartProps = resolveDefaultProps(props.categoricalChartProps, defaultPolarChartProps);
+	const { ref } = props;
+	const polarChartProps = resolveDefaultProps(props.categoricalChartProps, defaultPolarChartProps);
 
-  const { layout, ...otherCategoricalProps } = polarChartProps;
+	const { layout, ...otherCategoricalProps } = polarChartProps;
 
-  const { chartName, defaultTooltipEventType, validateTooltipEventTypes, tooltipPayloadSearcher } = props;
+	const {
+		chartName,
+		defaultTooltipEventType,
+		validateTooltipEventTypes,
+		tooltipPayloadSearcher,
+	} = props;
 
-  const options: ChartOptions = {
-    chartName,
-    defaultTooltipEventType,
-    validateTooltipEventTypes,
-    tooltipPayloadSearcher,
-    eventEmitter: undefined,
-  };
+	const options: ChartOptions = {
+		chartName,
+		defaultTooltipEventType,
+		validateTooltipEventTypes,
+		tooltipPayloadSearcher,
+		eventEmitter: undefined,
+	};
 
-  return (
-    <RechartsStoreProvider preloadedState={{ options }} reduxStoreName={polarChartProps.id ?? chartName}>
-      <ChartDataContextProvider chartData={polarChartProps.data} />
-      <ReportMainChartProps layout={layout} margin={polarChartProps.margin} />
-      <ReportEventSettings
-        throttleDelay={polarChartProps.throttleDelay}
-        throttledEvents={polarChartProps.throttledEvents}
-      />
-      <ReportChartProps
-        baseValue={undefined}
-        accessibilityLayer={polarChartProps.accessibilityLayer}
-        barCategoryGap={polarChartProps.barCategoryGap}
-        maxBarSize={polarChartProps.maxBarSize}
-        stackOffset={polarChartProps.stackOffset}
-        barGap={polarChartProps.barGap}
-        barSize={polarChartProps.barSize}
-        syncId={polarChartProps.syncId}
-        syncMethod={polarChartProps.syncMethod}
-        className={polarChartProps.className}
-        reverseStackOrder={polarChartProps.reverseStackOrder}
-      />
-      <ReportPolarOptions
-        cx={polarChartProps.cx}
-        cy={polarChartProps.cy}
-        startAngle={polarChartProps.startAngle}
-        endAngle={polarChartProps.endAngle}
-        innerRadius={polarChartProps.innerRadius}
-        outerRadius={polarChartProps.outerRadius}
-      />
-      <CategoricalChart {...otherCategoricalProps} ref={ref} />
-    </RechartsStoreProvider>
-  );
+	return <RechartsStoreProvider
+		preloadedState={{ options }}
+		reduxStoreName={polarChartProps.id ?? chartName}
+	>
+		<ChartDataContextProvider chartData={polarChartProps.data} />
+		<ReportMainChartProps layout={layout} margin={polarChartProps.margin} />
+		<ReportEventSettings
+			throttleDelay={polarChartProps.throttleDelay}
+			throttledEvents={polarChartProps.throttledEvents}
+		/>
+		<ReportChartProps
+			baseValue={undefined}
+			accessibilityLayer={polarChartProps.accessibilityLayer}
+			barCategoryGap={polarChartProps.barCategoryGap}
+			maxBarSize={polarChartProps.maxBarSize}
+			stackOffset={polarChartProps.stackOffset}
+			barGap={polarChartProps.barGap}
+			barSize={polarChartProps.barSize}
+			syncId={polarChartProps.syncId}
+			syncMethod={polarChartProps.syncMethod}
+			className={polarChartProps.className}
+			reverseStackOrder={polarChartProps.reverseStackOrder}
+		/>
+		<ReportPolarOptions
+			cx={polarChartProps.cx}
+			cy={polarChartProps.cy}
+			startAngle={polarChartProps.startAngle}
+			endAngle={polarChartProps.endAngle}
+			innerRadius={polarChartProps.innerRadius}
+			outerRadius={polarChartProps.outerRadius}
+		/>
+		<CategoricalChart {...otherCategoricalProps} ref={ref} />
+	</RechartsStoreProvider>;
 }

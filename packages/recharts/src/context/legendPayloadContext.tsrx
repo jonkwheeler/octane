@@ -7,5 +7,5 @@ import { selectLegendPayload } from '../state/selectors/legendSelectors';
  * @return all Legend items ready to be rendered
  */
 export function useLegendPayload(): ReadonlyArray<LegendPayload> | undefined {
-  return useAppSelector(selectLegendPayload);
+	return useAppSelector(selectLegendPayload);
 }

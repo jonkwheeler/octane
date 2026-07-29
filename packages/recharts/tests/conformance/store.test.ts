@@ -53,7 +53,10 @@ describe('recharts redux plumbing', () => {
 			xAxisId: 0,
 			yAxisId: 0,
 			ifOverflow: 'discard',
-			segment: [{ x: 1, y: 2 }, { x: 3, y: 4 }],
+			segment: [
+				{ x: 1, y: 2 },
+				{ x: 3, y: 4 },
+			],
 		};
 		const result = mount(ReferenceLineReporterApp, { store, settings });
 		await flush();
@@ -61,7 +64,10 @@ describe('recharts redux plumbing', () => {
 			store,
 			settings: {
 				...settings,
-				segment: [{ x: 1, y: 2 }, { x: 3, y: 4 }],
+				segment: [
+					{ x: 1, y: 2 },
+					{ x: 3, y: 4 },
+				],
 			},
 		});
 		await flush();
@@ -70,7 +76,13 @@ describe('recharts redux plumbing', () => {
 
 		result.update(ReferenceLineReporterApp, {
 			store,
-			settings: { ...settings, segment: [{ x: 1, y: 2 }, { x: 5, y: 6 }] },
+			settings: {
+				...settings,
+				segment: [
+					{ x: 1, y: 2 },
+					{ x: 5, y: 6 },
+				],
+			},
 		});
 		await flush();
 		expect(actions).toEqual([

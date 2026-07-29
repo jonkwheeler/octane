@@ -58,6 +58,5 @@ export function adaptEventsOfChild(
 	return out;
 }
 
-export const isNonEmptyArray = <T>(
-	arr: ReadonlyArray<T> | null | undefined,
-): arr is [T, ...T[]] => Array.isArray(arr) && arr.length > 0;
+export const isNonEmptyArray = <T>(arr: ReadonlyArray<T> | null | undefined): arr is [T, ...T[]] =>
+	Array.isArray(arr) && arr.length > 0;
