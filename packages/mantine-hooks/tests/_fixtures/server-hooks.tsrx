@@ -1,10 +1,12 @@
 import { useCounter, useDisclosure, useListState, useMediaQuery } from '@octanejs/mantine-hooks';
 
 export function ServerHooks() @{
-	const [count] = useCounter(2);
-	const [opened] = useDisclosure(true);
+	// Keep every optional user argument explicit: Octane appends the custom-hook
+	// slot after these arguments when it compiles this TSRX call site.
+	const [count] = useCounter(2, undefined);
+	const [opened] = useDisclosure(true, undefined);
 	const [items] = useListState(['Ada', 'Grace']);
-	const wide = useMediaQuery('(min-width: 60rem)', false);
+	const wide = useMediaQuery('(min-width: 60rem)', false, undefined);
 
 	<output>{`${count}:${opened ? 'open' : 'closed'}:${items.join(',')}:${
 		wide ? 'wide' : 'narrow'

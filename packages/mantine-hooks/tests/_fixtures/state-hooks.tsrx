@@ -2,7 +2,7 @@ import { useCounter, useDisclosure, useFetch, useListState } from '@octanejs/man
 
 export function StateHooks() @{
 	const [count, counter] = useCounter(1, { min: 0, max: 2 });
-	const [opened, disclosure] = useDisclosure(false);
+	const [opened, disclosure] = useDisclosure(false, undefined);
 	const [items, itemsHandlers] = useListState(['Ada']);
 
 	<section>

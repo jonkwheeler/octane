@@ -155,22 +155,31 @@ export function useLongPress(
 function getEventPosition(
 	event: React.MouseEvent | React.TouchEvent,
 ): { x: number; y: number } | null {
+	const nativeEvent = getNativeEvent(event);
 	if (isTouchEvent(event)) {
-		const touch = event.touches[0] ?? event.changedTouches[0];
+		const touch = nativeEvent.touches?.[0] ?? nativeEvent.changedTouches?.[0];
 		return touch ? { x: touch.clientX, y: touch.clientY } : null;
 	}
 
-	return { x: event.clientX, y: event.clientY };
+	return { x: nativeEvent.clientX, y: nativeEvent.clientY };
 }
 
 function isTouchEvent(event: React.MouseEvent | React.TouchEvent): event is React.TouchEvent {
-	return window.TouchEvent
-		? event.nativeEvent instanceof TouchEvent
-		: 'touches' in event.nativeEvent;
+	const nativeEvent = getNativeEvent(event);
+	return 'touches' in nativeEvent || 'changedTouches' in nativeEvent;
 }
 
 function isMouseEvent(event: React.MouseEvent | React.TouchEvent): event is React.MouseEvent {
-	return event.nativeEvent instanceof MouseEvent;
+	const nativeEvent = getNativeEvent(event);
+	return (
+		typeof nativeEvent.clientX === 'number' &&
+		typeof nativeEvent.clientY === 'number' &&
+		!('touches' in nativeEvent)
+	);
+}
+
+function getNativeEvent(event: React.MouseEvent | React.TouchEvent): any {
+	return (event as any).nativeEvent ?? event;
 }
 
 export namespace useLongPress {
