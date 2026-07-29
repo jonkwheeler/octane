@@ -8,8 +8,12 @@ export function getInputOnChange<T>(
 			setValue(val as T);
 		} else if (typeof val === 'function') {
 			setValue(val);
-		} else if (typeof val === 'object' && 'nativeEvent' in val) {
-			const { currentTarget } = val;
+		} else if (
+			typeof val === 'object' &&
+			(('currentTarget' in val && val.currentTarget != null) ||
+				('target' in val && val.target != null))
+		) {
+			const currentTarget = ('currentTarget' in val && val.currentTarget) || (val as any).target;
 
 			if (currentTarget.type === 'checkbox') {
 				setValue((currentTarget as any).checked as any);
@@ -17,7 +21,7 @@ export function getInputOnChange<T>(
 				setValue(currentTarget.value as any);
 			}
 		} else {
-			setValue(val);
+			setValue(val as T);
 		}
 	};
 }

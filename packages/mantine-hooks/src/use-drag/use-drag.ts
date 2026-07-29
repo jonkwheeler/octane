@@ -111,6 +111,7 @@ interface DragInternalState {
 	lockedAxis: 'x' | 'y' | null;
 	canceled: boolean;
 	lastVelocity: Vector2;
+	lastEvent: PointerEvent | null;
 }
 
 function createInitialState(): DragInternalState {
@@ -126,6 +127,7 @@ function createInitialState(): DragInternalState {
 		lockedAxis: null,
 		canceled: false,
 		lastVelocity: [0, 0],
+		lastEvent: null,
 	};
 }
 
@@ -186,6 +188,7 @@ export function useDrag<T extends HTMLElement = any>(
 			s.firstFired = false;
 			s.lockedAxis = null;
 			s.canceled = false;
+			s.lastEvent = null;
 			setActive(false);
 			document.body.style.userSelect = '';
 			document.body.style.webkitUserSelect = '';
@@ -194,9 +197,9 @@ export function useDrag<T extends HTMLElement = any>(
 		};
 
 		const cancel = () => {
-			if (stateRef.current.isActive) {
-				stateRef.current.canceled = true;
-				resetDrag();
+			const s = stateRef.current;
+			if (s.isActive && s.lastEvent) {
+				emitCanceled(s.lastEvent);
 			}
 		};
 
@@ -229,6 +232,7 @@ export function useDrag<T extends HTMLElement = any>(
 			s.lockedAxis = null;
 			s.canceled = false;
 			s.lastVelocity = [0, 0];
+			s.lastEvent = event;
 
 			const [tx, ty] = getThresholdVector(optionsRef.current.threshold);
 			if (tx === 0 && ty === 0) {
@@ -253,6 +257,9 @@ export function useDrag<T extends HTMLElement = any>(
 					cancel,
 					event,
 				});
+				if (!s.isActive) {
+					return;
+				}
 			}
 
 			documentControllerRef.current?.abort();
@@ -269,6 +276,7 @@ export function useDrag<T extends HTMLElement = any>(
 			if (!s.isActive || event.pointerId !== s.pointerId) {
 				return;
 			}
+			s.lastEvent = event;
 
 			const rawMovement: Vector2 = [event.clientX - s.startXY[0], event.clientY - s.startXY[1]];
 
@@ -332,6 +340,7 @@ export function useDrag<T extends HTMLElement = any>(
 					const dist: Vector2 = [Math.abs(mov[0]), Math.abs(mov[1])];
 					const maxDist = Math.max(dist[0], dist[1]);
 					const isTap = maxDist < (opts.tapThreshold ?? 3);
+					s.isActive = false;
 
 					handlerRef.current({
 						xy: [event.clientX, event.clientY],
@@ -366,6 +375,7 @@ export function useDrag<T extends HTMLElement = any>(
 
 			const maxDistance = Math.max(distance[0], distance[1]);
 			const tap = opts.filterTaps === true && maxDistance < (opts.tapThreshold ?? 3);
+			s.isActive = false;
 
 			handlerRef.current({
 				xy: [event.clientX, event.clientY],
@@ -388,14 +398,13 @@ export function useDrag<T extends HTMLElement = any>(
 			resetDrag();
 		};
 
-		const onPointerCancel = (event: PointerEvent) => {
+		const emitCanceled = (event: PointerEvent) => {
 			const s = stateRef.current;
-			if (!s.isActive || event.pointerId !== s.pointerId) {
-				return;
-			}
-
 			const rawMovement: Vector2 = [event.clientX - s.startXY[0], event.clientY - s.startXY[1]];
 			const movement = applyAxisConstraint(rawMovement);
+			// Mark the gesture inactive before notifying the consumer so calling
+			// cancel() from the terminal update cannot recursively cancel again.
+			s.isActive = false;
 
 			handlerRef.current({
 				xy: [event.clientX, event.clientY],
@@ -416,6 +425,15 @@ export function useDrag<T extends HTMLElement = any>(
 			});
 
 			resetDrag();
+		};
+
+		const onPointerCancel = (event: PointerEvent) => {
+			const s = stateRef.current;
+			if (!s.isActive || event.pointerId !== s.pointerId) {
+				return;
+			}
+			s.lastEvent = event;
+			emitCanceled(event);
 		};
 
 		node.addEventListener('pointerdown', onPointerDown, {
