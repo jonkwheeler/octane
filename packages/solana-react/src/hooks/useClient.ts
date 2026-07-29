@@ -1,13 +1,13 @@
 import { useCallback, useContext, useSyncExternalStore } from 'octane';
 import type { Client } from '@solana/kit';
 import { ClientContext } from '../client-context';
-import { splitSlot, subSlot } from '../internal';
+import { subSlot } from '../internal';
 
 export function useClient<TClient extends object = object>(): Client<TClient>;
 export function useClient<TClient extends object = object>(
 	...args: [slot?: symbol]
 ): Client<TClient> {
-	const [, slot] = splitSlot(args);
+	const slot = args[0];
 	const store = useContext(ClientContext);
 	if (!store) throw new Error('useClient must be used inside ClientProvider');
 	const subscribe = useCallback(
@@ -37,7 +37,7 @@ export function useClientCapability<TClient extends object>(
 	config: UseClientCapabilityConfig,
 	...args: [slot?: symbol]
 ): Client<TClient> {
-	const [, slot] = splitSlot(args);
+	const slot = args[0];
 	const client = (useClient as (...args: [slot?: symbol]) => Client<TClient>)(
 		subSlot(slot, 'client'),
 	);

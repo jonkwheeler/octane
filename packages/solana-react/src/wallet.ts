@@ -57,6 +57,7 @@ export function createWalletStore(registry?: WalletRegistry) {
 	let generation = 0;
 	let selected: WalletAccount | null = null;
 	let wallets: readonly Wallet[] = [];
+	let snapshot: WalletSnapshot = { wallets, selected };
 	const listeners = new Set<() => void>();
 	let disposers: (() => void)[] = [];
 	let fingerprint = '';
@@ -75,6 +76,7 @@ export function createWalletStore(registry?: WalletRegistry) {
 			)
 		)
 			selected = null;
+		snapshot = { wallets, selected };
 		for (const listener of listeners) listener();
 	};
 
@@ -93,7 +95,7 @@ export function createWalletStore(registry?: WalletRegistry) {
 	replaceRegistry(registry);
 
 	return {
-		getSnapshot: (): WalletSnapshot => ({ wallets, selected }),
+		getSnapshot: (): WalletSnapshot => snapshot,
 		subscribe(listener: () => void) {
 			listeners.add(listener);
 			return () => listeners.delete(listener);
@@ -104,6 +106,7 @@ export function createWalletStore(registry?: WalletRegistry) {
 				throw new Error('Cannot select an undiscovered wallet account');
 			if (Object.is(selected, account)) return;
 			selected = account;
+			snapshot = { wallets, selected };
 			for (const listener of listeners) listener();
 		},
 		dispose() {

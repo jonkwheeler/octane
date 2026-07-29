@@ -8,8 +8,3 @@ export function subSlot(slot: symbol | undefined, tag: string): symbol {
 	if (!child) children.set(tag, (child = Symbol(`${slot.description ?? 'solana'}:${tag}`)));
 	return child;
 }
-
-export function splitSlot(args: unknown[]): [unknown[], symbol | undefined] {
-	const tail = args.at(-1);
-	return typeof tail === 'symbol' ? [args.slice(0, -1), tail] : [args, undefined];
-}

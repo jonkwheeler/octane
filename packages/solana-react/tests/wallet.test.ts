@@ -38,8 +38,11 @@ describe('wallet boundary', () => {
 		const store = createWalletStore(first);
 		const listener = vi.fn();
 		store.subscribe(listener);
-		const account = store.getSnapshot().wallets[0]!.accounts[0]!;
+		const initialSnapshot = store.getSnapshot();
+		expect(store.getSnapshot()).toBe(initialSnapshot);
+		const account = initialSnapshot.wallets[0]!.accounts[0]!;
 		store.select(account);
+		expect(store.getSnapshot()).not.toBe(initialSnapshot);
 		expect(store.getSnapshot().selected?.address).toBe('A');
 		first.emit();
 		expect(listener).toHaveBeenCalledOnce();
