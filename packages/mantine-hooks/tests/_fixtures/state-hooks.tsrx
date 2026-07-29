@@ -22,7 +22,9 @@ export function FetchHooks() @{
 
 	<section>
 		<button id="fetch" onClick={() => void refetch()}>fetch</button>
-		<output id="loading">{loading ? 'loading' : 'idle'}</output>
+		<output id="loading">
+			{loading ? 'loading' : 'idle'}
+		</output>
 		<output id="data">{data?.value ?? 'none'}</output>
 	</section>
 }
