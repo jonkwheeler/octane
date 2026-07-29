@@ -8,6 +8,7 @@ import { join, resolve } from 'node:path';
 export const KNOWN_BINDINGS = {
 	zustand: '@octanejs/zustand',
 	valtio: '@octanejs/valtio',
+	'mobx-react-lite': '@octanejs/mobx',
 	jotai: '@octanejs/jotai',
 	'@apollo/client': '@octanejs/apollo-client',
 	'@tanstack/ai-react': '@octanejs/tanstack-ai',
@@ -130,6 +131,7 @@ export const KNOWN_VANILLA_CORES = {
 	'react-hook-form': null,
 	zustand: 'zustand/vanilla',
 	valtio: 'valtio/vanilla',
+	'mobx-react-lite': 'mobx',
 	jotai: 'jotai/vanilla',
 	'@lexical/react': 'lexical',
 	'@tiptap/react': '@tiptap/core',

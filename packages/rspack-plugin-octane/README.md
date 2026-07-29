@@ -1,8 +1,10 @@
 # `@octanejs/rspack-plugin`
 
-Low-level Rspack 2.x integration for Octane. It compiles `.tsrx`, eligible
-Octane `.tsx`, and raw `.ts`/`.js` hook sources; the full routing and SSR app
-integration lives in `@octanejs/rsbuild-plugin`.
+Low-level Rspack 2.x integration for Octane. Its standalone loader follows the
+webpack loader API and can also be used by webpack-compatible hosts such as
+Next.js. It compiles `.tsrx`, eligible Octane `.tsx`, and raw
+`.ts`/`.js` hook sources; the full Rspack routing and SSR app integration lives
+in `@octanejs/rsbuild-plugin`.
 
 ## Install
 
@@ -100,7 +102,8 @@ server, add Rspack's `HotModuleReplacementPlugin` as usual.
 
 ## Loader only
 
-The ESM loader is exported for custom rule composition:
+The ESM loader is exported for custom rule composition. Loader-only consumers
+do not need `@rspack/core`:
 
 ```js
 export default {
@@ -158,6 +161,51 @@ export default {
 ```
 
 The class plugin is recommended unless another integration owns those concerns.
+
+### Next.js
+
+Keep the React application in ordinary `.tsx` files and compile only explicitly
+owned `.tsrx` islands:
+
+```js
+export default {
+	turbopack: {
+		rules: {
+			'*.tsrx': {
+				loaders: [
+					{
+						loader: '@octanejs/rspack-plugin/loader',
+						options: { environment: 'client', requireDirective: true },
+					},
+				],
+				as: '*.tsx',
+			},
+		},
+		resolveExtensions: ['.tsrx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
+	},
+	webpack(config) {
+		config.resolve.extensions.unshift('.tsrx');
+		config.module.rules.push({
+			test: /\.tsrx$/,
+			enforce: 'pre',
+			use: {
+				loader: '@octanejs/rspack-plugin/loader',
+				options: { environment: 'client', requireDirective: true },
+			},
+		});
+		return config;
+	},
+};
+```
+
+Next 16 uses the Turbopack rule by default. Pass `--webpack` to exercise the
+webpack rule. `examples/next-islands` builds the same island through both
+bundlers in CI.
+
+The importing React module must be below a Next `'use client'` boundary and
+mount the compiled component through `OctaneCompat` from `octane/react`. The
+explicit client environment is intentional: a hosted island is a Client
+Component even when the surrounding App Router route is server-rendered.
 
 ## App-level metadata
 

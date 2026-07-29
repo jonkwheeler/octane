@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@octanejs/recharts": ["./types/octane-bindings.d.ts"],
+      "@octanejs/tiptap": ["./types/octane-bindings.d.ts"]
+    }
+  }
+}

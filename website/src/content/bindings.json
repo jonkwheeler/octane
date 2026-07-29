@@ -5,6 +5,7 @@
     "packages": [
       "@octanejs/zustand",
       "@octanejs/valtio",
+      "@octanejs/mobx",
       "@octanejs/jotai",
       "@octanejs/redux",
       "@octanejs/redux-toolkit",

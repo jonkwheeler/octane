@@ -5,6 +5,10 @@
 > real React 19 tree—see
 > **[react-hosted-octane-compat-plan.md](./react-hosted-octane-compat-plan.md)**.
 
+The maintained binding set now also includes `@octanejs/mobx`, which reuses the
+MobX core and ports the `mobx-react-lite` function-component surface. Its
+conformance and static-rendering evidence lives under `packages/mobx/tests/`.
+
 > Goal: measure how faithfully Octane matches React's hook/effect/store/context/
 > Suspense surface by porting **real third-party React libraries** and running a
 > representative slice of **their own test suites** — with React (compiled from the

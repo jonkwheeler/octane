@@ -22,6 +22,8 @@ pnpm dlx @octanejs/cli doctor
 | `octane init` | Wire Octane into the project in this directory: bundler plugin, tsconfig, scripts, dependencies. |
 | `octane doctor` | Check the project for the mistakes that break Octane quietly. `--fix` repairs the mechanical ones. |
 | `octane analyze` | Compile the project and report every Octane compiler diagnostic, with its code and suggested edit. |
+| `octane migrate analyze <path...>` | Evaluate React leaves and dependencies for incremental Octane adoption. |
+| `octane migrate convert <path...>` | Preview or apply a conservative Octane-authored TSX conversion. |
 | `octane add <package>` | Install a binding, by its own name or by the React package it ports, and print its divergences. |
 | `octane bindings [query]` | List and search the `@octanejs/*` bindings. |
 | `octane explain <error>` | Decode a runtime error code, including the minified production message. |
@@ -86,6 +88,45 @@ src/Form.tsrx
 A file that will not parse is reported as an error and does not stop the rest of
 the run. Exit code is `3` when anything error-severity was found, or when
 `--strict` and there were warnings.
+
+## Incremental React adoption
+
+Keep the React application and its framework-owned routes in place, then
+evaluate a leaf before moving its ownership to an Octane island:
+
+```bash
+octane migrate analyze src/components/PriceBadge.tsx
+octane migrate analyze src/components --json
+```
+
+The report follows local static imports, terminates cycles, and classifies every
+runtime package import as:
+
+- **supported** through the generated binding catalog or Octane runtime;
+- **blocked** when the imported entrypoint is React-bound without a binding; or
+- **candidate** when no React evidence is present, which is not a compatibility
+  guarantee.
+
+Class components, provider boundaries, server-only imports, ambiguous dynamic
+imports, and unsupported React APIs are source blockers. Existing
+`octane analyze` remains the compiler-diagnostic command and is unchanged.
+
+Conversion is dry-run by default:
+
+```bash
+octane migrate convert src/components/PriceBadge.tsx
+octane migrate convert src/components/PriceBadge.tsx --apply
+```
+
+For an eligible file it adds the Octane JSX ownership pragma, rewrites React and
+catalog-backed imports, and changes text-input `onChange` to Octane's native
+per-edit `onInput`. Checkboxes and radio inputs preserve `onChange`. Every write
+is guarded by the digest analyzed for that file; a differing file at the apply
+check becomes a conflict and is left untouched.
+
+The complete Next.js loader, island boundary, verification matrix, and stop
+conditions are in the
+[incremental React adoption guide](../../docs/incremental-react-adoption.md).
 
 ## For agents and CI
 

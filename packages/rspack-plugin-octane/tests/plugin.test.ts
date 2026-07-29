@@ -78,7 +78,7 @@ describe('OctaneRspackPlugin', () => {
 		const aliases = compiler.options.resolve.alias as Record<string, string>;
 		expect(aliases['@']).toBe('/project/src');
 		expect(aliases['octane$']).toMatch(
-			/(?:octane\/server|packages\/octane\/src\/server\/index\.ts)$/,
+			/(?:octane\/server|octane\/dist\/server\/index\.js|packages\/octane\/src\/server\/index\.ts)$/,
 		);
 		expect(compiler.options.module.rules).toHaveLength(2);
 		expect(compiler.options.module.rules[0]).toMatchObject({

@@ -619,6 +619,8 @@ Octane itself. Good places to start:
   the deliberate divergences, and why everything else matching React is the point.
 - **[Bindings](https://octanejs.dev/docs/bindings)** — the `@octanejs/*` ports of
   the React ecosystem.
+- **[Incremental React adoption](./docs/incremental-react-adoption.md)** — analyze
+  and move one React leaf at a time into a Next.js-hosted Octane island.
 
 ## Packages
 
@@ -663,7 +665,8 @@ generated from the workspace manifests in
   tooling. It measures framework use rather than monorepo repair. Active
   held-out material stays outside the repository.
 - The `@octanejs/*` framework bindings — each an octane port of a React library:
-  [`zustand`](./packages/zustand), [`jotai`](./packages/jotai),
+  [`zustand`](./packages/zustand), [`valtio`](./packages/valtio),
+  [`mobx`](./packages/mobx), [`jotai`](./packages/jotai),
   [`ai`](./packages/tanstack-ai), [`query`](./packages/tanstack-query),
   [`store`](./packages/tanstack-store),
   [`form`](./packages/tanstack-form), [`apollo-client`](./packages/apollo-client),

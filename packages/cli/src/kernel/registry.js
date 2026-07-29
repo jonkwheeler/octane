@@ -25,6 +25,11 @@ export const COMMANDS = [
 		load: () => import('../commands/analyze.js'),
 	},
 	{
+		name: 'migrate',
+		summary: 'Evaluate React source for incremental Octane adoption.',
+		load: () => import('../commands/migrate/index.js'),
+	},
+	{
 		name: 'info',
 		summary: 'Print environment and project details for a bug report.',
 		load: () => import('../commands/info.js'),

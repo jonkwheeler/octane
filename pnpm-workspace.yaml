@@ -261,11 +261,13 @@ catalogs:
     i18next: 26.3.6
     jsdom: ^29.1.1
     jotai: ^2.20.2
+    mobx: 6.16.1
     lexical: 0.46.0
     lighthouse: 13.4.1
     lucide-react: 1.24.0
     motion: ^12.42.2
     motion-dom: ^12.0.0
+    next: 16.2.12
     miniflare: 4.20260714.0
     nuqs: 2.9.1
     '@standard-schema/spec': 1.1.0
@@ -400,7 +402,10 @@ minimumReleaseAgeExclude:
   - 'shadcn@4.14.1'
   - 'tailwindcss@4.3.3'
   - '@tailwindcss/vite@4.3.3'
-  - octane@0.1.16 || 0.1.17
+  - octane@0.1.16 || 0.1.17 || 0.1.18
+  - '@octanejs/recharts@0.1.15'
+  - '@octanejs/redux@0.1.15'
+  - '@octanejs/tiptap@0.0.12'
 
 # Changesets 2.31.1 assumes npm's error shape and crashes on pnpm 11 duplicate
 # publish errors. Remove this backport once the fix ships on Changesets' stable line.

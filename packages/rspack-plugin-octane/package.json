@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=22"
   },
-  "description": "Rspack loader and compiler plugin for Octane TSRX source",
+  "description": "Webpack-compatible loader and Rspack compiler plugin for Octane TSRX source",
   "author": {
     "name": "Dominic Gannaway",
     "email": "dg@domgan.com"
@@ -49,6 +49,11 @@
   "peerDependencies": {
     "@rspack/core": "^2.0.0",
     "octane": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@rspack/core": "catalog:default",
