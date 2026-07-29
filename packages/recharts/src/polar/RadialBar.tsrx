@@ -535,7 +535,7 @@ function renderBackground(props: InternalProps, sectors?: ReadonlyArray<RadialBa
     const { cornerRadius } = props;
     const backgroundProps = svgPropertiesNoEventsFromUnknown(props.background);
     return (
-      <ZIndexLayer zIndex={getZIndexFromUnknown(this.props.background, DefaultZIndexes.barBackground)}>
+      <ZIndexLayer zIndex={getZIndexFromUnknown(props.background, DefaultZIndexes.barBackground)}>
         {sectors.map((entry, i) => {
           const { value, background, ...rest } = entry;
 
@@ -543,7 +543,7 @@ function renderBackground(props: InternalProps, sectors?: ReadonlyArray<RadialBa
             return null;
           }
 
-          const props: React.ComponentProps<typeof RadialBarSector> = {
+          const sectorProps: React.ComponentProps<typeof RadialBarSector> = {
             cornerRadius: parseCornerRadius(cornerRadius),
             ...rest,
             // @ts-expect-error backgroundProps is contributing unknown props
@@ -560,7 +560,7 @@ function renderBackground(props: InternalProps, sectors?: ReadonlyArray<RadialBa
           return (
             <RadialBarSector
               key={`background-${rest.cx}-${rest.cy}-${rest.innerRadius}-${rest.outerRadius}-${rest.startAngle}-${rest.endAngle}-${i}`}
-              {...props}
+              {...sectorProps}
             />
           );
         })}
