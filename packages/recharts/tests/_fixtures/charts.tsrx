@@ -129,6 +129,19 @@ export function CartesianChartsApp() @{
 	</div>
 }
 
+export function ScatterAnimationCallbacksApp({ onAnimationStart, onAnimationEnd }) @{
+	<ScatterChart width={500} height={300}>
+		<XAxis dataKey="x" type="number" />
+		<YAxis dataKey="y" type="number" />
+		<Scatter
+			data={[{ x: 10, y: 20 }]}
+			animationDuration={1}
+			onAnimationStart={onAnimationStart}
+			onAnimationEnd={onAnimationEnd}
+		/>
+	</ScatterChart>
+}
+
 export function PolarChartsApp() @{
 	<div>
 		<PieChart width={400} height={300}>

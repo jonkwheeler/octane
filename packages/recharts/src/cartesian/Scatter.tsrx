@@ -156,6 +156,8 @@ interface ScatterInternalProps extends ZIndexable {
   animationEasing: EasingInput;
   animationInterpolateFn: AnimationInterpolateFn<ScatterPointItem, CartesianLayout>;
   animationMatchBy: AnimationMatchByProp<ScatterPointItem>;
+  onAnimationStart?: () => void;
+  onAnimationEnd?: () => void;
 
   needClip: boolean;
 
@@ -359,6 +361,14 @@ interface ScatterProps<DataPointType = any, DataValueType = any>
    * @see {@link https://recharts.github.io/en-US/guide/animations/ Animations guide}
    */
   animationMatchBy?: AnimationMatchByProp<ScatterPointItem>;
+  /**
+   * Called when the Scatter animation starts.
+   */
+  onAnimationStart?: () => void;
+  /**
+   * Called when the Scatter animation finishes.
+   */
+  onAnimationEnd?: () => void;
   /**
    * Z-Index of this component and its children. The higher the value,
    * the more on top it will be rendered.
@@ -721,10 +731,21 @@ function SymbolsWithAnimation({
   previousPointsRef: MutableRefObject<ReadonlyArray<ScatterPointItem> | null>;
   props: InternalProps;
 }) {
-  const { points, isAnimationActive, animationBegin, animationDuration, animationEasing, animationInterpolateFn } =
-    props;
+  const {
+    points,
+    isAnimationActive,
+    animationBegin,
+    animationDuration,
+    animationEasing,
+    animationInterpolateFn,
+    onAnimationStart,
+    onAnimationEnd,
+  } = props;
 
-  const { isAnimating, handleAnimationStart, handleAnimationEnd } = useAnimationCallbacks();
+  const { isAnimating, handleAnimationStart, handleAnimationEnd } = useAnimationCallbacks(
+    onAnimationStart,
+    onAnimationEnd,
+  );
   const layout = useCartesianChartLayout();
 
   if (layout == null) return null;

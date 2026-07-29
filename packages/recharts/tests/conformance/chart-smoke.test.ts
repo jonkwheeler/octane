@@ -4,7 +4,7 @@
  * — bars as rectangles, lines as curves, axes with ticks. Byte-parity vs real
  * recharts is asserted separately by the differential suite.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
@@ -14,6 +14,7 @@ import {
 	OverlayChartApp,
 	PolarChartsApp,
 	ResponsiveChartApp,
+	ScatterAnimationCallbacksApp,
 } from '../_fixtures/charts.tsrx';
 
 async function settle() {
@@ -89,6 +90,28 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-cartesian-grid')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-reference-line')).toBeTruthy();
 		result.unmount();
+	});
+
+	it('forwards Scatter animation lifecycle callbacks', async () => {
+		let frameTime = performance.now();
+		vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
+			setTimeout(() => callback((frameTime += 16)), 0),
+		);
+		vi.stubGlobal('cancelAnimationFrame', (handle: number) => clearTimeout(handle));
+		const starts: string[] = [];
+		const ends: string[] = [];
+		try {
+			const result = mount(ScatterAnimationCallbacksApp, {
+				onAnimationStart: () => starts.push('start'),
+				onAnimationEnd: () => ends.push('end'),
+			});
+			await settle();
+			expect(starts).toEqual(['start']);
+			expect(ends).toEqual(['end']);
+			result.unmount();
+		} finally {
+			vi.unstubAllGlobals();
+		}
 	});
 
 	it('renders pie, radar, radial bar, and polar axes', async () => {

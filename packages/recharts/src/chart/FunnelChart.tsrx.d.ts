@@ -1,1 +1,12 @@
-export declare function FunnelChart(props: Record<string, unknown>): unknown;
+import * as React from 'octane';
+import { CartesianChartProps } from '../util/types';
+/**
+ * @consumes ResponsiveContainerContext
+ * @provides CartesianViewBoxContext
+ * @provides CartesianChartContext
+ */
+export declare const FunnelChart: <DataPointType = any>(
+	props: CartesianChartProps<DataPointType> & {
+		ref?: React.Ref<SVGSVGElement>;
+	},
+) => React.ReactElement;
