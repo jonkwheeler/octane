@@ -20,6 +20,7 @@ import { ShadcnBasesDemo } from './demos/ShadcnBases.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
 import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
+import { AlienSignalsDemo } from './demos/AlienSignals.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
 import conditionalSource from './demos/Conditional.tsrx?raw';
@@ -37,6 +38,7 @@ import shadcnSource from './demos/ShadcnBases.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
 import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
+import alienSignalsSource from './demos/AlienSignals.tsrx?raw';
 
 export interface Demo {
 	/** Stable id — also the URL route, so renaming one breaks shared links. */
@@ -53,6 +55,18 @@ export interface DemoGroup {
 }
 
 export const GROUPS: readonly DemoGroup[] = [
+	{
+		id: 'state',
+		label: 'State',
+		demos: [
+			{
+				id: 'alien-signals',
+				title: 'Alien Signals',
+				Component: AlienSignalsDemo,
+				source: alienSignalsSource,
+			},
+		],
+	},
 	{
 		id: 'language',
 		label: 'Language',

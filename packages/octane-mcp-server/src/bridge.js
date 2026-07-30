@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 // expected union from the workspace manifests, so publishing a new binding
 // without registering it in either catalog fails the mcp-server tests.
 export const KNOWN_BINDINGS = {
+	'react-alien-signals': '@octanejs/alien-signals',
 	'usehooks-ts': '@octanejs/usehooks-ts',
 	zustand: '@octanejs/zustand',
 	valtio: '@octanejs/valtio',
@@ -133,6 +134,7 @@ export const KNOWN_BINDING_PACKAGE_DIRS = new Set(
 );
 
 export const KNOWN_VANILLA_CORES = {
+	'react-alien-signals': 'alien-signals',
 	'@apollo/client': '@apollo/client',
 	'@tanstack/react-query': '@tanstack/query-core',
 	wagmi: '@wagmi/core',

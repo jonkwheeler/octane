@@ -265,6 +265,11 @@ describe('bridgeReportFromSource', () => {
 });
 
 describe('KNOWN_BINDINGS', () => {
+	it('maps react-alien-signals to the Octane binding and vanilla core', () => {
+		expect(KNOWN_BINDINGS['react-alien-signals']).toBe('@octanejs/alien-signals');
+		expect(KNOWN_VANILLA_CORES['react-alien-signals']).toBe('alien-signals');
+	});
+
 	it('maps Streamdown and every official plugin package to the consolidated binding', () => {
 		const upstreamPackages = [
 			'streamdown',

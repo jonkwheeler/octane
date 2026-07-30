@@ -32,6 +32,7 @@ const USER_APP_EVAL_ALLOWED_IMPORTS = new Map([
 		resolve(import.meta.dirname, 'packages/tanstack-query/src/index.ts'),
 	],
 	['@octanejs/zustand', resolve(import.meta.dirname, 'packages/zustand/src/index.ts')],
+	['@octanejs/alien-signals', resolve(import.meta.dirname, 'packages/alien-signals/src/index.ts')],
 	['@tanstack/query-core', null],
 	['i18next', null],
 	['octane', resolve(import.meta.dirname, 'packages/octane/src/index.ts')],
@@ -447,6 +448,52 @@ export default defineConfig({
 					env: { OCTANE_TEST_COMPILE_MODE: 'profile' },
 				},
 				plugins: [octane({ hmr: false, profile: true })],
+			},
+			{
+				test: {
+					name: 'alien-signals',
+					include: [
+						'packages/alien-signals/tests/**/*.test.ts',
+						'playground/octane/src/demos/AlienSignals.test.ts',
+						'!packages/alien-signals/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@\//,
+							replacement: `${resolve(import.meta.dirname, 'playground/octane/src')}/`,
+						},
+						{
+							find: /^@octanejs\/alien-signals$/,
+							replacement: resolve(import.meta.dirname, 'packages/alien-signals/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'alien-signals-ssr',
+					include: ['packages/alien-signals/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/alien-signals$/,
+							replacement: resolve(import.meta.dirname, 'packages/alien-signals/src/index.ts'),
+						},
+					],
+				},
 			},
 			{
 				test: {

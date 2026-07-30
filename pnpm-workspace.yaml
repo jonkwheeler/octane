@@ -123,6 +123,7 @@ catalogs:
     '@react-rxjs/core': 0.10.8
     '@react-rxjs/utils': 0.9.7
     '@rx-state/core': 0.1.4
+    alien-signals: 1.0.4
     '@apollo/client': 4.2.6
     dexie: 4.4.4
     fake-indexeddb: 6.2.5
