@@ -21,7 +21,7 @@ export function AnimeJsDemo() @{
 	const domAnimation = useRef<JSAnimation | undefined>(undefined);
 	const reducedMotion = usePrefersReducedMotion();
 	const animation = useAnimeScope(() => {
-		if (reducedMotion !== false) return;
+		if (reducedMotion === undefined) return;
 		domAnimation.current = animate('.animejs-orb', {
 			x: [0, 220],
 			rotate: 360,
@@ -30,6 +30,7 @@ export function AnimeJsDemo() @{
 			ease: 'inOut(3)',
 			alternate: true,
 			loop: true,
+			autoplay: !reducedMotion,
 		});
 		return () => {
 			domAnimation.current = undefined;

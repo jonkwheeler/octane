@@ -10,7 +10,7 @@ export function AnimeJsScene({ reducedMotion }: { reducedMotion: boolean | undef
 	const invalidate = useThree((state) => state.invalidate);
 
 	useEffect(() => {
-		if (!mesh.current || reducedMotion !== false) return;
+		if (!mesh.current || reducedMotion === undefined) return;
 		const scope = createScope();
 		scope.add(() => {
 			animate(mesh.current!, {
@@ -21,6 +21,7 @@ export function AnimeJsScene({ reducedMotion }: { reducedMotion: boolean | undef
 				ease: 'inOut(3)',
 				alternate: true,
 				loop: true,
+				autoplay: !reducedMotion,
 				onRender: () => invalidate(),
 			});
 		});
