@@ -66,7 +66,10 @@ describe('@octanejs/solana-react hydration', () => {
 			expect(errors).not.toHaveBeenCalled();
 			expect(client.activeSubscriptions()).toBe(1);
 
-			root.render(ClientProviderFixture, { client: replacement });
+			flushSync(() => {
+				root?.render(ClientProviderFixture, { client: replacement });
+			});
+			expect(serverLabel?.textContent).toBe('replacement-client');
 			await settle();
 			expect(serverLabel?.textContent).toBe('replacement-client');
 			expect(container.querySelectorAll('#solana-client-label')).toHaveLength(1);
