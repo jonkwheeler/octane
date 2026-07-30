@@ -18,6 +18,23 @@ export function EffectProbe(props: {
 	<div ref={ref} data-testid="effect">effect</div>
 }
 
+export function EffectPoolProbe() @{
+	const first = useOnInView(() => {}, {
+		threshold: 0.5,
+		triggerOnce: true,
+		initialInView: true,
+	});
+	const second = useOnInView(() => {}, {
+		threshold: 0.5,
+		triggerOnce: false,
+		initialInView: false,
+	});
+	<>
+		<div ref={first} data-testid="effect-first">first</div>
+		<div ref={second} data-testid="effect-second">second</div>
+	</>
+}
+
 export function ComponentProbe() @{
 	<InView
 		children={({ inView, ref }: { inView: boolean; ref(node: Element | null): void }) => <section

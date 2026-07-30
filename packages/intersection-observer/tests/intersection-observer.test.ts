@@ -7,7 +7,7 @@ import {
 	setupIntersectionMocking,
 } from '../src/test-utils';
 import { observe } from '../src/observe';
-import { ComponentProbe, EffectProbe, HookProbe } from './_fixtures/probes.tsrx';
+import { ComponentProbe, EffectPoolProbe, EffectProbe, HookProbe } from './_fixtures/probes.tsrx';
 
 beforeEach(() => setupIntersectionMocking(vi.fn));
 afterEach(() => {
@@ -64,6 +64,14 @@ describe('Octane binding', () => {
 		const target = result.find('[data-testid="effect"]');
 		mockIsIntersecting(target, true);
 		expect(onChange).toHaveBeenCalledOnce();
+		result.unmount();
+	});
+
+	it('pools useOnInView observers regardless of library-only flags', () => {
+		const result = mount(EffectPoolProbe);
+		const first = result.find('[data-testid="effect-first"]');
+		const second = result.find('[data-testid="effect-second"]');
+		expect(intersectionMockInstance(second)).toBe(intersectionMockInstance(first));
 		result.unmount();
 	});
 

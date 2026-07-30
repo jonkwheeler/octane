@@ -34,7 +34,14 @@ export function useOnInView(
 					unobserve.current = undefined;
 				}
 			},
-			options,
+			{
+				root: options.root,
+				rootMargin: options.rootMargin,
+				threshold: options.threshold,
+				trackVisibility: options.trackVisibility,
+				delay: options.delay,
+				scrollMargin: options.scrollMargin,
+			},
 			options.fallbackInView,
 		);
 		return () => {
