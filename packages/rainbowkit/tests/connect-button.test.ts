@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { createConfig, http } from '@wagmi/core';
+import { connect, createConfig, http } from '@wagmi/core';
 import { mock } from '@wagmi/connectors/mock';
 import { mainnet, sepolia } from 'viem/chains';
 import { QueryClient } from '@octanejs/tanstack-query';
@@ -118,6 +118,48 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		flushEffects();
 		try {
 			expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+		} finally {
+			root.unmount();
+			container.remove();
+		}
+	});
+
+	it('keeps direct account and chain modal hooks inert until a connected provider mounts', async () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		await connect(config, { connector: config.connectors[0]! });
+		root.render(ProgrammaticProvider, {
+			config,
+			queryClient: new QueryClient(),
+		});
+		flushSync(() => {});
+		const accountOpener = container.querySelector('#programmatic-account') as HTMLButtonElement;
+		const chainOpener = container.querySelector('#programmatic-chain') as HTMLButtonElement;
+		accountOpener.click();
+		chainOpener.click();
+		flushSync(() => {});
+		expect(container.querySelector('[role="dialog"]')).toBeNull();
+
+		flushEffects();
+		flushSync(() => {});
+		accountOpener.click();
+		flushSync(() => {});
+		flushEffects();
+		expect(container.querySelector('[role="dialog"] h2')?.textContent).toBe('Account');
+		(container.querySelector('.rk-close') as HTMLButtonElement).click();
+		flushSync(() => {});
+		flushEffects();
+		chainOpener.click();
+		flushSync(() => {});
+		flushEffects();
+		try {
+			expect(container.querySelector('[role="dialog"] h2')?.textContent).toBe('Switch network');
 		} finally {
 			root.unmount();
 			container.remove();
