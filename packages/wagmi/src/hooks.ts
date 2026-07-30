@@ -11,9 +11,17 @@ import {
 	watchConnectors,
 	type Config,
 	type ConnectErrorType,
+	type DisconnectErrorType,
 	type GetBalanceErrorType,
+	type ReadContractErrorType,
+	type SendTransactionErrorType,
 	type ResolvedRegister,
 	type SignMessageErrorType,
+	type SimulateContractErrorType,
+	type SwitchChainErrorType,
+	type SwitchConnectionErrorType,
+	type WaitForTransactionReceiptErrorType,
+	type WriteContractErrorType,
 } from '@wagmi/core';
 import { deepEqual, watchChains } from '@wagmi/core/internal';
 import {
@@ -33,14 +41,46 @@ import {
 	type ConnectMutateAsync,
 	type ConnectOptions,
 	type ConnectVariables,
+	type DisconnectData,
+	type DisconnectMutate,
+	type DisconnectMutateAsync,
+	type DisconnectOptions,
+	type DisconnectVariables,
 	type GetBalanceData,
 	type GetBalanceOptions,
+	type ReadContractData,
+	type ReadContractOptions,
+	type SendTransactionData,
+	type SendTransactionMutate,
+	type SendTransactionMutateAsync,
+	type SendTransactionOptions,
+	type SendTransactionVariables,
 	type SignMessageData,
 	type SignMessageMutate,
 	type SignMessageMutateAsync,
 	type SignMessageOptions,
 	type SignMessageVariables,
+	type SimulateContractData,
+	type SimulateContractOptions,
+	type SwitchChainData,
+	type SwitchChainMutate,
+	type SwitchChainMutateAsync,
+	type SwitchChainOptions,
+	type SwitchChainVariables,
+	type SwitchConnectionData,
+	type SwitchConnectionMutate,
+	type SwitchConnectionMutateAsync,
+	type SwitchConnectionOptions,
+	type SwitchConnectionVariables,
+	type WaitForTransactionReceiptData,
+	type WaitForTransactionReceiptOptions,
+	type WriteContractData,
+	type WriteContractMutate,
+	type WriteContractMutateAsync,
+	type WriteContractOptions,
+	type WriteContractVariables,
 } from '@wagmi/core/query';
+import type { Abi, ContractFunctionArgs, ContractFunctionName } from 'viem';
 import {
 	useMutation,
 	useQuery,
@@ -196,33 +236,25 @@ export function useConnections(parameters: ParametersWithConfig | symbol = {}, .
 	return useSnapshot(subscribe, () => getConnections(config), slot);
 }
 
-function useMutationWithAliases(
-	factory: unknown,
+function useFactoryMutation<data, error, variables, context>(
+	factory: (
+		config: Config,
+		parameters: ParametersWithConfig,
+	) => UseMutationOptions<data, error, variables, context>,
 	parameters: ParametersWithConfig | symbol | undefined,
 	rest: unknown[],
-	aliases: string[],
 	privileged = false,
 	securityAction: 'privileged' | 'switchChain' | 'switchConnection' = 'privileged',
-) {
+): UseMutationResult<data, error, variables, context> {
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	const mutationOptions = (
-		factory as (
-			config: Config,
-			parameters: ParametersWithConfig,
-		) => UseMutationOptions<unknown, unknown, unknown, unknown>
-	)(config, options);
-	const mutation = useOctaneMutation(
+	const mutationOptions = factory(config, options);
+	return useOctaneMutation(
 		privileged
 			? secureMutationOptions(config, mutationOptions, undefined, securityAction)
 			: mutationOptions,
 		subSlot(slot, 'mutation'),
 	);
-	const result: Record<string, unknown> & typeof mutation = { ...mutation };
-	for (const alias of aliases) {
-		result[alias] = alias.endsWith('Async') ? mutation.mutateAsync : mutation.mutate;
-	}
-	return result;
 }
 
 export type UseConnectParameters<
@@ -280,55 +312,162 @@ export function useConnect(parameters: ParametersWithConfig | symbol = {}, ...re
 	} as UseConnectReturnType<typeof config>;
 }
 
+type AliasedMutationResult<data, error, variables, context, mutate, mutateAsync> = Omit<
+	UseMutationResult<data, error, variables, context>,
+	'mutate' | 'mutateAsync'
+> & {
+	mutate: mutate;
+	mutateAsync: mutateAsync;
+};
+
+export type UseDisconnectParameters<context = unknown> = DisconnectOptions<context> & {
+	config?: Config;
+};
+export type UseDisconnectReturnType<context = unknown> = AliasedMutationResult<
+	DisconnectData,
+	DisconnectErrorType,
+	DisconnectVariables,
+	context,
+	DisconnectMutate<context>,
+	DisconnectMutateAsync<context>
+> & {
+	disconnect: DisconnectMutate<context>;
+	disconnectAsync: DisconnectMutateAsync<context>;
+	connectors: ReturnType<typeof useConnections>[number]['connector'][];
+};
+
+export function useDisconnect<context = unknown>(
+	parameters?: UseDisconnectParameters<context> | symbol,
+	...rest: unknown[]
+): UseDisconnectReturnType<context>;
 export function useDisconnect(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
-	const result = useMutationWithAliases(disconnectMutationOptions, parameters, rest, [
-		'disconnect',
-		'disconnectAsync',
-	]);
+	const mutation = useFactoryMutation<
+		DisconnectData,
+		DisconnectErrorType,
+		DisconnectVariables,
+		unknown
+	>(
+		(config, options) => disconnectMutationOptions(config, options as DisconnectOptions<unknown>),
+		parameters,
+		rest,
+	);
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
 	return {
-		...result,
+		...mutation,
+		disconnect: mutation.mutate,
+		disconnectAsync: mutation.mutateAsync,
 		connectors: useConnections({ config }, subSlot(slot, 'connections')).map(
 			(connection) => connection.connector,
 		),
-	};
+	} as UseDisconnectReturnType;
 }
 
+export type UseSwitchConnectionParameters<
+	config extends Config = Config,
+	context = unknown,
+> = SwitchConnectionOptions<config, context> & { config?: config };
+export type UseSwitchConnectionReturnType<
+	config extends Config = Config,
+	context = unknown,
+> = AliasedMutationResult<
+	SwitchConnectionData<config>,
+	SwitchConnectionErrorType,
+	SwitchConnectionVariables,
+	context,
+	SwitchConnectionMutate<config, context>,
+	SwitchConnectionMutateAsync<config, context>
+> & {
+	switchConnection: SwitchConnectionMutate<config, context>;
+	switchConnectionAsync: SwitchConnectionMutateAsync<config, context>;
+	connectors: config['connectors'];
+};
+
+export function useSwitchConnection<
+	config extends Config = ResolvedRegister['config'],
+	context = unknown,
+>(
+	parameters?: UseSwitchConnectionParameters<config, context> | symbol,
+	...rest: unknown[]
+): UseSwitchConnectionReturnType<config, context>;
 export function useSwitchConnection(
 	parameters: ParametersWithConfig | symbol = {},
 	...rest: unknown[]
 ) {
-	const result = useMutationWithAliases(
-		switchConnectionMutationOptions,
+	const mutation = useFactoryMutation<
+		SwitchConnectionData<Config>,
+		SwitchConnectionErrorType,
+		SwitchConnectionVariables,
+		unknown
+	>(
+		(config, options) =>
+			switchConnectionMutationOptions(config, options as SwitchConnectionOptions<Config, unknown>),
 		parameters,
 		rest,
-		['switchConnection', 'switchConnectionAsync'],
 		true,
 		'switchConnection',
 	);
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
 	return {
-		...result,
+		...mutation,
+		switchConnection: mutation.mutate,
+		switchConnectionAsync: mutation.mutateAsync,
 		connectors: useConnections({ config }, subSlot(slot, 'connections')).map(
 			(connection) => connection.connector,
 		),
-	};
+	} as UseSwitchConnectionReturnType;
 }
 
+export type UseSwitchChainParameters<
+	config extends Config = Config,
+	context = unknown,
+> = SwitchChainOptions<config, context> & { config?: config };
+export type UseSwitchChainReturnType<
+	config extends Config = Config,
+	context = unknown,
+> = AliasedMutationResult<
+	SwitchChainData<config, config['chains'][number]['id']>,
+	SwitchChainErrorType,
+	SwitchChainVariables<config, config['chains'][number]['id']>,
+	context,
+	SwitchChainMutate<config, context>,
+	SwitchChainMutateAsync<config, context>
+> & {
+	switchChain: SwitchChainMutate<config, context>;
+	switchChainAsync: SwitchChainMutateAsync<config, context>;
+	chains: config['chains'];
+};
+
+export function useSwitchChain<
+	config extends Config = ResolvedRegister['config'],
+	context = unknown,
+>(
+	parameters?: UseSwitchChainParameters<config, context> | symbol,
+	...rest: unknown[]
+): UseSwitchChainReturnType<config, context>;
 export function useSwitchChain(parameters: ParametersWithConfig | symbol = {}, ...rest: unknown[]) {
-	const result = useMutationWithAliases(
-		switchChainMutationOptions,
+	const mutation = useFactoryMutation<
+		SwitchChainData<Config, Config['chains'][number]['id']>,
+		SwitchChainErrorType,
+		SwitchChainVariables<Config, Config['chains'][number]['id']>,
+		unknown
+	>(
+		(config, options) =>
+			switchChainMutationOptions(config, options as SwitchChainOptions<Config, unknown>),
 		parameters,
 		rest,
-		['switchChain', 'switchChainAsync'],
 		true,
 		'switchChain',
 	);
 	const [options, slot] = argumentsAndSlot(parameters, rest);
 	const config = useConfig(options);
-	return { ...result, chains: useChains({ config }, subSlot(slot, 'chains')) };
+	return {
+		...mutation,
+		switchChain: mutation.mutate,
+		switchChainAsync: mutation.mutateAsync,
+		chains: useChains({ config }, subSlot(slot, 'chains')),
+	} as UseSwitchChainReturnType;
 }
 
 function useCoreQuery(
@@ -381,6 +520,37 @@ export function useBalance(parameters: ParametersWithConfig | symbol = {}, ...re
 	return useCoreQuery(getBalanceQueryOptions, parameters, rest, { chain: true });
 }
 
+export type UseReadContractParameters<
+	abi extends Abi | readonly unknown[] = Abi,
+	functionName extends ContractFunctionName<abi, 'pure' | 'view'> = ContractFunctionName<
+		abi,
+		'pure' | 'view'
+	>,
+	args extends ContractFunctionArgs<abi, 'pure' | 'view', functionName> = ContractFunctionArgs<
+		abi,
+		'pure' | 'view',
+		functionName
+	>,
+	config extends Config = Config,
+	selectData = ReadContractData<abi, functionName, args>,
+> = ReadContractOptions<abi, functionName, args, config, selectData> & { config?: config };
+export type UseReadContractReturnType<
+	abi extends Abi | readonly unknown[],
+	functionName extends ContractFunctionName<abi, 'pure' | 'view'>,
+	args extends ContractFunctionArgs<abi, 'pure' | 'view', functionName>,
+	selectData = ReadContractData<abi, functionName, args>,
+> = UseQueryResult<selectData, ReadContractErrorType>;
+
+export function useReadContract<
+	const abi extends Abi | readonly unknown[],
+	functionName extends ContractFunctionName<abi, 'pure' | 'view'>,
+	const args extends ContractFunctionArgs<abi, 'pure' | 'view', functionName>,
+	config extends Config = ResolvedRegister['config'],
+	selectData = ReadContractData<abi, functionName, args>,
+>(
+	parameters?: UseReadContractParameters<abi, functionName, args, config, selectData> | symbol,
+	...rest: unknown[]
+): UseReadContractReturnType<abi, functionName, args, selectData>;
 export function useReadContract(
 	parameters: ParametersWithConfig | symbol = {},
 	...rest: unknown[]
@@ -388,6 +558,41 @@ export function useReadContract(
 	return useCoreQuery(readContractQueryOptions, parameters, rest, { chain: true });
 }
 
+export type UseSimulateContractParameters<
+	abi extends Abi | readonly unknown[] = Abi,
+	functionName extends ContractFunctionName<abi, 'nonpayable' | 'payable'> = ContractFunctionName<
+		abi,
+		'nonpayable' | 'payable'
+	>,
+	args extends ContractFunctionArgs<abi, 'nonpayable' | 'payable', functionName> =
+		ContractFunctionArgs<abi, 'nonpayable' | 'payable', functionName>,
+	config extends Config = Config,
+	chainId extends config['chains'][number]['id'] | undefined = config['chains'][number]['id'],
+	selectData = SimulateContractData<abi, functionName, args, config, chainId>,
+> = SimulateContractOptions<abi, functionName, args, config, chainId, selectData> & {
+	config?: config;
+};
+export type UseSimulateContractReturnType<
+	abi extends Abi | readonly unknown[],
+	functionName extends ContractFunctionName<abi, 'nonpayable' | 'payable'>,
+	args extends ContractFunctionArgs<abi, 'nonpayable' | 'payable', functionName>,
+	config extends Config,
+	chainId extends config['chains'][number]['id'] | undefined,
+	selectData = SimulateContractData<abi, functionName, args, config, chainId>,
+> = UseQueryResult<selectData, SimulateContractErrorType>;
+
+export function useSimulateContract<
+	const abi extends Abi | readonly unknown[],
+	functionName extends ContractFunctionName<abi, 'nonpayable' | 'payable'>,
+	const args extends ContractFunctionArgs<abi, 'nonpayable' | 'payable', functionName>,
+	config extends Config = ResolvedRegister['config'],
+	chainId extends config['chains'][number]['id'] | undefined = config['chains'][number]['id'],
+	selectData = SimulateContractData<abi, functionName, args, config, chainId>,
+>(
+	parameters?:
+		UseSimulateContractParameters<abi, functionName, args, config, chainId, selectData> | symbol,
+	...rest: unknown[]
+): UseSimulateContractReturnType<abi, functionName, args, config, chainId, selectData>;
 export function useSimulateContract(
 	parameters: ParametersWithConfig | symbol = {},
 	...rest: unknown[]
@@ -398,6 +603,24 @@ export function useSimulateContract(
 	});
 }
 
+export type UseWaitForTransactionReceiptParameters<
+	config extends Config = Config,
+	chainId extends config['chains'][number]['id'] = config['chains'][number]['id'],
+	selectData = WaitForTransactionReceiptData<config, chainId>,
+> = WaitForTransactionReceiptOptions<config, chainId, selectData> & { config?: config };
+export type UseWaitForTransactionReceiptReturnType<selectData> = UseQueryResult<
+	selectData,
+	WaitForTransactionReceiptErrorType
+>;
+
+export function useWaitForTransactionReceipt<
+	config extends Config = ResolvedRegister['config'],
+	chainId extends config['chains'][number]['id'] = config['chains'][number]['id'],
+	selectData = WaitForTransactionReceiptData<config, chainId>,
+>(
+	parameters?: UseWaitForTransactionReceiptParameters<config, chainId, selectData> | symbol,
+	...rest: unknown[]
+): UseWaitForTransactionReceiptReturnType<selectData>;
 export function useWaitForTransactionReceipt(
 	parameters: ParametersWithConfig | symbol = {},
 	...rest: unknown[]
@@ -405,30 +628,102 @@ export function useWaitForTransactionReceipt(
 	return useCoreQuery(waitForTransactionReceiptQueryOptions, parameters, rest, { chain: true });
 }
 
+export type UseWriteContractParameters<
+	config extends Config = Config,
+	context = unknown,
+> = WriteContractOptions<config, context> & { config?: config };
+export type UseWriteContractReturnType<
+	config extends Config = Config,
+	context = unknown,
+> = AliasedMutationResult<
+	WriteContractData,
+	WriteContractErrorType,
+	WriteContractVariables<Abi, string, readonly unknown[], config, config['chains'][number]['id']>,
+	context,
+	WriteContractMutate<config, context>,
+	WriteContractMutateAsync<config, context>
+> & {
+	writeContract: WriteContractMutate<config, context>;
+	writeContractAsync: WriteContractMutateAsync<config, context>;
+};
+
+export function useWriteContract<
+	config extends Config = ResolvedRegister['config'],
+	context = unknown,
+>(
+	parameters?: UseWriteContractParameters<config, context> | symbol,
+	...rest: unknown[]
+): UseWriteContractReturnType<config, context>;
 export function useWriteContract(
 	parameters: ParametersWithConfig | symbol = {},
 	...rest: unknown[]
 ) {
-	return useMutationWithAliases(
-		writeContractMutationOptions,
+	const mutation = useFactoryMutation<
+		WriteContractData,
+		WriteContractErrorType,
+		WriteContractVariables<Abi, string, readonly unknown[], Config, Config['chains'][number]['id']>,
+		unknown
+	>(
+		(config, options) =>
+			writeContractMutationOptions(config, options as WriteContractOptions<Config, unknown>),
 		parameters,
 		rest,
-		['writeContract', 'writeContractAsync'],
 		true,
 	);
+	return {
+		...mutation,
+		writeContract: mutation.mutate,
+		writeContractAsync: mutation.mutateAsync,
+	} as UseWriteContractReturnType;
 }
 
+export type UseSendTransactionParameters<
+	config extends Config = Config,
+	context = unknown,
+> = SendTransactionOptions<config, context> & { config?: config };
+export type UseSendTransactionReturnType<
+	config extends Config = Config,
+	context = unknown,
+> = AliasedMutationResult<
+	SendTransactionData,
+	SendTransactionErrorType,
+	SendTransactionVariables<config, config['chains'][number]['id']>,
+	context,
+	SendTransactionMutate<config, context>,
+	SendTransactionMutateAsync<config, context>
+> & {
+	sendTransaction: SendTransactionMutate<config, context>;
+	sendTransactionAsync: SendTransactionMutateAsync<config, context>;
+};
+
+export function useSendTransaction<
+	config extends Config = ResolvedRegister['config'],
+	context = unknown,
+>(
+	parameters?: UseSendTransactionParameters<config, context> | symbol,
+	...rest: unknown[]
+): UseSendTransactionReturnType<config, context>;
 export function useSendTransaction(
 	parameters: ParametersWithConfig | symbol = {},
 	...rest: unknown[]
 ) {
-	return useMutationWithAliases(
-		sendTransactionMutationOptions,
+	const mutation = useFactoryMutation<
+		SendTransactionData,
+		SendTransactionErrorType,
+		SendTransactionVariables<Config, Config['chains'][number]['id']>,
+		unknown
+	>(
+		(config, options) =>
+			sendTransactionMutationOptions(config, options as SendTransactionOptions<Config, unknown>),
 		parameters,
 		rest,
-		['sendTransaction', 'sendTransactionAsync'],
 		true,
 	);
+	return {
+		...mutation,
+		sendTransaction: mutation.mutate,
+		sendTransactionAsync: mutation.mutateAsync,
+	} as UseSendTransactionReturnType;
 }
 
 export type UseSignMessageParameters<context = unknown> = SignMessageOptions<context> & {
@@ -448,11 +743,20 @@ export function useSignMessage<context = unknown>(
 	parameters: UseSignMessageParameters<context> | symbol = {},
 	...rest: unknown[]
 ): UseSignMessageReturnType<context> {
-	return useMutationWithAliases(
-		signMessageMutationOptions,
+	const mutation = useFactoryMutation<
+		SignMessageData,
+		SignMessageErrorType,
+		SignMessageVariables,
+		unknown
+	>(
+		(config, options) => signMessageMutationOptions(config, options as SignMessageOptions<context>),
 		parameters as ParametersWithConfig | symbol,
 		rest,
-		['signMessage', 'signMessageAsync'],
 		true,
-	) as unknown as UseSignMessageReturnType<context>;
+	);
+	return {
+		...mutation,
+		signMessage: mutation.mutate,
+		signMessageAsync: mutation.mutateAsync,
+	} as UseSignMessageReturnType<context>;
 }
