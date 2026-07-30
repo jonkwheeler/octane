@@ -1,5 +1,5 @@
 import type { Bindable, BindableParams } from '@zag-js/core';
-import { identity, isFunction } from '@zag-js/utils';
+import { isFunction } from '@zag-js/utils';
 import { flushSync, useEffect, useRef, useState } from 'octane';
 
 import { subSlot } from './internal';
@@ -47,7 +47,7 @@ function useBindableValue<T>(
 			return (controlled ? props().value : value) as T;
 		},
 		set(nextValue: T | ((prev: T) => T)) {
-			const execute = props().sync ? flushSync : identity;
+			const execute = props().sync ? flushSync : (run: () => void) => run();
 			execute(() => setFn(nextValue));
 		},
 		invoke(nextValue: T, previousValue: T) {
