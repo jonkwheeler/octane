@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@octanejs/cmdk": "workspace:*",
+    "@octanejs/gsap": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/radix": "workspace:*",
     "@octanejs/sonner": "workspace:*",
@@ -24,6 +25,7 @@
     "@octanejs/usehooks-ts": "workspace:*",
     "class-variance-authority": "catalog:default",
     "clsx": "catalog:default",
+    "gsap": "catalog:default",
     "octane": "workspace:*",
     "tailwind-merge": "catalog:default"
   },

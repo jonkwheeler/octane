@@ -9,6 +9,7 @@ import { Conditional } from './demos/Conditional.tsrx';
 import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
+import { GSAPDemo } from './demos/GSAP.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
@@ -20,6 +21,7 @@ import conditionalSource from './demos/Conditional.tsrx?raw';
 import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
+import gsapSource from './demos/GSAP.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
@@ -87,6 +89,12 @@ export const GROUPS: readonly DemoGroup[] = [
 		id: 'components',
 		label: 'Components',
 		demos: [
+			{
+				id: 'gsap',
+				title: 'GSAP',
+				Component: GSAPDemo,
+				source: gsapSource,
+			},
 			{
 				id: 'cmdk',
 				title: 'Command menu',

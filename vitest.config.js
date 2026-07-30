@@ -2729,6 +2729,23 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'gsap',
+					include: ['packages/gsap/tests/**/*.test.ts', '!packages/gsap/tests/ssr/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/gsap$/,
+							replacement: resolve(import.meta.dirname, 'packages/gsap/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
@@ -2764,6 +2781,27 @@ export default defineConfig({
 								import.meta.dirname,
 								'packages/react-error-boundary/src/server.tsrx',
 							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'gsap-ssr',
+					include: ['packages/gsap/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/gsap$/,
+							replacement: resolve(import.meta.dirname, 'packages/gsap/src/index.ts'),
 						},
 					],
 				},
