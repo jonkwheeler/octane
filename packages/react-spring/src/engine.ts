@@ -78,9 +78,10 @@ export class SpringValue<T = number> {
 
 	start(update: T | SpringUpdate<T>): Promise<AnimationResult<T>> {
 		const props = asUpdate(update);
+		const wasIdle = this.idle;
 		this.stop(true);
 		if (props.reset && props.from !== undefined) this.setValue(props.from);
-		else if (props.from !== undefined && this.idle) this.setValue(props.from);
+		else if (props.from !== undefined && wasIdle) this.setValue(props.from);
 		this.update = props;
 		this.velocity = props.config?.velocity ?? 0;
 		this.idle = false;
@@ -94,7 +95,12 @@ export class SpringValue<T = number> {
 				typeof target !== 'number' ||
 				Object.is(this.value, target);
 			props.onStart?.(
-				{ value: this.value, finished: immediate, cancelled: false, noop: Object.is(this.value, target) },
+				{
+					value: this.value,
+					finished: immediate,
+					cancelled: false,
+					noop: Object.is(this.value, target),
+				},
 				this,
 			);
 			if (immediate) {
@@ -129,7 +135,10 @@ export class SpringValue<T = number> {
 					next = (this.value as number) + this.velocity * step;
 					const precision = options.precision ?? 0.01;
 					done = Math.abs(this.velocity) <= precision && Math.abs(displacement) <= precision;
-					if (options.clamp && Math.sign((active.to as number) - next) !== Math.sign(displacement)) {
+					if (
+						options.clamp &&
+						Math.sign((active.to as number) - next) !== Math.sign(displacement)
+					) {
 						done = true;
 					}
 				}
@@ -207,10 +216,7 @@ export class Interpolation<T> {
 }
 
 export function to<A, T>(source: SpringValue<A>, calc: (value: A) => T): Interpolation<T>;
-export function to<T>(
-	sources: SpringValue<any>[],
-	calc: (...values: any[]) => T,
-): Interpolation<T>;
+export function to<T>(sources: SpringValue<any>[], calc: (...values: any[]) => T): Interpolation<T>;
 export function to<T>(
 	source: SpringValue<any> | SpringValue<any>[],
 	calc: (...values: any[]) => T,
@@ -248,6 +254,9 @@ export class Controller<State extends Record<string, any> = Record<string, any>>
 	}
 
 	async start(update: ControllerUpdate<State>): Promise<AnimationResult<State>> {
+		if (update.delay !== undefined && update.delay > 0) {
+			await new Promise<void>((resolve) => setTimeout(resolve, update.delay));
+		}
 		const from: Partial<State> = update.from ?? {};
 		const target: Partial<State> = update.to ?? {};
 		for (const key in from) {
@@ -261,12 +270,9 @@ export class Controller<State extends Record<string, any> = Record<string, any>>
 				return spring.start({
 					to: target[typedKey]!,
 					from: from[typedKey],
-					config:
-						typeof update.config === 'function' ? update.config(typedKey) : update.config,
+					config: typeof update.config === 'function' ? update.config(typedKey) : update.config,
 					immediate:
-						typeof update.immediate === 'function'
-							? update.immediate(typedKey)
-							: update.immediate,
+						typeof update.immediate === 'function' ? update.immediate(typedKey) : update.immediate,
 				});
 			}),
 		);

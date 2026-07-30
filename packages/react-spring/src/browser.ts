@@ -43,10 +43,11 @@ function readScroll(target: Window | HTMLElement) {
 }
 
 export function useScroll(
-	options: ControllerUpdate<any> & { container?: ElementRef<HTMLElement> } = {},
+	optionsOrSlot: (ControllerUpdate<any> & { container?: ElementRef<HTMLElement> }) | symbol = {},
 	...args: any[]
 ) {
-	const slot = browserSlot(args);
+	const slot = typeof optionsOrSlot === 'symbol' ? optionsOrSlot : browserSlot(args);
+	const options = typeof optionsOrSlot === 'symbol' ? {} : optionsOrSlot;
 	const [values] = useState(
 		() => ({
 			scrollX: new SpringValue(0),
@@ -85,10 +86,11 @@ export function useScroll(
 }
 
 export function useResize(
-	options: ControllerUpdate<any> & { container?: ElementRef<HTMLElement> } = {},
+	optionsOrSlot: (ControllerUpdate<any> & { container?: ElementRef<HTMLElement> }) | symbol = {},
 	...args: any[]
 ) {
-	const slot = browserSlot(args);
+	const slot = typeof optionsOrSlot === 'symbol' ? optionsOrSlot : browserSlot(args);
+	const options = typeof optionsOrSlot === 'symbol' ? {} : optionsOrSlot;
 	const [values] = useState(
 		() => ({
 			width: new SpringValue(0),
@@ -136,10 +138,11 @@ export interface InViewOptions extends Omit<IntersectionObserverInit, 'root' | '
 }
 
 export function useInView(
-	options: InViewOptions = {},
+	optionsOrSlot: InViewOptions | symbol = {},
 	...args: any[]
 ): [ElementRef<Element>, boolean] {
-	const slot = browserSlot(args);
+	const slot = typeof optionsOrSlot === 'symbol' ? optionsOrSlot : browserSlot(args);
+	const options = typeof optionsOrSlot === 'symbol' ? {} : optionsOrSlot;
 	const [ref] = useState<ElementRef<Element>>(
 		() => ({ current: null }),
 		browserSub(slot, 'in-view-ref'),

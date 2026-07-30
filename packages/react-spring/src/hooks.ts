@@ -79,10 +79,11 @@ export function useSpring<State extends Record<string, any>>(
 
 export function useSpringValue<T>(
 	initial: T,
-	props?: Omit<SpringUpdate<T>, 'to'>,
+	propsOrSlot?: Omit<SpringUpdate<T>, 'to'> | symbol,
 	...args: any[]
 ): SpringValue<T> {
-	const slot = trailingSlot(args);
+	const slot = typeof propsOrSlot === 'symbol' ? propsOrSlot : trailingSlot(args);
+	const props = typeof propsOrSlot === 'symbol' ? undefined : propsOrSlot;
 	const [value] = useState(() => new SpringValue(initial), sub(slot, 'value'));
 	useLayoutEffect(
 		() => () => {

@@ -71,7 +71,7 @@ function createAnimatedComponent(tag: string) {
 					state.pending = false;
 					if (state.cancelled) return;
 					for (const [key, value] of state.fluids) {
-						state.node.style.setProperty(key, styleValue(key, value.get()));
+						(state.node.style as any)[key] = styleValue(key, value.get());
 					}
 				};
 				const schedule = () => {
