@@ -11,6 +11,7 @@ import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
+import { SolanaDemo } from './demos/Solana.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
@@ -20,6 +21,7 @@ import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
+import solanaSource from './demos/Solana.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 
 export interface Demo {
@@ -94,6 +96,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'shadcn/ui',
 				Component: ShadcnDemo,
 				source: shadcnSource,
+			},
+			{
+				id: 'solana',
+				title: 'Solana',
+				Component: SolanaDemo,
+				source: solanaSource,
 			},
 		],
 	},
