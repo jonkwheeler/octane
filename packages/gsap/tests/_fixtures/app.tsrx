@@ -20,3 +20,15 @@ export function GSAPProbe(props: {
 		<span class="target">{props.value}</span>
 	</div>
 }
+
+export function GSAPUndefinedDependenciesProbe(props: {
+	value: string;
+	log: (entry: string) => void;
+}) @{
+	useGSAP(() => {
+		props.log(`effect:${props.value}`);
+		return () => props.log(`cleanup:${props.value}`);
+	}, { dependencies: undefined });
+
+	<div>{props.value}</div>
+}

@@ -37,7 +37,7 @@ export function GSAPDemo() @{
 		<div class="row">
 			<button class="btn" id="gsap-replay" onClick={() => setDirection((value) => value * -1)}>
 				Replay from
-				{direction > 0 ? 'left' : 'right'}
+				{direction > 0 ? 'right' : 'left'}
 			</button>
 			<button class="btn" id="gsap-pulse" onClick={pulse}>Pulse safely</button>
 		</div>

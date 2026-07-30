@@ -44,16 +44,17 @@ function isConfig(value: unknown): value is UseGSAPConfig {
 const useGSAPImpl = (...rawArgs: unknown[]): UseGSAPReturn => {
 	const [args, slot] = splitSlot(rawArgs);
 	let callback = args[0] as ContextFunction | UseGSAPConfig | undefined;
-	let dependencies = (args[1] ?? emptyDependencies) as unknown[] | UseGSAPConfig;
+	let dependencies: unknown[] | UseGSAPConfig | null | undefined = (args[1] ??
+		emptyDependencies) as unknown[] | UseGSAPConfig;
 	let config = defaultConfig;
 
 	if (isConfig(callback)) {
 		config = callback;
 		callback = undefined;
-		dependencies = config.dependencies ?? emptyDependencies;
+		dependencies = 'dependencies' in config ? config.dependencies : emptyDependencies;
 	} else if (isConfig(dependencies)) {
 		config = dependencies;
-		dependencies = config.dependencies ?? emptyDependencies;
+		dependencies = 'dependencies' in config ? config.dependencies : emptyDependencies;
 	}
 
 	if (callback !== undefined && typeof callback !== 'function') {
@@ -74,8 +75,9 @@ const useGSAPImpl = (...rawArgs: unknown[]): UseGSAPReturn => {
 			) as typeof func,
 		subSlot(slot, 'context-safe'),
 	);
-	const resolvedDependencies = dependencies as unknown[];
-	const deferCleanup = resolvedDependencies.length > 0 && revertOnUpdate !== true;
+	const resolvedDependencies = dependencies as unknown[] | null | undefined;
+	const deferCleanup =
+		resolvedDependencies != null && resolvedDependencies.length > 0 && revertOnUpdate !== true;
 
 	if (deferCleanup) {
 		useIsomorphicLayoutEffect(

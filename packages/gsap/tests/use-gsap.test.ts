@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createLog, flushEffects, mount } from '../../octane/tests/_helpers';
 import { useGSAP } from '@octanejs/gsap';
 import type { UseGSAPReturn } from '@octanejs/gsap';
-import { GSAPProbe } from './_fixtures/app.tsrx';
+import { GSAPProbe, GSAPUndefinedDependenciesProbe } from './_fixtures/app.tsrx';
 
 describe('useGSAP', () => {
 	it('runs in a scoped GSAP context and reverts before dependency updates', () => {
@@ -52,6 +52,21 @@ describe('useGSAP', () => {
 
 		root.unmount();
 		expect(log.drain()).toEqual(['cleanup:one', 'cleanup:two']);
+	});
+
+	it('reruns when a config explicitly provides undefined dependencies', () => {
+		const log = createLog();
+		const root = mount(GSAPUndefinedDependenciesProbe, { value: 'one', log: log.push });
+
+		flushEffects();
+		expect(log.drain()).toEqual(['effect:one']);
+
+		root.update(GSAPUndefinedDependenciesProbe, { value: 'two', log: log.push });
+		flushEffects();
+		expect(log.drain()).toEqual(['cleanup:one', 'effect:two']);
+
+		root.unmount();
+		expect(log.drain()).toEqual(['cleanup:two']);
 	});
 
 	it('exposes the upstream static registration contract', () => {
