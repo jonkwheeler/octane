@@ -566,6 +566,35 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(settledWalletButtons[1]!.disabled).toBe(true);
 	});
 
+	it('falls back to connector id when a configured connector uid is stale', () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: ['0x0000000000000000000000000000000000000011'] })],
+			transports: { [mainnet.id]: http() },
+		});
+		const [connector] = config.connectors;
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+			wallets: [
+				{
+					id: connector!.id,
+					name: 'Configured wallet',
+					connectorUid: 'stale-connector-uid',
+				},
+			],
+		});
+		flushEffects();
+		flushSync(() => {});
+		mounted.click('#custom-connect');
+		flushEffects();
+
+		const walletButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.rk-action'));
+		expect(walletButtons).toHaveLength(1);
+		expect(walletButtons[0]!.textContent).toBe('Configured wallet');
+		expect(walletButtons[0]!.disabled).toBe(false);
+	});
+
 	it('clears a pending modal connection after dismissal without reopening it', async () => {
 		const config = setup();
 		let release!: () => void;

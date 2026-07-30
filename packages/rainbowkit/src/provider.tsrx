@@ -54,8 +54,9 @@ function walletEntries(
 		const fallback = connectors.find(
 			(connector) => connector.id === descriptor.id || connector.name === descriptor.name,
 		);
-		const connector =
-			descriptor.connectorUid ? byIdentity.get(descriptor.connectorUid) : fallback;
+		const connector = descriptor.connectorUid
+			? byIdentity.get(descriptor.connectorUid) ?? fallback
+			: fallback;
 		const identity =
 			connector ? connectorIdentity(connector) : descriptor.connectorUid || descriptor.id;
 		if (consumed.has(identity)) continue;
@@ -84,6 +85,7 @@ function Modal(props: {
 	descriptionId: string;
 	beginConnecting: () => symbol;
 	endConnecting: (token: symbol) => void;
+	opener: HTMLElement | null;
 }) @{
 	const connection = useConnection();
 	const connect = useConnect();
@@ -152,7 +154,11 @@ function Modal(props: {
 			ownerDocument.removeEventListener('keydown', onKeyDown);
 			removeModal(props.token);
 			unlockBody(ownerDocument);
-			queueMicrotask(() => focusTopModal(ownerDocument));
+			queueMicrotask(() => {
+				if (!focusTopModal(ownerDocument)) {
+					props.opener?.isConnected && props.opener.focus();
+				}
+			});
 		};
 	}, [props.token]);
 
@@ -316,14 +322,6 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 	const closeModal = useCallback((token?: ModalToken) => {
 		setActiveModal((current) => {
 			if (!current || token && current.token !== token) return current;
-			removeModal(current.token);
-			const returnTo = current.opener;
-			const ownerDocument = current.ownerDocument;
-			queueMicrotask(() => {
-				if (!ownerDocument || !focusTopModal(ownerDocument)) {
-					returnTo?.isConnected && returnTo.focus();
-				}
-			});
 			return null;
 		});
 	}, []);
@@ -336,20 +334,16 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		if (modalNoLongerApplies) closeModal(activeModal.token);
 	}, [activeModal, closeModal, connection.status]);
 	const openModal = useCallback((kind: ModalKind, nextOpener?: HTMLElement | null) => {
-		setActiveModal((current) => {
-			if (current) removeModal(current.token);
-			const token = `${providerId}:${++modalGeneration.current}`;
-			const fallbackDocument = rootRef.current?.ownerDocument;
-			const ownerDocument =
-				nextOpener?.ownerDocument ?? fallbackDocument ??
-					(typeof document === 'undefined' ? null : document);
-			return {
-				kind,
-				token,
-				opener: nextOpener ?? ownerDocument?.activeElement as HTMLElement | null | undefined ??
-					null,
-				ownerDocument,
-			};
+		const token = `${providerId}:${++modalGeneration.current}`;
+		const fallbackDocument = rootRef.current?.ownerDocument;
+		const ownerDocument =
+			nextOpener?.ownerDocument ?? fallbackDocument ??
+				(typeof document === 'undefined' ? null : document);
+		setActiveModal({
+			kind,
+			token,
+			opener: nextOpener ?? ownerDocument?.activeElement as HTMLElement | null | undefined ?? null,
+			ownerDocument,
 		});
 	}, [providerId]);
 	const context = useMemo(
@@ -392,6 +386,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 					descriptionId={`${providerId}-description`}
 					beginConnecting={beginConnecting}
 					endConnecting={endConnecting}
+					opener={activeModal.opener}
 				/>
 			}
 		</RainbowKitContext.Provider>
