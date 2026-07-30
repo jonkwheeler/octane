@@ -48,6 +48,7 @@
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",
+      "@octanejs/phosphor-icons",
       "@octanejs/usehooks-ts",
       "@octanejs/tanstack-hotkeys",
       "@octanejs/tanstack-pacer"
