@@ -4,6 +4,7 @@ import { SpringValue } from './engine';
 
 export * from './engine';
 export * from './hooks';
+export * from './browser';
 export * from './context';
 export { Spring, SpringContext, Trail, Transition } from './components.tsrx';
 

@@ -1,16 +1,9 @@
-import { provideContext } from 'octane';
 import { SpringContext as SpringContextObject, type SpringContextValue } from './context';
-import { useSpring, useTrail } from './hooks';
+import { useSpring, useTrail, useTransition } from './hooks';
 
-export function SpringContext(
-	props: SpringContextValue & { children?: unknown },
-	scope: any,
-) @{
+export function SpringContext(props: SpringContextValue & { children?: unknown }) @{
 	const { children, ...value } = props;
-	provideContext(scope, SpringContextObject, value);
-	<>
-		{children}
-	</>
+	<SpringContextObject value={value}>{children}</SpringContextObject>
 }
 
 export function Spring(props: any) @{
@@ -31,9 +24,8 @@ export function Trail(props: any) @{
 
 export function Transition(props: any) @{
 	const { children, items = [], ...update } = props;
-	const list = Array.isArray(items) ? items : [items];
-	const [styles] = useTrail(list.length, update);
+	const transitions = useTransition(items, update);
 	<>
-		{list.map((item: any, index: number) => children(item)(styles[index]))}
+		{transitions((styles: any, item: any) => children(item)(styles))}
 	</>
 }

@@ -8,6 +8,29 @@ import {
 	type SpringUpdate,
 } from './engine';
 
+export type TransitionPhase = 'mount' | 'enter' | 'update' | 'leave';
+
+export interface UseTransitionProps<
+	Item,
+	State extends Record<string, any>,
+> extends ControllerUpdate<State> {
+	keys?: ((item: Item) => string | number) | Array<string | number>;
+	initial?: Partial<State> | null;
+	enter?: Partial<State> | ((item: Item) => Partial<State>);
+	update?: Partial<State> | ((item: Item) => Partial<State>);
+	leave?: Partial<State> | ((item: Item) => Partial<State>);
+	sort?: (a: Item, b: Item) => number;
+	expires?: boolean | number;
+	exitBeforeEnter?: boolean;
+}
+
+interface TransitionRecord<Item, State extends Record<string, any>> {
+	key: string | number;
+	item: Item;
+	phase: TransitionPhase;
+	controller: Controller<State>;
+}
+
 const subCache = new Map<symbol, Map<string, symbol>>();
 
 function sub(slot: symbol | undefined, tag: string): symbol | undefined {
@@ -95,7 +118,7 @@ export function useSprings<State extends Record<string, any>>(
 		state.ref.delete(controller);
 	}
 	const updates = state.controllers.map((controller, index) =>
-		typeof props === 'function' ? props(index, controller) : props[index] ?? {},
+		typeof props === 'function' ? props(index, controller) : (props[index] ?? {}),
 	);
 	useLayoutEffect(
 		() => {
@@ -132,17 +155,132 @@ export function useSpringRef<State extends Record<string, any>>(...args: any[]):
 	return useState(() => new SpringRef<State>(), sub(slot, 'ref'))[0];
 }
 
-export function useChain(refs: SpringRef<any>[], timeSteps?: number[], timeFrame = 1000): void {
+function resolveTransitionValue<Item, State extends Record<string, any>>(
+	value: Partial<State> | ((item: Item) => Partial<State>) | undefined,
+	item: Item,
+): Partial<State> | undefined {
+	return typeof value === 'function' ? value(item) : value;
+}
+
+export function useTransition<Item, State extends Record<string, any>>(
+	items: Item | Item[],
+	props: UseTransitionProps<Item, State>,
+	...args: any[]
+): (
+	render: (
+		values: { [Key in keyof State]: SpringValue<State[Key]> },
+		item: Item,
+		transition: { key: string | number; phase: TransitionPhase },
+		index: number,
+	) => unknown,
+) => unknown[] {
+	const slot = trailingSlot(args);
+	const list = (Array.isArray(items) ? items : [items]).filter(
+		(item): item is Item => item !== undefined && item !== null,
+	);
+	const [, forceUpdate] = useState(0, sub(slot, 'version'));
+	const [records] = useState(
+		() => [] as Array<TransitionRecord<Item, State>>,
+		sub(slot, 'records'),
+	);
+	const nextKeys = list.map((item, index) =>
+		typeof props.keys === 'function'
+			? props.keys(item)
+			: Array.isArray(props.keys)
+				? props.keys[index]
+				: ((item as any)?.key ?? (item as any)?.id ?? (item as any)),
+	);
+	const nextKeySet = new Set(nextKeys);
+
+	for (const record of records) {
+		if (!nextKeySet.has(record.key) && record.phase !== 'leave') record.phase = 'leave';
+	}
+	list.forEach((item, index) => {
+		const key = nextKeys[index]!;
+		const existing = records.find((record) => record.key === key);
+		if (existing !== undefined) {
+			existing.item = item;
+			existing.phase = existing.phase === 'leave' ? 'enter' : 'update';
+			return;
+		}
+		const from = (props.initial === null ? props.from : (props.initial ?? props.from)) as
+			Partial<State> | undefined;
+		records.push({
+			key,
+			item,
+			phase: 'enter',
+			controller: new Controller<State>({ from }),
+		});
+	});
+	if (props.sort !== undefined) records.sort((a, b) => props.sort!(a.item, b.item));
+
+	const signature = records.map((record) => `${String(record.key)}:${record.phase}`).join('|');
 	useLayoutEffect(
 		() => {
-			const timers = refs.map((ref, index) =>
-				setTimeout(
-					() => void ref.start(),
-					timeSteps === undefined ? index * 16 : (timeSteps[index] ?? 0) * timeFrame,
-				),
-			);
-			return () => timers.forEach(clearTimeout);
+			let active = true;
+			for (const record of [...records]) {
+				const target =
+					record.phase === 'leave'
+						? resolveTransitionValue(props.leave, record.item)
+						: record.phase === 'update'
+							? resolveTransitionValue(props.update ?? props.enter, record.item)
+							: resolveTransitionValue(props.enter, record.item);
+				const phase = record.phase;
+				void record.controller
+					.start({
+						to: target,
+						config: props.config,
+						immediate: props.immediate,
+					})
+					.then(() => {
+						if (!active || phase !== 'leave' || record.phase !== 'leave') return;
+						const expiration = props.expires ?? true;
+						const remove = () => {
+							const index = records.indexOf(record);
+							if (index >= 0) {
+								records.splice(index, 1);
+								forceUpdate((value) => value + 1);
+							}
+						};
+						if (typeof expiration === 'number' && expiration > 0) setTimeout(remove, expiration);
+						else if (expiration !== false) remove();
+					});
+			}
+			return () => {
+				active = false;
+			};
 		},
-		[refs, timeSteps, timeFrame],
+		[signature, props],
+		sub(slot, 'transition-effect'),
 	);
+	useLayoutEffect(
+		() => () => {
+			records.forEach((record) => record.controller.stop(true));
+			records.length = 0;
+		},
+		[],
+		sub(slot, 'transition-cleanup'),
+	);
+
+	return (render) =>
+		records.map((record, index) =>
+			render(
+				record.controller.springs,
+				record.item,
+				{ key: record.key, phase: record.phase },
+				index,
+			),
+		);
+}
+
+export function useChain(refs: SpringRef<any>[], timeSteps?: number[], timeFrame = 1000): void {
+	useLayoutEffect(() => {
+		const timers = refs.map((ref, index) =>
+			setTimeout(
+				() => void ref.start(),
+				timeSteps === undefined ? index * 16 : (timeSteps[index] ?? 0) * timeFrame,
+			),
+		);
+		return () => timers.forEach(clearTimeout);
+	}, [refs, timeSteps, timeFrame]);
 }
