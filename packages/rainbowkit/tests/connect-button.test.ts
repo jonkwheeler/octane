@@ -92,6 +92,38 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(mounted.find('#outside').textContent).toBe('true');
 	});
 
+	it('keeps the direct connect modal hook inert until the provider mounts', () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		root.render(ProgrammaticProvider, {
+			config,
+			queryClient: new QueryClient(),
+		});
+		flushSync(() => {});
+		const opener = container.querySelector('#programmatic-open') as HTMLButtonElement;
+		opener.click();
+		flushSync(() => {});
+		expect(container.querySelector('[role="dialog"]')).toBeNull();
+
+		flushEffects();
+		flushSync(() => {});
+		opener.click();
+		flushSync(() => {});
+		flushEffects();
+		try {
+			expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+		} finally {
+			root.unmount();
+			container.remove();
+		}
+	});
+
 	it('connects through WalletButton and renders connected account controls', async () => {
 		setup();
 		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
@@ -583,6 +615,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
 		});
 		flushEffects();
+		flushSync(() => {});
 		mounted.click('#first-provider');
 		flushEffects();
 		mounted.click('#second-provider');

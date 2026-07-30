@@ -8,7 +8,7 @@ export function useConnectModal(): {
 	const context = useContext(RainbowKitContext);
 	return {
 		connectModalOpen: context?.activeModal?.kind === 'connect',
-		openConnectModal: context
+		openConnectModal: context?.mounted
 			? (event) =>
 					context.openModal('connect', event?.currentTarget as HTMLElement | null | undefined)
 			: undefined,
