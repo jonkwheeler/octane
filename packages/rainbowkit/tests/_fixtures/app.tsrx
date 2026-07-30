@@ -47,9 +47,14 @@ export let latestWalletConnect: (() => void) | undefined;
 
 function WalletRaceProbe() @{
 	<WalletButton wallet="mock">
-		{({ connect }) => {
+		{({ connect, error }) => {
 			latestWalletConnect = connect;
-			return <span id="wallet-race-ready">ready</span>;
+			return <>
+				<span id="wallet-race-ready">ready</span>
+				<span id="wallet-race-error">
+					{error instanceof Error ? error.message : '-'}
+				</span>
+			</>;
 		}}
 	</WalletButton>
 }
@@ -106,7 +111,12 @@ function ProgrammaticOpener() @{
 	const accountModal = useAccountModal();
 	const chainModal = useChainModal();
 	<div>
-		<button type="button" id="programmatic-open" onClick={() => connectModal.openConnectModal?.()}>
+		<button
+			type="button"
+			id="programmatic-open"
+			data-enabled={String(connectModal.openConnectModal !== undefined)}
+			onClick={() => connectModal.openConnectModal?.()}
+		>
 			Programmatic open
 		</button>
 		<button

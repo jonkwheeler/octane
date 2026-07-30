@@ -121,6 +121,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		} finally {
 			root.unmount();
 			container.remove();
+			flushEffects();
 		}
 	});
 
@@ -166,6 +167,45 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		}
 	});
 
+	it('dismisses the connect modal and disables its hook after an external connection', async () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		root.render(ProgrammaticProvider, {
+			config,
+			queryClient: new QueryClient(),
+		});
+		flushSync(() => {});
+		flushEffects();
+		flushSync(() => {});
+		const opener = container.querySelector('#programmatic-open') as HTMLButtonElement;
+		expect(opener.dataset.enabled).toBe('true');
+		opener.click();
+		flushSync(() => {});
+		flushEffects();
+		expect(container.querySelector('[role="dialog"] h2')?.textContent).toBe('Connect a wallet');
+
+		act(() => {
+			config.setState((state) => ({ ...state, status: 'connected' }));
+		});
+		flushSync(() => {});
+		flushEffects();
+		try {
+			expect(container.querySelector('[role="dialog"]')).toBeNull();
+			expect(opener.dataset.enabled).toBe('false');
+		} finally {
+			root.unmount();
+			container.remove();
+			flushEffects();
+		}
+		await Promise.resolve();
+	});
+
 	it('connects through WalletButton and renders connected account controls', async () => {
 		setup();
 		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
@@ -177,6 +217,36 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.querySelector('[data-rk]')?.textContent).toContain('0x0000…0001');
 		expect(document.querySelector('[data-rk]')?.textContent).toContain('Ethereum');
 		expect(document.querySelector('[data-rk]')?.textContent).toContain('Disconnect');
+	});
+
+	it('keeps WalletButton connection failures visible and retryable', async () => {
+		const config = setup();
+		let attempts = 0;
+		config.connectors[0]!.connect = async () => {
+			attempts++;
+			throw new Error('WalletButton rejected');
+		};
+
+		const button = document.querySelector('.rk-wallet-button') as HTMLButtonElement;
+		button.click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(document.querySelector('.rk-wallet-error[role="alert"]')?.textContent).toContain(
+			'WalletButton rejected',
+		);
+		expect(button.disabled).toBe(false);
+
+		latestWalletConnect!();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(mounted!.find('#wallet-race-error').textContent).toContain('WalletButton rejected');
+		latestWalletConnect!();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		expect(attempts).toBe(3);
 	});
 
 	it('disconnects from the account modal and keeps failures actionable', async () => {
@@ -435,12 +505,13 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 	});
 
 	it('labels only the selected wallet as pending and clears the label after rejection', async () => {
+		const firstAccount = '0x0000000000000000000000000000000000000011' as const;
 		const config = createConfig({
 			chains: [mainnet],
-			connectors: [mock({ accounts: [account] }), mock({ accounts: [account] })],
+			connectors: [mock({ accounts: [firstAccount] })],
 			transports: { [mainnet.id]: http() },
 		});
-		const [first, second] = config.connectors;
+		const [first] = config.connectors;
 		let reject!: (error: Error) => void;
 		const gate = new Promise<never>((_, rejectPromise) => {
 			reject = rejectPromise;
@@ -451,7 +522,12 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
 			wallets: [
 				{ id: 'first', name: 'First wallet', connectorUid: first!.uid },
-				{ id: 'second', name: 'Second wallet', connectorUid: second!.uid },
+				{
+					id: 'second',
+					name: 'Second wallet',
+					connectorUid: 'unavailable-second-wallet',
+					unavailableReason: 'Not installed',
+				},
 			],
 		});
 		flushEffects();
@@ -470,12 +546,24 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 
 		reject(new Error('User rejected request'));
 		await act(async () => {
+			await Promise.resolve();
+			config.setState((state) => ({
+				...state,
+				connections: new Map(),
+				current: null,
+				status: 'disconnected',
+			}));
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
-		expect(walletButtons[0]!.textContent).toBe('First wallet');
-		expect(walletButtons[1]!.textContent).toBe('Second wallet');
-		expect(walletButtons[0]!.disabled).toBe(false);
-		expect(walletButtons[1]!.disabled).toBe(false);
+		flushSync(() => {});
+		flushEffects();
+		const settledWalletButtons = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-action'),
+		);
+		expect(settledWalletButtons[0]!.textContent).toBe('First wallet');
+		expect(settledWalletButtons[1]!.textContent).toBe('Second wallet');
+		expect(settledWalletButtons[0]!.disabled).toBe(false);
+		expect(settledWalletButtons[1]!.disabled).toBe(true);
 	});
 
 	it('clears a pending modal connection after dismissal without reopening it', async () => {
@@ -698,6 +786,41 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.body.style.overflow).toBe('');
 	});
 
+	it('keeps the top modal isolated when a lower provider closes out of order', async () => {
+		const config = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		mounted = mount(TwoProviders, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		});
+		flushEffects();
+		flushSync(() => {});
+		mounted.click('#first-provider');
+		flushEffects();
+		mounted.click('#second-provider');
+		flushEffects();
+		const dialogs = Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]'));
+		(dialogs[0]!.querySelector('.rk-close') as HTMLButtonElement).click();
+		flushEffects();
+		await Promise.resolve();
+
+		const remaining = document.querySelector<HTMLElement>('[role="dialog"]')!;
+		expect(remaining).toBe(dialogs[1]);
+		expect(remaining.closest('[inert]')).toBeNull();
+		expect(mounted.find('#first-provider').closest('[aria-hidden="true"]')).not.toBeNull();
+		expect(document.body.style.overflow).toBe('hidden');
+
+		(remaining.querySelector('.rk-close') as HTMLButtonElement).click();
+		flushEffects();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(mounted.find('#first-provider').closest('[aria-hidden="true"]')).toBeNull();
+		expect(mounted.find('#second-provider').closest('[aria-hidden="true"]')).toBeNull();
+		expect(document.body.style.overflow).toBe('');
+	});
+
 	it('coordinates modal stacks and body locks independently per ownerDocument', async () => {
 		const config = setup();
 		mounted!.click('#custom-connect');
@@ -799,7 +922,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
 	});
 
-	it('does not let a stale connect success close a newer modal generation', async () => {
+	it('closes a replacement connect modal when an older request connects the session', async () => {
 		const config = setup();
 		let release!: () => void;
 		const gate = new Promise<void>((resolve) => {
@@ -823,6 +946,6 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			await gate;
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
-		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
 	});
 });
