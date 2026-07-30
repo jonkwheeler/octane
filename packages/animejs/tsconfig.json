@@ -16,5 +16,5 @@
     "strict": true
   },
   "include": ["./src/", "./tests/types/"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "exclude": ["node_modules", "dist"]
 }

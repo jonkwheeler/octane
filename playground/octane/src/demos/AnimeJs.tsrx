@@ -1,11 +1,12 @@
 import { animate, type JSAnimation, useAnimeScope } from '@octanejs/animejs';
 import { Canvas } from '@octanejs/three';
+import { useRef } from 'octane';
 import { AnimeJsScene } from './AnimeJsScene.three.tsrx';
 
 export function AnimeJsDemo() @{
-	let domAnimation: JSAnimation | undefined;
+	const domAnimation = useRef<JSAnimation | undefined>(undefined);
 	const animation = useAnimeScope(() => {
-		domAnimation = animate('.animejs-orb', {
+		domAnimation.current = animate('.animejs-orb', {
 			x: [0, 220],
 			rotate: 360,
 			scale: [0.75, 1.15],
@@ -14,6 +15,9 @@ export function AnimeJsDemo() @{
 			alternate: true,
 			loop: true,
 		});
+		return () => {
+			domAnimation.current = undefined;
+		};
 	}, []);
 
 	<div>
@@ -27,16 +31,16 @@ export function AnimeJsDemo() @{
 				<div class="animejs-section-heading">
 					<h3>{'Scoped DOM animation'}</h3>
 					<div class="animejs-controls">
-						<button class="btn" onClick={() => domAnimation?.play()}>
+						<button class="btn" onClick={() => domAnimation.current?.play()}>
 							Start
 						</button>
-						<button class="btn" onClick={() => domAnimation?.reverse()}>
+						<button class="btn" onClick={() => domAnimation.current?.reverse()}>
 							Reverse
 						</button>
 						<button class="btn" onClick={() => animation.scope.current?.refresh()}>
 							Refresh
 						</button>
-						<button class="btn" onClick={() => domAnimation?.revert()}>
+						<button class="btn" onClick={() => domAnimation.current?.revert()}>
 							Reset
 						</button>
 					</div>
