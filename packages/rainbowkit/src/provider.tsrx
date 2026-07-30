@@ -343,6 +343,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 	const connection = useConnection();
 	const [mounted, setMounted] = useState(false);
 	const connectingTokens = useRef(new Set<symbol>());
+	const modalGeneration = useRef(0);
 	const [connectingCount, setConnectingCount] = useState(0);
 	const rootRef = useRef<HTMLDivElement | null>(null);
 	useEffect(() => setMounted(true), []);
@@ -381,7 +382,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 	const openModal = useCallback((kind: ModalKind, nextOpener?: HTMLElement | null) => {
 		setActiveModal((current) => {
 			if (current) removeModal(current.token);
-			const token = Symbol(`rainbowkit-modal-${providerId}`);
+			const token = `${providerId}:${++modalGeneration.current}`;
 			const fallbackDocument = rootRef.current?.ownerDocument;
 			const ownerDocument =
 				nextOpener?.ownerDocument ?? fallbackDocument ??
@@ -426,6 +427,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			{props.children}
 			@if (activeModal) {
 				<Modal
+					key={activeModal.token}
 					kind={activeModal.kind}
 					token={activeModal.token}
 					wallets={wallets}
