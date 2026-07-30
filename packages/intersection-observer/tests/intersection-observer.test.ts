@@ -67,6 +67,18 @@ describe('Octane binding', () => {
 		result.unmount();
 	});
 
+	it('uses the latest useOnInView callback immediately after a render', () => {
+		const first = vi.fn();
+		const second = vi.fn();
+		const result = mount(EffectProbe, { onChange: first });
+		const target = result.find('[data-testid="effect"]');
+		result.update(EffectProbe, { onChange: second });
+		mockIsIntersecting(target, true);
+		expect(first).not.toHaveBeenCalled();
+		expect(second).toHaveBeenCalledOnce();
+		result.unmount();
+	});
+
 	it('pools useOnInView observers regardless of library-only flags', () => {
 		const result = mount(EffectPoolProbe);
 		const first = result.find('[data-testid="effect-first"]');

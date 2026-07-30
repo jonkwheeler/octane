@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'octane';
+import { useCallback, useRef } from 'octane';
 import { observe } from './observe.js';
 import type { IntersectionChangeEffect, IntersectionEffectOptions } from './types.js';
 
@@ -8,13 +8,10 @@ export function useOnInView(
 ) {
 	options = typeof options === 'symbol' ? {} : options;
 	const callback = useRef(onChange);
+	callback.current = onChange;
 	const unobserve = useRef<void | (() => void)>(undefined);
 	const effectCleanup = useRef<void | (() => void)>(undefined);
 	const lastInView = useRef(options.initialInView);
-
-	useEffect(() => {
-		callback.current = onChange;
-	}, [onChange]);
 
 	return useCallback((node: Element | null) => {
 		unobserve.current?.();
