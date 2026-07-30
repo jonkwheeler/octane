@@ -64,6 +64,7 @@ function consumerTypeFixtures() {
 	const switchConnection = useSwitchConnection({ config });
 	expectType<void>(switchConnection.switchConnection({ connector }));
 	expectType<Promise<unknown>>(switchConnection.switchConnectionAsync({ connector }));
+	expectType<Config['connectors'][number] | undefined>(switchConnection.connectors[0]);
 
 	const switchChain = useSwitchChain({ config });
 	expectType<void>(switchChain.switchChain({ chainId: 1 }));

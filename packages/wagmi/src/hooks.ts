@@ -380,7 +380,7 @@ export type UseSwitchConnectionReturnType<
 > & {
 	switchConnection: SwitchConnectionMutate<config, context>;
 	switchConnectionAsync: SwitchConnectionMutateAsync<config, context>;
-	connectors: config['connectors'];
+	connectors: ReturnType<typeof useConnections>[number]['connector'][];
 };
 
 export function useSwitchConnection<
