@@ -1,0 +1,63 @@
+{
+  "name": "@octanejs/livestore",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
+  "description": "LiveStore bindings for Octane, ported from @livestore/react over LiveStore's framework-neutral core.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/livestore"
+  },
+  "main": "src/mod.ts",
+  "module": "src/mod.ts",
+  "types": "src/mod.ts",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": "./src/mod.ts",
+    "./experimental": "./src/experimental/mod.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --project livestore --project livestore-ssr",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
+  },
+  "dependencies": {
+    "@livestore/common": "catalog:default",
+    "@livestore/framework-toolkit": "catalog:default",
+    "@livestore/livestore": "catalog:default",
+    "@livestore/utils": "catalog:default",
+    "@opentelemetry/api": "catalog:default"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@livestore/adapter-web": "catalog:default",
+    "@tsrx/react": "catalog:default",
+    "esbuild": "catalog:default",
+    "octane": "workspace:*",
+    "vitest": "catalog:default"
+  }
+}

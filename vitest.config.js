@@ -874,6 +874,59 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'livestore',
+					include: ['packages/livestore/tests/**/*.test.ts'],
+					exclude: [...configDefaults.exclude, 'packages/livestore/tests/ssr/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/livestore\/experimental$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/livestore/src/experimental/mod.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/livestore$/,
+							replacement: resolve(import.meta.dirname, 'packages/livestore/src/mod.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'livestore-ssr',
+					include: ['packages/livestore/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/livestore\/experimental$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/livestore/src/experimental/mod.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/livestore$/,
+							replacement: resolve(import.meta.dirname, 'packages/livestore/src/mod.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'tanstack-store',
 					include: [
 						'packages/tanstack-store/tests/conformance/**/*.test.ts',
