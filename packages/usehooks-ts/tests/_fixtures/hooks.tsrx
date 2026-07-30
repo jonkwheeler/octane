@@ -41,10 +41,14 @@ export function StateProbe() @{
 }
 
 export function StepValidationProbe(props: {
-	onReady(setStep: (value: number) => void): void;
+	onReady(actions: {
+		goToNextStep(): void;
+		goToPrevStep(): void;
+		setStep(value: number | ((previous: number) => number)): void;
+	}): void;
 }) @{
 	const [step, actions] = useStep(2);
-	useLayoutEffect(() => props.onReady(actions.setStep), [actions.setStep, props.onReady]);
+	useLayoutEffect(() => props.onReady(actions), [actions, props.onReady]);
 	<p>{step as string}</p>
 }
 
@@ -92,6 +96,11 @@ export function DebounceValueProbe(props: {
 		</span>
 		<button id="pending" onClick={() => props.onPending(update.isPending())}>pending</button>
 	</div>
+}
+
+export function MissingDebounceDelayProbe() @{
+	(useDebounceValue as unknown as (value: number) => unknown)(1);
+	<p>unreachable</p>
 }
 
 export function DisabledTimersProbe(props: {

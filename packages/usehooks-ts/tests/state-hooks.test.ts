@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { mount } from '../../octane/tests/_helpers';
+import { act, mount } from '../../octane/tests/_helpers';
 import { StateProbe, StepValidationProbe } from './_fixtures/hooks.tsrx';
 
 afterEach(() => document.body.replaceChildren());
@@ -42,12 +42,50 @@ describe('state hooks', () => {
 	it('rejects step values outside the configured range', () => {
 		let setStep: ((value: number) => void) | undefined;
 		const result = mount(StepValidationProbe, {
-			onReady(callback) {
-				setStep = callback;
+			onReady(actions) {
+				setStep = actions.setStep;
 			},
 		});
 		expect(() => setStep?.(3)).toThrow('Step not valid');
 		expect(result.find('p').textContent).toBe('1');
+		result.unmount();
+	});
+
+	it('keeps repeated same-turn step actions within both bounds', () => {
+		let actions:
+			| {
+					goToNextStep(): void;
+					goToPrevStep(): void;
+					setStep(value: number | ((previous: number) => number)): void;
+			  }
+			| undefined;
+		const result = mount(StepValidationProbe, {
+			onReady(nextActions) {
+				actions = nextActions;
+			},
+		});
+
+		const next = actions!.goToNextStep;
+		act(() => {
+			next();
+			next();
+		});
+		expect(result.find('p').textContent).toBe('2');
+
+		const previous = actions!.goToPrevStep;
+		act(() => {
+			previous();
+			previous();
+		});
+		expect(result.find('p').textContent).toBe('1');
+
+		const setStep = actions!.setStep;
+		act(() => {
+			setStep((step) => step + 1);
+			setStep((step) => step - 1);
+		});
+		expect(result.find('p').textContent).toBe('1');
+
 		result.unmount();
 	});
 });

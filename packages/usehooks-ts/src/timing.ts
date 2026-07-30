@@ -117,14 +117,15 @@ export interface UseDebounceValueOptions<T> extends DebounceOptions {
 export function useDebounceValue<T>(
 	...runtime: [
 		initialValue: T | (() => T),
-		delay?: number,
+		delay: number,
 		options?: UseDebounceValueOptions<T>,
 		slot?: symbol,
 	]
 ): [T, DebouncedState<(value: T) => void>] {
 	const { args: rawArgs, slot } = splitSlot(runtime);
-	const args = rawArgs as [T | (() => T), number?, UseDebounceValueOptions<T>?];
+	const args = rawArgs as [T | (() => T), number, UseDebounceValueOptions<T>?];
 	const [initialValue, delay, options] = args;
+	if (typeof delay !== 'number') throw new Error('delay is required');
 	const value = initialValue instanceof Function ? initialValue() : initialValue!;
 	const [debouncedValue, setDebouncedValue] = useState(value, subSlot(slot, 'state'));
 	const previous = useRef(value, subSlot(slot, 'previous'));

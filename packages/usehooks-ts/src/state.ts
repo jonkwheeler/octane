@@ -112,25 +112,23 @@ export function useStep(...runtime: [maxStep: number, slot?: symbol]): [number, 
 	const canGoToPrevStep = currentStep - 1 > 0;
 	const setStep = useCallback(
 		(step: SetStateAction<number>) => {
-			const next = typeof step === 'function' ? step(currentStep) : step;
-			if (next < 1 || next > maxStep) throw new Error('Step not valid');
-			setCurrentStep(next);
+			setCurrentStep((current: number) => {
+				const next = typeof step === 'function' ? step(current) : step;
+				if (next < 1 || next > maxStep) throw new Error('Step not valid');
+				return next;
+			});
 		},
-		[maxStep, currentStep],
+		[maxStep],
 		subSlot(slot, 'set'),
 	);
 	const goToNextStep = useCallback(
-		() => {
-			if (canGoToNextStep) setCurrentStep((step: number) => step + 1);
-		},
-		[canGoToNextStep],
+		() => setCurrentStep((step: number) => (step < maxStep ? step + 1 : step)),
+		[maxStep],
 		subSlot(slot, 'next'),
 	);
 	const goToPrevStep = useCallback(
-		() => {
-			if (canGoToPrevStep) setCurrentStep((step: number) => step - 1);
-		},
-		[canGoToPrevStep],
+		() => setCurrentStep((step: number) => (step > 1 ? step - 1 : step)),
+		[],
 		subSlot(slot, 'prev'),
 	);
 	const reset = useCallback(() => setCurrentStep(1), [], subSlot(slot, 'reset'));

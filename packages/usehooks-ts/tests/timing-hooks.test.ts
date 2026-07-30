@@ -5,6 +5,7 @@ import {
 	DebounceValueProbe,
 	DisabledTimersProbe,
 	IsMountedProbe,
+	MissingDebounceDelayProbe,
 	TimingProbe,
 } from './_fixtures/hooks.tsrx';
 
@@ -161,6 +162,10 @@ describe('timing and lifecycle hooks', () => {
 		signedZero.update(DebounceValueProbe, { value: -0, onPending });
 		signedZero.click('#pending');
 		expect(onPending).toHaveBeenLastCalledWith(false);
+	});
+
+	it('rejects an omitted debounce value delay after removing the compiler slot', () => {
+		expect(() => mount(MissingDebounceDelayProbe)).toThrow('delay is required');
 	});
 
 	it('honors a custom debounce value equality function while mounted', async () => {
