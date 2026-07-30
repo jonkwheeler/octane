@@ -44,6 +44,8 @@
     "examples:check": "pnpm examples:static:check && pnpm examples:typecheck && pnpm examples:build",
     "lucide:generate": "pnpm --filter @octanejs/lucide generate",
     "lucide:generate:check": "pnpm --filter @octanejs/lucide generate:check",
+    "phosphor-icons:generate": "pnpm --filter @octanejs/phosphor-icons generate",
+    "phosphor-icons:generate:check": "pnpm --filter @octanejs/phosphor-icons generate:check",
     "shadcn:registry": "pnpm --filter @octanejs/shadcn registry:build",
     "shadcn:registry:check": "pnpm --filter @octanejs/shadcn registry:check",
     "evals:test": "pnpm --filter @octanejs/evals test",

@@ -434,6 +434,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(rainbowKitStyles).toContain('background: var(--rk-connect-background)');
 		expect(rainbowKitStyles).toContain('color: var(--rk-connect-text)');
 		expect(rainbowKitStyles).toContain('border-radius: var(--rk-action-radius)');
+		expect(rainbowKitStyles.match(/color: var\(--rk-modal-text\)/g)).toHaveLength(1);
 	});
 
 	it('deduplicates by connector uid and explains configured unavailable wallets', () => {
