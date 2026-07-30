@@ -5,6 +5,11 @@ export function subSlot(slot: symbol | undefined, tag: string): symbol {
 	let children = slots.get(slot);
 	if (!children) slots.set(slot, (children = new Map()));
 	let child = children.get(tag);
-	if (!child) children.set(tag, (child = Symbol(`${slot.description ?? 'solana'}:${tag}`)));
+	if (!child) {
+		children.set(
+			tag,
+			(child = Symbol.for(`${slot.description ?? '@octanejs/solana-react'}:${tag}`)),
+		);
+	}
 	return child;
 }
