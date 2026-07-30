@@ -14,7 +14,7 @@ export function subSlot(slot: symbol | undefined, tag: string): symbol | undefin
 	}
 	let child = children.get(tag);
 	if (!child) {
-		child = Symbol(tag);
+		child = Symbol.for(`${slot.description ?? ''}:${tag}`);
 		children.set(tag, child);
 	}
 	return child;
