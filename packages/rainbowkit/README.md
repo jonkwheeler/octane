@@ -48,8 +48,9 @@ must not be presented as drop-in dependency parity.
 The adapter derives the familiar disconnected, connecting, connected, wrong
 network, and modal-open states directly from Wagmi v3. The supported cohort is
 `RainbowKitProvider`, `ConnectButton`, `ConnectButton.Custom`, `WalletButton`,
-`useConnectModal`, `useAccountModal`, `useChainModal`, and the light, dark, and
-rainbow theme factories.
+`useConnectModal`, `useAccountModal`, `useChainModal`, and the familiar light,
+dark, and midnight theme factories. `rainbowTheme` is an explicitly documented
+Octane-only purple/rounded preset.
 
 ## Wallet catalogue and accessibility
 

@@ -54,6 +54,15 @@ export function darkTheme(options?: ThemeOptions): Theme {
 	return createTheme(true, options);
 }
 
+export function midnightTheme(options?: ThemeOptions): Theme {
+	return createTheme(true, {
+		accentColor: '#fff',
+		accentColorForeground: '#1a1b1f',
+		...options,
+	});
+}
+
+/** Octane extension with a purple rounded preset; not an upstream RainbowKit export. */
 export function rainbowTheme(options?: ThemeOptions): Theme {
 	return lightTheme({ accentColor: '#7b3fe4', fontStack: 'rounded', ...options });
 }

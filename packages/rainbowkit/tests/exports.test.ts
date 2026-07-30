@@ -9,6 +9,7 @@ describe('@octanejs/rainbowkit exports', () => {
 			'WalletButton',
 			'darkTheme',
 			'lightTheme',
+			'midnightTheme',
 			'rainbowTheme',
 			'useAccountModal',
 			'useChainModal',

@@ -8,10 +8,11 @@ export function useConnectModal(): {
 	const context = useContext(RainbowKitContext);
 	return {
 		connectModalOpen: context?.activeModal?.kind === 'connect',
-		openConnectModal: context?.mounted
-			? (event) =>
-					context.openModal('connect', event?.currentTarget as HTMLElement | null | undefined)
-			: undefined,
+		openConnectModal:
+			context?.mounted && !context.connected
+				? (event) =>
+						context.openModal('connect', event?.currentTarget as HTMLElement | null | undefined)
+				: undefined,
 	};
 }
 

@@ -75,39 +75,6 @@ function errorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : 'The wallet request failed.';
 }
 
-function isolatedBackground(dialog: HTMLElement): HTMLElement[] {
-	const ownerDocument = dialog.ownerDocument;
-	const elements = new Set<HTMLElement>();
-	let child: HTMLElement = dialog;
-	let parent = child.parentElement;
-	while (parent) {
-		for (const sibling of Array.from(parent.children)) {
-			if (sibling !== child) elements.add(sibling as HTMLElement);
-		}
-		if (parent === ownerDocument.body) break;
-		child = parent;
-		parent = parent.parentElement;
-	}
-	return [...elements];
-}
-
-function activateModalPath(dialog: HTMLElement) {
-	const ownerDocument = dialog.ownerDocument;
-	const state: { element: HTMLElement; ariaHidden: string | null; inert: boolean }[] = [];
-	let element: HTMLElement | null = dialog;
-	while (element && element !== ownerDocument.body) {
-		state.push({
-			element,
-			ariaHidden: element.getAttribute('aria-hidden'),
-			inert: element.inert,
-		});
-		element.inert = false;
-		element.removeAttribute('aria-hidden');
-		element = element.parentElement;
-	}
-	return state;
-}
-
 function Modal(props: {
 	kind: ModalKind;
 	token: ModalToken;
@@ -144,18 +111,6 @@ function Modal(props: {
 		pushModal(props.token, ownerDocument);
 		lockBody(ownerDocument);
 		registerModal(props.token, dialog);
-		const pathState = activateModalPath(dialog);
-		const backgroundState = isolatedBackground(dialog).map(
-			(element) => ({
-				element,
-				ariaHidden: element.getAttribute('aria-hidden'),
-				inert: element.inert,
-			}),
-		);
-		for (const state of backgroundState) {
-			state.element.inert = true;
-			state.element.setAttribute('aria-hidden', 'true');
-		}
 		const focusable = () => Array.from(
 			dialog.querySelectorAll<HTMLElement>(
 				'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
@@ -197,16 +152,6 @@ function Modal(props: {
 			ownerDocument.removeEventListener('keydown', onKeyDown);
 			removeModal(props.token);
 			unlockBody(ownerDocument);
-			for (const state of backgroundState) {
-				state.element.inert = state.inert;
-				if (state.ariaHidden === null) state.element.removeAttribute('aria-hidden');
-				else state.element.setAttribute('aria-hidden', state.ariaHidden);
-			}
-			for (const state of pathState) {
-				state.element.inert = state.inert;
-				if (state.ariaHidden === null) state.element.removeAttribute('aria-hidden');
-				else state.element.setAttribute('aria-hidden', state.ariaHidden);
-			}
 			queueMicrotask(() => focusTopModal(ownerDocument));
 		};
 	}, [props.token]);
@@ -383,9 +328,12 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		});
 	}, []);
 	useEffect(() => {
-		if (activeModal && activeModal.kind !== 'connect' && connection.status !== 'connected') {
-			closeModal(activeModal.token);
-		}
+		if (!activeModal) return;
+		const modalNoLongerApplies =
+			activeModal.kind === 'connect'
+				? connection.status === 'connected'
+				: connection.status !== 'connected';
+		if (modalNoLongerApplies) closeModal(activeModal.token);
 	}, [activeModal, closeModal, connection.status]);
 	const openModal = useCallback((kind: ModalKind, nextOpener?: HTMLElement | null) => {
 		setActiveModal((current) => {
