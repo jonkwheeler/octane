@@ -38,9 +38,6 @@ export function Subscribe(props: Props) @{
 					liftSuspense()(source).subscribe({
 						error(error) {
 							if (synchronous) synchronousError = error;
-							else queueMicrotask(() => {
-								throw error;
-							});
 						},
 					}),
 				);
