@@ -12,7 +12,6 @@ export type WagmiProviderProps = {
 
 type HydrationLifecycle = {
 	config: ResolvedRegister['config'];
-	reconnectOnMount: boolean;
 	onMount: () => Promise<void>;
 };
 
@@ -21,17 +20,13 @@ export function WagmiProvider(props: WagmiProviderProps) @{
 	const lifecycleRef = useRef<HydrationLifecycle | null>(null);
 	let lifecycle = lifecycleRef.current;
 
-	if (
-		!lifecycle || lifecycle.config !== props.config ||
-			lifecycle.reconnectOnMount !== reconnectOnMount
-	) {
+	if (!lifecycle || lifecycle.config !== props.config) {
 		const { onMount } = hydrate(props.config, {
 			initialState: props.initialState,
 			reconnectOnMount,
 		});
 		lifecycle = {
 			config: props.config,
-			reconnectOnMount,
 			onMount,
 		};
 		lifecycleRef.current = lifecycle;
