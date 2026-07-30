@@ -106,11 +106,7 @@ function ProgrammaticOpener() @{
 	const accountModal = useAccountModal();
 	const chainModal = useChainModal();
 	<div>
-		<button
-			type="button"
-			id="programmatic-open"
-			onClick={() => connectModal.openConnectModal?.()}
-		>
+		<button type="button" id="programmatic-open" onClick={() => connectModal.openConnectModal?.()}>
 			Programmatic open
 		</button>
 		<button
@@ -120,11 +116,7 @@ function ProgrammaticOpener() @{
 		>
 			Programmatic account
 		</button>
-		<button
-			type="button"
-			id="programmatic-chain"
-			onClick={() => chainModal.openChainModal?.()}
-		>
+		<button type="button" id="programmatic-chain" onClick={() => chainModal.openChainModal?.()}>
 			Programmatic chain
 		</button>
 	</div>
