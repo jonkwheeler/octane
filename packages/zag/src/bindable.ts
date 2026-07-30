@@ -36,6 +36,8 @@ function useBindableValue<T>(
 			console.log(`[bindable > ${props().debug}] setValue`, { next, prev: previous });
 		}
 
+		valueRef.current = next;
+		prevValue.current = next;
 		if (!controlled) setValue(next);
 		if (!eq(next, previous)) props().onChange?.(next, previous);
 	};

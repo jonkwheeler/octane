@@ -24,6 +24,16 @@ describe('useMachine', () => {
 		result.unmount();
 	});
 
+	it('keeps bindable reads current across chained actions', async () => {
+		const result = mount(MachineFixture);
+		await nextPaint();
+
+		result.click('#machine-double');
+		await nextPaint();
+		expect(result.find('#machine-state').textContent).toBe('active/2');
+		result.unmount();
+	});
+
 	it('keeps multiple call sites independent', async () => {
 		const result = mount(IndependentMachines);
 		await nextPaint();
@@ -79,11 +89,12 @@ describe('useMachine', () => {
 });
 
 describe('Portal', () => {
-	it('portals every child into the configured container', () => {
+	it('portals every child into the configured container after mounting', async () => {
 		const target = document.createElement('div');
 		document.body.append(target);
 		const result = mount(PortalFixture, { target });
 
+		await nextPaint();
 		expect(target.querySelector('#portalled-first')?.textContent).toBe('first');
 		expect(target.querySelector('#portalled-second')?.textContent).toBe('second');
 		expect(result.container.querySelector('#portalled-first')).toBeNull();
@@ -105,13 +116,14 @@ describe('Portal', () => {
 		target.remove();
 	});
 
-	it('portals into a Document root instead of the ambient document', () => {
+	it('portals into a Document root instead of the ambient document', async () => {
 		const alternateDocument = document.implementation.createHTMLDocument('portal target');
 		const result = mount(PortalFixture, {
 			target: null,
 			getRootNode: () => alternateDocument,
 		});
 
+		await nextPaint();
 		expect(alternateDocument.body.querySelector('#portalled-first')?.textContent).toBe('first');
 		expect(document.body.querySelector('#portalled-first')).toBeNull();
 

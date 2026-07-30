@@ -17,6 +17,10 @@ export const machine = createMachine<any>({
 					target: 'active',
 					actions: ['increment'],
 				},
+				DOUBLE: {
+					target: 'active',
+					actions: ['increment', 'increment'],
+				},
 			},
 		},
 		active: {
@@ -92,6 +96,7 @@ export function MachineFixture() @{
 	<div>
 		<p id="machine-state">{service.state.get() + '/' + service.context.get('count')}</p>
 		<button id="machine-toggle" onClick={() => service.send({ type: 'TOGGLE' })}>toggle</button>
+		<button id="machine-double" onClick={() => service.send({ type: 'DOUBLE' })}>double</button>
 	</div>
 }
 
