@@ -13,6 +13,7 @@ import { KeyedList } from './demos/KeyedList.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SolanaDemo } from './demos/Solana.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
+import { WagmiDemo } from './demos/Wagmi.tsrx';
 import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
@@ -24,6 +25,7 @@ import keyedListSource from './demos/KeyedList.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import solanaSource from './demos/Solana.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
+import wagmiSource from './demos/Wagmi.tsrx?raw';
 import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
 
 export interface Demo {
@@ -104,6 +106,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'Solana',
 				Component: SolanaDemo,
 				source: solanaSource,
+			},
+			{
+				id: 'wagmi',
+				title: 'Wagmi',
+				Component: WagmiDemo,
+				source: wagmiSource,
 			},
 			{
 				id: 'usehooks-ts',
