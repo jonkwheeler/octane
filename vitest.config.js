@@ -1820,6 +1820,27 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-spring',
+					include: ['packages/react-spring/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-spring$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-spring/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-spring\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-spring/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'dnd-kit',
 					include: [
 						'packages/dnd-kit/tests/conformance/**/*.test.ts',
