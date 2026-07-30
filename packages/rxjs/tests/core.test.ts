@@ -3,7 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { bind, shareLatest, state } from '@octanejs/rxjs';
 import { createSignal } from '@octanejs/rxjs/utils';
 import { mount, nextPaint } from './_helpers';
-import { Reader, StableSubscriptionReader, SubscribeReader } from './_fixtures/reader.tsrx';
+import {
+	ObservableErrorBoundary,
+	Reader,
+	StableSubscriptionReader,
+	SubscribeReader,
+} from './_fixtures/reader.tsrx';
 
 describe('@octanejs/rxjs', () => {
 	it('renders the current value and tracks later emissions', async () => {
@@ -68,6 +73,19 @@ describe('@octanejs/rxjs', () => {
 		view.click('#rerender');
 		await nextPaint();
 		expect(subscriptions).toBe(1);
+		view.unmount();
+	});
+
+	it('routes asynchronous observable errors through an Octane boundary', async () => {
+		const source = new BehaviorSubject(1);
+		const view = mount(ObservableErrorBoundary, { source });
+		await nextPaint();
+		source.error(new Error('observable failed'));
+		for (let i = 0; i < 4; i++) {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			await nextPaint();
+		}
+		expect(view.find('#observable-error').textContent).toBe('observable failed');
 		view.unmount();
 	});
 });

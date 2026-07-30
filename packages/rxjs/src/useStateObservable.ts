@@ -1,5 +1,5 @@
 import { liftSuspense, NoSubscribersError, StatePromise } from '@rx-state/core';
-import { useRef, useState, useSyncExternalStore } from 'octane';
+import { useReducer, useRef, useSyncExternalStore } from 'octane';
 import type { DefaultedStateObservable, StateObservable, SUSPENSE } from '@rx-state/core';
 import { useSubscription } from './context.ts';
 import { subSlot } from './internal.ts';
@@ -15,7 +15,8 @@ interface ObservableRef<T> {
 
 export function useStateObservable<T>(source: StateObservable<T>, slot?: symbol): Value<T> {
 	const subscription = useSubscription();
-	const [, setError] = useState<unknown>(undefined, subSlot(slot, 'error'));
+	const errorRef = useRef<unknown>(undefined, subSlot(slot, 'error'));
+	const [, rerender] = useReducer((count: number) => count + 1, 0, subSlot(slot, 'error-update'));
 	const callbackRef = useRef<ObservableRef<T> | undefined>(undefined, subSlot(slot, 'callbacks'));
 
 	if (!callbackRef.current) {
@@ -47,19 +48,21 @@ export function useStateObservable<T>(source: StateObservable<T>, slot?: symbol)
 		ref.subscribe = (notify) => {
 			const active = liftSuspense()(source).subscribe({
 				next: notify,
-				error: (error) =>
-					setError(() => {
-						throw error;
-					}),
+				error: (error) => {
+					errorRef.current = error;
+					rerender(0);
+				},
 			});
 			return () => active.unsubscribe();
 		};
 	}
 
-	return useSyncExternalStore(
+	const value = useSyncExternalStore(
 		ref.subscribe,
 		ref.getSnapshot,
 		ref.getSnapshot,
 		subSlot(slot, 'store'),
 	);
+	if (errorRef.current !== undefined) throw errorRef.current;
+	return value;
 }

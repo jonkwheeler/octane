@@ -23,3 +23,11 @@ export function StableSubscriptionReader(props: { source: Observable<number> }) 
 		<button id="rerender" onClick={() => setRenders(renders + 1)}>{renders as any}</button>
 	</>
 }
+
+export function ObservableErrorBoundary(props: { source: Observable<number> }) @{
+	@try {
+		<Reader source={props.source} />
+	} @catch (error) {
+		<output id="observable-error">{(error as Error).message as string}</output>
+	}
+}
