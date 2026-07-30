@@ -143,6 +143,24 @@ export const GROUPS: readonly DemoGroup[] = [
 				Component: UseHooksTsDemo,
 				source: useHooksTsSource,
 			},
+			{
+				id: 'mantine-hooks',
+				title: 'Mantine Hooks',
+				Component: MantineHooksDemo,
+				source: mantineHooksSource,
+			},
+			{
+				id: 'mobx',
+				title: 'MobX',
+				Component: MobxDemo,
+				source: mobxSource,
+			},
+			{
+				id: 'error-boundary',
+				title: 'Error boundary',
+				Component: ErrorBoundaryDemo,
+				source: errorBoundarySource,
+			},
 		],
 	},
 ];
