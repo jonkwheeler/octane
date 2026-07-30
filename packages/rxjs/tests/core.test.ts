@@ -88,4 +88,15 @@ describe('@octanejs/rxjs', () => {
 		expect(view.find('#observable-error').textContent).toBe('observable failed');
 		view.unmount();
 	});
+
+	it('clears an observable error when the source changes', async () => {
+		const failed = new BehaviorSubject(1);
+		const view = mount(ObservableErrorBoundary, { source: failed });
+		await nextPaint();
+		failed.error(new Error('observable failed'));
+		view.update(ObservableErrorBoundary, { source: new BehaviorSubject(2) });
+		await nextPaint();
+		expect(view.find('#value').textContent).toBe('2');
+		view.unmount();
+	});
 });

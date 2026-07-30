@@ -29,7 +29,7 @@ export function bind(source: unknown, defaultValue?: unknown): readonly [unknown
 			: state(source as (...args: unknown[]) => Observable<unknown>);
 		const useBound = (...runtimeArgs: unknown[]) => {
 			const [args, slot] = splitSlot(runtimeArgs);
-			return useStateObservable(bound(...args), slot);
+			return useStateObservable(bound(...args), slot, args);
 		};
 		return [useBound, bound] as const;
 	}

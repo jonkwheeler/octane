@@ -13,9 +13,29 @@ interface ObservableRef<T> {
 	getSnapshot: () => Value<T>;
 }
 
-export function useStateObservable<T>(source: StateObservable<T>, slot?: symbol): Value<T> {
+export function useStateObservable<T>(
+	source: StateObservable<T>,
+	slot?: symbol,
+	identity?: readonly unknown[],
+): Value<T> {
 	const subscription = useSubscription();
-	const errorRef = useRef<unknown>(undefined, subSlot(slot, 'error'));
+	const identityRef = useRef<readonly unknown[] | StateObservable<T>>(
+		identity ?? source,
+		subSlot(slot, 'identity'),
+	);
+	const previousIdentity = identityRef.current;
+	if (
+		identity &&
+		(!Array.isArray(previousIdentity) ||
+			previousIdentity.length !== identity.length ||
+			identity.some((value, index) => (previousIdentity as readonly unknown[])[index] !== value))
+	) {
+		identityRef.current = identity;
+	}
+	const sourceIdentity = identityRef.current;
+	const errorRef = useRef<
+		{ source: readonly unknown[] | StateObservable<T>; error: unknown } | undefined
+	>(undefined, subSlot(slot, 'error'));
 	const [, rerender] = useReducer((count: number) => count + 1, 0, subSlot(slot, 'error-update'));
 	const callbackRef = useRef<ObservableRef<T> | undefined>(undefined, subSlot(slot, 'callbacks'));
 
@@ -49,7 +69,7 @@ export function useStateObservable<T>(source: StateObservable<T>, slot?: symbol)
 			const active = liftSuspense()(source).subscribe({
 				next: notify,
 				error: (error) => {
-					errorRef.current = error;
+					errorRef.current = { source: sourceIdentity, error };
 					rerender(0);
 				},
 			});
@@ -63,6 +83,6 @@ export function useStateObservable<T>(source: StateObservable<T>, slot?: symbol)
 		ref.getSnapshot,
 		subSlot(slot, 'store'),
 	);
-	if (errorRef.current !== undefined) throw errorRef.current;
+	if (errorRef.current?.source === sourceIdentity) throw errorRef.current.error;
 	return value;
 }
