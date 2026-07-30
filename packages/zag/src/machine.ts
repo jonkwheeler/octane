@@ -256,7 +256,9 @@ export function useMachine<T extends MachineSchema>(...rawArgs: unknown[]): Serv
 
 	useSafeLayoutEffect(
 		() => {
+			let cancelled = false;
 			queueMicrotask(() => {
+				if (cancelled) return;
 				const started = statusRef.current === MachineStatus.Started;
 				statusRef.current = MachineStatus.Started;
 				debug(started ? 'rehydrating...' : 'initializing...');
@@ -266,6 +268,7 @@ export function useMachine<T extends MachineSchema>(...rawArgs: unknown[]): Serv
 
 			const functions = effects.current;
 			return () => {
+				cancelled = true;
 				const currentState = getCurrentState();
 				debug('unmounting...');
 				hydratedStateRef.current = currentState;

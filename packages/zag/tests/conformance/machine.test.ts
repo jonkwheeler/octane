@@ -64,6 +64,17 @@ describe('useMachine', () => {
 		await Promise.resolve();
 		expect(lifecycleEvents.slice(-3)).toEqual(['root-cleanup', 'active-cleanup', 'root-exit']);
 	});
+
+	it('does not initialize a machine after an immediate unmount', async () => {
+		lifecycleEvents.length = 0;
+		const result = mount(LifecycleMachine);
+		result.unmount();
+		await Promise.resolve();
+
+		expect(lifecycleEvents).not.toContain('root-entry');
+		expect(lifecycleEvents).not.toContain('root-effect');
+		expect(lifecycleEvents).not.toContain('idle-entry');
+	});
 });
 
 describe('Portal', () => {

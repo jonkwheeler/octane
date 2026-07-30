@@ -24,4 +24,14 @@ describe('@zag-js/react public surface', () => {
 			.join('\n');
 		expect(source).not.toMatch(/from ['"]react(?:-dom)?(?:\/[^'"]*)?['"]/);
 	});
+
+	it('maps React-style change handlers to Octane input handlers', () => {
+		const onChange = () => {};
+		const ref = () => {};
+		const normalized = zag.normalizeProps.input({ onChange, ref });
+
+		expect(normalized).not.toHaveProperty('onChange');
+		expect(normalized.onInput).toBe(onChange);
+		expect(normalized.ref).toBe(ref);
+	});
 });
