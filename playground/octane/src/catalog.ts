@@ -15,6 +15,8 @@ import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
 import { MobxDemo } from './demos/Mobx.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
+import { WagmiDemo } from './demos/Wagmi.tsrx';
+import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
 import conditionalSource from './demos/Conditional.tsrx?raw';
@@ -27,6 +29,8 @@ import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
 import mobxSource from './demos/Mobx.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
+import wagmiSource from './demos/Wagmi.tsrx?raw';
+import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
 
 export interface Demo {
 	/** Stable id — also the URL route, so renaming one breaks shared links. */
@@ -118,6 +122,18 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'Error boundary',
 				Component: ErrorBoundaryDemo,
 				source: errorBoundarySource,
+			},
+			{
+				id: 'wagmi',
+				title: 'Wagmi',
+				Component: WagmiDemo,
+				source: wagmiSource,
+			},
+			{
+				id: 'usehooks-ts',
+				title: 'usehooks-ts',
+				Component: UseHooksTsDemo,
+				source: useHooksTsSource,
 			},
 		],
 	},
