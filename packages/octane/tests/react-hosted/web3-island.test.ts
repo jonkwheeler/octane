@@ -13,6 +13,10 @@ import {
 import { Web3Island } from './_fixtures/web3-island.tsrx';
 
 const observationIds = new Set<string>();
+let mountedHost: Awaited<ReturnType<typeof mountReactHost>> | undefined;
+let hydratedRoot: ReturnType<typeof hydrateRoot> | undefined;
+let hydrationContainer: HTMLElement | undefined;
+let consoleErrorSpy: ReturnType<typeof vi.spyOn> | undefined;
 
 function observe(id: string): string {
 	observationIds.add(id);
@@ -59,7 +63,19 @@ function ReactWeb3Host(props: {
 	);
 }
 
-afterEach(() => {
+afterEach(async () => {
+	consoleErrorSpy?.mockRestore();
+	consoleErrorSpy = undefined;
+	if (mountedHost) {
+		await mountedHost.unmount();
+		mountedHost = undefined;
+	}
+	if (hydratedRoot) {
+		await reactAct(async () => hydratedRoot?.unmount());
+		hydratedRoot = undefined;
+	}
+	hydrationContainer?.remove();
+	hydrationContainer = undefined;
 	document.body.style.overflow = '';
 	for (const id of observationIds) resetWeb3IslandObservation(id);
 	observationIds.clear();
@@ -69,7 +85,7 @@ describe('incremental React adoption — Wagmi and RainbowKit island', () => {
 	it('keeps React in control while the island connects, updates, navigates, and tears down', async () => {
 		const id = observe('web3-client-journey');
 		const uncaught: unknown[] = [];
-		const mounted = await mountReactHost(
+		const mounted = (mountedHost = await mountReactHost(
 			h(ReactWeb3Host, {
 				label: 'Wallet controls',
 				observationId: id,
@@ -77,7 +93,7 @@ describe('incremental React adoption — Wagmi and RainbowKit island', () => {
 				route: 'portfolio',
 			}),
 			{ onUncaughtError: (error) => uncaught.push(error) },
-		);
+		));
 		const shell = mounted.container.querySelector('main');
 		const host = mounted.host();
 		await flushHostedEffects();
@@ -161,6 +177,7 @@ describe('incremental React adoption — Wagmi and RainbowKit island', () => {
 		expect(uncaught).toEqual([]);
 
 		await mounted.unmount();
+		mountedHost = undefined;
 	});
 
 	it('server-renders and hydrates the Web3 island without replacing its markup', async () => {
@@ -176,21 +193,24 @@ describe('incremental React adoption — Wagmi and RainbowKit island', () => {
 			'renderWeb3ReactPage',
 			{ ...props, route: 'portfolio' },
 		);
-		const container = document.createElement('div');
+		const container = (hydrationContainer = document.createElement('div'));
 		container.innerHTML = serverHtml;
 		document.body.appendChild(container);
 		const serverHost = container.querySelector('[data-octane-compat]') as HTMLElement;
 		const serverConnectButton = serverHost.querySelector('.rk-connect-button');
 		expect(serverConnectButton?.textContent).toBe('Connect Wallet');
 
-		const errors = vi.spyOn(console, 'error');
-		let root!: ReturnType<typeof hydrateRoot>;
+		const errors = (consoleErrorSpy = vi.spyOn(console, 'error'));
 		await reactAct(async () => {
-			root = hydrateRoot(container, h(ReactWeb3Host, { ...props, route: 'portfolio' }) as never);
+			hydratedRoot = hydrateRoot(
+				container,
+				h(ReactWeb3Host, { ...props, route: 'portfolio' }) as never,
+			);
 		});
 		await flushHostedEffects();
 		expect(errors).not.toHaveBeenCalled();
 		errors.mockRestore();
+		consoleErrorSpy = undefined;
 		expect(container.querySelector('[data-octane-compat]')).toBe(serverHost);
 		expect(serverHost.querySelector('.rk-connect-button')).toBe(serverConnectButton);
 		expect(serverHost.querySelector('#island-route')?.textContent).toBe('portfolio');
@@ -210,11 +230,13 @@ describe('incremental React adoption — Wagmi and RainbowKit island', () => {
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
 
 		await reactAct(async () => {
-			root.unmount();
+			hydratedRoot?.unmount();
 		});
+		hydratedRoot = undefined;
 		await nextTurns();
 		await flushHostedEffects();
 		expect(readWeb3IslandObservation(id)).toEqual({ activeWatchers: 0, cleanups: 1 });
 		container.remove();
+		hydrationContainer = undefined;
 	});
 });
