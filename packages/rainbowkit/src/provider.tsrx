@@ -93,6 +93,18 @@ function Modal(props: {
 	const switchChain = useSwitchChain();
 	const [pendingWalletIdentity, setPendingWalletIdentity] = useState<string | null>(null);
 	const dialogRef = useRef<HTMLElement | null>(null);
+	const focusScope = props.opener?.closest<HTMLElement>('[data-rk]');
+	const restoreFocus = () => {
+		const ownerDocument = props.opener?.ownerDocument ?? dialogRef.current?.ownerDocument;
+		if (!ownerDocument) return;
+		queueMicrotask(() => {
+			if (focusTopModal(ownerDocument)) return;
+			const fallback = focusScope?.querySelector<HTMLElement>(
+				'.rk-connect-button:not([disabled]), .rk-wallet-button:not([disabled])',
+			);
+			((props.opener?.isConnected ? props.opener : fallback))?.focus();
+		});
+	};
 	const title =
 		props.kind === 'connect'
 			? 'Connect a wallet'
@@ -110,7 +122,6 @@ function Modal(props: {
 		const dialog = dialogRef.current;
 		if (!dialog) return;
 		const ownerDocument = dialog.ownerDocument;
-		const focusScope = props.opener?.closest<HTMLElement>('[data-rk]');
 		pushModal(props.token, ownerDocument);
 		lockBody(ownerDocument);
 		registerModal(props.token, dialog);
@@ -155,14 +166,7 @@ function Modal(props: {
 			ownerDocument.removeEventListener('keydown', onKeyDown);
 			removeModal(props.token);
 			unlockBody(ownerDocument);
-			queueMicrotask(() => {
-				if (!focusTopModal(ownerDocument)) {
-					const fallback = focusScope?.querySelector<HTMLElement>(
-						'.rk-connect-button:not([disabled]), .rk-wallet-button:not([disabled])',
-					);
-					((props.opener?.isConnected ? props.opener : fallback))?.focus();
-				}
-			});
+			restoreFocus();
 		};
 	}, [props.token]);
 
@@ -170,9 +174,10 @@ function Modal(props: {
 		if (!entry.connector) return;
 		const pendingToken = props.beginConnecting();
 		setPendingWalletIdentity(entry.identity);
-		void connect.connectAsync({ connector: entry.connector }).then(
-			() => props.close(props.token),
-		).catch(() => {}).finally(() => {
+		void connect.connectAsync({ connector: entry.connector }).then(() => {
+			props.close(props.token);
+			restoreFocus();
+		}).catch(() => {}).finally(() => {
 			setPendingWalletIdentity(null);
 			props.endConnecting(pendingToken);
 		});
