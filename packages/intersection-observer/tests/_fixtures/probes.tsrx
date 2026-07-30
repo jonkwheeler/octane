@@ -1,5 +1,7 @@
 import { InView, useInView, useOnInView } from '@octanejs/intersection-observer';
 
+const noopEffect = () => {};
+
 export function HookProbe(props: {
 	onChange?(inView: boolean, entry: IntersectionObserverEntry): void;
 	triggerOnce?: boolean;
@@ -18,13 +20,18 @@ export function EffectProbe(props: {
 	<div ref={ref} data-testid="effect">effect</div>
 }
 
-export function EffectPoolProbe() @{
-	const first = useOnInView(() => {}, {
+export function EffectPoolProbe(
+	props: {
+		onFirst?: (inView: boolean, entry: IntersectionObserverEntry) => void;
+		onSecond?: (inView: boolean, entry: IntersectionObserverEntry) => void;
+	} = {},
+) @{
+	const first = useOnInView(props.onFirst ?? noopEffect, {
 		threshold: 0.5,
 		triggerOnce: true,
 		initialInView: true,
 	});
-	const second = useOnInView(() => {}, {
+	const second = useOnInView(props.onSecond ?? noopEffect, {
 		threshold: 0.5,
 		triggerOnce: false,
 		initialInView: false,

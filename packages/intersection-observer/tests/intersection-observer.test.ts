@@ -3,6 +3,7 @@ import { flushEffects, mount } from '../../octane/tests/_helpers';
 import {
 	destroyIntersectionMocking,
 	intersectionMockInstance,
+	mockAllIsIntersecting,
 	mockIsIntersecting,
 	setupIntersectionMocking,
 } from '../src/test-utils';
@@ -84,6 +85,18 @@ describe('Octane binding', () => {
 		const first = result.find('[data-testid="effect-first"]');
 		const second = result.find('[data-testid="effect-second"]');
 		expect(intersectionMockInstance(second)).toBe(intersectionMockInstance(first));
+		result.unmount();
+	});
+
+	it('notifies each pooled observer subscriber once in mockAllIsIntersecting', () => {
+		const onFirst = vi.fn();
+		const onSecond = vi.fn();
+		const result = mount(EffectPoolProbe, { onFirst, onSecond });
+
+		mockAllIsIntersecting(true);
+
+		expect(onFirst).toHaveBeenCalledOnce();
+		expect(onSecond).toHaveBeenCalledOnce();
 		result.unmount();
 	});
 

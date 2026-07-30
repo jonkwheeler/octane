@@ -7,14 +7,13 @@ type MockFn = <T extends (...args: any[]) => any>(
 	mockClear(): void;
 };
 
-const observers = new Map<
-	Element,
-	{
-		callback: IntersectionObserverCallback;
-		elements: Set<Element>;
-		instance: IntersectionObserver;
-	}
->();
+interface ObserverRecord {
+	callback: IntersectionObserverCallback;
+	elements: Set<Element>;
+	instance: IntersectionObserver;
+}
+
+const observers = new Map<Element, ObserverRecord>();
 let originalIntersectionObserver: typeof IntersectionObserver | undefined;
 
 function entryFor(element: Element, isIntersecting: boolean, ratio: number) {
@@ -73,7 +72,8 @@ export function destroyIntersectionMocking() {
 
 export function mockAllIsIntersecting(isIntersecting: boolean | number) {
 	const ratio = typeof isIntersecting === 'number' ? isIntersecting : isIntersecting ? 1 : 0;
-	const unique = new Set(observers.values());
+	const unique = new Map<IntersectionObserver, ObserverRecord>();
+	observers.forEach((observer) => unique.set(observer.instance, observer));
 	act(() => {
 		unique.forEach(({ callback, elements, instance }) => {
 			callback(
