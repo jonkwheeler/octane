@@ -21,7 +21,7 @@ export function AnimeJsScene() @{
 				ease: 'inOut(3)',
 				alternate: true,
 				loop: true,
-				onRender: invalidate,
+				onRender: () => invalidate(),
 			});
 		});
 		return () => scope.revert();
