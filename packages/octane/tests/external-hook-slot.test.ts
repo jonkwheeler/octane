@@ -657,6 +657,7 @@ describe('manifest-declared manual hook slots', () => {
 			'dnd-kit',
 			'floating-ui',
 			'i18next',
+			'intersection-observer',
 			'jotai',
 			'lexical',
 			'lucide',

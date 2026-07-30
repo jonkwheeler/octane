@@ -104,6 +104,7 @@ export const KNOWN_BINDINGS = {
 	'@reduxjs/toolkit': '@octanejs/redux-toolkit',
 	'@testing-library/react': '@octanejs/testing-library',
 	'react-i18next': '@octanejs/i18next',
+	'react-intersection-observer': '@octanejs/intersection-observer',
 	'@mdx-js/react': '@octanejs/mdx',
 	'dexie-react-hooks': '@octanejs/dexie',
 };
