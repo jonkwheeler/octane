@@ -54,10 +54,10 @@ function useConnectButtonState(): ConnectButtonRendererProps {
 		connectModalOpen: connectModal.connectModalOpen,
 		connectionStatus: !mounted
 			? 'disconnected'
-			: connect.isPending || rainbowKit?.connecting
-				? 'connecting'
-				: connected
-					? 'connected'
+			: connected
+				? 'connected'
+				: connect.isPending || rainbowKit?.connecting
+					? 'connecting'
 					: 'disconnected',
 		mounted,
 		openAccountModal: mounted ? accountModal.openAccountModal : undefined,

@@ -686,7 +686,38 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		});
 	});
 
-	it('keeps newer WalletButton pending state when an older request completes first', async () => {
+	it('keeps Custom connected while another wallet connection attempt is pending', async () => {
+		const config = setup();
+		await act(async () => {
+			await connect(config, { connector: config.connectors[0]! });
+		});
+		flushEffects();
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await gate;
+			return original(parameters);
+		};
+
+		(document.querySelector('.rk-wallet-button') as HTMLButtonElement).click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(mounted!.find('#custom-status').textContent).toBe('connected');
+		expect(mounted!.find('#connection-status').textContent).toBe('connected');
+
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+	});
+
+	it('reports connected when an older request completes before a newer pending request', async () => {
 		const config = setup();
 		const releases: Array<() => void> = [];
 		const connector = config.connectors[0]!;
@@ -705,7 +736,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
-		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		expect(mounted!.find('#connection-status').textContent).toBe('connected');
 		releases[1]!();
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
@@ -713,7 +744,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(mounted!.find('#connection-status').textContent).not.toBe('connecting');
 	});
 
-	it('keeps the older WalletButton pending state when a newer request completes first', async () => {
+	it('reports connected when a newer request completes before an older pending request', async () => {
 		const config = setup();
 		const releases: Array<() => void> = [];
 		const connector = config.connectors[0]!;
@@ -732,7 +763,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
-		expect(mounted!.find('#connection-status').textContent).toBe('connecting');
+		expect(mounted!.find('#connection-status').textContent).toBe('connected');
 		releases[0]!();
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
