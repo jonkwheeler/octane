@@ -9,6 +9,7 @@ import { Conditional } from './demos/Conditional.tsrx';
 import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
+import { IntersectionObserverDemo } from './demos/IntersectionObserver.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
@@ -24,6 +25,7 @@ import conditionalSource from './demos/Conditional.tsrx?raw';
 import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
+import intersectionObserverSource from './demos/IntersectionObserver.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
@@ -124,6 +126,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'usehooks-ts',
 				Component: UseHooksTsDemo,
 				source: useHooksTsSource,
+			},
+			{
+				id: 'intersection-observer',
+				title: 'Intersection Observer',
+				Component: IntersectionObserverDemo,
+				source: intersectionObserverSource,
 			},
 			{
 				id: 'mantine-hooks',

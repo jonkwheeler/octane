@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@octanejs/cmdk": "workspace:*",
+    "@octanejs/intersection-observer": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/mantine-hooks": "workspace:*",
     "@octanejs/mobx": "workspace:*",

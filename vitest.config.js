@@ -734,6 +734,33 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'intersection-observer',
+					include: ['packages/intersection-observer/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/intersection-observer$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/intersection-observer/src/index.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/intersection-observer\/test-utils$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/intersection-observer/src/test-utils.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'tanstack-hotkeys',
 					include: ['packages/tanstack-hotkeys/tests/**/*.test.ts'],
 					environment: 'jsdom',

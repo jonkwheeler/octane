@@ -152,6 +152,25 @@
       "verified": "2026-07-13"
     },
     {
+      "name": "@octanejs/intersection-observer",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": {
+        "package": "react-intersection-observer",
+        "version": "10.1.0",
+        "source": "https://github.com/thebuilder/react-intersection-observer/tree/v10.1.0",
+        "license": "MIT"
+      },
+      "surface": "Complete public runtime surface: useInView, useOnInView, InView, observe, defaultFallbackInView, and test utilities.",
+      "divergences": [
+        "Public node and prop types use Octane structural types and do not import React.",
+        "InView is implemented as a function component while preserving the upstream render-prop and wrapper behavior.",
+        "In TSRX, an InView render function must be supplied through the children prop; nested children compile to an opaque render block."
+      ],
+      "ssr": "Supported. Observation begins in an effect; initialInView controls deterministic server output.",
+      "verified": "2026-07-30"
+    },
+    {
       "name": "@octanejs/jotai",
       "version": "0.1.18",
       "category": "Shared state",
