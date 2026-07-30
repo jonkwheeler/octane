@@ -74,6 +74,7 @@ describe('useMachine', () => {
 		expect(lifecycleEvents).not.toContain('root-entry');
 		expect(lifecycleEvents).not.toContain('root-effect');
 		expect(lifecycleEvents).not.toContain('idle-entry');
+		expect(lifecycleEvents).not.toContain('root-exit');
 	});
 });
 
