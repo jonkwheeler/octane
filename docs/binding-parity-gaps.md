@@ -34,6 +34,7 @@ surface and evidence.
 | `@octanejs/mobx` | 0 |
 | `@octanejs/motion` | 0 |
 | `@octanejs/nuqs` | 0 |
+| `@octanejs/phosphor-icons` | 0 |
 | `@octanejs/radix` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/recharts` | 0 |

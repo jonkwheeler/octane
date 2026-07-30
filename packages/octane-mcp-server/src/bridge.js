@@ -37,6 +37,7 @@ export const KNOWN_BINDINGS = {
 	'@lexical/react': '@octanejs/lexical',
 	'@tiptap/react': '@octanejs/tiptap',
 	'lucide-react': '@octanejs/lucide',
+	'@phosphor-icons/react': '@octanejs/phosphor-icons',
 	'@floating-ui/react': '@octanejs/floating-ui',
 	'react-aria': '@octanejs/aria',
 	'react-aria-components': '@octanejs/aria',
@@ -103,6 +104,7 @@ export const KNOWN_BINDINGS = {
 	'@reduxjs/toolkit': '@octanejs/redux-toolkit',
 	'@testing-library/react': '@octanejs/testing-library',
 	'react-i18next': '@octanejs/i18next',
+	'@inertiajs/react': '@octanejs/inertia',
 	'@mdx-js/react': '@octanejs/mdx',
 	'dexie-react-hooks': '@octanejs/dexie',
 };

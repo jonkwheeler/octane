@@ -10,6 +10,10 @@ import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
+import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
+import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
+import { MobxDemo } from './demos/Mobx.tsrx';
+import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
@@ -21,6 +25,10 @@ import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
+import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
+import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
+import mobxSource from './demos/Mobx.tsrx?raw';
+import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
@@ -100,6 +108,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				source: shadcnSource,
 			},
 			{
+				id: 'phosphor-icons',
+				title: 'Phosphor Icons',
+				Component: PhosphorIconsDemo,
+				source: phosphorIconsSource,
+			},
+			{
 				id: 'wagmi',
 				title: 'Wagmi',
 				Component: WagmiDemo,
@@ -110,6 +124,24 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'usehooks-ts',
 				Component: UseHooksTsDemo,
 				source: useHooksTsSource,
+			},
+			{
+				id: 'mantine-hooks',
+				title: 'Mantine Hooks',
+				Component: MantineHooksDemo,
+				source: mantineHooksSource,
+			},
+			{
+				id: 'mobx',
+				title: 'MobX',
+				Component: MobxDemo,
+				source: mobxSource,
+			},
+			{
+				id: 'error-boundary',
+				title: 'Error boundary',
+				Component: ErrorBoundaryDemo,
+				source: errorBoundarySource,
 			},
 		],
 	},

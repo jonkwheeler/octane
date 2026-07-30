@@ -1,5 +1,12 @@
 {
   "name": "@octanejs/inertia",
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
