@@ -7,12 +7,20 @@ const effectSlot = Symbol('Inertia.usePoll.effect');
 
 export default function usePoll(
 	interval: number,
-	requestOptions: ReloadOptions | (() => ReloadOptions) = {},
-	options: PollOptions = {
+	requestOptions: ReloadOptions | (() => ReloadOptions) | symbol = {},
+	options: PollOptions | symbol = {
 		keepAlive: false,
 		autoStart: true,
 	},
 ) {
+	requestOptions = typeof requestOptions === 'symbol' ? {} : requestOptions;
+	options =
+		typeof options === 'symbol'
+			? {
+					keepAlive: false,
+					autoStart: true,
+				}
+			: options;
 	const latest = useRef(requestOptions, latestSlot);
 	latest.current = requestOptions;
 

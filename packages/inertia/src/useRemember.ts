@@ -9,9 +9,11 @@ const effectSlot = Symbol('Inertia.useRemember.effect');
 
 export default function useRemember<State>(
 	initialState: State,
-	key?: string,
-	excludeKeysRef?: MutableRefObject<string[]>,
+	key?: string | symbol,
+	excludeKeysRef?: MutableRefObject<string[]> | symbol,
 ): [State, Dispatch<SetStateAction<State>>] {
+	key = typeof key === 'symbol' ? undefined : key;
+	excludeKeysRef = typeof excludeKeysRef === 'symbol' ? undefined : excludeKeysRef;
 	const [state, setState] = useState(() => {
 		const restored = router.restore(key) as State;
 

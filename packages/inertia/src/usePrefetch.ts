@@ -6,12 +6,13 @@ const isPrefetchingSlot = Symbol('Inertia.usePrefetch.isPrefetching');
 const isPrefetchedSlot = Symbol('Inertia.usePrefetch.isPrefetched');
 const effectSlot = Symbol('Inertia.usePrefetch.effect');
 
-export default function usePrefetch(options: VisitOptions = {}): {
+export default function usePrefetch(options: VisitOptions | symbol = {}): {
 	lastUpdatedAt: number | null;
 	isPrefetching: boolean;
 	isPrefetched: boolean;
 	flush: () => void;
 } {
+	options = typeof options === 'symbol' ? {} : options;
 	const cached =
 		typeof window === 'undefined' ? null : router.getCached(window.location.pathname, options);
 	const inFlight =
