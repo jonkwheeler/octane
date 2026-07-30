@@ -5783,6 +5783,12 @@ importers:
       '@octanejs/sonner':
         specifier: workspace:*
         version: link:../../packages/sonner
+      '@octanejs/tanstack-query':
+        specifier: workspace:*
+        version: link:../../packages/tanstack-query
+      '@octanejs/wagmi':
+        specifier: workspace:*
+        version: link:../../packages/wagmi
       class-variance-authority:
         specifier: catalog:default
         version: 0.7.1
