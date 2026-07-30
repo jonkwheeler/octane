@@ -133,6 +133,23 @@ describe('timing and lifecycle hooks', () => {
 		expect(onDebounce).toHaveBeenCalledOnce();
 	});
 
+	it('preserves queued work across equivalent debounce option forms', () => {
+		const onDebounce = vi.fn();
+		const onPending = vi.fn();
+		const result = mount(DebounceControlsProbe, { onDebounce, onPending });
+
+		result.click('#queue');
+		result.update(DebounceControlsProbe, {
+			onDebounce,
+			onPending,
+			options: { leading: false, trailing: true },
+		});
+		vi.advanceTimersByTime(50);
+
+		expect(onDebounce).toHaveBeenCalledOnce();
+		expect(onDebounce).toHaveBeenLastCalledWith('queued');
+	});
+
 	it('uses strict equality by default for NaN and signed zero', () => {
 		const onPending = vi.fn();
 		const result = mount(DebounceValueProbe, { value: Number.NaN, onPending });

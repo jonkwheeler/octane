@@ -61,6 +61,9 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 	const { args: rawArgs, slot } = splitSlot(runtime);
 	const args = rawArgs as [T, number?, DebounceOptions?];
 	const [func, delay = 500, options] = args;
+	const leading = options?.leading ?? false;
+	const trailing = options?.trailing ?? true;
+	const maxWait = options?.maxWait;
 	const wrapped = useMemo(
 		() => {
 			let pending = false;
@@ -76,7 +79,11 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 					return func(...callArgs);
 				},
 				delay,
-				options,
+				{
+					leading,
+					trailing,
+					...(maxWait === undefined ? {} : { maxWait }),
+				},
 			);
 			const value = ((...callArgs: Parameters<T>) => {
 				pending = true;
@@ -96,7 +103,7 @@ export function useDebounceCallback<T extends (...args: any[]) => ReturnType<T>>
 			value.isPending = () => pending;
 			return value;
 		},
-		[func, delay, options?.leading, options?.trailing, options?.maxWait],
+		[func, delay, leading, trailing, maxWait],
 		subSlot(slot, 'memo'),
 	);
 	useIsoLayoutEffect(() => () => wrapped.cancel(), [wrapped], subSlot(slot, 'cleanup'));
