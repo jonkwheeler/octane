@@ -102,10 +102,32 @@ export function TwoProviders(props: { config: Config; queryClient: unknown }) @{
 }
 
 function ProgrammaticOpener() @{
-	const modal = useConnectModal();
-	<button type="button" id="programmatic-open" onClick={() => modal.openConnectModal?.()}>
-		Programmatic open
-	</button>
+	const connectModal = useConnectModal();
+	const accountModal = useAccountModal();
+	const chainModal = useChainModal();
+	<div>
+		<button
+			type="button"
+			id="programmatic-open"
+			onClick={() => connectModal.openConnectModal?.()}
+		>
+			Programmatic open
+		</button>
+		<button
+			type="button"
+			id="programmatic-account"
+			onClick={() => accountModal.openAccountModal?.()}
+		>
+			Programmatic account
+		</button>
+		<button
+			type="button"
+			id="programmatic-chain"
+			onClick={() => chainModal.openChainModal?.()}
+		>
+			Programmatic chain
+		</button>
+	</div>
 }
 
 export function ProgrammaticProvider(props: { config: Config; queryClient: unknown }) @{
