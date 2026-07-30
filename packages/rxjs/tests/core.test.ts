@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, config, Observable, of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 import { bind, shareLatest, state } from '@octanejs/rxjs';
 import { createSignal } from '@octanejs/rxjs/utils';
@@ -6,6 +6,7 @@ import { mount, nextPaint } from './_helpers';
 import {
 	ObservableErrorBoundary,
 	Reader,
+	SourceSubscriber,
 	StableSubscriptionReader,
 	SubscribeReader,
 } from './_fixtures/reader.tsrx';
@@ -58,6 +59,24 @@ describe('@octanejs/rxjs', () => {
 		await nextPaint();
 		expect(view.find('#value').textContent).toBe('4');
 		view.unmount();
+	});
+
+	it('does not report owned source errors as unhandled', async () => {
+		const unhandledErrors: unknown[] = [];
+		const previousHandler = config.onUnhandledError;
+		config.onUnhandledError = (error) => unhandledErrors.push(error);
+		const source = new Observable((subscriber) => {
+			queueMicrotask(() => subscriber.error(new Error('source failed')));
+		});
+		const view = mount(SourceSubscriber, { source });
+
+		try {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			expect(unhandledErrors).toEqual([]);
+		} finally {
+			view.unmount();
+			config.onUnhandledError = previousHandler;
+		}
 	});
 
 	it('keeps the store subscribe callback stable across unrelated renders', async () => {

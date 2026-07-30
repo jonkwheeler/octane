@@ -51,7 +51,12 @@ export function Subscribe(props: Props) @{
 		owner.current.sourceSubscription?.unsubscribe();
 		owner.current.source = props.source$;
 		owner.current.sourceSubscription = props.source$
-			? liftSuspense()(props.source$).subscribe()
+			? liftSuspense()(props.source$).subscribe({
+					// The owned source subscription exists only to keep the source
+					// active. Consumers surface observable errors through their own
+					// subscriptions, so do not also report them as unhandled here.
+					error() {},
+				})
 			: null;
 	}
 

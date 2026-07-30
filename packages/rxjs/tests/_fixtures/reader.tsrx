@@ -15,6 +15,12 @@ export function SubscribeReader(props: { source: Observable<number> }) @{
 	</Subscribe>
 }
 
+export function SourceSubscriber(props: { source: Observable<unknown> }) @{
+	<Subscribe source$={props.source}>
+		<span id="subscribed">{'subscribed'}</span>
+	</Subscribe>
+}
+
 export function StableSubscriptionReader(props: { source: Observable<number> }) @{
 	const value = useValue(props.source);
 	const [renders, setRenders] = useState(0);
