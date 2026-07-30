@@ -115,6 +115,7 @@ catalogs:
     '@rspack/core': 2.1.3
     typescript: 5.9.3
   default:
+    animejs: 4.5.0
     '@apollo/client': 4.2.6
     dexie: 4.4.4
     fake-indexeddb: 6.2.5

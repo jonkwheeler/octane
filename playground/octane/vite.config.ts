@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { octane } from 'octane/compiler/vite';
+import { threeRenderers } from '@octanejs/three/config';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-	plugins: [octane(), tailwindcss()],
+	plugins: [octane({ renderers: threeRenderers }), tailwindcss()],
 
 	resolve: {
 		// The shadcn CLI installs registry components importing via the `@/`
@@ -33,6 +34,13 @@ export default defineConfig({
 		// octane plugin has to compile, so they must not be pre-bundled either. That
 		// covers both the cmdk demo and the registry-installed shadcn components,
 		// which build on the raw-source radix and lucide bindings.
-		exclude: ['octane', '@octanejs/cmdk', '@octanejs/radix', '@octanejs/lucide'],
+		exclude: [
+			'octane',
+			'@octanejs/animejs',
+			'@octanejs/cmdk',
+			'@octanejs/three',
+			'@octanejs/radix',
+			'@octanejs/lucide',
+		],
 	},
 });
