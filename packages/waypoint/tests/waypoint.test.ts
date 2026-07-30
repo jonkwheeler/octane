@@ -123,4 +123,21 @@ describe('Waypoint', () => {
 		expect(onEnter).toHaveBeenCalledOnce();
 		result.unmount();
 	});
+
+	it('keeps a cloned child ref attached across updates', () => {
+		const onEnter = vi.fn();
+		const childRef = vi.fn();
+		const result = mount(ChildProbe, { onEnter, childRef, label: 'first' });
+		flushEffects();
+		const child = result.find('[data-testid="child"]');
+		expect(childRef).toHaveBeenCalledTimes(1);
+		expect(childRef).toHaveBeenLastCalledWith(child);
+
+		result.update(ChildProbe, { onEnter, childRef, label: 'second' });
+		flushEffects();
+		expect(childRef).toHaveBeenCalledTimes(1);
+
+		result.unmount();
+		expect(childRef).toHaveBeenLastCalledWith(null);
+	});
 });

@@ -1,4 +1,12 @@
-import { cloneElement, createElement, isValidElement, useEffect, useRef, useState } from 'octane';
+import {
+	cloneElement,
+	createElement,
+	isValidElement,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'octane';
 import { findScrollableAncestor, getBounds, getCurrentPosition } from './geometry.js';
 import {
 	ABOVE,
@@ -15,6 +23,11 @@ export function Waypoint(props: WaypointProps) {
 	const previousPosition = useRef<WaypointPosition>(INVISIBLE);
 	const latest = useRef(props);
 	latest.current = props;
+	const childRef =
+		props.children && isValidElement(props.children)
+			? (props.children as any).props?.ref
+			: undefined;
+	const mergedRef = useMemo(() => [childRef, setNode], [childRef]);
 
 	useEffect(() => {
 		if (typeof window === 'undefined' || !node) return;
@@ -69,7 +82,7 @@ export function Waypoint(props: WaypointProps) {
 
 	if (props.children && isValidElement(props.children)) {
 		return cloneElement(props.children, {
-			ref: [(props.children as any).props?.ref, setNode],
+			ref: mergedRef,
 		});
 	}
 	return createElement('span', {
