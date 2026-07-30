@@ -1,35 +1,12 @@
 import { raf } from '@react-spring/rafz';
 import { hostComponent, useLayoutEffect, useState } from 'octane';
+import { SpringValue } from './engine';
 
-type ChangeListener<T> = (value: T) => void;
+export * from './engine';
+export * from './hooks';
 
 const HOST_STATE = Symbol.for('octane-react-spring:animated-host-state');
 const HOST_EFFECT = Symbol.for('octane-react-spring:animated-host-effect');
-
-export class SpringValue<T = number> {
-	private value: T;
-	private listeners = new Set<ChangeListener<T>>();
-
-	constructor(value: T) {
-		this.value = value;
-	}
-
-	get(): T {
-		return this.value;
-	}
-
-	set(value: T): this {
-		if (Object.is(value, this.value)) return this;
-		this.value = value;
-		for (const listener of this.listeners) listener(value);
-		return this;
-	}
-
-	onChange(listener: ChangeListener<T>): () => void {
-		this.listeners.add(listener);
-		return () => this.listeners.delete(listener);
-	}
-}
 
 function isSpringValue(value: unknown): value is SpringValue<unknown> {
 	return value instanceof SpringValue;
