@@ -656,6 +656,7 @@ describe('manifest-declared manual hook slots', () => {
 			'dexie',
 			'dnd-kit',
 			'floating-ui',
+			'gsap',
 			'i18next',
 			'jotai',
 			'lexical',
