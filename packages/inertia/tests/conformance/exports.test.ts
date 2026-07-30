@@ -10,6 +10,19 @@ describe('@octanejs/inertia framework-neutral exports', () => {
 	});
 
 	it('does not expose an accidental partial adapter surface', () => {
-		expect(Object.keys(binding).sort()).toEqual(['http', 'progress', 'router']);
+		expect(Object.keys(binding).sort()).toEqual([
+			'config',
+			'http',
+			'progress',
+			'resetLayoutProps',
+			'router',
+			'setLayoutProps',
+			'useForm',
+			'useHttp',
+			'usePage',
+			'usePoll',
+			'usePrefetch',
+			'useRemember',
+		]);
 	});
 });

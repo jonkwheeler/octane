@@ -25,6 +25,7 @@ types are explicit exclusions from the Octane package.
 
 ## Status
 
-The framework-neutral exports and package boundary are present. Hooks,
-components, SSR, hydration, and the protocol playground are implemented by the
-dependent units in the binding plan.
+The framework-neutral exports, package boundary, contexts, layout-property
+store, and renderer-independent hook/form layer are present. Components, root
+lifecycle, full SSR/hydration, and the protocol playground are implemented by
+the dependent units in the binding plan.

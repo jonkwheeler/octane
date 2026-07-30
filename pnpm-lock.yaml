@@ -4153,6 +4153,9 @@ importers:
       '@inertiajs/react':
         specifier: catalog:default
         version: 3.6.1(axios@1.18.1(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@octanejs/testing-library':
+        specifier: workspace:*
+        version: link:../testing-library
       octane:
         specifier: workspace:*
         version: link:../octane
