@@ -1219,6 +1219,11 @@ export default defineConfig({
 						'!packages/rainbowkit/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
+					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
+					// inside the test body (same helper as apollo-client/base-ui); keep the
+					// same 30s headroom so a loaded CI shard doesn't overrun Vitest's 5s default.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					globals: false,
 				},
 				plugins: [octane()],
