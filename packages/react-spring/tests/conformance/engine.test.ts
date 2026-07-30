@@ -1,9 +1,10 @@
 import { raf } from '@react-spring/rafz';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Controller, SpringValue, config, to } from '@octanejs/react-spring';
 
 afterEach(() => {
 	raf.frameLoop = 'always';
+	vi.useRealTimers();
 });
 
 function advanceUntilIdle(limit = 240): void {
@@ -53,6 +54,18 @@ describe('React Spring engine', () => {
 
 		expect(result.finished).toBe(true);
 		expect(controller.get()).toEqual({ x: 20, opacity: 1 });
+	});
+
+	it('cancels a delayed controller start before it launches springs', async () => {
+		vi.useFakeTimers();
+		const controller = new Controller({ from: { x: 0 } });
+		const resultPromise = controller.start({ to: { x: 20 }, delay: 100 });
+
+		controller.stop(true);
+		await vi.advanceTimersByTimeAsync(100);
+
+		expect(await resultPromise).toEqual({ value: { x: 0 }, finished: false, cancelled: true });
+		expect(controller.get()).toEqual({ x: 0 });
 	});
 
 	it('derives interpolated values from fluid parents', () => {

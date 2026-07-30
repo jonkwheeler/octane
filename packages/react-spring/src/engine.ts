@@ -236,6 +236,7 @@ export interface ControllerUpdate<State extends Record<string, any>> {
 
 export class Controller<State extends Record<string, any> = Record<string, any>> {
 	springs: { [Key in keyof State]: SpringValue<State[Key]> } = {} as any;
+	private startId = 0;
 
 	constructor(props: ControllerUpdate<State> = {}) {
 		const initial = { ...props.from, ...(!props.from ? props.to : undefined) } as State;
@@ -254,8 +255,16 @@ export class Controller<State extends Record<string, any> = Record<string, any>>
 	}
 
 	async start(update: ControllerUpdate<State>): Promise<AnimationResult<State>> {
+		const startId = ++this.startId;
 		if (update.delay !== undefined && update.delay > 0) {
 			await new Promise<void>((resolve) => setTimeout(resolve, update.delay));
+			if (startId !== this.startId) {
+				return {
+					value: this.get(),
+					finished: false,
+					cancelled: true,
+				};
+			}
 		}
 		const from: Partial<State> = update.from ?? {};
 		const target: Partial<State> = update.to ?? {};
@@ -284,6 +293,7 @@ export class Controller<State extends Record<string, any> = Record<string, any>>
 	}
 
 	stop(cancel = false): this {
+		this.startId++;
 		for (const key in this.springs) this.springs[key].stop(cancel);
 		return this;
 	}

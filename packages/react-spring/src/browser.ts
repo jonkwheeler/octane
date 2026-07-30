@@ -110,7 +110,11 @@ export function useResize(
 				const onResize = () => update(window.innerWidth, window.innerHeight);
 				onResize();
 				window.addEventListener('resize', onResize);
-				return () => window.removeEventListener('resize', onResize);
+				return () => {
+					window.removeEventListener('resize', onResize);
+					values.width.stop(true);
+					values.height.stop(true);
+				};
 			}
 			const rect = element.getBoundingClientRect();
 			update(rect.width, rect.height);
