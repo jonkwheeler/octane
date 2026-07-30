@@ -867,7 +867,7 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(mounted!.find('#connection-status').textContent).not.toBe('connecting');
 	});
 
-	it('shows wrong-network controls and recovers through the chain modal', async () => {
+	it('shows wrong-network controls after the connector changes chains and recovers', async () => {
 		const config = createConfig({
 			chains: [mainnet, sepolia],
 			connectors: [mock({ accounts: [account] })],
@@ -884,14 +884,15 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
 		act(() => {
-			config.setState((state) => ({ ...state, chainId: 999_999 }));
+			config.connectors[0]!.onChainChanged('999999');
 		});
 		flushEffects();
 		expect(mounted.find('#custom-status').textContent).toBe('wrong-chain');
 		const wrong = Array.from(
 			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
-		).find((button) => button.textContent?.includes('Wrong network'))!;
-		wrong.click();
+		).find((button) => button.textContent?.includes('Wrong network'));
+		expect(wrong).toBeDefined();
+		wrong!.click();
 		flushEffects();
 		const sepoliaButton = Array.from(
 			document.querySelectorAll<HTMLButtonElement>('.rk-dialog .rk-action'),

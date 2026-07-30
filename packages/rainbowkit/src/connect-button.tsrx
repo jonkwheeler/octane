@@ -1,4 +1,4 @@
-import { useChainId, useChains, useConnect, useConnection, useDisconnect } from '@octanejs/wagmi';
+import { useChains, useConnect, useConnection, useDisconnect } from '@octanejs/wagmi';
 import { isChildrenBlock, useContext, type OctaneNode } from 'octane';
 import { useAccountModal, useChainModal, useConnectModal } from './hooks';
 import { RainbowKitContext } from './internal';
@@ -30,12 +30,11 @@ function useConnectButtonState(): ConnectButtonRendererProps {
 	const connection = useConnection();
 	const connect = useConnect();
 	const rainbowKit = useContext(RainbowKitContext);
-	const chainId = useChainId();
 	const chains = useChains();
 	const accountModal = useAccountModal();
 	const chainModal = useChainModal();
 	const connectModal = useConnectModal();
-	const chain = chains.find((candidate) => candidate.id === chainId);
+	const chain = chains.find((candidate) => candidate.id === connection.chainId);
 	const connected = connection.status === 'connected' && Boolean(connection.address);
 	const mounted = rainbowKit?.mounted ?? false;
 	return {
@@ -48,7 +47,7 @@ function useConnectButtonState(): ConnectButtonRendererProps {
 		accountModalOpen: accountModal.accountModalOpen,
 		authenticationStatus: undefined,
 		chain: mounted && connected
-			? { id: chainId, name: chain?.name, unsupported: chain === undefined }
+			? { id: connection.chainId!, name: chain?.name, unsupported: chain === undefined }
 			: undefined,
 		chainModalOpen: chainModal.chainModalOpen,
 		connectModalOpen: connectModal.connectModalOpen,
