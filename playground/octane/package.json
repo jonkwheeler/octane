@@ -18,6 +18,7 @@
     "@octanejs/cmdk": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/radix": "workspace:*",
+    "@octanejs/react-spring": "workspace:*",
     "@octanejs/sonner": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/wagmi": "workspace:*",

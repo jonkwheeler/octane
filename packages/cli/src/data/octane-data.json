@@ -283,6 +283,19 @@
       "verified": "2026-07-29"
     },
     {
+      "name": "@octanejs/react-spring",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": { "package": "@react-spring/web", "version": "10.1.2" },
+      "surface": "Stable React Spring web target at the package root and Parallax through the ./parallax subpath. The port provides spring values, controllers, interpolation, Octane hooks and render-prop components, animated DOM hosts, browser observers, SSR-safe initial rendering, and Parallax scrolling.",
+      "divergences": [
+        "React renderables and refs are represented by Octane renderables and refs-as-props.",
+        "The all-renderer react-spring meta-package is intentionally not mapped."
+      ],
+      "ssr": "Initial and immediate values render on the server; browser observers and frame work start after client commit.",
+      "verified": "2026-07-30"
+    },
+    {
       "name": "@octanejs/recharts",
       "version": "0.1.18",
       "category": "Data-heavy screens",
@@ -705,6 +718,8 @@
     "@lexical/react": "@octanejs/lexical",
     "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mdx-js/react": "@octanejs/mdx",
+    "@react-spring/parallax": "@octanejs/react-spring",
+    "@react-spring/web": "@octanejs/react-spring",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
     "@stylexjs/stylex": "@octanejs/stylex",

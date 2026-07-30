@@ -41,6 +41,7 @@
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",
+      "@octanejs/react-spring",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
       "@octanejs/react-error-boundary",

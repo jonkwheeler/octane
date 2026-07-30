@@ -5827,18 +5827,21 @@ importers:
       '@octanejs/radix':
         specifier: workspace:*
         version: link:../../packages/radix
+      '@octanejs/react-spring':
+        specifier: workspace:*
+        version: link:../../packages/react-spring
       '@octanejs/sonner':
         specifier: workspace:*
         version: link:../../packages/sonner
       '@octanejs/tanstack-query':
         specifier: workspace:*
         version: link:../../packages/tanstack-query
-      '@octanejs/wagmi':
-        specifier: workspace:*
-        version: link:../../packages/wagmi
       '@octanejs/usehooks-ts':
         specifier: workspace:*
         version: link:../../packages/usehooks-ts
+      '@octanejs/wagmi':
+        specifier: workspace:*
+        version: link:../../packages/wagmi
       class-variance-authority:
         specifier: catalog:default
         version: 0.7.1
