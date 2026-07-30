@@ -49,7 +49,13 @@ export const withReactApi = <TSchema extends LiveStoreSchema, TContext = {}>(
 		(useQuery as (...args: unknown[]) => unknown)(queryable, { store }, ...rest);
 	augmented.useClientDocument = (table: unknown, ...rest: unknown[]) => {
 		const slot = typeof rest.at(-1) === 'symbol' ? rest.pop() : undefined;
-		return (useClientDocument as (...args: unknown[]) => unknown)(table, ...rest, { store }, slot);
+		return (useClientDocument as (...args: unknown[]) => unknown)(
+			table,
+			rest[0],
+			rest[1],
+			{ store },
+			slot,
+		);
 	};
 	augmented.useSyncStatus = (...rest: unknown[]) =>
 		(useSyncStatus as (...args: unknown[]) => SyncStatus)({ store }, ...rest);
