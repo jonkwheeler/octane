@@ -125,6 +125,7 @@ export function useSignalEffect(run: () => void | (() => void), ...rest: [slot?:
 interface ScopeController {
 	cancelled: boolean;
 	current: (() => void) | undefined;
+	disconnect: () => void;
 	stop: () => void;
 }
 
@@ -136,11 +137,14 @@ export function useSignalScope<T>(callback: () => T, ...rest: [slot?: symbol]): 
 			const scope: ScopeController = {
 				cancelled: false,
 				current: undefined,
-				stop: () => {
-					scope.cancelled = true;
+				disconnect: () => {
 					const current = scope.current;
 					scope.current = undefined;
 					current?.();
+				},
+				stop: () => {
+					scope.cancelled = true;
+					scope.disconnect();
 				},
 			};
 			return scope;
@@ -154,7 +158,7 @@ export function useSignalScope<T>(callback: () => T, ...rest: [slot?: symbol]): 
 			if (!controller.cancelled) {
 				controller.current = createSignalScope(callback);
 			}
-			return controller.stop;
+			return controller.disconnect;
 		},
 		[controller, callback],
 		subSlot(slot, 'scope:effect'),
