@@ -681,6 +681,7 @@ describe('manifest-declared manual hook slots', () => {
 			'usehooks-ts',
 			'valtio',
 			'wagmi',
+			'zag',
 			'zustand',
 		]);
 	});
