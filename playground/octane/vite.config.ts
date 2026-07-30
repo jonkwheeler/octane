@@ -41,6 +41,9 @@ export default defineConfig({
 			'@octanejs/three',
 			'@octanejs/radix',
 			'@octanejs/lucide',
+			'@octanejs/rainbowkit',
+			'@octanejs/tanstack-query',
+			'@octanejs/wagmi',
 		],
 	},
 });
