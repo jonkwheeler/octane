@@ -190,6 +190,11 @@ catalogs:
     '@tanstack/react-query': ^5.101.3
     '@tanstack/react-router': 1.170.18
     '@tanstack/react-store': ^0.11.0
+    '@zag-js/core': 1.42.0
+    '@zag-js/react': 1.42.0
+    '@zag-js/store': 1.42.0
+    '@zag-js/types': 1.42.0
+    '@zag-js/utils': 1.42.0
     '@tanstack/react-table': 8.21.3
     '@tanstack/react-virtual': 3.14.5
     '@tanstack/router-core': 1.171.15

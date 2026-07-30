@@ -852,6 +852,51 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'zag',
+					include: [
+						'packages/zag/tests/conformance/**/*.test.ts',
+						'packages/zag/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/zag$/,
+							replacement: resolve(import.meta.dirname, 'packages/zag/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'zag-ssr',
+					include: ['packages/zag/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^octane\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/zag$/,
+							replacement: resolve(import.meta.dirname, 'packages/zag/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'tanstack-store-ssr',
 					include: ['packages/tanstack-store/tests/ssr/**/*.test.ts'],
 					environment: 'node',
