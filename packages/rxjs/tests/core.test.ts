@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { bind, shareLatest, state } from '@octanejs/rxjs';
 import { createSignal } from '@octanejs/rxjs/utils';
 import { mount, nextPaint } from './_helpers';
-import { Reader, SubscribeReader } from './_fixtures/reader.tsrx';
+import { Reader, StableSubscriptionReader, SubscribeReader } from './_fixtures/reader.tsrx';
 
 describe('@octanejs/rxjs', () => {
 	it('renders the current value and tracks later emissions', async () => {
@@ -52,6 +52,22 @@ describe('@octanejs/rxjs', () => {
 		const view = mount(SubscribeReader, { source });
 		await nextPaint();
 		expect(view.find('#value').textContent).toBe('4');
+		view.unmount();
+	});
+
+	it('keeps the store subscribe callback stable across unrelated renders', async () => {
+		let subscriptions = 0;
+		const source = new Observable<number>((subscriber) => {
+			subscriptions++;
+			subscriber.next(8);
+		});
+		const view = mount(StableSubscriptionReader, { source });
+		await nextPaint();
+		expect(subscriptions).toBe(1);
+
+		view.click('#rerender');
+		await nextPaint();
+		expect(subscriptions).toBe(1);
 		view.unmount();
 	});
 });

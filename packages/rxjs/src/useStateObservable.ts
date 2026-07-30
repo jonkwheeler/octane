@@ -35,24 +35,26 @@ export function useStateObservable<T>(source: StateObservable<T>, slot?: symbol)
 			return value as Value<T>;
 		};
 		callbackRef.current = {
-			source,
+			source: null as unknown as StateObservable<T>,
 			subscribe: () => () => {},
 			getSnapshot,
 		};
 	}
 
 	const ref = callbackRef.current;
-	if (ref.source !== source) ref.source = source;
-	ref.subscribe = (notify) => {
-		const active = liftSuspense()(source).subscribe({
-			next: notify,
-			error: (error) =>
-				setError(() => {
-					throw error;
-				}),
-		});
-		return () => active.unsubscribe();
-	};
+	if (ref.source !== source) {
+		ref.source = source;
+		ref.subscribe = (notify) => {
+			const active = liftSuspense()(source).subscribe({
+				next: notify,
+				error: (error) =>
+					setError(() => {
+						throw error;
+					}),
+			});
+			return () => active.unsubscribe();
+		};
+	}
 
 	return useSyncExternalStore(
 		ref.subscribe,
