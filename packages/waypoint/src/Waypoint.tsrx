@@ -39,7 +39,7 @@ export function Waypoint(props: WaypointProps) {
 			if ((rapidDown || rapidUp) && latest.current.fireOnRapidScroll !== false) {
 				const insideArgs: WaypointCallbackArgs = { ...args, currentPosition: INSIDE };
 				latest.current.onEnter?.(insideArgs);
-				latest.current.onLeave?.(args);
+				latest.current.onLeave?.({ ...args, previousPosition: INSIDE });
 			} else {
 				if (currentPosition === INSIDE) latest.current.onEnter?.(args);
 				if (previous === INSIDE) latest.current.onLeave?.(args);
@@ -68,7 +68,9 @@ export function Waypoint(props: WaypointProps) {
 	]);
 
 	if (props.children && isValidElement(props.children)) {
-		return cloneElement(props.children, { ref: setNode });
+		return cloneElement(props.children, {
+			ref: [(props.children as any).props?.ref, setNode],
+		});
 	}
 	return createElement('span', {
 		ref: setNode,
