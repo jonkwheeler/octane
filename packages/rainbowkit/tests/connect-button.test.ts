@@ -359,6 +359,62 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.querySelector('[role="dialog"]')).not.toBeNull();
 	});
 
+	it('closes a replacement chain modal when an older request switches the chain', async () => {
+		const config = createConfig({
+			chains: [mainnet, sepolia],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http(), [sepolia.id]: http() },
+		});
+		mounted = mount(App, {
+			config,
+			queryClient: new QueryClient({ defaultOptions: { mutations: { retry: false } } }),
+		});
+		flushEffects();
+		flushSync(() => {});
+		await act(async () => {
+			await connect(config, { connector: config.connectors[0]! });
+		});
+		flushEffects();
+
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const switchChain = connector.switchChain!.bind(connector);
+		connector.switchChain = async (parameters) => {
+			await gate;
+			return switchChain(parameters);
+		};
+		const chainButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
+		).find((button) => button.textContent?.includes('Ethereum'))!;
+		chainButton.click();
+		flushEffects();
+		const sepoliaButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-dialog .rk-action'),
+		).find((button) => button.textContent?.includes('Sepolia'))!;
+		sepoliaButton.click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		flushEffects();
+		chainButton.click();
+		flushEffects();
+		expect(document.querySelector('[role="dialog"] h2')?.textContent).toBe('Switch network');
+
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		flushEffects();
+		expect(document.querySelector('[data-rk]')?.textContent).toContain('Sepolia');
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+	});
+
 	it('dismisses only from the overlay and restores all isolation on unmount', () => {
 		setup();
 		mounted!.click('#custom-connect');

@@ -298,6 +298,7 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		| {
 				kind: ModalKind;
 				token: ModalToken;
+				chainId: number | undefined;
 				opener: HTMLElement | null;
 				ownerDocument: Document | null;
 		  }
@@ -339,9 +340,10 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		const modalNoLongerApplies =
 			activeModal.kind === 'connect'
 				? connection.status === 'connected'
-				: connection.status !== 'connected';
+				: connection.status !== 'connected' ||
+					activeModal.kind === 'chain' && activeModal.chainId !== connection.chainId;
 		if (modalNoLongerApplies) closeModal(activeModal.token);
-	}, [activeModal, closeModal, connection.status]);
+	}, [activeModal, closeModal, connection.chainId, connection.status]);
 	const openModal = useCallback((kind: ModalKind, nextOpener?: HTMLElement | null) => {
 		const token = `${providerId}:${++modalGeneration.current}`;
 		const fallbackDocument = rootRef.current?.ownerDocument;
@@ -351,10 +353,11 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 		setActiveModal({
 			kind,
 			token,
+			chainId: connection.chainId,
 			opener: nextOpener ?? ownerDocument?.activeElement as HTMLElement | null | undefined ?? null,
 			ownerDocument,
 		});
-	}, [providerId]);
+	}, [connection.chainId, providerId]);
 	const context = useMemo(
 		() => ({
 			activeModal,
