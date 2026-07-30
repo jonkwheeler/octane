@@ -79,16 +79,14 @@ const useGSAPImpl = (...rawArgs: unknown[]): UseGSAPReturn => {
 	const deferCleanup =
 		resolvedDependencies != null && resolvedDependencies.length > 0 && revertOnUpdate !== true;
 
-	if (deferCleanup) {
-		useIsomorphicLayoutEffect(
-			() => {
-				mounted.current = true;
-				return () => context.current.revert();
-			},
-			emptyDependencies,
-			subSlot(slot, 'mount-cleanup'),
-		);
-	}
+	useIsomorphicLayoutEffect(
+		() => {
+			mounted.current = true;
+			return () => context.current.revert();
+		},
+		emptyDependencies,
+		subSlot(slot, 'mount-cleanup'),
+	);
 
 	useIsomorphicLayoutEffect(
 		() => {
