@@ -75,7 +75,7 @@ git checkout -b <branch>
 git add <files>
 git commit -m "<type>: <summary>"
 git push -u origin <branch>
-gh pr create --fill
+gh pr create --draft --fill
 gh pr edit <number> --add-label <type> --add-label agent-authored
 ```
 
@@ -85,6 +85,23 @@ Label after the PR exists rather than with `gh pr create --label`, so a rejected
 label cannot cost you the PR. An outside contributor's token has no rights to
 label at all; when the edit fails, leave the PR open and name the intended labels
 in the final response.
+
+## Leave the PR as a draft
+
+Open every PR as a draft and stop there. Nothing has run against the pushed diff
+yet, and the draft state is what says so. Marking it ready for review is the
+maintainer's job, and so is merging. Report the PR URL and end the task.
+
+Do not sit on `gh pr checks --watch` either. Repository CI intentionally skips
+every job while the pull request is a draft and starts on the
+`ready_for_review` event. Cursor Bugbot still reviews every pull request,
+including drafts, outside Actions, so people can watch and respond to its issue
+comments before making a draft ready. Vercel may also report separately.
+
+`.github/workflows/draft-agent-prs.yml` converts an `agent-authored` PR that was
+opened outside draft back into a draft, so a forgotten `--draft` costs a round
+trip instead of passing unnoticed. It leaves the PR alone once anyone has marked
+it ready for review, so it never undoes `gh pr ready`.
 
 ## Labels
 
@@ -107,3 +124,4 @@ also carries `agent-authored`.
 ## Final response
 
 Return PR URL, branch, commit summary, labels applied, and validation evidence.
+The PR stays a draft.
