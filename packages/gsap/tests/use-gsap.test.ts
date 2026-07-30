@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { createLog, flushEffects, mount } from '../../octane/tests/_helpers';
 import { useGSAP } from '@octanejs/gsap';
 import type { UseGSAPReturn } from '@octanejs/gsap';
-import { GSAPProbe, GSAPUndefinedDependenciesProbe } from './_fixtures/app.tsrx';
+import {
+	GSAPNullDependenciesProbe,
+	GSAPProbe,
+	GSAPUndefinedDependenciesProbe,
+} from './_fixtures/app.tsrx';
 
 describe('useGSAP', () => {
 	it('runs in a scoped GSAP context and reverts before dependency updates', () => {
@@ -62,6 +66,21 @@ describe('useGSAP', () => {
 		expect(log.drain()).toEqual(['effect:one']);
 
 		root.update(GSAPUndefinedDependenciesProbe, { value: 'two', log: log.push });
+		flushEffects();
+		expect(log.drain()).toEqual(['cleanup:one', 'effect:two']);
+
+		root.unmount();
+		expect(log.drain()).toEqual(['cleanup:two']);
+	});
+
+	it('preserves positional null dependencies so the effect reruns', () => {
+		const log = createLog();
+		const root = mount(GSAPNullDependenciesProbe, { value: 'one', log: log.push });
+
+		flushEffects();
+		expect(log.drain()).toEqual(['effect:one']);
+
+		root.update(GSAPNullDependenciesProbe, { value: 'two', log: log.push });
 		flushEffects();
 		expect(log.drain()).toEqual(['cleanup:one', 'effect:two']);
 

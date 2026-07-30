@@ -32,3 +32,15 @@ export function GSAPUndefinedDependenciesProbe(props: {
 
 	<div>{props.value}</div>
 }
+
+export function GSAPNullDependenciesProbe(props: {
+	value: string;
+	log: (entry: string) => void;
+}) @{
+	useGSAP(() => {
+		props.log(`effect:${props.value}`);
+		return () => props.log(`cleanup:${props.value}`);
+	}, null);
+
+	<div>{props.value}</div>
+}

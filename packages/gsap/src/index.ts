@@ -44,8 +44,9 @@ function isConfig(value: unknown): value is UseGSAPConfig {
 const useGSAPImpl = (...rawArgs: unknown[]): UseGSAPReturn => {
 	const [args, slot] = splitSlot(rawArgs);
 	let callback = args[0] as ContextFunction | UseGSAPConfig | undefined;
-	let dependencies: unknown[] | UseGSAPConfig | null | undefined = (args[1] ??
-		emptyDependencies) as unknown[] | UseGSAPConfig;
+	let dependencies: unknown[] | UseGSAPConfig | null | undefined = (
+		args[1] === undefined ? emptyDependencies : args[1]
+	) as unknown[] | UseGSAPConfig | null;
 	let config = defaultConfig;
 
 	if (isConfig(callback)) {
