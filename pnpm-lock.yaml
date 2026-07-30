@@ -5878,6 +5878,12 @@ importers:
       '@octanejs/lucide':
         specifier: workspace:*
         version: link:../../packages/lucide
+      '@octanejs/mantine-hooks':
+        specifier: workspace:*
+        version: link:../../packages/mantine-hooks
+      '@octanejs/mobx':
+        specifier: workspace:*
+        version: link:../../packages/mobx
       '@octanejs/phosphor-icons':
         specifier: workspace:*
         version: link:../../packages/phosphor-icons
@@ -5887,6 +5893,9 @@ importers:
       '@octanejs/rainbowkit':
         specifier: workspace:*
         version: link:../../packages/rainbowkit
+      '@octanejs/react-error-boundary':
+        specifier: workspace:*
+        version: link:../../packages/react-error-boundary
       '@octanejs/sonner':
         specifier: workspace:*
         version: link:../../packages/sonner
