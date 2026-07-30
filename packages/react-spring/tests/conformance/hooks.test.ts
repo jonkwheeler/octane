@@ -1,7 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { raf } from '@react-spring/rafz';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
-import { SpringHookFixture } from '../_fixtures/hooks.tsrx';
+import { SpringHookFixture, TrailHookFixture } from '../_fixtures/hooks.tsrx';
+
+afterEach(() => {
+	vi.useRealTimers();
+	raf.frameLoop = 'always';
+});
 
 describe('React Spring hooks', () => {
 	it('keeps spring values and the imperative API stable across updates', () => {
@@ -29,6 +34,27 @@ describe('React Spring hooks', () => {
 		expect(apis[1]).toBe(apis[0]);
 		expect(renders).toBe(2);
 		result.unmount();
-		raf.frameLoop = 'always';
+	});
+
+	it('adds trail staggering to the caller delay', async () => {
+		vi.useFakeTimers();
+		let styles: any[];
+		const result = mount(TrailHookFixture, {
+			delay: 100,
+			onReady: (value: any[]) => (styles = value),
+		});
+		flushEffects();
+
+		await vi.advanceTimersByTimeAsync(99);
+		expect(styles![0]?.x).toBeUndefined();
+		expect(styles![1]?.x).toBeUndefined();
+
+		await vi.advanceTimersByTimeAsync(1);
+		expect(styles![0].x.get()).toBe(1);
+		expect(styles![1]?.x).toBeUndefined();
+
+		await vi.advanceTimersByTimeAsync(16);
+		expect(styles![1].x.get()).toBe(1);
+		result.unmount();
 	});
 });

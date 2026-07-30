@@ -145,7 +145,7 @@ export function useTrail<State extends Record<string, any>>(
 			...update,
 			config: update.config,
 			to: update.to,
-			...(index > 0 ? { delay: index * 16 } : {}),
+			delay: (update.delay ?? 0) + index * 16,
 		}),
 		slot,
 	);
