@@ -678,6 +678,7 @@ describe('manifest-declared manual hook slots', () => {
 			'testing-library',
 			'three',
 			'tiptap',
+			'usehooks-ts',
 			'valtio',
 			'zustand',
 		]);

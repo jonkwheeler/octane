@@ -20,6 +20,7 @@
     "@octanejs/radix": "workspace:*",
     "@octanejs/solana-react": "workspace:*",
     "@octanejs/sonner": "workspace:*",
+    "@octanejs/usehooks-ts": "workspace:*",
     "class-variance-authority": "catalog:default",
     "clsx": "catalog:default",
     "octane": "workspace:*",
