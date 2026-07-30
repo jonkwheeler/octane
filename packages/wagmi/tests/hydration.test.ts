@@ -103,6 +103,55 @@ describe('WagmiProvider SSR initial state', () => {
 		expect(mountCalls).toBe(1);
 	});
 
+	it('mounts each replacement SSR config once without remounting the old config', async () => {
+		const first = config();
+		const second = config();
+		const mountCalls = new Map<Config, number>([
+			[first, 0],
+			[second, 0],
+		]);
+		for (const client of [first, second]) {
+			client._internal.store.persist.hasHydrated = () => false;
+			Object.defineProperty(client, 'storage', { value: {} });
+			const setState = client.setState.bind(client);
+			client.setState = ((state: State | ((state: State) => State)) => {
+				if (typeof state === 'function') mountCalls.set(client, mountCalls.get(client)! + 1);
+				return setState(state);
+			}) as typeof client.setState;
+		}
+		const props = {
+			config: first,
+			initialState: first.state,
+			reconnectOnMount: false,
+			log: () => {},
+		};
+
+		mounted = mount(HydrationApp, props);
+		expect([...mountCalls.values()]).toEqual([0, 0]);
+		flushEffects();
+		await act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+		expect([...mountCalls.values()]).toEqual([1, 0]);
+
+		mounted.update(HydrationApp, {
+			...props,
+			config: second,
+			initialState: second.state,
+		});
+		expect([...mountCalls.values()]).toEqual([1, 0]);
+		flushEffects();
+		await act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+		expect([...mountCalls.values()]).toEqual([1, 1]);
+
+		mounted.update(HydrationApp, {
+			...props,
+			config: second,
+			initialState: { ...second.state },
+		});
+		flushEffects();
+		await act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+		expect([...mountCalls.values()]).toEqual([1, 1]);
+	});
+
 	it('does not restart hydration for separately parsed equivalent initial state', () => {
 		const client = createConfig({
 			chains: [mainnet],
