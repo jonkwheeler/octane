@@ -113,9 +113,17 @@ export function LifecycleMachine() @{
 	<button id="lifecycle-next" onClick={() => service.send({ type: 'NEXT' })}>next</button>
 }
 
-export function PortalFixture(props: { target: HTMLElement; disabled?: boolean }) @{
+export function PortalFixture(props: {
+	target?: HTMLElement | null;
+	disabled?: boolean;
+	getRootNode?: () => Document | ShadowRoot | Node;
+}) @{
 	<div id="portal-owner">
-		<Portal container={{ current: props.target }} disabled={props.disabled}>
+		<Portal
+			container={props.target === undefined ? undefined : { current: props.target }}
+			disabled={props.disabled}
+			getRootNode={props.getRootNode}
+		>
 			<span id="portalled-first">first</span>
 			<span id="portalled-second">second</span>
 		</Portal>

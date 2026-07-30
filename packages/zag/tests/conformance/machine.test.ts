@@ -103,4 +103,17 @@ describe('Portal', () => {
 		result.unmount();
 		target.remove();
 	});
+
+	it('portals into a Document root instead of the ambient document', () => {
+		const alternateDocument = document.implementation.createHTMLDocument('portal target');
+		const result = mount(PortalFixture, {
+			target: null,
+			getRootNode: () => alternateDocument,
+		});
+
+		expect(alternateDocument.body.querySelector('#portalled-first')?.textContent).toBe('first');
+		expect(document.body.querySelector('#portalled-first')).toBeNull();
+
+		result.unmount();
+	});
 });

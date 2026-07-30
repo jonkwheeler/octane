@@ -15,7 +15,11 @@ export const Portal = (props: PortalProps) => {
 		return createElement(Fragment, null, children);
 	}
 
-	const doc = getRootNode?.().ownerDocument ?? document;
+	const rootNode = getRootNode?.();
+	const doc =
+		rootNode?.nodeType === Node.DOCUMENT_NODE
+			? (rootNode as Document)
+			: (rootNode?.ownerDocument ?? document);
 	const mountNode = container?.current ?? doc.body;
 	if (isChildrenBlock(children)) {
 		return createPortal(children, mountNode);
