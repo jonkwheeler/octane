@@ -312,6 +312,20 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.activeElement).toBe(action);
 	});
 
+	it('recaptures Tab when a pending action disables the focused control', () => {
+		setup();
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const close = document.querySelector('.rk-close') as HTMLButtonElement;
+		const action = document.querySelector('.rk-action') as HTMLButtonElement;
+		action.focus();
+		action.disabled = true;
+		document.dispatchEvent(
+			new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }),
+		);
+		expect(document.activeElement).toBe(close);
+	});
+
 	it('applies explicit theme tokens to the provider boundary', () => {
 		const config = createConfig({
 			chains: [mainnet],
@@ -746,13 +760,43 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		mounted!.click('#custom-connect');
 		flushEffects();
 		const replacementAction = document.querySelector('.rk-action') as HTMLButtonElement;
+		const replacementClose = document.querySelector('.rk-close') as HTMLButtonElement;
 		expect(replacementAction).not.toBe(firstAction);
 		expect(replacementAction.textContent).toBe('Mock Connector');
+		await Promise.resolve();
+		expect(document.activeElement).toBe(replacementClose);
 
 		reject(new Error('User rejected request'));
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
+	});
+
+	it('dismisses account and chain modals after an external disconnect', async () => {
+		const config = setup();
+		await act(async () => {
+			await connect(config, { connector: config.connectors[0]! });
+		});
+		flushEffects();
+
+		const accountButton = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.rk-connect-button'),
+		).find((button) => button.textContent?.includes('0x0000'))!;
+		accountButton.click();
+		flushEffects();
+		expect(document.querySelector('[role="dialog"] h2')?.textContent).toBe('Account');
+
+		await act(async () => {
+			config.setState((state) => ({
+				...state,
+				connections: new Map(),
+				current: null,
+				status: 'disconnected',
+			}));
+		});
+		flushSync(() => {});
+		flushEffects();
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
 	});
 
 	it('does not let a stale connect success close a newer modal generation', async () => {
