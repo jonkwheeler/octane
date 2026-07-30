@@ -26,12 +26,11 @@ export function useRequestQuery(
 			...options,
 			enabled: source === null ? false : options?.enabled,
 			queryKey: key,
-			queryFn: source === null
-				? skipToken
-				: ({ signal }: { signal: AbortSignal }) =>
-						typeof source === 'function'
-							? source(signal)
-							: source.send({ abortSignal: signal }),
+			queryFn:
+				source === null
+					? skipToken
+					: ({ signal }: { signal: AbortSignal }) =>
+							typeof source === 'function' ? source(signal) : source.send({ abortSignal: signal }),
 		},
 		undefined,
 		resolvedSlot,
