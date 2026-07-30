@@ -1,11 +1,27 @@
 import { animate, type JSAnimation, useAnimeScope } from '@octanejs/animejs';
 import { Canvas } from '@octanejs/three';
-import { useRef } from 'octane';
+import { useEffect, useRef, useState } from 'octane';
 import { AnimeJsScene } from './AnimeJsScene.three.tsrx';
+
+function usePrefersReducedMotion() {
+	const [reducedMotion, setReducedMotion] = useState<boolean | undefined>(undefined);
+
+	useEffect(() => {
+		const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const updatePreference = () => setReducedMotion(media.matches);
+		media.addEventListener('change', updatePreference);
+		updatePreference();
+		return () => media.removeEventListener('change', updatePreference);
+	}, []);
+
+	return reducedMotion;
+}
 
 export function AnimeJsDemo() @{
 	const domAnimation = useRef<JSAnimation | undefined>(undefined);
+	const reducedMotion = usePrefersReducedMotion();
 	const animation = useAnimeScope(() => {
+		if (reducedMotion !== false) return;
 		domAnimation.current = animate('.animejs-orb', {
 			x: [0, 220],
 			rotate: 360,
@@ -18,7 +34,7 @@ export function AnimeJsDemo() @{
 		return () => {
 			domAnimation.current = undefined;
 		};
-	}, []);
+	}, [reducedMotion]);
 
 	<div>
 		<h2 class="demo-title">{'Anime.js on Octane'}</h2>
@@ -61,7 +77,7 @@ export function AnimeJsDemo() @{
 						>
 							<ambientLight intensity={1.2} />
 							<directionalLight position={[2, 3, 4]} intensity={2.4} />
-							<AnimeJsScene />
+							<AnimeJsScene reducedMotion={reducedMotion} />
 						</Canvas>
 					} @pending {
 						<p>{'Starting WebGL…'}</p>

@@ -5,12 +5,12 @@ import '@octanejs/animejs/adapters/three';
 import { useThree } from '@octanejs/three';
 import { useEffect, useRef } from '@octanejs/three/renderer';
 
-export function AnimeJsScene() @{
+export function AnimeJsScene({ reducedMotion }: { reducedMotion: boolean | undefined }) @{
 	const mesh = useRef<THREE.Mesh | null>(null);
 	const invalidate = useThree((state) => state.invalidate);
 
 	useEffect(() => {
-		if (!mesh.current) return;
+		if (!mesh.current || reducedMotion !== false) return;
 		const scope = createScope();
 		scope.add(() => {
 			animate(mesh.current!, {
@@ -25,7 +25,7 @@ export function AnimeJsScene() @{
 			});
 		});
 		return () => scope.revert();
-	}, [invalidate]);
+	}, [invalidate, reducedMotion]);
 
 	<mesh ref={mesh}>
 		<icosahedronGeometry args={[1.15, 1]} />
