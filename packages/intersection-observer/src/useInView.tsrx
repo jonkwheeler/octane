@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'octane';
 import { observe } from './observe.js';
 import type { InViewHookResponse, IntersectionOptions } from './types.js';
 
-export function useInView(options: IntersectionOptions = {}): InViewHookResponse {
+export function useInView(options: IntersectionOptions | symbol = {}): InViewHookResponse {
+	options = typeof options === 'symbol' ? {} : options;
 	const {
 		threshold,
 		delay,

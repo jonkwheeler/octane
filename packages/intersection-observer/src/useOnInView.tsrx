@@ -4,8 +4,9 @@ import type { IntersectionChangeEffect, IntersectionEffectOptions } from './type
 
 export function useOnInView(
 	onChange: IntersectionChangeEffect,
-	options: IntersectionEffectOptions = {},
+	options: IntersectionEffectOptions | symbol = {},
 ) {
+	options = typeof options === 'symbol' ? {} : options;
 	const callback = useRef(onChange);
 	const unobserve = useRef<void | (() => void)>(undefined);
 	const effectCleanup = useRef<void | (() => void)>(undefined);

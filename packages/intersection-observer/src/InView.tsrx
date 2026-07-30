@@ -1,4 +1,4 @@
-import { createElement } from 'octane';
+import { createElement, isChildrenBlock } from 'octane';
 import { useInView } from './useInView.tsrx';
 import type { InViewProps, InViewRenderProps } from './types.js';
 
@@ -37,6 +37,6 @@ export function InView(props: InViewProps) {
 		inView: result.inView,
 		entry: result.entry,
 	};
-	if (typeof children === 'function') return children(renderProps);
+	if (typeof children === 'function' && !isChildrenBlock(children)) return children(renderProps);
 	return createElement(as, { ...rest, ref: result.ref }, children);
 }
