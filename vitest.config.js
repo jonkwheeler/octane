@@ -734,6 +734,23 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'waypoint',
+					include: ['packages/waypoint/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/waypoint$/,
+							replacement: resolve(import.meta.dirname, 'packages/waypoint/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'tanstack-hotkeys',
 					include: ['packages/tanstack-hotkeys/tests/**/*.test.ts'],
 					environment: 'jsdom',

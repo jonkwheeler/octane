@@ -17,6 +17,7 @@ import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
+import { WaypointDemo } from './demos/Waypoint.tsrx';
 import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
@@ -32,6 +33,7 @@ import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
+import waypointSource from './demos/Waypoint.tsrx?raw';
 import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
 
 export interface Demo {
@@ -124,6 +126,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'usehooks-ts',
 				Component: UseHooksTsDemo,
 				source: useHooksTsSource,
+			},
+			{
+				id: 'waypoint',
+				title: 'Waypoint',
+				Component: WaypointDemo,
+				source: waypointSource,
 			},
 			{
 				id: 'mantine-hooks',

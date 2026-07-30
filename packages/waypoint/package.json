@@ -1,0 +1,48 @@
+{
+  "name": "@octanejs/waypoint",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "react-waypoint for Octane.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/waypoint"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "status.json"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --config vitest.config.js --project waypoint",
+    "typecheck": "tsrx-tsc --noEmit"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "octane": "workspace:*",
+    "react-waypoint": "10.3.0",
+    "vitest": "catalog:default"
+  }
+}
