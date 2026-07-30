@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'octane';
+import { useLayoutEffect, useMemo, useRef } from 'octane';
 import { splitSlot, subSlot } from './internal';
 
 type Entry = { _tag: 'active'; rc: number; resource: unknown } | { _tag: 'destroyed' };
@@ -43,65 +43,57 @@ export function useRcResource<T>(
 	const [args, slot] = splitSlot(rest);
 	void args[0];
 
-	const keyRef = useRef<string | undefined>(undefined, subSlot(slot, 'rc:key'));
-	const scopeRef = useRef<object | undefined>(undefined, subSlot(slot, 'rc:scope'));
-	const didDisposeInMemo = useRef(false, subSlot(slot, 'rc:disposed'));
+	const heldRef = useRef<{ scope: object; key: string; resource: T } | undefined>(
+		undefined,
+		subSlot(slot, 'rc:held'),
+	);
 	const createRef = useRef(create, subSlot(slot, 'rc:create'));
 	const disposeRef = useRef(dispose, subSlot(slot, 'rc:dispose'));
 
 	createRef.current = create;
 	disposeRef.current = dispose;
 
+	const release = (held: { scope: object; key: string; resource: T }) => {
+		const bucket = getBucket(held.scope);
+		const cachedItem = bucket.get(held.key);
+		if (cachedItem?._tag !== 'active') return;
+		cachedItem.rc--;
+		if (cachedItem.rc === 0) {
+			disposeRef.current(cachedItem.resource as T);
+			bucket.delete(held.key);
+		}
+	};
+
 	const resource = useMemo(
 		() => {
+			const previous = heldRef.current;
+			if (previous !== undefined) release(previous);
+
 			const bucket = getBucket(scope);
-			if (didDisposeInMemo.current === true) {
-				const cachedItem = bucket.get(key);
-				if (cachedItem?._tag === 'active') return cachedItem.resource as T;
-			}
-
-			if (keyRef.current !== undefined && (keyRef.current !== key || scopeRef.current !== scope)) {
-				const previousBucket = getBucket(scopeRef.current!);
-				const previous = previousBucket.get(keyRef.current);
-				if (previous?._tag === 'active') {
-					previous.rc--;
-					if (previous.rc === 0) {
-						disposeRef.current(previous.resource as T);
-						previousBucket.set(keyRef.current, { _tag: 'destroyed' });
-						didDisposeInMemo.current = true;
-					}
-				}
-			}
-
 			const cachedItem = bucket.get(key);
+			let next: T;
 			if (cachedItem?._tag === 'active') {
 				cachedItem.rc++;
-				return cachedItem.resource as T;
+				next = cachedItem.resource as T;
+			} else {
+				next = createRef.current();
+				bucket.set(key, { _tag: 'active', rc: 1, resource: next });
 			}
 
-			const next = createRef.current();
-			bucket.set(key, { _tag: 'active', rc: 1, resource: next });
+			heldRef.current = { scope, key, resource: next };
 			return next;
 		},
 		[scope, key],
 		subSlot(slot, 'rc:memo'),
 	);
 
-	useEffect(
+	useLayoutEffect(
 		() => {
+			const held = heldRef.current;
 			return () => {
-				if (didDisposeInMemo.current === true) {
-					didDisposeInMemo.current = false;
-					return;
-				}
-
-				const bucket = getBucket(scope);
-				const cachedItem = bucket.get(key);
-				if (cachedItem?._tag !== 'active') return;
-				cachedItem.rc--;
-				if (cachedItem.rc === 0) {
-					disposeRef.current(cachedItem.resource as T);
-					bucket.delete(key);
+				if (held !== undefined && heldRef.current === held) {
+					release(held);
+					heldRef.current = undefined;
 				}
 			};
 		},
@@ -109,8 +101,6 @@ export function useRcResource<T>(
 		subSlot(slot, 'rc:effect'),
 	);
 
-	keyRef.current = key;
-	scopeRef.current = scope;
 	return resource;
 }
 
