@@ -20,6 +20,7 @@
     "@octanejs/phosphor-icons": "workspace:*",
     "@octanejs/radix": "workspace:*",
     "@octanejs/sonner": "workspace:*",
+    "@octanejs/usehooks-ts": "workspace:*",
     "class-variance-authority": "catalog:default",
     "clsx": "catalog:default",
     "octane": "workspace:*",

@@ -196,6 +196,10 @@ pre.boom {
 	color: var(--muted-foreground);
 }
 
+.panel + .panel {
+	margin-top: 12px;
+}
+
 /* @octanejs/cmdk ships unstyled — it exposes a DOM contract of `cmdk-*`
  * attributes to style against. Ported here from the playground's old inline
  * <style> block when that was retired, with the original hard-coded palette
