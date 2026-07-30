@@ -8,12 +8,22 @@
 .rk-action {
 	min-height: 44px;
 	border: 0;
-	border-radius: var(--rk-connect-radius);
-	background: var(--rk-accent);
-	color: var(--rk-accent-foreground);
 	padding: 0 16px;
 	font: inherit;
 	cursor: pointer;
+}
+
+.rk-connect-button,
+.rk-wallet-button {
+	border-radius: var(--rk-connect-radius);
+	background: var(--rk-connect-background);
+	color: var(--rk-connect-text);
+}
+
+.rk-action {
+	border-radius: var(--rk-action-radius);
+	background: var(--rk-accent);
+	color: var(--rk-accent-foreground);
 }
 
 .rk-overlay {

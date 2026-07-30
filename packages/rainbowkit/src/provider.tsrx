@@ -110,6 +110,7 @@ function Modal(props: {
 		const dialog = dialogRef.current;
 		if (!dialog) return;
 		const ownerDocument = dialog.ownerDocument;
+		const focusScope = props.opener?.closest<HTMLElement>('[data-rk]');
 		pushModal(props.token, ownerDocument);
 		lockBody(ownerDocument);
 		registerModal(props.token, dialog);
@@ -156,7 +157,10 @@ function Modal(props: {
 			unlockBody(ownerDocument);
 			queueMicrotask(() => {
 				if (!focusTopModal(ownerDocument)) {
-					props.opener?.isConnected && props.opener.focus();
+					const fallback = focusScope?.querySelector<HTMLElement>(
+						'.rk-connect-button:not([disabled]), .rk-wallet-button:not([disabled])',
+					);
+					((props.opener?.isConnected ? props.opener : fallback))?.focus();
 				}
 			});
 		};

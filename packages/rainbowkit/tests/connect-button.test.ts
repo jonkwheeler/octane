@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { connect, createConfig, http } from '@wagmi/core';
 import { mock } from '@wagmi/connectors/mock';
 import { mainnet, sepolia } from 'viem/chains';
@@ -14,6 +15,8 @@ import {
 	TwoProviders,
 	latestWalletConnect,
 } from './_fixtures/app.tsrx';
+
+const rainbowKitStyles = readFileSync('packages/rainbowkit/src/styles.css', 'utf8');
 
 const account = '0x0000000000000000000000000000000000000001' as const;
 let mounted: ReturnType<typeof mount> | undefined;
@@ -63,6 +66,24 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		flushEffects();
 		expect(mounted!.find('#custom-status').textContent).toBe('connected');
 		expect(document.querySelector('[role="dialog"]')).toBeNull();
+	});
+
+	it('focuses the replacement account control after connecting from the default button', async () => {
+		setup();
+		const opener = document.querySelector('.rk-connect-button') as HTMLButtonElement;
+		opener.focus();
+		opener.click();
+		flushEffects();
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		flushEffects();
+		await Promise.resolve();
+
+		expect(opener.isConnected).toBe(false);
+		expect(document.activeElement).toBe(document.querySelector('.rk-connect-button'));
 	});
 
 	it('dismisses with Escape, restores focus, and releases scroll containment', async () => {
@@ -410,6 +431,9 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		const root = document.querySelector('[data-rk]') as HTMLElement;
 		expect(root.style.getPropertyValue('--rk-accent')).toBe('#123456');
 		expect(root.style.getPropertyValue('--rk-modal-radius')).toBe('8px');
+		expect(rainbowKitStyles).toContain('background: var(--rk-connect-background)');
+		expect(rainbowKitStyles).toContain('color: var(--rk-connect-text)');
+		expect(rainbowKitStyles).toContain('border-radius: var(--rk-action-radius)');
 	});
 
 	it('deduplicates by connector uid and explains configured unavailable wallets', () => {
