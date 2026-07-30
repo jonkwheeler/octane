@@ -1,6 +1,20 @@
 import { useQuery } from '@octanejs/tanstack-query';
 import type { UseQueryOptions, UseQueryResult } from '@octanejs/tanstack-query';
 import { skipToken, type QueryKey } from '@tanstack/query-core';
+import { useCallback, useRef } from 'octane';
+
+const subCache = new Map<symbol, Map<string, symbol>>();
+function sub(slot: symbol | undefined, tag: string): symbol | undefined {
+	if (slot === undefined) return undefined;
+	let byTag = subCache.get(slot);
+	if (byTag === undefined) subCache.set(slot, (byTag = new Map()));
+	let symbol = byTag.get(tag);
+	if (symbol === undefined) {
+		symbol = Symbol.for(`${slot.description ?? ''}:request-query:${tag}`);
+		byTag.set(tag, symbol);
+	}
+	return symbol;
+}
 
 export type RequestSource<T> =
 	| ((signal: AbortSignal) => Promise<T>)
@@ -35,10 +49,17 @@ export function useRequestQuery(
 		undefined,
 		resolvedSlot,
 	);
+	const resultRef = useRef(result, sub(resolvedSlot, 'result'));
+	resultRef.current = result;
+	const idleRefetch = useCallback(
+		async () => resultRef.current,
+		[],
+		sub(resolvedSlot, 'idle-refetch'),
+	);
 	return source === null
 		? {
 				...result,
-				refetch: async () => result,
+				refetch: idleRefetch,
 			}
 		: result;
 }

@@ -85,6 +85,18 @@ describe('useRequestQuery', () => {
 		result.unmount();
 	});
 
+	it('keeps the null-source refetch identity stable across renders', () => {
+		const refetches: Array<() => Promise<unknown>> = [];
+		const onRefetch = (refetch: () => Promise<unknown>) => refetches.push(refetch);
+		const result = mount(RequestApp, { client, source: null, onRefetch });
+
+		result.update(RequestApp, { client, source: null, onRefetch });
+
+		expect(refetches).toHaveLength(2);
+		expect(refetches[1]).toBe(refetches[0]);
+		result.unmount();
+	});
+
 	it('preserves functional enabled semantics and supplies the TanStack Query', async () => {
 		const disabledSource = vi.fn(async () => 'disabled');
 		const disabledPredicate = vi.fn(() => false);
