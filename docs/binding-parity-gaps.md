@@ -35,6 +35,7 @@ surface and evidence.
 | `@octanejs/nuqs` | 0 |
 | `@octanejs/phosphor-icons` | 0 |
 | `@octanejs/radix` | 0 |
+| `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
