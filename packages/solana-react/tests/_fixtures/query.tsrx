@@ -18,7 +18,10 @@ export function RequestReader(props: {
 				}
 			: props.enabled;
 	const query = useRequestQuery(['request'], props.source, { enabled, retry: false });
-	<span id="status">{(query.isPending ? 'pending' : `data:${query.data}`) as string}</span>
+	<>
+		<span id="status">{(query.isPending ? 'pending' : `data:${query.data}`) as string}</span>
+		<button type="button" id="refetch" onClick={() => void query.refetch()}>Refetch</button>
+	</>
 }
 
 export function RequestApp(props: {

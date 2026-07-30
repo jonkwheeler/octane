@@ -75,6 +75,16 @@ describe('useRequestQuery', () => {
 		result.unmount();
 	});
 
+	it('keeps an imperative refetch idle when the source is null', async () => {
+		const result = mount(RequestApp, { client, source: null });
+
+		result.click('#refetch');
+		await flush();
+
+		expect(result.find('#status').textContent).toBe('pending');
+		result.unmount();
+	});
+
 	it('preserves functional enabled semantics and supplies the TanStack Query', async () => {
 		const disabledSource = vi.fn(async () => 'disabled');
 		const disabledPredicate = vi.fn(() => false);
