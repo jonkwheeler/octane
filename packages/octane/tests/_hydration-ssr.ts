@@ -5,12 +5,7 @@ import { octane } from '../src/compiler/vite.js';
 import type { RenderResult } from '../src/runtime.server';
 
 type HydrationBinding =
-	| 'apollo-client'
-	| 'aria'
-	| 'base-ui'
-	| 'docusaurus'
-	| 'rainbowkit'
-	| 'solana-react';
+	'apollo-client' | 'aria' | 'base-ui' | 'docusaurus' | 'rainbowkit' | 'solana-react';
 
 const repositoryRoot = resolve(import.meta.dirname, '../../..');
 
