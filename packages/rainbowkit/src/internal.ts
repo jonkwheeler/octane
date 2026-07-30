@@ -84,7 +84,7 @@ export function focusTopModal(document: Document): boolean {
 	const state = stateFor(document);
 	const token = state.stack.at(-1);
 	const element = token ? state.elements.get(token) : undefined;
-	element?.focus();
+	if (element && !element.contains(document.activeElement)) element.focus();
 	return Boolean(element);
 }
 

@@ -178,7 +178,10 @@ function Modal(props: {
 			}
 			const first = items[0]!;
 			const last = items.at(-1)!;
-			if (!dialog.contains(ownerDocument.activeElement)) {
+			if (
+				!dialog.contains(ownerDocument.activeElement) ||
+					!items.includes(ownerDocument.activeElement as HTMLElement)
+			) {
 				event.preventDefault();
 				((event.shiftKey ? last : first)).focus();
 			} else if (event.shiftKey && ownerDocument.activeElement === first) {
@@ -379,6 +382,11 @@ export function RainbowKitProvider(props: RainbowKitProviderProps) @{
 			return null;
 		});
 	}, []);
+	useEffect(() => {
+		if (activeModal && activeModal.kind !== 'connect' && connection.status !== 'connected') {
+			closeModal(activeModal.token);
+		}
+	}, [activeModal, closeModal, connection.status]);
 	const openModal = useCallback((kind: ModalKind, nextOpener?: HTMLElement | null) => {
 		setActiveModal((current) => {
 			if (current) removeModal(current.token);
