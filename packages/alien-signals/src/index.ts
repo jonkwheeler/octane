@@ -149,7 +149,7 @@ export function useSignalScope<T>(callback: () => T, ...rest: [slot?: symbol]): 
 			};
 			return scope;
 		},
-		[callback],
+		[],
 		subSlot(slot, 'scope:controller'),
 	);
 

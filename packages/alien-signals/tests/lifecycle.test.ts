@@ -47,6 +47,14 @@ describe('@octanejs/alien-signals lifecycle hooks', () => {
 		await nextPaint();
 
 		stop();
+		result.update(LifecycleEffects, {
+			source,
+			log: (entry) => entries.push(entry),
+			onStop: (nextStop) => {
+				stop = nextStop;
+			},
+		});
+		await nextPaint();
 		source(1);
 		expect(entries.filter((entry) => entry.startsWith('scope-') && entry.endsWith(':1'))).toEqual(
 			[],
