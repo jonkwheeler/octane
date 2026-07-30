@@ -5,6 +5,7 @@ import { mainnet } from 'viem/chains';
 import { act } from 'octane';
 import { flushEffects, mount } from '../../octane/tests/_helpers';
 import { HydrationApp } from './_fixtures/hydration.tsrx';
+import { parseHydratedState, serializeHydratedState } from '@octanejs/wagmi';
 
 const account = '0x0000000000000000000000000000000000000001' as const;
 let mounted: ReturnType<typeof mount> | undefined;
@@ -64,6 +65,43 @@ describe('WagmiProvider SSR initial state', () => {
 		mounted = mount(HydrationApp, props);
 		flushEffects();
 		mounted.update(HydrationApp, props);
+		flushEffects();
+
+		expect(hydrationCalls).toBe(1);
+		expect(mountCalls).toBe(1);
+	});
+
+	it('does not restart hydration for separately parsed equivalent initial state', () => {
+		const client = createConfig({
+			chains: [mainnet],
+			connectors: [mock({ accounts: [account] })],
+			transports: { [mainnet.id]: http() },
+		});
+		const serialized = serializeHydratedState(client.state)!;
+		const firstInitialState = parseHydratedState(serialized)!;
+		const secondInitialState = parseHydratedState(serialized)!;
+		expect(secondInitialState).not.toBe(firstInitialState);
+
+		client._internal.store.persist.hasHydrated = () => false;
+		Object.defineProperty(client, 'storage', { value: {} });
+		let hydrationCalls = 0;
+		let mountCalls = 0;
+		const setState = client.setState.bind(client);
+		client.setState = ((state: State | ((state: State) => State)) => {
+			if (typeof state === 'function') mountCalls++;
+			else hydrationCalls++;
+			return setState(state);
+		}) as typeof client.setState;
+
+		const props = {
+			config: client,
+			initialState: firstInitialState,
+			reconnectOnMount: false,
+			log: () => {},
+		};
+		mounted = mount(HydrationApp, props);
+		flushEffects();
+		mounted.update(HydrationApp, { ...props, initialState: secondInitialState });
 		flushEffects();
 
 		expect(hydrationCalls).toBe(1);
