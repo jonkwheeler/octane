@@ -4,6 +4,8 @@ import { SpringValue } from './engine';
 
 export * from './engine';
 export * from './hooks';
+export * from './context';
+export { Spring, SpringContext, Trail, Transition } from './components.tsrx';
 
 const HOST_STATE = Symbol.for('octane-react-spring:animated-host-state');
 const HOST_EFFECT = Symbol.for('octane-react-spring:animated-host-effect');
