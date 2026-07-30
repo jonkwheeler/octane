@@ -58,6 +58,7 @@ surface and evidence.
 | `@octanejs/testing-library` | 0 |
 | `@octanejs/three` | 0 |
 | `@octanejs/tiptap` | 0 |
+| `@octanejs/usehooks-ts` | 0 |
 | `@octanejs/valtio` | 0 |
 | `@octanejs/visx` | 0 |
 | `@octanejs/wagmi` | 0 |
