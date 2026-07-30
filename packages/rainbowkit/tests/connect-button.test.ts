@@ -727,6 +727,34 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		}
 	});
 
+	it('starts replacement modal generations with fresh row-local action state', async () => {
+		const config = setup();
+		let reject!: (error: Error) => void;
+		const gate = new Promise<never>((_, rejectPromise) => {
+			reject = rejectPromise;
+		});
+		config.connectors[0]!.connect = async () => gate;
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const firstAction = document.querySelector('.rk-action') as HTMLButtonElement;
+		firstAction.click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+		expect(firstAction.textContent).toContain('Waiting for');
+
+		mounted!.click('#custom-connect');
+		flushEffects();
+		const replacementAction = document.querySelector('.rk-action') as HTMLButtonElement;
+		expect(replacementAction).not.toBe(firstAction);
+		expect(replacementAction.textContent).toBe('Mock Connector');
+
+		reject(new Error('User rejected request'));
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+	});
+
 	it('does not let a stale connect success close a newer modal generation', async () => {
 		const config = setup();
 		let release!: () => void;

@@ -30,9 +30,11 @@ export function WagmiProvider(props: WagmiProviderProps) @{
 			onMount,
 		};
 		lifecycleRef.current = lifecycle;
+		if (!props.config._internal.ssr) onMount();
 	}
 
 	useEffect(() => {
+		if (!lifecycle.config._internal.ssr) return;
 		lifecycle.onMount();
 	}, [lifecycle]);
 

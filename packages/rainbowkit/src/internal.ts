@@ -2,7 +2,7 @@ import { createContext } from 'octane';
 import type { Connector } from '@wagmi/core';
 
 export type ModalKind = 'account' | 'chain' | 'connect';
-export type ModalToken = symbol;
+export type ModalToken = string;
 
 export type WalletDescriptor = {
 	id: string;
