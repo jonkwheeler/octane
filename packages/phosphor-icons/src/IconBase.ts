@@ -23,7 +23,7 @@ export function IconBase(props: IconBaseProps) {
 		height: size ?? contextSize,
 		fill: color ?? contextColor,
 		viewBox: '0 0 256 256',
-		transform: mirrored || contextMirrored ? 'scale(-1, 1)' : undefined,
+		transform: (mirrored ?? contextMirrored) ? 'scale(-1, 1)' : undefined,
 		...contextRest,
 		...rest,
 		ref,

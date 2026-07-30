@@ -53,7 +53,7 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 		expect(refs.at(-1)).toBe(null);
 	});
 
-	it('inherits context defaults and lets local props override them', () => {
+	it('inherits mirrored context and lets explicit false override it', () => {
 		const contextRefs: (SVGSVGElement | null)[] = [];
 		const localRefs: (SVGSVGElement | null)[] = [];
 		const unsafeContextValue = {
@@ -95,7 +95,7 @@ describe('@octanejs/phosphor-icons — runtime behavior', () => {
 		const local = mounted.find('#local');
 		expect(local.getAttribute('fill')).toBe('navy');
 		expect(local.getAttribute('width')).toBe('18');
-		expect(local.getAttribute('transform')).toBe('scale(-1, 1)');
+		expect(local.getAttribute('transform')).toBe(null);
 		expect(local.getAttribute('class')).toBe('local');
 		expect(local.querySelector('path')?.getAttribute('d')).toBe(cameraWeights.thin[0][1].d);
 		expect(contextRefs).toEqual([]);
