@@ -753,6 +753,8 @@
     "@mdx-js/react": "@octanejs/mdx",
     "@phosphor-icons/react": "@octanejs/phosphor-icons",
     "@rainbow-me/rainbowkit": "@octanejs/rainbowkit",
+    "@react-rxjs/core": "@octanejs/rxjs",
+    "@react-rxjs/utils": "@octanejs/rxjs",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
     "@stylexjs/stylex": "@octanejs/stylex",
