@@ -13,6 +13,7 @@ import { KeyedList } from './demos/KeyedList.tsrx';
 import { RainbowKitDemo } from './demos/RainbowKit.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
+import { WagmiDemo } from './demos/Wagmi.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
 import conditionalSource from './demos/Conditional.tsrx?raw';
@@ -23,6 +24,7 @@ import keyedListSource from './demos/KeyedList.tsrx?raw';
 import rainbowKitSource from './demos/RainbowKit.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
+import wagmiSource from './demos/Wagmi.tsrx?raw';
 
 export interface Demo {
 	/** Stable id — also the URL route, so renaming one breaks shared links. */
@@ -96,6 +98,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'shadcn/ui',
 				Component: ShadcnDemo,
 				source: shadcnSource,
+			},
+			{
+				id: 'wagmi',
+				title: 'Wagmi',
+				Component: WagmiDemo,
+				source: wagmiSource,
 			},
 			{
 				id: 'rainbowkit',
