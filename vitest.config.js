@@ -642,6 +642,27 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'inertia',
+					include: ['packages/inertia/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/inertia\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'i18next',
 					include: ['packages/i18next/tests/**/*.test.ts'],
 					exclude: [...configDefaults.exclude, 'packages/i18next/tests/ssr/**/*.test.ts'],
