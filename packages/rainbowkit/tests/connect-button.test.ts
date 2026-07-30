@@ -659,6 +659,45 @@ describe('RainbowKit Wagmi v3 compatibility gate', () => {
 		expect(document.activeElement).toBe(opener);
 	});
 
+	it('focuses replacement account controls when a dismissed default connection succeeds', async () => {
+		const config = setup();
+		let release!: () => void;
+		const gate = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		const connector = config.connectors[0]!;
+		const original = connector.connect.bind(connector);
+		connector.connect = async (parameters) => {
+			await gate;
+			return original(parameters);
+		};
+		const opener = document.querySelector('.rk-connect-button') as HTMLButtonElement;
+		opener.focus();
+		opener.click();
+		flushEffects();
+		(document.querySelector('.rk-action') as HTMLButtonElement).click();
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		act(() => {
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+		});
+		flushEffects();
+		expect(document.activeElement).toBe(document.body);
+
+		release();
+		await act(async () => {
+			await gate;
+			await new Promise((resolve) => setTimeout(resolve, 0));
+		});
+		flushEffects();
+		await Promise.resolve();
+
+		expect(opener.isConnected).toBe(false);
+		expect(document.activeElement).toBe(document.querySelector('.rk-connect-button'));
+	});
+
 	it('shares slow WalletButton connection state with Custom and default controls', async () => {
 		const config = setup();
 		let release!: () => void;
