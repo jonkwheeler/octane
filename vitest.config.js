@@ -1,5 +1,5 @@
 import { realpathSync } from 'node:fs';
-import { isAbsolute, relative, resolve } from 'node:path';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configDefaults, defineConfig } from 'vitest/config';
 import { octane } from './packages/octane/src/compiler/vite.js';
@@ -8,6 +8,59 @@ import { stylex } from './packages/stylex/src/vite.js';
 import { lynxRspeedyRenderers } from './packages/lynx/src/config.runtime.js';
 import { threeRenderers as THREE_RENDERERS } from './packages/three/src/config.ts';
 import { websiteMdxOptions } from './website/mdx-options.ts';
+
+const FORMISCH_UPSTREAM_CORE = resolve(
+	import.meta.dirname,
+	'packages/formisch/upstream/packages/core/src',
+);
+const FORMISCH_UPSTREAM_METHODS = resolve(
+	import.meta.dirname,
+	'packages/formisch/upstream/packages/methods/src',
+);
+
+function formischAdaptedCoreMethods() {
+	const mappings = [
+		[FORMISCH_UPSTREAM_CORE, resolve(import.meta.dirname, 'packages/formisch/src/core')],
+		[FORMISCH_UPSTREAM_METHODS, resolve(import.meta.dirname, 'packages/formisch/src/methods')],
+	];
+	return {
+		name: 'formisch-adapted-core-methods',
+		enforce: 'pre',
+		resolveId(source, importer) {
+			const cleanImporter = importer?.split('?')[0];
+			if (
+				!cleanImporter ||
+				!source.startsWith('.') ||
+				(!/\.test\.[cm]?[jt]sx?$/.test(cleanImporter) && !cleanImporter.includes('/vitest/'))
+			) {
+				return null;
+			}
+			const absoluteImport = resolve(dirname(cleanImporter), source);
+			for (const [upstreamRoot, adaptedRoot] of mappings) {
+				if (absoluteImport.startsWith(`${upstreamRoot}/`)) {
+					if (absoluteImport.includes('/vitest/')) return null;
+					return resolve(adaptedRoot, relative(upstreamRoot, absoluteImport));
+				}
+			}
+			return null;
+		},
+	};
+}
+
+function formischReactCore() {
+	return {
+		name: 'formisch-react-core',
+		enforce: 'pre',
+		resolveId(source, importer) {
+			if (!importer || source !== './framework/index.ts') return null;
+			const cleanImporter = importer.split('?')[0];
+			if (!cleanImporter.endsWith('/packages/formisch/upstream/packages/core/src/index.ts')) {
+				return null;
+			}
+			return resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.react.ts');
+		},
+	};
+}
 
 // Parser-AST immutability enforcement (see adoptParserAst in compile.js):
 // every vitest invocation — including ad-hoc single-file and IDE runs — deep-
@@ -940,6 +993,151 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/testing-library\/(.*)$/,
 							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'formisch-pristine-core',
+					include: ['packages/formisch/upstream/packages/core/src/**/*.test.ts'],
+					environment: 'jsdom',
+					setupFiles: ['packages/formisch/upstream/packages/core/src/vitest/setup.ts'],
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'formisch-pristine-methods',
+					include: ['packages/formisch/upstream/packages/methods/src/**/*.test.ts'],
+					environment: 'jsdom',
+					setupFiles: ['packages/formisch/audit/pristine-react-core-setup.ts'],
+					globals: false,
+				},
+				plugins: [formischReactCore()],
+				resolve: {
+					alias: [
+						{
+							find: /^@formisch\/core(?:\/react)?$/,
+							replacement: resolve(FORMISCH_UPSTREAM_CORE, 'index.ts'),
+						},
+						{
+							find: './framework/index.ts',
+							replacement: resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.react.ts'),
+						},
+						{
+							find: resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.ts'),
+							replacement: resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.react.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'formisch-pristine-react',
+					include: ['packages/formisch/upstream/frameworks/react/src/**/*.test.tsx'],
+					environment: 'jsdom',
+					setupFiles: [
+						'packages/formisch/audit/pristine-react-core-setup.ts',
+						'packages/formisch/upstream/frameworks/react/src/vitest/setup.ts',
+					],
+					globals: false,
+				},
+				plugins: [formischReactCore()],
+				resolve: {
+					alias: [
+						{
+							find: /^@formisch\/core(?:\/react)?$/,
+							replacement: resolve(FORMISCH_UPSTREAM_CORE, 'index.ts'),
+						},
+						{
+							find: /^@formisch\/methods(?:\/react)?$/,
+							replacement: resolve(FORMISCH_UPSTREAM_METHODS, 'index.ts'),
+						},
+						{
+							find: './framework/index.ts',
+							replacement: resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.react.ts'),
+						},
+						{
+							find: resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.ts'),
+							replacement: resolve(FORMISCH_UPSTREAM_CORE, 'framework/index.react.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'formisch-adapted-core-methods',
+					include: [
+						'packages/formisch/audit/resolver-canary/**/*.test.ts',
+						'packages/formisch/upstream/packages/core/src/**/*.test.ts',
+						'packages/formisch/upstream/packages/methods/src/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [formischAdaptedCoreMethods()],
+				resolve: {
+					alias: [
+						{
+							find: /^@formisch\/core(?:\/react)?$/,
+							replacement: resolve(import.meta.dirname, 'packages/formisch/src/core/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'formisch',
+					include: [
+						'packages/formisch/tests/conformance/**/*.test.ts',
+						'packages/formisch/tests/differential/**/*.test.ts',
+						'packages/formisch/tests/hydration/**/*.test.ts',
+						'packages/formisch/tests/upstream/**/*.test.tsrx',
+					],
+					environment: 'jsdom',
+					setupFiles: ['packages/formisch/tests/conformance/test-setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/formisch$/,
+							replacement: resolve(import.meta.dirname, 'packages/formisch/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/formisch\/core$/,
+							replacement: resolve(import.meta.dirname, 'packages/formisch/src/core/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'formisch-ssr',
+					include: ['packages/formisch/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/formisch$/,
+							replacement: resolve(import.meta.dirname, 'packages/formisch/src/index.ts'),
 						},
 					],
 				},

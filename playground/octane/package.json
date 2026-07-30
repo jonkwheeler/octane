@@ -17,6 +17,7 @@
   "dependencies": {
     "@octanejs/aria": "workspace:*",
     "@octanejs/cmdk": "workspace:*",
+    "@octanejs/formisch": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/mantine-hooks": "workspace:*",
     "@octanejs/mobx": "workspace:*",
@@ -35,7 +36,8 @@
     "clsx": "catalog:default",
     "octane": "workspace:*",
     "rxjs": "catalog:default",
-    "tailwind-merge": "catalog:default"
+    "tailwind-merge": "catalog:default",
+    "valibot": "catalog:default"
   },
   "devDependencies": {
     "@tailwindcss/vite": "catalog:default",

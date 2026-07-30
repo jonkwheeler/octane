@@ -10,6 +10,12 @@ packages/shadcn/registry/
 # Vendored pinned upstream sources a port is written against (byte-exact
 # provenance; do not reformat)
 packages/*/upstream/
+
+# Formisch parity evidence preserves byte-exact pristine test overlays and
+# import-only adapted type-test transformations; the parity inventory owns
+# their formatting and rejects any other structural change.
+packages/formisch/audit/pristine-react/
+packages/formisch/typetests/upstream/
 packages/shadcn/tests/differential/upstream/
 # Vendored pinned upstream shadcn style sheet (byte-exact below its header)
 playground/octane/src/styles/style-nova.css

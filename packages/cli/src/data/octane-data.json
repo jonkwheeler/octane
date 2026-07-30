@@ -124,6 +124,24 @@
       "verified": "2026-07-05"
     },
     {
+      "name": "@octanejs/formisch",
+      "version": "0.0.1",
+      "category": "Forms and content",
+      "upstream": {
+        "package": "@formisch/react",
+        "version": "1.0.0-rc.0",
+        "commit": "4c494fd8cf105efd04a4b179e9c090595a0bf041"
+      },
+      "surface": "Ports the Formisch React adapter surface while vendoring its React-selected core and modular methods into one React-free Octane package.",
+      "divergences": [
+        "Octane native text controls use `onInput`; selects, checkboxes, and radios use native `onChange`.",
+        "React synthetic event and renderable types are replaced with native DOM events and OctaneNode.",
+        "React StrictMode-specific delayed signal cleanup is omitted in favor of Octane lifecycle cleanup."
+      ],
+      "ssr": "Supported and tested: sequential requests stay isolated, hydration adopts existing form controls, and native input updates activate after hydration.",
+      "verified": "2026-07-30"
+    },
+    {
       "name": "@octanejs/hook-form",
       "version": "0.1.20",
       "category": "Forms and content",
@@ -762,6 +780,7 @@
     "@base-ui-components/react": "@octanejs/base-ui",
     "@dnd-kit/react": "@octanejs/dnd-kit",
     "@floating-ui/react": "@octanejs/floating-ui",
+    "@formisch/react": "@octanejs/formisch",
     "@lexical/react": "@octanejs/lexical",
     "@mantine/hooks": "@octanejs/mantine-hooks",
     "@mdx-js/react": "@octanejs/mdx",

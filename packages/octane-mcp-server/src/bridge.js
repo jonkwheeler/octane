@@ -17,6 +17,7 @@ export const KNOWN_BINDINGS = {
 	'@tanstack/ai-react': '@octanejs/tanstack-ai',
 	'@tanstack/react-devtools': '@octanejs/tanstack-devtools',
 	'@tanstack/react-form': '@octanejs/tanstack-form',
+	'@formisch/react': '@octanejs/formisch',
 	'@tanstack/react-query': '@octanejs/tanstack-query',
 	wagmi: '@octanejs/wagmi',
 	'@rainbow-me/rainbowkit': '@octanejs/rainbowkit',

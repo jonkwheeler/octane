@@ -138,6 +138,7 @@ catalogs:
     '@floating-ui/dom': ^1.8.0
     '@floating-ui/react': 0.27.19
     '@floating-ui/utils': ^0.2.12
+    '@formisch/react': 1.0.0-rc.0
     '@tanstack/form-core': 1.33.2
     '@tanstack/react-form': 1.33.2
     'aria-hidden': ^1.2.6
@@ -375,6 +376,7 @@ catalogs:
     three: 0.172.0
     type-fest: ^5.8.0
     typescript: ^5.9.3
+    valibot: ^1.4.1
     valtio: ^2.3.2
     vite: ^8.1.5
     astro: ^5.16.0
@@ -418,7 +420,7 @@ minimumReleaseAgeExclude:
   - 'shadcn@4.14.1'
   - 'tailwindcss@4.3.3'
   - '@tailwindcss/vite@4.3.3'
-  - octane@0.1.18 || 0.1.19 || 0.1.21 || 0.1.22
+  - octane@0.1.18 || 0.1.19 || 0.1.21 || 0.1.22 || 0.1.23
 
 # Changesets 2.31.1 assumes npm's error shape and crashes on pnpm 11 duplicate
 # publish errors. Remove this backport once the fix ships on Changesets' stable line.
