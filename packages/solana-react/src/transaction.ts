@@ -44,13 +44,13 @@ export function createTransactionExecutor<TPayload, TSigned, TSignature>(options
 		Object.is(a.payload, b.payload);
 
 	return async function execute(): Promise<TransactionResult<TSignature>> {
-		const operation = ++active;
 		const context = options.getContext();
 		if (!options.sign || !options.send || !options.confirm)
 			throw new TransactionFailure(
 				'missing-capability',
 				'Wallet lacks sign/send/confirm capability',
 			);
+		const operation = ++active;
 		await Promise.resolve();
 		if (operation !== active || !same(context, options.getContext()))
 			throw new TransactionFailure(
