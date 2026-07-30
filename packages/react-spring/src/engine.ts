@@ -232,6 +232,8 @@ export interface ControllerUpdate<State extends Record<string, any>> {
 	config?: SpringConfig | ((key: keyof State) => SpringConfig);
 	immediate?: boolean | ((key: keyof State) => boolean);
 	delay?: number;
+	cancel?: boolean;
+	pause?: boolean;
 }
 
 export class Controller<State extends Record<string, any> = Record<string, any>> {
@@ -255,6 +257,14 @@ export class Controller<State extends Record<string, any> = Record<string, any>>
 	}
 
 	async start(update: ControllerUpdate<State>): Promise<AnimationResult<State>> {
+		if (update.cancel === true) {
+			this.stop(true);
+			return { value: this.get(), finished: false, cancelled: true };
+		}
+		if (update.pause === true) {
+			this.stop(false);
+			return { value: this.get(), finished: false, cancelled: false };
+		}
 		const startId = ++this.startId;
 		if (update.delay !== undefined && update.delay > 0) {
 			await new Promise<void>((resolve) => setTimeout(resolve, update.delay));

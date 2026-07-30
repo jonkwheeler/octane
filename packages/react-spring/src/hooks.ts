@@ -7,6 +7,7 @@ import {
 	SpringValue,
 	type SpringUpdate,
 } from './engine';
+import { type SpringContextValue, useSpringContext } from './context';
 
 export type TransitionPhase = 'mount' | 'enter' | 'update' | 'leave';
 
@@ -56,12 +57,20 @@ function updateFrom<State extends Record<string, any>>(
 	return typeof props === 'function' ? props() : props;
 }
 
+function withContext<State extends Record<string, any>>(
+	update: ControllerUpdate<State>,
+	context: SpringContextValue,
+): ControllerUpdate<State> {
+	return { ...update, ...context } as ControllerUpdate<State>;
+}
+
 export function useSpring<State extends Record<string, any>>(
 	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
 	...args: any[]
 ): [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>] {
 	const slot = trailingSlot(args);
-	const update = updateFrom(props);
+	const context = useSpringContext();
+	const update = withContext(updateFrom(props), context);
 	const [controller] = useState(() => new Controller<State>(update), sub(slot, 'controller'));
 	const deps = args.find(Array.isArray) as any[] | undefined;
 	useLayoutEffect(
@@ -104,6 +113,7 @@ export function useSprings<State extends Record<string, any>>(
 	...args: any[]
 ): [{ [Key in keyof State]: SpringValue<State[Key]> }[], SpringRef<State>] {
 	const slot = trailingSlot(args);
+	const context = useSpringContext();
 	const [state] = useState(
 		() => ({ controllers: [] as Controller<State>[], ref: new SpringRef<State>() }),
 		sub(slot, 'state'),
@@ -119,7 +129,10 @@ export function useSprings<State extends Record<string, any>>(
 		state.ref.delete(controller);
 	}
 	const updates = state.controllers.map((controller, index) =>
-		typeof props === 'function' ? props(index, controller) : (props[index] ?? {}),
+		withContext(
+			typeof props === 'function' ? props(index, controller) : (props[index] ?? {}),
+			context,
+		),
 	);
 	useLayoutEffect(
 		() => {
@@ -176,6 +189,7 @@ export function useTransition<Item, State extends Record<string, any>>(
 	) => unknown,
 ) => unknown[] {
 	const slot = trailingSlot(args);
+	const context = useSpringContext();
 	const list = (Array.isArray(items) ? items : [items]).filter(
 		(item): item is Item => item !== undefined && item !== null,
 	);
@@ -232,6 +246,7 @@ export function useTransition<Item, State extends Record<string, any>>(
 						to: target,
 						config: props.config,
 						immediate: props.immediate,
+						...context,
 					})
 					.then(() => {
 						if (!active || phase !== 'leave' || record.phase !== 'leave') return;
@@ -251,7 +266,7 @@ export function useTransition<Item, State extends Record<string, any>>(
 				active = false;
 			};
 		},
-		[signature, props],
+		[signature, props, context],
 		sub(slot, 'transition-effect'),
 	);
 	useLayoutEffect(

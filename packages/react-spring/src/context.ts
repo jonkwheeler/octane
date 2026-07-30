@@ -1,12 +1,10 @@
 import { createContext, useContext } from 'octane';
-import type { SpringConfig } from './engine';
+import type { ControllerUpdate } from './engine';
 
-export interface SpringContextValue {
-	cancel?: boolean;
-	immediate?: boolean;
-	pause?: boolean;
-	config?: SpringConfig;
-}
+export type SpringContextValue = Pick<
+	ControllerUpdate<Record<string, any>>,
+	'cancel' | 'config' | 'immediate' | 'pause'
+>;
 
 export const SpringContext = createContext<SpringContextValue>({});
 

@@ -1,4 +1,4 @@
-import { animated, useSpring, useTrail } from '@octanejs/react-spring';
+import { animated, SpringContext, useSpring, useTrail } from '@octanejs/react-spring';
 
 export function SpringHookFixture(props) @{
 	props.onRender();
@@ -26,4 +26,19 @@ export function TrailHookFixture(props) @{
 	});
 	props.onReady(styles);
 	<div>{'trail'}</div>
+}
+
+function ContextSpringChild(props) @{
+	const [styles] = useSpring({
+		from: { x: 0 },
+		to: { x: 1 },
+	});
+	props.onReady(styles);
+	<div>{'context spring'}</div>
+}
+
+export function ContextSpringFixture(props) @{
+	<SpringContext immediate={true} pause={props.pause}>
+		<ContextSpringChild onReady={props.onReady} />
+	</SpringContext>
 }

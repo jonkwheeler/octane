@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { raf } from '@react-spring/rafz';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
-import { SpringHookFixture, TrailHookFixture } from '../_fixtures/hooks.tsrx';
+import { ContextSpringFixture, SpringHookFixture, TrailHookFixture } from '../_fixtures/hooks.tsrx';
 
 afterEach(() => {
 	vi.useRealTimers();
@@ -55,6 +55,19 @@ describe('React Spring hooks', () => {
 
 		await vi.advanceTimersByTimeAsync(16);
 		expect(styles![1].x.get()).toBe(1);
+		result.unmount();
+	});
+
+	it('applies SpringContext values and resumes after context pause', () => {
+		let styles: any;
+		const onReady = (value: any) => (styles = value);
+		const result = mount(ContextSpringFixture, { pause: true, onReady });
+		flushEffects();
+		expect(styles.x.get()).toBe(0);
+
+		result.update(ContextSpringFixture, { pause: false, onReady });
+		flushEffects();
+		expect(styles.x.get()).toBe(1);
 		result.unmount();
 	});
 });
