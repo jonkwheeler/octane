@@ -680,6 +680,7 @@ describe('manifest-declared manual hook slots', () => {
 			'tiptap',
 			'usehooks-ts',
 			'valtio',
+			'wagmi',
 			'zustand',
 		]);
 	});

@@ -13,6 +13,7 @@ import { KeyedList } from './demos/KeyedList.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
+import { WagmiDemo } from './demos/Wagmi.tsrx';
 import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
 
 import commandMenuSource from './demos/CommandMenu.tsrx?raw';
@@ -24,6 +25,7 @@ import keyedListSource from './demos/KeyedList.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
+import wagmiSource from './demos/Wagmi.tsrx?raw';
 import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
 
 export interface Demo {
@@ -104,6 +106,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'Phosphor Icons',
 				Component: PhosphorIconsDemo,
 				source: phosphorIconsSource,
+			},
+			{
+				id: 'wagmi',
+				title: 'Wagmi',
+				Component: WagmiDemo,
+				source: wagmiSource,
 			},
 			{
 				id: 'usehooks-ts',
