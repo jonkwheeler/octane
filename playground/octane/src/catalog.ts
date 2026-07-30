@@ -13,6 +13,7 @@ import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
 import { MobxDemo } from './demos/Mobx.tsrx';
+import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { ShadcnDemo } from './demos/Shadcn.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
@@ -27,6 +28,7 @@ import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
 import mobxSource from './demos/Mobx.tsrx?raw';
+import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import shadcnSource from './demos/Shadcn.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
@@ -104,6 +106,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'shadcn/ui',
 				Component: ShadcnDemo,
 				source: shadcnSource,
+			},
+			{
+				id: 'phosphor-icons',
+				title: 'Phosphor Icons',
+				Component: PhosphorIconsDemo,
+				source: phosphorIconsSource,
 			},
 			{
 				id: 'mantine-hooks',
