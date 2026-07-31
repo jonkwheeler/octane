@@ -8,8 +8,8 @@
     "sourceRoot": "src",
     "testRoot": "src/__tests__",
     "license": "MIT",
-    "integrity": "sha256:879e3f48b706e6ef0faaaad6f077707323c74a82899a6c1fcd32ba97a04f453f",
-    "verification": "recorded-unverified"
+    "integrity": "sha256:2d49ffe1a26427eb579201d574fa6a76903f8a15bae5b0bab20c434273ebc8bd",
+    "verification": "verified"
   },
   "environments": {
     "workspace-node": {
@@ -18,10 +18,56 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8264c06584e6a00a99a0276a992444a21bc2ed16292100d90dce102a8b2ce7a5"
+      "lockfileSha256": "088d10bd71abccf3b15f27012f7b3eeb6087839131ca944c7537a675ec22ad4a"
     }
   },
   "lanes": [
+    {
+      "id": "hook-form-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form-pristine",
+      "notes": "Runs the byte-exact react-hook-form 7.81.0 Jest suite against its original React binding and verifies every upstream test artifact has an adapted Octane counterpart.",
+      "files": [
+        {
+          "path": "packages/hook-form/tests/upstream-original.test.ts",
+          "role": "test",
+          "sha256": "0a7d78b454c855385b6a5ca32118a26b47eeec96be52c0902ead58741db8b2c8",
+          "cases": [
+            {
+              "id": "pristine:react-hook-form-original-suite",
+              "testName": "runs all 1,193 pinned react-hook-form tests unchanged"
+            }
+          ]
+        },
+        {
+          "path": "packages/hook-form/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "1f82b4850b552aa0e1ab542eae604dbbcd4eaf5a5adcb03fff8282ebbd556d36"
+        },
+        {
+          "path": "packages/hook-form/audit/upstream-adapted.SHA256SUMS",
+          "role": "support",
+          "sha256": "a0559f6adfbcb826775d899890306d8dd8c6c661340d80c62be8317030d0dcb4"
+        },
+        {
+          "path": "packages/hook-form/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "a937a98725166887581e2d8a2f93ec0894b18e8b0af0b24724cc1290540626cf"
+        },
+        {
+          "path": "packages/hook-form/tests/upstream-jest.setup.ts",
+          "role": "support",
+          "sha256": "a46d66851af2c056e805fdd574bf5ec3adb1181c43c5e41f0a1c592e338afe64"
+        },
+        {
+          "path": "scripts/react-parity/hook-form-upstream-lib.mjs",
+          "role": "support",
+          "sha256": "4c3722e0054b29c38624e047afa8297b89fb57ecc17503cce8d622f08768e9b9"
+        }
+      ]
+    },
     {
       "id": "hook-form-adapted-controller",
       "type": "adapted-octane",
@@ -88,7 +134,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "436b30bd0d142b00140be07bed4544368cd1743a7fecc3445c8203c63df6ef8d"
+          "sha256": "f0de8acc6c7bf0ab5941878067bf0afc4c2443a1e4903f0c8282eb043616c187"
         }
       ]
     }

@@ -78,9 +78,8 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 	const value = manifest();
 	assert.deepEqual(validateManifest(value), value);
 	assert.deepEqual(buildLaneArgv(value.lanes[0]), [
-		'pnpm',
-		'exec',
-		'vitest',
+		process.execPath,
+		'node_modules/vitest/vitest.mjs',
 		'run',
 		'--project',
 		'hook-form',
@@ -148,6 +147,17 @@ test('requires complete immutable provenance and environment identity', () => {
 	const partialIntegrity = manifest();
 	partialIntegrity.provenance.integrity = 'sha256:0123456789abcdef';
 	assert.throws(() => validateManifest(partialIntegrity), /complete sha256 digest/);
+});
+
+test('requires a live pristine lane before provenance can be verified', () => {
+	const value = manifest();
+	value.provenance.verification = 'verified';
+	assert.throws(
+		() => validateManifest(value),
+		/requires an available required pristine-upstream lane/,
+	);
+	value.lanes[0].type = 'pristine-upstream';
+	assert.doesNotThrow(() => validateManifest(value));
 });
 
 test('evaluates exact and minimum Node major requirements', () => {
@@ -268,7 +278,7 @@ test('CLI validates, lists, and rejects malformed invocations', () => {
 	assert.equal(run('validate').status, 0);
 	const listed = run('list');
 	assert.equal(listed.status, 0);
-	assert.match(listed.stdout, /recorded-unverified; cannot establish pristine parity/);
+	assert.match(listed.stdout, /hook-form-pristine-upstream.*verified/);
 	for (const args of [
 		['wat'],
 		['validate', '--wat', 'x'],

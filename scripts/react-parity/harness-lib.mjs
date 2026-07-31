@@ -113,8 +113,8 @@ export function validateManifest(manifest) {
 	}
 	for (const key of Object.keys(manifest.provenance))
 		if (!PROVENANCE_KEYS.has(key)) fail(`provenance has unknown key "${key}"`);
-	if (manifest.provenance.verification !== 'recorded-unverified')
-		fail('provenance.verification must be recorded-unverified');
+	if (!['recorded-unverified', 'verified'].includes(manifest.provenance.verification))
+		fail('provenance.verification must be recorded-unverified or verified');
 
 	if (!manifest.environments || typeof manifest.environments !== 'object') {
 		fail('environments must be an object');
@@ -177,6 +177,15 @@ export function validateManifest(manifest) {
 			}
 		}
 		if (laneCaseCount === 0) fail(`lane ${lane.id} must declare at least one executable case`);
+	}
+	if (
+		manifest.provenance.verification === 'verified' &&
+		!manifest.lanes.some(
+			(lane) =>
+				lane.type === 'pristine-upstream' && lane.oracle === 'required' && lane.available !== false,
+		)
+	) {
+		fail('verified provenance requires an available required pristine-upstream lane');
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');
@@ -280,9 +289,8 @@ export function buildLaneArgv(lane) {
 	if (testNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
 	const escaped = testNames.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 	return [
-		'pnpm',
-		'exec',
-		'vitest',
+		process.execPath,
+		'node_modules/vitest/vitest.mjs',
 		'run',
 		'--project',
 		lane.project,

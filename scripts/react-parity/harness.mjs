@@ -42,7 +42,7 @@ if (action === 'validate') {
 	for (const lane of manifest.lanes) {
 		const availability = lane.available === false ? 'unavailable' : 'available';
 		console.log(
-			`${lane.id}\t${lane.type}\t${lane.oracle}\t${availability}\trecorded-unverified; cannot establish pristine parity`,
+			`${lane.id}\t${lane.type}\t${lane.oracle}\t${availability}\t${manifest.provenance.verification}`,
 		);
 	}
 } else {

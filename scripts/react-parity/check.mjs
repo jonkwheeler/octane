@@ -10,6 +10,7 @@ import {
 	validateLedger,
 	validateUpstreams,
 } from './inventory-lib.mjs';
+import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -19,6 +20,11 @@ const LEDGER_PATH = path.join(AUDIT, 'react-conformance-ledger.json');
 const REPORT_PATH = path.join(REPO, 'docs/react-parity-coverage.md');
 const BINDING_MANIFESTS = ['packages/hook-form/audit/react-parity.json'];
 const errors = [];
+try {
+	verifyHookFormUpstream(REPO);
+} catch (error) {
+	errors.push(`react-hook-form upstream evidence is invalid: ${error.message}`);
+}
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
 // (BenchmarkExplorer, BenchBars, …). Scan both trees so a misleading claim can't

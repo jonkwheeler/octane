@@ -128,13 +128,13 @@
       "version": "0.1.19",
       "category": "Forms and content",
       "upstream": { "package": "react-hook-form", "version": "7.81.0" },
-      "surface": "Complete port of react-hook-form 7.81.0 (tag commit 46b217e034dd92f7aa3cb3a478815556b416b299) with the upstream test suite adapted to Octane: `useForm`, `useController`, `useFieldArray`, `useFormState`, `useWatch`, `useFormContext`/`FormProvider`, schema resolvers, and all validation modes.",
+      "surface": "Complete port of react-hook-form 7.81.0 (tag commit 46b217e034dd92f7aa3cb3a478815556b416b299), verified by all 1,193 original upstream tests plus a one-for-one adapted Octane test-artifact inventory: `useForm`, `useController`, `useFieldArray`, `useFormState`, `useWatch`, `useFormContext`/`FormProvider`, schema resolvers, and all validation modes.",
       "divergences": [
         "`register()` returns `onInput` (octane's native per-keystroke event) instead of React's synthetic `onChange`; mode names and `register` option keys keep the upstream spelling.",
         "Ported tests directly assert Octane's documented microtask-flush commit granularity, eager `Object.is` setState bailout, and native input-event delivery; the suite contains no skipped or expected-failure cases."
       ],
       "ssr": "Supported and tested — the upstream `*.server.test.tsx` suite runs via `octane/server` with byte-identical markup.",
-      "verified": "2026-07-14"
+      "verified": "2026-07-31"
     },
     {
       "name": "@octanejs/i18next",
