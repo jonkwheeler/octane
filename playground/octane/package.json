@@ -24,6 +24,7 @@
     "@octanejs/radix": "workspace:*",
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
+    "@octanejs/rxjs": "workspace:*",
     "@octanejs/sonner": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/wagmi": "workspace:*",
@@ -33,6 +34,7 @@
     "clsx": "catalog:default",
     "gsap": "catalog:default",
     "octane": "workspace:*",
+    "rxjs": "catalog:default",
     "tailwind-merge": "catalog:default"
   },
   "devDependencies": {
