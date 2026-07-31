@@ -6,7 +6,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 
-import { buildLaneArgv, validateManifest, verifyManifestFiles } from './harness-lib.mjs';
+import {
+	buildLaneArgv,
+	nodeMajorSatisfies,
+	validateManifest,
+	verifyManifestFiles,
+} from './harness-lib.mjs';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 
@@ -131,6 +136,15 @@ test('requires complete immutable provenance and environment identity', () => {
 	assert.throws(() => validateManifest(partialIntegrity), /complete sha256 digest/);
 });
 
+test('evaluates exact and minimum Node major requirements', () => {
+	assert.equal(nodeMajorSatisfies('>=22', 22), true);
+	assert.equal(nodeMajorSatisfies('>=22', 24), true);
+	assert.equal(nodeMajorSatisfies('>=22', 20), false);
+	assert.equal(nodeMajorSatisfies('22', 22), true);
+	assert.equal(nodeMajorSatisfies('22', 24), false);
+	assert.throws(() => nodeMajorSatisfies('^22', 22), /Unsupported Node requirement/);
+});
+
 test('rejects stale divergences and one divergence matching multiple cases', () => {
 	const stale = manifest({
 		divergences: [divergence({ caseIds: ['missing'] })],
@@ -158,6 +172,26 @@ test('rejects missing and tampered evidence files', async () => {
 	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
 	await writeFile(file, 'tampered');
 	await assert.rejects(() => verifyManifestFiles(value, root), /integrity mismatch/);
+});
+
+test('matches parity markers by exact id instead of shared prefix', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-markers-'));
+	const value = manifest();
+	const source = `
+// @parity-case adapted:example
+it('does the thing', () => {});
+// @parity-case adapted:example-extra
+it('does the extra thing', () => {});
+`;
+	value.lanes[0].files[0].cases.push({
+		id: 'adapted:example-extra',
+		testName: 'does the extra thing',
+	});
+	value.lanes[0].files[0].sha256 = sha256(source);
+	const file = join(root, value.lanes[0].files[0].path);
+	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
+	await writeFile(file, source);
+	await assert.doesNotReject(() => verifyManifestFiles(value, root));
 });
 
 test('an unavailable optional oracle is never reported as parity evidence', () => {

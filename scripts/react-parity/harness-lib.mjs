@@ -81,6 +81,13 @@ function deepFreeze(value) {
 	return value;
 }
 
+export function nodeMajorSatisfies(requirement, actualMajor) {
+	const match = /^(>=)?(\d+)$/.exec(requirement);
+	if (!match) throw new Error(`Unsupported Node requirement: ${requirement}`);
+	const requiredMajor = Number(match[2]);
+	return match[1] === '>=' ? actualMajor >= requiredMajor : actualMajor === requiredMajor;
+}
+
 export function validateManifest(manifest) {
 	if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest))
 		fail('root must be an object');
@@ -212,9 +219,13 @@ export async function verifyManifestFiles(manifest, root) {
 				const source = contents.toString('utf8');
 				for (const parityCase of file.cases) {
 					const marker = `@parity-case ${parityCase.id}`;
-					const count = source.split(marker).length - 1;
-					if (count !== 1) throw new Error(`${file.path}: ${marker} must appear exactly once`);
-					const markerEnd = source.indexOf(marker) + marker.length;
+					const escapedId = parityCase.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+					const matches = [
+						...source.matchAll(new RegExp(`^\\s*//\\s*@parity-case\\s+${escapedId}\\s*$`, 'gm')),
+					];
+					if (matches.length !== 1)
+						throw new Error(`${file.path}: ${marker} must appear exactly once`);
+					const markerEnd = matches[0].index + matches[0][0].length;
 					const tail = source.slice(markerEnd, markerEnd + 500);
 					if (/\bit\.(skip|todo)\s*\(/.test(tail) || !tail.includes(parityCase.testName)) {
 						throw new Error(
@@ -230,9 +241,9 @@ export async function verifyManifestFiles(manifest, root) {
 
 export async function verifyLaneEnvironment(manifest, lane, root, pnpmVersion) {
 	const environment = manifest.environments[lane.environment];
-	const requiredMajor = Number(environment.node.match(/\d+/)?.[0]);
-	if (Number(process.versions.node.split('.')[0]) !== requiredMajor)
-		throw new Error(`Node major must be ${requiredMajor}`);
+	const actualMajor = Number(process.versions.node.split('.')[0]);
+	if (!nodeMajorSatisfies(environment.node, actualMajor))
+		throw new Error(`Node ${actualMajor} does not satisfy ${environment.node}`);
 	if (environment.platform !== 'any' && environment.platform !== process.platform)
 		throw new Error(`platform must be ${environment.platform}`);
 	if (environment.arch !== 'any' && environment.arch !== process.arch)
