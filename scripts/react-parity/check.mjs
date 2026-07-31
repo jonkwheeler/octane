@@ -19,6 +19,7 @@ const UPSTREAMS_PATH = path.join(AUDIT, 'react-upstreams.json');
 const LEDGER_PATH = path.join(AUDIT, 'react-conformance-ledger.json');
 const REPORT_PATH = path.join(REPO, 'docs/react-parity-coverage.md');
 const BINDING_MANIFESTS = ['packages/hook-form/audit/react-parity.json'];
+const HARNESS_PATH = path.join(REPO, 'scripts/react-parity/harness.mjs');
 const errors = [];
 try {
 	verifyHookFormUpstream(REPO);
@@ -105,6 +106,20 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
 		for (const lane of manifest.lanes) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
+		}
+		if (manifest.provenance.verification === 'verified') {
+			for (const lane of manifest.lanes.filter(
+				(candidate) =>
+					candidate.type === 'pristine-upstream' &&
+					candidate.oracle === 'required' &&
+					candidate.available !== false,
+			)) {
+				execFileSync(
+					process.execPath,
+					[HARNESS_PATH, 'run', '--manifest', relativeFile, '--lane', lane.id],
+					{ cwd: REPO, stdio: 'inherit' },
+				);
+			}
 		}
 	} catch (error) {
 		errors.push(`${relativeFile} is invalid: ${error.message}`);

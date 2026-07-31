@@ -45,10 +45,11 @@ blur/commit), so the handler upstream calls `onChange` is exposed as
 Everything else — validation modes, `formState` proxy subscriptions,
 `useFieldArray`, `useWatch`/`Watch`, `FormStateSubscribe`, `reset`/`setValue`/
 `trigger` semantics, SSR via `octane/server` — matches upstream behavior; the
-port runs all 1,193 tests and eight snapshots from react-hook-form's original
-Jest suite unchanged, verifies every upstream test artifact has an adapted
-Octane counterpart, and runs differential tests asserting byte-identical DOM
-against the real react-hook-form. See [`UPSTREAM.md`](./UPSTREAM.md) for the pin,
+automated parity checks run all 1,193 tests and eight snapshots unchanged
+against the pinned React package as a pristine baseline. The Octane port
+separately passes its byte-locked, one-for-one adapted suite and differential
+tests asserting byte-identical DOM against the real react-hook-form. See
+[`UPSTREAM.md`](./UPSTREAM.md) for the pin,
 source inventory, export crosswalk, and test dispositions.
 
 ## License
