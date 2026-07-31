@@ -104,6 +104,8 @@ export const KNOWN_BINDINGS = {
 	'react-redux': '@octanejs/redux',
 	'@reduxjs/toolkit': '@octanejs/redux-toolkit',
 	'@zag-js/react': '@octanejs/zag',
+	'@react-rxjs/core': '@octanejs/rxjs',
+	'@react-rxjs/utils': '@octanejs/rxjs',
 	'@testing-library/react': '@octanejs/testing-library',
 	'react-i18next': '@octanejs/i18next',
 	'@mdx-js/react': '@octanejs/mdx',
