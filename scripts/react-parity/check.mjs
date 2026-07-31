@@ -9,12 +9,14 @@ import {
 	validateLedger,
 	validateUpstreams,
 } from './inventory-lib.mjs';
+import { loadManifest, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
 const UPSTREAMS_PATH = path.join(AUDIT, 'react-upstreams.json');
 const LEDGER_PATH = path.join(AUDIT, 'react-conformance-ledger.json');
 const REPORT_PATH = path.join(REPO, 'docs/react-parity-coverage.md');
+const BINDING_MANIFESTS = ['packages/hook-form/audit/react-parity.json'];
 const errors = [];
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
@@ -87,6 +89,14 @@ for (const relativeFile of CLAIM_FILES) {
 	for (const pattern of MISLEADING_CLAIMS) {
 		if (pattern.test(source))
 			errors.push(`${relativeFile} contains a misleading React-port count claim (${pattern}).`);
+	}
+}
+for (const relativeFile of BINDING_MANIFESTS) {
+	try {
+		const manifest = await loadManifest(path.join(REPO, relativeFile));
+		await verifyManifestFiles(manifest, REPO);
+	} catch (error) {
+		errors.push(`${relativeFile} is invalid: ${error.message}`);
 	}
 }
 

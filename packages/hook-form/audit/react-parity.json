@@ -1,0 +1,107 @@
+{
+  "$schema": "./react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/react-hook-form/react-hook-form.git",
+    "version": "7.81.0",
+    "commit": "46b217e034dd92f7aa3cb3a478815556b416b299",
+    "sourceRoot": "src",
+    "testRoot": "src/__tests__",
+    "license": "MIT",
+    "integrity": "sha256:879e3f48b706e6ef0faaaad6f077707323c74a82899a6c1fcd32ba97a04f453f",
+    "verification": "recorded-unverified"
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "1d98b1dd2537acaaf05838f30b59f1aadacef557551cae2ba1808a96a94a25d2"
+    }
+  },
+  "lanes": [
+    {
+      "id": "hook-form-adapted-controller",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form",
+      "notes": "An exact adapted upstream file; this is not a pristine upstream run.",
+      "files": [
+        {
+          "path": "packages/hook-form/tests/upstream/useController.test.tsx",
+          "role": "test",
+          "sha256": "8ed5bc7a6e67ed50f48a1cbab211c6a9dda88e79b13cc9bdee5cffffa400627f",
+          "cases": [
+            {
+              "id": "adapted:controller-on-input",
+              "testName": "should return a promise-like value from field.onInput"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hook-form-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form",
+      "notes": "The same fixture runs through Octane and real react-hook-form via the shared differential rig.",
+      "files": [
+        {
+          "path": "packages/hook-form/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "0ab7bf75290b94b61f3434faa7971cd7686a5dc6175f7b38713253114f550f0b",
+          "cases": [
+            {
+              "id": "differential:register",
+              "testName": "register: typing → per-keystroke validation → submit → reset renders byte-identical"
+            },
+            {
+              "id": "differential:controller",
+              "testName": "Controller: controlled typing, fieldState, reset renders byte-identical"
+            },
+            {
+              "id": "differential:field-array",
+              "testName": "useFieldArray: append/prepend/remove/swap/move/update renders byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/hook-form/tests/_fixtures/forms.tsrx",
+          "role": "support",
+          "sha256": "7ce8fcc9ff9cbd73b07a26a652cd149894781f67c25e5eccb0992115fab9bd03"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/hook-form/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "6b70dcb998d5bb012dbde1410301e9a8b99924f982900cfc116cab1792e49320"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "ea25f10c44baf71c48c6872e4b208f5510d1d134995f9ca44e18d9c5dc82c7ed"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "hook-form-native-input-handler",
+      "caseIds": ["adapted:controller-on-input"],
+      "upstreamResult": "Controller exposes field.onChange for React synthetic change events.",
+      "octaneResult": "Controller exposes field.onInput for Octane native input events; mode and option names retain upstream onChange spelling.",
+      "rationale": "Octane observes native per-keystroke input events rather than React synthetic change events.",
+      "owner": "@octanejs/hook-form",
+      "reviewCondition": "Review if Octane introduces a React-compatible synthetic event layer or changes its native input contract."
+    }
+  ]
+}

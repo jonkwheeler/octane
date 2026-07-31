@@ -32,6 +32,7 @@ describe('useController', () => {
 		render(<Component />);
 	});
 
+	// @parity-case adapted:controller-on-input
 	it('should return a promise-like value from field.onInput', async () => {
 		let onChangeResult: any;
 

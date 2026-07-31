@@ -1,0 +1,205 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import test from 'node:test';
+
+import { buildLaneArgv, validateManifest, verifyManifestFiles } from './harness-lib.mjs';
+
+const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+
+function manifest(overrides = {}) {
+	return {
+		schemaVersion: 1,
+		provenance: {
+			repo: 'https://github.com/react-hook-form/react-hook-form.git',
+			version: '7.81.0',
+			commit: '46b217e034dd92f7aa3cb3a478815556b416b299',
+			sourceRoot: 'src',
+			testRoot: 'src/__tests__',
+			license: 'MIT',
+			integrity: `sha256:${'0'.repeat(64)}`,
+			verification: 'recorded-unverified',
+		},
+		environments: {
+			local: {
+				node: '>=22',
+				platform: 'any',
+				arch: 'any',
+				packageManager: 'pnpm@11.15.1',
+				lockfile: 'pnpm-lock.yaml',
+				lockfileSha256: sha256('lockfile'),
+			},
+		},
+		lanes: [
+			{
+				id: 'adapted',
+				type: 'adapted-octane',
+				oracle: 'required',
+				environment: 'local',
+				project: 'hook-form',
+				files: [
+					{
+						path: 'packages/hook-form/tests/upstream/example.test.ts',
+						role: 'test',
+						sha256: sha256('example'),
+						cases: [{ id: 'adapted:example', testName: 'does the thing' }],
+					},
+				],
+			},
+		],
+		divergences: [],
+		...overrides,
+	};
+}
+
+function divergence(overrides = {}) {
+	return {
+		id: 'native-input',
+		caseIds: ['adapted:example'],
+		upstreamResult: 'Controller exposes field.onChange.',
+		octaneResult: 'Controller exposes field.onInput.',
+		rationale: 'Octane uses native input events.',
+		owner: '@octanejs/hook-form',
+		reviewCondition: 'Review if Octane adds React-compatible synthetic events.',
+		...overrides,
+	};
+}
+
+test('accepts distinct lane types and builds deterministic argv without a shell', () => {
+	const value = manifest();
+	assert.deepEqual(validateManifest(value), value);
+	assert.deepEqual(buildLaneArgv(value.lanes[0]), [
+		'pnpm',
+		'exec',
+		'vitest',
+		'run',
+		'--project',
+		'hook-form',
+		'-t',
+		'(?:does the thing)$',
+		'packages/hook-form/tests/upstream/example.test.ts',
+	]);
+});
+
+test('rejects duplicate lane and case ids', () => {
+	const duplicateLane = manifest({ lanes: [manifest().lanes[0], manifest().lanes[0]] });
+	assert.throws(() => validateManifest(duplicateLane), /duplicate lane id "adapted"/);
+
+	const duplicateCase = manifest();
+	duplicateCase.lanes[0].files[0].cases.push({ id: 'adapted:example', testName: 'again' });
+	assert.throws(() => validateManifest(duplicateCase), /duplicate case id "adapted:example"/);
+});
+
+test('rejects broad file patterns, regex skips, and raw shell commands', () => {
+	for (const path of ['packages/**/*.test.ts', 'packages/hook-form/tests/.*', '/test\\.ts$/']) {
+		const value = manifest();
+		value.lanes[0].files[0].path = path;
+		assert.throws(() => validateManifest(value), /exact relative file path/);
+	}
+	const value = manifest();
+	value.lanes[0].command = 'pnpm test && echo passed';
+	assert.throws(() => validateManifest(value), /unknown key "command"/);
+});
+
+test('requires complete immutable provenance and environment identity', () => {
+	for (const field of [
+		'repo',
+		'version',
+		'commit',
+		'sourceRoot',
+		'testRoot',
+		'license',
+		'integrity',
+	]) {
+		const value = manifest();
+		delete value.provenance[field];
+		assert.throws(() => validateManifest(value), new RegExp(`provenance\\.${field}`));
+	}
+	const value = manifest();
+	delete value.environments.local.lockfile;
+	assert.throws(() => validateManifest(value), /environments\.local\.lockfile/);
+
+	const shortCommit = manifest();
+	shortCommit.provenance.commit = 'b7df98c2';
+	assert.throws(() => validateManifest(shortCommit), /full 40-character Git commit/);
+
+	const partialIntegrity = manifest();
+	partialIntegrity.provenance.integrity = 'sha256:0123456789abcdef';
+	assert.throws(() => validateManifest(partialIntegrity), /complete sha256 digest/);
+});
+
+test('rejects stale divergences and one divergence matching multiple cases', () => {
+	const stale = manifest({
+		divergences: [divergence({ caseIds: ['missing'] })],
+	});
+	assert.throws(() => validateManifest(stale), /unknown case id "missing"/);
+
+	const broad = manifest({
+		divergences: [divergence({ caseIds: ['adapted:example', 'adapted:other'] })],
+	});
+	assert.throws(() => validateManifest(broad), /exactly one case id/);
+
+	for (const field of ['upstreamResult', 'octaneResult', 'rationale', 'owner', 'reviewCondition']) {
+		const incomplete = manifest({ divergences: [divergence()] });
+		delete incomplete.divergences[0][field];
+		assert.throws(() => validateManifest(incomplete), new RegExp(field));
+	}
+});
+
+test('rejects missing and tampered evidence files', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-'));
+	const value = manifest();
+	await assert.rejects(() => verifyManifestFiles(value, root), /missing evidence file/);
+
+	const file = join(root, value.lanes[0].files[0].path);
+	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
+	await writeFile(file, 'tampered');
+	await assert.rejects(() => verifyManifestFiles(value, root), /integrity mismatch/);
+});
+
+test('an unavailable optional oracle is never reported as parity evidence', () => {
+	const value = manifest();
+	value.lanes[0].oracle = 'optional';
+	value.lanes[0].available = false;
+	assert.throws(
+		() => buildLaneArgv(value.lanes[0]),
+		/optional oracle is unavailable; parity not established/,
+	);
+});
+
+test('rejects additional properties at every strict manifest level', () => {
+	for (const mutate of [
+		(value) => (value.extra = true),
+		(value) => (value.provenance.extra = true),
+		(value) => (value.environments.local.extra = true),
+		(value) => (value.lanes[0].files[0].extra = true),
+		(value) => (value.divergences = [divergence({ extra: true })]),
+	]) {
+		const value = manifest();
+		mutate(value);
+		assert.throws(() => validateManifest(value), /unknown key/);
+	}
+	const value = manifest({ environments: {} });
+	assert.throws(() => validateManifest(value), /environments must be non-empty/);
+});
+
+test('CLI validates, lists, and rejects malformed invocations', () => {
+	const cli = join(import.meta.dirname, 'harness.mjs');
+	const run = (...args) => spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
+	assert.equal(run('validate').status, 0);
+	const listed = run('list');
+	assert.equal(listed.status, 0);
+	assert.match(listed.stdout, /recorded-unverified; cannot establish pristine parity/);
+	for (const args of [
+		['wat'],
+		['validate', '--wat', 'x'],
+		['validate', '--manifest'],
+		['run', '--lane'],
+		['run', '--lane', 'missing'],
+	]) {
+		assert.notEqual(run(...args).status, 0, args.join(' '));
+	}
+});
