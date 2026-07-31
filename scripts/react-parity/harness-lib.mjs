@@ -1,6 +1,10 @@
 import { createHash } from 'node:crypto';
+import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { isAbsolute, relative, resolve } from 'node:path';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 const LANE_TYPES = new Set(['pristine-upstream', 'adapted-octane', 'differential', 'browser']);
 const ORACLES = new Set(['required', 'optional']);
@@ -280,6 +284,69 @@ export async function verifyLaneEnvironment(manifest, lane, root, pnpmVersion) {
 	const lockfile = await readFile(resolve(root, environment.lockfile));
 	const digest = createHash('sha256').update(lockfile).digest('hex');
 	if (digest !== environment.lockfileSha256) throw new Error('lockfile integrity mismatch');
+}
+
+export function verifyLaneCollectedTests(lane, collectedTests, root) {
+	const testFiles = new Set(
+		lane.files.filter((file) => file.role === 'test').map((file) => resolve(root, file.path)),
+	);
+	const declarations = lane.files.flatMap((file) =>
+		(file.cases ?? []).map((parityCase) => ({
+			file: resolve(root, file.path),
+			name: parityCase.fullName,
+			id: parityCase.id,
+		})),
+	);
+	const declaredNames = new Set(declarations.map(({ name }) => name));
+	const normalizedTests = collectedTests.map((test) => ({
+		...test,
+		// Vitest's list command renders suite boundaries as ` > ` while
+		// testNamePattern matches the runtime full name joined with spaces.
+		name: test.name.replaceAll(' > ', ' '),
+	}));
+	const selected = normalizedTests.filter(
+		(test) => testFiles.has(resolve(test.file)) && declaredNames.has(test.name),
+	);
+
+	for (const declaration of declarations) {
+		const matches = selected.filter(
+			(test) => resolve(test.file) === declaration.file && test.name === declaration.name,
+		);
+		if (matches.length !== 1) {
+			throw new Error(
+				`lane ${lane.id} case ${declaration.id} fullName must match exactly one collected Vitest test in its evidence file`,
+			);
+		}
+	}
+	if (selected.length !== declarations.length) {
+		throw new Error(`lane ${lane.id} fullName selection matches undeclared Vitest tests`);
+	}
+	return true;
+}
+
+export async function verifyManifestTestSelections(manifest, root) {
+	const testsByProject = new Map();
+	for (const lane of manifest.lanes.filter((candidate) => candidate.available !== false)) {
+		let collectedTests = testsByProject.get(lane.project);
+		if (!collectedTests) {
+			const { stdout } = await execFileAsync(
+				process.execPath,
+				[
+					'node_modules/vitest/vitest.mjs',
+					'list',
+					'--project',
+					lane.project,
+					'--staticParse',
+					'--json',
+				],
+				{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+			);
+			collectedTests = JSON.parse(stdout);
+			testsByProject.set(lane.project, collectedTests);
+		}
+		verifyLaneCollectedTests(lane, collectedTests, root);
+	}
+	return true;
 }
 
 export function buildLaneArgv(lane) {

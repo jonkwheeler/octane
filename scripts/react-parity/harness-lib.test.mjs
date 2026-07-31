@@ -10,6 +10,7 @@ import {
 	buildLaneArgv,
 	nodeMajorSatisfies,
 	validateManifest,
+	verifyLaneCollectedTests,
 	verifyLaneEnvironment,
 	verifyManifestFiles,
 } from './harness-lib.mjs';
@@ -99,6 +100,25 @@ test('matches the exact Vitest full name instead of another title with the same 
 	const pattern = new RegExp(buildLaneArgv(manifest().lanes[0])[6]);
 	assert.equal(pattern.test('example suite does the thing'), true);
 	assert.equal(pattern.test('other suite example suite does the thing'), false);
+});
+
+test('rejects a stale fullName that Vitest does not collect from its evidence file', () => {
+	const value = manifest();
+	const root = '/repo';
+	assert.throws(
+		() =>
+			verifyLaneCollectedTests(
+				value.lanes[0],
+				[
+					{
+						name: 'example suite renamed the thing',
+						file: '/repo/packages/hook-form/tests/upstream/example.test.ts',
+					},
+				],
+				root,
+			),
+		/fullName must match exactly one collected Vitest test/,
+	);
 });
 
 test('rejects duplicate lane and case ids', () => {

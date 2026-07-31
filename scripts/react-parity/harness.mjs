@@ -8,6 +8,7 @@ import {
 	loadManifest,
 	verifyLaneEnvironment,
 	verifyManifestFiles,
+	verifyManifestTestSelections,
 } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -37,6 +38,7 @@ if (action === 'validate') {
 	for (const lane of manifest.lanes) {
 		await verifyLaneEnvironment(manifest, lane, root, pnpmVersion);
 	}
+	await verifyManifestTestSelections(manifest, root);
 	console.log(`valid: ${manifestPath}`);
 } else if (action === 'list') {
 	for (const lane of manifest.lanes) {
@@ -49,6 +51,7 @@ if (action === 'validate') {
 	const selected = laneId ? manifest.lanes.filter((lane) => lane.id === laneId) : manifest.lanes;
 	if (selected.length === 0) throw new Error(`Unknown lane: ${laneId}`);
 	const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
+	await verifyManifestTestSelections({ ...manifest, lanes: selected }, root);
 	for (const lane of selected) {
 		await verifyLaneEnvironment(manifest, lane, root, pnpmVersion);
 		const [command, ...commandArgs] = buildLaneArgv(lane);

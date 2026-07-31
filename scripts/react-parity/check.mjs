@@ -11,7 +11,12 @@ import {
 	validateUpstreams,
 } from './inventory-lib.mjs';
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
-import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
+import {
+	loadManifest,
+	verifyLaneEnvironment,
+	verifyManifestFiles,
+	verifyManifestTestSelections,
+} from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
@@ -107,6 +112,7 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		for (const lane of manifest.lanes) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
+		await verifyManifestTestSelections(manifest, REPO);
 		if (manifest.provenance.verification === 'verified') {
 			for (const lane of manifest.lanes.filter(
 				(candidate) =>
