@@ -32,7 +32,7 @@ const ROOT_KEYS = new Set([
 const PROVENANCE_KEYS = new Set([...PROVENANCE_FIELDS, 'verification']);
 const ENVIRONMENT_KEYS = new Set(ENVIRONMENT_FIELDS);
 const FILE_KEYS = new Set(['path', 'role', 'sha256', 'cases']);
-const CASE_KEYS = new Set(['id', 'testName']);
+const CASE_KEYS = new Set(['id', 'testName', 'fullName']);
 const LANE_KEYS = new Set([
 	'id',
 	'type',
@@ -171,6 +171,7 @@ export function validateManifest(manifest) {
 					if (!CASE_KEYS.has(key)) fail(`case has unknown key "${key}"`);
 				requiredString(parityCase.id, `lane ${lane.id} case id`);
 				requiredString(parityCase.testName, `case ${parityCase.id} testName`);
+				requiredString(parityCase.fullName, `case ${parityCase.id} fullName`);
 				if (caseIds.has(parityCase.id)) fail(`duplicate case id "${parityCase.id}"`);
 				caseIds.add(parityCase.id);
 				laneCaseCount++;
@@ -285,9 +286,9 @@ export function buildLaneArgv(lane) {
 	if (lane.available === false) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
-	const testNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.testName));
-	if (testNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
-	const escaped = testNames.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+	const fullNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.fullName));
+	if (fullNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
+	const escaped = fullNames.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 	return [
 		process.execPath,
 		'node_modules/vitest/vitest.mjs',
@@ -295,7 +296,7 @@ export function buildLaneArgv(lane) {
 		'--project',
 		lane.project,
 		'-t',
-		`(?:${escaped.join('|')})$`,
+		`^(?:${escaped.join('|')})$`,
 		...lane.files
 			.filter((file) => file.role === 'test')
 			.map((file) => file.path)

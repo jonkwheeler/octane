@@ -37,7 +37,8 @@
           "cases": [
             {
               "id": "pristine:react-hook-form-original-suite",
-              "testName": "runs all 1,193 pinned react-hook-form tests unchanged"
+              "testName": "runs all 1,193 pinned react-hook-form tests unchanged",
+              "fullName": "runs all 1,193 pinned react-hook-form tests unchanged"
             }
           ]
         },
@@ -83,7 +84,8 @@
           "cases": [
             {
               "id": "adapted:controller-on-input",
-              "testName": "should return a promise-like value from field.onInput"
+              "testName": "should return a promise-like value from field.onInput",
+              "fullName": "useController should return a promise-like value from field.onInput"
             }
           ]
         }
@@ -104,15 +106,18 @@
           "cases": [
             {
               "id": "differential:register",
-              "testName": "register: typing → per-keystroke validation → submit → reset renders byte-identical"
+              "testName": "register: typing → per-keystroke validation → submit → reset renders byte-identical",
+              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing → per-keystroke validation → submit → reset renders byte-identical"
             },
             {
               "id": "differential:controller",
-              "testName": "Controller: controlled typing, fieldState, reset renders byte-identical"
+              "testName": "Controller: controlled typing, fieldState, reset renders byte-identical",
+              "fullName": "differential: @octanejs/hook-form vs real react-hook-form Controller: controlled typing, fieldState, reset renders byte-identical"
             },
             {
               "id": "differential:field-array",
-              "testName": "useFieldArray: append/prepend/remove/swap/move/update renders byte-identical"
+              "testName": "useFieldArray: append/prepend/remove/swap/move/update renders byte-identical",
+              "fullName": "differential: @octanejs/hook-form vs real react-hook-form useFieldArray: append/prepend/remove/swap/move/update renders byte-identical"
             }
           ]
         },

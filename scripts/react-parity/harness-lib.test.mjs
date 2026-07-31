@@ -51,7 +51,13 @@ function manifest(overrides = {}) {
 						path: 'packages/hook-form/tests/upstream/example.test.ts',
 						role: 'test',
 						sha256: sha256('example'),
-						cases: [{ id: 'adapted:example', testName: 'does the thing' }],
+						cases: [
+							{
+								id: 'adapted:example',
+								testName: 'does the thing',
+								fullName: 'example suite does the thing',
+							},
+						],
 					},
 				],
 			},
@@ -84,9 +90,15 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 		'--project',
 		'hook-form',
 		'-t',
-		'(?:does the thing)$',
+		'^(?:example suite does the thing)$',
 		'packages/hook-form/tests/upstream/example.test.ts',
 	]);
+});
+
+test('matches the exact Vitest full name instead of another title with the same suffix', () => {
+	const pattern = new RegExp(buildLaneArgv(manifest().lanes[0])[6]);
+	assert.equal(pattern.test('example suite does the thing'), true);
+	assert.equal(pattern.test('other suite example suite does the thing'), false);
 });
 
 test('rejects duplicate lane and case ids', () => {
@@ -94,7 +106,11 @@ test('rejects duplicate lane and case ids', () => {
 	assert.throws(() => validateManifest(duplicateLane), /duplicate lane id "adapted"/);
 
 	const duplicateCase = manifest();
-	duplicateCase.lanes[0].files[0].cases.push({ id: 'adapted:example', testName: 'again' });
+	duplicateCase.lanes[0].files[0].cases.push({
+		id: 'adapted:example',
+		testName: 'again',
+		fullName: 'example suite again',
+	});
 	assert.throws(() => validateManifest(duplicateCase), /duplicate case id "adapted:example"/);
 });
 
@@ -220,6 +236,7 @@ it('does the extra thing', () => {});
 	value.lanes[0].files[0].cases.push({
 		id: 'adapted:example-extra',
 		testName: 'does the extra thing',
+		fullName: 'example suite does the extra thing',
 	});
 	value.lanes[0].files[0].sha256 = sha256(source);
 	const file = join(root, value.lanes[0].files[0].path);

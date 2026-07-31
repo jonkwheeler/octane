@@ -116,10 +116,11 @@
                   "items": {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": ["id", "testName"],
+                    "required": ["id", "testName", "fullName"],
                     "properties": {
                       "id": { "type": "string", "minLength": 1 },
-                      "testName": { "type": "string", "minLength": 1 }
+                      "testName": { "type": "string", "minLength": 1 },
+                      "fullName": { "type": "string", "minLength": 1 }
                     }
                   }
                 }
