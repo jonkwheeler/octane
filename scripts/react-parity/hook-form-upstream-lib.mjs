@@ -119,8 +119,10 @@ export function verifyHookFormUpstream(repoRoot) {
 		if (JSON.stringify(portedUpstreamCases) !== JSON.stringify(upstream)) {
 			throw new Error(`${file}: adapted test registrations drifted from the pinned upstream suite`);
 		}
-		if (observedExtras.length !== allowedExtras.size) {
-			throw new Error(`${file}: expected every recorded Octane regression case to execute once`);
+		for (const title of allowedExtras) {
+			if (observedExtras.filter((observed) => observed === title).length !== 1) {
+				throw new Error(`${file}: expected every recorded Octane regression case to execute once`);
+			}
 		}
 		upstreamCases += upstream.length;
 		portedCases += ported.length;

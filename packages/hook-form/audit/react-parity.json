@@ -65,7 +65,7 @@
         {
           "path": "scripts/react-parity/hook-form-upstream-lib.mjs",
           "role": "support",
-          "sha256": "4c3722e0054b29c38624e047afa8297b89fb57ecc17503cce8d622f08768e9b9"
+          "sha256": "cbcbf6fa68e981fd27c1ffa06ca0dd1b1eb20314f1a6c041f86b25e705853d1f"
         }
       ]
     },

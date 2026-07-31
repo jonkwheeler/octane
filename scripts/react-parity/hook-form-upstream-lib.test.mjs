@@ -59,6 +59,42 @@ test('rejects an unrecorded adapted title change', async () => {
 	assert.throws(() => verifyHookFormUpstream(root), /test registrations drifted/);
 });
 
+test('rejects duplicating one port-only case while dropping another', async () => {
+	const { portedTests, root, upstreamTests } = await fixture();
+	const relativeFile = 'logic/getDirtyFields.test.ts';
+	const upstreamFile = join(upstreamTests, relativeFile);
+	const portedFile = join(portedTests, relativeFile);
+	const firstExtra =
+		'should mark an array-valued registered field as dirty with a boolean rather than diffing elements (#13584)';
+	const secondExtra =
+		'should still diff a field array element-by-element when the array path itself is not a registered leaf';
+	await mkdir(join(upstreamTests, 'logic'), { recursive: true });
+	await mkdir(join(portedTests, 'logic'), { recursive: true });
+	await writeFile(upstreamFile, "it('same dirty behavior', () => {});\n");
+	await writeFile(
+		portedFile,
+		`it('same dirty behavior', () => {});\nit('${firstExtra}', () => {});\nit('${secondExtra}', () => {});\n`,
+	);
+	await writeFile(
+		join(root, 'packages/hook-form/upstream/SHA256SUMS'),
+		renderHookFormUpstreamInventory(root),
+	);
+	await writeFile(
+		join(root, 'packages/hook-form/audit/upstream-adapted.SHA256SUMS'),
+		renderHookFormAdaptedInventory(root),
+	);
+
+	assert.doesNotThrow(() => verifyHookFormUpstream(root));
+	await writeFile(
+		portedFile,
+		`it('same dirty behavior', () => {});\nit('${firstExtra}', () => {});\nit('${firstExtra}', () => {});\n`,
+	);
+	assert.throws(
+		() => verifyHookFormUpstream(root),
+		/expected every recorded Octane regression case to execute once/,
+	);
+});
+
 test('rejects disabled, focused, or expected-failing adapted tests', async () => {
 	for (const registration of [
 		'describe.skip',
