@@ -10,6 +10,7 @@ import {
 	buildLaneArgv,
 	nodeMajorSatisfies,
 	validateManifest,
+	verifyLaneEnvironment,
 	verifyManifestFiles,
 } from './harness-lib.mjs';
 
@@ -185,6 +186,16 @@ test('rejects missing and tampered evidence files', async () => {
 	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
 	await writeFile(file, 'tampered');
 	await assert.rejects(() => verifyManifestFiles(value, root), /integrity mismatch/);
+});
+
+test('rejects environment drift during validation', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-environment-'));
+	const value = manifest();
+	await writeFile(join(root, 'pnpm-lock.yaml'), 'changed lockfile');
+	await assert.rejects(
+		() => verifyLaneEnvironment(value, value.lanes[0], root, '11.15.1'),
+		/lockfile integrity mismatch/,
+	);
 });
 
 test('matches parity markers by exact id instead of shared prefix', async () => {

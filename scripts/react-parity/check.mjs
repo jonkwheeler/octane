@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -9,7 +10,7 @@ import {
 	validateLedger,
 	validateUpstreams,
 } from './inventory-lib.mjs';
-import { loadManifest, verifyManifestFiles } from './harness-lib.mjs';
+import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
@@ -95,6 +96,10 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		await verifyManifestFiles(manifest, REPO);
+		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
+		for (const lane of manifest.lanes) {
+			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
+		}
 	} catch (error) {
 		errors.push(`${relativeFile} is invalid: ${error.message}`);
 	}

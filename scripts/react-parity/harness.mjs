@@ -33,6 +33,10 @@ const manifest = await loadManifest(manifestPath);
 await verifyManifestFiles(manifest, root);
 
 if (action === 'validate') {
+	const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
+	for (const lane of manifest.lanes) {
+		await verifyLaneEnvironment(manifest, lane, root, pnpmVersion);
+	}
 	console.log(`valid: ${manifestPath}`);
 } else if (action === 'list') {
 	for (const lane of manifest.lanes) {
