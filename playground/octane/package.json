@@ -24,6 +24,7 @@
     "@octanejs/radix": "workspace:*",
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
+    "@octanejs/rxjs": "workspace:*",
     "@octanejs/sonner": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/three": "workspace:*",
@@ -33,6 +34,7 @@
     "class-variance-authority": "catalog:default",
     "clsx": "catalog:default",
     "octane": "workspace:*",
+    "rxjs": "catalog:default",
     "tailwind-merge": "catalog:default",
     "three": "catalog:default"
   },
