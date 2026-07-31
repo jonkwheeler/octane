@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**62 publishable package(s), including 50 framework binding(s).**
+**64 publishable package(s), including 52 framework binding(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
@@ -40,12 +40,14 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.20` | 1 |
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.1` | 2 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.2` | 2 |
+| `@octanejs/react-spring` | [`packages/react-spring`](../packages/react-spring) | framework binding | `0.0.1` | 2 |
 | `@octanejs/recharts` | [`packages/recharts`](../packages/recharts) | framework binding | `0.1.18` | 1 |
 | `@octanejs/redux` | [`packages/redux`](../packages/redux) | framework binding | `0.1.18` | 1 |
 | `@octanejs/redux-toolkit` | [`packages/redux-toolkit`](../packages/redux-toolkit) | framework binding | `0.1.16` | 4 |
 | `@octanejs/remix-router` | [`packages/remix-router`](../packages/remix-router) | framework binding | `0.1.17` | 2 |
 | `@octanejs/rsbuild-plugin` | [`packages/rsbuild-plugin-octane`](../packages/rsbuild-plugin-octane) | metaframework | `0.1.16` | 3 |
 | `@octanejs/rspack-plugin` | [`packages/rspack-plugin-octane`](../packages/rspack-plugin-octane) | compiler integration | `0.1.16` | 2 |
+| `@octanejs/rxjs` | [`packages/rxjs`](../packages/rxjs) | framework binding | `0.1.0` | 2 |
 | `@octanejs/seo` | [`packages/seo`](../packages/seo) | document metadata | `0.0.6` | 1 |
 | `@octanejs/shadcn` | [`packages/shadcn`](../packages/shadcn) | framework binding | `0.0.6` | 2 |
 | `@octanejs/sonner` | [`packages/sonner`](../packages/sonner) | framework binding | `0.1.16` | 2 |
