@@ -98,6 +98,19 @@ test('rejects duplicate lane and case ids', () => {
 	assert.throws(() => validateManifest(duplicateCase), /duplicate case id "adapted:example"/);
 });
 
+test('rejects lanes without executable cases', () => {
+	const value = manifest();
+	value.lanes[0].files = [
+		{
+			path: 'packages/hook-form/tests/upstream/helper.ts',
+			role: 'support',
+			sha256: sha256('helper'),
+		},
+	];
+	assert.throws(() => validateManifest(value), /must declare at least one executable case/);
+	assert.throws(() => buildLaneArgv(value.lanes[0]), /has no executable cases/);
+});
+
 test('rejects broad file patterns, regex skips, and raw shell commands', () => {
 	for (const path of ['packages/**/*.test.ts', 'packages/hook-form/tests/.*', '/test\\.ts$/']) {
 		const value = manifest();
@@ -192,6 +205,24 @@ it('does the extra thing', () => {});
 	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
 	await writeFile(file, source);
 	await assert.doesNotReject(() => verifyManifestFiles(value, root));
+});
+
+test('requires a parity marker to bind to the immediately following exact test', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-neighbor-'));
+	const value = manifest();
+	const source = `
+// @parity-case adapted:example
+it('a neighboring test', () => {});
+it('does the thing', () => {});
+`;
+	value.lanes[0].files[0].sha256 = sha256(source);
+	const file = join(root, value.lanes[0].files[0].path);
+	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
+	await writeFile(file, source);
+	await assert.rejects(
+		() => verifyManifestFiles(value, root),
+		/must immediately precede one active test named "does the thing"/,
+	);
 });
 
 test('an unavailable optional oracle is never reported as parity evidence', () => {

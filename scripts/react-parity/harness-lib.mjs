@@ -81,6 +81,14 @@ function deepFreeze(value) {
 	return value;
 }
 
+function sourceStringLiterals(value) {
+	return [
+		`'${value.replaceAll('\\', '\\\\').replaceAll("'", "\\'")}'`,
+		`"${value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`,
+		`\`${value.replaceAll('\\', '\\\\').replaceAll('`', '\\`')}\``,
+	];
+}
+
 export function nodeMajorSatisfies(requirement, actualMajor) {
 	const match = /^(>=)?(\d+)$/.exec(requirement);
 	if (!match) throw new Error(`Unsupported Node requirement: ${requirement}`);
@@ -128,6 +136,7 @@ export function validateManifest(manifest) {
 	const laneIds = new Set();
 	const caseIds = new Set();
 	for (const lane of manifest.lanes) {
+		let laneCaseCount = 0;
 		for (const key of Object.keys(lane))
 			if (!LANE_KEYS.has(key)) fail(`lane has unknown key "${key}"`);
 		requiredString(lane.id, 'lane.id');
@@ -164,8 +173,10 @@ export function validateManifest(manifest) {
 				requiredString(parityCase.testName, `case ${parityCase.id} testName`);
 				if (caseIds.has(parityCase.id)) fail(`duplicate case id "${parityCase.id}"`);
 				caseIds.add(parityCase.id);
+				laneCaseCount++;
 			}
 		}
+		if (laneCaseCount === 0) fail(`lane ${lane.id} must declare at least one executable case`);
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');
@@ -226,10 +237,16 @@ export async function verifyManifestFiles(manifest, root) {
 					if (matches.length !== 1)
 						throw new Error(`${file.path}: ${marker} must appear exactly once`);
 					const markerEnd = matches[0].index + matches[0][0].length;
-					const tail = source.slice(markerEnd, markerEnd + 500);
-					if (/\bit\.(skip|todo)\s*\(/.test(tail) || !tail.includes(parityCase.testName)) {
+					const tail = source.slice(markerEnd).trimStart();
+					const declaration = /^(?:it|test)(?:\.(skip|todo))?\s*\(\s*/.exec(tail);
+					const exactTitle = declaration
+						? sourceStringLiterals(parityCase.testName).some((literal) =>
+								tail.slice(declaration[0].length).startsWith(literal),
+							)
+						: false;
+					if (!declaration || declaration[1] || !exactTitle) {
 						throw new Error(
-							`${file.path}: ${marker} must identify one active test named ${JSON.stringify(parityCase.testName)}`,
+							`${file.path}: ${marker} must immediately precede one active test named ${JSON.stringify(parityCase.testName)}`,
 						);
 					}
 				}
@@ -260,6 +277,7 @@ export function buildLaneArgv(lane) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
 	const testNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.testName));
+	if (testNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
 	const escaped = testNames.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 	return [
 		'pnpm',
