@@ -114,13 +114,27 @@ Apply no labels, and never pass `--label`. Your token has no rights to label at
 all when the PR comes from a fork, and `.github/workflows/label-pr.yml` applies
 both labels as a bot, which does.
 
-## Leave the PR as a draft
+## Draft and readiness gates
 
-Open every PR as a draft and stop there. Nothing has run against the pushed diff
-yet, and the draft state is what says so. Marking it ready for review is the
-maintainer's job, and so is merging. Report the PR URL and end the task.
+Open every PR as a draft. Nothing has run against the pushed diff yet, and the
+draft state is what says so. By default, leave readiness and merging to a
+maintainer. When the user explicitly authorizes the agent to mark the PR ready,
+do so only after checking every gate below against the current head and live base:
 
-Do not sit on `gh pr checks --watch` either. Repository CI intentionally skips
+- every required check is terminal and successful;
+- every actionable review comment and review thread is resolved on the current head;
+- no reviewer or bot review is still in progress or expected for an older head;
+- the head contains the live base branch, not merely the base SHA cached when the PR opened;
+- GitHub reports the PR mergeable with no conflict or branch-currency blocker; and
+- the final `pnpm sync` and relevant local validation leave the worktree clean.
+
+These are independent gates. Green checks do not prove that review feedback is
+resolved, and resolved feedback does not prove that the branch still merges.
+Re-check mergeability and the live base after the last push and immediately
+before `gh pr ready`. If the base moved, incorporate it without rewriting a
+published branch, rerun sync and validation, push, and start the gates again.
+
+Unless the user explicitly requested monitoring, do not sit on `gh pr checks --watch`. Repository CI intentionally skips
 every job while the pull request is a draft and starts on the
 `ready_for_review` event. Cursor Bugbot still reviews every pull request,
 including drafts, outside Actions, so people can watch and respond to its issue
