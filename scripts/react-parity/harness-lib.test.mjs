@@ -9,6 +9,7 @@ import test from 'node:test';
 import {
 	buildLaneArgv,
 	buildTypeScriptCompilerArgv,
+	compareTestIdentities,
 	nodeMajorSatisfies,
 	requiredExecutableLanes,
 	toPortablePath,
@@ -196,6 +197,18 @@ test('normalizes Windows identity paths and resolves full-suite inventories from
 		'packages/example.test.ts',
 		'--reporter=json',
 	]);
+});
+
+test('sorts test identities by locale-independent code-unit order', () => {
+	const identities = [
+		{ file: 'test.ts', fullName: 'z' },
+		{ file: 'test.ts', fullName: '_underscore' },
+		{ file: 'test.ts', fullName: 'Alpha' },
+	];
+	assert.deepEqual(
+		identities.sort(compareTestIdentities).map(({ fullName }) => fullName),
+		['Alpha', '_underscore', 'z'],
+	);
 });
 
 test('rejects adapted type evidence that bypasses the TSRX compiler', () => {

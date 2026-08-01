@@ -45,12 +45,12 @@
         {
           "path": "packages/hook-form/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "40eee96bebfbb107ce9f79c24de97417c3e2e33df1a3294a301913bb71e823f7"
+          "sha256": "a49eb10306a768c1ceb01d767a9283b516903d02b84ccc6811390807fbc19188"
         },
         {
           "path": "scripts/react-parity/hook-form-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "011bd0cadf51df23bea741d5384709c257862b619332528cdd6074c359aa72e1"
+          "sha256": "9e410071f34e884265f003e869e752e032c22e2b1dc65764e2ab2199bf18b3b1"
         },
         {
           "path": "packages/hook-form/upstream/SHA256SUMS",
@@ -168,12 +168,12 @@
         {
           "path": "packages/hook-form/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "a8c9c0c02978ba09f941b31b4ba1faf9fd65a924375e09afa81fb87af1ae33c1"
+          "sha256": "4558b536b1f2d17fe65abf4683485b2a289903682f7a7a9b07734e23d1149093"
         },
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "c76ccde409f08b79351b8ae601789ffbf3a010ba4e21c2010dfb0e0a95e5d0cc"
+          "sha256": "92f366bfdfaa9cfe8b9b6d0ed50648a0450838bbb745ab3f14983c297c630a26"
         }
       ]
     },
@@ -197,7 +197,7 @@
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "c76ccde409f08b79351b8ae601789ffbf3a010ba4e21c2010dfb0e0a95e5d0cc"
+          "sha256": "92f366bfdfaa9cfe8b9b6d0ed50648a0450838bbb745ab3f14983c297c630a26"
         }
       ]
     },

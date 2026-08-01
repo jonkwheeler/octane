@@ -117,6 +117,12 @@ export function toPortablePath(path) {
 	return path.replaceAll('\\', '/');
 }
 
+export function compareTestIdentities(left, right) {
+	const leftKey = `${left.file}\0${left.fullName}`;
+	const rightKey = `${right.file}\0${right.fullName}`;
+	return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+}
+
 export function validateManifest(manifest) {
 	if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest))
 		fail('root must be an object');
@@ -438,7 +444,7 @@ export async function verifyManifestTestSelections(manifest, root) {
 					file: toPortablePath(relative(root, test.file)),
 					fullName: test.name.replaceAll(' > ', ' '),
 				}))
-				.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
+				.sort(compareTestIdentities);
 			const expected = inventory.tests.map(({ file, fullName }) => ({ file, fullName }));
 			if (JSON.stringify(collected) !== JSON.stringify(expected))
 				throw new Error(`lane ${lane.id} collected test identities drifted from its inventory`);
@@ -509,7 +515,7 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 					status: test.status,
 				})),
 			)
-			.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
+			.sort(compareTestIdentities);
 		const expected = inventory.tests.map(({ file, fullName }) => ({
 			file,
 			fullName,

@@ -1073,6 +1073,36 @@
     },
     {
       "file": "src/__tests__/performance.test.tsx",
+      "fullName": "Re-render efficiency does not re-render a useWatch component when an unwatched field changes",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/performance.test.tsx",
+      "fullName": "Re-render efficiency does not re-render the form parent when a child useWatch re-renders",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/performance.test.tsx",
+      "fullName": "Throughput handles 500 onChange events on a single field within budget",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/performance.test.tsx",
+      "fullName": "Throughput handles 500 onChange events with an active watch(fn) subscriber within budget",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/performance.test.tsx",
+      "fullName": "Throughput handles one change per field on a 50-field form within budget",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/performance.test.tsx",
+      "fullName": "Throughput runs trigger() on a 50-field form with required validation within budget",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/performance.test.tsx",
       "fullName": "_getDirty optimization surfaces untracked setValue fields in dirtyFields when the last tracked field goes pristine",
       "status": "passed"
     },
@@ -1128,16 +1158,6 @@
     },
     {
       "file": "src/__tests__/performance.test.tsx",
-      "fullName": "Re-render efficiency does not re-render a useWatch component when an unwatched field changes",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/performance.test.tsx",
-      "fullName": "Re-render efficiency does not re-render the form parent when a child useWatch re-renders",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/performance.test.tsx",
       "fullName": "setValues _valuesSubscriberCount guard includes values in the broadcast when a watch(fn) subscriber is active",
       "status": "passed"
     },
@@ -1154,26 +1174,6 @@
     {
       "file": "src/__tests__/performance.test.tsx",
       "fullName": "setValues emission batching emits exactly one state notification regardless of how many fields change",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/performance.test.tsx",
-      "fullName": "Throughput handles 500 onChange events on a single field within budget",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/performance.test.tsx",
-      "fullName": "Throughput handles 500 onChange events with an active watch(fn) subscriber within budget",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/performance.test.tsx",
-      "fullName": "Throughput handles one change per field on a 50-field form within budget",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/performance.test.tsx",
-      "fullName": "Throughput runs trigger() on a 50-field form with required validation within budget",
       "status": "passed"
     },
     {
@@ -2293,17 +2293,17 @@
     },
     {
       "file": "src/__tests__/useFieldArray/remove.test.tsx",
+      "fullName": "remove should remove Controller by index without error",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/useFieldArray/remove.test.tsx",
       "fullName": "remove should remove all field",
       "status": "passed"
     },
     {
       "file": "src/__tests__/useFieldArray/remove.test.tsx",
       "fullName": "remove should remove all field if isValid is true",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/useFieldArray/remove.test.tsx",
-      "fullName": "remove should remove Controller by index without error",
       "status": "passed"
     },
     {
@@ -2594,6 +2594,11 @@
     {
       "file": "src/__tests__/useForm.server.test.tsx",
       "fullName": "useForm with SSR should support progress enhancement for form",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/useForm.test.tsx",
+      "fullName": "useForm When using defaultValues formState.defaultValues and useFormState().defaultValues should be equal after reset",
       "status": "passed"
     },
     {
@@ -2949,11 +2954,6 @@
     {
       "file": "src/__tests__/useForm.test.tsx",
       "fullName": "useForm when shouldUnregister set to true with useFieldArray should remove and unregister inputs when inputs gets unmounted",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/useForm.test.tsx",
-      "fullName": "useForm When using defaultValues formState.defaultValues and useFormState().defaultValues should be equal after reset",
       "status": "passed"
     },
     {
@@ -4993,6 +4993,11 @@
     },
     {
       "file": "src/__tests__/useWatch.test.tsx",
+      "fullName": "useWatch reset Should update the value immediately after reset when used with Controller",
+      "status": "passed"
+    },
+    {
+      "file": "src/__tests__/useWatch.test.tsx",
       "fullName": "useWatch reset should fallback to inline defaultValue with reset API",
       "status": "passed"
     },
@@ -5009,11 +5014,6 @@
     {
       "file": "src/__tests__/useWatch.test.tsx",
       "fullName": "useWatch reset should return updated default value with watched field after reset",
-      "status": "passed"
-    },
-    {
-      "file": "src/__tests__/useWatch.test.tsx",
-      "fullName": "useWatch reset Should update the value immediately after reset when used with Controller",
       "status": "passed"
     },
     {
@@ -5343,12 +5343,12 @@
     },
     {
       "file": "src/__tests__/utils/deepEqual.test.ts",
-      "fullName": "deepEqual should return false when comparing an empty array with an empty plain object",
+      "fullName": "deepEqual should return false when comparing NaN with other values",
       "status": "passed"
     },
     {
       "file": "src/__tests__/utils/deepEqual.test.ts",
-      "fullName": "deepEqual should return false when comparing NaN with other values",
+      "fullName": "deepEqual should return false when comparing an empty array with an empty plain object",
       "status": "passed"
     },
     {
@@ -5363,12 +5363,12 @@
     },
     {
       "file": "src/__tests__/utils/deepEqual.test.ts",
-      "fullName": "deepEqual should return true when comparing invalid Date objects",
+      "fullName": "deepEqual should return true when comparing NaN values",
       "status": "passed"
     },
     {
       "file": "src/__tests__/utils/deepEqual.test.ts",
-      "fullName": "deepEqual should return true when comparing NaN values",
+      "fullName": "deepEqual should return true when comparing invalid Date objects",
       "status": "passed"
     },
     {

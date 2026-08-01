@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { toPortablePath } from './harness-lib.mjs';
+import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const lanes = [
@@ -29,7 +29,7 @@ for (const [project, destination] of lanes) {
 			file: test.relativeFile,
 			fullName: test.name.replaceAll(' > ', ' '),
 		}))
-		.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
+		.sort(compareTestIdentities);
 	const inventory = {
 		schemaVersion: 1,
 		project,

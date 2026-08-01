@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { toPortablePath } from './harness-lib.mjs';
+import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const upstreamRoot = resolve(root, 'packages/hook-form/upstream');
@@ -26,7 +26,7 @@ export function pristineTestIdentities(result, repoRoot = root) {
 				status: test.status,
 			})),
 		)
-		.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
+		.sort(compareTestIdentities);
 }
 
 if (process.argv.includes('--write')) {

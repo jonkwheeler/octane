@@ -1150,6 +1150,36 @@
       "fullName": "nested null bug should not throw when unregistering nested field with null parent"
     },
     {
+      "id": "runtime:064e9cbd7dee00e7",
+      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
+      "fullName": "Re-render efficiency does not re-render a useWatch component when an unwatched field changes"
+    },
+    {
+      "id": "runtime:4a84678947e54f0a",
+      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
+      "fullName": "Re-render efficiency does not re-render the form parent when a child useWatch re-renders"
+    },
+    {
+      "id": "runtime:e363b43a67977ac1",
+      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
+      "fullName": "Throughput handles 500 onChange events on a single field within budget"
+    },
+    {
+      "id": "runtime:fd7cd185789c1725",
+      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
+      "fullName": "Throughput handles 500 onChange events with an active watch(fn) subscriber within budget"
+    },
+    {
+      "id": "runtime:c687ad0aa1e57c75",
+      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
+      "fullName": "Throughput handles one change per field on a 50-field form within budget"
+    },
+    {
+      "id": "runtime:286072686e243e32",
+      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
+      "fullName": "Throughput runs trigger() on a 50-field form with required validation within budget"
+    },
+    {
       "id": "runtime:baa96f655cee92fc",
       "file": "packages/hook-form/tests/upstream/performance.test.tsx",
       "fullName": "_getDirty optimization surfaces untracked setValue fields in dirtyFields when the last tracked field goes pristine"
@@ -1205,16 +1235,6 @@
       "fullName": "onChange value-clone optimization stops emitting values after watch(fn) unsubscribes"
     },
     {
-      "id": "runtime:064e9cbd7dee00e7",
-      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
-      "fullName": "Re-render efficiency does not re-render a useWatch component when an unwatched field changes"
-    },
-    {
-      "id": "runtime:4a84678947e54f0a",
-      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
-      "fullName": "Re-render efficiency does not re-render the form parent when a child useWatch re-renders"
-    },
-    {
       "id": "runtime:b124f24cd0904860",
       "file": "packages/hook-form/tests/upstream/performance.test.tsx",
       "fullName": "setValues _valuesSubscriberCount guard includes values in the broadcast when a watch(fn) subscriber is active"
@@ -1233,26 +1253,6 @@
       "id": "runtime:7f179801e98baf4d",
       "file": "packages/hook-form/tests/upstream/performance.test.tsx",
       "fullName": "setValues emission batching emits exactly one state notification regardless of how many fields change"
-    },
-    {
-      "id": "runtime:e363b43a67977ac1",
-      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
-      "fullName": "Throughput handles 500 onChange events on a single field within budget"
-    },
-    {
-      "id": "runtime:fd7cd185789c1725",
-      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
-      "fullName": "Throughput handles 500 onChange events with an active watch(fn) subscriber within budget"
-    },
-    {
-      "id": "runtime:c687ad0aa1e57c75",
-      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
-      "fullName": "Throughput handles one change per field on a 50-field form within budget"
-    },
-    {
-      "id": "runtime:286072686e243e32",
-      "file": "packages/hook-form/tests/upstream/performance.test.tsx",
-      "fullName": "Throughput runs trigger() on a 50-field form with required validation within budget"
     },
     {
       "id": "runtime:1149dd93c3624565",
@@ -2330,6 +2330,11 @@
       "fullName": "remove should not reset Controller's value during remove when Field Array name is already registered"
     },
     {
+      "id": "runtime:a8b24a93cb3a0266",
+      "file": "packages/hook-form/tests/upstream/useFieldArray/remove.test.tsx",
+      "fullName": "remove should remove Controller by index without error"
+    },
+    {
       "id": "runtime:b836e714365a6034",
       "file": "packages/hook-form/tests/upstream/useFieldArray/remove.test.tsx",
       "fullName": "remove should remove all field"
@@ -2338,11 +2343,6 @@
       "id": "runtime:58e945a769349fe9",
       "file": "packages/hook-form/tests/upstream/useFieldArray/remove.test.tsx",
       "fullName": "remove should remove all field if isValid is true"
-    },
-    {
-      "id": "runtime:a8b24a93cb3a0266",
-      "file": "packages/hook-form/tests/upstream/useFieldArray/remove.test.tsx",
-      "fullName": "remove should remove Controller by index without error"
     },
     {
       "id": "runtime:40f8cd70fea7d647",
@@ -2573,6 +2573,11 @@
       "id": "runtime:f65731123c52a4e2",
       "file": "packages/hook-form/tests/upstream/useFieldArray/update.test.tsx",
       "fullName": "update with resolver should not invoke resolver when formState.isValid false"
+    },
+    {
+      "id": "runtime:cc0c4d830ac81e92",
+      "file": "packages/hook-form/tests/upstream/useForm.test.tsx",
+      "fullName": "useForm When using defaultValues formState.defaultValues and useFormState().defaultValues should be equal after reset"
     },
     {
       "id": "runtime:b5ab922389ff9426",
@@ -2928,11 +2933,6 @@
       "id": "runtime:05894650a479c0a4",
       "file": "packages/hook-form/tests/upstream/useForm.test.tsx",
       "fullName": "useForm when shouldUnregister set to true with useFieldArray should remove and unregister inputs when inputs gets unmounted"
-    },
-    {
-      "id": "runtime:cc0c4d830ac81e92",
-      "file": "packages/hook-form/tests/upstream/useForm.test.tsx",
-      "fullName": "useForm When using defaultValues formState.defaultValues and useFormState().defaultValues should be equal after reset"
     },
     {
       "id": "runtime:864acaffdc81870f",
@@ -4920,6 +4920,11 @@
       "fullName": "useWatch formContext should work with form context"
     },
     {
+      "id": "runtime:8e203ec42d3da5bf",
+      "file": "packages/hook-form/tests/upstream/useWatch.test.tsx",
+      "fullName": "useWatch reset Should update the value immediately after reset when used with Controller"
+    },
+    {
       "id": "runtime:20d8a783fc1d9843",
       "file": "packages/hook-form/tests/upstream/useWatch.test.tsx",
       "fullName": "useWatch reset should fallback to inline defaultValue with reset API"
@@ -4938,11 +4943,6 @@
       "id": "runtime:5189ac8d97dceeaf",
       "file": "packages/hook-form/tests/upstream/useWatch.test.tsx",
       "fullName": "useWatch reset should return updated default value with watched field after reset"
-    },
-    {
-      "id": "runtime:8e203ec42d3da5bf",
-      "file": "packages/hook-form/tests/upstream/useWatch.test.tsx",
-      "fullName": "useWatch reset Should update the value immediately after reset when used with Controller"
     },
     {
       "id": "runtime:903ec6008a4db185",
@@ -5270,14 +5270,14 @@
       "fullName": "deepEqual should not treat different values as equal when one side reuses an object reference"
     },
     {
-      "id": "runtime:7536c05734a43a27",
-      "file": "packages/hook-form/tests/upstream/utils/deepEqual.test.ts",
-      "fullName": "deepEqual should return false when comparing an empty array with an empty plain object"
-    },
-    {
       "id": "runtime:74b2928a7c53a103",
       "file": "packages/hook-form/tests/upstream/utils/deepEqual.test.ts",
       "fullName": "deepEqual should return false when comparing NaN with other values"
+    },
+    {
+      "id": "runtime:7536c05734a43a27",
+      "file": "packages/hook-form/tests/upstream/utils/deepEqual.test.ts",
+      "fullName": "deepEqual should return false when comparing an empty array with an empty plain object"
     },
     {
       "id": "runtime:223c471587233c9b",
@@ -5290,14 +5290,14 @@
       "fullName": "deepEqual should return false when two sets not match"
     },
     {
-      "id": "runtime:bb09a9c6bce10300",
-      "file": "packages/hook-form/tests/upstream/utils/deepEqual.test.ts",
-      "fullName": "deepEqual should return true when comparing invalid Date objects"
-    },
-    {
       "id": "runtime:3d2e4f4cdcde006f",
       "file": "packages/hook-form/tests/upstream/utils/deepEqual.test.ts",
       "fullName": "deepEqual should return true when comparing NaN values"
+    },
+    {
+      "id": "runtime:bb09a9c6bce10300",
+      "file": "packages/hook-form/tests/upstream/utils/deepEqual.test.ts",
+      "fullName": "deepEqual should return true when comparing invalid Date objects"
     },
     {
       "id": "runtime:c68bd7c4a0b17145",
