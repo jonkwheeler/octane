@@ -465,13 +465,7 @@ export async function verifyManifestTestSelections(manifest, root) {
 		if (!collectedTests) {
 			const { stdout } = await execFileAsync(
 				process.execPath,
-				[
-					'node_modules/vitest/vitest.mjs',
-					'list',
-					'--project',
-					lane.project,
-					'--json',
-				],
+				['node_modules/vitest/vitest.mjs', 'list', '--project', lane.project, '--json'],
 				{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 			);
 			collectedTests = JSON.parse(stdout);
