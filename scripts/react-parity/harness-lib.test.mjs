@@ -96,7 +96,7 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 	]);
 });
 
-test('accepts explicit TypeScript lanes and builds compiler argv without a shell', () => {
+test('accepts explicit TypeScript lanes and builds portable compiler argv without a shell', () => {
 	const lane = {
 		...manifest().lanes[0],
 		id: 'pristine-types',
@@ -111,11 +111,38 @@ test('accepts explicit TypeScript lanes and builds compiler argv without a shell
 	const value = manifest({ lanes: [lane] });
 	assert.deepEqual(validateManifest(value), value);
 	assert.deepEqual(buildLaneArgv(lane), [
-		join(process.cwd(), 'node_modules/.bin/tsc'),
+		process.execPath,
+		'node_modules/typescript/bin/tsc',
 		'--noEmit',
 		'-p',
 		'packages/hook-form/upstream/src/__typetest__/tsconfig.json',
 	]);
+});
+
+test('uses Node package entrypoints for every TypeScript compiler', () => {
+	const lane = {
+		...manifest().lanes[0],
+		execution: {
+			kind: 'typescript',
+			compiler: 'tsc',
+			project: 'tsconfig.json',
+		},
+	};
+	const entrypoints = {
+		tsc: 'node_modules/typescript/bin/tsc',
+		tsgo: 'node_modules/@typescript/native-preview/bin/tsgo',
+		'tsrx-tsc': 'node_modules/@tsrx/typescript-plugin/dist/tsc.js',
+	};
+
+	for (const [compiler, entrypoint] of Object.entries(entrypoints)) {
+		assert.deepEqual(buildLaneArgv({ ...lane, execution: { ...lane.execution, compiler } }), [
+			process.execPath,
+			entrypoint,
+			'--noEmit',
+			'-p',
+			'tsconfig.json',
+		]);
+	}
 });
 
 test('matches the exact Vitest full name instead of another title with the same suffix', () => {

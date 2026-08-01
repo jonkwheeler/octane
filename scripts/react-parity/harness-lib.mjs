@@ -376,8 +376,14 @@ export function buildLaneArgv(lane) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
 	if (lane.execution?.kind === 'typescript') {
+		const compilerEntrypoints = {
+			tsc: 'node_modules/typescript/bin/tsc',
+			tsgo: 'node_modules/@typescript/native-preview/bin/tsgo',
+			'tsrx-tsc': 'node_modules/@tsrx/typescript-plugin/dist/tsc.js',
+		};
 		return [
-			resolve('node_modules/.bin', lane.execution.compiler),
+			process.execPath,
+			compilerEntrypoints[lane.execution.compiler],
 			'--noEmit',
 			'-p',
 			lane.execution.project,
