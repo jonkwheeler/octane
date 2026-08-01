@@ -1,0 +1,1 @@
+{"upstream":{"package":"@mantine/carousel","version":"9.5.0"},"surface":"Complete @mantine/carousel 9.5.0 component surface backed directly by Embla core.","divergences":["The Octane hook initializes embla-carousel directly instead of embla-carousel-react."],"ssr":"Slides render as static markup; Embla initializes after the viewport mounts.","verified":"2026-07-29","notes":[]}

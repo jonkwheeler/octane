@@ -1,0 +1,10 @@
+{
+  "upstream": { "package": "@mantine/code-highlight", "version": "9.5.0" },
+  "surface": "Complete @mantine/code-highlight 9.5.0 runtime surface: block, inline, tabs, copy and expand controls, provider, and plain-text, highlight.js, and Shiki adapter factories.",
+  "divergences": [
+    "Adapter libraries remain user-supplied, matching the upstream adapter contract."
+  ],
+  "ssr": "Synchronous adapters render deterministic markup; adapters with async contexts initially render their fallback and load on the client.",
+  "verified": "2026-07-29",
+  "notes": []
+}
