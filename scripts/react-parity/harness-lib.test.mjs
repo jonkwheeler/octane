@@ -8,6 +8,7 @@ import test from 'node:test';
 
 import {
 	buildLaneArgv,
+	buildTypeScriptCompilerArgv,
 	nodeMajorSatisfies,
 	validateManifest,
 	verifyLaneCollectedTests,
@@ -149,13 +150,12 @@ test('uses Node package entrypoints for every TypeScript compiler', () => {
 	};
 
 	for (const [compiler, entrypoint] of Object.entries(entrypoints)) {
-		assert.deepEqual(buildLaneArgv({ ...lane, execution: { ...lane.execution, compiler } }), [
-			process.execPath,
-			entrypoint,
-			'--noEmit',
-			'-p',
-			'tsconfig.json',
-		]);
+		const expected = [process.execPath, entrypoint, '--noEmit', '-p', 'tsconfig.json'];
+		assert.deepEqual(buildTypeScriptCompilerArgv(compiler, 'tsconfig.json'), expected);
+		assert.deepEqual(
+			buildLaneArgv({ ...lane, execution: { ...lane.execution, compiler } }),
+			expected,
+		);
 	}
 });
 

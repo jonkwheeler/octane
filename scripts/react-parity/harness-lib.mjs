@@ -371,23 +371,21 @@ export async function verifyManifestTestSelections(manifest, root) {
 	return true;
 }
 
+export function buildTypeScriptCompilerArgv(compiler, project) {
+	const compilerEntrypoints = {
+		tsc: 'node_modules/typescript/bin/tsc',
+		tsgo: 'node_modules/@typescript/native-preview/bin/tsgo',
+		'tsrx-tsc': 'node_modules/@tsrx/typescript-plugin/dist/tsc.js',
+	};
+	return [process.execPath, compilerEntrypoints[compiler], '--noEmit', '-p', project];
+}
+
 export function buildLaneArgv(lane) {
 	if (lane.available === false) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
 	if (lane.execution?.kind === 'typescript') {
-		const compilerEntrypoints = {
-			tsc: 'node_modules/typescript/bin/tsc',
-			tsgo: 'node_modules/@typescript/native-preview/bin/tsgo',
-			'tsrx-tsc': 'node_modules/@tsrx/typescript-plugin/dist/tsc.js',
-		};
-		return [
-			process.execPath,
-			compilerEntrypoints[lane.execution.compiler],
-			'--noEmit',
-			'-p',
-			lane.execution.project,
-		];
+		return buildTypeScriptCompilerArgv(lane.execution.compiler, lane.execution.project);
 	}
 	const fullNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.fullName));
 	if (fullNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
