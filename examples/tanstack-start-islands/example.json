@@ -1,0 +1,28 @@
+{
+  "$schema": "../example.schema.json",
+  "schemaVersion": 1,
+  "id": "tanstack-start-islands",
+  "title": "TanStack Start Islands",
+  "summary": "A TanStack Start React shell incrementally hosting a stateful TSRX route leaf through OctaneCompat.",
+  "status": "experimental",
+  "host": "react",
+  "renderModes": ["client", "ssr"],
+  "dialects": ["tsrx", "tsx"],
+  "bindings": [],
+  "octaneFeatures": ["octane-compat", "react-host"],
+  "commands": {
+    "build": ["build"],
+    "typecheck": "typecheck",
+    "e2e": "test:e2e"
+  },
+  "journeys": [
+    {
+      "id": "start-route-octane-leaf",
+      "title": "Mount an interactive Octane counter inside a TanStack Start route",
+      "kind": "golden",
+      "spec": "e2e/adoption.spec.ts",
+      "critical": true
+    }
+  ],
+  "faultScenarios": []
+}

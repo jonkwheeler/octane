@@ -22,6 +22,10 @@ For the full story, see the
 
 Octane is alpha software. It is ready to try, but not yet ready for production.
 
+To keep an existing React or Next.js application and move one compiled leaf at
+a time, follow the
+[incremental React adoption guide](../../docs/incremental-react-adoption.md).
+
 ## License
 
 MIT

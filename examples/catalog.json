@@ -633,6 +633,43 @@
       ]
     },
     {
+      "directory": "examples/next-islands",
+      "id": "next-islands",
+      "title": "Next Islands",
+      "summary": "A Next.js App Router shell incrementally hosting stateful TSRX, Recharts, and Tiptap leaves through OctaneCompat.",
+      "status": "experimental",
+      "host": "react",
+      "renderModes": ["client", "static"],
+      "dialects": ["tsrx", "tsx"],
+      "bindings": ["@octanejs/recharts", "@octanejs/tiptap"],
+      "octaneFeatures": ["next-host", "octane-compat", "react-host"],
+      "commands": { "build": ["build"], "typecheck": "typecheck", "e2e": "test:e2e" },
+      "journeys": [
+        {
+          "id": "react-shell-octane-leaf",
+          "title": "Render a React-owned Next shell and update state inside its Octane leaf",
+          "kind": "golden",
+          "spec": "e2e/next-islands.spec.ts",
+          "critical": true
+        },
+        {
+          "id": "migrated-recharts-leaf",
+          "title": "Render and update a converted Recharts chart inside the hosted Octane root",
+          "kind": "golden",
+          "spec": "e2e/next-islands.spec.ts",
+          "critical": true
+        },
+        {
+          "id": "migrated-tiptap-leaf",
+          "title": "Render, replace, and edit Tiptap content inside the hosted Octane root",
+          "kind": "golden",
+          "spec": "e2e/next-islands.spec.ts",
+          "critical": true
+        }
+      ],
+      "faultScenarios": []
+    },
+    {
       "directory": "examples/pagecraft",
       "id": "pagecraft",
       "title": "Pagecraft",
@@ -799,6 +836,29 @@
       ]
     },
     {
+      "directory": "examples/react-router-islands",
+      "id": "react-router-islands",
+      "title": "React Router Islands",
+      "summary": "A React Router shell incrementally hosting a stateful TSRX route leaf through OctaneCompat.",
+      "status": "experimental",
+      "host": "react",
+      "renderModes": ["client"],
+      "dialects": ["tsrx", "tsx"],
+      "bindings": [],
+      "octaneFeatures": ["octane-compat", "react-host"],
+      "commands": { "build": ["build"], "typecheck": "typecheck", "e2e": "test:e2e" },
+      "journeys": [
+        {
+          "id": "react-route-octane-leaf",
+          "title": "Mount an interactive Octane counter inside a React Router route",
+          "kind": "golden",
+          "spec": "e2e/adoption.spec.ts",
+          "critical": true
+        }
+      ],
+      "faultScenarios": []
+    },
+    {
       "directory": "examples/relay",
       "id": "relay",
       "title": "Relay",
@@ -942,6 +1002,29 @@
       ]
     },
     {
+      "directory": "examples/tanstack-start-islands",
+      "id": "tanstack-start-islands",
+      "title": "TanStack Start Islands",
+      "summary": "A TanStack Start React shell incrementally hosting a stateful TSRX route leaf through OctaneCompat.",
+      "status": "experimental",
+      "host": "react",
+      "renderModes": ["client", "ssr"],
+      "dialects": ["tsrx", "tsx"],
+      "bindings": [],
+      "octaneFeatures": ["octane-compat", "react-host"],
+      "commands": { "build": ["build"], "typecheck": "typecheck", "e2e": "test:e2e" },
+      "journeys": [
+        {
+          "id": "start-route-octane-leaf",
+          "title": "Mount an interactive Octane counter inside a TanStack Start route",
+          "kind": "golden",
+          "spec": "e2e/adoption.spec.ts",
+          "critical": true
+        }
+      ],
+      "faultScenarios": []
+    },
+    {
       "directory": "examples/threadline",
       "id": "threadline",
       "title": "Threadline",
@@ -1011,6 +1094,29 @@
           "description": "Two rapid reactions complete on deliberately different delays without clobbering one another."
         }
       ]
+    },
+    {
+      "directory": "examples/vite-react-islands",
+      "id": "vite-react-islands",
+      "title": "Vite React Islands",
+      "summary": "A Vite React shell incrementally hosting a stateful TSRX leaf through OctaneCompat.",
+      "status": "experimental",
+      "host": "react",
+      "renderModes": ["client"],
+      "dialects": ["tsrx", "tsx"],
+      "bindings": [],
+      "octaneFeatures": ["octane-compat", "react-host"],
+      "commands": { "build": ["build"], "typecheck": "typecheck", "e2e": "test:e2e" },
+      "journeys": [
+        {
+          "id": "react-shell-octane-leaf",
+          "title": "Mount an interactive Octane counter inside the existing Vite React shell",
+          "kind": "golden",
+          "spec": "e2e/adoption.spec.ts",
+          "critical": true
+        }
+      ],
+      "faultScenarios": []
     },
     {
       "directory": "examples/wayfinder",

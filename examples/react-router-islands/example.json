@@ -1,0 +1,28 @@
+{
+  "$schema": "../example.schema.json",
+  "schemaVersion": 1,
+  "id": "react-router-islands",
+  "title": "React Router Islands",
+  "summary": "A React Router shell incrementally hosting a stateful TSRX route leaf through OctaneCompat.",
+  "status": "experimental",
+  "host": "react",
+  "renderModes": ["client"],
+  "dialects": ["tsrx", "tsx"],
+  "bindings": [],
+  "octaneFeatures": ["octane-compat", "react-host"],
+  "commands": {
+    "build": ["build"],
+    "typecheck": "typecheck",
+    "e2e": "test:e2e"
+  },
+  "journeys": [
+    {
+      "id": "react-route-octane-leaf",
+      "title": "Mount an interactive Octane counter inside a React Router route",
+      "kind": "golden",
+      "spec": "e2e/adoption.spec.ts",
+      "critical": true
+    }
+  ],
+  "faultScenarios": []
+}

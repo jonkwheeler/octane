@@ -1,0 +1,26 @@
+{
+  "name": "vite-react-islands-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "A React Vite shell incrementally hosting an Octane TSRX island.",
+  "scripts": {
+    "dev": "vite",
+    "build": "node ../../packages/octane/scripts/build.mjs && vite build",
+    "typecheck": "tsrx-tsc --noEmit",
+    "test:e2e": "node --experimental-strip-types --test e2e/*.spec.ts"
+  },
+  "dependencies": {
+    "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default"
+  },
+  "devDependencies": {
+    "@octanejs/vite-plugin": "workspace:*",
+    "@vitejs/plugin-react": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "typescript": "catalog:default",
+    "vite": "catalog:default"
+  }
+}

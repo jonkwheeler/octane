@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**55 publishable package(s), including 43 framework binding(s).**
+**72 publishable package(s), including 60 framework binding(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
@@ -30,9 +30,26 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/jotai` | [`packages/jotai`](../packages/jotai) | framework binding | `0.1.16` | 7 |
 | `@octanejs/lexical` | [`packages/lexical`](../packages/lexical) | framework binding | `0.1.18` | 42 |
 | `@octanejs/lucide` | [`packages/lucide`](../packages/lucide) | framework binding | `0.1.14` | 4 |
+| `@octanejs/mantine-carousel` | [`packages/mantine-carousel`](../packages/mantine-carousel) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-charts` | [`packages/mantine-charts`](../packages/mantine-charts) | framework binding | `0.1.0` | 3 |
+| `@octanejs/mantine-code-highlight` | [`packages/mantine-code-highlight`](../packages/mantine-code-highlight) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-core` | [`packages/mantine-core`](../packages/mantine-core) | framework binding | `0.1.0` | 4 |
+| `@octanejs/mantine-dates` | [`packages/mantine-dates`](../packages/mantine-dates) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-dropzone` | [`packages/mantine-dropzone`](../packages/mantine-dropzone) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-form` | [`packages/mantine-form`](../packages/mantine-form) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-hooks` | [`packages/mantine-hooks`](../packages/mantine-hooks) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-modals` | [`packages/mantine-modals`](../packages/mantine-modals) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-notifications` | [`packages/mantine-notifications`](../packages/mantine-notifications) | framework binding | `0.1.0` | 3 |
+| `@octanejs/mantine-nprogress` | [`packages/mantine-nprogress`](../packages/mantine-nprogress) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-schedule` | [`packages/mantine-schedule`](../packages/mantine-schedule) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-spotlight` | [`packages/mantine-spotlight`](../packages/mantine-spotlight) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-store` | [`packages/mantine-store`](../packages/mantine-store) | framework binding | `0.1.0` | 1 |
+| `@octanejs/mantine-tiptap` | [`packages/mantine-tiptap`](../packages/mantine-tiptap) | framework binding | `0.1.0` | 1 |
 | `@octanejs/mcp-server` | [`packages/octane-mcp-server`](../packages/octane-mcp-server) | agent tooling | `0.2.9` | 2 |
 | `@octanejs/mdx` | [`packages/mdx`](../packages/mdx) | framework binding | `0.1.16` | 4 |
+| `@octanejs/mobx` | [`packages/mobx`](../packages/mobx) | framework binding | `0.1.0` | 1 |
 | `@octanejs/motion` | [`packages/motion`](../packages/motion) | framework binding | `0.1.18` | 1 |
+| `@octanejs/number-format` | [`packages/number-format`](../packages/number-format) | framework binding | `0.1.0` | 1 |
 | `@octanejs/nuqs` | [`packages/nuqs`](../packages/nuqs) | framework binding | `0.1.8` | 7 |
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.18` | 1 |
 | `@octanejs/recharts` | [`packages/recharts`](../packages/recharts) | framework binding | `0.1.16` | 1 |

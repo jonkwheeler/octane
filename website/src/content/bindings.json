@@ -5,10 +5,12 @@
     "packages": [
       "@octanejs/zustand",
       "@octanejs/valtio",
+      "@octanejs/mobx",
       "@octanejs/jotai",
       "@octanejs/redux",
       "@octanejs/redux-toolkit",
-      "@octanejs/tanstack-store"
+      "@octanejs/tanstack-store",
+      "@octanejs/mantine-store"
     ]
   },
   {
@@ -32,6 +34,18 @@
       "@octanejs/radix",
       "@octanejs/base-ui",
       "@octanejs/aria",
+      "@octanejs/mantine-core",
+      "@octanejs/mantine-charts",
+      "@octanejs/mantine-carousel",
+      "@octanejs/mantine-code-highlight",
+      "@octanejs/mantine-dates",
+      "@octanejs/mantine-dropzone",
+      "@octanejs/mantine-modals",
+      "@octanejs/mantine-notifications",
+      "@octanejs/mantine-nprogress",
+      "@octanejs/mantine-schedule",
+      "@octanejs/mantine-spotlight",
+      "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/motion",
       "@octanejs/dnd-kit",
@@ -49,6 +63,9 @@
     "packages": [
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
+      "@octanejs/mantine-form",
+      "@octanejs/mantine-tiptap",
+      "@octanejs/number-format",
       "@octanejs/lexical",
       "@octanejs/tiptap",
       "@octanejs/mdx",

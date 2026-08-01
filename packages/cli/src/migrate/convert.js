@@ -1,0 +1,217 @@
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { parseModule } from '@tsrx/core';
+import { analyzeMigration } from './analyze.js';
+import { walkAst } from './ast.js';
+import { classifyPackageImport } from './classify.js';
+import { applyTextEdits } from './edits.js';
+
+const NATIVE_CHANGE_INPUT_TYPES = new Set([
+	'button',
+	'checkbox',
+	'color',
+	'date',
+	'datetime-local',
+	'file',
+	'hidden',
+	'image',
+	'month',
+	'radio',
+	'range',
+	'reset',
+	'submit',
+	'time',
+	'week',
+]);
+
+/**
+ * @typedef {{
+ *   file: string,
+ *   digest: string,
+ *   edits: import('./edits.js').TextEdit[],
+ *   changed: boolean,
+ *   output: string
+ * }} ConversionFile
+ * @typedef {{
+ *   schemaVersion: 1,
+ *   root: string,
+ *   report: import('./analyze.js').MigrationReport,
+ *   files: ConversionFile[],
+ *   blocked: boolean
+ * }} ConversionPlan
+ */
+
+/** @param {string} source */
+function digest(source) {
+	return createHash('sha256').update(source).digest('hex');
+}
+
+/** @param {string} source */
+function hasLeadingOctanePragma(source) {
+	const leadingTrivia =
+		/^\uFEFF?(?:(?:\s+)|(?:\/\/[^\n]*(?:\n|$))|(?:\/\*[\s\S]*?\*\/))*/.exec(source)?.[0] ?? '';
+	return /@jsxImportSource\s+([^\s*]+)/.exec(leadingTrivia)?.[1] === 'octane';
+}
+
+/** @param {any} node @returns {string | null} */
+function jsxName(node) {
+	if (node?.type === 'JSXIdentifier') return node.name;
+	return null;
+}
+
+/** @param {any} node @returns {import('./edits.js').TextEdit | null} */
+function textInputOnChangeEdit(node) {
+	if (node.type !== 'JSXOpeningElement') return null;
+	const host = jsxName(node.name);
+	if (host !== 'input' && host !== 'textarea') return null;
+	let onChange = null;
+	let type = null;
+	let hasDynamicType = false;
+	for (const attribute of node.attributes ?? []) {
+		if (attribute.type !== 'JSXAttribute') continue;
+		const name = jsxName(attribute.name);
+		if (name === 'onChange') onChange = attribute.name;
+		if (name === 'type') {
+			if (attribute.value?.type === 'Literal' || attribute.value?.type === 'StringLiteral') {
+				type = String(attribute.value.value).toLowerCase();
+			} else if (
+				attribute.value?.type === 'JSXExpressionContainer' &&
+				(attribute.value.expression?.type === 'Literal' ||
+					attribute.value.expression?.type === 'StringLiteral')
+			) {
+				type = String(attribute.value.expression.value).toLowerCase();
+			} else {
+				hasDynamicType = true;
+			}
+		}
+	}
+	if (
+		!onChange ||
+		(host === 'input' && (hasDynamicType || (type !== null && NATIVE_CHANGE_INPUT_TYPES.has(type))))
+	)
+		return null;
+	return { start: onChange.start, end: onChange.end, text: 'onInput', reason: 'native-text-input' };
+}
+
+/** @param {string} root @param {string} file @returns {ConversionFile} */
+function planFile(root, file) {
+	const source = readFileSync(file, 'utf8');
+	const ast = parseModule(source, file);
+	/** @type {import('./edits.js').TextEdit[]} */
+	const edits = [];
+
+	for (const node of ast.body ?? []) {
+		if (
+			(node.type !== 'ImportDeclaration' &&
+				node.type !== 'ExportNamedDeclaration' &&
+				node.type !== 'ExportAllDeclaration') ||
+			typeof node.source?.value !== 'string'
+		)
+			continue;
+		if (
+			node.importKind === 'type' ||
+			node.exportKind === 'type' ||
+			(node.type === 'ExportNamedDeclaration' &&
+				node.specifiers?.length > 0 &&
+				node.specifiers.every((/** @type {any} */ specifier) => specifier.exportKind === 'type'))
+		)
+			continue;
+		const classified = classifyPackageImport(root, node.source.value, file);
+		if (classified.classification !== 'supported' || !classified.replacement) continue;
+		if (classified.replacement === node.source.value) continue;
+		edits.push({
+			start: node.source.start + 1,
+			end: node.source.end - 1,
+			text: classified.replacement,
+			reason: 'supported-import',
+		});
+	}
+
+	walkAst(ast, (node) => {
+		if (
+			node.type === 'ImportExpression' &&
+			typeof node.source?.value === 'string' &&
+			!node.source.value.startsWith('.') &&
+			!node.source.value.startsWith('/')
+		) {
+			const classified = classifyPackageImport(root, node.source.value, file);
+			if (
+				classified.classification === 'supported' &&
+				classified.replacement &&
+				classified.replacement !== node.source.value
+			) {
+				edits.push({
+					start: node.source.start + 1,
+					end: node.source.end - 1,
+					text: classified.replacement,
+					reason: 'supported-import',
+				});
+			}
+		}
+		const edit = textInputOnChangeEdit(node);
+		if (edit) edits.push(edit);
+	});
+
+	if (!hasLeadingOctanePragma(source)) {
+		edits.push({
+			start: 0,
+			end: 0,
+			text: '/** @jsxImportSource octane */\n',
+			reason: 'jsx-ownership',
+		});
+	}
+
+	const output = applyTextEdits(source, edits);
+	return {
+		file,
+		digest: digest(source),
+		edits: edits.sort((left, right) => left.start - right.start),
+		changed: output !== source,
+		output,
+	};
+}
+
+/**
+ * @param {{ root: string, entries: string[] }} input
+ * @returns {ConversionPlan}
+ */
+export function createConversionPlan({ root, entries }) {
+	const projectRoot = path.resolve(root);
+	const report = analyzeMigration({ root: projectRoot, entries });
+	if (report.blocked) {
+		return { schemaVersion: 1, root: projectRoot, report, files: [], blocked: true };
+	}
+	return {
+		schemaVersion: 1,
+		root: projectRoot,
+		report,
+		files: report.candidateBoundaries.map((file) => planFile(projectRoot, file)),
+		blocked: false,
+	};
+}
+
+/**
+ * @param {ConversionPlan} plan
+ * @returns {{ file: string, applied: boolean, conflict: boolean }[]}
+ */
+export function applyConversionPlan(plan) {
+	/** @type {Set<string>} */
+	const conflicts = new Set(
+		plan.files
+			.filter((file) => digest(readFileSync(file.file, 'utf8')) !== file.digest)
+			.map((file) => file.file),
+	);
+	if (conflicts.size > 0) {
+		return plan.files.map((file) => ({
+			file: file.file,
+			applied: false,
+			conflict: conflicts.has(file.file),
+		}));
+	}
+
+	return plan.files.map((file) => {
+		if (file.changed) writeFileSync(file.file, file.output);
+		return { file: file.file, applied: file.changed, conflict: false };
+	});
+}

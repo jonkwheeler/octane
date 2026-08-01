@@ -61,3 +61,7 @@ add`) because those tools own their config schema, and falls back to a
   that spec rather than written by hand. The binding and error-code catalogs ship
   as a snapshot generated from this repository by `pnpm cli:data`, checked in CI,
   because the CLI runs against user projects rather than this checkout.
+# Unreleased
+
+- Add `octane migrate analyze` and `octane migrate convert` for incremental
+  React-to-Octane leaf adoption.
