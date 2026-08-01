@@ -104,7 +104,7 @@ export function verifyHookFormUpstream(repoRoot) {
 		}).map(({ title }) => TITLE_REPLACEMENTS.get(`${file}\0${title}`) ?? title);
 		const portedSource = readFileSync(resolve(portedRoot, file), 'utf8');
 		if (
-			/\b(?:fdescribe|fit|xdescribe|xit|xtest)\s*\(|\b(?:describe|it|test)\.(?:failing|only|skip|todo)\s*\(/.test(
+			/\b(?:fdescribe|fit|xdescribe|xit|xtest)(?:\s*\(|\.each\s*\()|\b(?:describe|it|test)\.(?:failing|only|skip|todo)(?:\s*\(|\.each\s*\()/.test(
 				portedSource,
 			)
 		) {

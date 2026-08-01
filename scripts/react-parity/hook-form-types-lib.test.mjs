@@ -57,3 +57,15 @@ test('rejects removing an adapted @ts-expect-error', async (t) => {
 	assert.equal(changed, true, 'fixture must contain @ts-expect-error');
 	assert.throws(() => buildTypeInventory(value.root, value.config), /assertion groups differ/);
 });
+
+test('rejects retargeting an adapted relative import', async (t) => {
+	const value = await fixture();
+	t.after(() => rm(value.root, { recursive: true, force: true }));
+	const file = join(value.adaptedRoot, 'errors.test-d.ts');
+	const source = await readFile(file, 'utf8');
+	await writeFile(file, source.replace("from '../src/types'", "from '../src/useForm'"));
+	assert.throws(
+		() => buildTypeInventory(value.root, value.config),
+		/change outside the permitted transformations/,
+	);
+});

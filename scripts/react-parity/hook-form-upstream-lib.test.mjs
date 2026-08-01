@@ -98,10 +98,13 @@ test('rejects duplicating one port-only case while dropping another', async () =
 test('rejects disabled, focused, or expected-failing adapted tests', async () => {
 	for (const registration of [
 		'describe.skip',
+		'describe.only.each',
 		'it.todo',
+		'it.skip.each',
 		'test.failing',
 		'it.only',
 		'fit',
+		'fit.each',
 		'xit',
 	]) {
 		const { portedTests, root } = await fixture();

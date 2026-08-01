@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { posix as posixPath, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/hook-form/audit/type-parity.json';
@@ -62,8 +62,12 @@ function assertionGroups(source, fileName) {
 	return groups;
 }
 
-function expectedAdaptedSpecifier(specifier) {
-	if (!specifier.startsWith('../')) return specifier;
+function expectedAdaptedSpecifier(specifier, fileName) {
+	if (
+		!specifier.startsWith('../') ||
+		!posixPath.normalize(posixPath.join(posixPath.dirname(fileName), specifier)).startsWith('../')
+	)
+		return specifier;
 	return specifier.replace(/^((?:\.\.\/)+)/, '$1src/');
 }
 
@@ -75,6 +79,16 @@ function structuralSource(source, fileName, side, adaptedSource = '') {
 		true,
 		ts.ScriptKind.TS,
 	);
+	const adaptedFile =
+		side === 'upstream'
+			? ts.createSourceFile(fileName, adaptedSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+			: undefined;
+	const adaptedSpecifiers = (adaptedFile?.statements ?? [])
+		.filter(
+			(statement) =>
+				ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier),
+		)
+		.map((statement) => statement.moduleSpecifier.text);
 	const replacements = [];
 	let importIndex = 0;
 	for (const statement of sourceFile.statements) {
@@ -83,15 +97,15 @@ function structuralSource(source, fileName, side, adaptedSource = '') {
 		const specifier = statement.moduleSpecifier.text;
 		let normalized = specifier;
 		if (side === 'upstream') {
-			normalized = expectedAdaptedSpecifier(specifier);
-			if (normalized.startsWith('../') && adaptedSource.includes(`from '${normalized}.tsrx'`))
-				normalized += '.tsrx';
+			normalized = expectedAdaptedSpecifier(specifier, fileName);
+			if (adaptedSpecifiers[importIndex] === `${normalized}.tsrx`) normalized += '.tsrx';
 		}
 		replacements.push({
 			start: statement.moduleSpecifier.getStart(sourceFile) + 1,
 			end: statement.moduleSpecifier.getEnd() - 1,
-			value: normalized.startsWith('.') ? `__source_${importIndex++}` : normalized,
+			value: normalized,
 		});
+		importIndex++;
 	}
 	let transformed = source;
 	for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
