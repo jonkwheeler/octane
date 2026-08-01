@@ -10,6 +10,7 @@ import {
 	buildLaneArgv,
 	buildTypeScriptCompilerArgv,
 	nodeMajorSatisfies,
+	requiredExecutableLanes,
 	validateManifest,
 	verifyLaneCollectedTests,
 	verifyLaneEnvironment,
@@ -102,12 +103,25 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 test('rejects successful Vitest runs that skipped declared cases', () => {
 	const lane = manifest().lanes[0];
 	assert.equal(
-		verifyLaneRunResult(lane, JSON.stringify({ numPassedTests: 1, numPendingTests: 0 })),
+		verifyLaneRunResult(lane, JSON.stringify({ numPassedTests: 1, numPendingTests: 5 })),
 		true,
 	);
 	assert.throws(
 		() => verifyLaneRunResult(lane, JSON.stringify({ numPassedTests: 0, numPendingTests: 1 })),
-		/executed 0 of 1 declared tests \(1 skipped\)/,
+		/executed 0 of 1 declared tests/,
+	);
+});
+
+test('selects every available required lane for aggregate execution', () => {
+	const value = manifest();
+	value.lanes.push(
+		{ ...value.lanes[0], id: 'differential', type: 'differential' },
+		{ ...value.lanes[0], id: 'optional', oracle: 'optional' },
+		{ ...value.lanes[0], id: 'unavailable', available: false },
+	);
+	assert.deepEqual(
+		requiredExecutableLanes(value).map((lane) => lane.id),
+		['adapted', 'differential'],
 	);
 });
 

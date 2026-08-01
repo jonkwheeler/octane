@@ -15,6 +15,7 @@ import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 import {
 	loadManifest,
+	requiredExecutableLanes,
 	verifyLaneEnvironment,
 	verifyManifestFiles,
 	verifyManifestTestSelections,
@@ -126,12 +127,7 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		}
 		await verifyManifestTestSelections(manifest, REPO);
 		if (manifest.provenance.verification === 'verified') {
-			for (const lane of manifest.lanes.filter(
-				(candidate) =>
-					(candidate.type === 'pristine-upstream' || candidate.type.endsWith('-types')) &&
-					candidate.oracle === 'required' &&
-					candidate.available !== false,
-			)) {
+			for (const lane of requiredExecutableLanes(manifest)) {
 				execFileSync(
 					process.execPath,
 					[HARNESS_PATH, 'run', '--manifest', relativeFile, '--lane', lane.id],

@@ -67,7 +67,7 @@ if (action === 'validate') {
 			});
 			if (captureResult) child.stdout.on('data', (chunk) => (stdout += chunk));
 			child.on('error', reject);
-			child.on('exit', (code, signal) => resolveExit(code ?? (signal ? 1 : 0)));
+			child.on('close', (code, signal) => resolveExit(code ?? (signal ? 1 : 0)));
 		});
 		if (exitCode !== 0) process.exit(exitCode);
 		verifyLaneRunResult(lane, stdout);
