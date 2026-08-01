@@ -33,7 +33,7 @@
         {
           "path": "packages/hook-form/tests/upstream-original.test.ts",
           "role": "test",
-          "sha256": "0a7d78b454c855385b6a5ca32118a26b47eeec96be52c0902ead58741db8b2c8",
+          "sha256": "e1ad5f6651c539087c69fdfe800253f084abdf7f8d468dde1dd2a2584f9354e0",
           "cases": [
             {
               "id": "pristine:react-hook-form-original-suite",
@@ -43,6 +43,16 @@
           ]
         },
         {
+          "path": "packages/hook-form/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "40eee96bebfbb107ce9f79c24de97417c3e2e33df1a3294a301913bb71e823f7"
+        },
+        {
+          "path": "scripts/react-parity/hook-form-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "0f35d7617dd132c0c710ae8bb5601e294be8fc008f598424b1cb7b200d194f33"
+        },
+        {
           "path": "packages/hook-form/upstream/SHA256SUMS",
           "role": "support",
           "sha256": "1f82b4850b552aa0e1ab542eae604dbbcd4eaf5a5adcb03fff8282ebbd556d36"
@@ -50,7 +60,7 @@
         {
           "path": "packages/hook-form/audit/upstream-adapted.SHA256SUMS",
           "role": "support",
-          "sha256": "a0559f6adfbcb826775d899890306d8dd8c6c661340d80c62be8317030d0dcb4"
+          "sha256": "f6a56591be3b990893ec81a8f9399700a89e67a60be2a4860b2516489fee446d"
         },
         {
           "path": "packages/hook-form/tests/upstream-jest.config.cjs",
@@ -102,7 +112,7 @@
         {
           "path": "packages/hook-form/audit/type-parity.json",
           "role": "support",
-          "sha256": "000a4711ecb2dfa0357c0d0ec0859f2389167c953c01e703494bee261157ee56"
+          "sha256": "01423814704d11cd9f0d06857acff08db6c1875f927928ab8c6a35041c67459a"
         }
       ]
     },
@@ -112,10 +122,10 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form-adapted-types",
-      "notes": "Runs every adapted type-test counterpart with tsgo after structural verification of all assertion groups and permitted transformations.",
+      "notes": "Runs every adapted type-test counterpart with tsrx-tsc after structural verification of all assertion groups and permitted transformations.",
       "execution": {
         "kind": "typescript",
-        "compiler": "tsgo",
+        "compiler": "tsrx-tsc",
         "project": "packages/hook-form/typetests/tsconfig.json"
       },
       "files": [
@@ -134,12 +144,60 @@
         {
           "path": "packages/hook-form/typetests/tsconfig.json",
           "role": "support",
-          "sha256": "2c7971d7f30b4fbea8e3d528d61d0d857c133ec52a4b09038a101b475b55c7fa"
+          "sha256": "101882a28a3c72c61599cbf743e616f83550e5702f72a55705848ef2a550ee50"
         },
         {
           "path": "scripts/react-parity/hook-form-types-lib.mjs",
           "role": "support",
           "sha256": "c5743bb6e14d2b8ea50ea66d4876c890ce52b83eded2ff2e1d8bf2ad861fb469"
+        }
+      ]
+    },
+    {
+      "id": "hook-form-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form",
+      "notes": "Runs the complete adapted upstream DOM suite without a title filter and verifies exact collected and executed test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/hook-form/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/hook-form/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "a8c9c0c02978ba09f941b31b4ba1faf9fd65a924375e09afa81fb87af1ae33c1"
+        },
+        {
+          "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "a27ebe634bb6028c7e4b14f299e2b2973fc5bf6804e93eace23dd4f415ea8af4"
+        }
+      ]
+    },
+    {
+      "id": "hook-form-adapted-full-suite-server",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form-server",
+      "notes": "Runs the complete adapted upstream server suite without a title filter and verifies exact collected and executed test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/hook-form/audit/adapted-runtime-server.json"
+      },
+      "files": [
+        {
+          "path": "packages/hook-form/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "62ff99be3fcb8e173e8e676b5ed7fba609c6d0806d905f783da98ee5f1e12125"
+        },
+        {
+          "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "a27ebe634bb6028c7e4b14f299e2b2973fc5bf6804e93eace23dd4f415ea8af4"
         }
       ]
     },
@@ -154,7 +212,7 @@
         {
           "path": "packages/hook-form/tests/upstream/useController.test.tsx",
           "role": "test",
-          "sha256": "8ed5bc7a6e67ed50f48a1cbab211c6a9dda88e79b13cc9bdee5cffffa400627f",
+          "sha256": "1310ca66fc0a79a3dd12af8952da60cf985a5ac777e4bc5678adc5aabd3f7517",
           "cases": [
             {
               "id": "adapted:controller-on-input",
@@ -225,8 +283,87 @@
       "upstreamResult": "Controller exposes field.onChange for React synthetic change events.",
       "octaneResult": "Controller exposes field.onInput for Octane native input events; mode and option names retain upstream onChange spelling.",
       "rationale": "Octane observes native per-keystroke input events rather than React synthetic change events.",
+      "classification": "event-model",
+      "consumerImpact": "Controller render props use onInput where React consumers expect onChange.",
+      "migrationGuidance": "Bind field.onInput to the native input handler; retain onChange naming only in react-hook-form configuration values.",
       "owner": "@octanejs/hook-form",
       "reviewCondition": "Review if Octane introduces a React-compatible synthetic event layer or changes its native input contract."
+    },
+    {
+      "id": "hook-form-native-noop-input",
+      "caseIds": ["runtime:4ca89a396197cd2e"],
+      "upstreamResult": "React suppresses an input event when its tracked value is unchanged.",
+      "octaneResult": "Octane delivers the native input event and react-hook-form notifies its value subscribers.",
+      "rationale": "Octane intentionally uses native DOM events without React's synthetic value tracker.",
+      "classification": "event-model",
+      "consumerImpact": "A programmatically dispatched no-op input may produce one additional watcher render.",
+      "migrationGuidance": "Do not dispatch input events when the DOM value has not changed if render counts are significant.",
+      "owner": "@octanejs/hook-form",
+      "reviewCondition": "Review if Octane adds synthetic value tracking."
+    },
+    {
+      "id": "hook-form-microtask-batching",
+      "caseIds": [
+        "runtime:9ade2443c59bd598",
+        "runtime:41cfb7f1f622474d",
+        "runtime:afb225847a57b345"
+      ],
+      "upstreamResult": "React batches microtask-separated handleSubmit notifications into one committed parent render.",
+      "octaneResult": "Octane commits each microtask-spaced notification, producing two parent renders.",
+      "rationale": "The runtimes intentionally have different scheduler and automatic-batching boundaries.",
+      "classification": "scheduling",
+      "consumerImpact": "Render-count assertions and effects tied to each commit observe an extra intermediate commit.",
+      "migrationGuidance": "Assert final form state rather than React-specific intermediate render counts.",
+      "owner": "@octanejs/hook-form",
+      "reviewCondition": "Review if Octane changes microtask batching semantics."
+    },
+    {
+      "id": "hook-form-duplicate-resolver-notification",
+      "caseIds": ["runtime:375cd9f568ef4f2c"],
+      "upstreamResult": "React batching exposes two resolver state commits.",
+      "octaneResult": "Octane exposes a third content-identical resolver state commit.",
+      "rationale": "Separate Octane render passes expose notifications React automatically coalesces.",
+      "classification": "scheduling",
+      "consumerImpact": "Effects subscribed to resolver state may run once more with equivalent content.",
+      "migrationGuidance": "Make state effects idempotent and compare semantic error content when deduplication matters.",
+      "owner": "@octanejs/hook-form",
+      "reviewCondition": "Review if Octane adopts React-compatible automatic batching."
+    },
+    {
+      "id": "hook-form-act-flush-boundary",
+      "caseIds": ["runtime:3b2b7a4e701f007a"],
+      "upstreamResult": "React act drains the in-flight validation microtask chain before returning.",
+      "octaneResult": "Octane act returns before a fire-and-forget validation notification schedules its final render.",
+      "rationale": "Octane act has a narrower async flush boundary than React act.",
+      "classification": "testing-runtime",
+      "consumerImpact": "Tests may observe stale subscribed formState immediately after an async act body.",
+      "migrationGuidance": "Wait for the asserted UI/state condition instead of relying on React act's macrotask drain behavior.",
+      "owner": "@octanejs/testing-library",
+      "reviewCondition": "Review if Octane act expands its async drain contract."
+    },
+    {
+      "id": "hook-form-reset-extra-render",
+      "caseIds": ["runtime:9874a97bb66b95e4"],
+      "upstreamResult": "React batches mount validity and reset notifications into two observed renders.",
+      "octaneResult": "Octane exposes an additional intermediate render while preserving the same final state.",
+      "rationale": "Octane commits notification passes that React batches.",
+      "classification": "scheduling",
+      "consumerImpact": "Render counters observe one extra render during reset with isValid subscribed.",
+      "migrationGuidance": "Depend on the final mounted and validity state, not React-specific render counts.",
+      "owner": "@octanejs/hook-form",
+      "reviewCondition": "Review if Octane changes notification batching."
+    },
+    {
+      "id": "hook-form-eager-equal-bailout",
+      "caseIds": ["runtime:c01c86279535b2d5"],
+      "upstreamResult": "React re-enters render once before bailing out on an Object.is-equal computed watch value.",
+      "octaneResult": "Octane eagerly skips the equal-value parent render.",
+      "rationale": "Octane's eager bailout avoids React fiber's probe render.",
+      "classification": "rendering",
+      "consumerImpact": "Render counters observe one fewer render when compute returns the current value.",
+      "migrationGuidance": "Treat compute as pure and avoid relying on component-body execution when its result is unchanged.",
+      "owner": "@octanejs/hook-form",
+      "reviewCondition": "Review if Octane changes eager equality bailout semantics."
     }
   ]
 }

@@ -13,7 +13,7 @@
       "sourcePolicy": "byte-exact pinned upstream"
     },
     "adapted": {
-      "compiler": "tsgo",
+      "compiler": "tsrx-tsc",
       "project": "packages/hook-form/typetests/tsconfig.json",
       "sourcePolicy": "structurally equivalent after permitted transformations"
     }

@@ -42,13 +42,18 @@ blur/commit), so the handler upstream calls `onChange` is exposed as
 - Register OPTIONS keep their upstream names: `register('x', { onChange, onBlur })`
   callbacks are invoked as before.
 
-Everything else — validation modes, `formState` proxy subscriptions,
+The remaining adapted behavior — validation modes, `formState` proxy subscriptions,
 `useFieldArray`, `useWatch`/`Watch`, `FormStateSubscribe`, `reset`/`setValue`/
 `trigger` semantics, SSR via `octane/server` — matches upstream behavior; the
 automated parity checks run all 1,193 tests and eight snapshots unchanged
 against the pinned React package as a pristine baseline. The Octane port
-separately passes its byte-locked, one-for-one adapted suite and differential
-tests asserting byte-identical DOM against the real react-hook-form. See
+separately runs its byte-locked adapted DOM and server suites without title
+filters. Their manifests record all 1,163 collected identities and require the
+same identities to execute and pass. The structured divergence ledger in
+[`audit/react-parity.json`](./audit/react-parity.json) records the native-event,
+scheduling, render-bailout, and test-flush differences, including consumer
+impact and migration guidance. Differential tests also assert byte-identical
+DOM against the real react-hook-form. See
 [`UPSTREAM.md`](./UPSTREAM.md) for the pin,
 source inventory, export crosswalk, and test dispositions.
 

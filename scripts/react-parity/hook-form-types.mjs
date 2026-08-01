@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildTypeScriptCompilerArgv } from './harness-lib.mjs';
+import { buildTypeScriptCompilerArgv, loadManifest } from './harness-lib.mjs';
 import { renderTypeInventories, verifyHookFormTypes } from './hook-form-types-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -16,13 +16,17 @@ if (process.argv.includes('--write')) {
 	}
 }
 const result = verifyHookFormTypes(root);
-for (const [compiler, project] of [
-	['tsc', 'packages/hook-form/upstream/src/__typetest__/tsconfig.json'],
-	['tsgo', 'packages/hook-form/typetests/tsconfig.json'],
-]) {
-	const [command, ...args] = buildTypeScriptCompilerArgv(compiler, project);
+const manifest = await loadManifest(resolve(root, 'packages/hook-form/audit/react-parity.json'));
+const typeLanes = manifest.lanes.filter(
+	(lane) => lane.oracle === 'required' && lane.available !== false && lane.type.endsWith('-types'),
+);
+for (const lane of typeLanes) {
+	const [command, ...args] = buildTypeScriptCompilerArgv(
+		lane.execution.compiler,
+		lane.execution.project,
+	);
 	execFileSync(command, args, { cwd: root, stdio: 'inherit' });
 }
 console.log(
-	`react-hook-form type parity verified (${result.files} files, ${result.assertions} assertion groups, pristine tsc + adapted tsgo).`,
+	`react-hook-form type parity verified (${result.files} files, ${result.assertions} assertion groups; ${typeLanes.map((lane) => `${lane.id}=${lane.execution.compiler}`).join(', ')}).`,
 );

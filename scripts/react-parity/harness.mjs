@@ -70,6 +70,6 @@ if (action === 'validate') {
 			child.on('close', (code, signal) => resolveExit(code ?? (signal ? 1 : 0)));
 		});
 		if (exitCode !== 0) process.exit(exitCode);
-		verifyLaneRunResult(lane, stdout);
+		verifyLaneRunResult(lane, stdout, root);
 	}
 }

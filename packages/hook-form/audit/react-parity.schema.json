@@ -18,14 +18,32 @@
       "then": {
         "properties": {
           "lanes": {
-            "contains": {
-              "properties": {
-                "type": { "const": "pristine-upstream" },
-                "oracle": { "const": "required" },
-                "available": { "not": { "const": false } }
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "pristine-upstream" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } }
+                  },
+                  "required": ["type", "oracle"]
+                }
               },
-              "required": ["type", "oracle"]
-            }
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "adapted-octane" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } },
+                    "execution": {
+                      "properties": { "kind": { "const": "vitest-full" } },
+                      "required": ["kind"]
+                    }
+                  },
+                  "required": ["type", "oracle", "execution"]
+                }
+              }
+            ]
           }
         }
       }
@@ -82,6 +100,23 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": { "type": { "const": "adapted-types" } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "execution": {
+                  "properties": { "compiler": { "const": "tsrx-tsc" } },
+                  "required": ["compiler"]
+                }
+              },
+              "required": ["execution"]
+            }
+          }
+        ],
         "required": ["id", "type", "oracle", "environment", "project", "files"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
@@ -103,24 +138,27 @@
           "execution": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["kind", "compiler", "project"],
+            "required": ["kind"],
+            "oneOf": [
+              {
+                "properties": { "kind": { "const": "typescript" } },
+                "required": ["kind", "compiler", "project"]
+              },
+              {
+                "properties": { "kind": { "const": "vitest-full" } },
+                "required": ["kind", "inventory"]
+              }
+            ],
             "properties": {
-              "kind": { "const": "typescript" },
+              "kind": { "enum": ["typescript", "vitest-full"] },
               "compiler": { "enum": ["tsc", "tsgo", "tsrx-tsc"] },
-              "project": { "type": "string", "minLength": 1 }
+              "project": { "type": "string", "minLength": 1 },
+              "inventory": { "type": "string", "minLength": 1 }
             }
           },
           "files": {
             "type": "array",
             "minItems": 1,
-            "contains": {
-              "type": "object",
-              "required": ["role", "cases"],
-              "properties": {
-                "role": { "const": "test" },
-                "cases": { "type": "array", "minItems": 1 }
-              }
-            },
             "items": {
               "type": "object",
               "additionalProperties": false,
@@ -160,6 +198,9 @@
           "upstreamResult",
           "octaneResult",
           "rationale",
+          "classification",
+          "consumerImpact",
+          "migrationGuidance",
           "owner",
           "reviewCondition"
         ],
@@ -168,12 +209,14 @@
           "caseIds": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 1,
             "items": { "type": "string", "minLength": 1 }
           },
           "upstreamResult": { "type": "string", "minLength": 1 },
           "octaneResult": { "type": "string", "minLength": 1 },
           "rationale": { "type": "string", "minLength": 1 },
+          "classification": { "type": "string", "minLength": 1 },
+          "consumerImpact": { "type": "string", "minLength": 1 },
+          "migrationGuidance": { "type": "string", "minLength": 1 },
           "owner": { "type": "string", "minLength": 1 },
           "reviewCondition": { "type": "string", "minLength": 1 }
         }

@@ -78,6 +78,9 @@ function divergence(overrides = {}) {
 		upstreamResult: 'Controller exposes field.onChange.',
 		octaneResult: 'Controller exposes field.onInput.',
 		rationale: 'Octane uses native input events.',
+		classification: 'event-model',
+		consumerImpact: 'Consumers bind a different native handler.',
+		migrationGuidance: 'Use onInput in Octane templates.',
 		owner: '@octanejs/hook-form',
 		reviewCondition: 'Review if Octane adds React-compatible synthetic events.',
 		...overrides,
@@ -173,6 +176,23 @@ test('uses Node package entrypoints for every TypeScript compiler', () => {
 	}
 });
 
+test('rejects adapted type evidence that bypasses the TSRX compiler', () => {
+	const lane = {
+		...manifest().lanes[0],
+		id: 'adapted-types',
+		type: 'adapted-types',
+		execution: {
+			kind: 'typescript',
+			compiler: 'tsgo',
+			project: 'packages/example/typetests/tsconfig.json',
+		},
+	};
+	assert.throws(
+		() => validateManifest(manifest({ lanes: [lane] })),
+		/adapted-types execution must use tsrx-tsc/,
+	);
+});
+
 test('matches the exact Vitest full name instead of another title with the same suffix', () => {
 	const pattern = new RegExp(buildLaneArgv(manifest().lanes[0])[6]);
 	assert.equal(pattern.test('example suite does the thing'), true);
@@ -262,7 +282,7 @@ test('requires complete immutable provenance and environment identity', () => {
 	assert.throws(() => validateManifest(partialIntegrity), /complete sha256 digest/);
 });
 
-test('requires a live pristine lane before provenance can be verified', () => {
+test('requires live pristine and adapted full-suite lanes before provenance can be verified', () => {
 	const value = manifest();
 	value.provenance.verification = 'verified';
 	assert.throws(
@@ -270,7 +290,24 @@ test('requires a live pristine lane before provenance can be verified', () => {
 		/requires an available required pristine-upstream lane/,
 	);
 	value.lanes[0].type = 'pristine-upstream';
+	assert.throws(
+		() => validateManifest(value),
+		/requires an available required adapted-octane full-suite lane/,
+	);
+	const adapted = {
+		...manifest().lanes[0],
+		id: 'adapted-full',
+		files: [{ path: 'audit/inventory.json', role: 'support', sha256: '0'.repeat(64) }],
+		execution: { kind: 'vitest-full', inventory: 'audit/inventory.json' },
+	};
+	value.lanes.push(adapted);
 	assert.doesNotThrow(() => validateManifest(value));
+	const optional = structuredClone(value);
+	optional.lanes[1].oracle = 'optional';
+	assert.throws(() => validateManifest(optional), /adapted-octane full-suite lane/);
+	const unavailable = structuredClone(value);
+	unavailable.lanes[1].available = false;
+	assert.throws(() => validateManifest(unavailable), /adapted-octane full-suite lane/);
 });
 
 test('evaluates exact and minimum Node major requirements', () => {
@@ -282,18 +319,31 @@ test('evaluates exact and minimum Node major requirements', () => {
 	assert.throws(() => nodeMajorSatisfies('^22', 22), /Unsupported Node requirement/);
 });
 
-test('rejects stale divergences and one divergence matching multiple cases', () => {
+test('rejects stale divergences and accepts one divergence matching multiple known cases', () => {
 	const stale = manifest({
 		divergences: [divergence({ caseIds: ['missing'] })],
 	});
 	assert.throws(() => validateManifest(stale), /unknown case id "missing"/);
 
-	const broad = manifest({
-		divergences: [divergence({ caseIds: ['adapted:example', 'adapted:other'] })],
+	const broad = manifest();
+	broad.lanes[0].files[0].cases.push({
+		id: 'adapted:other',
+		testName: 'does the other thing',
+		fullName: 'example suite does the other thing',
 	});
-	assert.throws(() => validateManifest(broad), /exactly one case id/);
+	broad.divergences = [divergence({ caseIds: ['adapted:example', 'adapted:other'] })];
+	assert.deepEqual(validateManifest(broad), broad);
 
-	for (const field of ['upstreamResult', 'octaneResult', 'rationale', 'owner', 'reviewCondition']) {
+	for (const field of [
+		'upstreamResult',
+		'octaneResult',
+		'rationale',
+		'classification',
+		'consumerImpact',
+		'migrationGuidance',
+		'owner',
+		'reviewCondition',
+	]) {
 		const incomplete = manifest({ divergences: [divergence()] });
 		delete incomplete.divergences[0][field];
 		assert.throws(() => validateManifest(incomplete), new RegExp(field));
@@ -309,6 +359,56 @@ test('rejects missing and tampered evidence files', async () => {
 	await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
 	await writeFile(file, 'tampered');
 	await assert.rejects(() => verifyManifestFiles(value, root), /integrity mismatch/);
+});
+
+test('rejects unstructured, undeclared, and unlinked full-suite divergences', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-divergence-'));
+	const sourcePath = 'packages/example/tests/upstream/example.test.ts';
+	const inventoryPath = 'packages/example/audit/adapted-runtime.json';
+	await mkdir(join(root, 'packages/example/tests/upstream'), { recursive: true });
+	await mkdir(join(root, 'packages/example/audit'), { recursive: true });
+	const makeValue = (source, divergences) => {
+		const inventory = JSON.stringify({
+			schemaVersion: 1,
+			project: 'example',
+			files: [sourcePath],
+			tests: [{ id: 'runtime:example', file: sourcePath, fullName: 'suite works' }],
+		});
+		return {
+			inventory,
+			value: manifest({
+				lanes: [
+					{
+						...manifest().lanes[0],
+						id: 'full',
+						files: [{ path: inventoryPath, role: 'support', sha256: sha256(inventory) }],
+						execution: { kind: 'vitest-full', inventory: inventoryPath },
+					},
+				],
+				divergences,
+			}),
+		};
+	};
+
+	let fixture = makeValue('// OCTANE DIVERGENCE: old form\ntest("works", () => {})\n', []);
+	await writeFile(
+		join(root, sourcePath),
+		'// OCTANE DIVERGENCE: old form\ntest("works", () => {})\n',
+	);
+	await writeFile(join(root, inventoryPath), fixture.inventory);
+	await assert.rejects(
+		() => verifyManifestFiles(validateManifest(fixture.value), root),
+		/must use OCTANE DIVERGENCE\[id\]/,
+	);
+
+	const declared = divergence({ id: 'declared', caseIds: ['runtime:example'] });
+	fixture = makeValue('// no marker\ntest("works", () => {})\n', [declared]);
+	await writeFile(join(root, sourcePath), '// no marker\ntest("works", () => {})\n');
+	await writeFile(join(root, inventoryPath), fixture.inventory);
+	await assert.rejects(
+		() => verifyManifestFiles(validateManifest(fixture.value), root),
+		/has no structured source or test marker/,
+	);
 });
 
 test('rejects environment drift during validation', async () => {

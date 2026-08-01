@@ -26,7 +26,11 @@ const AUDIT = path.join(REPO, 'packages/octane/audit');
 const UPSTREAMS_PATH = path.join(AUDIT, 'react-upstreams.json');
 const LEDGER_PATH = path.join(AUDIT, 'react-conformance-ledger.json');
 const REPORT_PATH = path.join(REPO, 'docs/react-parity-coverage.md');
-const BINDING_MANIFESTS = ['packages/hook-form/audit/react-parity.json'];
+const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), { withFileTypes: true })
+	.filter((entry) => entry.isDirectory())
+	.map((entry) => `packages/${entry.name}/audit/react-parity.json`)
+	.filter((manifest) => existsSync(path.join(REPO, manifest)))
+	.sort();
 const HARNESS_PATH = path.join(REPO, 'scripts/react-parity/harness.mjs');
 const errors = [];
 try {

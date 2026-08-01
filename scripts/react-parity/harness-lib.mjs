@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -55,11 +56,14 @@ const LANE_KEYS = new Set([
 	'notes',
 	'execution',
 ]);
-const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project']);
+const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory']);
 const DIVERGENCE_FIELDS = [
 	'upstreamResult',
 	'octaneResult',
 	'rationale',
+	'classification',
+	'consumerImpact',
+	'migrationGuidance',
 	'owner',
 	'reviewCondition',
 ];
@@ -166,14 +170,24 @@ export function validateManifest(manifest) {
 		if (lane.execution !== undefined) {
 			for (const key of Object.keys(lane.execution))
 				if (!EXECUTION_KEYS.has(key)) fail(`lane ${lane.id} execution has unknown key "${key}"`);
-			if (lane.execution.kind !== 'typescript')
-				fail(`lane ${lane.id} execution kind must be typescript`);
-			if (!['tsc', 'tsgo', 'tsrx-tsc'].includes(lane.execution.compiler))
-				fail(`lane ${lane.id} execution compiler is unsupported`);
-			exactPath(lane.execution.project, `lane ${lane.id} execution project`);
+			if (!['typescript', 'vitest-full'].includes(lane.execution.kind))
+				fail(`lane ${lane.id} execution kind is unsupported`);
+			if (lane.execution.kind === 'typescript') {
+				if (!['tsc', 'tsgo', 'tsrx-tsc'].includes(lane.execution.compiler))
+					fail(`lane ${lane.id} execution compiler is unsupported`);
+				exactPath(lane.execution.project, `lane ${lane.id} execution project`);
+				if (lane.execution.inventory !== undefined)
+					fail(`lane ${lane.id} TypeScript execution must not declare an inventory`);
+			} else {
+				if (lane.execution.compiler !== undefined || lane.execution.project !== undefined)
+					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
+				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
+			}
 		}
 		if (lane.type.endsWith('-types') !== (lane.execution?.kind === 'typescript'))
 			fail(`lane ${lane.id} type and execution kind must agree`);
+		if (lane.type === 'adapted-types' && lane.execution.compiler !== 'tsrx-tsc')
+			fail(`lane ${lane.id} adapted-types execution must use tsrx-tsc`);
 		if (!Array.isArray(lane.files) || lane.files.length === 0)
 			fail(`lane ${lane.id} files must be non-empty`);
 		for (const file of lane.files) {
@@ -201,7 +215,8 @@ export function validateManifest(manifest) {
 				laneCaseCount++;
 			}
 		}
-		if (laneCaseCount === 0) fail(`lane ${lane.id} must declare at least one executable case`);
+		if (laneCaseCount === 0 && lane.execution?.kind !== 'vitest-full')
+			fail(`lane ${lane.id} must declare at least one executable case`);
 	}
 	if (
 		manifest.provenance.verification === 'verified' &&
@@ -211,6 +226,18 @@ export function validateManifest(manifest) {
 		)
 	) {
 		fail('verified provenance requires an available required pristine-upstream lane');
+	}
+	if (
+		manifest.provenance.verification === 'verified' &&
+		!manifest.lanes.some(
+			(lane) =>
+				lane.type === 'adapted-octane' &&
+				lane.oracle === 'required' &&
+				lane.available !== false &&
+				lane.execution?.kind === 'vitest-full',
+		)
+	) {
+		fail('verified provenance requires an available required adapted-octane full-suite lane');
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');
@@ -222,14 +249,15 @@ export function validateManifest(manifest) {
 		requiredString(divergence.id, 'divergence.id');
 		if (divergenceIds.has(divergence.id)) fail(`duplicate divergence id "${divergence.id}"`);
 		divergenceIds.add(divergence.id);
-		if (!Array.isArray(divergence.caseIds) || divergence.caseIds.length !== 1) {
-			fail(`divergence ${divergence.id} must match exactly one case id`);
+		if (!Array.isArray(divergence.caseIds) || divergence.caseIds.length === 0) {
+			fail(`divergence ${divergence.id} must match at least one case id`);
 		}
-		const [caseId] = divergence.caseIds;
-		if (!caseIds.has(caseId))
-			fail(`divergence ${divergence.id} references unknown case id "${caseId}"`);
-		if (divergentCases.has(caseId)) fail(`case id "${caseId}" has multiple divergences`);
-		divergentCases.add(caseId);
+		for (const caseId of divergence.caseIds) {
+			if (!caseIds.has(caseId) && !caseId.startsWith('runtime:'))
+				fail(`divergence ${divergence.id} references unknown case id "${caseId}"`);
+			if (divergentCases.has(caseId)) fail(`case id "${caseId}" has multiple divergences`);
+			divergentCases.add(caseId);
+		}
 		for (const field of DIVERGENCE_FIELDS) {
 			requiredString(divergence[field], `divergence ${divergence.id} ${field}`);
 		}
@@ -244,7 +272,16 @@ export async function loadManifest(path) {
 
 export async function verifyManifestFiles(manifest, root) {
 	const absoluteRoot = resolve(root);
+	const runtimeCaseIds = new Set();
+	const adaptedFiles = new Set();
 	for (const lane of manifest.lanes) {
+		if (lane.execution?.kind === 'vitest-full') {
+			const inventory = JSON.parse(
+				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
+			);
+			for (const test of inventory.tests) runtimeCaseIds.add(test.id);
+			for (const file of inventory.files) adaptedFiles.add(file);
+		}
 		for (const file of lane.files) {
 			const absolute = resolve(absoluteRoot, file.path);
 			if (relative(absoluteRoot, absolute).startsWith('..'))
@@ -286,6 +323,29 @@ export async function verifyManifestFiles(manifest, root) {
 				}
 			}
 		}
+	}
+	for (const divergence of manifest.divergences) {
+		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('runtime:'))) {
+			if (!runtimeCaseIds.has(caseId))
+				throw new Error(
+					`divergence ${divergence.id} references unknown runtime case id "${caseId}"`,
+				);
+		}
+	}
+	const markerCounts = new Map();
+	for (const path of adaptedFiles) {
+		const source = await readFile(resolve(absoluteRoot, path), 'utf8');
+		if (/OCTANE DIVERGENCE\s*:/.test(source))
+			throw new Error(`${path}: divergence markers must use OCTANE DIVERGENCE[id]`);
+		for (const match of source.matchAll(/OCTANE DIVERGENCE\[([^\]]+)\]/g)) {
+			if (!manifest.divergences.some((entry) => entry.id === match[1]))
+				throw new Error(`${path}: undeclared divergence marker "${match[1]}"`);
+			markerCounts.set(match[1], (markerCounts.get(match[1]) ?? 0) + 1);
+		}
+	}
+	for (const divergence of manifest.divergences) {
+		if (!markerCounts.has(divergence.id))
+			throw new Error(`divergence ${divergence.id} has no structured source or test marker`);
 	}
 	return true;
 }
@@ -366,7 +426,21 @@ export async function verifyManifestTestSelections(manifest, root) {
 			collectedTests = JSON.parse(stdout);
 			testsByProject.set(lane.project, collectedTests);
 		}
-		verifyLaneCollectedTests(lane, collectedTests, root);
+		if (lane.execution?.kind === 'vitest-full') {
+			const inventory = JSON.parse(await readFile(resolve(root, lane.execution.inventory), 'utf8'));
+			const collected = collectedTests
+				.filter((test) => inventory.files.includes(relative(root, test.file)))
+				.map((test) => ({
+					file: relative(root, test.file),
+					fullName: test.name.replaceAll(' > ', ' '),
+				}))
+				.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
+			const expected = inventory.tests.map(({ file, fullName }) => ({ file, fullName }));
+			if (JSON.stringify(collected) !== JSON.stringify(expected))
+				throw new Error(`lane ${lane.id} collected test identities drifted from its inventory`);
+		} else {
+			verifyLaneCollectedTests(lane, collectedTests, root);
+		}
 	}
 	return true;
 }
@@ -387,6 +461,18 @@ export function buildLaneArgv(lane) {
 	if (lane.execution?.kind === 'typescript') {
 		return buildTypeScriptCompilerArgv(lane.execution.compiler, lane.execution.project);
 	}
+	if (lane.execution?.kind === 'vitest-full') {
+		const inventory = JSON.parse(readFileSync(lane.execution.inventory, 'utf8'));
+		return [
+			process.execPath,
+			'node_modules/vitest/vitest.mjs',
+			'run',
+			'--project',
+			lane.project,
+			...inventory.files,
+			'--reporter=json',
+		];
+	}
 	const fullNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.fullName));
 	if (fullNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
 	const escaped = fullNames.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -406,10 +492,32 @@ export function buildLaneArgv(lane) {
 	];
 }
 
-export function verifyLaneRunResult(lane, stdout) {
+export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 	if (lane.execution?.kind === 'typescript') return true;
-	const expected = lane.files.reduce((count, file) => count + (file.cases?.length ?? 0), 0);
 	const result = JSON.parse(stdout);
+	if (lane.execution?.kind === 'vitest-full') {
+		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
+		const executed = result.testResults
+			.flatMap((suite) =>
+				suite.assertionResults.map((test) => ({
+					file: relative(root, suite.name),
+					fullName: test.fullName,
+					status: test.status,
+				})),
+			)
+			.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
+		const expected = inventory.tests.map(({ file, fullName }) => ({
+			file,
+			fullName,
+			status: 'passed',
+		}));
+		if (JSON.stringify(executed) !== JSON.stringify(expected))
+			throw new Error(
+				`lane ${lane.id} did not execute every inventoried test identity exactly once`,
+			);
+		return true;
+	}
+	const expected = lane.files.reduce((count, file) => count + (file.cases?.length ?? 0), 0);
 	if (result.numPassedTests !== expected) {
 		throw new Error(
 			`lane ${lane.id} executed ${result.numPassedTests ?? 0} of ${expected} declared tests`,
