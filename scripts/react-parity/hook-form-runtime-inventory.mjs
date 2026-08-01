@@ -15,7 +15,7 @@ const lanes = [
 for (const [project, destination] of lanes) {
 	const output = execFileSync(
 		process.execPath,
-		['node_modules/vitest/vitest.mjs', 'list', '--project', project, '--staticParse', '--json'],
+		['node_modules/vitest/vitest.mjs', 'list', '--project', project, '--json'],
 		{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 	);
 	const tests = JSON.parse(output)

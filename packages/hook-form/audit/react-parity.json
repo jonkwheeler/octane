@@ -18,7 +18,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "27b3741f9d6579c7d653f23c7f72f12d95d314e533844fb5421bc4ac4bbb70b6"
+      "lockfileSha256": "6b825adcc3b5a022099ba37b9523df42c2a2d2d380e60c1d1863d552bc360e4b"
     }
   },
   "lanes": [
@@ -168,12 +168,12 @@
         {
           "path": "packages/hook-form/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "4558b536b1f2d17fe65abf4683485b2a289903682f7a7a9b07734e23d1149093"
+          "sha256": "27568ec8f4f89c8d37a121728bbbba3a075a119ffdca0f78cf63b77efdd6751c"
         },
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "92f366bfdfaa9cfe8b9b6d0ed50648a0450838bbb745ab3f14983c297c630a26"
+          "sha256": "c6d57caa823f390a6a88f8c59ffbc0044e041c9e8ce55849be1eba42db786cce"
         }
       ]
     },
@@ -197,7 +197,7 @@
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "92f366bfdfaa9cfe8b9b6d0ed50648a0450838bbb745ab3f14983c297c630a26"
+          "sha256": "c6d57caa823f390a6a88f8c59ffbc0044e041c9e8ce55849be1eba42db786cce"
         }
       ]
     },
@@ -271,7 +271,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "95d22a7310d6f0681c71a48d75c7e073cf8a3e84aba0ccf95ff9837a0602da60"
+          "sha256": "714d61df0d7ccb78ee2a6bc88b816bac26046fefed2ee7c5dfa2a5c023d8b18e"
         }
       ]
     }

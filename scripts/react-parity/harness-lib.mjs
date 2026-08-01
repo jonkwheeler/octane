@@ -470,7 +470,6 @@ export async function verifyManifestTestSelections(manifest, root) {
 					'list',
 					'--project',
 					lane.project,
-					'--staticParse',
 					'--json',
 				],
 				{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
