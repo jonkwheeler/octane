@@ -85,12 +85,31 @@
         "required": ["id", "type", "oracle", "environment", "project", "files"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
-          "type": { "enum": ["pristine-upstream", "adapted-octane", "differential", "browser"] },
+          "type": {
+            "enum": [
+              "pristine-upstream",
+              "adapted-octane",
+              "differential",
+              "browser",
+              "pristine-types",
+              "adapted-types"
+            ]
+          },
           "oracle": { "enum": ["required", "optional"] },
           "available": { "type": "boolean" },
           "environment": { "type": "string", "minLength": 1 },
           "project": { "type": "string", "minLength": 1 },
           "notes": { "type": "string" },
+          "execution": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "compiler", "project"],
+            "properties": {
+              "kind": { "const": "typescript" },
+              "compiler": { "enum": ["tsc", "tsgo", "tsrx-tsc"] },
+              "project": { "type": "string", "minLength": 1 }
+            }
+          },
           "files": {
             "type": "array",
             "minItems": 1,

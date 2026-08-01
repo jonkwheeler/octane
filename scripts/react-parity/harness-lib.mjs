@@ -6,7 +6,14 @@ import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
 
-const LANE_TYPES = new Set(['pristine-upstream', 'adapted-octane', 'differential', 'browser']);
+const LANE_TYPES = new Set([
+	'pristine-upstream',
+	'adapted-octane',
+	'differential',
+	'browser',
+	'pristine-types',
+	'adapted-types',
+]);
 const ORACLES = new Set(['required', 'optional']);
 const PROVENANCE_FIELDS = [
 	'repo',
@@ -46,7 +53,9 @@ const LANE_KEYS = new Set([
 	'project',
 	'files',
 	'notes',
+	'execution',
 ]);
+const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project']);
 const DIVERGENCE_FIELDS = [
 	'upstreamResult',
 	'octaneResult',
@@ -154,6 +163,17 @@ export function validateManifest(manifest) {
 		if (!manifest.environments[lane.environment])
 			fail(`lane ${lane.id} references unknown environment`);
 		requiredString(lane.project, `lane ${lane.id} project`);
+		if (lane.execution !== undefined) {
+			for (const key of Object.keys(lane.execution))
+				if (!EXECUTION_KEYS.has(key)) fail(`lane ${lane.id} execution has unknown key "${key}"`);
+			if (lane.execution.kind !== 'typescript')
+				fail(`lane ${lane.id} execution kind must be typescript`);
+			if (!['tsc', 'tsgo', 'tsrx-tsc'].includes(lane.execution.compiler))
+				fail(`lane ${lane.id} execution compiler is unsupported`);
+			exactPath(lane.execution.project, `lane ${lane.id} execution project`);
+		}
+		if (lane.type.endsWith('-types') !== (lane.execution?.kind === 'typescript'))
+			fail(`lane ${lane.id} type and execution kind must agree`);
 		if (!Array.isArray(lane.files) || lane.files.length === 0)
 			fail(`lane ${lane.id} files must be non-empty`);
 		for (const file of lane.files) {
@@ -240,7 +260,7 @@ export async function verifyManifestFiles(manifest, root) {
 			if (actual !== file.sha256) {
 				throw new Error(`integrity mismatch for evidence file: ${file.path}`);
 			}
-			if (file.role === 'test') {
+			if (file.role === 'test' && lane.execution?.kind !== 'typescript') {
 				const source = contents.toString('utf8');
 				for (const parityCase of file.cases) {
 					const marker = `@parity-case ${parityCase.id}`;
@@ -326,7 +346,9 @@ export function verifyLaneCollectedTests(lane, collectedTests, root) {
 
 export async function verifyManifestTestSelections(manifest, root) {
 	const testsByProject = new Map();
-	for (const lane of manifest.lanes.filter((candidate) => candidate.available !== false)) {
+	for (const lane of manifest.lanes.filter(
+		(candidate) => candidate.available !== false && candidate.execution?.kind !== 'typescript',
+	)) {
 		let collectedTests = testsByProject.get(lane.project);
 		if (!collectedTests) {
 			const { stdout } = await execFileAsync(
@@ -352,6 +374,14 @@ export async function verifyManifestTestSelections(manifest, root) {
 export function buildLaneArgv(lane) {
 	if (lane.available === false) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
+	}
+	if (lane.execution?.kind === 'typescript') {
+		return [
+			resolve('node_modules/.bin', lane.execution.compiler),
+			'--noEmit',
+			'-p',
+			lane.execution.project,
+		];
 	}
 	const fullNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.fullName));
 	if (fullNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);

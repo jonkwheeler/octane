@@ -4209,6 +4209,12 @@ importers:
       '@tsrx/react':
         specifier: catalog:default
         version: 0.2.56(react@19.2.7)
+      '@types/react':
+        specifier: catalog:default
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: catalog:default
+        version: 19.2.3(@types/react@19.2.17)
       esbuild:
         specifier: catalog:default
         version: 0.28.1

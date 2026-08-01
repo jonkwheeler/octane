@@ -18,7 +18,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "088d10bd71abccf3b15f27012f7b3eeb6087839131ca944c7537a675ec22ad4a"
+      "lockfileSha256": "cfb5f23a1e40a70e0b3e147fba0392cae41ec44c4f3d791c9de26f4f9618600e"
     }
   },
   "lanes": [
@@ -66,6 +66,80 @@
           "path": "scripts/react-parity/hook-form-upstream-lib.mjs",
           "role": "support",
           "sha256": "cbcbf6fa68e981fd27c1ffa06ca0dd1b1eb20314f1a6c041f86b25e705853d1f"
+        }
+      ]
+    },
+    {
+      "id": "hook-form-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form-pristine-types",
+      "notes": "Runs the pinned upstream type suite unchanged with tsc and pinned React type dependencies.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/hook-form/upstream/src/__typetest__/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/hook-form/audit/upstream-types.json",
+          "role": "test",
+          "sha256": "0115a4c0bcef6177c61ff82bf967e17cf8c73183befae0d1529e644b803a7ebd",
+          "cases": [
+            {
+              "id": "types:pristine-upstream",
+              "testName": "pinned upstream type suite",
+              "fullName": "pinned upstream type suite"
+            }
+          ]
+        },
+        {
+          "path": "packages/hook-form/upstream/src/__typetest__/tsconfig.json",
+          "role": "support",
+          "sha256": "1cb85aa587143235067fd2a303fffefa8088e7ecd5178936300613551af279df"
+        },
+        {
+          "path": "packages/hook-form/audit/type-parity.json",
+          "role": "support",
+          "sha256": "000a4711ecb2dfa0357c0d0ec0859f2389167c953c01e703494bee261157ee56"
+        }
+      ]
+    },
+    {
+      "id": "hook-form-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "hook-form-adapted-types",
+      "notes": "Runs every adapted type-test counterpart with tsgo after structural verification of all assertion groups and permitted transformations.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsgo",
+        "project": "packages/hook-form/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/hook-form/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "7096cbb25da20c16d3daba05c10e6ba044d134db9ebbfc261c01366db16f6972",
+          "cases": [
+            {
+              "id": "types:adapted-octane",
+              "testName": "adapted Octane type suite",
+              "fullName": "adapted Octane type suite"
+            }
+          ]
+        },
+        {
+          "path": "packages/hook-form/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "2c7971d7f30b4fbea8e3d528d61d0d857c133ec52a4b09038a101b475b55c7fa"
+        },
+        {
+          "path": "scripts/react-parity/hook-form-types-lib.mjs",
+          "role": "support",
+          "sha256": "f855ca338685a8e365a2fe0908ab4ea70e6f3f51e9cb0941e24d901be1681539"
         }
       ]
     },

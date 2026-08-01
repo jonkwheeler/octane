@@ -96,6 +96,28 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 	]);
 });
 
+test('accepts explicit TypeScript lanes and builds compiler argv without a shell', () => {
+	const lane = {
+		...manifest().lanes[0],
+		id: 'pristine-types',
+		type: 'pristine-types',
+		project: 'hook-form-pristine-types',
+		execution: {
+			kind: 'typescript',
+			compiler: 'tsc',
+			project: 'packages/hook-form/upstream/src/__typetest__/tsconfig.json',
+		},
+	};
+	const value = manifest({ lanes: [lane] });
+	assert.deepEqual(validateManifest(value), value);
+	assert.deepEqual(buildLaneArgv(lane), [
+		join(process.cwd(), 'node_modules/.bin/tsc'),
+		'--noEmit',
+		'-p',
+		'packages/hook-form/upstream/src/__typetest__/tsconfig.json',
+	]);
+});
+
 test('matches the exact Vitest full name instead of another title with the same suffix', () => {
 	const pattern = new RegExp(buildLaneArgv(manifest().lanes[0])[6]);
 	assert.equal(pattern.test('example suite does the thing'), true);

@@ -11,6 +11,8 @@ import {
 	validateUpstreams,
 } from './inventory-lib.mjs';
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
+import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
+import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 import {
 	loadManifest,
 	verifyLaneEnvironment,
@@ -30,6 +32,16 @@ try {
 	verifyHookFormUpstream(REPO);
 } catch (error) {
 	errors.push(`react-hook-form upstream evidence is invalid: ${error.message}`);
+}
+try {
+	verifyHookFormTypes(REPO);
+} catch (error) {
+	errors.push(`react-hook-form type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyPortTestClassifications(REPO);
+} catch (error) {
+	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
@@ -116,7 +128,7 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		if (manifest.provenance.verification === 'verified') {
 			for (const lane of manifest.lanes.filter(
 				(candidate) =>
-					candidate.type === 'pristine-upstream' &&
+					(candidate.type === 'pristine-upstream' || candidate.type.endsWith('-types')) &&
 					candidate.oracle === 'required' &&
 					candidate.available !== false,
 			)) {
