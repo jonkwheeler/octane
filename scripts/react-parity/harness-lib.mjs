@@ -113,6 +113,10 @@ export function nodeMajorSatisfies(requirement, actualMajor) {
 	return match[1] === '>=' ? actualMajor >= requiredMajor : actualMajor === requiredMajor;
 }
 
+export function toPortablePath(path) {
+	return path.replaceAll('\\', '/');
+}
+
 export function validateManifest(manifest) {
 	if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest))
 		fail('root must be an object');
@@ -429,9 +433,9 @@ export async function verifyManifestTestSelections(manifest, root) {
 		if (lane.execution?.kind === 'vitest-full') {
 			const inventory = JSON.parse(await readFile(resolve(root, lane.execution.inventory), 'utf8'));
 			const collected = collectedTests
-				.filter((test) => inventory.files.includes(relative(root, test.file)))
+				.filter((test) => inventory.files.includes(toPortablePath(relative(root, test.file))))
 				.map((test) => ({
-					file: relative(root, test.file),
+					file: toPortablePath(relative(root, test.file)),
 					fullName: test.name.replaceAll(' > ', ' '),
 				}))
 				.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));
@@ -454,7 +458,7 @@ export function buildTypeScriptCompilerArgv(compiler, project) {
 	return [process.execPath, compilerEntrypoints[compiler], '--noEmit', '-p', project];
 }
 
-export function buildLaneArgv(lane) {
+export function buildLaneArgv(lane, root = process.cwd()) {
 	if (lane.available === false) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
@@ -462,7 +466,7 @@ export function buildLaneArgv(lane) {
 		return buildTypeScriptCompilerArgv(lane.execution.compiler, lane.execution.project);
 	}
 	if (lane.execution?.kind === 'vitest-full') {
-		const inventory = JSON.parse(readFileSync(lane.execution.inventory, 'utf8'));
+		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
 		return [
 			process.execPath,
 			'node_modules/vitest/vitest.mjs',
@@ -500,7 +504,7 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 		const executed = result.testResults
 			.flatMap((suite) =>
 				suite.assertionResults.map((test) => ({
-					file: relative(root, suite.name),
+					file: toPortablePath(relative(root, suite.name)),
 					fullName: test.fullName,
 					status: test.status,
 				})),

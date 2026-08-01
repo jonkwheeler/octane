@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const lanes = [
@@ -18,13 +19,14 @@ for (const [project, destination] of lanes) {
 		{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 	);
 	const tests = JSON.parse(output)
-		.filter((test) => test.file.includes('/packages/hook-form/tests/upstream/'))
+		.map((test) => ({ ...test, relativeFile: toPortablePath(relative(root, test.file)) }))
+		.filter((test) => test.relativeFile.startsWith('packages/hook-form/tests/upstream/'))
 		.map((test) => ({
 			id: `runtime:${createHash('sha256')
-				.update(`${relative(root, test.file)}\0${test.name.replaceAll(' > ', ' ')}`)
+				.update(`${test.relativeFile}\0${test.name.replaceAll(' > ', ' ')}`)
 				.digest('hex')
 				.slice(0, 16)}`,
-			file: relative(root, test.file),
+			file: test.relativeFile,
 			fullName: test.name.replaceAll(' > ', ' '),
 		}))
 		.sort((a, b) => `${a.file}\0${a.fullName}`.localeCompare(`${b.file}\0${b.fullName}`));

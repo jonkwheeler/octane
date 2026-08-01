@@ -11,6 +11,7 @@ import {
 	buildTypeScriptCompilerArgv,
 	nodeMajorSatisfies,
 	requiredExecutableLanes,
+	toPortablePath,
 	validateManifest,
 	verifyLaneCollectedTests,
 	verifyLaneEnvironment,
@@ -174,6 +175,27 @@ test('uses Node package entrypoints for every TypeScript compiler', () => {
 			expected,
 		);
 	}
+});
+
+test('normalizes Windows identity paths and resolves full-suite inventories from the harness root', async () => {
+	assert.equal(
+		toPortablePath('packages\\hook-form\\tests\\example.test.ts'),
+		'packages/hook-form/tests/example.test.ts',
+	);
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-root-'));
+	await mkdir(join(root, 'audit'), { recursive: true });
+	await writeFile(
+		join(root, 'audit/inventory.json'),
+		JSON.stringify({ files: ['packages/example.test.ts'] }),
+	);
+	const lane = {
+		...manifest().lanes[0],
+		execution: { kind: 'vitest-full', inventory: 'audit/inventory.json' },
+	};
+	assert.deepEqual(buildLaneArgv(lane, root).slice(5), [
+		'packages/example.test.ts',
+		'--reporter=json',
+	]);
 });
 
 test('rejects adapted type evidence that bypasses the TSRX compiler', () => {

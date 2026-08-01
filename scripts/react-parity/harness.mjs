@@ -55,7 +55,7 @@ if (action === 'validate') {
 	await verifyManifestTestSelections({ ...manifest, lanes: selected }, root);
 	for (const lane of selected) {
 		await verifyLaneEnvironment(manifest, lane, root, pnpmVersion);
-		const [command, ...commandArgs] = buildLaneArgv(lane);
+		const [command, ...commandArgs] = buildLaneArgv(lane, root);
 		console.log(`running ${lane.id}: ${JSON.stringify([command, ...commandArgs])}`);
 		let stdout = '';
 		const exitCode = await new Promise((resolveExit, reject) => {

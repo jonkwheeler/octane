@@ -2,9 +2,10 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { join, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const upstreamRoot = resolve(root, 'packages/hook-form/upstream');
@@ -18,7 +19,9 @@ export function pristineTestIdentities(result, repoRoot = root) {
 	return result.testResults
 		.flatMap((suite) =>
 			suite.assertionResults.map((test) => ({
-				file: suite.name.replace(`${repoRoot}/packages/hook-form/upstream/`, ''),
+				file: toPortablePath(
+					relative(resolve(repoRoot, 'packages/hook-form/upstream'), suite.name),
+				),
 				fullName: test.fullName,
 				status: test.status,
 			})),

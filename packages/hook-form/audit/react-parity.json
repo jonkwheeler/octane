@@ -50,7 +50,7 @@
         {
           "path": "scripts/react-parity/hook-form-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "0f35d7617dd132c0c710ae8bb5601e294be8fc008f598424b1cb7b200d194f33"
+          "sha256": "011bd0cadf51df23bea741d5384709c257862b619332528cdd6074c359aa72e1"
         },
         {
           "path": "packages/hook-form/upstream/SHA256SUMS",
@@ -173,7 +173,7 @@
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "a27ebe634bb6028c7e4b14f299e2b2973fc5bf6804e93eace23dd4f415ea8af4"
+          "sha256": "c76ccde409f08b79351b8ae601789ffbf3a010ba4e21c2010dfb0e0a95e5d0cc"
         }
       ]
     },
@@ -197,7 +197,7 @@
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "a27ebe634bb6028c7e4b14f299e2b2973fc5bf6804e93eace23dd4f415ea8af4"
+          "sha256": "c76ccde409f08b79351b8ae601789ffbf3a010ba4e21c2010dfb0e0a95e5d0cc"
         }
       ]
     },
