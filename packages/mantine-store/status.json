@@ -1,0 +1,8 @@
+{
+  "upstream": { "package": "@mantine/store", "version": "9.5.0" },
+  "surface": "Complete @mantine/store 9.5.0 surface: createStore, useStore, subscriptions, initialization, and state updates.",
+  "divergences": ["useStore subscribes through Octane's useSyncExternalStore implementation."],
+  "ssr": "Store snapshots are deterministic during server rendering.",
+  "verified": "2026-07-29",
+  "notes": []
+}
