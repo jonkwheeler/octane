@@ -10,6 +10,7 @@ import {
 	buildLaneArgv,
 	buildTypeScriptCompilerArgv,
 	compareTestIdentities,
+	describeTestIdentityMismatch,
 	nodeMajorSatisfies,
 	requiredExecutableLanes,
 	toPortablePath,
@@ -19,6 +20,16 @@ import {
 	verifyLaneRunResult,
 	verifyManifestFiles,
 } from './harness-lib.mjs';
+
+test('describeTestIdentityMismatch reports missing, unexpected, and duplicate identities', () => {
+	const passed = { file: 'test.ts', fullName: 'works', status: 'passed' };
+	const skipped = { ...passed, status: 'skipped' };
+	const message = describeTestIdentityMismatch([passed, passed], [passed, skipped]);
+	assert.match(message, /missing \(1\):/);
+	assert.match(message, /test\.ts :: works \[passed\]/);
+	assert.match(message, /unexpected \(1\):/);
+	assert.match(message, /test\.ts :: works \[skipped\]/);
+});
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 

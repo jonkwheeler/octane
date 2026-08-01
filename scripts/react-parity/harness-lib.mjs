@@ -123,6 +123,48 @@ export function compareTestIdentities(left, right) {
 	return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
 }
 
+function formatTestIdentity(test) {
+	return `${test.file} :: ${test.fullName} [${test.status}]`;
+}
+
+function testIdentityKey(test) {
+	return `${test.file}\0${test.fullName}\0${test.status}`;
+}
+
+export function describeTestIdentityMismatch(expected, actual) {
+	const expectedCounts = new Map();
+	const actualCounts = new Map();
+	for (const test of expected) {
+		const key = testIdentityKey(test);
+		expectedCounts.set(key, (expectedCounts.get(key) ?? 0) + 1);
+	}
+	for (const test of actual) {
+		const key = testIdentityKey(test);
+		actualCounts.set(key, (actualCounts.get(key) ?? 0) + 1);
+	}
+	const missing = expected.filter((test) => {
+		const key = testIdentityKey(test);
+		const remaining = actualCounts.get(key) ?? 0;
+		if (remaining === 0) return true;
+		actualCounts.set(key, remaining - 1);
+		return false;
+	});
+	const unexpected = actual.filter((test) => {
+		const key = testIdentityKey(test);
+		const remaining = expectedCounts.get(key) ?? 0;
+		if (remaining === 0) return true;
+		expectedCounts.set(key, remaining - 1);
+		return false;
+	});
+	const summarize = (label, tests) => {
+		if (tests.length === 0) return `${label}: none`;
+		const shown = tests.slice(0, 10).map(formatTestIdentity).join('\n    ');
+		const remainder = tests.length > 10 ? `\n    ... and ${tests.length - 10} more` : '';
+		return `${label} (${tests.length}):\n    ${shown}${remainder}`;
+	};
+	return `${summarize('missing', missing)}\n  ${summarize('unexpected', unexpected)}`;
+}
+
 export function validateManifest(manifest) {
 	if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest))
 		fail('root must be an object');
@@ -523,7 +565,7 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 		}));
 		if (JSON.stringify(executed) !== JSON.stringify(expected))
 			throw new Error(
-				`lane ${lane.id} did not execute every inventoried test identity exactly once`,
+				`lane ${lane.id} did not execute every inventoried test identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
 			);
 		return true;
 	}
