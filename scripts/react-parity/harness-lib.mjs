@@ -404,5 +404,18 @@ export function buildLaneArgv(lane) {
 			.filter((file) => file.role === 'test')
 			.map((file) => file.path)
 			.sort(),
+		'--reporter=json',
 	];
+}
+
+export function verifyLaneRunResult(lane, stdout) {
+	if (lane.execution?.kind === 'typescript') return true;
+	const expected = lane.files.reduce((count, file) => count + (file.cases?.length ?? 0), 0);
+	const result = JSON.parse(stdout);
+	if (result.numPassedTests !== expected || result.numPendingTests !== 0) {
+		throw new Error(
+			`lane ${lane.id} executed ${result.numPassedTests ?? 0} of ${expected} declared tests (${result.numPendingTests ?? 0} skipped)`,
+		);
+	}
+	return true;
 }

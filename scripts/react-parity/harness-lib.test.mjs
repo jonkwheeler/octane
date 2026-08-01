@@ -12,6 +12,7 @@ import {
 	validateManifest,
 	verifyLaneCollectedTests,
 	verifyLaneEnvironment,
+	verifyLaneRunResult,
 	verifyManifestFiles,
 } from './harness-lib.mjs';
 
@@ -93,7 +94,20 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 		'-t',
 		'^(?:example suite does the thing)$',
 		'packages/hook-form/tests/upstream/example.test.ts',
+		'--reporter=json',
 	]);
+});
+
+test('rejects successful Vitest runs that skipped declared cases', () => {
+	const lane = manifest().lanes[0];
+	assert.equal(
+		verifyLaneRunResult(lane, JSON.stringify({ numPassedTests: 1, numPendingTests: 0 })),
+		true,
+	);
+	assert.throws(
+		() => verifyLaneRunResult(lane, JSON.stringify({ numPassedTests: 0, numPendingTests: 1 })),
+		/executed 0 of 1 declared tests \(1 skipped\)/,
+	);
 });
 
 test('accepts explicit TypeScript lanes and builds portable compiler argv without a shell', () => {

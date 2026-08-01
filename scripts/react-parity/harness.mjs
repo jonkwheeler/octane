@@ -9,6 +9,7 @@ import {
 	verifyLaneEnvironment,
 	verifyManifestFiles,
 	verifyManifestTestSelections,
+	verifyLaneRunResult,
 } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -56,11 +57,19 @@ if (action === 'validate') {
 		await verifyLaneEnvironment(manifest, lane, root, pnpmVersion);
 		const [command, ...commandArgs] = buildLaneArgv(lane);
 		console.log(`running ${lane.id}: ${JSON.stringify([command, ...commandArgs])}`);
+		let stdout = '';
 		const exitCode = await new Promise((resolveExit, reject) => {
-			const child = spawn(command, commandArgs, { cwd: root, shell: false, stdio: 'inherit' });
+			const captureResult = lane.execution?.kind !== 'typescript';
+			const child = spawn(command, commandArgs, {
+				cwd: root,
+				shell: false,
+				stdio: captureResult ? ['inherit', 'pipe', 'inherit'] : 'inherit',
+			});
+			if (captureResult) child.stdout.on('data', (chunk) => (stdout += chunk));
 			child.on('error', reject);
 			child.on('exit', (code, signal) => resolveExit(code ?? (signal ? 1 : 0)));
 		});
 		if (exitCode !== 0) process.exit(exitCode);
+		verifyLaneRunResult(lane, stdout);
 	}
 }
