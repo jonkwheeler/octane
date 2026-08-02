@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 46 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 45 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -4413,9 +4413,9 @@
         "path": "packages/drei/upstream/src/core/Wireframe.tsx",
         "line": 201
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Wireframe.three.tsrx",
+      "evidence": ["packages/drei/tests/wireframe.test.ts"],
       "divergence": null
     },
     {

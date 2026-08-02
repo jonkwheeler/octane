@@ -12,6 +12,7 @@ export { MeshRefractionMaterial } from './MeshRefractionMaterial.three.tsrx';
 export type { MeshRefractionMaterialProps } from './MeshRefractionMaterial.three.tsrx';
 export { MeshReflectorMaterial } from './MeshReflectorMaterial.three.tsrx';
 export type { MeshReflectorMaterialProps } from './MeshReflectorMaterial.three.tsrx';
+export { Wireframe } from './Wireframe.three.tsrx';
 export {
 	Box,
 	Capsule,
