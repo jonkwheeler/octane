@@ -303,11 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-<<<<<<< HEAD
-          "sha256": "a2048bdf25349a3bf50233b01c023393dd6f66535225fca1bfb4063fc2c7b475"
-=======
-          "sha256": "ff8d6ec79ba9388ff324a64803b82881b1376aea6620e6897cdd90ef65718724"
->>>>>>> efebd650 (fix(react-resizable-panels): pin pristine test runtime)
+          "sha256": "34d5bf86daed75d953b36699c82f5e9472fd979351dab53194fc304274ba645c"
         }
       ]
     }

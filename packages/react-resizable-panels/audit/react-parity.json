@@ -50,7 +50,9 @@
       "notes": "Pinned byte-exact React suite inventory under its pinned jsdom 26 environment.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/react-resizable-panels/audit/pristine-runtime.json"
+        "inventory": "packages/react-resizable-panels/audit/pristine-runtime.json",
+        "runner": "packages/react-resizable-panels/node_modules/vitest/vitest.mjs",
+        "config": "packages/react-resizable-panels/vitest.pristine.config.ts"
       },
       "files": [
         {

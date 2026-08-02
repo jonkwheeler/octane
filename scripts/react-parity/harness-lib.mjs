@@ -60,7 +60,15 @@ const LANE_KEYS = new Set([
 	'execution',
 	'evidenceOrigin',
 ]);
-const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory', 'config', 'root']);
+const EXECUTION_KEYS = new Set([
+	'kind',
+	'compiler',
+	'project',
+	'inventory',
+	'config',
+	'root',
+	'runner',
+]);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
 const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
 const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full']);
@@ -319,19 +327,30 @@ export function validateManifest(manifest) {
 				exactPath(lane.execution.project, `lane ${lane.id} execution project`);
 				if (lane.execution.inventory !== undefined)
 					fail(`lane ${lane.id} TypeScript execution must not declare an inventory`);
-				if (lane.execution.config !== undefined || lane.execution.root !== undefined)
+				if (
+					lane.execution.config !== undefined ||
+					lane.execution.root !== undefined ||
+					lane.execution.runner !== undefined
+				)
 					fail(`lane ${lane.id} TypeScript execution only accepts compiler and project`);
 			} else if (lane.execution.kind === 'vitest-full') {
 				if (
 					lane.execution.compiler !== undefined ||
 					lane.execution.project !== undefined ||
-					lane.execution.config !== undefined ||
 					lane.execution.root !== undefined
 				)
-					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
+					fail(`lane ${lane.id} Vitest execution has unsupported fields`);
 				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
+				if (lane.execution.config !== undefined)
+					exactPath(lane.execution.config, `lane ${lane.id} execution config`);
+				if (lane.execution.runner !== undefined)
+					exactPath(lane.execution.runner, `lane ${lane.id} execution runner`);
 			} else {
-				if (lane.execution.compiler !== undefined || lane.execution.project !== undefined)
+				if (
+					lane.execution.compiler !== undefined ||
+					lane.execution.project !== undefined ||
+					lane.execution.runner !== undefined
+				)
 					fail(`lane ${lane.id} Jest execution must not declare a compiler or project`);
 				exactPath(lane.execution.config, `lane ${lane.id} execution config`);
 				exactPath(lane.execution.root, `lane ${lane.id} execution root`);
@@ -734,15 +753,19 @@ export async function verifyManifestTestSelections(manifest, root) {
 			candidate.available !== false &&
 			!['typescript', 'jest-full'].includes(candidate.execution?.kind),
 	)) {
-		let collectedTests = testsByProject.get(lane.project);
+		const runner = lane.execution?.runner ?? 'node_modules/vitest/vitest.mjs';
+		const config = lane.execution?.config;
+		const collectionKey = `${runner}\0${config ?? lane.project}`;
+		let collectedTests = testsByProject.get(collectionKey);
 		if (!collectedTests) {
+			const selection = config ? ['--config', config] : ['--project', lane.project];
 			const { stdout } = await execFileAsync(
 				process.execPath,
-				['node_modules/vitest/vitest.mjs', 'list', '--project', lane.project, '--json'],
+				[runner, 'list', ...selection, '--json'],
 				{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 			);
 			collectedTests = JSON.parse(stdout);
-			testsByProject.set(lane.project, collectedTests);
+			testsByProject.set(collectionKey, collectedTests);
 		}
 		if (lane.execution?.kind === 'vitest-full') {
 			const inventory = JSON.parse(await readFile(resolve(root, lane.execution.inventory), 'utf8'));
@@ -783,15 +806,11 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 	}
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
-		return [
-			process.execPath,
-			'node_modules/vitest/vitest.mjs',
-			'run',
-			'--project',
-			lane.project,
-			...inventory.files,
-			'--reporter=json',
-		];
+		const runner = lane.execution.runner ?? 'node_modules/vitest/vitest.mjs';
+		const selection = lane.execution.config
+			? ['--config', lane.execution.config]
+			: ['--project', lane.project];
+		return [process.execPath, runner, 'run', ...selection, ...inventory.files, '--reporter=json'];
 	}
 	if (lane.execution?.kind === 'jest-full') {
 		return [

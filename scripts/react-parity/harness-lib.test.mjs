@@ -300,9 +300,19 @@ test('normalizes Windows identity paths and resolves full-suite inventories from
 	);
 	const lane = {
 		...manifest().lanes[0],
-		execution: { kind: 'vitest-full', inventory: 'audit/inventory.json' },
+		execution: {
+			kind: 'vitest-full',
+			inventory: 'audit/inventory.json',
+			runner: 'packages/example/node_modules/vitest/vitest.mjs',
+			config: 'packages/example/vitest.config.ts',
+		},
 	};
-	assert.deepEqual(buildLaneArgv(lane, root).slice(5), [
+	assert.deepEqual(buildLaneArgv(lane, root), [
+		process.execPath,
+		'packages/example/node_modules/vitest/vitest.mjs',
+		'run',
+		'--config',
+		'packages/example/vitest.config.ts',
 		'packages/example.test.ts',
 		'--reporter=json',
 	]);

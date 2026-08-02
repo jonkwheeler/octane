@@ -1613,7 +1613,11 @@ export default defineConfig({
 				test: {
 					name: 'react-resizable-panels',
 					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
-					exclude: ['packages/react-resizable-panels/tests/browser/**'],
+					exclude: [
+						'packages/react-resizable-panels/tests/browser/**',
+						'packages/react-resizable-panels/tests/differential/**',
+						'packages/react-resizable-panels/tests/ssr/**',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
