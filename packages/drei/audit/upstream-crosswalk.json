@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 164
+    "gaps": 162
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -515,7 +515,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/Clone.three.tsrx",
-      "evidence": ["packages/drei/tests/clone.test.ts", "packages/drei/typetests/clone.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/clone.test.ts",
+        "packages/drei/typetests/clone.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2949,9 +2952,9 @@
         "path": "packages/drei/upstream/src/core/PositionalAudio.tsx",
         "line": 12
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PositionalAudio.three.tsrx",
+      "evidence": ["packages/drei/tests/positional-audio.test.ts"],
       "divergence": null
     },
     {
@@ -2962,9 +2965,9 @@
         "path": "packages/drei/upstream/src/core/PositionalAudio.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PositionalAudio.three.tsrx",
+      "evidence": ["packages/drei/typetests/positional-audio.test-d.ts"],
       "divergence": null
     },
     {
@@ -3486,7 +3489,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/Segments.three.tsrx",
-      "evidence": ["packages/drei/tests/segments.test.ts", "packages/drei/typetests/segments.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/segments.test.ts",
+        "packages/drei/typetests/segments.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4579,7 +4585,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/Bvh.three.tsrx",
-      "evidence": ["packages/drei/tests/bvh.test.ts", "packages/drei/typetests/bvh.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/bvh.test.ts",
+        "packages/drei/typetests/bvh.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4624,7 +4633,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/useCamera.three.tsrx",
-      "evidence": ["packages/drei/tests/hooks.test.ts", "packages/drei/typetests/hooks.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/hooks.test.ts",
+        "packages/drei/typetests/hooks.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4743,7 +4755,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/Fbo.three.tsrx",
-      "evidence": ["packages/drei/tests/fbo.test.ts", "packages/drei/typetests/fbo.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/fbo.test.ts",
+        "packages/drei/typetests/fbo.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4798,7 +4813,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/useFont.three.tsrx",
-      "evidence": ["packages/drei/tests/font.test.ts", "packages/drei/typetests/font.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/font.test.ts",
+        "packages/drei/typetests/font.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4856,7 +4874,10 @@
       },
       "status": "ported",
       "implementation": "packages/drei/src/core/useIntersect.three.tsrx",
-      "evidence": ["packages/drei/tests/hooks.test.ts", "packages/drei/typetests/hooks.test-d.ts"],
+      "evidence": [
+        "packages/drei/tests/hooks.test.ts",
+        "packages/drei/typetests/hooks.test-d.ts"
+      ],
       "divergence": null
     },
     {
