@@ -4187,6 +4187,9 @@ importers:
       detect-gpu:
         specifier: ^5.0.56
         version: 5.0.70
+      hls.js:
+        specifier: ^1.5.17
+        version: 1.6.16
       stats-gl:
         specifier: ^2.2.8
         version: 2.4.2(@types/three@0.172.0)(three@0.172.0)

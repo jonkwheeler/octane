@@ -167,6 +167,8 @@ export { Stats } from './Stats.three.tsrx';
 export type { StatsProps } from './Stats.three.tsrx';
 export { StatsGl } from './StatsGl.three.tsrx';
 export type { StatsGlProps } from './StatsGl.three.tsrx';
+export { VideoTexture, useVideoTexture } from './VideoTexture.three.tsrx';
+export type { VideoTextureProps } from './VideoTexture.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
