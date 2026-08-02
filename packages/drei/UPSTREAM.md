@@ -23,6 +23,35 @@ therefore inventoried as upstream evidence, then exercised through paired React
 and Octane characterization fixtures at the appropriate DOM, Three-scene, or
 real-browser observation boundary.
 
+The complete tagged test tree contains exactly four artifacts, all under
+`test/e2e/`: `App.tsx`, `e2e.sh`, `snapshot.test.ts`, and its Linux PNG snapshot.
+They form one whole-gallery Playwright screenshot case. Their byte hashes and
+individual dispositions are recorded in `audit/upstream-test-artifacts.json`.
+That single visual smoke test is retained as upstream evidence but is
+insufficient as an export-level runtime suite, so it is not mislabeled as a
+one-for-one adapted lane.
+
+The tag contains no upstream type-test suite. The upstream `tsconfig.json`
+compiles package source, while the `@ts-expect-error` comments in that source are
+inventoried separately so removing one makes the audit fail. The port's
+`typetests/` are repository-authored API checks and continue to run in package
+typecheck; they are not represented as adapted upstream type parity.
+
+## Executable parity evidence
+
+`audit/react-parity.json` registers the complete repository-authored Vitest suite
+and a focused paired React/Octane canary with the global `react-parity:check`
+harness. `audit/test-classifications.json` gives every port-authored test file
+exactly one disposition. Paired files import the pinned React Drei oracle in the
+test body; renderer-configuration and audit-guard files are explicitly
+Octane-only and do not count as React-parity evidence.
+
+`audit/runtime-evidence.json` hashes every test file and every collected assertion
+inventory. `audit/upstream-test-artifacts.json` is the empty transformation
+ledger: no upstream test or type suite was adapted. The audit guard includes
+negative controls for a skipped test file, deleted assertion, removed upstream
+`@ts-expect-error` inventory entry, and fabricated upstream type suite.
+
 ## Completeness contract
 
 `audit/upstream-crosswalk.json` is generated from the pinned public runtime and

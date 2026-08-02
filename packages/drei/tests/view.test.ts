@@ -155,6 +155,7 @@ function normalize(records: Record[]) {
 }
 
 describe('View', () => {
+	// @parity-case differential:view-rendering
 	it('matches tracked rect, viewport/scissor/render restoration, frames and refs', async () => {
 		const pair = await mountPair({ index: 2, frames: 1, visible: true, name: 'view-group' });
 		for (let i = 0; i < 3; i++) {
@@ -192,6 +193,7 @@ describe('View', () => {
 		expect(ReactView.Port).toBeTypeOf('function');
 	});
 
+	// OCTANE DIVERGENCE[view-renderer-boundary][runtime:74a010948a1b6d68]
 	it('documents the outside-DOM renderer boundary while keeping View.Port callable', () => {
 		const root = createOctaneDomRoot(document.createElement('div'));
 		expect(() => root.render(ViewDomBoundary, {})).toThrow(

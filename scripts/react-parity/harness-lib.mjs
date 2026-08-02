@@ -417,13 +417,9 @@ export function validateManifest(manifest) {
 					'verified provenance with present upstream runtime tests requires required full pristine-upstream and adapted-octane lanes with upstream-suite evidence',
 				);
 		} else if (manifest.upstreamSuites.runtime === 'insufficient') {
-			if (
-				!requiredFullRuntime('pristine-upstream', 'upstream-suite') ||
-				!requiredFullRuntime('adapted-octane', 'upstream-suite') ||
-				!requiredDifferential
-			)
+			if (!requiredFullRuntime('adapted-octane', 'repo-authored') || !requiredDifferential)
 				fail(
-					'verified provenance with insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence',
+					'verified provenance with insufficient upstream runtime tests requires full adapted-octane and differential lanes with repo-authored evidence',
 				);
 		} else if (!requiredFullRuntime('adapted-octane', 'repo-authored') || !requiredDifferential) {
 			fail(
@@ -431,20 +427,25 @@ export function validateManifest(manifest) {
 			);
 		}
 
-		const expectedOrigin =
-			manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
-		const requiredTypeEvidence = (type) =>
-			manifest.lanes.some(
-				(lane) =>
-					lane.type === type &&
-					lane.oracle === 'required' &&
-					lane.available !== false &&
-					lane.evidenceOrigin === expectedOrigin,
-			);
-		if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
-			fail(
-				`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
-			);
+		if (manifest.upstreamSuites.types === 'absent') {
+			if (manifest.lanes.some((lane) => lane.type.endsWith('-types')))
+				fail('absent upstream type tests must not be represented by synthetic type parity lanes');
+		} else {
+			const expectedOrigin =
+				manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
+			const requiredTypeEvidence = (type) =>
+				manifest.lanes.some(
+					(lane) =>
+						lane.type === type &&
+						lane.oracle === 'required' &&
+						lane.available !== false &&
+						lane.evidenceOrigin === expectedOrigin,
+				);
+			if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
+				fail(
+					`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
+				);
+		}
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');

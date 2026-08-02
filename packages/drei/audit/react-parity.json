@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/pmndrs/drei.git",
+    "version": "10.7.7",
+    "commit": "b8b99fd4ca1dfb8d821335671320512daa6efea4",
+    "sourceRoot": "src",
+    "testRoot": "test/e2e",
+    "license": "MIT",
+    "integrity": "sha256:13ec9fc26559a2ab7e09132d80519d13bb0a67e4accd6a48e4a8bf0fde8f1d18",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "insufficient",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/drei/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/drei/tests"],
+      "include": ["\\.test\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 293,
+    "uniqueIdentities": 293,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "40105b4973969f25074aa8c0edff838fb2bc2bbec447ae5f647eda087fad2644"
+    }
+  },
+  "lanes": [
+    {
+      "id": "drei-repo-authored-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs all repository-authored Drei tests. 101 of 104 files execute paired scenarios against the pinned React implementation; three files validate Octane-only renderer and audit contracts.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/drei/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/drei/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "e48196e0f034805b8b91a0c0f04946762a53b82eed92c7e574836b124f8197a1"
+        },
+        {
+          "path": "packages/drei/audit/runtime-evidence.json",
+          "role": "support",
+          "sha256": "6bfb177dccea620cdfb54638a5c1f90b7dce483d2f82530ca9fbae0a9c7cf18a"
+        },
+        {
+          "path": "packages/drei/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "c42fc99e0e3aa718b313f25c41360659f8e8527e9530a0d3e8732ec273d3bfab"
+        },
+        {
+          "path": "packages/drei/audit/upstream-test-artifacts.json",
+          "role": "support",
+          "sha256": "b5ba695aa025061b55b62a4cbadf8dfd654c82ef8e3ed960c245a4544ea51441"
+        },
+        {
+          "path": "packages/drei/scripts/check-react-parity.mjs",
+          "role": "support",
+          "sha256": "a570e1049c2aaf1d6b0e554cca0e8633901388eb85a20f62bfe9549ab34696e7"
+        }
+      ]
+    },
+    {
+      "id": "drei-differential-canary",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei",
+      "evidenceOrigin": "repo-authored",
+      "notes": "A focused canary proving that parity selection resolves and executes a paired React/Octane Three-renderer scenario.",
+      "files": [
+        {
+          "path": "packages/drei/tests/view.test.ts",
+          "role": "test",
+          "sha256": "41fb1410383cba251f72ccbafdce87e2ce30fdb9b150b4a6cabfe3118218e9b0",
+          "cases": [
+            {
+              "id": "differential:view-rendering",
+              "testName": "matches tracked rect, viewport/scissor/render restoration, frames and refs",
+              "fullName": "View matches tracked rect, viewport/scissor/render restoration, frames and refs"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "view-renderer-boundary",
+      "caseIds": ["runtime:74a010948a1b6d68"],
+      "upstreamResult": "React Drei can move View children between DOM and Three roots through tunnel-rat.",
+      "octaneResult": "Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
+      "rationale": "Octane components are statically owned by one renderer.",
+      "classification": "intentional-divergence",
+      "consumerImpact": "A View cannot transport authored Three children from an independent DOM root.",
+      "migrationGuidance": "Author View inside the Three Canvas and avoid the DOM-root View.Port transport form.",
+      "owner": "@octanejs/drei",
+      "reviewCondition": "Revisit if Octane gains cross-renderer component transport."
+    }
+  ]
+}

@@ -497,9 +497,12 @@ test('makes every upstream runtime suite state an executable verified requiremen
 
 	const insufficient = structuredClone(present);
 	insufficient.upstreamSuites.runtime = 'insufficient';
+	insufficient.lanes = insufficient.lanes.filter((lane) => lane.type !== 'pristine-upstream');
+	insufficient.lanes.find((lane) => lane.type === 'adapted-octane').evidenceOrigin =
+		'repo-authored';
 	assert.throws(
 		() => validateManifest(insufficient),
-		/insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence/,
+		/insufficient upstream runtime tests requires full adapted-octane and differential lanes with repo-authored evidence/,
 	);
 	insufficient.lanes.push(differentialLane());
 	assert.doesNotThrow(() => validateManifest(insufficient));
@@ -516,7 +519,7 @@ test('makes every upstream runtime suite state an executable verified requiremen
 	assert.doesNotThrow(() => validateManifest(absent));
 });
 
-test('requires paired executable type lanes for every upstream type suite state', () => {
+test('requires paired executable type lanes only when upstream type evidence exists', () => {
 	const value = verifiedManifest();
 	for (const mutation of [
 		(candidate) =>
@@ -537,7 +540,7 @@ test('requires paired executable type lanes for every upstream type suite state'
 		);
 	}
 
-	for (const suiteState of ['absent', 'insufficient']) {
+	for (const suiteState of ['insufficient']) {
 		const repoAuthored = structuredClone(value);
 		repoAuthored.upstreamSuites.types = suiteState;
 		for (const lane of repoAuthored.lanes.filter((candidate) => candidate.type.endsWith('-types')))
@@ -577,6 +580,17 @@ test('requires paired executable type lanes for every upstream type suite state'
 			new RegExp(`with ${suiteState} upstream type tests.*repo-authored evidence`),
 		);
 	}
+
+	const absent = structuredClone(value);
+	absent.upstreamSuites.types = 'absent';
+	absent.lanes = absent.lanes.filter((lane) => !lane.type.endsWith('-types'));
+	assert.doesNotThrow(() => validateManifest(absent));
+	const synthetic = structuredClone(absent);
+	synthetic.lanes.push(typeLane('pristine-types'));
+	assert.throws(
+		() => validateManifest(synthetic),
+		/must not be represented by synthetic type parity lanes/,
+	);
 });
 
 test('requires explicit type evidence origins and the framework-appropriate compilers', () => {

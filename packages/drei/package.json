@@ -27,7 +27,9 @@
     "upstream:generate": "node scripts/generate-upstream-crosswalk.mjs",
     "upstream:check": "node scripts/check-upstream-crosswalk.mjs",
     "upstream:ready": "node scripts/check-upstream-crosswalk.mjs --ready",
-    "test": "vitest run --root ../.. --project drei",
+    "react-parity:generate": "node scripts/generate-react-parity.mjs",
+    "react-parity:check": "node scripts/check-react-parity.mjs",
+    "test": "node scripts/check-react-parity.mjs && vitest run --root ../.. --project drei",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {

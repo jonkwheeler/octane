@@ -48,6 +48,14 @@ try {
 } catch (error) {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
 }
+try {
+	execFileSync(process.execPath, ['packages/drei/scripts/check-react-parity.mjs'], {
+		cwd: REPO,
+		stdio: 'inherit',
+	});
+} catch (error) {
+	errors.push(`Drei parity evidence is invalid: ${error.message}`);
+}
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
 // (BenchmarkExplorer, BenchBars, …). Scan both trees so a misleading claim can't
