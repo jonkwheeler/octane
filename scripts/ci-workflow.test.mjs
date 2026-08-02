@@ -95,6 +95,14 @@ describe('CI workflow aggregation', () => {
 		}
 	});
 
+	test('runs the Embla browser suite only in the Chromium integration lane', () => {
+		assert.match(
+			jobSource('test_shard'),
+			/--exclude "packages\/embla-carousel\/tests\/browser\/\*\*\/\*\.test\.ts"/,
+		);
+		assert.match(jobSource('heavy_integration'), /packages\/embla-carousel\/tests\/browser/);
+	});
+
 	test('skips expensive jobs only after the committed scope classifier opts out', () => {
 		assert.match(
 			jobSource('release_change'),
