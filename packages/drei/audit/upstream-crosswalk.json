@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 206
+    "gaps": 205
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -834,9 +834,9 @@
         "path": "packages/drei/upstream/src/web/CycleRaycast.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/CycleRaycast.three.tsrx",
+      "evidence": ["packages/drei/tests/cycle-raycast.test.ts"],
       "divergence": null
     },
     {
