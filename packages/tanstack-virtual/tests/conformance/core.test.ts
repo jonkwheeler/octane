@@ -203,6 +203,8 @@ describe('state wiring + scrolling', () => {
 		r.unmount();
 	});
 
+	// OCTANE DIVERGENCE[tanstack-virtual-nested-flush][adapted:tanstack-virtual-nested-flush]
+	// @parity-case adapted:tanstack-virtual-nested-flush
 	it('sync scroll update inside a discrete-event flush still lands (flushSync degradation)', async () => {
 		// #scroll-500's onClick dispatches the scroll event synchronously INSIDE
 		// octane's click flush → core notifies sync=true → the adapter's

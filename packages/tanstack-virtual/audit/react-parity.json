@@ -1,0 +1,244 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/virtual.git",
+    "version": "@tanstack/react-virtual@3.14.5",
+    "commit": "151e9f47abd4ef2d3b11936c04be8908e6bd0607",
+    "sourceRoot": "packages/react-virtual/src",
+    "testRoot": "packages/react-virtual/tests",
+    "license": "MIT",
+    "integrity": "sha256:e93b937aa9cdc910ab9dddae1c342acee8c2d45b5574298383e204b5a94b718e",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "insufficient" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-virtual/src"],
+      "include": ["\\.ts$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": {
+      "roots": ["packages/tanstack-virtual/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-virtual-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-virtual",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs exact element, horizontal, dynamic-measurement, and window-scroll fixtures against @tanstack/react-virtual@3.14.5 with deterministic injected geometry.",
+      "files": [
+        {
+          "path": "packages/tanstack-virtual/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "9a7522bc1831f25886271f13df6a9933bc8e181438139d9027d9815f2ce04327",
+          "cases": [
+            {
+              "id": "differential:tanstack-virtual-basic",
+              "testName": "BasicList: scroll windows + count clamp + scrollToIndex, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-virtual vs real @tanstack/react-virtual BasicList: scroll windows + count clamp + scrollToIndex, byte-identical"
+            },
+            {
+              "id": "differential:tanstack-virtual-horizontal",
+              "testName": "HorizontalList: scrollLeft windowing, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-virtual vs real @tanstack/react-virtual HorizontalList: scrollLeft windowing, byte-identical"
+            },
+            {
+              "id": "differential:tanstack-virtual-dynamic",
+              "testName": "DynamicList: measureElement + resizeItem + measure(), byte-identical",
+              "fullName": "differential: @octanejs/tanstack-virtual vs real @tanstack/react-virtual DynamicList: measureElement + resizeItem + measure(), byte-identical"
+            },
+            {
+              "id": "differential:tanstack-virtual-window",
+              "testName": "WindowList: window scroll windowing, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-virtual vs real @tanstack/react-virtual WindowList: window scroll windowing, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "271c821488a6ccf73bde7ae32b7fea84d32ebf1f940e2247874aac48f6088bf8"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "842eb7fde270b1773b2e3b76481b3a9c19c2a2efb6396d72418e98032fe64bf9"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_setup.ts",
+          "role": "support",
+          "sha256": "f2e46ded38b1f54a3493c0587ce519dd4ec3f811fa6412525fcc5cf17efb8d90"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/basic-list-diff.tsrx",
+          "role": "support",
+          "sha256": "cf8296962fa6fb86a07010b4a568e8b674fd71a72dc06a657fc8762e76084664"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/dynamic-measure-diff.tsrx",
+          "role": "support",
+          "sha256": "b980804610c7e7e2a62fd770ce1811e5bc11fff00453b75386e2171d6fcecfd6"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/horizontal-diff.tsrx",
+          "role": "support",
+          "sha256": "7b354c8873feb4dda8ab89a5290a538b0271981aa36a95d44b2b7b7f1d479614"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/list-basic.tsrx",
+          "role": "support",
+          "sha256": "d9f6b49e023554100f3f5f7e27c89c509eddc7b6faa2de65d34a91b1dba3c766"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/list-dynamic.tsrx",
+          "role": "support",
+          "sha256": "dfbd1781728124932c9b6804649bb1230e77371363666e4c1f13046084475b0d"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/list-window.tsrx",
+          "role": "support",
+          "sha256": "00e5a6c99aff59f917a3bfdba76588c0ba65c1c9608e2caa4435337d8420eb0b"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/server.tsrx",
+          "role": "support",
+          "sha256": "8b4049e1ae27d74f79f8244b56fb013594fe1305f5589d6ffb60fdce2dae63df"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/window-diff.tsrx",
+          "role": "support",
+          "sha256": "98085e53308052da1ffa7980e533f40b751ca337db51d6ec5e4a00681421ab8e"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-virtual-adapted-divergence",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-virtual",
+      "notes": "Authenticates nested synchronous scroll notification behavior at an Octane discrete-event flush boundary.",
+      "files": [
+        {
+          "path": "packages/tanstack-virtual/tests/conformance/core.test.ts",
+          "role": "test",
+          "sha256": "d363d13ae2c003a5df8cba08c1d62adb664772a3734c6d89ffefe18c9d10187d",
+          "cases": [
+            {
+              "id": "adapted:tanstack-virtual-nested-flush",
+              "testName": "sync scroll update inside a discrete-event flush still lands (flushSync degradation)",
+              "fullName": "state wiring + scrolling sync scroll update inside a discrete-event flush still lands (flushSync degradation)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tanstack-virtual-adapted-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-virtual",
+      "notes": "Authenticates initialRect and initialOffset windowing during DOM-free server rendering.",
+      "files": [
+        {
+          "path": "packages/tanstack-virtual/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "d09055ccdaf256f259fafc426fd504c32e166455a9f9167f9620f42924ba2d7e",
+          "cases": [
+            {
+              "id": "adapted:tanstack-virtual-ssr",
+              "testName": "renders the initial offset window without a DOM",
+              "fullName": "@octanejs/tanstack-virtual SSR renders the initial offset window without a DOM"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_fixtures/server.tsrx",
+          "role": "support",
+          "sha256": "8b4049e1ae27d74f79f8244b56fb013594fe1305f5589d6ffb60fdce2dae63df"
+        },
+        {
+          "path": "packages/tanstack-virtual/tests/_setup.ts",
+          "role": "support",
+          "sha256": "f2e46ded38b1f54a3493c0587ce519dd4ec3f811fa6412525fcc5cf17efb8d90"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-virtual-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-virtual-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the public element and window virtualizer generic contract.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-virtual/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-virtual/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "f10f78209ff421d185eb10db6eea9592adc6aceffaa6cc0639f85750f0f26310",
+          "cases": [
+            {
+              "id": "types:tanstack-virtual-public-api",
+              "testName": "element and window virtualizer element inference",
+              "fullName": "element and window virtualizer element inference"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-virtual/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "730311895c1ee2e6d8849b09a2d48071c8e00a7a2f5be330057dc4e79a6506eb"
+        },
+        {
+          "path": "packages/tanstack-virtual/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "4f1aba0195954c016fe8b95ce49caa54492277bbb3ded516873704098a532615"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "tanstack-virtual-nested-flush",
+      "caseIds": ["adapted:tanstack-virtual-nested-flush"],
+      "upstreamResult": "React flushSync performs a synchronous nested flush for a sync virtualizer notification.",
+      "octaneResult": "Octane degrades nested flushSync to a plain dispatch drained by the ambient discrete-event flush.",
+      "rationale": "Octane prevents re-entrant flush stacks while retaining the same settled consumer-visible window.",
+      "classification": "framework-integration",
+      "consumerImpact": "The virtual window is current when the enclosing event flush returns; no extra consumer action is required.",
+      "migrationGuidance": "None; observe virtualizer state after the event boundary rather than relying on React's nested flush implementation detail.",
+      "owner": "@octanejs/tanstack-virtual",
+      "reviewCondition": "Review if Octane changes re-entrant flush semantics."
+    }
+  ]
+}
