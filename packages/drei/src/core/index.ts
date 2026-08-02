@@ -122,6 +122,8 @@ export { Helper, useHelper } from './Helper.three.tsrx';
 export type { HelperProps } from './Helper.three.tsrx';
 export { ScreenSizer } from './ScreenSizer.three.tsrx';
 export type { ScreenSizerProps } from './ScreenSizer.three.tsrx';
+export { Preload } from './Preload.three.tsrx';
+export type { PreloadProps } from './Preload.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

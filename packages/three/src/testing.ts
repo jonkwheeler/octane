@@ -41,6 +41,8 @@ export interface TestingRenderer extends Renderer {
 	readonly disposed: boolean;
 	/** The currently selected render target, matching WebGLRenderer state. */
 	readonly renderTarget: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null;
+	/** Scene/camera pairs submitted for eager shader compilation. */
+	readonly compileCalls: readonly (readonly [THREE.Object3D, THREE.Camera])[];
 	/** WebGLRenderer-compatible automatic clearing flag. */
 	autoClear: boolean;
 }
@@ -92,6 +94,7 @@ class FrameRecorder implements TestingRenderer {
 	#lastCamera: THREE.Camera | null = null;
 	#disposed = false;
 	#renderTarget: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null = null;
+	readonly compileCalls: Array<readonly [THREE.Object3D, THREE.Camera]> = [];
 	autoClear = true;
 
 	constructor(canvas: CanvasLike) {
@@ -122,6 +125,10 @@ class FrameRecorder implements TestingRenderer {
 		this.#frameCount++;
 		this.#lastScene = scene;
 		this.#lastCamera = camera;
+	}
+
+	compile(scene: THREE.Object3D, camera: THREE.Camera): void {
+		this.compileCalls.push([scene, camera]);
 	}
 
 	setPixelRatio(_dpr: number): void {}
