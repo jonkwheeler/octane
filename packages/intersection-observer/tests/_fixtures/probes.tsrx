@@ -15,9 +15,32 @@ export function HookProbe(props: {
 
 export function EffectProbe(props: {
 	onChange(inView: boolean, entry: IntersectionObserverEntry): void;
+	threshold?: number;
+	triggerOnce?: boolean;
 }) @{
-	const ref = useOnInView(props.onChange);
+	const ref = useOnInView(props.onChange, {
+		threshold: props.threshold,
+		triggerOnce: props.triggerOnce,
+	});
 	<div ref={ref} data-testid="effect">effect</div>
+}
+
+export function EffectSwapProbe(props: {
+	alternate: boolean;
+	onChange(inView: boolean, entry: IntersectionObserverEntry): void;
+}) {
+	const ref = useOnInView(props.onChange);
+	if (props.alternate) return <span ref={ref} data-testid="effect-swap">alternate</span>;
+	return <div ref={ref} data-testid="effect-swap">initial</div>;
+}
+
+export function HookSwapProbe(props: {
+	alternate: boolean;
+	onChange(inView: boolean, entry: IntersectionObserverEntry): void;
+}) {
+	const { ref } = useInView({ onChange: props.onChange });
+	if (props.alternate) return <span ref={ref} data-testid="hook-swap">alternate</span>;
+	return <div ref={ref} data-testid="hook-swap">initial</div>;
 }
 
 export function EffectPoolProbe(

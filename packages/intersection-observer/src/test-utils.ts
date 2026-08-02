@@ -13,7 +13,7 @@ interface ObserverRecord {
 	instance: IntersectionObserver;
 }
 
-const observers = new Map<Element, ObserverRecord>();
+const observers = new Map<IntersectionObserver, ObserverRecord>();
 let originalIntersectionObserver: typeof IntersectionObserver | undefined;
 
 function entryFor(element: Element, isIntersecting: boolean, ratio: number) {
@@ -42,18 +42,17 @@ export function setupIntersectionMocking(mockFn: MockFn) {
 			rootMargin: options.rootMargin ?? '',
 			observe: mockFn((element: Element) => {
 				elements.add(element);
-				observers.set(element, { callback, elements, instance });
 			}),
 			unobserve: mockFn((element: Element) => {
 				elements.delete(element);
-				observers.delete(element);
 			}),
 			disconnect: mockFn(() => {
-				elements.forEach((element) => observers.delete(element));
+				observers.delete(instance);
 				elements.clear();
 			}),
 			takeRecords: mockFn(() => []),
 		} as unknown as IntersectionObserver;
+		observers.set(instance, { callback, elements, instance });
 		return instance;
 	}) as unknown as typeof IntersectionObserver;
 }
@@ -72,10 +71,8 @@ export function destroyIntersectionMocking() {
 
 export function mockAllIsIntersecting(isIntersecting: boolean | number) {
 	const ratio = typeof isIntersecting === 'number' ? isIntersecting : isIntersecting ? 1 : 0;
-	const unique = new Map<IntersectionObserver, ObserverRecord>();
-	observers.forEach((observer) => unique.set(observer.instance, observer));
 	act(() => {
-		unique.forEach(({ callback, elements, instance }) => {
+		observers.forEach(({ callback, elements, instance }) => {
 			callback(
 				[...elements].map((element) => entryFor(element, ratio > 0, ratio)),
 				instance,
@@ -85,14 +82,18 @@ export function mockAllIsIntersecting(isIntersecting: boolean | number) {
 }
 
 export function mockIsIntersecting(element: Element, isIntersecting: boolean | number) {
-	const observer = observers.get(element);
-	if (!observer) throw new Error('No IntersectionObserver instance found for element');
+	const matching = [...observers.values()].filter(({ elements }) => elements.has(element));
+	if (matching.length === 0) throw new Error('No IntersectionObserver instance found for element');
 	const ratio = typeof isIntersecting === 'number' ? isIntersecting : isIntersecting ? 1 : 0;
-	act(() => observer.callback([entryFor(element, ratio > 0, ratio)], observer.instance));
+	act(() => {
+		for (const observer of matching) {
+			observer.callback([entryFor(element, ratio > 0, ratio)], observer.instance);
+		}
+	});
 }
 
 export function intersectionMockInstance(element: Element) {
-	const observer = observers.get(element);
+	const observer = [...observers.values()].find(({ elements }) => elements.has(element));
 	if (!observer) throw new Error('No IntersectionObserver instance found for element');
 	return observer.instance;
 }

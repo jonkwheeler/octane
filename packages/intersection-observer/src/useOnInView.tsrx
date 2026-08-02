@@ -11,13 +11,14 @@ export function useOnInView(
 	callback.current = onChange;
 	const unobserve = useRef<void | (() => void)>(undefined);
 	const effectCleanup = useRef<void | (() => void)>(undefined);
-	const lastInView = useRef(options.initialInView);
+	const lastInView = useRef<boolean | undefined>(undefined);
 
 	return useCallback((node: Element | null) => {
 		unobserve.current?.();
 		unobserve.current = undefined;
 		effectCleanup.current?.();
 		effectCleanup.current = undefined;
+		lastInView.current = undefined;
 		if (!node || options.skip) return;
 		unobserve.current = observe(
 			node,
@@ -26,9 +27,10 @@ export function useOnInView(
 				lastInView.current = inView;
 				effectCleanup.current?.();
 				effectCleanup.current = callback.current(inView, entry);
-				if (entry.isIntersecting && options.triggerOnce) {
+				if (inView && options.triggerOnce) {
 					unobserve.current?.();
 					unobserve.current = undefined;
+					lastInView.current = undefined;
 				}
 			},
 			{
@@ -46,6 +48,7 @@ export function useOnInView(
 			unobserve.current = undefined;
 			effectCleanup.current?.();
 			effectCleanup.current = undefined;
+			lastInView.current = undefined;
 		};
 	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.fallbackInView, options.delay, options.scrollMargin]);
 }

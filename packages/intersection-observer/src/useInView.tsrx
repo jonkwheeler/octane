@@ -27,6 +27,7 @@ export function useInView(options: IntersectionOptions | symbol = {}): InViewHoo
 	}>({ inView: Boolean(initialInView) });
 
 	useEffect(() => {
+		if (lastInView.current === undefined) lastInView.current = initialInView;
 		if (skip || !ref) return;
 		let unobserve: (() => void) | undefined;
 		unobserve = observe(
@@ -52,6 +53,7 @@ export function useInView(options: IntersectionOptions | symbol = {}): InViewHoo
 	if (!ref && entryTarget && !triggerOnce && !skip && previousTarget.current !== entryTarget) {
 		previousTarget.current = entryTarget;
 		setState({ inView: Boolean(initialInView) });
+		lastInView.current = initialInView;
 	}
 
 	const result = [setRef, state.inView, state.entry] as InViewHookResponse;

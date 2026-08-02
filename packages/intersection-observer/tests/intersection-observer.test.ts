@@ -8,7 +8,14 @@ import {
 	setupIntersectionMocking,
 } from '../src/test-utils';
 import { observe } from '../src/observe';
-import { ComponentProbe, EffectPoolProbe, EffectProbe, HookProbe } from './_fixtures/probes.tsrx';
+import {
+	ComponentProbe,
+	EffectPoolProbe,
+	EffectProbe,
+	EffectSwapProbe,
+	HookProbe,
+	HookSwapProbe,
+} from './_fixtures/probes.tsrx';
 
 beforeEach(() => setupIntersectionMocking(vi.fn));
 afterEach(() => {
@@ -29,6 +36,24 @@ describe('observe', () => {
 		expect(observer.disconnect).not.toHaveBeenCalled();
 		stopSecond();
 		expect(observer.disconnect).toHaveBeenCalledOnce();
+	});
+
+	it('keeps distinct observers registered for the same element', () => {
+		const target = document.createElement('div');
+		const first = vi.fn();
+		const second = vi.fn();
+		const stopFirst = observe(target, first, { threshold: 0.25 });
+		const stopSecond = observe(target, second, { threshold: 0.75 });
+
+		mockIsIntersecting(target, true);
+		expect(first).toHaveBeenCalledOnce();
+		expect(second).toHaveBeenCalledOnce();
+
+		stopFirst();
+		mockIsIntersecting(target, true);
+		expect(first).toHaveBeenCalledOnce();
+		expect(second).toHaveBeenCalledTimes(2);
+		stopSecond();
 	});
 });
 
@@ -65,6 +90,51 @@ describe('Octane binding', () => {
 		const target = result.find('[data-testid="effect"]');
 		mockIsIntersecting(target, true);
 		expect(onChange).toHaveBeenCalledOnce();
+		result.unmount();
+	});
+
+	it('resets useOnInView initial-false suppression when the target changes', () => {
+		const onChange = vi.fn();
+		const result = mount(EffectSwapProbe, { alternate: false, onChange });
+		const initial = result.find('[data-testid="effect-swap"]');
+		mockIsIntersecting(initial, false);
+		expect(onChange).not.toHaveBeenCalled();
+
+		result.update(EffectSwapProbe, { alternate: true, onChange });
+		const alternate = result.find('[data-testid="effect-swap"]');
+		mockIsIntersecting(alternate, false);
+		expect(onChange).not.toHaveBeenCalled();
+		result.unmount();
+	});
+
+	it('keeps triggerOnce observing until the threshold-aware inView state is true', () => {
+		const result = mount(EffectProbe, {
+			onChange: vi.fn(),
+			threshold: 0.75,
+			triggerOnce: true,
+		});
+		const target = result.find('[data-testid="effect"]');
+		const observer = intersectionMockInstance(target);
+		mockIsIntersecting(target, 0.25);
+		expect(observer.unobserve).not.toHaveBeenCalled();
+		mockIsIntersecting(target, 0.75);
+		expect(observer.unobserve).toHaveBeenCalledWith(target);
+		result.unmount();
+	});
+
+	it('resets useInView initial-false suppression when the target changes', () => {
+		const onChange = vi.fn();
+		const result = mount(HookSwapProbe, { alternate: false, onChange });
+		flushEffects();
+		const initial = result.find('[data-testid="hook-swap"]');
+		mockIsIntersecting(initial, false);
+		expect(onChange).not.toHaveBeenCalled();
+
+		result.update(HookSwapProbe, { alternate: true, onChange });
+		flushEffects();
+		const alternate = result.find('[data-testid="hook-swap"]');
+		mockIsIntersecting(alternate, false);
+		expect(onChange).not.toHaveBeenCalled();
 		result.unmount();
 	});
 
