@@ -9,6 +9,7 @@ import { Conditional } from './demos/Conditional.tsrx';
 import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
+import { InputOTPDemo } from './demos/InputOTP.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
@@ -26,6 +27,7 @@ import conditionalSource from './demos/Conditional.tsrx?raw';
 import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
+import inputOTPSource from './demos/InputOTP.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
@@ -99,6 +101,12 @@ export const GROUPS: readonly DemoGroup[] = [
 		id: 'components',
 		label: 'Components',
 		demos: [
+			{
+				id: 'input-otp',
+				title: 'Input OTP',
+				Component: InputOTPDemo,
+				source: inputOTPSource,
+			},
 			{
 				id: 'cmdk',
 				title: 'Command menu',

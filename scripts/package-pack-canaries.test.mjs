@@ -105,6 +105,7 @@ describe('packed TSRX source consumers', () => {
 	const archiveSpecs = {
 		'@octanejs/cmdk': 'file:/tmp/cmdk.tgz',
 		'@octanejs/floating-ui': 'file:/tmp/floating-ui.tgz',
+		'@octanejs/input-otp': 'file:/tmp/input-otp.tgz',
 		'@octanejs/radix': 'file:/tmp/radix.tgz',
 		'@octanejs/sonner': 'file:/tmp/sonner.tgz',
 		'@octanejs/tiptap': 'file:/tmp/tiptap.tgz',
@@ -150,13 +151,15 @@ describe('packed TSRX source consumers', () => {
 		assert.equal(config.compilerOptions.paths, undefined);
 	});
 
-	test('exercises all three published bindings from a real local TSRX component', () => {
+	test('exercises all four published bindings from a real local TSRX component', () => {
 		const source = renderPackedTsrxConsumerSource();
 
 		assert.match(source, /from '@octanejs\/cmdk'/);
+		assert.match(source, /from '@octanejs\/input-otp'/);
 		assert.match(source, /from '@octanejs\/sonner'/);
 		assert.match(source, /from '@octanejs\/tiptap'/);
 		assert.match(source, /<Command\b/);
+		assert.match(source, /<OTPInput\b/);
 		assert.match(source, /<Toaster\b/);
 		assert.match(source, /<EditorProvider\b/);
 		assert.match(source, /<Tiptap\b/);
@@ -167,6 +170,7 @@ describe('packed TSRX source consumers', () => {
 
 		assert.match(source, /type IsAny<T>/);
 		assert.match(source, /AssertNotAny<CommandProps>/);
+		assert.match(source, /AssertNotAny<OTPInputProps>/);
 		assert.match(source, /AssertNotAny<Parameters<typeof Command>\[0\]>/);
 		assert.match(source, /AssertNotAny<ToasterProps>/);
 		assert.match(source, /AssertNotAny<Parameters<typeof Toaster>\[0\]>/);

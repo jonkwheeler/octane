@@ -26,6 +26,7 @@ surface and evidence.
 | `@octanejs/floating-ui` | 0 |
 | `@octanejs/hook-form` | 0 |
 | `@octanejs/i18next` | 0 |
+| `@octanejs/input-otp` | 0 |
 | `@octanejs/jotai` | 0 |
 | `@octanejs/lexical` | 0 |
 | `@octanejs/lucide` | 0 |

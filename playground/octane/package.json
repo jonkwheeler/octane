@@ -17,6 +17,7 @@
   "dependencies": {
     "@octanejs/aria": "workspace:*",
     "@octanejs/cmdk": "workspace:*",
+    "@octanejs/input-otp": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/mantine-hooks": "workspace:*",
     "@octanejs/mobx": "workspace:*",

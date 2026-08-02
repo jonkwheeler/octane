@@ -6,12 +6,25 @@
   "engines": {
     "node": ">=22"
   },
-  "description": "Octane port of input-otp 1.4.2.",
+  "description": "Accessible one-time password inputs for Octane, ported from input-otp 1.4.2.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/input-otp"
+  },
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
   "files": [
     "src",
+    "README.md",
     "UPSTREAM.md"
   ],
   "exports": {
