@@ -94,6 +94,8 @@ export const CodeBlockBody = memo(
 			data-streamdown="code-block-body"
 			{...rest}
 		>
+			{/* OCTANE DIVERGENCE[streamdown-code-class-corrections][adapted:streamdown-code-class-corrections]:
+    balanced arbitrary-value classes correct malformed upstream 2.5 output. */}
 			<pre
 				className={cn(
 					className,

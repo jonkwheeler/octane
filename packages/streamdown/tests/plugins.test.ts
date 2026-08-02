@@ -10,6 +10,7 @@ import { math, createMathPlugin } from '@octanejs/streamdown/math';
 import { createMermaidPlugin, mermaid } from '@octanejs/streamdown/mermaid';
 
 describe('@octanejs/streamdown plugin entry points', () => {
+	// @parity-case adapted:streamdown-consolidated-plugins
 	it('exposes every official plugin factory and default instance', () => {
 		expect(code.type).toBe('code-highlighter');
 		expect(createCodePlugin().name).toBe('shiki');

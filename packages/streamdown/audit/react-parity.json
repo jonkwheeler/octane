@@ -1,0 +1,259 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/vercel/streamdown.git",
+    "version": "streamdown@2.5.0 + official pinned plugins",
+    "commit": "e5deed330aa4231751a106445d93d62e4716a22f",
+    "sourceRoot": "packages",
+    "testRoot": "packages/streamdown/tests",
+    "license": "Apache-2.0",
+    "integrity": "sha256:8dc9e1f04cda91beab7818cc11fd5cee8c5f316b84934686c892c8cfb9b808ac",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "absent", "types": "absent" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/streamdown/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": {
+      "roots": ["packages/streamdown/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "158c20b1be7230db9f6a3af36ea860469e5c4aae8d2ccc03c7a80c74bba519a8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "streamdown-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "streamdown",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM.",
+      "files": [
+        {
+          "path": "packages/streamdown/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "8bdd2e47cc0fd3f02c3108ebc0d8b71ce9b4adccf481b292b68d4b36b50f63be",
+          "cases": [
+            {
+              "id": "differential:streamdown-static-markdown",
+              "testName": "matches Streamdown 2.5 for static Markdown, GFM, math, CJK, and custom tags",
+              "fullName": "@octanejs/streamdown differential parity matches Streamdown 2.5 for static Markdown, GFM, math, CJK, and custom tags"
+            },
+            {
+              "id": "differential:streamdown-streaming-append",
+              "testName": "preserves completed blocks while appending streamed Markdown",
+              "fullName": "@octanejs/streamdown differential parity preserves completed blocks while appending streamed Markdown"
+            },
+            {
+              "id": "differential:streamdown-hast-components",
+              "testName": "preserves HAST nodes, custom components, inline code, and custom renderers",
+              "fullName": "@octanejs/streamdown differential parity preserves HAST nodes, custom components, inline code, and custom renderers"
+            },
+            {
+              "id": "differential:streamdown-filtering",
+              "testName": "matches element filtering, unwrapping, and URL transformation",
+              "fullName": "@octanejs/streamdown differential parity matches element filtering, unwrapping, and URL transformation"
+            },
+            {
+              "id": "differential:streamdown-controls",
+              "testName": "renders the documented code and table control surface",
+              "fullName": "@octanejs/streamdown differential parity renders the documented code and table control surface"
+            },
+            {
+              "id": "differential:streamdown-mode-transitions",
+              "testName": "survives append, shrink, and static/streaming mode round trips",
+              "fullName": "@octanejs/streamdown differential parity survives append, shrink, and static/streaming mode round trips"
+            },
+            {
+              "id": "differential:streamdown-link-safety",
+              "testName": "matches the custom link-safety modal lifecycle",
+              "fullName": "@octanejs/streamdown differential parity matches the custom link-safety modal lifecycle"
+            },
+            {
+              "id": "differential:streamdown-animation-callbacks",
+              "testName": "matches animation start and end callbacks",
+              "fullName": "@octanejs/streamdown differential parity matches animation start and end callbacks"
+            }
+          ]
+        },
+        {
+          "path": "packages/streamdown/tests/_fixtures/markdown-parity.tsrx",
+          "role": "support",
+          "sha256": "8f3b7a8ed0c06612e5bc8f003b6625379f704454a4bbcfd5e38b748096992d6f"
+        },
+        {
+          "path": "packages/streamdown/tests/_fixtures/feature-parity.tsrx",
+          "role": "support",
+          "sha256": "cb735a265140fa2e1c92b5476fef56acc12160cdefd1122e6aae3b776cd417c3"
+        },
+        {
+          "path": "packages/streamdown/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "e97875029695f4aa901e629430ba1be8ab234e3ff6f3f66e383866f33282a1e8"
+        },
+        {
+          "path": "packages/streamdown/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "f646a6899b186b5712cf6ea515a7d2603b856a993666a79cf5759eb15ed76881"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "714d61df0d7ccb78ee2a6bc88b816bac26046fefed2ee7c5dfa2a5c023d8b18e"
+        }
+      ]
+    },
+    {
+      "id": "streamdown-adapted-divergence-contracts",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "streamdown",
+      "notes": "Runs exact Octane cases authenticating native custom-component events and consolidated plugin subpaths.",
+      "files": [
+        {
+          "path": "packages/streamdown/tests/divergences.test.ts",
+          "role": "test",
+          "sha256": "9046c21c3c3daeb62672f1240cd29a763d54c486e8c550cf946e5d135d6832f1",
+          "cases": [
+            {
+              "id": "adapted:streamdown-native-events",
+              "testName": "delivers native DOM events to custom Markdown components",
+              "fullName": "@octanejs/streamdown documented runtime divergences delivers native DOM events to custom Markdown components"
+            },
+            {
+              "id": "adapted:streamdown-code-class-corrections",
+              "testName": "emits balanced code-block background classes",
+              "fullName": "@octanejs/streamdown documented runtime divergences emits balanced code-block background classes"
+            },
+            {
+              "id": "adapted:streamdown-icon-sizing",
+              "testName": "consumes built-in icon sizes into SVG dimensions",
+              "fullName": "@octanejs/streamdown documented runtime divergences consumes built-in icon sizes into SVG dimensions"
+            }
+          ]
+        },
+        {
+          "path": "packages/streamdown/tests/_fixtures/divergence-events.tsrx",
+          "role": "support",
+          "sha256": "e412363d703d4b5771d72e0bf0f00c791c773c7c838385c2b7e0789891343903"
+        },
+        {
+          "path": "packages/streamdown/tests/plugins.test.ts",
+          "role": "test",
+          "sha256": "eab360a8d86bb7f23ca94c4ee45a1fe03e3ee1e247fb255cb260dfeaecc71f18",
+          "cases": [
+            {
+              "id": "adapted:streamdown-consolidated-plugins",
+              "testName": "exposes every official plugin factory and default instance",
+              "fullName": "@octanejs/streamdown plugin entry points exposes every official plugin factory and default instance"
+            }
+          ]
+        },
+        {
+          "path": "packages/octane/tests/_helpers.ts",
+          "role": "support",
+          "sha256": "a4a9ee179a2dcaf20a96cb5807f5584f484deddc2bf25fb94cc90ade9e920572"
+        },
+        {
+          "path": "packages/streamdown/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "f646a6899b186b5712cf6ea515a7d2603b856a993666a79cf5759eb15ed76881"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "714d61df0d7ccb78ee2a6bc88b816bac26046fefed2ee7c5dfa2a5c023d8b18e"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "streamdown-native-events",
+      "caseIds": ["adapted:streamdown-native-events"],
+      "upstreamResult": "Custom React components receive React synthetic event objects from rendered Markdown hosts.",
+      "octaneResult": "Custom Octane components receive native DOM event objects with native currentTarget semantics.",
+      "rationale": "Octane uses delegated native DOM events instead of React's synthetic event layer.",
+      "classification": "event-model",
+      "consumerImpact": "Custom component callbacks observe native event identity and lifecycle semantics.",
+      "migrationGuidance": "Type custom component event callbacks against the exported native Octane event props.",
+      "owner": "@octanejs/streamdown",
+      "reviewCondition": "Review if Octane introduces React-compatible synthetic events."
+    },
+    {
+      "id": "streamdown-consolidated-plugins",
+      "caseIds": ["adapted:streamdown-consolidated-plugins"],
+      "upstreamResult": "Code, math, Mermaid, and CJK integrations ship as four separate @streamdown packages.",
+      "octaneResult": "All four integrations ship as @octanejs/streamdown package subpath exports.",
+      "rationale": "The Octane binding consolidates one renderer-specific distribution surface.",
+      "classification": "distribution",
+      "consumerImpact": "Consumers import official integrations from @octanejs/streamdown/code, /math, /mermaid, and /cjk.",
+      "migrationGuidance": "Replace separate @streamdown plugin package specifiers with the corresponding Octane subpath.",
+      "owner": "@octanejs/streamdown",
+      "reviewCondition": "Review if the integrations are published as independent Octane packages."
+    },
+    {
+      "id": "streamdown-independent-animation-timing",
+      "caseIds": ["differential:streamdown-streaming-append"],
+      "upstreamResult": "Version 2.5.0 shares animation progress across sibling blocks, producing 0ms durations for later sibling text.",
+      "octaneResult": "Each streaming block tracks progress independently, producing 100ms durations and a 40ms third-fragment delay in the pinned fixture.",
+      "rationale": "Per-block progress prevents one completed block from suppressing animation in a newly appended sibling.",
+      "classification": "behavior-correction",
+      "consumerImpact": "Appended sibling blocks animate independently instead of inheriting another block's completed progress.",
+      "migrationGuidance": "Expect newly appended blocks to receive their own configured animation timing.",
+      "owner": "@octanejs/streamdown",
+      "reviewCondition": "Review when upstream isolates animation state per block."
+    },
+    {
+      "id": "streamdown-code-class-corrections",
+      "caseIds": ["adapted:streamdown-code-class-corrections"],
+      "upstreamResult": "Version 2.5.0 emits two unbalanced Tailwind arbitrary-value background class strings.",
+      "octaneResult": "The light and dark code-block background class strings contain balanced closing parentheses.",
+      "rationale": "Balanced arbitrary-value syntax is required for Tailwind to recognize the classes.",
+      "classification": "styling-correction",
+      "consumerImpact": "Code-block theme backgrounds can be generated correctly by Tailwind scans.",
+      "migrationGuidance": "Include the Octane package source in the Tailwind content scan as documented.",
+      "owner": "@octanejs/streamdown",
+      "reviewCondition": "Review when the pinned upstream classes are balanced."
+    },
+    {
+      "id": "streamdown-icon-sizing",
+      "caseIds": ["adapted:streamdown-icon-sizing"],
+      "upstreamResult": "Version 2.5.0 leaves the size prop as an inert SVG attribute while width and height remain 16.",
+      "octaneResult": "Built-in icons consume size into exact width and height attributes and omit the inert size attribute.",
+      "rationale": "The declared icon size should control its rendered dimensions.",
+      "classification": "rendering-correction",
+      "consumerImpact": "Control icons render at the requested 14px or 20px dimensions instead of always 16px.",
+      "migrationGuidance": "Account for the requested icon sizes in pixel-sensitive styling or snapshots.",
+      "owner": "@octanejs/streamdown",
+      "reviewCondition": "Review when upstream consumes icon size into dimensions."
+    }
+  ]
+}

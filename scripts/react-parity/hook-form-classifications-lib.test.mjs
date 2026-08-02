@@ -55,3 +55,26 @@ test('rejects a stale divergence classification', async (t) => {
 	await writeFile(path, `${JSON.stringify(config)}\n`);
 	assert.throws(() => verifyPortTestClassifications(root), /not present in the parity manifest/);
 });
+
+test('verifies an arbitrary binding classification ledger', async (t) => {
+	const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
+	t.after(() => rm(root, { recursive: true, force: true }));
+	await cp(
+		new URL('../../packages/streamdown/tests', import.meta.url),
+		join(root, 'packages/streamdown/tests'),
+		{ recursive: true },
+	);
+	for (const file of ['test-classifications.json', 'react-parity.json']) {
+		await cp(
+			new URL(`../../packages/streamdown/audit/${file}`, import.meta.url),
+			join(root, `packages/streamdown/audit/${file}`),
+			{ recursive: true },
+		);
+	}
+	assert.deepEqual(verifyPortTestClassifications(root, 'streamdown'), { tests: 12 });
+	await writeFile(join(root, 'packages/streamdown/tests/unclassified.test.ts'), 'export {};\n');
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'streamdown'),
+		/every port-authored streamdown test must have exactly one classification/,
+	);
+});

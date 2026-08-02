@@ -1,5 +1,8 @@
 'use client';
 
+// OCTANE DIVERGENCE[streamdown-consolidated-plugins][adapted:streamdown-consolidated-plugins]:
+// the four official plugin packages are published as @octanejs/streamdown subpaths.
+
 import {
 	type BundledLanguage,
 	type BundledTheme,
