@@ -1,164 +1,297 @@
 // Behavioral Octane port of @react-spring/parallax v10.1.2.
+import { raf } from '@react-spring/rafz';
 import { createContext, useContext, useImperativeHandle, useLayoutEffect, useState } from 'octane';
+import { config as configs, Controller, type SpringConfig } from './engine';
+
+type ConfigProp = SpringConfig | ((key: string) => SpringConfig);
+type RefObject<T> = { current: T | null };
+
+export interface StickyConfig {
+	start?: number;
+	end?: number;
+}
+
+export interface IParallaxLayer {
+	horizontal: boolean;
+	sticky?: StickyConfig;
+	isSticky: boolean;
+	setHeight(height: number, immediate?: boolean): void;
+	setPosition(height: number, scroll: number, immediate?: boolean): void;
+	stop(): void;
+}
 
 export interface IParallax {
-	readonly current: number;
-	readonly busy: boolean;
+	config: ConfigProp;
+	horizontal: boolean;
+	busy: boolean;
+	space: number;
+	offset: number;
+	current: number;
+	controller: Controller<{ scroll: number }>;
+	layers: Set<IParallaxLayer>;
+	container: RefObject<HTMLDivElement>;
+	content: RefObject<HTMLDivElement>;
 	scrollTo(offset: number): void;
 	update(): void;
 	stop(): void;
 }
 
-interface LayerRegistration {
-	node: HTMLElement;
+interface ParallaxState extends IParallax {
+	enabled: boolean;
+	pages: number;
+}
+
+interface ParallaxLayerState extends IParallaxLayer {
+	factor: number;
 	offset: number;
 	speed: number;
-	factor: number;
-	sticky?: { start: number; end: number };
 }
 
-interface ParallaxContextValue {
-	container: { current: HTMLElement | null };
-	horizontal: boolean;
-	enabled: boolean;
-	space: number;
-	layers: Set<LayerRegistration>;
-	update(): void;
+const ParallaxContext = createContext<IParallax | null>(null);
+const START_TRANSLATE_3D = 'translate3d(0px,0px,0px)';
+
+function scrollProperty(horizontal: boolean): 'scrollLeft' | 'scrollTop' {
+	return horizontal ? 'scrollLeft' : 'scrollTop';
 }
 
-const ParallaxContext = createContext<ParallaxContextValue | null>(null);
-
-function positionLayer(context: ParallaxContextValue, layer: LayerRegistration): void {
-	const container = context.container.current;
-	if (container === null) return;
-	const scroll = context.horizontal ? container.scrollLeft : container.scrollTop;
-	const page =
-		context.space > 0 ? scroll / context.space : 0;
-	let position = layer.offset * context.space - scroll * layer.speed;
-	if (layer.sticky !== undefined) {
-		const start = layer.sticky.start;
-		const end = layer.sticky.end;
-		position = page < start
-			? start * context.space - scroll
-			: page > end
-				? end * context.space - scroll
-				: 0;
-	}
-	layer.node.style.transform = context.horizontal
-		? `translate3d(${position}px,0,0)`
-		: `translate3d(0,${position}px,0)`;
-	layer.node.style.width = context.horizontal ? `${layer.factor * context.space}px` : '100%';
-	layer.node.style.height = context.horizontal ? '100%' : `${layer.factor * context.space}px`;
+function updateLayerNode(
+	node: HTMLElement,
+	horizontal: boolean,
+	space: number,
+	translate: number,
+): void {
+	node.style[horizontal ? 'width' : 'height'] = `${space}px`;
+	node.style[horizontal ? 'height' : 'width'] = '100%';
+	node.style.transform = horizontal
+		? `translate3d(${translate}px,0,0)`
+		: `translate3d(0,${translate}px,0)`;
 }
 
 export function Parallax(props: any) @{
-	const [container] = useState<{ current: HTMLElement | null }>(() => ({ current: null }));
-	const [context] = useState<ParallaxContextValue>(
-		() => ({
-			container,
-			horizontal: Boolean(props.horizontal),
-			enabled: props.enabled !== false,
+	const {
+		pages,
+		config = configs.slow,
+		enabled = true,
+		horizontal = false,
+		innerStyle,
+		children,
+		ref: givenRef,
+		style,
+		...rest
+	} = props;
+	const [container] = useState<RefObject<HTMLDivElement>>(() => ({ current: null }));
+	const [content] = useState<RefObject<HTMLDivElement>>(() => ({ current: null }));
+	const [state] = useState<ParallaxState>(() => {
+		const controller = new Controller<{ scroll: number }>({ from: { scroll: 0 } });
+		const parallax: ParallaxState = {
+			config,
+			horizontal,
+			enabled,
+			pages,
+			busy: false,
 			space: 0,
+			offset: 0,
+			current: 0,
+			controller,
 			layers: new Set(),
+			container,
+			content,
 			update() {
 				const node = container.current;
 				if (node === null) return;
-				context.space = context.horizontal ? node.clientWidth : node.clientHeight;
-				for (const layer of context.layers) positionLayer(context, layer);
+				parallax.space = parallax.horizontal ? node.clientWidth : node.clientHeight;
+				const scroll = scrollProperty(parallax.horizontal);
+				if (parallax.enabled) parallax.current = node[scroll];
+				else node[scroll] = parallax.current = parallax.offset * parallax.space;
+				if (content.current !== null) {
+					content.current.style[parallax.horizontal ? 'width' : 'height'] = `${
+						parallax.space * parallax.pages
+					}px`;
+				}
+				for (const layer of parallax.layers) {
+					layer.setHeight(parallax.space, true);
+					layer.setPosition(parallax.space, parallax.current, true);
+				}
 			},
-		}),
-	);
-	context.horizontal = Boolean(props.horizontal);
-	context.enabled = props.enabled !== false;
-
-	const [api] = useState<IParallax>(
-		() => ({
-			current: 0,
-			busy: false,
 			scrollTo(offset: number) {
 				const node = container.current;
-				if (node === null || !context.enabled) return;
-				const next = offset * context.space;
-				if (context.horizontal) node.scrollLeft = next;
-				else node.scrollTop = next;
-				(api as any).current = offset;
-				context.update();
+				if (node === null || !parallax.enabled) return;
+				parallax.offset = offset;
+				const scroll = scrollProperty(parallax.horizontal);
+				controller.set({ scroll: parallax.current });
+				controller.stop().start({
+					to: { scroll: offset * parallax.space },
+					config: parallax.config,
+					onChange(result) {
+						const value = result.value.scroll;
+						node[scroll] = value;
+						parallax.current = value;
+						for (const layer of parallax.layers) layer.setPosition(parallax.space, value, true);
+					},
+				});
 			},
-			update: () => context.update(),
 			stop() {
-				(api as any).busy = false;
+				controller.stop();
+				parallax.busy = false;
 			},
-		}),
-	);
-	useImperativeHandle(props.ref, () => api, []);
+		};
+		return parallax;
+	});
+	state.config = config;
+	state.horizontal = horizontal;
+	state.enabled = enabled;
+	state.pages = pages;
+	useImperativeHandle(givenRef, () => state, []);
+
 	useLayoutEffect(() => {
 		const node = container.current;
 		if (node === null) return;
-		const update = () => {
-			if (!context.enabled) return;
-			(api as any).current = (context.horizontal ? node.scrollLeft : node.scrollTop) /
-			Math.max(1, context.space);
-			context.update();
+		let live = true;
+		const onScroll = () => {
+			if (!enabled || state.busy) return;
+			state.busy = true;
+			state.current = node[scrollProperty(state.horizontal)];
+			raf.onStart(() => {
+				if (!live) return;
+				for (const layer of state.layers) layer.setPosition(state.space, state.current);
+				state.busy = false;
+			});
 		};
-		update();
-		node.addEventListener('scroll', update, { passive: true });
+		const onResize = () => state.update();
+		state.update();
+		node.addEventListener('scroll', onScroll, { passive: true });
 		const observer =
-			typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => context.update());
+			typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onResize);
 		observer?.observe(node);
 		return () => {
-			node.removeEventListener('scroll', update);
+			live = false;
+			node.removeEventListener('scroll', onScroll);
 			observer?.disconnect();
-			api.stop();
+			state.stop();
+			for (const layer of state.layers) layer.stop();
 		};
-	}, [context.horizontal, context.enabled]);
+	}, [horizontal, enabled, pages]);
 
-	const axisStyle = context.horizontal
-		? { width: `${props.pages * 100}%`, height: '100%' }
-		: { width: '100%', height: `${props.pages * 100}%` };
-	<ParallaxContext value={context}>
+	<div
+		{...rest}
+		ref={container}
+		onWheel={enabled ? state.stop : undefined}
+		onTouchStart={enabled ? state.stop : undefined}
+		style={{
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: '100%',
+			height: '100%',
+			overflowY: enabled && !horizontal ? 'scroll' : 'hidden',
+			overflowX: enabled && horizontal ? 'scroll' : 'hidden',
+			WebkitOverflowScrolling: 'touch',
+			transform: START_TRANSLATE_3D,
+			...style,
+		}}
+	>
 		<div
-			{...props}
-			ref={container}
+			ref={content}
 			style={{
-				position: 'relative',
-				overflow: context.enabled ? 'auto' : 'hidden',
-				width: '100%',
-				height: '100%',
-				...props.style,
+				overflow: 'hidden',
+				position: 'absolute',
+				width: horizontal ? `${state.space * pages}px` : '100%',
+				height: horizontal ? '100%' : `${state.space * pages}px`,
+				transform: START_TRANSLATE_3D,
+				...innerStyle,
 			}}
 		>
-			<div style={{ position: 'absolute', ...axisStyle }}>{props.children}</div>
+			<ParallaxContext value={state}>{children}</ParallaxContext>
 		</div>
-	</ParallaxContext>
+	</div>
 }
 
 export function ParallaxLayer(props: any) @{
-	const context = useContext(ParallaxContext);
-	if (context === null) throw new Error('ParallaxLayer must be rendered inside Parallax');
-	const [node] = useState<{ current: HTMLElement | null }>(() => ({ current: null }));
+	const {
+		horizontal: layerHorizontal,
+		factor = 1,
+		offset = 0,
+		speed = 0,
+		sticky,
+		ref: givenRef,
+		style,
+		children,
+		...rest
+	} = props;
+	const parent = useContext(ParallaxContext);
+	if (parent === null) throw new Error('ParallaxLayer must be rendered inside Parallax');
+	const [node] = useState<RefObject<HTMLDivElement>>(() => ({ current: null }));
+	const [layer] = useState<ParallaxLayerState>(
+		() => ({
+			horizontal: layerHorizontal === undefined || sticky ? parent.horizontal : layerHorizontal,
+			factor,
+			offset,
+			speed,
+			sticky: sticky === undefined
+				? undefined
+				: { start: sticky.start ?? 0, end: sticky.end ?? (sticky.start ?? 0) + 1 },
+			isSticky: false,
+			setHeight(height) {
+				if (node.current === null) return;
+				const size = layer.sticky ? height : height * layer.factor;
+				node.current.style[layer.horizontal ? 'width' : 'height'] = `${size}px`;
+			},
+			setPosition(height, scroll) {
+				const element = node.current;
+				if (element === null) return;
+				let translate: number;
+				if (layer.sticky) {
+					const start = (layer.sticky.start ?? 0) * height;
+					const end = (layer.sticky.end ?? layer.sticky.start ?? 0) * height;
+					layer.isSticky = scroll >= start && scroll <= end;
+					element.style.position = layer.isSticky ? 'sticky' : 'absolute';
+					translate = layer.isSticky ? 0 : scroll < start ? start : end;
+				} else {
+					const targetScroll = Math.floor(layer.offset) * height;
+					translate = -(scroll * layer.speed) + height * layer.offset + targetScroll * layer.speed;
+				}
+				updateLayerNode(
+					element,
+					layer.horizontal,
+					layer.sticky ? height : height * layer.factor,
+					translate,
+				);
+			},
+			stop() {},
+		}),
+	);
+	layer.horizontal = layerHorizontal === undefined || sticky ? parent.horizontal : layerHorizontal;
+	layer.factor = factor;
+	layer.offset = offset;
+	layer.speed = speed;
+	layer.sticky = sticky === undefined
+		? undefined
+		: { start: sticky.start ?? 0, end: sticky.end ?? (sticky.start ?? 0) + 1 };
+	useImperativeHandle(givenRef, () => layer, []);
 	useLayoutEffect(() => {
-		if (node.current === null) return;
-		const layer: LayerRegistration = {
-			node: node.current,
-			offset: props.offset ?? 0,
-			speed: props.speed ?? 0,
-			factor: props.factor ?? 1,
-			sticky: props.sticky,
-		};
-		context.layers.add(layer);
-		context.update();
+		parent.layers.add(layer);
+		parent.update();
 		return () => {
-			context.layers.delete(layer);
+			parent.layers.delete(layer);
+			layer.stop();
+			parent.update();
 		};
-	}, [props.offset, props.speed, props.factor, props.sticky]);
+	}, [parent, offset, speed, factor, sticky?.start, sticky?.end, layerHorizontal]);
+
 	<div
-		{...props}
+		{...rest}
 		ref={node}
 		style={{
 			position: 'absolute',
-			inset: 0,
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0,
+			backgroundSize: 'auto',
+			backgroundRepeat: 'no-repeat',
 			willChange: 'transform',
-			...props.style,
+			transform: START_TRANSLATE_3D,
+			...style,
 		}}
-	>{props.children}</div>
+	>{children}</div>
 }

@@ -1,6 +1,7 @@
 // Behavioral port of React Spring v10.1.2 browser hooks.
 import { useLayoutEffect, useState } from 'octane';
 import { SpringValue, type ControllerUpdate } from './engine';
+import { Globals } from './shared/globals';
 
 type ElementRef<T> = { current: T | null };
 
@@ -195,10 +196,17 @@ export function useReducedMotion(...args: any[]): boolean | null {
 		() => {
 			if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
 			const query = window.matchMedia('(prefers-reduced-motion)');
-			const update = () => setReduced(query.matches);
+			const update = () => {
+				setReduced(query.matches);
+				Globals.assign({ skipAnimation: query.matches });
+			};
 			update();
-			query.addEventListener('change', update);
-			return () => query.removeEventListener('change', update);
+			if (query.addEventListener) query.addEventListener('change', update);
+			else query.addListener(update);
+			return () => {
+				if (query.removeEventListener) query.removeEventListener('change', update);
+				else query.removeListener(update);
+			};
 		},
 		[],
 		browserSub(slot, 'reduced-effect'),

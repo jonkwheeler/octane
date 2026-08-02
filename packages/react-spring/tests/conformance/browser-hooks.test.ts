@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { act, flushEffects, mount } from '../../../octane/tests/_helpers';
+import { Globals } from '../../src/index';
 import { BrowserHooksFixture } from '../_fixtures/browser-hooks.tsrx';
 
 describe('React Spring browser hooks', () => {
@@ -85,11 +86,13 @@ describe('React Spring browser hooks', () => {
 		await act(() => mediaListener());
 		flushEffects();
 		expect(latest.reducedMotion).toBe(true);
+		expect(Globals.skipAnimation).toBe(true);
 
 		result.unmount();
 		expect(remove).toHaveBeenCalledWith('scroll', listeners.get('scroll'));
 		expect(disconnectResize).toHaveBeenCalled();
 		expect(disconnectIntersection).toHaveBeenCalled();
 		expect(removeMedia).toHaveBeenCalledWith('change', mediaListener);
+		Globals.assign({ skipAnimation: false });
 	});
 });

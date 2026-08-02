@@ -1,5 +1,6 @@
 // React-free behavioral port of react-spring v10.1.2 packages/core/src/SpringValue.ts.
 import { raf } from '@react-spring/rafz';
+import { Globals } from '../shared/globals';
 import {
 	type AnimationResult,
 	getCancelledResult,
@@ -138,6 +139,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		const target = goal(props.to);
 		const immediate =
 			props.immediate === true ||
+			Globals.skipAnimation ||
 			!isAnimatable(this.value) ||
 			!isAnimatable(target) ||
 			Object.is(this.value, target);

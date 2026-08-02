@@ -1,5 +1,6 @@
 // Behavioral ports of public helpers exported by @react-spring/web@10.1.2.
 import { raf } from '@react-spring/rafz';
+export { Globals } from './shared/globals';
 
 export class Any {}
 
@@ -12,13 +13,6 @@ export class BailSignal extends Error {
 		);
 	}
 }
-
-export const Globals = {
-	skipAnimation: false,
-	assign(values: { skipAnimation?: boolean }) {
-		if (values.skipAnimation !== undefined) this.skipAnimation = values.skipAnimation;
-	},
-};
 
 export const update = raf.advance;
 
