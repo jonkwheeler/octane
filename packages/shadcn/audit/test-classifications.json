@@ -79,8 +79,9 @@
     },
     {
       "path": "packages/shadcn/tests/sonner.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks the Octane Sonner wrapper integration; it is not a React differential."
+      "disposition": "octane-only-divergence",
+      "divergenceId": "shadcn-sonner-theme",
+      "reason": "Authenticates the documented Sonner theme and wrapper adaptation."
     },
     {
       "path": "packages/shadcn/tests/ssr/server-tier2.test.ts",
