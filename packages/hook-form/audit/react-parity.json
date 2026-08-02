@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "d7c7ed8d39b2b7f315596882f7369617c1907c6e957db617419e7e46dcead0ed"
+      "lockfileSha256": "6eccbbe20fe9c3ea8390fc17c77c8c0386bf2f6abd7d3a89c78e7dc7b036c376"
     }
   },
   "lanes": [
@@ -303,7 +303,11 @@
         {
           "path": "vitest.config.js",
           "role": "support",
+<<<<<<< HEAD
           "sha256": "a2048bdf25349a3bf50233b01c023393dd6f66535225fca1bfb4063fc2c7b475"
+=======
+          "sha256": "ff8d6ec79ba9388ff324a64803b82881b1376aea6620e6897cdd90ef65718724"
+>>>>>>> efebd650 (fix(react-resizable-panels): pin pristine test runtime)
         }
       ]
     }

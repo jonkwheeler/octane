@@ -27,8 +27,8 @@
     ".": "./src/index.tsrx"
   },
   "scripts": {
-    "test": "pnpm upstream:verify && vitest run --root ../.. --project react-resizable-panels && vitest run --root ../.. --project react-resizable-panels-server && vitest run --root ../.. --project react-resizable-panels-pristine && vitest run --root ../.. --project react-resizable-panels-browser",
-    "test:upstream": "vitest run --config upstream/source/vitest.config.ts",
+    "test": "pnpm upstream:verify && vitest run --root ../.. --project react-resizable-panels && vitest run --root ../.. --project react-resizable-panels-server && pnpm test:upstream && vitest run --root ../.. --project react-resizable-panels-browser",
+    "test:upstream": "vitest run --config vitest.pristine.config.ts",
     "upstream:verify": "node audit/verify-provenance.mjs",
     "upstream:verify:negative-controls": "node audit/verify-provenance.mjs --negative-controls",
     "typecheck:probes": "tsrx-tsc --noEmit -p audit/type-probes/tsconfig.json",
@@ -41,17 +41,18 @@
     "@octanejs/testing-library": "workspace:*",
     "@testing-library/jest-dom": "catalog:default",
     "@testing-library/react": "catalog:default",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
     "@tsrx/react": "catalog:default",
     "octane": "workspace:*",
     "jsdom": "26.1.0",
     "playwright": "catalog:default",
-    "react": "catalog:default",
-    "react-dom": "catalog:default",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-resizable-panels": "catalog:default",
     "vite": "catalog:default",
-    "vitest": "catalog:default",
+    "vitest": "3.2.4",
     "vitest-fail-on-console": "^0.10.1"
   }
 }

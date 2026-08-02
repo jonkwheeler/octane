@@ -753,7 +753,9 @@ export async function verifyManifestTestSelections(manifest, root) {
 					fullName: test.name.replaceAll(' > ', ' '),
 				}))
 				.sort(compareTestIdentities);
-			const expected = inventory.tests.map(({ file, fullName }) => ({ file, fullName }));
+			const expected = inventory.tests
+				.map(({ file, fullName }) => ({ file, fullName }))
+				.sort(compareTestIdentities);
 			if (JSON.stringify(collected) !== JSON.stringify(expected))
 				throw new Error(`lane ${lane.id} collected test identities drifted from its inventory`);
 		} else {
@@ -834,11 +836,13 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 				})),
 			)
 			.sort(compareTestIdentities);
-		const expected = inventory.tests.map(({ file, fullName }) => ({
-			file,
-			fullName,
-			status: 'passed',
-		}));
+		const expected = inventory.tests
+			.map(({ file, fullName }) => ({
+				file,
+				fullName,
+				status: 'passed',
+			}))
+			.sort(compareTestIdentities);
 		if (JSON.stringify(executed) !== JSON.stringify(expected))
 			throw new Error(
 				`lane ${lane.id} did not execute every inventoried test identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,

@@ -1,11 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-resizable-panels",
-  "roots": [
-    "packages/react-resizable-panels/tests/upstream",
-    "packages/react-resizable-panels/tests/conformance",
-    "packages/react-resizable-panels/tests/hydration"
-  ],
+  "roots": ["packages/react-resizable-panels/tests"],
   "files": [
     "packages/react-resizable-panels/tests/conformance/persistence.test.ts",
     "packages/react-resizable-panels/tests/hydration/persistence.test.ts",

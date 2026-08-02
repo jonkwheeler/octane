@@ -1602,6 +1602,7 @@ export default defineConfig({
 					setupFiles: ['packages/react-resizable-panels/upstream/source/vitest.setup.ts'],
 					environment: 'jsdom',
 					globals: false,
+					server: { deps: { inline: ['vitest-fail-on-console'] } },
 					sequence: { groupOrder: 1 },
 				},
 				resolve: {
@@ -1613,6 +1614,26 @@ export default defineConfig({
 					name: 'react-resizable-panels',
 					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
 					exclude: ['packages/react-resizable-panels/tests/browser/**'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-resizable-panels$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-resizable-panels/src/index.tsrx',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-resizable-panels-differential',
+					include: ['packages/react-resizable-panels/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},

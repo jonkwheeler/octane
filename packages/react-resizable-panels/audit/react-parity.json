@@ -24,8 +24,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 433,
-    "uniqueIdentities": 328,
+    "inventoryEntries": 434,
+    "uniqueIdentities": 329,
     "duplicateEntriesWithinLanes": 105,
     "identitiesSharedAcrossLanes": 0
   },
@@ -36,7 +36,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "38271a8aaa30de7d54ed05d4a47adb77c5a5bf4e36106eb7eb3312d864991aa6"
+      "lockfileSha256": "6018a6b699e47518d5c874354146216cf5052d3e0691eb8fbe661f04c3aad9c4"
     }
   },
   "lanes": [
@@ -56,7 +56,12 @@
         {
           "path": "packages/react-resizable-panels/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "84dfba3e347d2232c703312d2fb20f40db3e5228cd151ff78f77e9b1e2a952dc"
+          "sha256": "8d91108959e9bdc9685bfb6131a8ba8612a42eb7c6b92c12d333dc2d36b0d83c"
+        },
+        {
+          "path": "packages/react-resizable-panels/vitest.pristine.config.ts",
+          "role": "support",
+          "sha256": "b8c186506980c14b44ea3ba07ef7d8fc074580c3bd72d8fd3cec2a82b02bf2bb"
         }
       ]
     },
@@ -76,7 +81,7 @@
         {
           "path": "packages/react-resizable-panels/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "d81700260596f93a07ef6cefcbf31322c97a87eac2b163f4a4b497a6b76cdc19"
+          "sha256": "6a59e184b378fc0983540b3a6a89da7933856443c138e47f2180111875d9e478"
         }
       ]
     },
@@ -96,7 +101,7 @@
         {
           "path": "packages/react-resizable-panels/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "2bc848da9cafe9c9529c0c3bd5724a93ce78617720ccde2d0621b3b6ade7d6bc"
+          "sha256": "0cc32156f962f7ab65e7b4a51f13c5bb52de178fd669fa3f8ee2cf3a6f1d45b7"
         }
       ]
     },
@@ -115,7 +120,7 @@
         {
           "path": "packages/react-resizable-panels/audit/adapted-runtime-browser.json",
           "role": "support",
-          "sha256": "dffda50decf47df8e048c89d314cbed9bdbcb3cc3e0ed1bbb0587bffcd4382dd"
+          "sha256": "1a48d246dacd8f64ea4f572698dc7d8f35014f26bf58108558128385b4df96e2"
         }
       ]
     },
@@ -135,7 +140,7 @@
         {
           "path": "packages/react-resizable-panels/audit/differential-runtime.json",
           "role": "support",
-          "sha256": "18c958d1f9ebb5a89fa2bfc6fa3210af58e701aa156f404777b04a4c7b76239a"
+          "sha256": "be8d3a24c73c3e153744b81d9c36d9d907c0a55b67e7b9cf25eaa2192d607c84"
         }
       ]
     },
@@ -156,7 +161,7 @@
         {
           "path": "packages/react-resizable-panels/audit/type-probes/pristine.ts",
           "role": "test",
-          "sha256": "7eea96b19e3766b6cc270886fbf3e35ad302efa15f41d2343811e68ff8bdb46b",
+          "sha256": "1a5436adb35a5e927bf1b3f351e814fa24f3b46eeae2081aca2d95f3d0815ce1",
           "cases": [
             {
               "id": "types:rrp-pristine",
@@ -189,7 +194,7 @@
         {
           "path": "packages/react-resizable-panels/audit/type-probes/expressibility.ts",
           "role": "test",
-          "sha256": "0f605a9bb46c0e9145c6cc0bf62ae32c47742b39833e0e5c7e4bf1e433f92791",
+          "sha256": "64d990b3902edf811cd62381de09d85d1d4f83c9e877e65a40b9676eb037f375",
           "cases": [
             {
               "id": "types:rrp-adapted",
