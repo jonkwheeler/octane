@@ -159,6 +159,8 @@ export { SoftShadows } from './softShadows.three.tsrx';
 export type { SoftShadowsProps } from './softShadows.three.tsrx';
 export { PerformanceMonitor, usePerformanceMonitor } from './PerformanceMonitor.three.tsrx';
 export type { PerformanceMonitorApi, PerformanceMonitorProps } from './PerformanceMonitor.three.tsrx';
+export { CameraControls, CameraControlsImpl } from './CameraControls.three.tsrx';
+export type { CameraControlsProps } from './CameraControls.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

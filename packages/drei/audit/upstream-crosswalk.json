@@ -15,9 +15,9 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 152
+    "gaps": 149
   },
-  "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
+  "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
       "id": "export:AccumulativeShadows",
@@ -338,9 +338,12 @@
         "path": "packages/drei/upstream/src/core/CameraControls.tsx",
         "line": 57
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/CameraControls.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/camera-controls.test.ts",
+        "packages/drei/typetests/camera-controls.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -348,12 +351,12 @@
       "name": "CameraControlsImpl",
       "kind": "type",
       "source": {
-        "path": "packages/drei/upstream/src/core/CameraControls.tsx",
-        "line": 235
+        "path": "node_modules/.pnpm/camera-controls@3.1.2_three@0.172.0/node_modules/camera-controls/dist/index.d.ts",
+        "line": 165
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/CameraControls.three.tsrx",
+      "evidence": ["packages/drei/typetests/camera-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -364,9 +367,9 @@
         "path": "packages/drei/upstream/src/core/CameraControls.tsx",
         "line": 25
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/CameraControls.three.tsrx",
+      "evidence": ["packages/drei/typetests/camera-controls.test-d.ts"],
       "divergence": null
     },
     {
