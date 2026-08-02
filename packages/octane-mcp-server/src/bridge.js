@@ -51,6 +51,13 @@ export const KNOWN_BINDINGS = {
 	'@dnd-kit/react': '@octanejs/dnd-kit',
 	sonner: '@octanejs/sonner',
 	'react-error-boundary': '@octanejs/react-error-boundary',
+	streamdown: '@octanejs/streamdown',
+	// The official plugins are consolidated as subpaths of the same package.
+	// The bundled bridge skill documents each exact import rewrite.
+	'@streamdown/code': '@octanejs/streamdown',
+	'@streamdown/math': '@octanejs/streamdown',
+	'@streamdown/mermaid': '@octanejs/streamdown',
+	'@streamdown/cjk': '@octanejs/streamdown',
 	shadcn: '@octanejs/shadcn',
 	recharts: '@octanejs/recharts',
 	'@react-three/fiber': '@octanejs/three',
@@ -548,6 +555,9 @@ function planFor(report) {
 		);
 	}
 	steps.push(
+		"Pin the upstream version you are bridging and copy that release's React binding source into your repository beside the port, keeping the upstream LICENSE and leaving the copy unmodified, then work through it module by module. A bridge written from the README or the type declarations covers the demo path and drops the rest of the API; the copy is also the diff you review on the next upgrade.",
+	);
+	steps.push(
 		'Re-implement the React binding layer (the hooks/components that import react) against Octane hooks of the same names. Most store bindings reduce to useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot).',
 	);
 	const rewrites = (report.apis ?? []).filter(
@@ -569,7 +579,10 @@ function planFor(report) {
 		'Re-author any JSX components shipped by the package in .tsrx: compiled React JSX output cannot run on Octane, and hooks called from non-compiled files need compiler slotting (see the bridge-react-package skill for the subSlot pattern).',
 	);
 	steps.push(
-		'Validate with tests that drive real DOM events and compare behavior against the React original where possible.',
+		"Run the pinned release's own test suite against the bridge where it ships one: framework-neutral suites unmodified against the reused core, React-binding suites ported case by case (fixtures in .tsrx, @octanejs/testing-library for @testing-library/react, upstream case names kept). Note which upstream test files you ran, ported, or left out and why, and triage a failure before touching its assertion.",
+	);
+	steps.push(
+		'Validate the rest with tests that drive real DOM events and compare behavior against the React original where possible.',
 	);
 	return steps;
 }

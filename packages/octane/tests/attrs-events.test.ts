@@ -18,6 +18,8 @@ import {
 	ShadowedHookFactory,
 	RegexCallbackDependency,
 	RegexEventArgument,
+	DeferredEventArgument,
+	MountStableHandlers,
 	StableNativeEventCallbacks,
 	AriaStaticLiterals,
 } from './_fixtures/attrs-events.tsrx';
@@ -205,6 +207,47 @@ describe('events + useState', () => {
 		r.click('button');
 		r.click('button');
 		expect(r.find('button').textContent).toBe('2');
+		r.unmount();
+	});
+
+	it('runs a call-valued event argument only when the event fires', () => {
+		const built: number[] = [];
+		const build = (count: number) => {
+			built.push(count);
+			return `built:${count}`;
+		};
+		const r = mount(DeferredEventArgument, { build });
+
+		expect(built).toEqual([]);
+		r.click('#rerender');
+		r.click('#rerender');
+		expect(r.find('#rerender').textContent).toBe('2');
+		expect(built).toEqual([]);
+
+		r.click('#refresh');
+		expect(built).toEqual([2]);
+		expect(r.find('#refresh').textContent).toBe('built:2');
+		r.unmount();
+	});
+
+	it('keeps a capturing inline handler on the latest render while installing a stable one once', () => {
+		const r = mount(MountStableHandlers);
+
+		r.click('#bump');
+		r.click('#bump');
+		expect(r.find('#bump').textContent).toBe('2');
+
+		// The load-bearing half: this handler captures `n`, so freezing it at
+		// mount would report the mount-time 0 forever.
+		r.click('#capturing');
+		expect(r.find('output').textContent).toBe('n=2');
+
+		// The install-once half still dispatches after many renders.
+		r.click('#stable');
+		expect(r.find('output').textContent).toBe('stable');
+		r.click('#bump');
+		r.click('#stable');
+		expect(r.find('output').textContent).toBe('stable');
 		r.unmount();
 	});
 

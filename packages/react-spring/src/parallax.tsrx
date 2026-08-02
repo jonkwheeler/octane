@@ -147,7 +147,9 @@ export function ParallaxLayer(props: any) @{
 		};
 		context.layers.add(layer);
 		context.update();
-		return () => context.layers.delete(layer);
+		return () => {
+			context.layers.delete(layer);
+		};
 	}, [props.offset, props.speed, props.factor, props.sticky]);
 	<div
 		{...props}

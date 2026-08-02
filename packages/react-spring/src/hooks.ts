@@ -227,7 +227,13 @@ export function useTransition<Item, State extends Record<string, any>>(
 			controller: new Controller<State>({ from }),
 		});
 	});
-	if (props.sort !== undefined) records.sort((a, b) => props.sort!(a.item, b.item));
+	if (props.sort !== undefined) {
+		records.sort((a, b) => props.sort!(a.item, b.item));
+	} else {
+		const active = nextKeys.map((key) => records.find((record) => record.key === key)!);
+		const leaving = records.filter((record) => !nextKeySet.has(record.key));
+		records.splice(0, records.length, ...active, ...leaving);
+	}
 
 	const signature = records.map((record) => `${String(record.key)}:${record.phase}`).join('|');
 	useLayoutEffect(
@@ -242,12 +248,16 @@ export function useTransition<Item, State extends Record<string, any>>(
 							: resolveTransitionValue(props.enter, record.item);
 				const phase = record.phase;
 				void record.controller
-					.start({
-						to: target,
-						config: props.config,
-						immediate: props.immediate,
-						...context,
-					})
+					.start(
+						withContext(
+							{
+								to: target,
+								config: props.config,
+								immediate: props.immediate,
+							},
+							context,
+						),
+					)
 					.then(() => {
 						if (!active || phase !== 'leave' || record.phase !== 'leave') return;
 						const expiration = props.expires ?? true;
