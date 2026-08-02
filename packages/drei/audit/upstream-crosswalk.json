@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 284
+    "gaps": 283
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -4681,9 +4681,12 @@
         "path": "packages/drei/upstream/src/core/useDepthBuffer.ts",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useDepthBuffer.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/depth-buffer.test.ts",
+        "packages/drei/typetests/depth-buffer.test-d.ts"
+      ],
       "divergence": null
     },
     {

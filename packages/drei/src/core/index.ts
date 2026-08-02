@@ -75,6 +75,7 @@ export {
 	PerspectiveCamera,
 	useCubeCamera,
 } from './cameras.three.tsrx';
+export { useDepthBuffer } from './useDepthBuffer.three.tsrx';
 export type {
 	CubeCameraOptions,
 	CubeCameraProps,
