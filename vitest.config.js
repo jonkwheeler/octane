@@ -504,6 +504,7 @@ export default defineConfig({
 					include: ['packages/valtio/tests/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
+					globalSetup: ['packages/valtio/tests/differential/_setup.ts'],
 				},
 				plugins: [octane()],
 				resolve: {

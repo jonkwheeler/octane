@@ -1,0 +1,173 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/pmndrs/valtio.git",
+    "version": "valtio@2.3.2",
+    "commit": "15c64d4d7a7a9bd55d750fa6a317b440978a2b25",
+    "sourceRoot": "src",
+    "testRoot": "tests",
+    "license": "MIT",
+    "integrity": "sha256:90ba3507f7fefcf8654c36bcedffa1f7b96d5a9ed7cde14a9df52107eb90c825",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "insufficient" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/valtio/src"],
+      "include": ["\\.ts$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": { "roots": ["packages/valtio/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "1aaed814bed9a4c75adadd47ae2f9c2c69e9c636cbfef9bb858386956ee99946"
+    }
+  },
+  "lanes": [
+    {
+      "id": "valtio-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "valtio",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs exact accessed-snapshot and mutable useProxy scenarios against valtio@2.3.2.",
+      "files": [
+        {
+          "path": "packages/valtio/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "c2fe5ff4670e356cfbaa0036b5a1226d7d94a605ab75434b48b5f9de80dc2fcd",
+          "cases": [
+            {
+              "id": "differential:valtio-snapshot",
+              "testName": "renders and updates accessed snapshot paths identically",
+              "fullName": "differential: @octanejs/valtio vs valtio renders and updates accessed snapshot paths identically"
+            },
+            {
+              "id": "differential:valtio-use-proxy",
+              "testName": "reads snapshots and mutates the source proxy identically through useProxy",
+              "fullName": "differential: @octanejs/valtio vs valtio reads snapshots and mutates the source proxy identically through useProxy"
+            }
+          ]
+        },
+        {
+          "path": "packages/valtio/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "f44418aef38ea7f997470c2ddda6964f71b8287f2f9b290d27bb408a28520bc9"
+        },
+        {
+          "path": "packages/valtio/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "35644601b67415e7cd2f1255fee7664442e288cafce47bb894d61172fee45fb4"
+        },
+        {
+          "path": "packages/valtio/tests/_fixtures/store.tsrx",
+          "role": "support",
+          "sha256": "4d9bb28527bc5437d4e3fa2aac2237a9a07a9454b8dc164e5de7d7c0af74d833"
+        }
+      ]
+    },
+    {
+      "id": "valtio-adapted-divergence",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "valtio",
+      "notes": "Authenticates the documented omission of React DevTools affected-path labels.",
+      "files": [
+        {
+          "path": "packages/valtio/tests/conformance/exports.test.ts",
+          "role": "test",
+          "sha256": "eb2f8dcdde12d473c54aa3a3ea5a5ea9beb72067648c8caef418ccbba52af3fe",
+          "cases": [
+            {
+              "id": "adapted:valtio-debug-labels",
+              "testName": "omits React DevTools debug labels from the snapshot hook",
+              "fullName": "vanilla entry points omits React DevTools debug labels from the snapshot hook"
+            }
+          ]
+        },
+        {
+          "path": "packages/valtio/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "f44418aef38ea7f997470c2ddda6964f71b8287f2f9b290d27bb408a28520bc9"
+        },
+        {
+          "path": "packages/valtio/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "35644601b67415e7cd2f1255fee7664442e288cafce47bb894d61172fee45fb4"
+        },
+        {
+          "path": "packages/valtio/tests/_fixtures/store.tsrx",
+          "role": "support",
+          "sha256": "4d9bb28527bc5437d4e3fa2aac2237a9a07a9454b8dc164e5de7d7c0af74d833"
+        }
+      ]
+    },
+    {
+      "id": "valtio-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "valtio-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles readonly snapshot and mutable proxy inference through the Octane public entries.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/valtio/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/valtio/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "6dc621d10ab422b3b75a6b480cd2858a526382fd86a38c35c972644524485a57",
+          "cases": [
+            {
+              "id": "types:valtio-public-api",
+              "testName": "snapshot and mutable proxy inference",
+              "fullName": "snapshot and mutable proxy inference"
+            }
+          ]
+        },
+        {
+          "path": "packages/valtio/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "442b77ee0d951d0f79790a5db2cc811faa6f8974e68c11d8802502517be05891"
+        },
+        {
+          "path": "packages/valtio/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "d9433c155d7cbd58d462e12960140ce259f8bf0ef84d45bf748c78703ed0c791"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "valtio-debug-labels",
+      "caseIds": ["adapted:valtio-debug-labels"],
+      "upstreamResult": "Valtio reports affected snapshot paths through React useDebugValue for React DevTools.",
+      "octaneResult": "The Octane hook omits the React-specific debug label while preserving snapshot behavior.",
+      "rationale": "Octane useDebugValue is currently a no-op and there is no React DevTools channel to populate.",
+      "classification": "framework-integration",
+      "consumerImpact": "React DevTools does not show affected-path labels for the Octane hook.",
+      "migrationGuidance": "Inspect the proxy or Octane component updates directly when debugging.",
+      "owner": "@octanejs/valtio",
+      "reviewCondition": "Review when Octane exposes a functional debug-value channel."
+    }
+  ]
+}

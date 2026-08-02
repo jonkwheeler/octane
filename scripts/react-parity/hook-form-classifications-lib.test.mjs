@@ -55,3 +55,8 @@ test('rejects a stale divergence classification', async (t) => {
 	await writeFile(path, `${JSON.stringify(config)}\n`);
 	assert.throws(() => verifyPortTestClassifications(root), /not present in the parity manifest/);
 });
+
+test('verifies an arbitrary binding classification ledger', () => {
+	const root = new URL('../..', import.meta.url).pathname;
+	assert.deepEqual(verifyPortTestClassifications(root, 'valtio'), { tests: 4 });
+});

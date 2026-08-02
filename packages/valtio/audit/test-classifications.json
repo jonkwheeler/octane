@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/valtio/tests/conformance/binding.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks additional Octane subscription, slot, and accessed-path behavior beyond the bounded differential scenarios."
+    },
+    {
+      "path": "packages/valtio/tests/conformance/exports.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "valtio-debug-labels",
+      "reason": "Authenticates the documented omission of React DevTools affected-path labels and the framework-neutral re-export boundary."
+    },
+    {
+      "path": "packages/valtio/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs the exact snapshot and useProxy scenarios against valtio@2.3.2 with React 19.2.7."
+    },
+    {
+      "path": "packages/valtio/tests/differential/setup.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
+    }
+  ]
+}
