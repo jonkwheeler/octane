@@ -26,9 +26,17 @@ vi.mock('three-stdlib', async (importOriginal) => {
 		MeshSurfaceSampler: class {
 			private index = 0;
 			private call = { weight: undefined as string | undefined, built: false };
-			constructor(_mesh: THREE.Mesh) { samplerCalls.push(this.call); }
-			setWeightAttribute(weight?: string) { this.call.weight = weight; return this; }
-			build() { this.call.built = true; return this; }
+			constructor(_mesh: THREE.Mesh) {
+				samplerCalls.push(this.call);
+			}
+			setWeightAttribute(weight?: string) {
+				this.call.weight = weight;
+				return this;
+			}
+			build() {
+				this.call.built = true;
+				return this;
+			}
 			sample(position: THREE.Vector3, normal: THREE.Vector3, color: THREE.Color) {
 				const value = ++this.index;
 				position.set(value, value + 0.25, -value);
@@ -77,14 +85,18 @@ async function reactExternal(mesh: THREE.Mesh, instances: THREE.InstancedMesh) {
 	const meshRef = { current: mesh };
 	const instancesRef = { current: instances };
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(ReactSampler, {
-		mesh: meshRef,
-		instances: instancesRef,
-		count: 3,
-		weight: 'weight',
-		transform,
-		position: [4, 5, 6],
-	})));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(ReactSampler, {
+				mesh: meshRef,
+				instances: instancesRef,
+				count: 3,
+				weight: 'weight',
+				transform,
+				position: [4, 5, 6],
+			}),
+		),
+	);
 	return { root, meshRef, instancesRef };
 }
 
@@ -95,7 +107,9 @@ async function reactSurface(mesh: THREE.Mesh) {
 	function Scene() {
 		const meshRef = React.useRef(mesh);
 		const value = useReactSurfaceSampler(meshRef, 2);
-		React.useLayoutEffect(() => { buffer = value; }, [value]);
+		React.useLayoutEffect(() => {
+			buffer = value;
+		}, [value]);
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
@@ -107,8 +121,16 @@ describe('Sampler', () => {
 	it('matches external refs, weighted sampling, transform payloads, matrices, invalidation, and group props', async () => {
 		const reactMesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
 		const octaneMesh = reactMesh.clone();
-		const reactInstances = new THREE.InstancedMesh(new THREE.SphereGeometry(), new THREE.MeshBasicMaterial(), 3);
-		const octaneInstances = new THREE.InstancedMesh(new THREE.SphereGeometry(), new THREE.MeshBasicMaterial(), 3);
+		const reactInstances = new THREE.InstancedMesh(
+			new THREE.SphereGeometry(),
+			new THREE.MeshBasicMaterial(),
+			3,
+		);
+		const octaneInstances = new THREE.InstancedMesh(
+			new THREE.SphereGeometry(),
+			new THREE.MeshBasicMaterial(),
+			3,
+		);
 		const react = await reactExternal(reactMesh, reactInstances);
 		const octane = await createOctaneThree(SamplerExternalScene, {
 			meshRef: { current: octaneMesh },
@@ -150,7 +172,9 @@ describe('Sampler', () => {
 	});
 
 	it('matches the hook default transform and returns a replaced buffer over the sampled storage', async () => {
-		const react = await reactSurface(new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial()));
+		const react = await reactSurface(
+			new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial()),
+		);
 		let buffer!: THREE.InstancedBufferAttribute;
 		const octane = await createOctaneThree(SurfaceSamplerScene, {
 			mesh: new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial()),

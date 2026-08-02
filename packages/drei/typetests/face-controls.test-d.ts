@@ -1,7 +1,17 @@
-import { FaceControls, useFaceControls, type FaceControlsApi, type FaceControlsProps } from '@octanejs/drei';
+import {
+	FaceControls,
+	useFaceControls,
+	type FaceControlsApi,
+	type FaceControlsProps,
+} from '@octanejs/drei';
 import * as THREE from 'three';
 
-const props: FaceControlsProps = { manualDetect: true, manualUpdate: true, camera: new THREE.PerspectiveCamera(), smoothTime: 0 };
+const props: FaceControlsProps = {
+	manualDetect: true,
+	manualUpdate: true,
+	camera: new THREE.PerspectiveCamera(),
+	smoothTime: 0,
+};
 declare const api: FaceControlsApi;
 api.update(1 / 60, api.computeTarget());
 api.facemeshApiRef.current?.meshRef.current?.geometry.computeBoundingBox();

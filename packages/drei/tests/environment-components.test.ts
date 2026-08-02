@@ -59,7 +59,9 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		setPixelRatio() {},
 		setSize() {},
 		setRenderTarget() {},
-		getRenderTarget() { return null; },
+		getRenderTarget() {
+			return null;
+		},
 		renderLists: { dispose() {} },
 		forceContextLoss() {},
 		dispose() {},
@@ -76,14 +78,14 @@ async function reactRoot(element: React.ReactNode) {
 	const canvas = document.createElement('canvas');
 	const root = createReactThreeRoot(canvas);
 	let getState!: () => ReactRootState;
-	function Capture() { getState = reactUseThree((state) => state.get); return null; }
+	function Capture() {
+		getState = reactUseThree((state) => state.get);
+		return null;
+	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		element,
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(React.createElement(React.Fragment, null, element, React.createElement(Capture))),
+	);
 	await flush();
 	return { root, getState };
 }
@@ -101,54 +103,67 @@ function sceneSnapshot(scene: THREE.Scene) {
 }
 
 describe('Environment components', () => {
-	it.each([false, true, 'only'] as const)('matches EnvironmentMap assignment and cleanup for background=%s', async (background) => {
-		const reactMap = new THREE.Texture();
-		reactMap.name = 'map';
-		const octaneMap = reactMap.clone();
-		octaneMap.name = 'map';
-		const reactTarget = new THREE.Scene();
-		const octaneTarget = new THREE.Scene();
-		const reactOldBackground = new THREE.Texture();
-		const reactOldEnvironment = new THREE.Texture();
-		const octaneOldBackground = reactOldBackground.clone();
-		const octaneOldEnvironment = reactOldEnvironment.clone();
-		reactTarget.background = reactOldBackground;
-		reactTarget.environment = reactOldEnvironment;
-		octaneTarget.background = octaneOldBackground;
-		octaneTarget.environment = octaneOldEnvironment;
-		const config = {
-			backgroundBlurriness: 0.35,
-			backgroundIntensity: 0.75,
-			backgroundRotation: new THREE.Euler(0.1, 0.2, 0.3),
-			environmentIntensity: 1.4,
-			environmentRotation: new THREE.Euler(0.4, 0.5, 0.6),
-		};
-		const react = await reactRoot(React.createElement(ReactEnvironmentMap, {
-			map: reactMap,
-			background,
-			scene: { current: reactTarget },
-			...config,
-		}));
-		const octane = await createOctaneThree(EnvironmentMapScene, {
-			map: octaneMap,
-			background,
-			targetScene: { current: octaneTarget },
-			...config,
-		});
-		expect(sceneSnapshot(octaneTarget)).toEqual(sceneSnapshot(reactTarget));
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
-		expect(octaneTarget.background).toBe(octaneOldBackground);
-		expect(octaneTarget.environment).toBe(octaneOldEnvironment);
-	});
+	it.each([false, true, 'only'] as const)(
+		'matches EnvironmentMap assignment and cleanup for background=%s',
+		async (background) => {
+			const reactMap = new THREE.Texture();
+			reactMap.name = 'map';
+			const octaneMap = reactMap.clone();
+			octaneMap.name = 'map';
+			const reactTarget = new THREE.Scene();
+			const octaneTarget = new THREE.Scene();
+			const reactOldBackground = new THREE.Texture();
+			const reactOldEnvironment = new THREE.Texture();
+			const octaneOldBackground = reactOldBackground.clone();
+			const octaneOldEnvironment = reactOldEnvironment.clone();
+			reactTarget.background = reactOldBackground;
+			reactTarget.environment = reactOldEnvironment;
+			octaneTarget.background = octaneOldBackground;
+			octaneTarget.environment = octaneOldEnvironment;
+			const config = {
+				backgroundBlurriness: 0.35,
+				backgroundIntensity: 0.75,
+				backgroundRotation: new THREE.Euler(0.1, 0.2, 0.3),
+				environmentIntensity: 1.4,
+				environmentRotation: new THREE.Euler(0.4, 0.5, 0.6),
+			};
+			const react = await reactRoot(
+				React.createElement(ReactEnvironmentMap, {
+					map: reactMap,
+					background,
+					scene: { current: reactTarget },
+					...config,
+				}),
+			);
+			const octane = await createOctaneThree(EnvironmentMapScene, {
+				map: octaneMap,
+				background,
+				targetScene: { current: octaneTarget },
+				...config,
+			});
+			expect(sceneSnapshot(octaneTarget)).toEqual(sceneSnapshot(reactTarget));
+			octane.unmount();
+			await reactThreeAct(async () => react.root.unmount());
+			expect(octaneTarget.background).toBe(octaneOldBackground);
+			expect(octaneTarget.environment).toBe(octaneOldEnvironment);
+		},
+	);
 
 	it('matches EnvironmentCube loading, blur aliasing, scene props, disposal, and restoration', async () => {
 		const files = ['/px', '/nx', '/py', '/ny', '/pz', '/nz'];
-		const react = await reactRoot(React.createElement(
-			React.Suspense,
-			{ fallback: null },
-			React.createElement(ReactEnvironmentCube, { files, path: '/env/', background: true, blur: 0.45, environmentIntensity: 1.6 }),
-		));
+		const react = await reactRoot(
+			React.createElement(
+				React.Suspense,
+				{ fallback: null },
+				React.createElement(ReactEnvironmentCube, {
+					files,
+					path: '/env/',
+					background: true,
+					blur: 0.45,
+					environmentIntensity: 1.6,
+				}),
+			),
+		);
 		const octane = await createOctaneThree(EnvironmentCubeScene, {
 			files,
 			path: '/env/',
@@ -173,11 +188,17 @@ describe('Environment components', () => {
 		const octaneMap = new THREE.Texture();
 		let reactChild!: THREE.Group;
 		let octaneChild!: THREE.Group;
-		const react = await reactRoot(React.createElement(
-			ReactEnvironmentPortal,
-			{ map: reactMap, background: 'only', frames: 3, near: 0.25, far: 80, resolution: 32 },
-			React.createElement('group', { ref: (value: THREE.Group) => (reactChild = value), name: 'portal-child', position: [1, 2, 3] }),
-		));
+		const react = await reactRoot(
+			React.createElement(
+				ReactEnvironmentPortal,
+				{ map: reactMap, background: 'only', frames: 3, near: 0.25, far: 80, resolution: 32 },
+				React.createElement('group', {
+					ref: (value: THREE.Group) => (reactChild = value),
+					name: 'portal-child',
+					position: [1, 2, 3],
+				}),
+			),
+		);
 		const octane = await createOctaneThree(EnvironmentPortalScene, {
 			map: octaneMap,
 			background: 'only',
@@ -195,12 +216,17 @@ describe('Environment components', () => {
 		expect(octaneUpdates).toHaveLength(reactUpdates.length);
 		expect(octaneChild.parent?.isScene).toBe(reactChild.parent?.isScene);
 		expect(octaneChild.position.toArray()).toEqual(reactChild.position.toArray());
-		const octaneCamera = octaneChild.parent!.children.find((object) => object.type === 'CubeCamera') as THREE.CubeCamera;
-		const reactCamera = reactChild.parent!.children.find((object) => object.type === 'CubeCamera') as THREE.CubeCamera;
-		const cameraPlanes = (camera: THREE.CubeCamera) => camera.children.map((child) => ({
-			near: (child as THREE.PerspectiveCamera).near,
-			far: (child as THREE.PerspectiveCamera).far,
-		}));
+		const octaneCamera = octaneChild.parent!.children.find(
+			(object) => object.type === 'CubeCamera',
+		) as THREE.CubeCamera;
+		const reactCamera = reactChild.parent!.children.find(
+			(object) => object.type === 'CubeCamera',
+		) as THREE.CubeCamera;
+		const cameraPlanes = (camera: THREE.CubeCamera) =>
+			camera.children.map((child) => ({
+				near: (child as THREE.PerspectiveCamera).near,
+				far: (child as THREE.PerspectiveCamera).far,
+			}));
 		expect(cameraPlanes(octaneCamera)).toEqual(cameraPlanes(reactCamera));
 		expect(octane.scene.background).toBeTruthy();
 		octane.unmount();
@@ -216,20 +242,36 @@ describe('Environment components', () => {
 		mapRoot.unmount();
 
 		const files = ['/gx', '/gnx', '/gy', '/gny', '/gz', '/gnz'];
-		const react = await reactRoot(React.createElement(
-			React.Suspense,
-			{ fallback: null },
-			React.createElement(ReactEnvironment, { files, ground: { height: 7, radius: 12, scale: 250 } }),
-		));
+		const react = await reactRoot(
+			React.createElement(
+				React.Suspense,
+				{ fallback: null },
+				React.createElement(ReactEnvironment, {
+					files,
+					ground: { height: 7, radius: 12, scale: 250 },
+				}),
+			),
+		);
 		const octane = await createOctaneThree(EnvironmentGroundScene, {
 			files,
 			ground: { height: 7, radius: 12, scale: 250 },
 		});
 		await flush();
-		const octaneGround = octane.scene.children.find((object) => object instanceof THREE.Mesh) as any;
-		const reactGround = react.getState().scene.children.find((object) => object instanceof THREE.Mesh) as any;
-		expect({ height: octaneGround.height, radius: octaneGround.radius, scale: octaneGround.scale.toArray() })
-			.toEqual({ height: reactGround.height, radius: reactGround.radius, scale: reactGround.scale.toArray() });
+		const octaneGround = octane.scene.children.find(
+			(object) => object instanceof THREE.Mesh,
+		) as any;
+		const reactGround = react
+			.getState()
+			.scene.children.find((object) => object instanceof THREE.Mesh) as any;
+		expect({
+			height: octaneGround.height,
+			radius: octaneGround.radius,
+			scale: octaneGround.scale.toArray(),
+		}).toEqual({
+			height: reactGround.height,
+			radius: reactGround.radius,
+			scale: reactGround.scale.toArray(),
+		});
 		octane.unmount();
 		await reactThreeAct(async () => react.root.unmount());
 		useEnvironment.clear({ files });

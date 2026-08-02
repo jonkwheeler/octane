@@ -33,21 +33,41 @@ const context = {
 	currentTime: 0,
 	destination: audioNode(),
 	listener: {
-		positionX: audioParam(), positionY: audioParam(), positionZ: audioParam(),
-		forwardX: audioParam(), forwardY: audioParam(), forwardZ: audioParam(),
-		upX: audioParam(), upY: audioParam(), upZ: audioParam(),
+		positionX: audioParam(),
+		positionY: audioParam(),
+		positionZ: audioParam(),
+		forwardX: audioParam(),
+		forwardY: audioParam(),
+		forwardZ: audioParam(),
+		upX: audioParam(),
+		upY: audioParam(),
+		upZ: audioParam(),
 	},
 	createGain: () => audioNode({ gain: audioParam(1) }),
-	createPanner: () => audioNode({
-		panningModel: 'HRTF', distanceModel: 'inverse', refDistance: 1,
-		rolloffFactor: 1, maxDistance: 10_000, coneInnerAngle: 360,
-		coneOuterAngle: 0, coneOuterGain: 0,
-		positionX: audioParam(), positionY: audioParam(), positionZ: audioParam(),
-		orientationX: audioParam(), orientationY: audioParam(), orientationZ: audioParam(),
-	}),
-	createBufferSource: () => audioNode({
-		start() {}, stop() {}, detune: audioParam(), playbackRate: audioParam(1),
-	}),
+	createPanner: () =>
+		audioNode({
+			panningModel: 'HRTF',
+			distanceModel: 'inverse',
+			refDistance: 1,
+			rolloffFactor: 1,
+			maxDistance: 10_000,
+			coneInnerAngle: 360,
+			coneOuterAngle: 0,
+			coneOuterGain: 0,
+			positionX: audioParam(),
+			positionY: audioParam(),
+			positionZ: audioParam(),
+			orientationX: audioParam(),
+			orientationY: audioParam(),
+			orientationZ: audioParam(),
+		}),
+	createBufferSource: () =>
+		audioNode({
+			start() {},
+			stop() {},
+			detune: audioParam(),
+			playbackRate: audioParam(1),
+		}),
 };
 
 beforeAll(() => {
@@ -67,9 +87,14 @@ afterAll(() => {
 function renderer(canvas: HTMLCanvasElement): WebGLRenderer {
 	return {
 		domElement: canvas,
-		outputColorSpace: '', toneMapping: 0,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		outputColorSpace: '',
+		toneMapping: 0,
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as WebGLRenderer;
 }
 
@@ -92,20 +117,35 @@ function snapshot(sound: ThreePositionalAudio) {
 
 describe('PositionalAudio', () => {
 	it('matches the pinned React Drei configuration, ref, update, and camera listener lifecycle', async () => {
-		const props = { url: '/sound.ogg', distance: 4, loop: false, autoplay: false, position: [1, 2, 3] as const };
+		const props = {
+			url: '/sound.ogg',
+			distance: 4,
+			loop: false,
+			autoplay: false,
+			position: [1, 2, 3] as const,
+		};
 		let reactSound!: ThreePositionalAudio;
 		const canvas = document.createElement('canvas');
 		const reactRoot = createReactThreeRoot(canvas);
 		await reactRoot.configure({
-			gl: renderer(canvas), frameloop: 'never', dpr: 1,
+			gl: renderer(canvas),
+			frameloop: 'never',
+			dpr: 1,
 			size: { width: 64, height: 64, top: 0, left: 0 },
 			camera: new PerspectiveCamera(),
 		});
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			React.Suspense,
-			{ fallback: null },
-			React.createElement(ReactPositionalAudio, { ...props, ref: (value) => (reactSound = value!) }),
-		)));
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(ReactPositionalAudio, {
+						...props,
+						ref: (value) => (reactSound = value!),
+					}),
+				),
+			),
+		);
 		let octaneSound!: ThreePositionalAudio;
 		const octaneRoot = await createOctaneThree(PositionalAudioScene, {
 			...props,
@@ -117,7 +157,9 @@ describe('PositionalAudio', () => {
 		expect(octaneSound.listener.parent).toBeInstanceOf(PerspectiveCamera);
 
 		octaneRoot.update(PositionalAudioScene, {
-			...props, distance: 9, loop: true,
+			...props,
+			distance: 9,
+			loop: true,
 			ref: (value: ThreePositionalAudio) => (octaneSound = value),
 		});
 		await flush();
@@ -135,7 +177,11 @@ describe('PositionalAudio', () => {
 		const play = vi.spyOn(ThreePositionalAudio.prototype, 'play');
 		let sound!: ThreePositionalAudio;
 		const root = await createOctaneThree(PositionalAudioScene, {
-			url: '/quiet.ogg', distance: 1, loop: true, autoplay: false, position: [0, 0, 0],
+			url: '/quiet.ogg',
+			distance: 1,
+			loop: true,
+			autoplay: false,
+			position: [0, 0, 0],
 			ref: (value: ThreePositionalAudio) => (sound = value),
 		});
 		await flush();

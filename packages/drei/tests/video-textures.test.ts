@@ -20,8 +20,12 @@ const mocks = vi.hoisted(() => {
 		loadSource = vi.fn();
 		attachMedia = vi.fn(() => this.listeners.get('hlsMediaAttached')?.());
 		destroy = vi.fn();
-		constructor(readonly config: unknown) { instances.push(this); }
-		on(type: string, callback: () => void) { this.listeners.set(type, callback); }
+		constructor(readonly config: unknown) {
+			instances.push(this);
+		}
+		on(type: string, callback: () => void) {
+			this.listeners.set(type, callback);
+		}
 	}
 	return { Hls, instances };
 });
@@ -39,11 +43,17 @@ beforeEach(() => {
 	nextFrameHandle = 1;
 	mocks.instances.length = 0;
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-	vi.spyOn(document, 'createElement').mockImplementation(((tagName: string, options?: ElementCreationOptions) => {
+	vi.spyOn(document, 'createElement').mockImplementation(((
+		tagName: string,
+		options?: ElementCreationOptions,
+	) => {
 		const element = originalCreateElement(tagName, options);
 		if (tagName.toLowerCase() === 'video') {
 			const video = element as HTMLVideoElement;
-			Object.defineProperty(video, 'play', { configurable: true, value: vi.fn(async () => undefined) });
+			Object.defineProperty(video, 'play', {
+				configurable: true,
+				value: vi.fn(async () => undefined),
+			});
 			Object.defineProperty(video, 'requestVideoFrameCallback', {
 				configurable: true,
 				value: vi.fn((callback: VideoFrameRequestCallback) => {
@@ -70,8 +80,12 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
@@ -96,28 +110,40 @@ function textureSnapshot(texture: THREE.VideoTexture) {
 describe('VideoTexture', () => {
 	it('matches video configuration, suspension, ref/render callback, frame callback, start, and disposal', async () => {
 		const props = {
-			src: '/movie.mp4', unsuspend: 'loadedmetadata' as const, start: true,
-			crossOrigin: 'use-credentials', muted: false, loop: false, playsInline: false,
+			src: '/movie.mp4',
+			unsuspend: 'loadedmetadata' as const,
+			start: true,
+			crossOrigin: 'use-credentials',
+			muted: false,
+			loop: false,
+			playsInline: false,
 		};
 		let reactTexture: THREE.VideoTexture | null = null;
 		const reactFrames = vi.fn();
 		const canvas = document.createElement('canvas');
 		const reactRoot = createReactThreeRoot(canvas);
 		await reactRoot.configure({ gl: renderer(canvas), frameloop: 'never', dpr: 1 });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			React.Suspense,
-			{ fallback: null },
-			React.createElement(ReactVideoTexture, {
-				...props, onVideoFrame: reactFrames,
-				ref: (value) => (reactTexture = value), children: (value) => void (reactTexture = value) || null,
-			}),
-		)));
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(ReactVideoTexture, {
+						...props,
+						onVideoFrame: reactFrames,
+						ref: (value) => (reactTexture = value),
+						children: (value) => void (reactTexture = value) || null,
+					}),
+				),
+			),
+		);
 		await flush();
 
 		let octaneTexture: THREE.VideoTexture | null = null;
 		const octaneFrames = vi.fn();
 		const octaneRoot = await createOctaneThree(VideoTextureScene, {
-			...props, onVideoFrame: octaneFrames,
+			...props,
+			onVideoFrame: octaneFrames,
 			ref: (value: THREE.VideoTexture | null) => (octaneTexture = value),
 			children: (value: THREE.VideoTexture) => void (octaneTexture = value) || null,
 		});
@@ -126,7 +152,8 @@ describe('VideoTexture', () => {
 		expect((octaneTexture!.image as HTMLVideoElement).play).toHaveBeenCalledOnce();
 		expect((reactTexture!.image as HTMLVideoElement).play).toHaveBeenCalledOnce();
 
-		for (const callback of [...frameCallbacks.values()]) callback(1, {} as VideoFrameCallbackMetadata);
+		for (const callback of [...frameCallbacks.values()])
+			callback(1, {} as VideoFrameCallbackMetadata);
 		expect(octaneFrames).toHaveBeenCalledTimes(reactFrames.mock.calls.length);
 		const octaneDispose = vi.spyOn(octaneTexture!, 'dispose');
 		const reactDispose = vi.spyOn(reactTexture!, 'dispose');
@@ -142,14 +169,20 @@ describe('VideoTexture', () => {
 		const canvas = document.createElement('canvas');
 		const reactRoot = createReactThreeRoot(canvas);
 		await reactRoot.configure({ gl: renderer(canvas), frameloop: 'never', dpr: 1 });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			React.Suspense,
-			{ fallback: null },
-			React.createElement(ReactVideoTexture, {
-				src: '/live.m3u8', start: false,
-				ref: (value) => (reactTexture = value), children: () => null,
-			}),
-		)));
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(ReactVideoTexture, {
+						src: '/live.m3u8',
+						start: false,
+						ref: (value) => (reactTexture = value),
+						children: () => null,
+					}),
+				),
+			),
+		);
 		await flush();
 		videos.at(-1)!.dispatchEvent(new Event('loadedmetadata'));
 		await flush();
@@ -160,10 +193,16 @@ describe('VideoTexture', () => {
 
 		let texture: THREE.VideoTexture | null = null;
 		const root = await createOctaneThree(VideoTextureScene, {
-			src: '/live.m3u8', unsuspend: 'loadedmetadata', start: false,
-			crossOrigin: 'anonymous', muted: true, loop: true, playsInline: true,
+			src: '/live.m3u8',
+			unsuspend: 'loadedmetadata',
+			start: false,
+			crossOrigin: 'anonymous',
+			muted: true,
+			loop: true,
+			playsInline: true,
 			onVideoFrame: undefined,
-			ref: (value: THREE.VideoTexture | null) => (texture = value), children: () => null,
+			ref: (value: THREE.VideoTexture | null) => (texture = value),
+			children: () => null,
 		});
 		await flush();
 		videos.at(-1)!.dispatchEvent(new Event('loadedmetadata'));
@@ -186,24 +225,36 @@ describe('screen and webcam video textures', () => {
 		const getDisplayMedia = vi.fn(async () => screenStream);
 		const getUserMedia = vi.fn(async () => webcamStream);
 		Object.defineProperty(navigator, 'mediaDevices', {
-			configurable: true, value: { getDisplayMedia, getUserMedia },
+			configurable: true,
+			value: { getDisplayMedia, getUserMedia },
 		});
 
 		const screenOptions = { video: { displaySurface: 'window' as const } };
 		const reactCanvas = document.createElement('canvas');
 		const reactRoot = createReactThreeRoot(reactCanvas);
 		await reactRoot.configure({ gl: renderer(reactCanvas), frameloop: 'never', dpr: 1 });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			React.Suspense, { fallback: null },
-			React.createElement(ReactScreenVideoTexture, { options: screenOptions, start: false, children: () => null }),
-		)));
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(ReactScreenVideoTexture, {
+						options: screenOptions,
+						start: false,
+						children: () => null,
+					}),
+				),
+			),
+		);
 		await flush();
 		expect(getDisplayMedia).toHaveBeenLastCalledWith(screenOptions);
 		await reactThreeAct(async () => reactRoot.unmount());
 		await flush();
 
 		const octaneScreen = await createOctaneThree(ScreenVideoTextureScene, {
-			options: screenOptions, ref: () => {}, children: () => null,
+			options: screenOptions,
+			ref: () => {},
+			children: () => null,
 		});
 		await flush();
 		expect(getDisplayMedia).toHaveBeenLastCalledWith(screenOptions);
@@ -212,7 +263,9 @@ describe('screen and webcam video textures', () => {
 
 		const constraints = { audio: false, video: { facingMode: 'environment' } };
 		const octaneWebcam = await createOctaneThree(WebcamVideoTextureScene, {
-			constraints, ref: () => {}, children: () => null,
+			constraints,
+			ref: () => {},
+			children: () => null,
 		});
 		await flush();
 		expect(getUserMedia).toHaveBeenCalledWith(constraints);

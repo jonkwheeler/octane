@@ -33,8 +33,12 @@ function renderer(canvas: HTMLCanvasElement): Recorder {
 		properties: { remove: (material: unknown) => void removeCalls.push(material) },
 		info: { programs: [{}, {}] },
 		compile: (scene, camera) => void compileCalls.push([scene, camera]),
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as Recorder;
 }
 
@@ -47,15 +51,21 @@ describe('SoftShadows', () => {
 		const reactRenderer = renderer(reactCanvas);
 		const reactRoot = createReactThreeRoot(reactCanvas);
 		await reactRoot.configure({ gl: reactRenderer, frameloop: 'never', dpr: 1 });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			React.Fragment,
-			{},
-			React.createElement('mesh', {},
-				React.createElement('boxGeometry'),
-				React.createElement('meshBasicMaterial', { ref: (value) => (reactMaterial = value!) }),
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					React.Fragment,
+					{},
+					React.createElement(
+						'mesh',
+						{},
+						React.createElement('boxGeometry'),
+						React.createElement('meshBasicMaterial', { ref: (value) => (reactMaterial = value!) }),
+					),
+					React.createElement(ReactSoftShadows, props),
+				),
 			),
-			React.createElement(ReactSoftShadows, props),
-		)));
+		);
 		const reactShader = THREE.ShaderChunk.shadowmap_pars_fragment;
 		expect(reactShader).toContain('#define PENUMBRA_FILTER_SIZE float(18)');
 		expect(reactShader).toContain('for(int i = 0; i < 6; i ++)');
@@ -70,10 +80,12 @@ describe('SoftShadows', () => {
 		const octaneRenderer = renderer(octaneCanvas);
 		const octaneRoot = createOctaneThreeRoot(octaneCanvas);
 		await octaneRoot.configure({ gl: octaneRenderer, frameloop: 'never', dpr: 1 });
-		await octaneAct(async () => octaneRoot.render(SoftShadowsScene, {
-			...props,
-			materialRef: (value: THREE.MeshBasicMaterial) => (octaneMaterial = value),
-		}));
+		await octaneAct(async () =>
+			octaneRoot.render(SoftShadowsScene, {
+				...props,
+				materialRef: (value: THREE.MeshBasicMaterial) => (octaneMaterial = value),
+			}),
+		);
 		expect(THREE.ShaderChunk.shadowmap_pars_fragment).toBe(reactShader);
 		expect(octaneRenderer.compileCalls).toHaveLength(1);
 		expect(octaneRenderer.removeCalls).toContain(octaneMaterial);
@@ -89,9 +101,14 @@ describe('SoftShadows', () => {
 		const canvas = document.createElement('canvas');
 		const root = createOctaneThreeRoot(canvas);
 		await root.configure({ gl: renderer(canvas), frameloop: 'never', dpr: 1 });
-		await octaneAct(async () => root.render(SoftShadowsScene, {
-			focus: 0, samples: 10, size: 25, materialRef: () => {},
-		}));
+		await octaneAct(async () =>
+			root.render(SoftShadowsScene, {
+				focus: 0,
+				samples: 10,
+				size: 25,
+				materialRef: () => {},
+			}),
+		);
 		expect(THREE.ShaderChunk.shadowmap_pars_fragment).not.toBe(original);
 		root.unmount();
 		await octaneAct(async () => undefined);

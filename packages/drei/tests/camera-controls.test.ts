@@ -22,16 +22,28 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
 function callbacks() {
 	return {
-		onControlStart: vi.fn(), onControl: vi.fn(), onControlEnd: vi.fn(),
-		onTransitionStart: vi.fn(), onUpdate: vi.fn(), onWake: vi.fn(),
-		onRest: vi.fn(), onSleep: vi.fn(), onStart: vi.fn(), onEnd: vi.fn(), onChange: vi.fn(),
+		onControlStart: vi.fn(),
+		onControl: vi.fn(),
+		onControlEnd: vi.fn(),
+		onTransitionStart: vi.fn(),
+		onUpdate: vi.fn(),
+		onWake: vi.fn(),
+		onRest: vi.fn(),
+		onSleep: vi.fn(),
+		onStart: vi.fn(),
+		onEnd: vi.fn(),
+		onChange: vi.fn(),
 	};
 }
 
@@ -47,7 +59,13 @@ function snapshot(controls: CameraControlsImpl) {
 
 describe('CameraControls', () => {
 	it('matches props, default takeover, event aliases, frame updates, and disconnection', async () => {
-		const props = { makeDefault: true, regress: false, minDistance: 2, maxDistance: 40, smoothTime: 0.4 };
+		const props = {
+			makeDefault: true,
+			regress: false,
+			minDistance: 2,
+			maxDistance: 40,
+			smoothTime: 0.4,
+		};
 		const reactCallbacks = callbacks();
 		let reactControls!: CameraControlsImpl;
 		let reactState!: ReactRootState;
@@ -78,7 +96,16 @@ describe('CameraControls', () => {
 		for (const group of [reactCallbacks, octaneCallbacks]) {
 			for (const callback of Object.values(group)) callback.mockClear();
 		}
-		for (const type of ['controlstart', 'control', 'controlend', 'transitionstart', 'update', 'wake', 'rest', 'sleep']) {
+		for (const type of [
+			'controlstart',
+			'control',
+			'controlend',
+			'transitionstart',
+			'update',
+			'wake',
+			'rest',
+			'sleep',
+		]) {
 			reactControls.dispatchEvent({ type } as any);
 			octaneControls.dispatchEvent({ type } as any);
 		}
@@ -103,8 +130,13 @@ describe('CameraControls', () => {
 	it('does not regress performance when regress is false', async () => {
 		let controls!: CameraControlsImpl;
 		const root = await createOctaneThree(CameraControlsScene, {
-			makeDefault: false, regress: false, minDistance: 0, maxDistance: Infinity,
-			smoothTime: 0.25, ...callbacks(), ref: (value: CameraControlsImpl) => (controls = value),
+			makeDefault: false,
+			regress: false,
+			minDistance: 0,
+			maxDistance: Infinity,
+			smoothTime: 0.25,
+			...callbacks(),
+			ref: (value: CameraControlsImpl) => (controls = value),
 		});
 		const regress = vi.spyOn(root.store.getState().performance, 'regress');
 		controls.dispatchEvent({ type: 'control' } as any);

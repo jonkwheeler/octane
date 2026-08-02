@@ -2,7 +2,12 @@ import type { PointsBuffersProps, PointsInstancesProps, PositionPoint } from '@o
 import type { ThreeElement, ThreeRef } from '@octanejs/three';
 
 const pointRef: ThreeRef<PositionPoint> = { current: null };
-const point: ThreeElement<typeof PositionPoint> = { ref: pointRef, position: [1, 2, 3], size: 2, color: 'red' };
+const point: ThreeElement<typeof PositionPoint> = {
+	ref: pointRef,
+	position: [1, 2, 3],
+	size: 2,
+	color: 'red',
+};
 const instances: PointsInstancesProps = { limit: 100, range: 20, position: [0, 1, 0] };
 const buffers: PointsBuffersProps = {
 	positions: new Float32Array(6),

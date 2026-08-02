@@ -29,5 +29,10 @@ export const PortalMaterialImpl = shaderMaterial(
 );
 
 export type PortalMaterialInstance = InstanceType<typeof PortalMaterialImpl> & {
-	blur: number; blend: number; size: number; resolution: THREE.Vector2; sdf: THREE.Texture | null; map: THREE.Texture | null;
+	blur: number;
+	blend: number;
+	size: number;
+	resolution: THREE.Vector2;
+	sdf: THREE.Texture | null;
+	map: THREE.Texture | null;
 };

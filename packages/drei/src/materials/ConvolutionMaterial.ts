@@ -5,10 +5,19 @@ export class ConvolutionMaterial extends THREE.ShaderMaterial {
 	constructor(texelSize = new THREE.Vector2()) {
 		super({
 			uniforms: {
-				inputBuffer: new THREE.Uniform(null), depthBuffer: new THREE.Uniform(null), resolution: new THREE.Uniform(new THREE.Vector2()),
-				texelSize: new THREE.Uniform(new THREE.Vector2()), halfTexelSize: new THREE.Uniform(new THREE.Vector2()), kernel: new THREE.Uniform(0),
-				scale: new THREE.Uniform(1), cameraNear: new THREE.Uniform(0), cameraFar: new THREE.Uniform(1), minDepthThreshold: new THREE.Uniform(0),
-				maxDepthThreshold: new THREE.Uniform(1), depthScale: new THREE.Uniform(0), depthToBlurRatioBias: new THREE.Uniform(0.25),
+				inputBuffer: new THREE.Uniform(null),
+				depthBuffer: new THREE.Uniform(null),
+				resolution: new THREE.Uniform(new THREE.Vector2()),
+				texelSize: new THREE.Uniform(new THREE.Vector2()),
+				halfTexelSize: new THREE.Uniform(new THREE.Vector2()),
+				kernel: new THREE.Uniform(0),
+				scale: new THREE.Uniform(1),
+				cameraNear: new THREE.Uniform(0),
+				cameraFar: new THREE.Uniform(1),
+				minDepthThreshold: new THREE.Uniform(0),
+				maxDepthThreshold: new THREE.Uniform(1),
+				depthScale: new THREE.Uniform(0),
+				depthToBlurRatioBias: new THREE.Uniform(0.25),
 			},
 			fragmentShader: `#include <common>
 #include <dithering_pars_fragment>
@@ -38,12 +47,19 @@ void main() {
   vUv2 = vec2(uv.x + dUv.x, uv.y - dUv.y); vUv3 = vec2(uv.x - dUv.x, uv.y - dUv.y);
   gl_Position = vec4(position.xy, 1.0, 1.0);
 }`,
-			blending: THREE.NoBlending, depthWrite: false, depthTest: false,
+			blending: THREE.NoBlending,
+			depthWrite: false,
+			depthTest: false,
 		});
 		this.toneMapped = false;
 		this.setTexelSize(texelSize.x, texelSize.y);
 		this.kernel = new Float32Array([0, 1, 2, 2, 3]);
 	}
-	setTexelSize(x: number, y: number): void { this.uniforms.texelSize.value.set(x, y); this.uniforms.halfTexelSize.value.set(x, y).multiplyScalar(0.5); }
-	setResolution(resolution: THREE.Vector2): void { this.uniforms.resolution.value.copy(resolution); }
+	setTexelSize(x: number, y: number): void {
+		this.uniforms.texelSize.value.set(x, y);
+		this.uniforms.halfTexelSize.value.set(x, y).multiplyScalar(0.5);
+	}
+	setResolution(resolution: THREE.Vector2): void {
+		this.uniforms.resolution.value.copy(resolution);
+	}
 }

@@ -77,18 +77,45 @@ async function reactInstances(geometry: THREE.BufferGeometry, material: THREE.Ma
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(
-			ReactInstances,
-			{ ref: (value: THREE.InstancedMesh) => (mesh = value), geometry, material, limit: 3, range: 1, frames: 2, position: [4, 0, 0] },
-			React.createElement(ReactInstance, { ref: (value: ReactPositionMesh) => (first = value), position: [1, 2, 3], scale: [2, 3, 4], color: '#4080c0' }),
-			React.createElement(ReactInstance, { ref: (value: ReactPositionMesh) => (second = value), position: [-2, 1, 0.5], scale: 0.75, color: 'red' }),
-			React.createElement(ReactInstancedAttribute, { ref: (value: THREE.InstancedBufferAttribute) => (attribute = value), name: 'scale', defaultValue: [1, 1, 1], normalized: true }),
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					ReactInstances,
+					{
+						ref: (value: THREE.InstancedMesh) => (mesh = value),
+						geometry,
+						material,
+						limit: 3,
+						range: 1,
+						frames: 2,
+						position: [4, 0, 0],
+					},
+					React.createElement(ReactInstance, {
+						ref: (value: ReactPositionMesh) => (first = value),
+						position: [1, 2, 3],
+						scale: [2, 3, 4],
+						color: '#4080c0',
+					}),
+					React.createElement(ReactInstance, {
+						ref: (value: ReactPositionMesh) => (second = value),
+						position: [-2, 1, 0.5],
+						scale: 0.75,
+						color: 'red',
+					}),
+					React.createElement(ReactInstancedAttribute, {
+						ref: (value: THREE.InstancedBufferAttribute) => (attribute = value),
+						name: 'scale',
+						defaultValue: [1, 1, 1],
+						normalized: true,
+					}),
+				),
+				React.createElement(Capture),
+			),
 		),
-		React.createElement(Capture),
-	)));
+	);
 	return { root, mesh, first, second, attribute, getState };
 }
 
@@ -104,32 +131,56 @@ async function reactMerged(meshes: THREE.Mesh[] | Record<string, THREE.Object3D>
 		return null;
 	}
 	const renderChildren = Array.isArray(meshes)
-		? (First: React.ElementType, Second: React.ElementType) => React.createElement(
-			React.Fragment,
-			null,
-			React.createElement(First, { ref: (value: ReactPositionMesh) => (first = value), position: [1, 0, 0] }),
-			React.createElement(Second, { ref: (value: ReactPositionMesh) => (second = value), position: [0, 2, 0] }),
-		)
-		: (InstancesByName: Record<string, React.ElementType>) => React.createElement(
-			React.Fragment,
-			null,
-			React.createElement(InstancesByName.cube!, { ref: (value: ReactPositionMesh) => (first = value), position: [1, 0, 0] }),
-			React.createElement(InstancesByName.sphere!, { ref: (value: ReactPositionMesh) => (second = value), position: [0, 2, 0] }),
-		);
+		? (First: React.ElementType, Second: React.ElementType) =>
+				React.createElement(
+					React.Fragment,
+					null,
+					React.createElement(First, {
+						ref: (value: ReactPositionMesh) => (first = value),
+						position: [1, 0, 0],
+					}),
+					React.createElement(Second, {
+						ref: (value: ReactPositionMesh) => (second = value),
+						position: [0, 2, 0],
+					}),
+				)
+		: (InstancesByName: Record<string, React.ElementType>) =>
+				React.createElement(
+					React.Fragment,
+					null,
+					React.createElement(InstancesByName.cube!, {
+						ref: (value: ReactPositionMesh) => (first = value),
+						position: [1, 0, 0],
+					}),
+					React.createElement(InstancesByName.sphere!, {
+						ref: (value: ReactPositionMesh) => (second = value),
+						position: [0, 2, 0],
+					}),
+				);
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(ReactMerged, { ref: (value: THREE.Group) => (group = value), meshes, limit: 2 }, renderChildren),
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					ReactMerged,
+					{ ref: (value: THREE.Group) => (group = value), meshes, limit: 2 },
+					renderChildren,
+				),
+				React.createElement(Capture),
+			),
+		),
+	);
 	return { root, group, first, second, getState };
 }
 
 function hierarchy(object: THREE.Object3D): unknown {
 	return object.children.map((child) => ({
 		type: child.type,
-		count: (child as THREE.InstancedMesh).isInstancedMesh ? (child as THREE.InstancedMesh).count : undefined,
+		count: (child as THREE.InstancedMesh).isInstancedMesh
+			? (child as THREE.InstancedMesh).count
+			: undefined,
 		geometryType: (child as THREE.Mesh).geometry?.type,
 		materialType: Array.isArray((child as THREE.Mesh).material)
 			? (child as THREE.Mesh).material.map((material) => material.type)
@@ -181,7 +232,9 @@ describe('Instances', () => {
 		const versions = [mesh.instanceMatrix.version, mesh.instanceColor!.version, attribute.version];
 		await reactThreeAct(async () => reactAdvance(1, true, react.getState()));
 		octane.advanceFrames(1, 1);
-		expect([mesh.instanceMatrix.version, mesh.instanceColor!.version, attribute.version]).toEqual(versions);
+		expect([mesh.instanceMatrix.version, mesh.instanceColor!.version, attribute.version]).toEqual(
+			versions,
+		);
 		octane.unmount();
 		await reactThreeAct(async () => react.root.unmount());
 		expect(octaneGeometry.getAttribute('scale')).toBeUndefined();
@@ -189,7 +242,11 @@ describe('Instances', () => {
 
 	it('matches PositionMesh raycasting and draw-count and miss negative controls', () => {
 		function exercise(PointClass: typeof PositionMesh | typeof ReactPositionMesh) {
-			const parent = new THREE.InstancedMesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), 1);
+			const parent = new THREE.InstancedMesh(
+				new THREE.BoxGeometry(),
+				new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }),
+				1,
+			);
 			parent.count = 1;
 			parent.setMatrixAt(0, new THREE.Matrix4().makeTranslation(1, 0, 0));
 			const point = new PointClass() as PositionMesh;
@@ -199,22 +256,39 @@ describe('Instances', () => {
 			parent.userData.instances = [key];
 			parent.updateMatrixWorld(true);
 			const hits: THREE.Intersection[] = [];
-			point.raycast(new THREE.Raycaster(new THREE.Vector3(1, 0, 5), new THREE.Vector3(0, 0, -1)), hits);
+			point.raycast(
+				new THREE.Raycaster(new THREE.Vector3(1, 0, 5), new THREE.Vector3(0, 0, -1)),
+				hits,
+			);
 			parent.count = -1;
 			const excluded: THREE.Intersection[] = [];
-			point.raycast(new THREE.Raycaster(new THREE.Vector3(1, 0, 5), new THREE.Vector3(0, 0, -1)), excluded);
+			point.raycast(
+				new THREE.Raycaster(new THREE.Vector3(1, 0, 5), new THREE.Vector3(0, 0, -1)),
+				excluded,
+			);
 			parent.count = 1;
 			const misses: THREE.Intersection[] = [];
-			point.raycast(new THREE.Raycaster(new THREE.Vector3(5, 0, 5), new THREE.Vector3(0, 0, -1)), misses);
+			point.raycast(
+				new THREE.Raycaster(new THREE.Vector3(5, 0, 5), new THREE.Vector3(0, 0, -1)),
+				misses,
+			);
 			return {
-				hit: hits[0] && { distance: hits[0].distance, point: hits[0].point.toArray(), instanceId: hits[0].instanceId },
+				hit: hits[0] && {
+					distance: hits[0].distance,
+					point: hits[0].point.toArray(),
+					instanceId: hits[0].instanceId,
+				},
 				excluded: excluded.length,
 				misses: misses.length,
 				geometryIdentity: point.geometry === parent.geometry,
 			};
 		}
 		expect(exercise(PositionMesh)).toEqual(exercise(ReactPositionMesh));
-		expect(exercise(PositionMesh)).toMatchObject({ excluded: 0, misses: 0, geometryIdentity: true });
+		expect(exercise(PositionMesh)).toMatchObject({
+			excluded: 0,
+			misses: 0,
+			geometryIdentity: true,
+		});
 	});
 
 	it.each([
@@ -232,9 +306,9 @@ describe('Instances', () => {
 		root.advanceFrames(1, 1);
 		expect(mesh.count).toBe(1);
 		expect(instance.instance.current).toBe(mesh);
-		expect(mesh.instanceMatrix.array.slice(12, 15)).toEqual(new Float32Array(
-			_name.startsWith('render') ? [2, 3, 4] : [3, 2, 1],
-		));
+		expect(mesh.instanceMatrix.array.slice(12, 15)).toEqual(
+			new Float32Array(_name.startsWith('render') ? [2, 3, 4] : [3, 2, 1]),
+		);
 		root.unmount();
 	});
 
@@ -280,7 +354,9 @@ describe('Instances', () => {
 		recordRoot.advanceFrames(1, 1);
 		expect(Object.keys(recordMeshes)).toEqual(Object.keys(reactRecordMeshes));
 		expect(Object.keys(recordMeshes)).toEqual(['cube', 'sphere']);
-		expect(hierarchy(cube.instance.current!)).toEqual(hierarchy(reactRecord.first.instance.current!));
+		expect(hierarchy(cube.instance.current!)).toEqual(
+			hierarchy(reactRecord.first.instance.current!),
+		);
 		expect(cube.instance.current?.geometry).toBe(arrayMeshes[0]!.geometry);
 		expect(sphere.instance.current?.geometry).toBe(arrayMeshes[1]!.geometry);
 		recordRoot.unmount();
@@ -288,6 +364,8 @@ describe('Instances', () => {
 	});
 
 	it('rejects Instance outside its required provider', async () => {
-		await expect(createOctaneThree(InstanceWithoutParentScene, {})).rejects.toThrow('Instance must be used inside Instances component.');
+		await expect(createOctaneThree(InstanceWithoutParentScene, {})).rejects.toThrow(
+			'Instance must be used inside Instances component.',
+		);
 	});
 });

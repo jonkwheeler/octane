@@ -22,8 +22,12 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
@@ -35,21 +39,31 @@ async function flush(): Promise<void> {
 
 describe('DetectGPU', () => {
 	it('matches the pinned React Drei suspension, result, render callback, and global cache key', async () => {
-		const result: TierResult = { tier: 2, type: 'BENCHMARK', isMobile: false, fps: 58, gpu: 'Parity GPU' };
+		const result: TierResult = {
+			tier: 2,
+			type: 'BENCHMARK',
+			isMobile: false,
+			fps: 58,
+			gpu: 'Parity GPU',
+		};
 		mocks.getGPUTier.mockResolvedValue(result);
 		const options = { failIfMajorPerformanceCaveat: true, desktopTiers: [0, 20, 40, 60] };
 		const reactResults: TierResult[] = [];
 		const canvas = document.createElement('canvas');
 		const reactRoot = createReactThreeRoot(canvas);
 		await reactRoot.configure({ gl: renderer(canvas), frameloop: 'never', dpr: 1 });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			React.Suspense,
-			{ fallback: null },
-			React.createElement(ReactDetectGPU, {
-				...options,
-				children: (value) => void reactResults.push(value) || null,
-			}),
-		)));
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(ReactDetectGPU, {
+						...options,
+						children: (value) => void reactResults.push(value) || null,
+					}),
+				),
+			),
+		);
 		await flush();
 
 		const octaneResults: TierResult[] = [];

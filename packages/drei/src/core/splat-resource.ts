@@ -11,7 +11,10 @@ export type SplatMaterialType = {
 	focal?: number;
 };
 
-export type TargetMesh = THREE.Mesh<THREE.InstancedBufferGeometry, THREE.ShaderMaterial & SplatMaterialType> & {
+export type TargetMesh = THREE.Mesh<
+	THREE.InstancedBufferGeometry,
+	THREE.ShaderMaterial & SplatMaterialType
+> & {
 	ready: boolean;
 	sorted: boolean;
 	pm: THREE.Matrix4;
@@ -164,7 +167,11 @@ function createWorker(self: any) {
 		const validIndexList = new Int32Array(vertexCount);
 		let validCount = 0;
 		for (let index = 0; index < vertexCount; index++) {
-			const depth = view[0] * matrices[index * 16 + 12] + view[1] * matrices[index * 16 + 13] + view[2] * matrices[index * 16 + 14] + view[3];
+			const depth =
+				view[0] * matrices[index * 16 + 12] +
+				view[1] * matrices[index * 16 + 13] +
+				view[2] * matrices[index * 16 + 14] +
+				view[3];
 			if (hashed || (depth < 0 && matrices[index * 16 + 15] > threshold * depth)) {
 				depthList[validCount] = depth;
 				validIndexList[validCount] = index;
@@ -180,12 +187,23 @@ function createWorker(self: any) {
 			counts[sizeList[index]]++;
 		}
 		const starts = new Uint32Array(256 * 256);
-		for (let index = 1; index < 256 * 256; index++) starts[index] = starts[index - 1] + counts[index - 1];
+		for (let index = 1; index < 256 * 256; index++)
+			starts[index] = starts[index - 1] + counts[index - 1];
 		const depthIndex = new Uint32Array(validCount);
-		for (let index = 0; index < validCount; index++) depthIndex[starts[sizeList[index]]++] = validIndexList[index];
+		for (let index = 0; index < validCount; index++)
+			depthIndex[starts[sizeList[index]]++] = validIndexList[index];
 		return depthIndex;
 	}
-	self.onmessage = (event: { data: { method: string; length: number; key: string; view: ArrayBuffer; matrices: ArrayBuffer; hashed: boolean } }) => {
+	self.onmessage = (event: {
+		data: {
+			method: string;
+			length: number;
+			key: string;
+			view: ArrayBuffer;
+			matrices: ArrayBuffer;
+			hashed: boolean;
+		};
+	}) => {
 		if (event.data.method === 'push') {
 			if (offset === 0) matrices = new Float32Array(event.data.length);
 			const newMatrices = new Float32Array(event.data.matrices);
@@ -210,9 +228,14 @@ export class SplatLoader extends THREE.Loader<SharedState> {
 		const shared: SharedState = {
 			gl: this.gl,
 			url: this.manager.resolveURL(url),
-			worker: new Worker(URL.createObjectURL(new Blob(['(', createWorker.toString(), ')(self)'], { type: 'application/javascript' }))),
+			worker: new Worker(
+				URL.createObjectURL(
+					new Blob(['(', createWorker.toString(), ')(self)'], { type: 'application/javascript' }),
+				),
+			),
 			manager: this.manager,
-			update: (target: TargetMesh, camera: THREE.Camera, hashed: boolean) => update(camera, shared, target, hashed),
+			update: (target: TargetMesh, camera: THREE.Camera, hashed: boolean) =>
+				update(camera, shared, target, hashed),
 			connect: (target: TargetMesh) => connect(shared, target),
 			loading: false,
 			loaded: false,
@@ -231,10 +254,12 @@ export class SplatLoader extends THREE.Loader<SharedState> {
 			centerAndScaleTexture: null!,
 			onProgress,
 		};
-		load(shared).then(onLoad).catch((error) => {
-			onError?.(error);
-			shared.manager.itemError(shared.url);
-		});
+		load(shared)
+			.then(onLoad)
+			.catch((error) => {
+				onError?.(error);
+				shared.manager.itemError(shared.url);
+			});
 	}
 }
 
@@ -254,11 +279,27 @@ async function load(shared: SharedState): Promise<SharedState> {
 	if (shared.numVertices > shared.maxVertexes) shared.numVertices = shared.maxVertexes;
 	shared.bufferTextureWidth = maxTextureSize;
 	shared.bufferTextureHeight = Math.floor((shared.numVertices - 1) / maxTextureSize) + 1;
-	shared.centerAndScaleData = new Float32Array(shared.bufferTextureWidth * shared.bufferTextureHeight * 4);
-	shared.covAndColorData = new Uint32Array(shared.bufferTextureWidth * shared.bufferTextureHeight * 4);
-	shared.centerAndScaleTexture = new THREE.DataTexture(shared.centerAndScaleData, shared.bufferTextureWidth, shared.bufferTextureHeight, THREE.RGBAFormat, THREE.FloatType);
+	shared.centerAndScaleData = new Float32Array(
+		shared.bufferTextureWidth * shared.bufferTextureHeight * 4,
+	);
+	shared.covAndColorData = new Uint32Array(
+		shared.bufferTextureWidth * shared.bufferTextureHeight * 4,
+	);
+	shared.centerAndScaleTexture = new THREE.DataTexture(
+		shared.centerAndScaleData,
+		shared.bufferTextureWidth,
+		shared.bufferTextureHeight,
+		THREE.RGBAFormat,
+		THREE.FloatType,
+	);
 	shared.centerAndScaleTexture.needsUpdate = true;
-	shared.covAndColorTexture = new THREE.DataTexture(shared.covAndColorData, shared.bufferTextureWidth, shared.bufferTextureHeight, THREE.RGBAIntegerFormat, THREE.UnsignedIntType);
+	shared.covAndColorTexture = new THREE.DataTexture(
+		shared.covAndColorData,
+		shared.bufferTextureWidth,
+		shared.bufferTextureHeight,
+		THREE.RGBAIntegerFormat,
+		THREE.UnsignedIntType,
+	);
 	shared.covAndColorTexture.internalFormat = 'RGBA32UI';
 	shared.covAndColorTexture.needsUpdate = true;
 	return shared;
@@ -279,17 +320,29 @@ async function lazyLoad(shared: SharedState): Promise<void> {
 			if (shared.totalDownloadBytes !== undefined) {
 				const percent = (bytesDownloaded / shared.totalDownloadBytes) * 100;
 				if (shared.onProgress && percent - lastReportedProgress > 1) {
-					shared.onProgress(new ProgressEvent('progress', { lengthComputable, loaded: bytesDownloaded, total: shared.totalDownloadBytes }));
+					shared.onProgress(
+						new ProgressEvent('progress', {
+							lengthComputable,
+							loaded: bytesDownloaded,
+							total: shared.totalDownloadBytes,
+						}),
+					);
 					lastReportedProgress = percent;
 				}
 			}
 			chunks.push(value);
 			const bytesRemaining = bytesDownloaded - bytesProcessed;
-			if (shared.totalDownloadBytes !== undefined && bytesRemaining > shared.rowLength * shared.chunkSize) {
+			if (
+				shared.totalDownloadBytes !== undefined &&
+				bytesRemaining > shared.rowLength * shared.chunkSize
+			) {
 				const vertexCount = Math.floor(bytesRemaining / shared.rowLength);
 				const concatenated = new Uint8Array(bytesRemaining);
 				let offset = 0;
-				for (const chunk of chunks) { concatenated.set(chunk, offset); offset += chunk.length; }
+				for (const chunk of chunks) {
+					concatenated.set(chunk, offset);
+					offset += chunk.length;
+				}
 				chunks.length = 0;
 				if (bytesRemaining > vertexCount * shared.rowLength) {
 					const extra = new Uint8Array(bytesRemaining - vertexCount * shared.rowLength);
@@ -299,9 +352,23 @@ async function lazyLoad(shared: SharedState): Promise<void> {
 				const buffer = new Uint8Array(vertexCount * shared.rowLength);
 				buffer.set(concatenated.subarray(0, buffer.byteLength), 0);
 				const matrices = pushDataBuffer(shared, buffer.buffer, vertexCount);
-				shared.worker.postMessage({ method: 'push', src: shared.url, length: shared.numVertices * 16, matrices: matrices.buffer }, [matrices.buffer]);
+				shared.worker.postMessage(
+					{
+						method: 'push',
+						src: shared.url,
+						length: shared.numVertices * 16,
+						matrices: matrices.buffer,
+					},
+					[matrices.buffer],
+				);
 				bytesProcessed += vertexCount * shared.rowLength;
-				shared.onProgress?.(new ProgressEvent('progress', { lengthComputable, loaded: shared.totalDownloadBytes, total: shared.totalDownloadBytes }));
+				shared.onProgress?.(
+					new ProgressEvent('progress', {
+						lengthComputable,
+						loaded: shared.totalDownloadBytes,
+						total: shared.totalDownloadBytes,
+					}),
+				);
 			}
 		} catch (error) {
 			console.error(error);
@@ -311,16 +378,27 @@ async function lazyLoad(shared: SharedState): Promise<void> {
 	if (bytesDownloaded - bytesProcessed > 0) {
 		const concatenated = new Uint8Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0));
 		let offset = 0;
-		for (const chunk of chunks) { concatenated.set(chunk, offset); offset += chunk.length; }
+		for (const chunk of chunks) {
+			concatenated.set(chunk, offset);
+			offset += chunk.length;
+		}
 		const numVertices = Math.floor(concatenated.byteLength / shared.rowLength);
 		const matrices = pushDataBuffer(shared, concatenated.buffer, numVertices);
-		shared.worker.postMessage({ method: 'push', src: shared.url, length: numVertices * 16, matrices: matrices.buffer }, [matrices.buffer]);
+		shared.worker.postMessage(
+			{ method: 'push', src: shared.url, length: numVertices * 16, matrices: matrices.buffer },
+			[matrices.buffer],
+		);
 	}
 	shared.loaded = true;
 	shared.manager.itemEnd(shared.url);
 }
 
-function update(camera: THREE.Camera, shared: SharedState, target: TargetMesh, hashed: boolean): void {
+function update(
+	camera: THREE.Camera,
+	shared: SharedState,
+	target: TargetMesh,
+	hashed: boolean,
+): void {
 	camera.updateMatrixWorld();
 	shared.gl.getCurrentViewport(target.viewport);
 	target.material.viewport!.x = target.viewport.z;
@@ -335,7 +413,10 @@ function update(camera: THREE.Camera, shared: SharedState, target: TargetMesh, h
 			target.modelViewMatrix.elements[10],
 			target.modelViewMatrix.elements[14],
 		]);
-		shared.worker.postMessage({ method: 'sort', src: shared.url, key: target.uuid, view: view.buffer, hashed }, [view.buffer]);
+		shared.worker.postMessage(
+			{ method: 'sort', src: shared.url, key: target.uuid, view: view.buffer, hashed },
+			[view.buffer],
+		);
 		if (hashed && shared.loaded) target.sorted = true;
 	}
 }
@@ -350,7 +431,7 @@ function connect(shared: SharedState, target: TargetMesh): () => void {
 	const splatIndexArray = new Uint32Array(shared.bufferTextureWidth * shared.bufferTextureHeight);
 	const splatIndexes = new THREE.InstancedBufferAttribute(splatIndexArray, 1, false);
 	splatIndexes.setUsage(THREE.DynamicDrawUsage);
-	const geometry = target.geometry = new THREE.InstancedBufferGeometry();
+	const geometry = (target.geometry = new THREE.InstancedBufferGeometry());
 	const positions = new THREE.BufferAttribute(new Float32Array(18), 3);
 	geometry.setAttribute('position', positions);
 	positions.setXYZ(2, -2, 2, 0);
@@ -374,9 +455,16 @@ function connect(shared: SharedState, target: TargetMesh): () => void {
 	shared.worker.addEventListener('message', listener);
 	async function wait() {
 		while (true) {
-			const centerProperties = shared.gl.properties.get(shared.centerAndScaleTexture) as { __webglTexture?: unknown } | undefined;
-			const colorProperties = shared.gl.properties.get(shared.covAndColorTexture) as { __webglTexture?: unknown } | undefined;
-			if (centerProperties?.__webglTexture && colorProperties?.__webglTexture && shared.loadedVertexCount > 0) break;
+			const centerProperties = shared.gl.properties.get(shared.centerAndScaleTexture) as
+				{ __webglTexture?: unknown } | undefined;
+			const colorProperties = shared.gl.properties.get(shared.covAndColorTexture) as
+				{ __webglTexture?: unknown } | undefined;
+			if (
+				centerProperties?.__webglTexture &&
+				colorProperties?.__webglTexture &&
+				shared.loadedVertexCount > 0
+			)
+				break;
 			await new Promise((resolve) => setTimeout(resolve, 10));
 		}
 		target.ready = true;
@@ -385,10 +473,15 @@ function connect(shared: SharedState, target: TargetMesh): () => void {
 	return () => shared.worker.removeEventListener('message', listener);
 }
 
-function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, requestedVertexCount: number): Float32Array {
+function pushDataBuffer(
+	shared: SharedState,
+	buffer: ArrayBufferLike,
+	requestedVertexCount: number,
+): Float32Array {
 	const context = shared.gl.getContext();
 	let vertexCount = requestedVertexCount;
-	if (shared.loadedVertexCount + vertexCount > shared.maxVertexes) vertexCount = shared.maxVertexes - shared.loadedVertexCount;
+	if (shared.loadedVertexCount + vertexCount > shared.maxVertexes)
+		vertexCount = shared.maxVertexes - shared.loadedVertexCount;
 	if (vertexCount <= 0) throw 'Failed to parse file';
 	const bytes = new Uint8Array(buffer);
 	const floats = new Float32Array(buffer);
@@ -403,8 +496,16 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, requestedV
 			-(bytes[32 * index + 28] - 128) / 128,
 		);
 		quaternion.invert();
-		const center = new THREE.Vector3(floats[8 * index], floats[8 * index + 1], -floats[8 * index + 2]);
-		const scale = new THREE.Vector3(floats[8 * index + 3], floats[8 * index + 4], floats[8 * index + 5]);
+		const center = new THREE.Vector3(
+			floats[8 * index],
+			floats[8 * index + 1],
+			-floats[8 * index + 2],
+		);
+		const scale = new THREE.Vector3(
+			floats[8 * index + 3],
+			floats[8 * index + 4],
+			floats[8 * index + 5],
+		);
 		const matrix = new THREE.Matrix4();
 		matrix.makeRotationFromQuaternion(quaternion);
 		matrix.transpose();
@@ -415,23 +516,32 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, requestedV
 		matrix.setPosition(center);
 		const covarianceIndexes = [0, 1, 2, 5, 6, 10];
 		let maximum = 0;
-		for (const covarianceIndex of covarianceIndexes) if (Math.abs(matrix.elements[covarianceIndex]) > maximum) maximum = Math.abs(matrix.elements[covarianceIndex]);
+		for (const covarianceIndex of covarianceIndexes)
+			if (Math.abs(matrix.elements[covarianceIndex]) > maximum)
+				maximum = Math.abs(matrix.elements[covarianceIndex]);
 		let destination = shared.loadedVertexCount * 4 + index * 4;
 		shared.centerAndScaleData[destination] = center.x;
 		shared.centerAndScaleData[destination + 1] = -center.y;
 		shared.centerAndScaleData[destination + 2] = center.z;
 		shared.centerAndScaleData[destination + 3] = maximum / 32767;
 		destination = shared.loadedVertexCount * 8 + index * 8;
-		for (let component = 0; component < covarianceIndexes.length; component++) covariance[destination + component] = (matrix.elements[covarianceIndexes[component]] * 32767) / maximum;
+		for (let component = 0; component < covarianceIndexes.length; component++)
+			covariance[destination + component] =
+				(matrix.elements[covarianceIndexes[component]] * 32767) / maximum;
 		destination = shared.loadedVertexCount * 16 + (index * 4 + 3) * 4;
-		const color = new THREE.Color(bytes[32 * index + 24] / 255, bytes[32 * index + 25] / 255, bytes[32 * index + 26] / 255);
+		const color = new THREE.Color(
+			bytes[32 * index + 24] / 255,
+			bytes[32 * index + 25] / 255,
+			bytes[32 * index + 26] / 255,
+		);
 		color.convertSRGBToLinear();
 		colorBytes[destination] = color.r * 255;
 		colorBytes[destination + 1] = color.g * 255;
 		colorBytes[destination + 2] = color.b * 255;
 		colorBytes[destination + 3] = bytes[32 * index + 27];
 		matrix.elements[15] = (Math.max(scale.x, scale.y, scale.z) * bytes[32 * index + 27]) / 255;
-		for (let component = 0; component < 16; component++) matrices[index * 16 + component] = matrix.elements[component];
+		for (let component = 0; component < 16; component++)
+			matrices[index * 16 + component] = matrix.elements[component];
 	}
 	while (vertexCount > 0) {
 		let width = 0;
@@ -448,12 +558,38 @@ function pushDataBuffer(shared: SharedState, buffer: ArrayBufferLike, requestedV
 			width = vertexCount % shared.bufferTextureWidth;
 			height = 1;
 		}
-		const centerProperties = shared.gl.properties.get(shared.centerAndScaleTexture) as { __webglTexture: WebGLTexture };
+		const centerProperties = shared.gl.properties.get(shared.centerAndScaleTexture) as {
+			__webglTexture: WebGLTexture;
+		};
 		context.bindTexture(context.TEXTURE_2D, centerProperties.__webglTexture);
-		context.texSubImage2D(context.TEXTURE_2D, 0, xOffset, yOffset, width, height, context.RGBA, context.FLOAT, shared.centerAndScaleData, shared.loadedVertexCount * 4);
-		const colorProperties = shared.gl.properties.get(shared.covAndColorTexture) as { __webglTexture: WebGLTexture };
+		context.texSubImage2D(
+			context.TEXTURE_2D,
+			0,
+			xOffset,
+			yOffset,
+			width,
+			height,
+			context.RGBA,
+			context.FLOAT,
+			shared.centerAndScaleData,
+			shared.loadedVertexCount * 4,
+		);
+		const colorProperties = shared.gl.properties.get(shared.covAndColorTexture) as {
+			__webglTexture: WebGLTexture;
+		};
 		context.bindTexture(context.TEXTURE_2D, colorProperties.__webglTexture);
-		context.texSubImage2D(context.TEXTURE_2D, 0, xOffset, yOffset, width, height, (context as WebGL2RenderingContext).RGBA_INTEGER, context.UNSIGNED_INT, shared.covAndColorData, shared.loadedVertexCount * 4);
+		context.texSubImage2D(
+			context.TEXTURE_2D,
+			0,
+			xOffset,
+			yOffset,
+			width,
+			height,
+			(context as WebGL2RenderingContext).RGBA_INTEGER,
+			context.UNSIGNED_INT,
+			shared.covAndColorData,
+			shared.loadedVertexCount * 4,
+		);
 		shared.gl.resetState();
 		shared.loadedVertexCount += width * height;
 		vertexCount -= width * height;

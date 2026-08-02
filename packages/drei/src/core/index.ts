@@ -170,7 +170,11 @@ export type { StarsProps } from './Stars.three.tsrx';
 export { Segment, SegmentObject, Segments } from './Segments.three.tsrx';
 export type { SegmentProps, SegmentsProps } from './Segments.three.tsrx';
 export { MarchingCube, MarchingCubes, MarchingPlane } from './MarchingCubes.three.tsrx';
-export type { MarchingCubeProps, MarchingCubesProps, MarchingPlaneProps } from './MarchingCubes.three.tsrx';
+export type {
+	MarchingCubeProps,
+	MarchingCubesProps,
+	MarchingPlaneProps,
+} from './MarchingCubes.three.tsrx';
 export { PositionalAudio } from './PositionalAudio.three.tsrx';
 export type { PositionalAudioProps } from './PositionalAudio.three.tsrx';
 export { AsciiRenderer } from './AsciiRenderer.three.tsrx';
@@ -180,7 +184,10 @@ export type { TransformControlsProps } from './TransformControls.three.tsrx';
 export { SoftShadows } from './softShadows.three.tsrx';
 export type { SoftShadowsProps } from './softShadows.three.tsrx';
 export { PerformanceMonitor, usePerformanceMonitor } from './PerformanceMonitor.three.tsrx';
-export type { PerformanceMonitorApi, PerformanceMonitorProps } from './PerformanceMonitor.three.tsrx';
+export type {
+	PerformanceMonitorApi,
+	PerformanceMonitorProps,
+} from './PerformanceMonitor.three.tsrx';
 export { CameraControls, CameraControlsImpl } from './CameraControls.three.tsrx';
 export type { CameraControlsProps } from './CameraControls.three.tsrx';
 export { DetectGPU, useDetectGPU } from './DetectGPU.three.tsrx';
@@ -195,15 +202,32 @@ export { TrailTexture, useTrailTexture } from './TrailTexture.three.tsrx';
 export type { TrailTextureProps } from './TrailTexture.three.tsrx';
 export { Point, Points, PointsBuffer, PositionPoint } from './Points.three.tsrx';
 export type { PointsBuffersProps, PointsInstancesProps } from './Points.three.tsrx';
-export { createInstances, Instance, InstancedAttribute, Instances, Merged, PositionMesh } from './Instances.three.tsrx';
-export type { InstanceProps, InstancedAttributeProps, InstancesProps, MergedProps } from './Instances.three.tsrx';
+export {
+	createInstances,
+	Instance,
+	InstancedAttribute,
+	Instances,
+	Merged,
+	PositionMesh,
+} from './Instances.three.tsrx';
+export type {
+	InstanceProps,
+	InstancedAttributeProps,
+	InstancesProps,
+	MergedProps,
+} from './Instances.three.tsrx';
 export { Sampler, useSurfaceSampler } from './Sampler.three.tsrx';
 export type { SamplerProps, TransformFn, useSurfaceSamplerProps } from './Sampler.three.tsrx';
 export { Cloud, CloudInstance, Clouds } from './Cloud.three.tsrx';
 export type { CloudProps, CloudsProps } from './Cloud.three.tsrx';
 export { Trail, useTrail } from './Trail.three.tsrx';
 export type { MeshLineGeometry, TrailProps } from './Trail.three.tsrx';
-export { Environment, EnvironmentCube, EnvironmentMap, EnvironmentPortal } from './Environment.three.tsrx';
+export {
+	Environment,
+	EnvironmentCube,
+	EnvironmentMap,
+	EnvironmentPortal,
+} from './Environment.three.tsrx';
 export type { EnvironmentProps } from './Environment.three.tsrx';
 export { Text3D } from './Text3D.three.tsrx';
 export type { Text3DProps } from './Text3D.three.tsrx';
@@ -221,8 +245,15 @@ export { Outlines } from './Outlines.three.tsrx';
 export type { OutlinesProps } from './Outlines.three.tsrx';
 export { ContactShadows } from './ContactShadows.three.tsrx';
 export type { ContactShadowsProps } from './ContactShadows.three.tsrx';
-export { AccumulativeShadows, RandomizedLight, accumulativeContext } from './AccumulativeShadows.three.tsrx';
-export type { AccumulativeShadowsProps, RandomizedLightProps } from './AccumulativeShadows.three.tsrx';
+export {
+	AccumulativeShadows,
+	RandomizedLight,
+	accumulativeContext,
+} from './AccumulativeShadows.three.tsrx';
+export type {
+	AccumulativeShadowsProps,
+	RandomizedLightProps,
+} from './AccumulativeShadows.three.tsrx';
 export { Stage } from './Stage.three.tsrx';
 export type { StageProps } from './Stage.three.tsrx';
 export { Image } from './Image.three.tsrx';

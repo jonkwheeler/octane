@@ -52,8 +52,12 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
@@ -94,7 +98,9 @@ describe('AsciiRenderer', () => {
 		const reactDom = parentedCanvas();
 		const reactRoot = createReactThreeRoot(reactDom.canvas);
 		await reactRoot.configure({
-			gl: renderer(reactDom.canvas), frameloop: 'never', dpr: 1,
+			gl: renderer(reactDom.canvas),
+			frameloop: 'never',
+			dpr: 1,
 			size: { width: 320, height: 180, top: 0, left: 0 },
 		});
 		let reactState!: ReactRootState;
@@ -108,13 +114,17 @@ describe('AsciiRenderer', () => {
 		const octaneDom = parentedCanvas();
 		const octaneRoot = createOctaneThreeRoot(octaneDom.canvas);
 		await octaneRoot.configure({
-			gl: renderer(octaneDom.canvas), frameloop: 'never', dpr: 1,
+			gl: renderer(octaneDom.canvas),
+			frameloop: 'never',
+			dpr: 1,
 			size: { width: 320, height: 180, top: 0, left: 0 },
 		});
 		await octaneAct(async () => octaneRoot.render(AsciiRendererScene, props));
 		const octaneEffect = mocks.instances.at(-1)!;
 
-		expect(snapshot(octaneEffect, octaneDom.canvas)).toEqual(snapshot(reactEffect, reactDom.canvas));
+		expect(snapshot(octaneEffect, octaneDom.canvas)).toEqual(
+			snapshot(reactEffect, reactDom.canvas),
+		);
 		await reactThreeAct(async () => reactState.advance(1 / 60, true));
 		octaneRoot.store.getState().advance(1 / 60);
 		expect(octaneEffect.render).toHaveBeenCalledTimes(reactEffect.render.mock.calls.length);

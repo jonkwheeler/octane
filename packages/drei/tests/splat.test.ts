@@ -26,16 +26,35 @@ const textureUploads: Array<{ width: number; height: number; offset: number }> =
 
 class MockWorker {
 	record: WorkerRecord = { listeners: new Set(), messages: [], vertexCount: 0 };
-	constructor() { workers.push(this.record); }
-	addEventListener(_type: string, listener: (event: MessageEvent<{ key: string; indices: Uint32Array }>) => void) { this.record.listeners.add(listener); }
-	removeEventListener(_type: string, listener: (event: MessageEvent<{ key: string; indices: Uint32Array }>) => void) { this.record.listeners.delete(listener); }
+	constructor() {
+		workers.push(this.record);
+	}
+	addEventListener(
+		_type: string,
+		listener: (event: MessageEvent<{ key: string; indices: Uint32Array }>) => void,
+	) {
+		this.record.listeners.add(listener);
+	}
+	removeEventListener(
+		_type: string,
+		listener: (event: MessageEvent<{ key: string; indices: Uint32Array }>) => void,
+	) {
+		this.record.listeners.delete(listener);
+	}
 	postMessage(message: Record<string, any>) {
 		this.record.messages.push(message);
-		if (message.method === 'push') this.record.vertexCount += new Float32Array(message.matrices).length / 16;
+		if (message.method === 'push')
+			this.record.vertexCount += new Float32Array(message.matrices).length / 16;
 		if (message.method === 'sort') {
-			const indices = Uint32Array.from({ length: this.record.vertexCount }, (_, index) => this.record.vertexCount - index - 1);
+			const indices = Uint32Array.from(
+				{ length: this.record.vertexCount },
+				(_, index) => this.record.vertexCount - index - 1,
+			);
 			queueMicrotask(() => {
-				const event = { data: { key: message.key, indices } } as MessageEvent<{ key: string; indices: Uint32Array }>;
+				const event = { data: { key: message.key, indices } } as MessageEvent<{
+					key: string;
+					indices: Uint32Array;
+				}>;
 				for (const listener of this.record.listeners) listener(event);
 			});
 		}
@@ -82,7 +101,18 @@ function renderer(canvas: HTMLCanvasElement) {
 		UNSIGNED_INT: 0x1405,
 		getParameter: () => 4,
 		bindTexture() {},
-		texSubImage2D(_target: number, _level: number, _x: number, _y: number, width: number, height: number, _format: number, _type: number, _data: ArrayBufferView, offset: number) {
+		texSubImage2D(
+			_target: number,
+			_level: number,
+			_x: number,
+			_y: number,
+			width: number,
+			height: number,
+			_format: number,
+			_type: number,
+			_data: ArrayBufferView,
+			offset: number,
+		) {
 			textureUploads.push({ width, height, offset });
 		},
 	};
@@ -116,11 +146,14 @@ beforeEach(() => {
 	textureUploads.length = 0;
 	vi.stubGlobal('Worker', MockWorker);
 	vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:splat-worker');
-	vi.stubGlobal('fetch', vi.fn(async (input: string | URL | Request) => {
-		fetchCalls.push(String(input));
-		const bytes = splatBytes();
-		return new Response(bytes, { headers: { 'Content-Length': String(bytes.byteLength) } });
-	}));
+	vi.stubGlobal(
+		'fetch',
+		vi.fn(async (input: string | URL | Request) => {
+			fetchCalls.push(String(input));
+			const bytes = splatBytes();
+			return new Response(bytes, { headers: { 'Content-Length': String(bytes.byteLength) } });
+		}),
+	);
 });
 
 afterEach(() => {
@@ -134,30 +167,54 @@ async function mountPair(props: Record<string, unknown>) {
 	let reactSecond!: TargetMesh;
 	let octaneFirst!: TargetMesh;
 	let octaneSecond!: TargetMesh;
-	function Capture() { reactState = useThree(); return null; }
+	function Capture() {
+		reactState = useThree();
+		return null;
+	}
 	const reactCanvas = document.createElement('canvas');
 	const reactRoot = createReactRoot(reactCanvas);
-	await reactRoot.configure({ gl: renderer(reactCanvas), frameloop: 'never', dpr: 1, size: { width: 200, height: 100, left: 0, top: 0 } });
-	await act(async () => reactRoot.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(React.Suspense, { fallback: null },
-			React.createElement(ReactSplat, { ...props, position: props.firstPosition, name: 'first-splat' }),
-			props.second && React.createElement(ReactSplat, {
-				...props,
-				alphaTest: props.secondAlphaTest,
-				alphaHash: props.secondAlphaHash,
-				toneMapped: props.secondToneMapped,
-				chunkSize: props.secondChunkSize,
-				position: props.secondPosition,
-				name: 'second-splat',
-			}),
+	await reactRoot.configure({
+		gl: renderer(reactCanvas),
+		frameloop: 'never',
+		dpr: 1,
+		size: { width: 200, height: 100, left: 0, top: 0 },
+	});
+	await act(async () =>
+		reactRoot.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(ReactSplat, {
+						...props,
+						position: props.firstPosition,
+						name: 'first-splat',
+					}),
+					props.second &&
+						React.createElement(ReactSplat, {
+							...props,
+							alphaTest: props.secondAlphaTest,
+							alphaHash: props.secondAlphaHash,
+							toneMapped: props.secondToneMapped,
+							chunkSize: props.secondChunkSize,
+							position: props.secondPosition,
+							name: 'second-splat',
+						}),
+				),
+				React.createElement(Capture),
+			),
 		),
-		React.createElement(Capture),
-	)));
+	);
 	const octaneCanvas = document.createElement('canvas');
 	const octaneRoot = createOctaneRoot(octaneCanvas);
-	await octaneRoot.configure({ gl: renderer(octaneCanvas), frameloop: 'never', dpr: 1, size: { width: 200, height: 100, left: 0, top: 0 } });
+	await octaneRoot.configure({
+		gl: renderer(octaneCanvas),
+		frameloop: 'never',
+		dpr: 1,
+		size: { width: 200, height: 100, left: 0, top: 0 },
+	});
 	octaneRoot.render(SplatScene, {
 		...props,
 	});
@@ -169,11 +226,21 @@ async function mountPair(props: Record<string, unknown>) {
 	return {
 		reactRoot,
 		octaneRoot,
-		get reactState() { return reactState; },
-		get reactFirst() { return reactFirst; },
-		get reactSecond() { return reactSecond; },
-		get octaneFirst() { return octaneFirst; },
-		get octaneSecond() { return octaneSecond; },
+		get reactState() {
+			return reactState;
+		},
+		get reactFirst() {
+			return reactFirst;
+		},
+		get reactSecond() {
+			return reactSecond;
+		},
+		get octaneFirst() {
+			return octaneFirst;
+		},
+		get octaneSecond() {
+			return octaneSecond;
+		},
 	};
 }
 
@@ -207,8 +274,15 @@ function snapshot(mesh: TargetMesh) {
 			toneMapped: material.toneMapped,
 			viewport: material.viewport?.toArray(),
 			focal: material.focal,
-			textures: [material.centerAndScaleTexture?.image.width, material.centerAndScaleTexture?.image.height, material.covAndColorTexture?.internalFormat],
-			shaderMarkers: [material.vertexShader.includes('splatIndex'), material.fragmentShader.includes('alphahash_fragment')],
+			textures: [
+				material.centerAndScaleTexture?.image.width,
+				material.centerAndScaleTexture?.image.height,
+				material.covAndColorTexture?.internalFormat,
+			],
+			shaderMarkers: [
+				material.vertexShader.includes('splatIndex'),
+				material.fragmentShader.includes('alphahash_fragment'),
+			],
 		},
 	};
 }
@@ -216,20 +290,42 @@ function snapshot(mesh: TargetMesh) {
 describe('Splat', () => {
 	it('matches progressive loading, shared cache/state, geometry, sorting, cleanup, and non-hashed material behavior', async () => {
 		const pair = await mountPair({
-			src: '/scene.splat', second: true, alphaTest: 0.2, alphaHash: false, toneMapped: true, chunkSize: 1,
-			firstPosition: [1, 2, 3], secondPosition: [-1, 0, 2], secondAlphaTest: 0.4, secondAlphaHash: false, secondToneMapped: false, secondChunkSize: 99,
+			src: '/scene.splat',
+			second: true,
+			alphaTest: 0.2,
+			alphaHash: false,
+			toneMapped: true,
+			chunkSize: 1,
+			firstPosition: [1, 2, 3],
+			secondPosition: [-1, 0, 2],
+			secondAlphaTest: 0.4,
+			secondAlphaHash: false,
+			secondToneMapped: false,
+			secondChunkSize: 99,
 		});
 		expect(fetchCalls).toEqual(['/scene.splat', '/scene.splat']);
 		expect(workers).toHaveLength(2);
-		expect(pair.octaneFirst.material.centerAndScaleTexture).toBe(pair.octaneSecond.material.centerAndScaleTexture);
-		expect(pair.reactFirst.material.centerAndScaleTexture).toBe(pair.reactSecond.material.centerAndScaleTexture);
+		expect(pair.octaneFirst.material.centerAndScaleTexture).toBe(
+			pair.octaneSecond.material.centerAndScaleTexture,
+		);
+		expect(pair.reactFirst.material.centerAndScaleTexture).toBe(
+			pair.reactSecond.material.centerAndScaleTexture,
+		);
 		expect(textureUploads).toHaveLength(4);
 		await advancePair(pair);
 		expect(snapshot(pair.octaneFirst)).toEqual(snapshot(pair.reactFirst));
 		expect(snapshot(pair.octaneSecond)).toEqual(snapshot(pair.reactSecond));
 		expect(snapshot(pair.octaneFirst).instanceCount).toBe(2);
-		expect(workers.every((worker) => worker.messages.filter((message) => message.method === 'push').length === 1)).toBe(true);
-		expect(workers.every((worker) => worker.messages.filter((message) => message.method === 'sort').length === 2)).toBe(true);
+		expect(
+			workers.every(
+				(worker) => worker.messages.filter((message) => message.method === 'push').length === 1,
+			),
+		).toBe(true);
+		expect(
+			workers.every(
+				(worker) => worker.messages.filter((message) => message.method === 'sort').length === 2,
+			),
+		).toBe(true);
 
 		// Negative control: changing one material's blend mode must fail parity.
 		pair.octaneFirst.material.blending = THREE.NormalBlending;
@@ -240,16 +336,29 @@ describe('Splat', () => {
 	});
 
 	it('matches alphaHash defines/material state and sorted-worker short circuit', async () => {
-		const pair = await mountPair({ src: '/hashed.splat', alphaHash: true, alphaTest: 0.8, toneMapped: false, chunkSize: 25000, firstPosition: [0, 0, 0] });
+		const pair = await mountPair({
+			src: '/hashed.splat',
+			alphaHash: true,
+			alphaTest: 0.8,
+			toneMapped: false,
+			chunkSize: 25000,
+			firstPosition: [0, 0, 0],
+		});
 		await advancePair(pair);
 		expect(snapshot(pair.octaneFirst)).toEqual(snapshot(pair.reactFirst));
 		expect(pair.octaneFirst.material.transparent).toBe(false);
 		expect(pair.octaneFirst.material.depthWrite).toBe(true);
 		expect(pair.octaneFirst.material.alphaTest).toBe(0);
 		expect(pair.octaneFirst.material.alphaHash).toBe(true);
-		const counts = workers.map((worker) => worker.messages.filter((message) => message.method === 'sort').length);
+		const counts = workers.map(
+			(worker) => worker.messages.filter((message) => message.method === 'sort').length,
+		);
 		await advancePair(pair);
-		expect(workers.map((worker) => worker.messages.filter((message) => message.method === 'sort').length)).toEqual(counts);
+		expect(
+			workers.map(
+				(worker) => worker.messages.filter((message) => message.method === 'sort').length,
+			),
+		).toEqual(counts);
 		pair.octaneRoot.unmount();
 		await act(async () => pair.reactRoot.unmount());
 	});

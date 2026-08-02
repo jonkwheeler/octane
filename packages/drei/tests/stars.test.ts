@@ -61,19 +61,34 @@ async function reactStars(props: Record<string, unknown>) {
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(ReactStars, { ...props, ref: (value: THREE.Points) => (points = value) }),
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(ReactStars, {
+					...props,
+					ref: (value: THREE.Points) => (points = value),
+				}),
+				React.createElement(Capture),
+			),
+		),
+	);
 	return { root, points, getState };
 }
 
 describe('Stars', () => {
 	it('matches seeded geometry, material flags, fade, and frame timing', async () => {
 		vi.spyOn(Math, 'random').mockReturnValue(0.25);
-		const props = { radius: 10, depth: 5, count: 4, factor: 2, saturation: 0.4, fade: true, speed: 1.5 };
+		const props = {
+			radius: 10,
+			depth: 5,
+			count: 4,
+			factor: 2,
+			saturation: 0.4,
+			fade: true,
+			speed: 1.5,
+		};
 		const react = await reactStars(props);
 		let octanePoints!: THREE.Points;
 		const octane = await createOctaneThree(StarsScene, {

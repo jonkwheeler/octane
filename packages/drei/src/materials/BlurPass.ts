@@ -1,7 +1,27 @@
-import { BufferAttribute, BufferGeometry, Camera, HalfFloatType, LinearFilter, Mesh, Scene, Vector2, WebGLRenderTarget, type WebGLRenderer } from 'three';
+import {
+	BufferAttribute,
+	BufferGeometry,
+	Camera,
+	HalfFloatType,
+	LinearFilter,
+	Mesh,
+	Scene,
+	Vector2,
+	WebGLRenderTarget,
+	type WebGLRenderer,
+} from 'three';
 import { ConvolutionMaterial } from './ConvolutionMaterial.js';
 
-export interface BlurPassProps { gl: WebGLRenderer; resolution: number; width?: number; height?: number; minDepthThreshold?: number; maxDepthThreshold?: number; depthScale?: number; depthToBlurRatioBias?: number }
+export interface BlurPassProps {
+	gl: WebGLRenderer;
+	resolution: number;
+	width?: number;
+	height?: number;
+	minDepthThreshold?: number;
+	maxDepthThreshold?: number;
+	depthScale?: number;
+	depthToBlurRatioBias?: number;
+}
 
 export class BlurPass {
 	readonly renderTargetA: WebGLRenderTarget;
@@ -11,8 +31,22 @@ export class BlurPass {
 	readonly camera: Camera;
 	readonly screen: Mesh;
 	renderToScreen = false;
-	constructor({ resolution, width = 500, height = 500, minDepthThreshold = 0, maxDepthThreshold = 1, depthScale = 0, depthToBlurRatioBias = 0.25 }: BlurPassProps) {
-		this.renderTargetA = new WebGLRenderTarget(resolution, resolution, { minFilter: LinearFilter, magFilter: LinearFilter, stencilBuffer: false, depthBuffer: false, type: HalfFloatType });
+	constructor({
+		resolution,
+		width = 500,
+		height = 500,
+		minDepthThreshold = 0,
+		maxDepthThreshold = 1,
+		depthScale = 0,
+		depthToBlurRatioBias = 0.25,
+	}: BlurPassProps) {
+		this.renderTargetA = new WebGLRenderTarget(resolution, resolution, {
+			minFilter: LinearFilter,
+			magFilter: LinearFilter,
+			stencilBuffer: false,
+			depthBuffer: false,
+			type: HalfFloatType,
+		});
 		this.renderTargetB = this.renderTargetA.clone();
 		this.convolutionMaterial = new ConvolutionMaterial();
 		this.convolutionMaterial.setTexelSize(1 / width, 1 / height);
@@ -22,21 +56,39 @@ export class BlurPass {
 		this.convolutionMaterial.uniforms.depthScale.value = depthScale;
 		this.convolutionMaterial.uniforms.depthToBlurRatioBias.value = depthToBlurRatioBias;
 		this.convolutionMaterial.defines.USE_DEPTH = depthScale > 0;
-		this.scene = new Scene(); this.camera = new Camera();
+		this.scene = new Scene();
+		this.camera = new Camera();
 		const geometry = new BufferGeometry();
-		geometry.setAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
+		geometry.setAttribute(
+			'position',
+			new BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3),
+		);
 		geometry.setAttribute('uv', new BufferAttribute(new Float32Array([0, 0, 2, 0, 0, 2]), 2));
-		this.screen = new Mesh(geometry, this.convolutionMaterial); this.screen.frustumCulled = false; this.scene.add(this.screen);
+		this.screen = new Mesh(geometry, this.convolutionMaterial);
+		this.screen.frustumCulled = false;
+		this.scene.add(this.screen);
 	}
-	render(renderer: WebGLRenderer, inputBuffer: WebGLRenderTarget, outputBuffer: WebGLRenderTarget): void {
-		const uniforms = this.convolutionMaterial.uniforms; uniforms.depthBuffer.value = inputBuffer.depthTexture;
-		let last = inputBuffer; let destination: WebGLRenderTarget; let index = 0;
+	render(
+		renderer: WebGLRenderer,
+		inputBuffer: WebGLRenderTarget,
+		outputBuffer: WebGLRenderTarget,
+	): void {
+		const uniforms = this.convolutionMaterial.uniforms;
+		uniforms.depthBuffer.value = inputBuffer.depthTexture;
+		let last = inputBuffer;
+		let destination: WebGLRenderTarget;
+		let index = 0;
 		for (; index < this.convolutionMaterial.kernel.length - 1; index++) {
 			destination = (index & 1) === 0 ? this.renderTargetA : this.renderTargetB;
-			uniforms.kernel.value = this.convolutionMaterial.kernel[index]; uniforms.inputBuffer.value = last.texture;
-			renderer.setRenderTarget(destination); renderer.render(this.scene, this.camera); last = destination;
+			uniforms.kernel.value = this.convolutionMaterial.kernel[index];
+			uniforms.inputBuffer.value = last.texture;
+			renderer.setRenderTarget(destination);
+			renderer.render(this.scene, this.camera);
+			last = destination;
 		}
-		uniforms.kernel.value = this.convolutionMaterial.kernel[index]; uniforms.inputBuffer.value = last.texture;
-		renderer.setRenderTarget(this.renderToScreen ? null : outputBuffer); renderer.render(this.scene, this.camera);
+		uniforms.kernel.value = this.convolutionMaterial.kernel[index];
+		uniforms.inputBuffer.value = last.texture;
+		renderer.setRenderTarget(this.renderToScreen ? null : outputBuffer);
+		renderer.render(this.scene, this.camera);
 	}
 }

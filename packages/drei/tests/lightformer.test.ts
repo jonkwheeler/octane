@@ -31,7 +31,9 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 
 function snapshot(mesh: THREE.Mesh) {
 	const material = mesh.material as THREE.MeshBasicMaterial;
-	const light = mesh.children.find((child): child is THREE.PointLight => child.isPointLight === true);
+	const light = mesh.children.find(
+		(child): child is THREE.PointLight => child.isPointLight === true,
+	);
 	return {
 		geometry: mesh.geometry.type,
 		parameters: { ...mesh.geometry.parameters },
@@ -53,10 +55,14 @@ async function reactLightformer(props: Record<string, unknown>) {
 	const root = createReactThreeRoot(canvas);
 	let mesh!: THREE.Mesh;
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(ReactLightformer, {
-		...props,
-		ref: (value: THREE.Mesh) => (mesh = value),
-	})));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(ReactLightformer, {
+				...props,
+				ref: (value: THREE.Mesh) => (mesh = value),
+			}),
+		),
+	);
 	return { root, mesh };
 }
 
@@ -68,7 +74,13 @@ describe('Lightformer', () => {
 		['plane', undefined],
 		['box', [2, 3, 4]],
 	] as const)('matches %s geometry defaults and explicit args', async (form, args) => {
-		const props = { form, args, color: '#80c0ff', intensity: 2.5, scale: [2, 3] as [number, number] };
+		const props = {
+			form,
+			args,
+			color: '#80c0ff',
+			intensity: 2.5,
+			scale: [2, 3] as [number, number],
+		};
 		const react = await reactLightformer(props);
 		let octaneMesh!: THREE.Mesh;
 		const octane = await createOctaneThree(LightformerScene, {

@@ -36,7 +36,9 @@ function snapshot(flow: Flow) {
 		objectType: mesh.type,
 		name: mesh.name,
 		geometry: mesh.geometry.type,
-		material: Array.isArray(mesh.material) ? mesh.material.map((entry) => entry.type) : mesh.material.type,
+		material: Array.isArray(mesh.material)
+			? mesh.material.map((entry) => entry.type)
+			: mesh.material.type,
 		curveLength: flow.curveLengthArray[0],
 		spineLength: flow.uniforms.spineLength.value,
 		pathOffset: flow.uniforms.pathOffset.value,
@@ -55,16 +57,20 @@ describe('CurveModifier', () => {
 		const reactRoot = createReactThreeRoot(canvas);
 		let reactFlow!: Flow;
 		await reactRoot.configure({ gl: renderer(canvas), frameloop: 'never' });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(
-			ReactCurveModifier,
-			{ ref: (value: Flow) => (reactFlow = value), curve: reactCurve },
-			React.createElement(
-				'mesh',
-				{ name: 'source' },
-				React.createElement('boxGeometry', { args: [2, 1, 1] }),
-				React.createElement('meshStandardMaterial', { color: '#4080c0' }),
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(
+					ReactCurveModifier,
+					{ ref: (value: Flow) => (reactFlow = value), curve: reactCurve },
+					React.createElement(
+						'mesh',
+						{ name: 'source' },
+						React.createElement('boxGeometry', { args: [2, 1, 1] }),
+						React.createElement('meshStandardMaterial', { color: '#4080c0' }),
+					),
+				),
 			),
-		)));
+		);
 		let octaneFlow!: Flow;
 		const octane = await createOctaneThree(CurveModifierScene, {
 			ref: (value: Flow) => (octaneFlow = value),

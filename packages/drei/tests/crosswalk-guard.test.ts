@@ -23,7 +23,7 @@ async function runMutation(mutate: (manifest: Record<string, any>) => void, args
 	});
 }
 
-describe('Drei crosswalk guard', () => {
+describe('Drei crosswalk guard', { timeout: 30_000 }, () => {
 	it('accepts the committed inventory while work remains explicitly classified as gaps', async () => {
 		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 		const result = spawnSync(process.execPath, [checker], {

@@ -12,11 +12,18 @@ import { create as createOctaneThree } from '@octanejs/three/testing';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { MeshLineMaterial } from 'meshline';
 import * as THREE from 'three';
-import { TrailDiscoveredScene, TrailExternalScene, TrailHookScene } from './_fixtures/trail.three.tsrx';
+import {
+	TrailDiscoveredScene,
+	TrailExternalScene,
+	TrailHookScene,
+} from './_fixtures/trail.three.tsrx';
 
 beforeAll(() => {
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-	extendReactThree({ ...THREE, MeshLineMaterial } as unknown as Record<string, new (...args: any[]) => any>);
+	extendReactThree({ ...THREE, MeshLineMaterial } as unknown as Record<
+		string,
+		new (...args: any[]) => any
+	>);
 });
 
 function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
@@ -37,10 +44,13 @@ function snapshot(mesh: THREE.Mesh) {
 	const geometry = mesh.geometry;
 	const material = mesh.material as MeshLineMaterial;
 	return {
-		position: geometry.getAttribute('position') && Array.from(geometry.getAttribute('position').array),
-		previous: geometry.getAttribute('previous') && Array.from(geometry.getAttribute('previous').array),
+		position:
+			geometry.getAttribute('position') && Array.from(geometry.getAttribute('position').array),
+		previous:
+			geometry.getAttribute('previous') && Array.from(geometry.getAttribute('previous').array),
 		next: geometry.getAttribute('next') && Array.from(geometry.getAttribute('next').array),
-		counters: geometry.getAttribute('counters') && Array.from(geometry.getAttribute('counters').array),
+		counters:
+			geometry.getAttribute('counters') && Array.from(geometry.getAttribute('counters').array),
 		lineWidth: material.lineWidth,
 		color: material.color.getHexString(),
 		sizeAttenuation: material.sizeAttenuation,
@@ -53,29 +63,36 @@ async function reactExternal(target: THREE.Object3D) {
 	const root = createReactThreeRoot(canvas);
 	let mesh!: THREE.Mesh;
 	let getState!: () => ReactRootState;
-	function Capture() { getState = reactUseThree((state) => state.get); return null; }
+	function Capture() {
+		getState = reactUseThree((state) => state.get);
+		return null;
+	}
 	await root.configure({
 		gl: renderer(canvas),
 		frameloop: 'never',
 		size: { width: 320, height: 180, top: 0, left: 0 },
 	});
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(ReactTrail, {
-			ref: (value: THREE.Mesh) => (mesh = value),
-			target: { current: target },
-			width: 0.6,
-			length: 2,
-			decay: 2,
-			local: false,
-			stride: 0.2,
-			interval: 2,
-			color: '#4080c0',
-			attenuation: (width: number) => width * width,
-		}),
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(ReactTrail, {
+					ref: (value: THREE.Mesh) => (mesh = value),
+					target: { current: target },
+					width: 0.6,
+					length: 2,
+					decay: 2,
+					local: false,
+					stride: 0.2,
+					interval: 2,
+					color: '#4080c0',
+					attenuation: (width: number) => width * width,
+				}),
+				React.createElement(Capture),
+			),
+		),
+	);
 	return { root, mesh, getState };
 }
 
@@ -93,18 +110,22 @@ describe('Trail', () => {
 		octaneParent.updateMatrixWorld(true);
 		const react = await reactExternal(reactTarget);
 		let mesh!: THREE.Mesh;
-		const octane = await createOctaneThree(TrailExternalScene, {
-			ref: (value: THREE.Mesh) => (mesh = value),
-			targetRef: { current: octaneTarget },
-			width: 0.6,
-			length: 2,
-			decay: 2,
-			local: false,
-			stride: 0.2,
-			interval: 2,
-			color: '#4080c0',
-			attenuation: (width: number) => width * width,
-		}, { width: 320, height: 180 });
+		const octane = await createOctaneThree(
+			TrailExternalScene,
+			{
+				ref: (value: THREE.Mesh) => (mesh = value),
+				targetRef: { current: octaneTarget },
+				width: 0.6,
+				length: 2,
+				decay: 2,
+				local: false,
+				stride: 0.2,
+				interval: 2,
+				color: '#4080c0',
+				attenuation: (width: number) => width * width,
+			},
+			{ width: 320, height: 180 },
+		);
 		for (let index = 0; index < 4; index++) await Promise.resolve();
 		expect(mesh.parent).toBe(octane.scene);
 		expect(react.mesh.parent).toBe(react.getState().scene);

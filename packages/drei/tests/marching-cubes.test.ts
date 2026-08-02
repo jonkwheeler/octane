@@ -40,10 +40,18 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 type Calls = Array<[string, ...unknown[]]>;
 
 function recordCalls(instance: MarchingCubesImpl, calls: Calls) {
-	vi.spyOn(instance, 'update').mockImplementation(() => { calls.push(['update']); });
-	vi.spyOn(instance, 'reset').mockImplementation(() => { calls.push(['reset']); });
-	vi.spyOn(instance, 'addBall').mockImplementation((...args) => { calls.push(['addBall', ...args]); });
-	vi.spyOn(instance, 'addPlaneY').mockImplementation((...args) => { calls.push(['addPlaneY', ...args]); });
+	vi.spyOn(instance, 'update').mockImplementation(() => {
+		calls.push(['update']);
+	});
+	vi.spyOn(instance, 'reset').mockImplementation(() => {
+		calls.push(['reset']);
+	});
+	vi.spyOn(instance, 'addBall').mockImplementation((...args) => {
+		calls.push(['addBall', ...args]);
+	});
+	vi.spyOn(instance, 'addPlaneY').mockImplementation((...args) => {
+		calls.push(['addPlaneY', ...args]);
+	});
 }
 
 async function reactMarching(color: THREE.Color) {
@@ -58,17 +66,38 @@ async function reactMarching(color: THREE.Color) {
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(
-			ReactMarchingCubes,
-			{ ref: (value: MarchingCubesImpl) => (marching = value), resolution: 20, maxPolyCount: 500, enableUvs: true, enableColors: true },
-			React.createElement(ReactMarchingCube, { ref: (value: THREE.Group) => (cube = value), position: [0.2, -0.4, 0.6], strength: 0.7, subtract: 9, color }),
-			React.createElement(ReactMarchingPlane, { ref: (value: THREE.Group) => (plane = value), planeType: 'y', strength: 0.3, subtract: 7 }),
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					ReactMarchingCubes,
+					{
+						ref: (value: MarchingCubesImpl) => (marching = value),
+						resolution: 20,
+						maxPolyCount: 500,
+						enableUvs: true,
+						enableColors: true,
+					},
+					React.createElement(ReactMarchingCube, {
+						ref: (value: THREE.Group) => (cube = value),
+						position: [0.2, -0.4, 0.6],
+						strength: 0.7,
+						subtract: 9,
+						color,
+					}),
+					React.createElement(ReactMarchingPlane, {
+						ref: (value: THREE.Group) => (plane = value),
+						planeType: 'y',
+						strength: 0.3,
+						subtract: 7,
+					}),
+				),
+				React.createElement(Capture),
+			),
 		),
-		React.createElement(Capture),
-	)));
+	);
 	return { root, marching, cube, plane, getState };
 }
 

@@ -60,16 +60,20 @@ describe('Sky', () => {
 		const reactRoot = createReactThreeRoot(canvas);
 		let reactSky!: SkyImpl;
 		await reactRoot.configure({ gl: renderer(canvas), frameloop: 'never' });
-		await reactThreeAct(async () => reactRoot.render(React.createElement(ReactSky, {
-			ref: (value: SkyImpl) => (reactSky = value),
-			distance: 750,
-			inclination: 0.7,
-			azimuth: 0.2,
-			mieCoefficient: 0.01,
-			mieDirectionalG: 0.65,
-			rayleigh: 0.9,
-			turbidity: 6,
-		})));
+		await reactThreeAct(async () =>
+			reactRoot.render(
+				React.createElement(ReactSky, {
+					ref: (value: SkyImpl) => (reactSky = value),
+					distance: 750,
+					inclination: 0.7,
+					azimuth: 0.2,
+					mieCoefficient: 0.01,
+					mieDirectionalG: 0.65,
+					rayleigh: 0.9,
+					turbidity: 6,
+				}),
+			),
+		);
 		let octaneSky!: SkyImpl;
 		const octane = await createOctaneThree(SkyScene, {
 			ref: (value: SkyImpl) => (octaneSky = value),

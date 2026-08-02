@@ -65,7 +65,15 @@ function makeDataset() {
 	}));
 	const spriteData: SpriteData = {
 		frames,
-		meta: { version: '1', size: { w: 96, h: 32 }, rows: 1, columns: 3, frameWidth: 32, frameHeight: 32, scale: '1' },
+		meta: {
+			version: '1',
+			size: { w: 96, h: 32 },
+			rows: 1,
+			columns: 3,
+			frameWidth: 32,
+			frameHeight: 32,
+			scale: '1',
+		},
 	};
 	return { spriteTexture: texture, spriteData, aspect: new THREE.Vector3(1, 1, 1) };
 }
@@ -107,41 +115,76 @@ async function mountPair(props: SpriteAnimatorProps) {
 	}
 	const reactCanvas = document.createElement('canvas');
 	const reactRoot = createReactRoot(reactCanvas);
-	await reactRoot.configure({ gl: renderer(reactCanvas), frameloop: 'never', dpr: 1, size: { width: 200, height: 100, left: 0, top: 0 } });
-	await act(async () => reactRoot.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(
-			ReactSpriteAnimator,
-			{ ...props as ReactSpriteAnimatorProps, ...callbacks(reactEvents), ref: (value: THREE.Group) => { reactGroup = value; } },
-			React.createElement(ReactCapture),
+	await reactRoot.configure({
+		gl: renderer(reactCanvas),
+		frameloop: 'never',
+		dpr: 1,
+		size: { width: 200, height: 100, left: 0, top: 0 },
+	});
+	await act(async () =>
+		reactRoot.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					ReactSpriteAnimator,
+					{
+						...(props as ReactSpriteAnimatorProps),
+						...callbacks(reactEvents),
+						ref: (value: THREE.Group) => {
+							reactGroup = value;
+						},
+					},
+					React.createElement(ReactCapture),
+				),
+				React.createElement(CaptureRoot),
+			),
 		),
-		React.createElement(CaptureRoot),
-	)));
+	);
 	const octaneCanvas = document.createElement('canvas');
 	const octaneRoot = createOctaneRoot(octaneCanvas);
-	await octaneRoot.configure({ gl: renderer(octaneCanvas), frameloop: 'never', dpr: 1, size: { width: 200, height: 100, left: 0, top: 0 } });
+	await octaneRoot.configure({
+		gl: renderer(octaneCanvas),
+		frameloop: 'never',
+		dpr: 1,
+		size: { width: 200, height: 100, left: 0, top: 0 },
+	});
 	octaneRoot.render(SpriteAnimatorScene, {
 		...props,
 		...callbacks(octaneEvents),
-		groupRef: (value: THREE.Group) => { octaneGroup = value; },
-		onContext: (value: AnimationState) => { octaneContext = value; },
+		groupRef: (value: THREE.Group) => {
+			octaneGroup = value;
+		},
+		onContext: (value: AnimationState) => {
+			octaneContext = value;
+		},
 	});
 	await flush();
 	return {
 		reactRoot,
 		octaneRoot,
-		get reactGroup() { return reactGroup; },
-		get octaneGroup() { return octaneGroup; },
-		get reactContext() { return reactContext; },
-		get octaneContext() { return octaneContext; },
+		get reactGroup() {
+			return reactGroup;
+		},
+		get octaneGroup() {
+			return octaneGroup;
+		},
+		get reactContext() {
+			return reactContext;
+		},
+		get octaneContext() {
+			return octaneContext;
+		},
 		reactState,
 		reactEvents,
 		octaneEvents,
 	};
 }
 
-async function advancePair(pair: Awaited<ReturnType<typeof mountPair>>, milliseconds: number): Promise<void> {
+async function advancePair(
+	pair: Awaited<ReturnType<typeof mountPair>>,
+	milliseconds: number,
+): Promise<void> {
 	now = milliseconds;
 	await act(async () => reactAdvance(milliseconds, true, pair.reactState));
 	pair.octaneRoot.store.getState().advance(milliseconds / 1000);
@@ -151,7 +194,8 @@ async function advancePair(pair: Awaited<ReturnType<typeof mountPair>>, millisec
 function findMaterial(group: THREE.Group): THREE.MeshBasicMaterial {
 	let material!: THREE.MeshBasicMaterial;
 	group.traverse((object) => {
-		if ((object as THREE.Mesh).material instanceof THREE.MeshBasicMaterial) material = (object as THREE.Mesh).material as THREE.MeshBasicMaterial;
+		if ((object as THREE.Mesh).material instanceof THREE.MeshBasicMaterial)
+			material = (object as THREE.Mesh).material as THREE.MeshBasicMaterial;
 	});
 	return material;
 }
@@ -162,7 +206,8 @@ function snapshot(group: THREE.Group) {
 	let instancedCount: number | null = null;
 	group.traverse((object) => {
 		if ((object as THREE.Mesh).isMesh) meshCount++;
-		if ((object as THREE.InstancedMesh).isInstancedMesh) instancedCount = (object as THREE.InstancedMesh).count;
+		if ((object as THREE.InstancedMesh).isInstancedMesh)
+			instancedCount = (object as THREE.InstancedMesh).count;
 	});
 	return {
 		name: group.name,
@@ -202,8 +247,16 @@ describe('SpriteAnimator', () => {
 		});
 		await advancePair(spritePair, 100);
 		expect(snapshot(spritePair.octaneGroup)).toEqual(snapshot(spritePair.reactGroup));
-		expect(spritePair.octaneContext && { imageUrl: spritePair.octaneContext.imageUrl, hasEnded: spritePair.octaneContext.hasEnded }).toEqual(
-			spritePair.reactContext && { imageUrl: spritePair.reactContext.imageUrl, hasEnded: spritePair.reactContext.hasEnded },
+		expect(
+			spritePair.octaneContext && {
+				imageUrl: spritePair.octaneContext.imageUrl,
+				hasEnded: spritePair.octaneContext.hasEnded,
+			},
+		).toEqual(
+			spritePair.reactContext && {
+				imageUrl: spritePair.reactContext.imageUrl,
+				hasEnded: spritePair.reactContext.hasEnded,
+			},
 		);
 		expect(spritePair.octaneContext?.ref).toBeDefined();
 
@@ -211,7 +264,10 @@ describe('SpriteAnimator', () => {
 			spriteDataset: makeDataset(),
 			fps: 0,
 			asSprite: false,
-			instanceItems: [[1, 0, 0], [0, 2, 0]],
+			instanceItems: [
+				[1, 0, 0],
+				[0, 2, 0],
+			],
 			maxItems: 4,
 		});
 		await advancePair(instancePair, 100);
@@ -226,14 +282,28 @@ describe('SpriteAnimator', () => {
 	});
 
 	it('matches static/manual frame selection and paused progression boundaries', async () => {
-		const manual = await mountPair({ spriteDataset: makeDataset(), fps: 0, startFrame: 0, endFrame: 2, offset: 0.5, autoPlay: true, roundFramePosition: true });
+		const manual = await mountPair({
+			spriteDataset: makeDataset(),
+			fps: 0,
+			startFrame: 0,
+			endFrame: 2,
+			offset: 0.5,
+			autoPlay: true,
+			roundFramePosition: true,
+		});
 		await advancePair(manual, 100);
 		await advancePair(manual, 200);
 		expect(snapshot(manual.octaneGroup)).toEqual(snapshot(manual.reactGroup));
 		expect(manual.octaneEvents).toEqual(manual.reactEvents);
 		expect(manual.octaneEvents.frame.at(-1)?.currentFrame).toBe(1);
 
-		const paused = await mountPair({ spriteDataset: makeDataset(), fps: 10, autoPlay: false, play: true, pause: true });
+		const paused = await mountPair({
+			spriteDataset: makeDataset(),
+			fps: 10,
+			autoPlay: false,
+			play: true,
+			pause: true,
+		});
 		await advancePair(paused, 500);
 		expect(paused.octaneEvents.frame).toEqual(paused.reactEvents.frame);
 		expect(paused.octaneEvents.frame).toHaveLength(0);
@@ -242,14 +312,28 @@ describe('SpriteAnimator', () => {
 	});
 
 	it('matches timed start/end/loop callbacks and backwards progression', async () => {
-		const looping = await mountPair({ spriteDataset: makeDataset(), fps: 10, loop: true, startFrame: 0, endFrame: 2, autoPlay: true });
+		const looping = await mountPair({
+			spriteDataset: makeDataset(),
+			fps: 10,
+			loop: true,
+			startFrame: 0,
+			endFrame: 2,
+			autoPlay: true,
+		});
 		for (const time of [101, 202, 303, 404]) await advancePair(looping, time);
 		expect(looping.octaneEvents).toEqual(looping.reactEvents);
 		expect(looping.octaneEvents.loop).toEqual([{ currentFrameName: '', currentFrame: 0 }]);
 		expect(snapshot(looping.octaneGroup)).toEqual(snapshot(looping.reactGroup));
 
 		now = 0;
-		const backwards = await mountPair({ spriteDataset: makeDataset(), fps: 10, loop: false, endFrame: 2, playBackwards: true, autoPlay: true });
+		const backwards = await mountPair({
+			spriteDataset: makeDataset(),
+			fps: 10,
+			loop: false,
+			endFrame: 2,
+			playBackwards: true,
+			autoPlay: true,
+		});
 		for (const time of [101, 202, 303, 404]) await advancePair(backwards, time);
 		expect(backwards.octaneEvents).toEqual(backwards.reactEvents);
 		expect(backwards.octaneEvents.end).toEqual([{ currentFrameName: '', currentFrame: 2 }]);
@@ -257,7 +341,14 @@ describe('SpriteAnimator', () => {
 		expect(backwards.octaneContext?.hasEnded).toBe(true);
 
 		now = 0;
-		const resetting = await mountPair({ spriteDataset: makeDataset(), fps: 10, loop: false, endFrame: 2, resetOnEnd: true, autoPlay: true });
+		const resetting = await mountPair({
+			spriteDataset: makeDataset(),
+			fps: 10,
+			loop: false,
+			endFrame: 2,
+			resetOnEnd: true,
+			autoPlay: true,
+		});
 		for (const time of [101, 202, 303, 404, 505]) await advancePair(resetting, time);
 		expect(resetting.octaneEvents).toEqual(resetting.reactEvents);
 		expect(resetting.octaneEvents.end).toEqual([{ currentFrameName: '', currentFrame: 0 }]);

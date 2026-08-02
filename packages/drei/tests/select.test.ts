@@ -62,22 +62,26 @@ async function reactSelect(options: {
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), camera, frameloop: 'never' });
-	await reactThreeAct(async () => root.render(
-		React.createElement(
-			ReactSelect,
-			{
-				multiple: options.multiple,
-				box: options.box,
-				filter: options.filter,
-				onChange: (objects: THREE.Object3D[]) => changes.push(objects.map((object) => object.name)),
-				onChangePointerUp: (objects: THREE.Object3D[]) => pointerUps.push(objects.map((object) => object.name)),
-			},
-			React.createElement('mesh', { name: 'first' }),
-			React.createElement('mesh', { name: 'second' }),
-			React.createElement(Capture),
-			React.createElement(StateCapture),
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				ReactSelect,
+				{
+					multiple: options.multiple,
+					box: options.box,
+					filter: options.filter,
+					onChange: (objects: THREE.Object3D[]) =>
+						changes.push(objects.map((object) => object.name)),
+					onChangePointerUp: (objects: THREE.Object3D[]) =>
+						pointerUps.push(objects.map((object) => object.name)),
+				},
+				React.createElement('mesh', { name: 'first' }),
+				React.createElement('mesh', { name: 'second' }),
+				React.createElement(Capture),
+				React.createElement(StateCapture),
+			),
 		),
-	));
+	);
 	return { root, getState, canvas, parent, selections, changes, pointerUps };
 }
 
@@ -88,13 +92,19 @@ function namedChildren(scene: THREE.Scene) {
 	return { first, second, group };
 }
 
-function reactFire(group: ReactEventObject, name: string, object: THREE.Object3D, shiftKey = false) {
+function reactFire(
+	group: ReactEventObject,
+	name: string,
+	object: THREE.Object3D,
+	shiftKey = false,
+) {
 	group.__r3f!.handlers[name]({ object, shiftKey, stopPropagation() {} });
 }
 
 describe('Select', () => {
 	it('matches single selection, toggle, filter, and context updates', async () => {
-		const filter = (objects: THREE.Object3D[]) => objects.filter((object) => object.name !== 'second');
+		const filter = (objects: THREE.Object3D[]) =>
+			objects.filter((object) => object.name !== 'second');
 		const react = await reactSelect({ multiple: false, filter });
 		const octaneSelections: string[][] = [];
 		const octaneChanges: string[][] = [];
@@ -104,21 +114,32 @@ describe('Select', () => {
 			box: false,
 			filter,
 			onSelection: (selection: string[]) => octaneSelections.push(selection),
-			onChange: (objects: THREE.Object3D[]) => octaneChanges.push(objects.map((object) => object.name)),
-			onChangePointerUp: (objects: THREE.Object3D[]) => octanePointerUps.push(objects.map((object) => object.name)),
+			onChange: (objects: THREE.Object3D[]) =>
+				octaneChanges.push(objects.map((object) => object.name)),
+			onChangePointerUp: (objects: THREE.Object3D[]) =>
+				octanePointerUps.push(objects.map((object) => object.name)),
 		});
 		const reactObjects = namedChildren(react.getState().scene);
 		const octaneObjects = namedChildren(octane.scene);
 
 		await reactThreeAct(async () => reactFire(reactObjects.group, 'onClick', reactObjects.first));
-		await octane.fireEvent(octaneObjects.group, 'click', { object: octaneObjects.first, shiftKey: false });
+		await octane.fireEvent(octaneObjects.group, 'click', {
+			object: octaneObjects.first,
+			shiftKey: false,
+		});
 		expect(octaneSelections).toEqual(react.selections);
 		expect(octanePointerUps).toEqual(react.pointerUps);
 
 		await reactThreeAct(async () => reactFire(reactObjects.group, 'onClick', reactObjects.first));
-		await octane.fireEvent(octaneObjects.group, 'click', { object: octaneObjects.first, shiftKey: false });
+		await octane.fireEvent(octaneObjects.group, 'click', {
+			object: octaneObjects.first,
+			shiftKey: false,
+		});
 		await reactThreeAct(async () => reactFire(reactObjects.group, 'onClick', reactObjects.second));
-		await octane.fireEvent(octaneObjects.group, 'click', { object: octaneObjects.second, shiftKey: false });
+		await octane.fireEvent(octaneObjects.group, 'click', {
+			object: octaneObjects.second,
+			shiftKey: false,
+		});
 		expect(octaneSelections).toEqual(react.selections);
 		expect(octanePointerUps).toEqual(react.pointerUps);
 		expect(octaneChanges).toEqual(react.changes);
@@ -137,17 +158,31 @@ describe('Select', () => {
 			filter: undefined,
 			onSelection: (selection: string[]) => octaneSelections.push(selection),
 			onChange: undefined,
-			onChangePointerUp: (objects: THREE.Object3D[]) => octanePointerUps.push(objects.map((object) => object.name)),
+			onChangePointerUp: (objects: THREE.Object3D[]) =>
+				octanePointerUps.push(objects.map((object) => object.name)),
 		});
 		const reactObjects = namedChildren(react.getState().scene);
 		const octaneObjects = namedChildren(octane.scene);
 
 		await reactThreeAct(async () => reactFire(reactObjects.group, 'onClick', reactObjects.first));
-		await octane.fireEvent(octaneObjects.group, 'click', { object: octaneObjects.first, shiftKey: false });
-		await reactThreeAct(async () => reactFire(reactObjects.group, 'onClick', reactObjects.second, true));
-		await octane.fireEvent(octaneObjects.group, 'click', { object: octaneObjects.second, shiftKey: true });
-		await reactThreeAct(async () => reactFire(reactObjects.group, 'onClick', reactObjects.first, true));
-		await octane.fireEvent(octaneObjects.group, 'click', { object: octaneObjects.first, shiftKey: true });
+		await octane.fireEvent(octaneObjects.group, 'click', {
+			object: octaneObjects.first,
+			shiftKey: false,
+		});
+		await reactThreeAct(async () =>
+			reactFire(reactObjects.group, 'onClick', reactObjects.second, true),
+		);
+		await octane.fireEvent(octaneObjects.group, 'click', {
+			object: octaneObjects.second,
+			shiftKey: true,
+		});
+		await reactThreeAct(async () =>
+			reactFire(reactObjects.group, 'onClick', reactObjects.first, true),
+		);
+		await octane.fireEvent(octaneObjects.group, 'click', {
+			object: octaneObjects.first,
+			shiftKey: true,
+		});
 		await reactThreeAct(async () => reactObjects.group.__r3f!.handlers.onPointerMissed({}));
 		await octane.fireEvent(octaneObjects.group, 'pointerMissed');
 
@@ -164,22 +199,32 @@ describe('Select', () => {
 		const octanePointerUps: string[][] = [];
 		const octaneCamera = new THREE.PerspectiveCamera(75, 1280 / 800, 0.1, 1000);
 		octaneCamera.position.z = 5;
-		const octane = await createOctaneThree(SelectScene, {
-			multiple: true,
-			box: true,
-			filter: undefined,
-			onSelection: () => {},
-			onChange: (objects: THREE.Object3D[]) => octaneChanges.push(objects.map((object) => object.name)),
-			onChangePointerUp: (objects: THREE.Object3D[]) => octanePointerUps.push(objects.map((object) => object.name)),
-		}, { width: 1280, height: 800, camera: octaneCamera });
+		const octane = await createOctaneThree(
+			SelectScene,
+			{
+				multiple: true,
+				box: true,
+				filter: undefined,
+				onSelection: () => {},
+				onChange: (objects: THREE.Object3D[]) =>
+					octaneChanges.push(objects.map((object) => object.name)),
+				onChangePointerUp: (objects: THREE.Object3D[]) =>
+					octanePointerUps.push(objects.map((object) => object.name)),
+			},
+			{ width: 1280, height: 800, camera: octaneCamera },
+		);
 		const octaneParent = document.createElement('div');
 		octaneParent.append(octane.canvas as HTMLCanvasElement);
 
-		await reactThreeAct(async () => document.dispatchEvent(new PointerEvent('pointerdown', {
-			shiftKey: true,
-			clientX: 0,
-			clientY: 0,
-		})));
+		await reactThreeAct(async () =>
+			document.dispatchEvent(
+				new PointerEvent('pointerdown', {
+					shiftKey: true,
+					clientX: 0,
+					clientY: 0,
+				}),
+			),
+		);
 		await Promise.resolve();
 		expect(octane.store.getState().events.enabled).toBe(react.getState().events.enabled);
 		expect(octane.store.getState().events.enabled).toBe(false);
@@ -187,9 +232,9 @@ describe('Select', () => {
 		const octaneOverlay = octaneParent.querySelector('div') as HTMLDivElement;
 		expect(octaneOverlay.style.cssText).toBe(reactOverlay.style.cssText);
 
-		await reactThreeAct(async () => document.dispatchEvent(
-			new PointerEvent('pointermove', { clientX: 1280, clientY: 800 }),
-		));
+		await reactThreeAct(async () =>
+			document.dispatchEvent(new PointerEvent('pointermove', { clientX: 1280, clientY: 800 })),
+		);
 		expect(octaneOverlay.style.left).toBe(reactOverlay.style.left);
 		expect(octaneOverlay.style.top).toBe(reactOverlay.style.top);
 		expect(octaneOverlay.style.width).toBe(reactOverlay.style.width);

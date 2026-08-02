@@ -23,8 +23,12 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
@@ -50,9 +54,18 @@ describe('TransformControls', () => {
 		const reactEvents = { change: vi.fn(), down: vi.fn(), up: vi.fn(), object: vi.fn() };
 		const octaneEvents = { change: vi.fn(), down: vi.fn(), up: vi.fn(), object: vi.fn() };
 		const props = {
-			makeDefault: true, enabled: false, axis: 'X', mode: 'rotate' as const,
-			translationSnap: 2, rotationSnap: 0.5, scaleSnap: 0.25,
-			space: 'local' as const, size: 1.5, showX: false, showY: true, showZ: false,
+			makeDefault: true,
+			enabled: false,
+			axis: 'X',
+			mode: 'rotate' as const,
+			translationSnap: 2,
+			rotationSnap: 0.5,
+			scaleSnap: 0.25,
+			space: 'local' as const,
+			size: 1.5,
+			showX: false,
+			showY: true,
+			showZ: false,
 		};
 		let reactControls!: TransformControlsImpl;
 		let reactState!: ReactRootState;
@@ -117,9 +130,19 @@ describe('TransformControls', () => {
 		object.name = 'external';
 		let controls!: TransformControlsImpl;
 		const root = await createOctaneThree(TransformControlsScene, {
-			object, makeDefault: false, enabled: true, axis: null, mode: 'translate',
-			translationSnap: null, rotationSnap: null, scaleSnap: null, space: 'world',
-			size: 1, showX: true, showY: true, showZ: true,
+			object,
+			makeDefault: false,
+			enabled: true,
+			axis: null,
+			mode: 'translate',
+			translationSnap: null,
+			rotationSnap: null,
+			scaleSnap: null,
+			space: 'world',
+			size: 1,
+			showX: true,
+			showY: true,
+			showZ: true,
 			ref: (value: TransformControlsImpl) => (controls = value),
 		});
 		expect(controls.object).toBe(object);

@@ -62,18 +62,27 @@ async function reactSegments(firstStart: THREE.Vector3) {
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(
-			ReactSegments,
-			{ ref: (value: Line2) => (line = value), limit: 2, lineWidth: 3 },
-			React.createElement(ReactSegment, { ref: (value: SegmentObjectType) => (first = value), start: firstStart, end: [1, 2, 3], color: 'red' }),
-			React.createElement(ReactSegment, { start: 2, end: [3, 4, 5], color: '#00ff00' }),
-			React.createElement(ReactSegment, { start: [9, 9, 9], end: [10, 10, 10], color: 'blue' }),
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					ReactSegments,
+					{ ref: (value: Line2) => (line = value), limit: 2, lineWidth: 3 },
+					React.createElement(ReactSegment, {
+						ref: (value: SegmentObjectType) => (first = value),
+						start: firstStart,
+						end: [1, 2, 3],
+						color: 'red',
+					}),
+					React.createElement(ReactSegment, { start: 2, end: [3, 4, 5], color: '#00ff00' }),
+					React.createElement(ReactSegment, { start: [9, 9, 9], end: [10, 10, 10], color: 'blue' }),
+				),
+				React.createElement(Capture),
+			),
 		),
-		React.createElement(Capture),
-	)));
+	);
 	return { root, line, first, getState };
 }
 

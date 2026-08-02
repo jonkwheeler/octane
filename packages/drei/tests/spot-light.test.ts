@@ -7,14 +7,21 @@ import {
 	type RootState,
 	useThree,
 } from '@react-three/fiber';
-import { SpotLight as ReactSpotLight, SpotLightShadow as ReactSpotLightShadow } from '@react-three/drei/core/SpotLight.js';
+import {
+	SpotLight as ReactSpotLight,
+	SpotLightShadow as ReactSpotLightShadow,
+} from '@react-three/drei/core/SpotLight.js';
 import { createRoot as createOctaneRoot } from '@octanejs/three';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { SpotLight } from '../src/index.js';
 import { InvalidSpotLightShadowScene, SpotLightScene } from './_fixtures/spot-light.three.tsrx';
 
-type RenderRecord = { target: THREE.WebGLRenderTarget | null; object: THREE.Object3D; camera?: THREE.Camera };
+type RenderRecord = {
+	target: THREE.WebGLRenderTarget | null;
+	object: THREE.Object3D;
+	camera?: THREE.Camera;
+};
 
 beforeAll(() => {
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -27,9 +34,15 @@ function renderer(canvas: HTMLCanvasElement, records: RenderRecord[]) {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		setRenderTarget(value: THREE.WebGLRenderTarget | null) { target = value; },
-		getRenderTarget() { return target; },
-		render(object: THREE.Object3D, camera?: THREE.Camera) { records.push({ target, object, camera }); },
+		setRenderTarget(value: THREE.WebGLRenderTarget | null) {
+			target = value;
+		},
+		getRenderTarget() {
+			return target;
+		},
+		render(object: THREE.Object3D, camera?: THREE.Camera) {
+			records.push({ target, object, camera });
+		},
 		setPixelRatio() {},
 		setSize() {},
 		renderLists: { dispose() {} },
@@ -39,18 +52,21 @@ function renderer(canvas: HTMLCanvasElement, records: RenderRecord[]) {
 }
 
 function shaderMaterial(light: THREE.SpotLight): THREE.ShaderMaterial | null {
-	const mesh = light.children.find((child) => (child as THREE.Mesh).isMesh) as THREE.Mesh | undefined;
-	return mesh ? mesh.material as THREE.ShaderMaterial : null;
+	const mesh = light.children.find((child) => (child as THREE.Mesh).isMesh) as
+		THREE.Mesh | undefined;
+	return mesh ? (mesh.material as THREE.ShaderMaterial) : null;
 }
 
 function shadowMesh(light: THREE.SpotLight): THREE.Mesh | undefined {
-	return light.parent?.children.find((child) => child !== light && (child as THREE.Mesh).isMesh) as THREE.Mesh | undefined;
+	return light.parent?.children.find((child) => child !== light && (child as THREE.Mesh).isMesh) as
+		THREE.Mesh | undefined;
 }
 
 function lightSnapshot(light: THREE.SpotLight) {
 	const material = shaderMaterial(light);
 	const geometry = light.children.find((child) => (child as THREE.Mesh).isMesh)
-		? (light.children.find((child) => (child as THREE.Mesh).isMesh) as THREE.Mesh).geometry as THREE.CylinderGeometry
+		? ((light.children.find((child) => (child as THREE.Mesh).isMesh) as THREE.Mesh)
+				.geometry as THREE.CylinderGeometry)
 		: null;
 	return {
 		name: light.name,
@@ -83,8 +99,13 @@ function lightSnapshot(light: THREE.SpotLight) {
 			far: material.uniforms.cameraFar.value,
 			resolution: (material.uniforms.resolution.value as THREE.Vector2).toArray(),
 			spotPosition: (material.uniforms.spotPosition.value as THREE.Vector3).toArray(),
-			quaternion: light.children.find((child) => (child as THREE.Mesh).isMesh)?.quaternion.toArray(),
-			shaderMarkers: [material.vertexShader.includes('vIntensity'), material.fragmentShader.includes('readDepth')],
+			quaternion: light.children
+				.find((child) => (child as THREE.Mesh).isMesh)
+				?.quaternion.toArray(),
+			shaderMarkers: [
+				material.vertexShader.includes('vIntensity'),
+				material.fragmentShader.includes('readDepth'),
+			],
 		},
 	};
 }
@@ -104,7 +125,10 @@ function shadowSnapshot(light: THREE.SpotLight) {
 		transparent: material.transparent,
 		alphaMapName: material.alphaMap?.name,
 		wrap: material.alphaMap && [material.alphaMap.wrapS, material.alphaMap.wrapT],
-		targetSize: material.alphaMap && [material.alphaMap.image.width, material.alphaMap.image.height],
+		targetSize: material.alphaMap && [
+			material.alphaMap.image.width,
+			material.alphaMap.image.height,
+		],
 	};
 }
 
@@ -123,38 +147,68 @@ async function mountPair(options: {
 	let reactState!: RootState;
 	const reactRefValues: Array<THREE.SpotLight | null> = [];
 	const octaneRefValues: Array<THREE.SpotLight | null> = [];
-	function Capture() { reactState = useThree(); return null; }
+	function Capture() {
+		reactState = useThree();
+		return null;
+	}
 	const reactCanvas = document.createElement('canvas');
 	const reactRoot = createReactRoot(reactCanvas);
-	await reactRoot.configure({ gl: renderer(reactCanvas, reactRecords), frameloop: 'never', dpr: 2, size: { width: 160, height: 90, left: 0, top: 0 } });
-	const reactChild = options.shadow ? React.createElement(ReactSpotLightShadow, options.shadow) : undefined;
+	await reactRoot.configure({
+		gl: renderer(reactCanvas, reactRecords),
+		frameloop: 'never',
+		dpr: 2,
+		size: { width: 160, height: 90, left: 0, top: 0 },
+	});
+	const reactChild = options.shadow
+		? React.createElement(ReactSpotLightShadow, options.shadow)
+		: undefined;
 	const reactProps = {
 		...options.props,
 		target: reactTarget,
-		ref: (value: THREE.SpotLight | null) => { reactRefValues.push(value); if (value) reactLight = value; },
+		ref: (value: THREE.SpotLight | null) => {
+			reactRefValues.push(value);
+			if (value) reactLight = value;
+		},
 	};
-	const reactTree = () => React.createElement(React.Fragment, null,
-		React.createElement(ReactSpotLight, reactProps, reactChild),
-		React.createElement(Capture),
-	);
+	const reactTree = () =>
+		React.createElement(
+			React.Fragment,
+			null,
+			React.createElement(ReactSpotLight, reactProps, reactChild),
+			React.createElement(Capture),
+		);
 	await act(async () => reactRoot.render(reactTree()));
 	const octaneCanvas = document.createElement('canvas');
 	const octaneRoot = createOctaneRoot(octaneCanvas);
-	await octaneRoot.configure({ gl: renderer(octaneCanvas, octaneRecords), frameloop: 'never', dpr: 2, size: { width: 160, height: 90, left: 0, top: 0 } });
+	await octaneRoot.configure({
+		gl: renderer(octaneCanvas, octaneRecords),
+		frameloop: 'never',
+		dpr: 2,
+		size: { width: 160, height: 90, left: 0, top: 0 },
+	});
 	const octaneProps = {
 		...options.props,
 		target: octaneTarget,
 		shadow: options.shadow,
-		lightRef: (value: THREE.SpotLight | null) => { octaneRefValues.push(value); if (value) octaneLight = value; },
+		lightRef: (value: THREE.SpotLight | null) => {
+			octaneRefValues.push(value);
+			if (value) octaneLight = value;
+		},
 	};
 	octaneRoot.render(SpotLightScene, octaneProps);
 	for (let index = 0; index < 8; index++) await Promise.resolve();
 	return {
 		reactRoot,
 		octaneRoot,
-		get reactLight() { return reactLight; },
-		get octaneLight() { return octaneLight; },
-		get reactState() { return reactState; },
+		get reactLight() {
+			return reactLight;
+		},
+		get octaneLight() {
+			return octaneLight;
+		},
+		get reactState() {
+			return reactState;
+		},
 		reactRecords,
 		octaneRecords,
 		reactRefValues,
@@ -174,9 +228,20 @@ describe('SpotLight', () => {
 		shadowMap.name = 'static-shadow';
 		const pair = await mountPair({
 			props: {
-				position: [2, 3, 4], angle: 0.3, distance: 8, color: '#336699', intensity: 2,
-				opacity: 0.6, radiusTop: 0.25, radiusBottom: 1.75, depthBuffer: reactDepth,
-				attenuation: 7, anglePower: 9, volumetric: true, debug: false, name: 'key-light',
+				position: [2, 3, 4],
+				angle: 0.3,
+				distance: 8,
+				color: '#336699',
+				intensity: 2,
+				opacity: 0.6,
+				radiusTop: 0.25,
+				radiusBottom: 1.75,
+				depthBuffer: reactDepth,
+				attenuation: 7,
+				anglePower: 9,
+				volumetric: true,
+				debug: false,
+				name: 'key-light',
 			},
 			shadow: { distance: 0.5, alphaTest: 0.3, scale: 2, width: 64, height: 32, map: shadowMap },
 		});
@@ -184,7 +249,9 @@ describe('SpotLight', () => {
 		expect(lightSnapshot(pair.octaneLight)).toEqual(lightSnapshot(pair.reactLight));
 		expect(shadowSnapshot(pair.octaneLight)).toEqual(shadowSnapshot(pair.reactLight));
 		expect(pair.octaneLight.target).not.toBe(pair.reactLight.target);
-		expect(pair.octaneRefValues.filter(Boolean)).toHaveLength(pair.reactRefValues.filter(Boolean).length);
+		expect(pair.octaneRefValues.filter(Boolean)).toHaveLength(
+			pair.reactRefValues.filter(Boolean).length,
+		);
 		const expectedPosition = new THREE.Vector3(2, 3, 4).lerp(new THREE.Vector3(), 0.5).toArray();
 		expect(shadowMesh(pair.octaneLight)?.position.toArray()).toEqual(expectedPosition);
 
@@ -200,7 +267,8 @@ describe('SpotLight', () => {
 	it('matches custom shadow shader render targets, frame time, shader input, debug output, and disposal', async () => {
 		const map = new THREE.Texture({ width: 4, height: 4 });
 		map.name = 'noise-map';
-		const customShader = 'varying vec2 vUv; uniform sampler2D uShadowMap; uniform float uTime; void main(){ gl_FragColor = vec4(texture2D(uShadowMap, vUv).rgb * uTime, 1.0); }';
+		const customShader =
+			'varying vec2 vUv; uniform sampler2D uShadowMap; uniform float uTime; void main(){ gl_FragColor = vec4(texture2D(uShadowMap, vUv).rgb * uTime, 1.0); }';
 		const pair = await mountPair({
 			props: { position: [0, 4, 0], volumetric: false, debug: true },
 			shadow: { map, shader: customShader, width: 16, height: 8, distance: 0.25 },
@@ -208,8 +276,12 @@ describe('SpotLight', () => {
 		await advancePair(pair, 250, 0.25);
 		expect(lightSnapshot(pair.octaneLight)).toEqual(lightSnapshot(pair.reactLight));
 		expect(shadowSnapshot(pair.octaneLight)).toEqual(shadowSnapshot(pair.reactLight));
-		const reactHasHelper = pair.reactLight.parent?.children.some((child) => (child as THREE.SpotLightHelper).isSpotLightHelper);
-		const octaneHasHelper = pair.octaneLight.parent?.children.some((child) => (child as THREE.SpotLightHelper).isSpotLightHelper);
+		const reactHasHelper = pair.reactLight.parent?.children.some(
+			(child) => (child as THREE.SpotLightHelper).isSpotLightHelper,
+		);
+		const octaneHasHelper = pair.octaneLight.parent?.children.some(
+			(child) => (child as THREE.SpotLightHelper).isSpotLightHelper,
+		);
 		expect(octaneHasHelper).toBe(reactHasHelper);
 		expect(shadowSnapshot(pair.octaneLight)?.opacity).toBe(1);
 		const reactPass = pair.reactRecords.find((record) => record.target !== null)!;
@@ -220,15 +292,27 @@ describe('SpotLight', () => {
 		let octaneDisposed = false;
 		let reactTargetDisposed = false;
 		let octaneTargetDisposed = false;
-		reactShader.addEventListener('dispose', () => { reactDisposed = true; });
-		octaneShader.addEventListener('dispose', () => { octaneDisposed = true; });
-		reactPass.target!.addEventListener('dispose', () => { reactTargetDisposed = true; });
-		octanePass.target!.addEventListener('dispose', () => { octaneTargetDisposed = true; });
+		reactShader.addEventListener('dispose', () => {
+			reactDisposed = true;
+		});
+		octaneShader.addEventListener('dispose', () => {
+			octaneDisposed = true;
+		});
+		reactPass.target!.addEventListener('dispose', () => {
+			reactTargetDisposed = true;
+		});
+		octanePass.target!.addEventListener('dispose', () => {
+			octaneTargetDisposed = true;
+		});
 		expect(octaneShader.fragmentShader).toBe(reactShader.fragmentShader);
 		expect(octaneShader.fragmentShader).toContain('uShadowMap');
 		expect(octaneShader.uniforms.uTime.value).toBe(reactShader.uniforms.uTime.value);
-		expect(octaneShader.uniforms.uShadowMap.value.name).toBe(reactShader.uniforms.uShadowMap.value.name);
-		expect(pair.octaneRecords.filter((record) => record.target)).toHaveLength(pair.reactRecords.filter((record) => record.target).length);
+		expect(octaneShader.uniforms.uShadowMap.value.name).toBe(
+			reactShader.uniforms.uShadowMap.value.name,
+		);
+		expect(pair.octaneRecords.filter((record) => record.target)).toHaveLength(
+			pair.reactRecords.filter((record) => record.target).length,
+		);
 		pair.octaneRoot.unmount();
 		await act(async () => pair.reactRoot.unmount());
 		expect(octaneDisposed).toBe(reactDisposed);
@@ -243,11 +327,25 @@ describe('SpotLight', () => {
 		await reactRoot.configure({ gl: renderer(reactCanvas, []), frameloop: 'never' });
 		const badReactRef = { current: new THREE.Object3D() };
 		const boundaryMap = new THREE.Texture();
-		await expect(act(async () => reactRoot.render(React.createElement(ReactSpotLightShadow, { spotlightRef: badReactRef, map: boundaryMap } as any)))).rejects.toThrow('SpotlightShadow must be a child of a SpotLight');
+		await expect(
+			act(async () =>
+				reactRoot.render(
+					React.createElement(ReactSpotLightShadow, {
+						spotlightRef: badReactRef,
+						map: boundaryMap,
+					} as any),
+				),
+			),
+		).rejects.toThrow('SpotlightShadow must be a child of a SpotLight');
 		const octaneCanvas = document.createElement('canvas');
 		const octaneRoot = createOctaneRoot(octaneCanvas);
 		await octaneRoot.configure({ gl: renderer(octaneCanvas, []), frameloop: 'never' });
-		expect(() => octaneRoot.render(InvalidSpotLightShadowScene, { spotlightRef: { current: new THREE.Object3D() }, map: boundaryMap })).toThrow('SpotlightShadow must be a child of a SpotLight');
+		expect(() =>
+			octaneRoot.render(InvalidSpotLightShadowScene, {
+				spotlightRef: { current: new THREE.Object3D() },
+				map: boundaryMap,
+			}),
+		).toThrow('SpotlightShadow must be a child of a SpotLight');
 		octaneRoot.unmount();
 		await act(async () => reactRoot.unmount());
 

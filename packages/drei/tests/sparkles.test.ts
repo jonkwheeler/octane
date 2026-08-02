@@ -38,13 +38,18 @@ function snapshot(points: THREE.Points) {
 	const names = ['position', 'size', 'opacity', 'speed', 'color', 'noise'];
 	const material = points.material as SparklesMaterial;
 	return {
-		attributes: Object.fromEntries(names.map((name) => {
-			const value = points.geometry.getAttribute(name) as THREE.BufferAttribute;
-			return [name, {
-				itemSize: value.itemSize,
-				array: Array.from(value.array, (entry) => entry === 0 ? 0 : entry),
-			}];
-		})),
+		attributes: Object.fromEntries(
+			names.map((name) => {
+				const value = points.geometry.getAttribute(name) as THREE.BufferAttribute;
+				return [
+					name,
+					{
+						itemSize: value.itemSize,
+						array: Array.from(value.array, (entry) => (entry === 0 ? 0 : entry)),
+					},
+				];
+			}),
+		),
 		material: {
 			transparent: material.transparent,
 			depthWrite: material.depthWrite,
@@ -64,12 +69,19 @@ async function reactSparkles(props: Record<string, unknown>) {
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never', dpr: 1 });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(ReactSparkles, { ...props, ref: (value: THREE.Points) => (points = value) }),
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(ReactSparkles, {
+					...props,
+					ref: (value: THREE.Points) => (points = value),
+				}),
+				React.createElement(Capture),
+			),
+		),
+	);
 	return { root, points, getState };
 }
 

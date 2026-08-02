@@ -24,8 +24,12 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as any;
 }
 
@@ -35,31 +39,87 @@ async function mountPair(props: Record<string, unknown>) {
 	let reactState!: RootState;
 	let reactElement!: HTMLDivElement;
 	let octaneElement!: HTMLDivElement;
-	function Capture() { reactState = useThree(); return null; }
+	function Capture() {
+		reactState = useThree();
+		return null;
+	}
 	const reactHost = document.createElement('main');
 	const reactCanvas = document.createElement('canvas');
 	reactHost.append(reactCanvas);
 	const reactRoot = createReactRoot(reactCanvas);
-	await reactRoot.configure({ gl: renderer(reactCanvas), frameloop: 'never', size: { width: 200, height: 100, left: 0, top: 0 }, dpr: 1 });
+	await reactRoot.configure({
+		gl: renderer(reactCanvas),
+		frameloop: 'never',
+		size: { width: 200, height: 100, left: 0, top: 0 },
+		dpr: 1,
+	});
 	const { customGeometry, captureOcclusion, raycastOccluder, ...componentProps } = props;
-	if (captureOcclusion) componentProps.onOcclude = (hidden: boolean) => reactOcclusions.push(hidden);
-	await act(async () => reactRoot.render(React.createElement(React.Fragment, null,
-		raycastOccluder ? React.createElement('mesh', { position: [0, 0, 2] }, React.createElement('planeGeometry', { args: [10, 10] }), React.createElement('meshBasicMaterial')) : null,
-		React.createElement(ReactHtml, { ...componentProps, geometry: customGeometry ? React.createElement('boxGeometry') : undefined, ref: (value: HTMLDivElement) => (reactElement = value) }, React.createElement('button', { className: 'html-content' }, 'dark:label:0')),
-		React.createElement(Capture),
-	)));
+	if (captureOcclusion)
+		componentProps.onOcclude = (hidden: boolean) => reactOcclusions.push(hidden);
+	await act(async () =>
+		reactRoot.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				raycastOccluder
+					? React.createElement(
+							'mesh',
+							{ position: [0, 0, 2] },
+							React.createElement('planeGeometry', { args: [10, 10] }),
+							React.createElement('meshBasicMaterial'),
+						)
+					: null,
+				React.createElement(
+					ReactHtml,
+					{
+						...componentProps,
+						geometry: customGeometry ? React.createElement('boxGeometry') : undefined,
+						ref: (value: HTMLDivElement) => (reactElement = value),
+					},
+					React.createElement('button', { className: 'html-content' }, 'dark:label:0'),
+				),
+				React.createElement(Capture),
+			),
+		),
+	);
 
 	const octaneHost = document.createElement('main');
 	const octaneCanvas = document.createElement('canvas');
 	octaneHost.append(octaneCanvas);
 	const octaneRoot = createOctaneRoot(octaneCanvas);
-	await octaneRoot.configure({ gl: renderer(octaneCanvas), frameloop: 'never', size: { width: 200, height: 100, left: 0, top: 0 }, dpr: 1 });
-	const octaneProps = { ...props, theme: 'dark', label: 'label', htmlRef: (value: HTMLDivElement) => (octaneElement = value) };
+	await octaneRoot.configure({
+		gl: renderer(octaneCanvas),
+		frameloop: 'never',
+		size: { width: 200, height: 100, left: 0, top: 0 },
+		dpr: 1,
+	});
+	const octaneProps = {
+		...props,
+		theme: 'dark',
+		label: 'label',
+		htmlRef: (value: HTMLDivElement) => (octaneElement = value),
+	};
 	delete octaneProps.captureOcclusion;
 	if (captureOcclusion) octaneProps.onOcclude = (hidden: boolean) => octaneOcclusions.push(hidden);
 	octaneRoot.render(HtmlScene, octaneProps);
-	await act(async () => { for (let index = 0; index < 8; index++) await Promise.resolve(); });
-	return { reactRoot, octaneRoot, reactState, reactHost, octaneHost, reactOcclusions, octaneOcclusions, get reactElement() { return reactElement; }, get octaneElement() { return octaneElement; } };
+	await act(async () => {
+		for (let index = 0; index < 8; index++) await Promise.resolve();
+	});
+	return {
+		reactRoot,
+		octaneRoot,
+		reactState,
+		reactHost,
+		octaneHost,
+		reactOcclusions,
+		octaneOcclusions,
+		get reactElement() {
+			return reactElement;
+		},
+		get octaneElement() {
+			return octaneElement;
+		},
+	};
 }
 
 function defineSize(element: HTMLElement, width: number, height: number): void {
@@ -71,7 +131,9 @@ function defineSize(element: HTMLElement, width: number, height: number): void {
 
 function meshIn(scene: THREE.Scene): THREE.Mesh {
 	let result: THREE.Mesh | undefined;
-	scene.traverse((object) => { if (!result && object instanceof THREE.Mesh) result = object; });
+	scene.traverse((object) => {
+		if (!result && object instanceof THREE.Mesh) result = object;
+	});
 	return result!;
 }
 
@@ -91,15 +153,27 @@ function octaneElementStyles(element: HTMLElement) {
 describe('Html', () => {
 	it('matches projected positioning, DOM props, refs, prepend and cleanup', async () => {
 		const calculatePosition = vi.fn(() => [30, 40] as [number, number]);
-		const pair = await mountPair({ calculatePosition, center: true, prepend: true, className: 'label', wrapperClass: 'wrapper', style: { color: 'red' }, distanceFactor: 2 });
+		const pair = await mountPair({
+			calculatePosition,
+			center: true,
+			prepend: true,
+			className: 'label',
+			wrapperClass: 'wrapper',
+			style: { color: 'red' },
+			distanceFactor: 2,
+		});
 		await act(async () => reactAdvance(1 / 60, true, pair.reactState));
 		pair.octaneRoot.store.getState().advance(1 / 60);
 		expect(pair.octaneElement.textContent).toBe(pair.reactElement.textContent);
 		expect(pair.octaneElement.className).toBe(pair.reactElement.className);
 		expect(pair.octaneElement.style.color).toBe(pair.reactElement.style.color);
 		expect(pair.octaneElement.parentElement?.className).toBe('wrapper');
-		expect(pair.octaneElement.parentElement?.style.transform).toBe(pair.reactElement.parentElement?.style.transform);
-		expect(pair.octaneElement.parentElement?.style.zIndex).toBe(pair.reactElement.parentElement?.style.zIndex);
+		expect(pair.octaneElement.parentElement?.style.transform).toBe(
+			pair.reactElement.parentElement?.style.transform,
+		);
+		expect(pair.octaneElement.parentElement?.style.zIndex).toBe(
+			pair.reactElement.parentElement?.style.zIndex,
+		);
 		expect(pair.octaneHost.firstElementChild).not.toBe(pair.octaneHost.querySelector('canvas'));
 		pair.octaneRoot.unmount();
 		await act(async () => pair.reactRoot.unmount());
@@ -121,7 +195,14 @@ describe('Html', () => {
 	});
 
 	it('matches every transform DOM layer, matrices, pointer events, blending state and plane shaders', async () => {
-		const pair = await mountPair({ transform: true, sprite: true, pointerEvents: 'none', occlude: 'blending', castShadow: true, receiveShadow: true });
+		const pair = await mountPair({
+			transform: true,
+			sprite: true,
+			pointerEvents: 'none',
+			occlude: 'blending',
+			castShadow: true,
+			receiveShadow: true,
+		});
 		await act(async () => reactAdvance(1 / 60, true, pair.reactState));
 		pair.octaneRoot.store.getState().advance(1 / 60);
 		const reactCanvas = pair.reactHost.querySelector('canvas')!;
@@ -159,7 +240,9 @@ describe('Html', () => {
 		const displayPair = await mountPair({ position: [0, 0, 10] });
 		await act(async () => reactAdvance(1 / 60, true, displayPair.reactState));
 		displayPair.octaneRoot.store.getState().advance(1 / 60);
-		expect(displayPair.octaneElement.parentElement?.style.display).toBe(displayPair.reactElement.parentElement?.style.display);
+		expect(displayPair.octaneElement.parentElement?.style.display).toBe(
+			displayPair.reactElement.parentElement?.style.display,
+		);
 		displayPair.octaneRoot.unmount();
 		await act(async () => displayPair.reactRoot.unmount());
 
@@ -187,22 +270,37 @@ describe('Html', () => {
 	});
 
 	it('matches transform plane sizing for default perspective and custom geometry scale', async () => {
-		const perspective = await mountPair({ transform: true, occlude: 'blending', distanceFactor: 20 });
+		const perspective = await mountPair({
+			transform: true,
+			occlude: 'blending',
+			distanceFactor: 20,
+		});
 		defineSize(perspective.reactElement.parentElement!, 80, 40);
 		defineSize(perspective.octaneElement.parentElement!, 80, 40);
 		await act(async () => reactAdvance(1 / 60, true, perspective.reactState));
 		perspective.octaneRoot.store.getState().advance(1 / 60);
-		expect(meshIn(perspective.octaneRoot.store.getState().scene).scale.toArray()).toEqual(meshIn(perspective.reactState.scene).scale.toArray());
+		expect(meshIn(perspective.octaneRoot.store.getState().scene).scale.toArray()).toEqual(
+			meshIn(perspective.reactState.scene).scale.toArray(),
+		);
 		perspective.octaneRoot.unmount();
 		await act(async () => perspective.reactRoot.unmount());
 
-		const custom = await mountPair({ transform: true, occlude: 'blending', customGeometry: true, scale: [2, 4, 5] });
+		const custom = await mountPair({
+			transform: true,
+			occlude: 'blending',
+			customGeometry: true,
+			scale: [2, 4, 5],
+		});
 		defineSize(custom.reactElement.parentElement!, 80, 40);
 		defineSize(custom.octaneElement.parentElement!, 80, 40);
 		await act(async () => reactAdvance(1 / 60, true, custom.reactState));
 		custom.octaneRoot.store.getState().advance(1 / 60);
-		expect(meshIn(custom.octaneRoot.store.getState().scene).scale.toArray()).toEqual(meshIn(custom.reactState.scene).scale.toArray());
-		expect(meshIn(custom.octaneRoot.store.getState().scene).scale.toArray()).toEqual([0.5, 0.25, 0.2]);
+		expect(meshIn(custom.octaneRoot.store.getState().scene).scale.toArray()).toEqual(
+			meshIn(custom.reactState.scene).scale.toArray(),
+		);
+		expect(meshIn(custom.octaneRoot.store.getState().scene).scale.toArray()).toEqual([
+			0.5, 0.25, 0.2,
+		]);
 		custom.octaneRoot.unmount();
 		await act(async () => custom.reactRoot.unmount());
 	});
@@ -214,7 +312,9 @@ describe('Html', () => {
 		camera.updateProjectionMatrix();
 		object.updateMatrixWorld();
 		camera.updateMatrixWorld();
-		expect(defaultCalculatePosition(object, camera, { width: 200, height: 100 })).toEqual([100, 50]);
+		expect(defaultCalculatePosition(object, camera, { width: 200, height: 100 })).toEqual([
+			100, 50,
+		]);
 		expect(Html).toBeTypeOf('function');
 	});
 });

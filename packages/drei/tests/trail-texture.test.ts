@@ -21,9 +21,12 @@ beforeEach(() => {
 	vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function (type: string) {
 		if (type !== '2d') return null;
 		const calls: Call[] = [];
-		const gradient = { addColorStop: (offset: number, color: string) => calls.push(['color', offset, color]) };
+		const gradient = {
+			addColorStop: (offset: number, color: string) => calls.push(['color', offset, color]),
+		};
 		const context = {
-			fillStyle: '', globalCompositeOperation: 'source-over',
+			fillStyle: '',
+			globalCompositeOperation: 'source-over',
 			fillRect: (...args: unknown[]) => calls.push(['fillRect', ...args]),
 			createRadialGradient: (...args: unknown[]) => (calls.push(['gradient', ...args]), gradient),
 			beginPath: () => calls.push(['beginPath']),
@@ -42,16 +45,26 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
 describe('TrailTexture', () => {
 	it('matches texture setup, touch interpolation, force smoothing, drawing, and frame aging', async () => {
 		const props = {
-			size: 64, maxAge: 500, radius: 0.25, intensity: 0.4,
-			interpolate: 2, smoothing: 0.5, minForce: 0.2, blend: 'screen' as const,
+			size: 64,
+			maxAge: 500,
+			radius: 0.25,
+			intensity: 0.4,
+			interpolate: 2,
+			smoothing: 0.5,
+			minForce: 0.2,
+			blend: 'screen' as const,
 		};
 		let reactTuple!: [THREE.Texture, (event: { uv: { x: number; y: number } }) => void];
 		let reactState!: ReactRootState;
@@ -97,9 +110,15 @@ describe('TrailTexture', () => {
 	it('uses the upstream canvas defaults when no config is supplied', async () => {
 		let tuple!: [THREE.Texture, (event: any) => void];
 		const root = await createOctaneThree(TrailTextureScene, {
-			size: undefined, maxAge: undefined, radius: undefined, intensity: undefined,
-			interpolate: undefined, smoothing: undefined, minForce: undefined,
-			blend: undefined, children: (value: typeof tuple) => void (tuple = value) || null,
+			size: undefined,
+			maxAge: undefined,
+			radius: undefined,
+			intensity: undefined,
+			interpolate: undefined,
+			smoothing: undefined,
+			minForce: undefined,
+			blend: undefined,
+			children: (value: typeof tuple) => void (tuple = value) || null,
 		});
 		expect(tuple[0].image.width).toBe(256);
 		expect(tuple[0].image.height).toBe(256);

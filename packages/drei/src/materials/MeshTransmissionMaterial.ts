@@ -1,7 +1,14 @@
 import * as THREE from 'three';
 
-interface Uniform<T> { value: T }
-interface Shader { uniforms: Record<string, Uniform<any>>; defines: Record<string, string>; vertexShader: string; fragmentShader: string }
+interface Uniform<T> {
+	value: T;
+}
+interface Shader {
+	uniforms: Record<string, Uniform<any>>;
+	defines: Record<string, string>;
+	vertexShader: string;
+	fragmentShader: string;
+}
 
 export class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
 	uniforms: Record<string, Uniform<any>>;
@@ -9,10 +16,21 @@ export class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
 	constructor(samples = 6, transmissionSampler = false) {
 		super();
 		this.uniforms = {
-			chromaticAberration: { value: 0.05 }, transmission: { value: 0 }, _transmission: { value: 1 },
-			transmissionMap: { value: null }, roughness: { value: 0 }, thickness: { value: 0 }, thicknessMap: { value: null },
-			attenuationDistance: { value: Infinity }, attenuationColor: { value: new THREE.Color('white') }, anisotropicBlur: { value: 0.1 },
-			time: { value: 0 }, distortion: { value: 0 }, distortionScale: { value: 0.5 }, temporalDistortion: { value: 0 }, buffer: { value: null },
+			chromaticAberration: { value: 0.05 },
+			transmission: { value: 0 },
+			_transmission: { value: 1 },
+			transmissionMap: { value: null },
+			roughness: { value: 0 },
+			thickness: { value: 0 },
+			thicknessMap: { value: null },
+			attenuationDistance: { value: Infinity },
+			attenuationColor: { value: new THREE.Color('white') },
+			anisotropicBlur: { value: 0.1 },
+			time: { value: 0 },
+			distortion: { value: 0 },
+			distortionScale: { value: 0.5 },
+			temporalDistortion: { value: 0 },
+			buffer: { value: null },
 		};
 		this.onBeforeCompile = (parameters) => {
 			const shader = parameters as unknown as Shader;
@@ -21,7 +39,8 @@ export class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
 			if ((this as any).anisotropy > 0) shader.defines.USE_ANISOTROPY = '';
 			if (transmissionSampler) shader.defines.USE_SAMPLER = '';
 			else shader.defines.USE_TRANSMISSION = '';
-			shader.fragmentShader = `
+			shader.fragmentShader =
+				`
 				uniform float chromaticAberration;
 				uniform float anisotropicBlur;
 				uniform float time;
@@ -56,7 +75,9 @@ export class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
 				}
 				float snoiseFractal(vec3 m) { return 0.5333333*snoise(m) + 0.2666667*snoise(2.0*m) + 0.1333333*snoise(4.0*m) + 0.0666667*snoise(8.0*m); }
 			` + shader.fragmentShader;
-			shader.fragmentShader = shader.fragmentShader.replace('#include <transmission_pars_fragment>', `
+			shader.fragmentShader = shader.fragmentShader.replace(
+				'#include <transmission_pars_fragment>',
+				`
 				#ifdef USE_TRANSMISSION
 					uniform float _transmission;
 					uniform float thickness;
@@ -111,8 +132,11 @@ export class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
 						return vec4((1.0 - F) * attenuatedColor * diffuseColor, transmittedLight.a);
 					}
 				#endif
-			`);
-			shader.fragmentShader = shader.fragmentShader.replace('#include <transmission_fragment>', `
+			`,
+			);
+			shader.fragmentShader = shader.fragmentShader.replace(
+				'#include <transmission_fragment>',
+				`
 				material.transmission = _transmission;
 				material.transmissionAlpha = 1.0;
 				material.thickness = thickness;
@@ -144,11 +168,15 @@ export class MeshTransmissionMaterialImpl extends THREE.MeshPhysicalMaterial {
 				}
 				transmission /= ${samples}.0;
 				totalDiffuse = mix(totalDiffuse, transmission.rgb, material.transmission);
-			`);
+			`,
+			);
 		};
-		for (const name of Object.keys(this.uniforms)) Object.defineProperty(this, name, {
-			get: () => this.uniforms[name].value,
-			set: (value) => { this.uniforms[name].value = value; },
-		});
+		for (const name of Object.keys(this.uniforms))
+			Object.defineProperty(this, name, {
+				get: () => this.uniforms[name].value,
+				set: (value) => {
+					this.uniforms[name].value = value;
+				},
+			});
 	}
 }

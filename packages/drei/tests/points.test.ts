@@ -83,17 +83,36 @@ async function reactInstances() {
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(
-			ReactPoints,
-			{ ref: (value: THREE.Points) => (points = value), limit: 3, range: 1, position: [4, 0, 0] },
-			React.createElement(ReactPoint, { ref: (value: ReactPositionPoint) => (first = value), position: [1, 2, 3], size: 2.5, color: '#4080c0' }),
-			React.createElement(ReactPoint, { ref: (value: ReactPositionPoint) => (second = value), position: [-2, 1, 0.5], size: 0.75, color: 'red' }),
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(
+					ReactPoints,
+					{
+						ref: (value: THREE.Points) => (points = value),
+						limit: 3,
+						range: 1,
+						position: [4, 0, 0],
+					},
+					React.createElement(ReactPoint, {
+						ref: (value: ReactPositionPoint) => (first = value),
+						position: [1, 2, 3],
+						size: 2.5,
+						color: '#4080c0',
+					}),
+					React.createElement(ReactPoint, {
+						ref: (value: ReactPositionPoint) => (second = value),
+						position: [-2, 1, 0.5],
+						size: 0.75,
+						color: 'red',
+					}),
+				),
+				React.createElement(Capture),
+			),
 		),
-		React.createElement(Capture),
-	)));
+	);
 	return { root, points, first, second, getState };
 }
 
@@ -112,12 +131,22 @@ async function reactBuffer(
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(Component, { ref: (value: THREE.Points) => (points = value), positions, colors, sizes, stride: 2 }),
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				React.Fragment,
+				null,
+				React.createElement(Component, {
+					ref: (value: THREE.Points) => (points = value),
+					positions,
+					colors,
+					sizes,
+					stride: 2,
+				}),
+				React.createElement(Capture),
+			),
+		),
+	);
 	return { root, points, getState };
 }
 
@@ -161,32 +190,35 @@ describe('Points', () => {
 	it.each([
 		['explicit buffer component', ReactPointsBuffer, PointsBufferScene],
 		['Float32Array dispatch through Points', ReactPoints, PointsDispatchBufferScene],
-	] as const)('matches %s attribute construction and frame invalidation', async (_name, ReactComponent, OctaneComponent) => {
-		const reactPositions = new Float32Array([1, 2, 3, 4, 5, 6]);
-		const reactColors = new Float32Array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6]);
-		const reactSizes = new Float32Array([7, 8, 9]);
-		const octanePositions = reactPositions.slice();
-		const octaneColors = reactColors.slice();
-		const octaneSizes = reactSizes.slice();
-		const react = await reactBuffer(ReactComponent, reactPositions, reactColors, reactSizes);
-		let points!: THREE.Points;
-		const octane = await createOctaneThree(OctaneComponent, {
-			ref: (value: THREE.Points) => (points = value),
-			positions: octanePositions,
-			colors: octaneColors,
-			sizes: octaneSizes,
-			stride: 2,
-		});
-		expect(points.geometry.attributes.position!.array).toBe(octanePositions);
-		expect(react.points.geometry.attributes.position!.array).toBe(reactPositions);
-		await reactThreeAct(async () => reactAdvance(1, true, react.getState()));
-		octane.advanceFrames(1, 1);
-		expect(attributesSnapshot(points)).toEqual(attributesSnapshot(react.points));
-		// Preserve the pinned upstream's non-obvious size count calculation.
-		expect(points.geometry.attributes.size!.count).toBe(octaneSizes.length / 2);
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
-	});
+	] as const)(
+		'matches %s attribute construction and frame invalidation',
+		async (_name, ReactComponent, OctaneComponent) => {
+			const reactPositions = new Float32Array([1, 2, 3, 4, 5, 6]);
+			const reactColors = new Float32Array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6]);
+			const reactSizes = new Float32Array([7, 8, 9]);
+			const octanePositions = reactPositions.slice();
+			const octaneColors = reactColors.slice();
+			const octaneSizes = reactSizes.slice();
+			const react = await reactBuffer(ReactComponent, reactPositions, reactColors, reactSizes);
+			let points!: THREE.Points;
+			const octane = await createOctaneThree(OctaneComponent, {
+				ref: (value: THREE.Points) => (points = value),
+				positions: octanePositions,
+				colors: octaneColors,
+				sizes: octaneSizes,
+				stride: 2,
+			});
+			expect(points.geometry.attributes.position!.array).toBe(octanePositions);
+			expect(react.points.geometry.attributes.position!.array).toBe(reactPositions);
+			await reactThreeAct(async () => reactAdvance(1, true, react.getState()));
+			octane.advanceFrames(1, 1);
+			expect(attributesSnapshot(points)).toEqual(attributesSnapshot(react.points));
+			// Preserve the pinned upstream's non-obvious size count calculation.
+			expect(points.geometry.attributes.size!.count).toBe(octaneSizes.length / 2);
+			octane.unmount();
+			await reactThreeAct(async () => react.root.unmount());
+		},
+	);
 
 	it('matches PositionPoint raycasting and its draw-range and miss negative controls', () => {
 		function exercise(PointClass: typeof PositionPoint | typeof ReactPositionPoint) {
@@ -200,7 +232,12 @@ describe('Points', () => {
 			parent.userData.instances = [key];
 			parent.add(point);
 			parent.updateMatrixWorld(true);
-			const raycaster = new THREE.Raycaster(new THREE.Vector3(1, 0, 5), new THREE.Vector3(0, 0, -1), 0, 10);
+			const raycaster = new THREE.Raycaster(
+				new THREE.Vector3(1, 0, 5),
+				new THREE.Vector3(0, 0, -1),
+				0,
+				10,
+			);
 			raycaster.params.Points = { threshold: 0.2 };
 			const hits: THREE.Intersection[] = [];
 			point.raycast(raycaster, hits);
@@ -210,19 +247,34 @@ describe('Points', () => {
 			point.raycast(raycaster, excluded);
 			parent.geometry.setDrawRange(0, 1);
 			const misses: THREE.Intersection[] = [];
-			point.raycast(new THREE.Raycaster(new THREE.Vector3(5, 0, 5), new THREE.Vector3(0, 0, -1)), misses);
+			point.raycast(
+				new THREE.Raycaster(new THREE.Vector3(5, 0, 5), new THREE.Vector3(0, 0, -1)),
+				misses,
+			);
 			return {
-				hit: hit && { distance: hit.distance, distanceToRay: hit.distanceToRay, point: hit.point.toArray(), index: hit.index, face: hit.face },
+				hit: hit && {
+					distance: hit.distance,
+					distanceToRay: hit.distanceToRay,
+					point: hit.point.toArray(),
+					index: hit.index,
+					face: hit.face,
+				},
 				excluded: excluded.length,
 				misses: misses.length,
 				geometryIdentity: point.geometry === parent.geometry,
 			};
 		}
 		expect(exercise(PositionPoint)).toEqual(exercise(ReactPositionPoint));
-		expect(exercise(PositionPoint)).toMatchObject({ excluded: 0, misses: 0, geometryIdentity: true });
+		expect(exercise(PositionPoint)).toMatchObject({
+			excluded: 0,
+			misses: 0,
+			geometryIdentity: true,
+		});
 	});
 
 	it('rejects Point outside its required Points provider', async () => {
-		await expect(createOctaneThree(PointWithoutParentScene, {})).rejects.toThrow('Point must be used inside Points component.');
+		await expect(createOctaneThree(PointWithoutParentScene, {})).rejects.toThrow(
+			'Point must be used inside Points component.',
+		);
 	});
 });

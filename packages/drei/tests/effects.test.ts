@@ -25,7 +25,9 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		setPixelRatio() {},
 		setSize() {},
 		setRenderTarget() {},
-		getRenderTarget() { return null; },
+		getRenderTarget() {
+			return null;
+		},
 		renderLists: { dispose() {} },
 		forceContextLoss() {},
 		dispose() {},
@@ -56,10 +58,14 @@ async function reactEffects(props: Record<string, unknown>) {
 		dpr: 1,
 		size: { width: 320, height: 180, top: 0, left: 0 },
 	});
-	await reactThreeAct(async () => root.render(React.createElement(ReactEffects, {
-		...props,
-		ref: (value: EffectComposer) => (composer = value),
-	})));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(ReactEffects, {
+				...props,
+				ref: (value: EffectComposer) => (composer = value),
+			}),
+		),
+	);
 	return { root, composer };
 }
 
@@ -76,13 +82,17 @@ describe('Effects', () => {
 		};
 		const react = await reactEffects(props);
 		let octaneComposer!: EffectComposer;
-		const octane = await createOctaneThree(EffectsScene, {
-			...props,
-			ref: (value: EffectComposer) => (octaneComposer = value),
-			renderIndex: 1,
-			disableGamma: false,
-			disableRenderPass: false,
-		}, { width: 320, height: 180 });
+		const octane = await createOctaneThree(
+			EffectsScene,
+			{
+				...props,
+				ref: (value: EffectComposer) => (octaneComposer = value),
+				renderIndex: 1,
+				disableGamma: false,
+				disableRenderPass: false,
+			},
+			{ width: 320, height: 180 },
+		);
 		expect(snapshot(octaneComposer)).toEqual(snapshot(react.composer));
 		octane.unmount();
 		await reactThreeAct(async () => react.root.unmount());
@@ -92,17 +102,21 @@ describe('Effects', () => {
 		const props = { disableRender: true, disableRenderPass: true, disableGamma: true };
 		const react = await reactEffects(props);
 		let octaneComposer!: EffectComposer;
-		const octane = await createOctaneThree(EffectsScene, {
-			...props,
-			ref: (value: EffectComposer) => (octaneComposer = value),
-			multisamping: 8,
-			colorSpace: undefined,
-			type: undefined,
-			renderIndex: 1,
-			depthBuffer: true,
-			stencilBuffer: false,
-			anisotropy: 1,
-		}, { width: 320, height: 180 });
+		const octane = await createOctaneThree(
+			EffectsScene,
+			{
+				...props,
+				ref: (value: EffectComposer) => (octaneComposer = value),
+				multisamping: 8,
+				colorSpace: undefined,
+				type: undefined,
+				renderIndex: 1,
+				depthBuffer: true,
+				stencilBuffer: false,
+				anisotropy: 1,
+			},
+			{ width: 320, height: 180 },
+		);
 		expect(snapshot(octaneComposer)).toEqual(snapshot(react.composer));
 		expect(octaneComposer.passes).toEqual([]);
 		octane.unmount();
@@ -118,20 +132,24 @@ describe('Effects', () => {
 		};
 		const react = await reactEffects(props);
 		let octaneComposer!: EffectComposer;
-		const octane = await createOctaneThree(EffectsScene, {
-			ref: (value: EffectComposer) => (octaneComposer = value),
-			pass: octanePass,
-			multisamping: 8,
-			colorSpace: undefined,
-			type: undefined,
-			renderIndex: 1,
-			disableGamma: false,
-			disableRenderPass: false,
-			disableRender: true,
-			depthBuffer: true,
-			stencilBuffer: false,
-			anisotropy: 1,
-		}, { width: 320, height: 180 });
+		const octane = await createOctaneThree(
+			EffectsScene,
+			{
+				ref: (value: EffectComposer) => (octaneComposer = value),
+				pass: octanePass,
+				multisamping: 8,
+				colorSpace: undefined,
+				type: undefined,
+				renderIndex: 1,
+				disableGamma: false,
+				disableRenderPass: false,
+				disableRender: true,
+				depthBuffer: true,
+				stencilBuffer: false,
+				anisotropy: 1,
+			},
+			{ width: 320, height: 180 },
+		);
 		expect(snapshot(octaneComposer)).toEqual(snapshot(react.composer));
 		expect(octaneComposer.passes[2]).toBe(octanePass);
 		octane.unmount();

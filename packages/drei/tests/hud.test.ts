@@ -26,15 +26,25 @@ function reactRenderer(canvas: HTMLCanvasElement) {
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
 		autoClear: true,
-		render(scene: THREE.Scene, camera: THREE.Camera) { renderCalls.push([scene, camera]); },
-		clearDepth() { clearDepthCalls++; },
+		render(scene: THREE.Scene, camera: THREE.Camera) {
+			renderCalls.push([scene, camera]);
+		},
+		clearDepth() {
+			clearDepthCalls++;
+		},
 		setPixelRatio() {},
 		setSize() {},
 		renderLists: { dispose() {} },
 		forceContextLoss() {},
 		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
-	return { renderer, renderCalls, get clearDepthCalls() { return clearDepthCalls; } };
+	return {
+		renderer,
+		renderCalls,
+		get clearDepthCalls() {
+			return clearDepthCalls;
+		},
+	};
 }
 
 function renderSnapshot(calls: readonly (readonly [THREE.Scene, THREE.Camera])[]) {
@@ -54,38 +64,43 @@ async function reactHud(renderPriority: number) {
 		return null;
 	}
 	await root.configure({ gl: recorder.renderer, frameloop: 'never' });
-	await reactThreeAct(async () => root.render(
-		React.createElement(
-			React.Fragment,
-			null,
-			React.createElement('group', { name: 'main-scene' }),
+	await reactThreeAct(async () =>
+		root.render(
 			React.createElement(
-				ReactHud,
-				{ renderPriority },
-				React.createElement('mesh', { name: 'hud-content' }),
+				React.Fragment,
+				null,
+				React.createElement('group', { name: 'main-scene' }),
+				React.createElement(
+					ReactHud,
+					{ renderPriority },
+					React.createElement('mesh', { name: 'hud-content' }),
+				),
+				React.createElement(Capture),
 			),
-			React.createElement(Capture),
 		),
-	));
+	);
 	return { root, getState, recorder };
 }
 
 describe('Hud', () => {
-	it.each([1, 2])('matches portal isolation and render ordering at priority %s', async (priority) => {
-		const react = await reactHud(priority);
-		const octane = await createOctaneThree(HudScene, { renderPriority: priority });
-		expect(octane.scene.getObjectByName('hud-content')).toBeUndefined();
-		expect(react.getState().scene.getObjectByName('hud-content')).toBeUndefined();
+	it.each([1, 2])(
+		'matches portal isolation and render ordering at priority %s',
+		async (priority) => {
+			const react = await reactHud(priority);
+			const octane = await createOctaneThree(HudScene, { renderPriority: priority });
+			expect(octane.scene.getObjectByName('hud-content')).toBeUndefined();
+			expect(react.getState().scene.getObjectByName('hud-content')).toBeUndefined();
 
-		await reactThreeAct(async () => reactAdvance(1, true, react.getState()));
-		octane.advanceFrames(1, 1);
-		expect(renderSnapshot(octane.renderer.renderCalls)).toEqual(
-			renderSnapshot(react.recorder.renderCalls),
-		);
-		expect(renderSnapshot(octane.renderer.renderCalls).some((call) => call.hud)).toBe(true);
-		expect(octane.renderer.autoClear).toBe(react.recorder.renderer.autoClear);
+			await reactThreeAct(async () => reactAdvance(1, true, react.getState()));
+			octane.advanceFrames(1, 1);
+			expect(renderSnapshot(octane.renderer.renderCalls)).toEqual(
+				renderSnapshot(react.recorder.renderCalls),
+			);
+			expect(renderSnapshot(octane.renderer.renderCalls).some((call) => call.hud)).toBe(true);
+			expect(octane.renderer.autoClear).toBe(react.recorder.renderer.autoClear);
 
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
-	});
+			octane.unmount();
+			await reactThreeAct(async () => react.root.unmount());
+		},
+	);
 });

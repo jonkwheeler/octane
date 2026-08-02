@@ -3,11 +3,7 @@ import {
 	getFirstFrame as reactGetFirstFrame,
 } from '@react-three/drei/core/useSpriteLoader.js';
 import { describe, expect, it } from 'vitest';
-import {
-	checkIfFrameIsEmpty,
-	getFirstFrame,
-	type FrameData,
-} from '../src/index.js';
+import { checkIfFrameIsEmpty, getFirstFrame, type FrameData } from '../src/index.js';
 
 function frame(x: number): FrameData {
 	return {

@@ -28,13 +28,19 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
 async function flush(): Promise<void> {
-	await act(async () => { for (let index = 0; index < 8; index++) await Promise.resolve(); });
+	await act(async () => {
+		for (let index = 0; index < 8; index++) await Promise.resolve();
+	});
 }
 
 async function mountPair(props: FacemeshProps) {
@@ -43,21 +49,37 @@ async function mountPair(props: FacemeshProps) {
 	const reactCanvas = document.createElement('canvas');
 	const reactRoot = createReactRoot(reactCanvas);
 	await reactRoot.configure({ gl: renderer(reactCanvas), frameloop: 'never', dpr: 1 });
-	await act(async () => reactRoot.render(React.createElement(
-		ReactFacemesh,
-		{ ...props as any, ref: (value: ReactFacemeshApi | null) => { reactApi = value; } },
-		React.createElement('meshBasicMaterial'),
-	)));
+	await act(async () =>
+		reactRoot.render(
+			React.createElement(
+				ReactFacemesh,
+				{
+					...(props as any),
+					ref: (value: ReactFacemeshApi | null) => {
+						reactApi = value;
+					},
+				},
+				React.createElement('meshBasicMaterial'),
+			),
+		),
+	);
 	const octaneCanvas = document.createElement('canvas');
 	const octaneRoot = createOctaneRoot(octaneCanvas);
 	await octaneRoot.configure({ gl: renderer(octaneCanvas), frameloop: 'never', dpr: 1 });
 	octaneRoot.render(FacemeshScene, {
 		...props,
-		meshRef: (value: FacemeshApi | null) => { octaneApi = value; },
+		meshRef: (value: FacemeshApi | null) => {
+			octaneApi = value;
+		},
 	});
 	await flush();
 	if (!reactApi || !octaneApi) throw new Error('Facemesh imperative refs were not assigned');
-	return { reactRoot, octaneRoot, reactApi: reactApi as ReactFacemeshApi, octaneApi: octaneApi as FacemeshApi };
+	return {
+		reactRoot,
+		octaneRoot,
+		reactApi: reactApi as ReactFacemeshApi,
+		octaneApi: octaneApi as FacemeshApi,
+	};
 }
 
 function meshSnapshot(api: ReactFacemeshApi | FacemeshApi) {
@@ -140,7 +162,9 @@ describe('Facemesh', () => {
 		const pair = await mountPair({ points: FacemeshDatas.SAMPLE_FACE.keypoints, eyes: true });
 		const warning = 'Facemesh `eyes` option only works if `faceBlendshapes` is provided: skipping.';
 		// React's development root may replay effects; both roots must emit the exact boundary warning.
-		expect(warn.mock.calls.filter(([message]) => message === warning).length).toBeGreaterThanOrEqual(2);
+		expect(
+			warn.mock.calls.filter(([message]) => message === warning).length,
+		).toBeGreaterThanOrEqual(2);
 		await unmountPair(pair);
 		warn.mockRestore();
 	});

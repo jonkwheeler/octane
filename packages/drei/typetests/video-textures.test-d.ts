@@ -8,7 +8,11 @@ import {
 	useVideoTexture,
 } from '../src/index.js';
 
-const video: VideoTextureProps = { src: '/movie.mp4', start: false, children: (texture) => texture };
+const video: VideoTextureProps = {
+	src: '/movie.mp4',
+	start: false,
+	children: (texture) => texture,
+};
 const screen: ScreenVideoTextureProps = { options: { video: true } };
 const webcam: WebcamVideoTextureProps = { constraints: { audio: false, video: true } };
 VideoTexture;

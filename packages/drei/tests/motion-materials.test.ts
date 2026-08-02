@@ -12,10 +12,7 @@ import { MeshWobbleMaterial as ReactMeshWobbleMaterial } from '@react-three/drei
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import {
-	DistortMaterialScene,
-	WobbleMaterialScene,
-} from './_fixtures/motion-materials.three.tsrx';
+import { DistortMaterialScene, WobbleMaterialScene } from './_fixtures/motion-materials.three.tsrx';
 
 beforeAll(() => {
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -56,12 +53,19 @@ async function reactMaterial(Component: React.ElementType, props: Record<string,
 		return null;
 	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		'mesh',
-		null,
-		React.createElement(Component, { ...props, ref: (value: MotionMaterial) => (material = value) }),
-		React.createElement(Capture),
-	)));
+	await reactThreeAct(async () =>
+		root.render(
+			React.createElement(
+				'mesh',
+				null,
+				React.createElement(Component, {
+					...props,
+					ref: (value: MotionMaterial) => (material = value),
+				}),
+				React.createElement(Capture),
+			),
+		),
+	);
 	return { root, material, getState };
 }
 
@@ -77,7 +81,10 @@ function materialSnapshot(material: MotionMaterial) {
 }
 
 function shaderSnapshot(material: MotionMaterial) {
-	const shader = { vertexShader: '#include <begin_vertex>', uniforms: {} as Record<string, unknown> };
+	const shader = {
+		vertexShader: '#include <begin_vertex>',
+		uniforms: {} as Record<string, unknown>,
+	};
 	material.onBeforeCompile(shader);
 	return {
 		uniforms: Object.keys(shader.uniforms).sort(),

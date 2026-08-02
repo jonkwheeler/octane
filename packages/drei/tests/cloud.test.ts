@@ -36,7 +36,9 @@ beforeAll(() => {
 	};
 });
 
-afterAll(() => { THREE.TextureLoader.prototype.load = originalTextureLoad; });
+afterAll(() => {
+	THREE.TextureLoader.prototype.load = originalTextureLoad;
+});
 
 function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 	return {
@@ -61,7 +63,9 @@ async function flushLoads() {
 
 function findInstanced(group: THREE.Group): THREE.InstancedMesh {
 	let found: THREE.InstancedMesh | undefined;
-	group.traverse((object) => { if ((object as THREE.InstancedMesh).isInstancedMesh) found = object as THREE.InstancedMesh; });
+	group.traverse((object) => {
+		if ((object as THREE.InstancedMesh).isInstancedMesh) found = object as THREE.InstancedMesh;
+	});
 	if (!found) throw new Error('Clouds did not create an InstancedMesh.');
 	return found;
 }
@@ -106,27 +110,57 @@ async function reactClouds(texture: string) {
 	let first!: THREE.Group;
 	let second!: THREE.Group;
 	let getState!: () => ReactRootState;
-	function Capture() { getState = reactUseThree((state) => state.get); return null; }
+	function Capture() {
+		getState = reactUseThree((state) => state.get);
+		return null;
+	}
 	await root.configure({ gl: renderer(canvas), frameloop: 'never' });
-	await reactThreeAct(async () => root.render(React.createElement(
-		React.Fragment,
-		null,
-		React.createElement(
-			React.Suspense,
-			{ fallback: null },
+	await reactThreeAct(async () =>
+		root.render(
 			React.createElement(
-				ReactClouds,
-				{ ref: (value: THREE.Group) => (group = value), texture, limit: 6, range: 4, frustumCulled: false, position: [2, 0, 0] },
-				React.createElement(ReactCloudInstance, {
-					ref: (value: THREE.Group) => (first = value), seed: 4, segments: 3, bounds: [2, 1, 3],
-					concentrate: 'outside', volume: 2, smallestVolume: 0.1, distribute,
-					growth: 1.5, speed: 0.75, fade: 8, opacity: 0.6, color: '#4080c0', position: [1, 2, 3],
-				}),
-				React.createElement(ReactCloudInstance, { ref: (value: THREE.Group) => (second = value), seed: 8, segments: 2, color: 'red' }),
+				React.Fragment,
+				null,
+				React.createElement(
+					React.Suspense,
+					{ fallback: null },
+					React.createElement(
+						ReactClouds,
+						{
+							ref: (value: THREE.Group) => (group = value),
+							texture,
+							limit: 6,
+							range: 4,
+							frustumCulled: false,
+							position: [2, 0, 0],
+						},
+						React.createElement(ReactCloudInstance, {
+							ref: (value: THREE.Group) => (first = value),
+							seed: 4,
+							segments: 3,
+							bounds: [2, 1, 3],
+							concentrate: 'outside',
+							volume: 2,
+							smallestVolume: 0.1,
+							distribute,
+							growth: 1.5,
+							speed: 0.75,
+							fade: 8,
+							opacity: 0.6,
+							color: '#4080c0',
+							position: [1, 2, 3],
+						}),
+						React.createElement(ReactCloudInstance, {
+							ref: (value: THREE.Group) => (second = value),
+							seed: 8,
+							segments: 2,
+							color: 'red',
+						}),
+					),
+				),
+				React.createElement(Capture),
 			),
 		),
-		React.createElement(Capture),
-	)));
+	);
 	await flushLoads();
 	return { root, group, first, second, getState };
 }
@@ -178,7 +212,8 @@ describe('Clouds', () => {
 	});
 
 	it('wraps a standalone Cloud in an implicit Clouds provider', async () => {
-		const texture = 'https://rawcdn.githack.com/pmndrs/drei-assets/9225a9f1fbd449d9411125c2f419b843d0308c9f/cloud.png';
+		const texture =
+			'https://rawcdn.githack.com/pmndrs/drei-assets/9225a9f1fbd449d9411125c2f419b843d0308c9f/cloud.png';
 		let cloud!: THREE.Group;
 		const root = await createOctaneThree(StandaloneCloudScene, {
 			ref: (value: THREE.Group) => (cloud = value),
@@ -189,13 +224,17 @@ describe('Clouds', () => {
 		await flushLoads();
 		root.advanceFrames(1, 0.25);
 		expect(cloud.type).toBe('Group');
-		expect(cloud.parent?.children.some((object) => (object as THREE.InstancedMesh).isInstancedMesh)).toBe(true);
+		expect(
+			cloud.parent?.children.some((object) => (object as THREE.InstancedMesh).isInstancedMesh),
+		).toBe(true);
 		root.unmount();
 		useTexture.clear(texture);
 		reactUseTexture.clear(texture);
 	});
 
 	it('rejects CloudInstance outside Clouds', async () => {
-		await expect(createOctaneThree(CloudInstanceWithoutParentScene, {})).rejects.toThrow('CloudInstance must be used inside Clouds component.');
+		await expect(createOctaneThree(CloudInstanceWithoutParentScene, {})).rejects.toThrow(
+			'CloudInstance must be used inside Clouds component.',
+		);
 	});
 });

@@ -14,7 +14,12 @@ const textures = new Map<string, THREE.Texture>();
 const jsonByUrl = new Map<string, SpriteData>();
 const textureLoadCalls: string[] = [];
 
-function frame(filename: string, x: number, width: number, height: number): FrameData & { filename: string } {
+function frame(
+	filename: string,
+	x: number,
+	width: number,
+	height: number,
+): FrameData & { filename: string } {
 	return {
 		filename,
 		frame: { x, y: 0, w: width, h: height },
@@ -47,13 +52,18 @@ async function flush(): Promise<void> {
 
 function snapshot(result: LoaderResult | undefined) {
 	const value = result?.spriteObj;
-	return value && {
-		aspect: value.aspect.toArray(),
-		colorSpace: value.spriteTexture.colorSpace,
-		frames: value.spriteData?.frames,
-		meta: value.spriteData?.meta,
-		image: value.spriteTexture.image && [value.spriteTexture.image.width, value.spriteTexture.image.height],
-	};
+	return (
+		value && {
+			aspect: value.aspect.toArray(),
+			colorSpace: value.spriteTexture.colorSpace,
+			frames: value.spriteData?.frames,
+			meta: value.spriteData?.meta,
+			image: value.spriteTexture.image && [
+				value.spriteTexture.image.width,
+				value.spriteTexture.image.height,
+			],
+		}
+	);
 }
 
 async function mountPair(options: {
@@ -67,7 +77,8 @@ async function mountPair(options: {
 	const reactLoads: LoadRecord[] = [];
 	const octaneLoads: LoadRecord[] = [];
 	const contextSettings = { willReadFrequently: true } as const;
-	const onReactLoad = (texture: THREE.Texture, data?: SpriteData | null) => reactLoads.push({ texture, data: data ?? null });
+	const onReactLoad = (texture: THREE.Texture, data?: SpriteData | null) =>
+		reactLoads.push({ texture, data: data ?? null });
 	function ReactScene() {
 		reactResult = reactUseSpriteLoader(
 			options.input,
@@ -81,19 +92,43 @@ async function mountPair(options: {
 	}
 	const reactCanvas = document.createElement('canvas');
 	const reactRoot = createReactRoot(reactCanvas);
-	await reactRoot.configure({ gl: renderer(reactCanvas), frameloop: 'never', dpr: 1, size: { width: 200, height: 100, left: 0, top: 0 } });
+	await reactRoot.configure({
+		gl: renderer(reactCanvas),
+		frameloop: 'never',
+		dpr: 1,
+		size: { width: 200, height: 100, left: 0, top: 0 },
+	});
 	await act(async () => reactRoot.render(React.createElement(ReactScene)));
 	const octaneCanvas = document.createElement('canvas');
 	const octaneRoot = createOctaneRoot(octaneCanvas);
-	await octaneRoot.configure({ gl: renderer(octaneCanvas), frameloop: 'never', dpr: 1, size: { width: 200, height: 100, left: 0, top: 0 } });
+	await octaneRoot.configure({
+		gl: renderer(octaneCanvas),
+		frameloop: 'never',
+		dpr: 1,
+		size: { width: 200, height: 100, left: 0, top: 0 },
+	});
 	octaneRoot.render(SpriteLoaderScene, {
 		...options,
 		contextSettings,
-		onLoad: (texture: THREE.Texture, data?: SpriteData | null) => octaneLoads.push({ texture, data: data ?? null }),
-		onRender: (value: LoaderResult) => { octaneResult = value; },
+		onLoad: (texture: THREE.Texture, data?: SpriteData | null) =>
+			octaneLoads.push({ texture, data: data ?? null }),
+		onRender: (value: LoaderResult) => {
+			octaneResult = value;
+		},
 	});
 	await flush();
-	return { reactRoot, octaneRoot, get reactResult() { return reactResult; }, get octaneResult() { return octaneResult; }, reactLoads, octaneLoads };
+	return {
+		reactRoot,
+		octaneRoot,
+		get reactResult() {
+			return reactResult;
+		},
+		get octaneResult() {
+			return octaneResult;
+		},
+		reactLoads,
+		octaneLoads,
+	};
 }
 
 beforeEach(() => {
@@ -108,8 +143,15 @@ beforeEach(() => {
 		queueMicrotask(() => onLoad?.(texture));
 		return texture;
 	});
-	vi.stubGlobal('fetch', vi.fn(async (url: string | URL | Request) => ({ json: async () => structuredClone(jsonByUrl.get(String(url))) })));
-	vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function (contextId: string) {
+	vi.stubGlobal(
+		'fetch',
+		vi.fn(async (url: string | URL | Request) => ({
+			json: async () => structuredClone(jsonByUrl.get(String(url))),
+		})),
+	);
+	vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(function (
+		contextId: string,
+	) {
 		if (contextId !== '2d') return null;
 		return {
 			drawImage() {},
@@ -130,14 +172,32 @@ describe('useSpriteLoader', () => {
 	it('matches JSON loading, animation grouping, scale ratios, callback state, and the real renderer chain', async () => {
 		const data = {
 			frames: [frame('idle-0', 0, 32, 16), frame('idle-1', 32, 16, 8), frame('run-0', 48, 8, 8)],
-			meta: { version: '1', size: { w: 64, h: 32 }, rows: 1, columns: 3, frameWidth: 16, frameHeight: 16, scale: '1' },
+			meta: {
+				version: '1',
+				size: { w: 64, h: 32 },
+				rows: 1,
+				columns: 3,
+				frameWidth: 16,
+				frameHeight: 16,
+				scale: '1',
+			},
 		} as unknown as SpriteData;
 		jsonByUrl.set('/sheet.json', data);
-		const pair = await mountPair({ input: '/sheet.png', json: '/sheet.json', animationNames: ['idle', 'run'] });
+		const pair = await mountPair({
+			input: '/sheet.png',
+			json: '/sheet.json',
+			animationNames: ['idle', 'run'],
+		});
 
 		expect(snapshot(pair.octaneResult)).toEqual(snapshot(pair.reactResult as LoaderResult));
-		expect(pair.octaneLoads.map(({ data: value }) => value)).toEqual(pair.reactLoads.map(({ data: value }) => value));
-		expect((pair.octaneResult!.spriteObj!.spriteData!.frames as Record<string, FrameData[]>).idle.map((value) => value.scaleRatio)).toEqual([1, 0.5]);
+		expect(pair.octaneLoads.map(({ data: value }) => value)).toEqual(
+			pair.reactLoads.map(({ data: value }) => value),
+		);
+		expect(
+			(pair.octaneResult!.spriteObj!.spriteData!.frames as Record<string, FrameData[]>).idle.map(
+				(value) => value.scaleRatio,
+			),
+		).toEqual([1, 0.5]);
 		expect(pair.octaneResult!.spriteObj!.spriteTexture.name).toBe('/sheet.png');
 
 		// Negative control: a changed delimiter must not accidentally satisfy parity.
@@ -153,7 +213,7 @@ describe('useSpriteLoader', () => {
 		expect(snapshot(pair.octaneResult)).toEqual(snapshot(pair.reactResult as LoaderResult));
 		const data = pair.octaneResult!.spriteObj!.spriteData!;
 		expect(data.meta).toMatchObject({ rows: 2, columns: 3, frameWidth: 64 / 3, frameHeight: 16 });
-		expect((data.frames as FrameData[])).toHaveLength(5);
+		expect(data.frames as FrameData[]).toHaveLength(5);
 		pair.octaneRoot.unmount();
 		await act(async () => pair.reactRoot.unmount());
 	});
@@ -164,8 +224,12 @@ describe('useSpriteLoader', () => {
 		pair.octaneResult!.loadJsonAndTexture('/octane-manual.png');
 		await flush();
 		expect(snapshot(pair.octaneResult)).toEqual(snapshot(pair.reactResult as LoaderResult));
-		expect(() => pair.reactResult!.loadJsonAndTexture('')).toThrow('Either textureUrl or input must be provided');
-		expect(() => pair.octaneResult!.loadJsonAndTexture('')).toThrow('Either textureUrl or input must be provided');
+		expect(() => pair.reactResult!.loadJsonAndTexture('')).toThrow(
+			'Either textureUrl or input must be provided',
+		);
+		expect(() => pair.octaneResult!.loadJsonAndTexture('')).toThrow(
+			'Either textureUrl or input must be provided',
+		);
 		expect(typeof useSpriteLoader.preload).toBe(typeof reactUseSpriteLoader.preload);
 		expect(typeof useSpriteLoader.clear).toBe(typeof reactUseSpriteLoader.clear);
 		useSpriteLoader.preload('/octane-preload.png');

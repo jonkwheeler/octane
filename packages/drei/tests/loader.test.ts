@@ -13,7 +13,11 @@ function snapshot(container: HTMLElement) {
 	const inner = outer.firstElementChild!.firstElementChild as HTMLElement;
 	const bar = inner.firstElementChild as HTMLElement;
 	const data = inner.lastElementChild as HTMLElement;
-	return { text: data.innerText, outerStyle: outer.getAttribute('style'), barStyle: bar.getAttribute('style') };
+	return {
+		text: data.innerText,
+		outerStyle: outer.getAttribute('style'),
+		barStyle: bar.getAttribute('style'),
+	};
 }
 
 describe('Loader', () => {

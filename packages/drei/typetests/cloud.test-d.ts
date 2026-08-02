@@ -9,7 +9,12 @@ const cloud: CloudProps = {
 	distribute: (_state, index) => ({ point: new THREE.Vector3(index, 0, 0), volume: 0.5 }),
 	color: 'white',
 };
-const clouds: CloudsProps = { texture: '/cloud.png', limit: 100, range: 50, material: THREE.MeshPhongMaterial };
+const clouds: CloudsProps = {
+	texture: '/cloud.png',
+	limit: 100,
+	range: 50,
+	material: THREE.MeshPhongMaterial,
+};
 void cloud;
 void clouds;
 

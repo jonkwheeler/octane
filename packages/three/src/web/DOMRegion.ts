@@ -20,9 +20,7 @@ export interface DOMRegionProps {
 	/** A renderer region that was already lowered by an outer component boundary. */
 	region?: RendererRegion;
 	/** Receives the stable DOM container owned by this region. */
-	containerRef?:
-		| { current: HTMLDivElement | null }
-		| ((value: HTMLDivElement | null) => void);
+	containerRef?: { current: HTMLDivElement | null } | ((value: HTMLDivElement | null) => void);
 }
 
 class DOMRegionSentinel extends Object3D {
@@ -57,10 +55,14 @@ export const DOMRegion = defineUniversalComponent<DOMRegionProps>('three', (prop
 	const binding = useMemo(() => createDOMRegionBinding(), [], DOM_REGION_BINDING);
 	const sentinel = useMemo(() => new DOMRegionSentinel(), [], DOM_REGION_SENTINEL);
 	useLayoutEffect(() => binding.attach(), [binding], DOM_REGION_LIFETIME);
-	useLayoutEffect(() => {
-		assignContainerRef(props.containerRef, binding.container);
-		return () => assignContainerRef(props.containerRef, null);
-	}, [binding, props.containerRef], DOM_REGION_CONTAINER_REF);
+	useLayoutEffect(
+		() => {
+			assignContainerRef(props.containerRef, binding.container);
+			return () => assignContainerRef(props.containerRef, null);
+		},
+		[binding, props.containerRef],
+		DOM_REGION_CONTAINER_REF,
+	);
 	useLayoutEffect(
 		() => binding.commit(props.target, props.region ?? props.children),
 		[binding, props.target, props.region, props.children],

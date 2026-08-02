@@ -21,7 +21,9 @@ const mocks = vi.hoisted(() => {
 		showPanel = vi.fn();
 		begin = vi.fn();
 		end = vi.fn();
-		constructor() { statsInstances.push(this); }
+		constructor() {
+			statsInstances.push(this);
+		}
 	}
 	class StatsGl {
 		domElement = document.createElement('div');
@@ -52,8 +54,12 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
@@ -64,7 +70,9 @@ describe('Stats', () => {
 		function ReactScene() {
 			reactState = reactUseThree();
 			return React.createElement(ReactStats, {
-				showPanel: 2, className: 'alpha beta', parent: { current: reactParent },
+				showPanel: 2,
+				className: 'alpha beta',
+				parent: { current: reactParent },
 			});
 		}
 		const canvas = document.createElement('canvas');
@@ -84,7 +92,9 @@ describe('Stats', () => {
 
 		const octaneParent = document.createElement('section');
 		const octaneRoot = await createOctaneThree(StatsScene, {
-			showPanel: 2, className: 'alpha beta', parent: { current: octaneParent },
+			showPanel: 2,
+			className: 'alpha beta',
+			parent: { current: octaneParent },
 		});
 		await reactThreeAct(async () => {
 			for (let index = 0; index < 8; index++) await Promise.resolve();
@@ -116,9 +126,13 @@ describe('StatsGl', () => {
 		function ReactScene() {
 			reactState = reactUseThree();
 			return React.createElement(ReactStatsGl, {
-				ref: (value) => (reactElement = value), parent: { current: reactParent },
-				id: 'perf', className: 'one two', clearStatsGlStyle: true,
-				showPanel: 1, logsPerSecond: 8,
+				ref: (value) => (reactElement = value),
+				parent: { current: reactParent },
+				id: 'perf',
+				className: 'one two',
+				clearStatsGlStyle: true,
+				showPanel: 1,
+				logsPerSecond: 8,
 			});
 		}
 		const canvas = document.createElement('canvas');
@@ -133,8 +147,12 @@ describe('StatsGl', () => {
 		let octaneElement: HTMLDivElement | null = null;
 		const octaneRoot = await createOctaneThree(StatsGlScene, {
 			ref: (value: HTMLDivElement | null) => (octaneElement = value),
-			parent: { current: octaneParent }, id: 'perf', className: 'one two',
-			clearStatsGlStyle: true, showPanel: 1, logsPerSecond: 8,
+			parent: { current: octaneParent },
+			id: 'perf',
+			className: 'one two',
+			clearStatsGlStyle: true,
+			showPanel: 1,
+			logsPerSecond: 8,
 		});
 		const octaneStats = mocks.statsGlInstances.at(-1)!;
 		octaneRoot.advanceFrames(1);

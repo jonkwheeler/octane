@@ -2,18 +2,35 @@ import * as THREE from 'three';
 import { shaderMaterial } from '../core/shaderMaterial.js';
 
 export type CausticsMaterialType = THREE.ShaderMaterial & {
-	cameraMatrixWorld?: THREE.Matrix4; cameraProjectionMatrixInv?: THREE.Matrix4; lightPlaneNormal?: THREE.Vector3;
-	lightPlaneConstant?: number; normalTexture?: THREE.Texture | null; depthTexture?: THREE.Texture | null;
-	lightDir?: THREE.Vector3; near?: number; far?: number; modelMatrix?: THREE.Matrix4; worldRadius?: number;
-	ior?: number; bounces?: number; resolution?: number; size?: number; intensity?: number;
+	cameraMatrixWorld?: THREE.Matrix4;
+	cameraProjectionMatrixInv?: THREE.Matrix4;
+	lightPlaneNormal?: THREE.Vector3;
+	lightPlaneConstant?: number;
+	normalTexture?: THREE.Texture | null;
+	depthTexture?: THREE.Texture | null;
+	lightDir?: THREE.Vector3;
+	near?: number;
+	far?: number;
+	modelMatrix?: THREE.Matrix4;
+	worldRadius?: number;
+	ior?: number;
+	bounces?: number;
+	resolution?: number;
+	size?: number;
+	intensity?: number;
 };
 
 export type CausticsProjectionMaterialType = THREE.ShaderMaterial & {
-	color?: THREE.Color; causticsTexture?: THREE.Texture; causticsTextureB?: THREE.Texture;
-	lightProjMatrix?: THREE.Matrix4; lightViewMatrix?: THREE.Matrix4;
+	color?: THREE.Color;
+	causticsTexture?: THREE.Texture;
+	causticsTextureB?: THREE.Texture;
+	lightProjMatrix?: THREE.Matrix4;
+	lightViewMatrix?: THREE.Matrix4;
 };
 
-export type NormalMaterialType = THREE.MeshNormalMaterial & { viewMatrix: { value: THREE.Matrix4 } };
+export type NormalMaterialType = THREE.MeshNormalMaterial & {
+	viewMatrix: { value: THREE.Matrix4 };
+};
 
 export function createNormalMaterial(side: THREE.Side = THREE.FrontSide) {
 	const viewMatrix = { value: new THREE.Matrix4() };
@@ -21,16 +38,27 @@ export function createNormalMaterial(side: THREE.Side = THREE.FrontSide) {
 		viewMatrix,
 		onBeforeCompile: (shader: THREE.WebGLProgramParametersWithUniforms) => {
 			shader.uniforms.viewMatrix = viewMatrix;
-			shader.fragmentShader = `vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+			shader.fragmentShader =
+				`vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
 				return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
-			}\n` + shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
-				normal = inverseTransformDirection( normal, viewMatrix );\n`);
+			}\n` +
+				shader.fragmentShader.replace(
+					'#include <normal_fragment_maps>',
+					`#include <normal_fragment_maps>
+				normal = inverseTransformDirection( normal, viewMatrix );\n`,
+				);
 		},
 	});
 }
 
 export const CausticsProjectionMaterial = shaderMaterial(
-	{ causticsTexture: null, causticsTextureB: null, color: new THREE.Color(), lightProjMatrix: new THREE.Matrix4(), lightViewMatrix: new THREE.Matrix4() },
+	{
+		causticsTexture: null,
+		causticsTextureB: null,
+		color: new THREE.Color(),
+		lightProjMatrix: new THREE.Matrix4(),
+		lightViewMatrix: new THREE.Matrix4(),
+	},
 	`varying vec3 vWorldPosition;
 	void main() {
 		gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.);
@@ -57,10 +85,22 @@ export const CausticsProjectionMaterial = shaderMaterial(
 
 export const CausticsMaterial = shaderMaterial(
 	{
-		cameraMatrixWorld: new THREE.Matrix4(), cameraProjectionMatrixInv: new THREE.Matrix4(), normalTexture: null, depthTexture: null,
-		lightDir: new THREE.Vector3(0, 1, 0), lightPlaneNormal: new THREE.Vector3(0, 1, 0), lightPlaneConstant: 0,
-		near: 0.1, far: 100, modelMatrix: new THREE.Matrix4(), worldRadius: 1 / 40, ior: 1.1, bounces: 0,
-		resolution: 1024, size: 10, intensity: 0.5,
+		cameraMatrixWorld: new THREE.Matrix4(),
+		cameraProjectionMatrixInv: new THREE.Matrix4(),
+		normalTexture: null,
+		depthTexture: null,
+		lightDir: new THREE.Vector3(0, 1, 0),
+		lightPlaneNormal: new THREE.Vector3(0, 1, 0),
+		lightPlaneConstant: 0,
+		near: 0.1,
+		far: 100,
+		modelMatrix: new THREE.Matrix4(),
+		worldRadius: 1 / 40,
+		ior: 1.1,
+		bounces: 0,
+		resolution: 1024,
+		size: 10,
+		intensity: 0.5,
 	},
 	`varying vec2 vUv;
 	void main() {

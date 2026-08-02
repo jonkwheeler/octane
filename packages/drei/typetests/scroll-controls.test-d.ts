@@ -1,4 +1,11 @@
-import { Scroll, ScrollControls, useScroll, type ScrollControlsProps, type ScrollControlsState, type ScrollProps } from '@octanejs/drei';
+import {
+	Scroll,
+	ScrollControls,
+	useScroll,
+	type ScrollControlsProps,
+	type ScrollControlsState,
+	type ScrollProps,
+} from '@octanejs/drei';
 
 const controls: ScrollControlsProps = { pages: 3, distance: 2, horizontal: true, children: null };
 const canvas: ScrollProps = { html: false };

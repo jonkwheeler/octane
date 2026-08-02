@@ -192,7 +192,9 @@ async function interactionPair(props: Record<string, any>) {
 		onDrag: octaneCalls.drag,
 		onDragEnd: octaneCalls.end,
 	});
-	await act(async () => { for (let i = 0; i < 4; i++) await Promise.resolve(); });
+	await act(async () => {
+		for (let i = 0; i < 4; i++) await Promise.resolve();
+	});
 	return { ...pair, reactCalls, octaneCalls };
 }
 
@@ -213,9 +215,9 @@ async function dragPair(
 	expect(pair.octaneControls.enabled).toBe(false);
 	await fireOctane(pair.octaneRoot.store, octaneTarget, 'onPointerMove', moveEvent);
 	await fireOctane(pair.octaneRoot.store, octaneTarget, 'onPointerUp', event());
-	expect(pair.octaneCalls.start.mock.calls.map((call) => [call[0].component, call[0].axis])).toEqual(
-		pair.reactCalls.start.mock.calls.map((call) => [call[0].component, call[0].axis]),
-	);
+	expect(
+		pair.octaneCalls.start.mock.calls.map((call) => [call[0].component, call[0].axis]),
+	).toEqual(pair.reactCalls.start.mock.calls.map((call) => [call[0].component, call[0].axis]));
 	if (compareMatrices) {
 		expect(pair.octaneCalls.drag.mock.calls.at(-1)!.map(rounded)).toEqual(
 			pair.reactCalls.drag.mock.calls.at(-1)!.map(rounded),
@@ -339,11 +341,17 @@ describe('PivotControls', () => {
 		const intersectPlane = vi.spyOn(THREE.Ray.prototype, 'intersectPlane');
 		await fireOctane(pair.octaneRoot.store, target, 'onPointerDown', event());
 		intersectPlane.mockClear();
-		await fireOctane(pair.octaneRoot.store, target, 'onPointerMove', event(new THREE.Vector3(0.1, 0.2, 5)));
+		await fireOctane(
+			pair.octaneRoot.store,
+			target,
+			'onPointerMove',
+			event(new THREE.Vector3(0.1, 0.2, 5)),
+		);
 		expect(intersectPlane).toHaveBeenCalledTimes(1);
 		await fireOctane(pair.octaneRoot.store, target, 'onPointerUp', event());
 		intersectPlane.mockRestore();
-		pair.octaneRoot.unmount(); await act(async () => pair.reactRoot.unmount());
+		pair.octaneRoot.unmount();
+		await act(async () => pair.reactRoot.unmount());
 	});
 
 	it('matches AxisRotator angle math, shift snapping, limits, lifecycle and callback matrices', async () => {
@@ -357,10 +365,16 @@ describe('PivotControls', () => {
 		const target = pair.octaneRef.children[0].children[0];
 		const click = new THREE.Vector3(1, 0, 0);
 		const hit = new THREE.Vector3(Math.cos(Math.PI / 6), Math.sin(Math.PI / 6), 5);
-		await dragPair(pair, target, event(new THREE.Vector3(0, 0, 5), click), event(hit, click, { shiftKey: true }));
+		await dragPair(
+			pair,
+			target,
+			event(new THREE.Vector3(0, 0, 5), click),
+			event(hit, click, { shiftKey: true }),
+		);
 		const deltaWorld = pair.octaneCalls.drag.mock.calls.at(-1)![3] as THREE.Matrix4;
 		expect(Number(Math.atan2(deltaWorld.elements[1], deltaWorld.elements[0]).toFixed(6))).toBe(0.2);
-		pair.octaneRoot.unmount(); await act(async () => pair.reactRoot.unmount());
+		pair.octaneRoot.unmount();
+		await act(async () => pair.reactRoot.unmount());
 	});
 
 	it('matches ScalingSphere scale math, shift snapping, pinned scaleLimits omission and mesh reset', async () => {
@@ -373,14 +387,20 @@ describe('PivotControls', () => {
 		});
 		const target = pair.octaneRef.children[0].children[0].children[0];
 		const sphere = target.children.find((child) => child instanceof THREE.Mesh) as THREE.Mesh;
-		await dragPair(pair, target, event(), event(new THREE.Vector3(3, 0, 5), new THREE.Vector3(), { shiftKey: true }));
+		await dragPair(
+			pair,
+			target,
+			event(),
+			event(new THREE.Vector3(3, 0, 5), new THREE.Vector3(), { shiftKey: true }),
+		);
 		const deltaWorld = pair.octaneCalls.drag.mock.calls.at(-1)![3] as THREE.Matrix4;
 		expect(Number(deltaWorld.elements[0].toFixed(6))).toBe(1.5);
 		// Pinned parity: scaleLimits is accepted publicly but omitted from the provider.
 		const reactDeltaWorld = pair.reactCalls.drag.mock.calls.at(-1)![3] as THREE.Matrix4;
 		expect(Number(reactDeltaWorld.elements[0].toFixed(6))).toBe(1.5);
 		expect(sphere.position.y).toBe(1.2);
-		pair.octaneRoot.unmount(); await act(async () => pair.reactRoot.unmount());
+		pair.octaneRoot.unmount();
+		await act(async () => pair.reactRoot.unmount());
 	});
 
 	it('matches annotations, class, line/hover options, DOM lifecycle and full control count', async () => {

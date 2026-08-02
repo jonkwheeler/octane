@@ -27,16 +27,25 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 		domElement: canvas,
 		outputColorSpace: THREE.SRGBColorSpace,
 		toneMapping: THREE.NoToneMapping,
-		render() {}, setPixelRatio() {}, setSize() {},
-		renderLists: { dispose() {} }, forceContextLoss() {}, dispose() {},
+		render() {},
+		setPixelRatio() {},
+		setSize() {},
+		renderLists: { dispose() {} },
+		forceContextLoss() {},
+		dispose() {},
 	} as unknown as THREE.WebGLRenderer;
 }
 
 function callbacks() {
 	return {
-		onIncline: vi.fn(), onDecline: vi.fn(), onChange: vi.fn(), onFallback: vi.fn(),
-		onSubscriberIncline: vi.fn(), onSubscriberDecline: vi.fn(),
-		onSubscriberChange: vi.fn(), onSubscriberFallback: vi.fn(),
+		onIncline: vi.fn(),
+		onDecline: vi.fn(),
+		onChange: vi.fn(),
+		onFallback: vi.fn(),
+		onSubscriberIncline: vi.fn(),
+		onSubscriberDecline: vi.fn(),
+		onSubscriberChange: vi.fn(),
+		onSubscriberFallback: vi.fn(),
 	};
 }
 
@@ -57,8 +66,13 @@ function apiSnapshot(api: PerformanceMonitorApi) {
 describe('PerformanceMonitor', () => {
 	it('matches decline, change, fallback, subscription, and sampling state', async () => {
 		const props = {
-			iterations: 2, ms: 100, threshold: 0.5, step: 0.2,
-			factor: 0.6, flipflops: 0, bounds: () => [30, 60] as [number, number],
+			iterations: 2,
+			ms: 100,
+			threshold: 0.5,
+			step: 0.2,
+			factor: 0.6,
+			flipflops: 0,
+			bounds: () => [30, 60] as [number, number],
 		};
 		const reactCallbacks = callbacks();
 		let reactState!: ReactRootState;
@@ -98,9 +112,15 @@ describe('PerformanceMonitor', () => {
 		const reactApi = reactCallbacks.onFallback.mock.calls[0][0] as PerformanceMonitorApi;
 		const octaneApi = octaneCallbacks.onFallback.mock.calls[0][0] as PerformanceMonitorApi;
 		expect(apiSnapshot(octaneApi)).toEqual(apiSnapshot(reactApi));
-		expect(octaneCallbacks.onDecline).toHaveBeenCalledTimes(reactCallbacks.onDecline.mock.calls.length);
-		expect(octaneCallbacks.onChange).toHaveBeenCalledTimes(reactCallbacks.onChange.mock.calls.length);
-		expect(octaneCallbacks.onFallback).toHaveBeenCalledTimes(reactCallbacks.onFallback.mock.calls.length);
+		expect(octaneCallbacks.onDecline).toHaveBeenCalledTimes(
+			reactCallbacks.onDecline.mock.calls.length,
+		);
+		expect(octaneCallbacks.onChange).toHaveBeenCalledTimes(
+			reactCallbacks.onChange.mock.calls.length,
+		);
+		expect(octaneCallbacks.onFallback).toHaveBeenCalledTimes(
+			reactCallbacks.onFallback.mock.calls.length,
+		);
 		expect(octaneCallbacks.onSubscriberDecline).toHaveBeenCalledTimes(1);
 		expect(octaneCallbacks.onSubscriberChange).toHaveBeenCalledTimes(1);
 		expect(octaneCallbacks.onSubscriberFallback).toHaveBeenCalledTimes(1);
@@ -115,10 +135,17 @@ describe('PerformanceMonitor', () => {
 	it('stops sampling after fallback', async () => {
 		const events = callbacks();
 		const root = await createOctaneThree(PerformanceMonitorScene, {
-			iterations: 1, ms: 10, threshold: 0, step: 0.1, factor: 0.5,
-			flipflops: 0, bounds: () => [30, 60], ...events,
+			iterations: 1,
+			ms: 10,
+			threshold: 0,
+			step: 0.1,
+			factor: 0.5,
+			flipflops: 0,
+			bounds: () => [30, 60],
+			...events,
 		});
-		const now = vi.spyOn(performance, 'now')
+		const now = vi
+			.spyOn(performance, 'now')
 			.mockReturnValueOnce(0)
 			.mockReturnValueOnce(10)
 			.mockReturnValue(20);
