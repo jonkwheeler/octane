@@ -48,6 +48,19 @@ try {
 } catch (error) {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
 }
+try {
+	execFileSync(process.execPath, [
+		path.join(REPO, 'packages/react-resizable-panels/audit/verify-provenance.mjs'),
+		'--negative-controls',
+	], { cwd: REPO, stdio: 'inherit' });
+	execFileSync(path.join(REPO, 'node_modules/.bin/tsrx-tsc'), [
+		'--noEmit',
+		'-p',
+		path.join(REPO, 'packages/react-resizable-panels/audit/type-probes/tsconfig.json'),
+	], { cwd: REPO, stdio: 'inherit' });
+} catch (error) {
+	errors.push(`react-resizable-panels parity evidence is invalid: ${error.message}`);
+}
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
 // (BenchmarkExplorer, BenchBars, …). Scan both trees so a misleading claim can't

@@ -24,14 +24,14 @@ inventories. The verifier's negative-control mode proves each fail-closed path.
 
 ## Public runtime export crosswalk
 
-All entries are explicit U1 gaps pending the behavior port: `Group`, `Panel`,
-`Separator`, `isCoarsePointer`, `useDefaultLayout`, `useGroupCallbackRef`,
-`useGroupRef`, `usePanelCallbackRef`, and `usePanelRef`. Their authoritative
-source modules and exact names are recorded in `audit/public-api.json`.
+The binding exports the exact pinned runtime set: `Group`, `Panel`, `Separator`,
+`isCoarsePointer`, `useDefaultLayout`, `useGroupCallbackRef`, `useGroupRef`,
+`usePanelCallbackRef`, and `usePanelRef`. Their authoritative source modules and
+exact names are recorded in `audit/public-api.json`.
 
 ## Public type crosswalk
 
-All 13 public types are explicit U1 gaps pending adapted declarations:
+All 13 public types are implemented and checked against the pinned declaration:
 `GroupImperativeHandle`, `GroupProps`, `Layout`, `LayoutChangedMeta`,
 `LayoutStorage`, `OnGroupLayoutChange`, `Orientation`, `OnPanelResize`,
 `PanelImperativeHandle`, `PanelProps`, `PanelSize`, `SizeUnit`, and
@@ -49,8 +49,10 @@ hand-written or `any`-based map.
 
 ## Upstream test disposition
 
-The canonical `lib/` tree contains the exact test artifacts and registrations
-enumerated in `audit/test-inventory.json`. U1 classifies every artifact as
-`pending-adaptation`; none is silently skipped or counted as Octane evidence.
-Pristine, adapted, and server projects are registered now so subsequent units
-must replace the proof-first sentinel with executable parity evidence.
+The canonical `lib/` tree contains the exact 29 test artifacts and 329 literal
+registrations enumerated in `audit/test-inventory.json`. Every artifact is
+adapted and executable; parameter matrices expand the adapted lane beyond the
+literal registration count. Port-authored differential, persistence, SSR,
+hydration, type, and real-browser evidence is inventoried separately. Negative
+controls reject missing or renamed tests, stale classifications, and API or
+provenance drift.

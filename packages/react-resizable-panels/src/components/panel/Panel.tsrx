@@ -33,7 +33,7 @@ export function Panel(props: PanelProps) @{
 	const elementRef = useRef<HTMLDivElement | null>(null);
 	const mergedRef = useMergedRefs(elementRef, elementRefProp);
 	const { getPanelStyles, id: groupId, orientation, registerPanel, updatePanelProps } = useGroupContext();
-	const hasOnResize = onResizeUnstable !== null;
+	const hasOnResize = onResizeUnstable != null;
 	const onResizeStable = useStableCallback(
 		(panelSize: PanelSize, _id: string | number | undefined, prevPanelSize: PanelSize | undefined) => {
 			onResizeUnstable?.(panelSize, idProp, prevPanelSize);

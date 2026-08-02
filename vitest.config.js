@@ -1608,6 +1608,7 @@ export default defineConfig({
 				test: {
 					name: 'react-resizable-panels',
 					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
+					exclude: ['packages/react-resizable-panels/tests/browser/**'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1622,6 +1623,16 @@ export default defineConfig({
 							),
 						},
 					],
+				},
+			},
+			{
+				test: {
+					name: 'react-resizable-panels-browser',
+					include: ['packages/react-resizable-panels/tests/browser/**/*.browser.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
 				},
 			},
 			{

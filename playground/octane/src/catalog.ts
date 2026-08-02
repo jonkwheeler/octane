@@ -16,6 +16,7 @@ import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { RxJSDemo } from './demos/RxJS.tsrx';
 import { RainbowKitDemo } from './demos/RainbowKit.tsrx';
+import { ReactResizablePanelsDemo } from './demos/ReactResizablePanels.tsrx';
 import { ShadcnBasesDemo } from './demos/ShadcnBases.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
@@ -33,6 +34,7 @@ import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import rxjsSource from './demos/RxJS.tsrx?raw';
 import rainbowKitSource from './demos/RainbowKit.tsrx?raw';
+import reactResizablePanelsSource from './demos/ReactResizablePanels.tsrx?raw';
 import shadcnSource from './demos/ShadcnBases.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
@@ -99,6 +101,12 @@ export const GROUPS: readonly DemoGroup[] = [
 		id: 'components',
 		label: 'Components',
 		demos: [
+			{
+				id: 'react-resizable-panels',
+				title: 'Resizable panels',
+				Component: ReactResizablePanelsDemo,
+				source: reactResizablePanelsSource,
+			},
 			{
 				id: 'cmdk',
 				title: 'Command menu',

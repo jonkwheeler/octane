@@ -17,12 +17,12 @@
   "files": ["src", "README.md", "UPSTREAM.md"],
   "exports": { ".": "./src/index.tsrx" },
   "scripts": {
-    "test": "pnpm upstream:verify && vitest run --root ../.. --project react-resizable-panels && vitest run --root ../.. --project react-resizable-panels-server && vitest run --root ../.. --project react-resizable-panels-pristine",
+    "test": "pnpm upstream:verify && vitest run --root ../.. --project react-resizable-panels && vitest run --root ../.. --project react-resizable-panels-server && vitest run --root ../.. --project react-resizable-panels-pristine && vitest run --root ../.. --project react-resizable-panels-browser",
     "test:upstream": "vitest run --config upstream/source/vitest.config.ts",
     "upstream:verify": "node audit/verify-provenance.mjs",
     "upstream:verify:negative-controls": "node audit/verify-provenance.mjs --negative-controls",
     "typecheck:probes": "tsrx-tsc --noEmit -p audit/type-probes/tsconfig.json",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "peerDependencies": { "octane": "workspace:*" },
   "devDependencies": {
@@ -32,9 +32,12 @@
     "@types/react-dom": "catalog:default",
     "@tsrx/react": "catalog:default",
     "octane": "workspace:*",
+    "jsdom": "26.1.0",
+    "playwright": "catalog:default",
     "react": "catalog:default",
     "react-dom": "catalog:default",
     "react-resizable-panels": "catalog:default",
+    "vite": "catalog:default",
     "vitest": "catalog:default"
   }
 }

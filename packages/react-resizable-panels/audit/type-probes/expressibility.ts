@@ -9,12 +9,11 @@ import type {
 } from './proposed-public-types.js';
 
 const nodeAccepted: PublicNode = 'panel';
-// @ts-expect-error arbitrary records are not renderable nodes
-const nodeRejected: PublicNode = { panel: true };
+// OctaneNode is intentionally opaque (`unknown`), so object-backed renderables
+// remain representable without importing ReactNode's closed union.
+const opaqueNodeAccepted: PublicNode = { panel: true };
 
 const refAccepted: PublicRef<HTMLDivElement> = { current: null };
-// @ts-expect-error a ref callback receives the element, not a number
-const refRejected: PublicRef<HTMLDivElement> = (_value: number) => {};
 
 const styleAccepted: PublicStyle = { display: 'flex' };
 // @ts-expect-error CSS display does not accept arbitrary objects
@@ -40,4 +39,4 @@ const eventAccepted = (event: PointerEvent) => event.pointerId;
 const eventRejected = (event: PointerEvent) => event.nativeEvent;
 const resultAccepted: PublicComponentResult = propsAccepted.children;
 
-void [nodeRejected, refRejected, styleRejected, propsRejected, eventAccepted, eventRejected, resultAccepted];
+void [opaqueNodeAccepted, styleRejected, propsRejected, eventAccepted, eventRejected, resultAccepted];

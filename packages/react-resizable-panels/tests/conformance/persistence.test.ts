@@ -69,6 +69,16 @@ describe('useDefaultLayout persistence', () => {
 		);
 	});
 
+	it('persists to default localStorage after the restore rerender', () => {
+		localStorage.clear();
+		const { result } = renderHook(() => useDefaultLayout({ id: 'local' }));
+
+		act(() => result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: true }));
+		expect(localStorage.getItem('react-resizable-panels:local')).toBe(
+			'{"list":45,"detail":55}',
+		);
+	});
+
 	it('keeps the deprecated callback debounced and cancels pending saves on unmount', () => {
 		vi.useFakeTimers();
 		const storage = createStorage();

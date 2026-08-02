@@ -36,7 +36,8 @@
         "should pass through ...rest attributes",
         "problematic styles should be suppressed"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/group/Group.test.tsrx"
     },
     {
       "path": "components/group/sortByElementOffset.test.ts",
@@ -48,7 +49,8 @@
         "should sort vertical elements",
         "should prioritize smaller elements if offsets are the same"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/group/sortByElementOffset.test.ts"
     },
     {
       "path": "components/group/useDefaultLayout.test.tsx",
@@ -81,7 +83,8 @@
         "prefers matching modern layouts if both are present",
         "updates persisted modern layout"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/group/useDefaultLayout.test.tsrx"
     },
     {
       "path": "components/panel/Panel.test.tsx",
@@ -97,7 +100,8 @@
         "should pass through explicit id prop",
         "should assign an id prop to support the ARIA separator"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/panel/Panel.test.tsrx"
     },
     {
       "path": "components/separator/Separator.test.tsx",
@@ -109,7 +113,8 @@
         "should pass through ...rest attributes",
         "should identify its primary panel if and only if it has an explicit id"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/separator/Separator.test.tsrx"
     },
     {
       "path": "global/cursor/getCursorStyle.test.ts",
@@ -136,7 +141,8 @@
         "horizontal and vertical",
         "disabled groups"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/cursor/getCursorStyle.test.ts"
     },
     {
       "path": "global/dom/calculateAvailableGroupSize.test.ts",
@@ -147,7 +153,8 @@
         "panel widths, excluding other DOM elements",
         "panel widths, excluding flex padding, gap, or margins"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/dom/calculateAvailableGroupSize.test.ts"
     },
     {
       "path": "global/dom/calculateHitRegions.test.ts",
@@ -169,7 +176,8 @@
         "should disable panel boundaries if there are no resizable panels before the current boundary",
         "should disable panel boundaries if there are no resizable panels after the current boundary"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/dom/calculateHitRegions.test.ts"
     },
     {
       "path": "global/styles/parseSizeAndUnit.test.ts",
@@ -184,7 +192,8 @@
         "vh units",
         "vw units"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/styles/parseSizeAndUnit.test.ts"
     },
     {
       "path": "global/styles/sizeStyleToPixels.test.ts",
@@ -199,7 +208,8 @@
         "vh units",
         "vw units"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/styles/sizeStyleToPixels.test.ts"
     },
     {
       "path": "global/utils/adjustLayoutByDelta.test.ts",
@@ -338,7 +348,8 @@
         "should not be resizable if 2 of 3 panels are disabled",
         "should be resizable via the imperative API"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/adjustLayoutByDelta.test.ts"
     },
     {
       "path": "global/utils/calculateDefaultLayout.test.ts",
@@ -348,7 +359,8 @@
         "explicit",
         "mix of explicit and inferred"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/calculateDefaultLayout.test.ts"
     },
     {
       "path": "global/utils/calculateSeparatorAriaValues.test.ts",
@@ -358,13 +370,15 @@
         "should consider other panel constraints when computing min/max values",
         "should assign aria-controls if an explicit id was passed as a prop"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/calculateSeparatorAriaValues.test.ts"
     },
     {
       "path": "global/utils/compareLayoutNumbers.test.ts",
       "registrationCount": 0,
       "identities": [],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/compareLayoutNumbers.test.ts"
     },
     {
       "path": "global/utils/doRectsIntersect.test.ts",
@@ -374,7 +388,8 @@
         "should support fully overlapping rects",
         "should support all negative coordinates"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/doRectsIntersect.test.ts"
     },
     {
       "path": "global/utils/findMatchingHitRegions.test.ts",
@@ -386,13 +401,15 @@
         "nested groups",
         "should skip disabled groups"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/findMatchingHitRegions.test.ts"
     },
     {
       "path": "global/utils/formatLayoutNumber.test.ts",
       "registrationCount": 0,
       "identities": [],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/formatLayoutNumber.test.ts"
     },
     {
       "path": "global/utils/getDistanceBetweenPointAndRect.test.ts",
@@ -402,7 +419,8 @@
         "should report the distance between the nearest border and an external point alt",
         "should report the distance between the nearest border and an internal point"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/getDistanceBetweenPointAndRect.test.ts"
     },
     {
       "path": "global/utils/getImperativeGroupMethods.test.ts",
@@ -416,7 +434,8 @@
         "validates and updates the group layout",
         "allows disabled panels to be resized"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/group/getImperativeGroupMethods.test.ts"
     },
     {
       "path": "global/utils/getImperativePanelMethods.test.ts",
@@ -448,25 +467,29 @@
         "last panel keeps the remainder when all preceding panels are collapsed and it is resized smaller",
         "last panel can still be resized normally when preceding panels are not all collapsed"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/components/panel/getImperativePanelMethods.test.ts"
     },
     {
       "path": "global/utils/layoutNumbersEqual.test.ts",
       "registrationCount": 0,
       "identities": [],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/layoutNumbersEqual.test.ts"
     },
     {
       "path": "global/utils/layoutsEqual.test.ts",
       "registrationCount": 0,
       "identities": [],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/layoutsEqual.test.ts"
     },
     {
       "path": "global/utils/objectsEqual.test.ts",
       "registrationCount": 0,
       "identities": [],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/objectsEqual.test.ts"
     },
     {
       "path": "global/utils/validatePanelGroupLayout.test.ts",
@@ -482,7 +505,8 @@
         "should not collapse a panel that's at or above the minimum size",
         "should collapse a panel once it drops below the halfway point between collapsed and minimum percentage sizes"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/global/utils/validatePanelGroupLayout.test.ts"
     },
     {
       "path": "hooks/useId.test.ts",
@@ -491,7 +515,8 @@
         "should prefer explicit id",
         "should fallback ot React useId"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/hooks/useId.test.ts"
     },
     {
       "path": "hooks/useMergedRefs.test.tsx",
@@ -500,7 +525,8 @@
         "should support ref objects and callback refs",
         "should gracefully ignore undefined refs"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/hooks/useMergedRefs.test.tsrx"
     },
     {
       "path": "hooks/useStableCallback.test.tsx",
@@ -509,7 +535,8 @@
         "should not execute the callback",
         "should call the callback when the event is triggered"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/hooks/useStableCallback.test.tsrx"
     },
     {
       "path": "utils/isArrayEqual.test.ts",
@@ -517,7 +544,8 @@
       "identities": [
         "should work"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/utils/isArrayEqual.test.ts"
     },
     {
       "path": "utils/parseNumericStyleValue.test.ts",
@@ -529,7 +557,8 @@
         "should ignore string percentage styles",
         "should ignore string relative styles"
       ],
-      "disposition": "pending-adaptation"
+      "disposition": "adapted",
+      "adaptedPath": "tests/upstream/utils/parseNumericStyleValue.test.ts"
     }
   ]
 }

@@ -34,7 +34,6 @@ export function useDefaultLayout(
 	const [defaultLayout, setDefaultLayout] = useState<Layout | undefined>(undefined, subSlot(slot, 'default-layout'));
 	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null, subSlot(slot, 'timeout'));
 	const storageRef = useRef<LayoutStorage | undefined>(storageProp, subSlot(slot, 'storage'));
-	storageRef.current = storageProp;
 
 	const clearPendingTimeout = useCallback(() => {
 		if (timeoutRef.current !== null) {

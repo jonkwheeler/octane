@@ -45,6 +45,7 @@
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
       "@octanejs/react-error-boundary",
+      "@octanejs/react-resizable-panels",
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",

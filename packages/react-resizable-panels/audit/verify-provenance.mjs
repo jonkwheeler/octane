@@ -68,20 +68,40 @@ function extractTests() {
         path: relative(root, path),
         registrationCount: identities.length,
         identities,
-        disposition: 'pending-adaptation',
       };
     });
 }
 
 function verifyTests(inventory = JSON.parse(readFileSync(join(packageRoot, 'audit/test-inventory.json'), 'utf8'))) {
   const actual = extractTests();
-  if (JSON.stringify(inventory.artifacts) !== JSON.stringify(actual)) fail('Upstream test identity inventory drift');
+  const recorded = inventory.artifacts.map(({ path, registrationCount, identities }) => ({ path, registrationCount, identities }));
+  if (JSON.stringify(recorded) !== JSON.stringify(actual)) fail('Upstream test identity inventory drift');
   if (inventory.artifactCount !== actual.length) fail('Upstream test artifact count drift');
   const count = actual.reduce((total, artifact) => total + artifact.registrationCount, 0);
   if (inventory.registrationCount !== count) fail('Upstream test registration count drift');
-  if (actual.some((artifact) => artifact.disposition !== 'pending-adaptation')) fail('Invalid U1 test disposition');
+  for (const artifact of inventory.artifacts) {
+    if (artifact.disposition !== 'adapted') fail(`Upstream artifact is not adapted: ${artifact.path}`);
+    if (artifact.disposition === 'adapted') {
+      if (!artifact.adaptedPath) fail(`Adapted artifact lacks path: ${artifact.path}`);
+      const adaptedSource = readFileSync(join(packageRoot, artifact.adaptedPath), 'utf8');
+      if (/\b(?:it|test|describe)\.(?:skip|todo)\b/.test(adaptedSource)) fail(`Skipped/todo adapted registration found: ${artifact.adaptedPath}`);
+      const adaptedIdentities = [...adaptedSource.matchAll(/\b(?:it|test)\s*\(\s*(["'])(.*?)\1/gs)].map((match) => match[2]).sort();
+      if (JSON.stringify(adaptedIdentities) !== JSON.stringify([...artifact.identities].sort())) fail(`Adapted registration identity/count drift: ${artifact.path}`);
+    } else if (artifact.adaptedPath) fail(`Non-adapted artifact declares adaptedPath: ${artifact.path}`);
+  }
   const source = actual.map((artifact) => readFileSync(join(packageRoot, 'upstream/source/lib', artifact.path), 'utf8')).join('\n');
   if (/\b(?:it|test|describe)\.(?:skip|todo)\b/.test(source)) fail('Skipped/todo upstream test registration found');
+}
+
+function verifyPortTests(inventory = JSON.parse(readFileSync(join(packageRoot, 'audit/port-test-inventory.json'), 'utf8'))) {
+  if (inventory.artifactCount !== inventory.artifacts.length) fail('Port test artifact count drift');
+  const count = inventory.artifacts.reduce((total, artifact) => total + artifact.registrationCount, 0);
+  if (inventory.registrationCount !== count) fail('Port test registration count drift');
+  for (const artifact of inventory.artifacts) {
+    if (artifact.classification !== 'port-authored') fail(`Invalid port test classification: ${artifact.path}`);
+    const source = readFileSync(join(packageRoot, artifact.path), 'utf8');
+    for (const identity of artifact.identities) if (!source.includes(identity)) fail(`Port identity missing: ${artifact.path} :: ${identity}`);
+  }
 }
 
 function expectFailure(label, callback) {
@@ -92,6 +112,7 @@ function expectFailure(label, callback) {
 verifyHashes();
 verifyApi();
 verifyTests();
+verifyPortTests();
 
 if (process.argv.includes('--negative-controls')) {
   const checksumLines = readFileSync(join(packageRoot, 'upstream/SHA256SUMS'), 'utf8').trim().split('\n');
@@ -105,6 +126,12 @@ if (process.argv.includes('--negative-controls')) {
   const renamed = structuredClone(tests);
   renamed.artifacts[0].identities[0] += ' renamed';
   expectFailure('renamed test identity', () => verifyTests(renamed));
+  const unadapted = structuredClone(tests);
+  unadapted.artifacts[0].disposition = 'accounted-not-adapted';
+  delete unadapted.artifacts[0].adaptedPath;
+  expectFailure('unadapted upstream artifact', () => verifyTests(unadapted));
+  const portTests = JSON.parse(readFileSync(join(packageRoot, 'audit/port-test-inventory.json'), 'utf8'));
+  expectFailure('missing port test artifact', () => verifyPortTests({ ...portTests, artifacts: portTests.artifacts.slice(1) }));
 }
 
-console.log(`Verified ${readFileSync(join(packageRoot, 'upstream/SHA256SUMS'), 'utf8').trim().split('\n').length} vendored files, ${expectedRuntime.length} runtime exports, ${expectedTypes.length} public types, and ${JSON.parse(readFileSync(join(packageRoot, 'audit/test-inventory.json'), 'utf8')).registrationCount} test registrations.`);
+console.log(`Verified ${readFileSync(join(packageRoot, 'upstream/SHA256SUMS'), 'utf8').trim().split('\n').length} vendored files, ${expectedRuntime.length} runtime exports, ${expectedTypes.length} public types, ${JSON.parse(readFileSync(join(packageRoot, 'audit/test-inventory.json'), 'utf8')).registrationCount} upstream registrations, and ${JSON.parse(readFileSync(join(packageRoot, 'audit/port-test-inventory.json'), 'utf8')).registrationCount} port-authored registrations.`);
