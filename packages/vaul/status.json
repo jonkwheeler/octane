@@ -1,0 +1,11 @@
+{
+  "upstream": {
+    "package": "vaul",
+    "version": "1.1.2",
+    "commit": "73d06cdd3fd990bf4b83214cfe240c246908af0d"
+  },
+  "surface": "Drawer, Root, NestedRoot, Portal, Overlay, Content, Handle, public props, and style.css.",
+  "divergences": [],
+  "ssr": "Pending implementation evidence.",
+  "verified": null
+}

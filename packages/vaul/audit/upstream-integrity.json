@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "package": "vaul",
+  "version": "1.1.2",
+  "repository": "https://github.com/emilkowalski/vaul.git",
+  "tag": "v1.1.2",
+  "commit": "73d06cdd3fd990bf4b83214cfe240c246908af0d",
+  "license": "MIT",
+  "npmTarball": "https://registry.npmjs.org/vaul/-/vaul-1.1.2.tgz",
+  "npmTarballSha256": "d062e21bae0c864c3559707c0451edabc0aac32a22eda239064a3faa7c9f1b21",
+  "fileCount": 28,
+  "treeSha256": "e952dcf5e2acd1870f767aa2fa6e015d00825da90f433cf446d170d212ca213e"
+}
