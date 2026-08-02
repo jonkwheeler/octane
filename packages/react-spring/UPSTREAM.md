@@ -31,8 +31,8 @@ exact framework-neutral `@react-spring/rafz` package. Source under upstream
 `packages/parallax` contains React hooks, contexts, JSX, element types, or
 `forwardRef`, so those observable contracts are adapted to Octane. The
 `packages/types` tree is the type oracle. Adapted source cites the pinned
-release and will be aligned module-by-module beside this tree as the parity
-work proceeds.
+release, while the machine-checked test disposition inventory ties every
+upstream test file to its executable Octane evidence.
 
 ## Runtime export crosswalk
 

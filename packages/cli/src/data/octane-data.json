@@ -323,7 +323,7 @@
         "The all-renderer react-spring meta-package is intentionally not mapped."
       ],
       "ssr": "Initial and immediate values render on the server; browser observers and frame work start after client commit.",
-      "verified": "2026-07-30"
+      "verified": "2026-08-02"
     },
     {
       "name": "@octanejs/recharts",

@@ -37,3 +37,17 @@ recorded in [`UPSTREAM.md`](./UPSTREAM.md).
 Supported scope, divergences, and verification are recorded in
 [`status.json`](./status.json) and the generated repository compatibility
 tables.
+
+## Verification
+
+```sh
+pnpm --dir packages/react-spring upstream:verify
+pnpm --dir packages/react-spring typecheck
+pnpm exec vitest run --project react-spring --project react-spring-ssr
+pnpm exec vitest run --project react-spring-browser
+pnpm packages:pack:check
+```
+
+The browser lane builds and exercises the central playground in development
+and production. The repository packed-source canary installs the root and
+Parallax subpath from their tarball alongside a packed Octane runtime.

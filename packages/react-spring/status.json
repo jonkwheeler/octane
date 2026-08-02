@@ -9,6 +9,10 @@
     "The all-renderer react-spring meta-package is intentionally not mapped."
   ],
   "ssr": "Initial and immediate values render on the server; browser observers and frame work start after client commit.",
-  "verified": "2026-07-30",
-  "notes": ["Renderer targets for native, Three, Konva, and Zdog are outside this binding."]
+  "verified": "2026-08-02",
+  "notes": [
+    "All 26 pinned upstream test files have machine-checked adapted or reused dispositions.",
+    "Development and production playground journeys cover animation, interruption, keyed transitions, reduced motion, Parallax, and route-away cleanup.",
+    "Renderer targets for native, Three, Konva, and Zdog are outside this binding."
+  ]
 }
