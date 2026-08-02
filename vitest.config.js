@@ -1733,6 +1733,26 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'drei',
+					include: ['packages/drei/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },
+				},
+				plugins: [octane({ renderers: THREE_RENDERERS })],
+				resolve: {
+					alias: [
+						...THREE_ALIASES,
+						{
+							find: /^@octanejs\/drei$/,
+							replacement: resolve(import.meta.dirname, 'packages/drei/src/index.ts'),
+						},
+					],
+					dedupe: ['react', 'react-dom', 'three'],
+				},
+			},
+			{
+				test: {
 					name: 'visx',
 					include: [
 						'packages/visx/tests/conformance/**/*.test.ts',

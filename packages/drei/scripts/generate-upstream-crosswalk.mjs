@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { format } from 'prettier';
@@ -11,6 +11,14 @@ const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 const repositoryRoot = path.resolve(packageRoot, '../..');
 const upstreamEntry = path.join(packageRoot, 'upstream/src/index.ts');
 const output = path.join(packageRoot, 'audit/upstream-crosswalk.json');
+
+let existingEntries = new Map();
+try {
+	const existing = JSON.parse(await readFile(output, 'utf8'));
+	existingEntries = new Map(existing.exports?.map((entry) => [entry.name, entry]) ?? []);
+} catch (error) {
+	if (error?.code !== 'ENOENT') throw error;
+}
 
 const program = ts.createProgram([upstreamEntry], {
 	allowJs: false,
@@ -65,7 +73,7 @@ const entries = checker
 		const hasType =
 			Boolean(symbol.flags & typeFlags) || (!hasRuntime && Boolean(symbol.flags & valueFlags));
 
-		return {
+		const generated = {
 			id: `export:${exportSymbol.name}`,
 			name: exportSymbol.name,
 			kind: hasRuntime && hasType ? 'value-and-type' : hasRuntime ? 'value' : 'type',
@@ -75,6 +83,18 @@ const entries = checker
 			evidence: [],
 			divergence: null,
 		};
+		const existing = existingEntries.get(exportSymbol.name);
+		if (
+			existing?.kind === generated.kind &&
+			existing.source?.path === generated.source.path &&
+			existing.source?.line === generated.source.line
+		) {
+			generated.status = existing.status;
+			generated.implementation = existing.implementation;
+			generated.evidence = existing.evidence;
+			generated.divergence = existing.divergence;
+		}
+		return generated;
 	})
 	.sort((left, right) => (left.name < right.name ? -1 : left.name > right.name ? 1 : 0));
 
@@ -111,7 +131,7 @@ const crosswalk = {
 	expectedTotals: {
 		runtimeExports: runtimeNames.size,
 		sourceExports: entries.length,
-		gaps: entries.length,
+		gaps: entries.filter((entry) => entry.status === 'gap').length,
 	},
 	inventorySha256: digest,
 	exports: entries,

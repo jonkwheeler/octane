@@ -26,8 +26,11 @@
     "upstream:generate": "node scripts/generate-upstream-crosswalk.mjs",
     "upstream:check": "node scripts/check-upstream-crosswalk.mjs",
     "upstream:ready": "node scripts/check-upstream-crosswalk.mjs --ready",
-    "test": "vitest run --project drei",
+    "test": "vitest run --root ../.. --project drei",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "three-mesh-bvh": "^0.8.3"
   },
   "engines": {
     "node": ">=22"

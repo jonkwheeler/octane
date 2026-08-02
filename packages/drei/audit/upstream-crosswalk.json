@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 379
+    "gaps": 376
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -4343,9 +4343,9 @@
         "path": "packages/drei/upstream/src/core/calculateScaleFactor.ts",
         "line": 24
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "reused",
+      "implementation": "packages/drei/src/core/calculateScaleFactor.ts",
+      "evidence": ["packages/drei/tests/core-utilities.test.ts"],
       "divergence": null
     },
     {
@@ -4408,9 +4408,9 @@
         "path": "packages/drei/upstream/src/core/meshBounds.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "reused",
+      "implementation": "packages/drei/src/core/meshBounds.ts",
+      "evidence": ["packages/drei/tests/core-utilities.test.ts"],
       "divergence": null
     },
     {
@@ -4421,9 +4421,9 @@
         "path": "packages/drei/upstream/src/core/shaderMaterial.tsx",
         "line": 22
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "reused",
+      "implementation": "packages/drei/src/core/shaderMaterial.ts",
+      "evidence": ["packages/drei/tests/core-utilities.test.ts"],
       "divergence": null
     },
     {

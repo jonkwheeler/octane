@@ -1,2 +1,3 @@
-// Public core exports are added only when their implementation and parity evidence land.
-export {};
+export { calculateScaleFactor } from './calculateScaleFactor.js';
+export { meshBounds } from './meshBounds.js';
+export { shaderMaterial } from './shaderMaterial.js';
