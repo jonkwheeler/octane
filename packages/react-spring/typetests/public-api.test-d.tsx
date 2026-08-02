@@ -27,6 +27,8 @@ const controller = new Controller(update);
 expectType<number>(controller.springs.x.get());
 
 const [styles, api] = useSpring(() => update, []);
+const objectStyles = useSpring(update);
+objectStyles.x.get();
 expectType<SpringValue<number>>(styles.x);
 expectType<Controller<{ x: number; opacity: number }>>(api);
 expectType<SpringValue<number>>(useSpringValue(0));

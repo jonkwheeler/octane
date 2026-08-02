@@ -19,6 +19,12 @@ function advanceUntilIdle(limit = 240): void {
 }
 
 describe('React Spring engine', () => {
+	it('settles a loop without a usable from value instead of recursing', async () => {
+		const value = new SpringValue(1);
+		await expect(value.start({ to: 1, loop: true, immediate: true })).resolves.toMatchObject({
+			finished: true,
+		});
+	});
 	it('advances a spring and resolves its public result', async () => {
 		raf.frameLoop = 'demand';
 		const value = new SpringValue(0);

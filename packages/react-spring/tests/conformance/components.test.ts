@@ -1,11 +1,14 @@
 import { raf } from '@react-spring/rafz';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { Controller } from '@octanejs/react-spring';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
 import {
 	SpringComponentFixture,
 	TrailComponentFixture,
 	TransitionComponentFixture,
 } from '../_fixtures/components.tsrx';
+
+afterEach(() => vi.restoreAllMocks());
 
 describe('React Spring render-prop components', () => {
 	it('renders Spring children with animated values', () => {
@@ -35,5 +38,17 @@ describe('React Spring render-prop components', () => {
 			expect(result.findAll(`[${attribute}]`)).toEqual([secondNode, firstNode]);
 			result.unmount();
 		}
+	});
+
+	it('does not restart unchanged transitions on parent rerenders', () => {
+		const item = { id: 'first', label: 'First' };
+		const result = mount(TransitionComponentFixture, { items: [item] });
+		flushEffects();
+		const start = vi.spyOn(Controller.prototype, 'start');
+
+		result.update(TransitionComponentFixture, { items: [item] });
+		flushEffects();
+		expect(start).not.toHaveBeenCalled();
+		result.unmount();
 	});
 });

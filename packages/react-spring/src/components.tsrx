@@ -23,7 +23,7 @@ export function SpringContext(props: SpringContextValue & { children?: unknown }
 
 export function Spring(props: any) @{
 	const { children, ...update } = props;
-	const [styles] = useSpring(update);
+	const styles = useSpring(update);
 	<>
 		{typeof children === 'function' && !isChildrenBlock(children) ? children(styles) : children}
 	</>

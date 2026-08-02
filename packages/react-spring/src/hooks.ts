@@ -32,6 +32,7 @@ interface TransitionRecord<Item, State extends Record<string, any>> {
 	item: Item;
 	phase: TransitionPhase;
 	controller: Controller<State>;
+	lastUpdate?: ControllerUpdate<State>;
 	expiration?: ReturnType<typeof setTimeout>;
 }
 
@@ -41,6 +42,24 @@ function equalDeps(previous: any[] | undefined, next: any[] | undefined): boolea
 		next !== undefined &&
 		previous.length === next.length &&
 		previous.every((value, index) => Object.is(value, next[index]))
+	);
+}
+
+function equalValue(previous: any, next: any): boolean {
+	if (Object.is(previous, next)) return true;
+	if (
+		previous === null ||
+		next === null ||
+		typeof previous !== 'object' ||
+		typeof next !== 'object' ||
+		Array.isArray(previous) !== Array.isArray(next)
+	)
+		return false;
+	const previousKeys = Object.keys(previous);
+	const nextKeys = Object.keys(next);
+	return (
+		previousKeys.length === nextKeys.length &&
+		previousKeys.every((key) => Object.hasOwn(next, key) && equalValue(previous[key], next[key]))
 	);
 }
 
@@ -77,9 +96,21 @@ function withContext<State extends Record<string, any>>(
 }
 
 export function useSpring<State extends Record<string, any>>(
+	props: ControllerUpdate<State>,
+): { [Key in keyof State]: SpringValue<State[Key]> };
+export function useSpring<State extends Record<string, any>>(
+	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
+	deps: any[],
+): [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>];
+export function useSpring<State extends Record<string, any>>(
+	props: () => ControllerUpdate<State>,
+): [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>];
+export function useSpring<State extends Record<string, any>>(
 	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
 	...args: any[]
-): [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>] {
+):
+	| { [Key in keyof State]: SpringValue<State[Key]> }
+	| [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>] {
 	const slot = trailingSlot(args);
 	const context = useSpringContext();
 	const update = withContext(updateFrom(props), context);
@@ -89,7 +120,7 @@ export function useSpring<State extends Record<string, any>>(
 		() => {
 			void controller.start(update);
 		},
-		deps ?? [update],
+		deps === undefined ? [update, context] : [...deps, context],
 		sub(slot, 'effect'),
 	);
 	useLayoutEffect(
@@ -99,7 +130,9 @@ export function useSpring<State extends Record<string, any>>(
 		[],
 		sub(slot, 'cleanup'),
 	);
-	return [controller.springs, controller];
+	return typeof props === 'function' || deps !== undefined
+		? [controller.springs, controller]
+		: controller.springs;
 }
 
 export function useSpringValue<T>(
@@ -168,10 +201,14 @@ export function useSprings<State extends Record<string, any>>(
 	useLayoutEffect(
 		() => {
 			updates.forEach((update, index) => void state.controllers[index].start(update));
-			return () => state.controllers.forEach((controller) => controller.stop(true));
 		},
 		[updates, context, length],
 		sub(slot, 'effect'),
+	);
+	useLayoutEffect(
+		() => () => state.controllers.forEach((controller) => controller.stop(true)),
+		[],
+		sub(slot, 'cleanup'),
 	);
 	return [state.controllers.map((controller) => controller.springs), state.ref];
 }
@@ -199,16 +236,25 @@ export function useTrail<State extends Record<string, any>>(
 	const slot = trailingSlot(args);
 	const deps = args.find(Array.isArray) as any[] | undefined;
 	const functionProps = typeof props === 'function';
+	const nextUpdate = updateFrom(props);
+	const [trailState] = useState(
+		() => ({ update: nextUpdate, revision: {} }),
+		sub(slot, 'trail-state'),
+	);
+	if (!equalValue(trailState.update, nextUpdate)) {
+		trailState.update = nextUpdate;
+		trailState.revision = {};
+	}
 	const result = useSprings(
 		length,
 		(index) => {
-			const update = updateFrom(props);
+			const update = trailState.update;
 			return {
 				...update,
 				delay: (update.delay ?? 0) + index * 16,
 			};
 		},
-		deps ?? [{}],
+		deps ?? (functionProps ? [] : [trailState.revision]),
 		slot,
 	);
 	return functionProps || deps !== undefined ? result : result[0];
@@ -268,6 +314,17 @@ export function useTransition<Item, State extends Record<string, any>>(
 		(item): item is Item => item !== undefined && item !== null,
 	);
 	const [, forceUpdate] = useState(0, sub(slot, 'version'));
+	const [transitionState] = useState(
+		() => ({ props, context, revision: 0 }),
+		sub(slot, 'transition-state'),
+	);
+	const transitionChanged =
+		!equalValue(transitionState.props, props) || !equalValue(transitionState.context, context);
+	if (transitionChanged) {
+		transitionState.props = props;
+		transitionState.context = context;
+		transitionState.revision++;
+	}
 	const [records] = useState(
 		() => [] as Array<TransitionRecord<Item, State>>,
 		sub(slot, 'records'),
@@ -293,8 +350,10 @@ export function useTransition<Item, State extends Record<string, any>>(
 				clearTimeout(existing.expiration);
 				existing.expiration = undefined;
 			}
+			const itemChanged = !equalValue(existing.item, item);
 			existing.item = item;
-			existing.phase = existing.phase === 'leave' ? 'enter' : 'update';
+			if (existing.phase === 'leave') existing.phase = 'enter';
+			else if (itemChanged || transitionChanged) existing.phase = 'update';
 			return;
 		}
 		if (props.exitBeforeEnter && hasLeaving) return;
@@ -317,7 +376,9 @@ export function useTransition<Item, State extends Record<string, any>>(
 		records.splice(0, records.length, ...active, ...leaving);
 	}
 
-	const signature = records.map((record) => `${String(record.key)}:${record.phase}`).join('|');
+	const signature = `${transitionState.revision}|${records
+		.map((record) => `${String(record.key)}:${record.phase}`)
+		.join('|')}`;
 	useLayoutEffect(
 		() => {
 			let active = true;
@@ -334,45 +395,44 @@ export function useTransition<Item, State extends Record<string, any>>(
 				const trailIndex =
 					phase === 'leave' && props.reverse ? phaseRecords.length - phaseIndex - 1 : phaseIndex;
 				const payload = transitionTarget(target);
-				void record.controller
-					.start(
-						withContext(
-							{
-								to: payload.to,
-								config: props.config,
-								immediate: props.immediate,
-								delay: (props.delay ?? 0) + (props.trail ?? 0) * trailIndex,
-								cancel: props.cancel,
-								pause: props.pause,
-								onStart: props.onStart,
-								onChange: props.onChange,
-								onRest: props.onRest,
-								onResolve: props.onResolve,
-								...payload.update,
-							},
-							context,
-						),
-					)
-					.then(() => {
-						if (!active || phase !== 'leave' || record.phase !== 'leave') return;
-						const expiration = props.expires ?? true;
-						const remove = () => {
-							const index = records.indexOf(record);
-							if (index >= 0) {
-								records.splice(index, 1);
-								forceUpdate((value) => value + 1);
-							}
-						};
-						if (typeof expiration === 'number' && expiration > 0)
-							record.expiration = setTimeout(remove, expiration);
-						else if (expiration !== false) remove();
-					});
+				const update = withContext(
+					{
+						to: payload.to,
+						config: props.config,
+						immediate: props.immediate,
+						delay: (props.delay ?? 0) + (props.trail ?? 0) * trailIndex,
+						cancel: props.cancel,
+						pause: props.pause,
+						onStart: props.onStart,
+						onChange: props.onChange,
+						onRest: props.onRest,
+						onResolve: props.onResolve,
+						...payload.update,
+					},
+					context,
+				);
+				if (equalValue(record.lastUpdate, update)) continue;
+				record.lastUpdate = update;
+				void record.controller.start(update).then(() => {
+					if (!active || phase !== 'leave' || record.phase !== 'leave') return;
+					const expiration = props.expires ?? true;
+					const remove = () => {
+						const index = records.indexOf(record);
+						if (index >= 0) {
+							records.splice(index, 1);
+							forceUpdate((value) => value + 1);
+						}
+					};
+					if (typeof expiration === 'number' && expiration > 0)
+						record.expiration = setTimeout(remove, expiration);
+					else if (expiration !== false) remove();
+				});
 			}
 			return () => {
 				active = false;
 			};
 		},
-		[signature, props, context],
+		[signature],
 		sub(slot, 'transition-effect'),
 	);
 	useLayoutEffect(
@@ -400,11 +460,18 @@ export function useTransition<Item, State extends Record<string, any>>(
 
 export function useChain(refs: SpringRef<any>[], timeSteps?: number[], timeFrame = 1000): void {
 	useLayoutEffect(() => {
+		let active = true;
+		if (timeSteps === undefined) {
+			void refs.reduce(
+				(sequence, ref) => sequence.then(() => (active ? ref.start() : undefined)),
+				Promise.resolve<unknown>(undefined),
+			);
+			return () => {
+				active = false;
+			};
+		}
 		const timers = refs.map((ref, index) =>
-			setTimeout(
-				() => void ref.start(),
-				timeSteps === undefined ? index * 16 : (timeSteps[index] ?? 0) * timeFrame,
-			),
+			setTimeout(() => void ref.start(), (timeSteps[index] ?? 0) * timeFrame),
 		);
 		return () => timers.forEach(clearTimeout);
 	}, [refs, timeSteps, timeFrame]);

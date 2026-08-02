@@ -25,11 +25,11 @@ export function SpringHookFixture(props) @{
 }
 
 export function ObjectSpringHookFixture(props) @{
-	const [styles, api] = useSpring({
+	const styles = useSpring({
 		from: { x: 0 },
 		to: { x: props.x },
 	});
-	props.onReady(styles, api);
+	props.onReady(styles);
 	<div>{'object spring'}</div>
 }
 
@@ -55,7 +55,7 @@ export function UpdatingTrailHookFixture(props) @{
 }
 
 function ContextSpringChild(props) @{
-	const [styles] = useSpring({
+	const styles = useSpring({
 		from: { x: 0 },
 		to: { x: 1 },
 	});
@@ -66,6 +66,18 @@ function ContextSpringChild(props) @{
 export function ContextSpringFixture(props) @{
 	<SpringContext immediate={true} pause={props.pause}>
 		<ContextSpringChild onReady={props.onReady} />
+	</SpringContext>
+}
+
+function ContextDepsSpringChild(props) @{
+	const [styles] = useSpring(() => ({ from: { x: 0 }, to: { x: 1 }, immediate: true }), []);
+	props.onReady(styles);
+	<div>{'context deps spring'}</div>
+}
+
+export function ContextDepsSpringFixture(props) @{
+	<SpringContext pause={props.pause}>
+		<ContextDepsSpringChild onReady={props.onReady} />
 	</SpringContext>
 }
 

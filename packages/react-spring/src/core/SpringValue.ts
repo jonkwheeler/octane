@@ -219,12 +219,17 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		const loop = active.props.loop;
 		const next = typeof loop === 'function' ? loop() : loop;
 		if (next && this.active === active && !active.settled) {
-			active.props = {
+			const nextProps = {
 				...active.props,
 				...(typeof next === 'object' ? next : {}),
 				loop,
 				reset: true,
 			};
+			if (nextProps.from === undefined && Object.is(this.value, goal(nextProps.to))) {
+				this.settle(active, getFinishedResult(this.value, true), true);
+				return;
+			}
+			active.props = nextProps;
 			this.run(active);
 			return;
 		}

@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { raf } from '@react-spring/rafz';
+import { Controller } from '@octanejs/react-spring';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
 import {
 	ContextSpringFixture,
+	ContextDepsSpringFixture,
 	ChainFixture,
 	NestedContextSpringFixture,
 	ObjectSpringHookFixture,
@@ -14,16 +16,16 @@ import {
 
 afterEach(() => {
 	vi.useRealTimers();
+	vi.restoreAllMocks();
 	raf.frameLoop = 'always';
 });
 
 describe('React Spring hooks', () => {
 	it('does not cancel object-form springs on parent rerenders', () => {
-		let api: any;
-		const onReady = (_styles: any, nextApi: any) => (api = nextApi);
+		const onReady = () => {};
 		const result = mount(ObjectSpringHookFixture, { x: 10, onReady });
 		flushEffects();
-		const stop = vi.spyOn(api, 'stop');
+		const stop = vi.spyOn(Controller.prototype, 'stop');
 
 		result.update(ObjectSpringHookFixture, { x: 10, onReady });
 		flushEffects();
@@ -95,6 +97,19 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	it('does not cancel object-form trails on unchanged parent rerenders', () => {
+		const onReady = () => {};
+		const result = mount(UpdatingTrailHookFixture, { x: 1, onReady });
+		flushEffects();
+		const stop = vi.spyOn(Controller.prototype, 'stop');
+
+		result.update(UpdatingTrailHookFixture, { x: 1, onReady });
+		flushEffects();
+		expect(stop).not.toHaveBeenCalled();
+		result.unmount();
+		expect(stop).toHaveBeenCalledWith(true);
+	});
+
 	it('applies SpringContext values and resumes after context pause', () => {
 		let styles: any;
 		const onReady = (value: any) => (styles = value);
@@ -103,6 +118,19 @@ describe('React Spring hooks', () => {
 		expect(styles.x.get()).toBe(0);
 
 		result.update(ContextSpringFixture, { pause: false, onReady });
+		flushEffects();
+		expect(styles.x.get()).toBe(1);
+		result.unmount();
+	});
+
+	it('applies SpringContext changes when useSpring has explicit deps', () => {
+		let styles: any;
+		const onReady = (value: any) => (styles = value);
+		const result = mount(ContextDepsSpringFixture, { pause: true, onReady });
+		flushEffects();
+		expect(styles.x.get()).toBe(0);
+
+		result.update(ContextDepsSpringFixture, { pause: false, onReady });
 		flushEffects();
 		expect(styles.x.get()).toBe(1);
 		result.unmount();
@@ -172,5 +200,27 @@ describe('React Spring hooks', () => {
 		result.unmount();
 		await vi.runAllTimersAsync();
 		expect(starts).toEqual(['b', 'c']);
+	});
+
+	it('starts useChain refs sequentially when timesteps are omitted', async () => {
+		let finishFirst!: () => void;
+		const starts: string[] = [];
+		const refs = [
+			{
+				start: () => {
+					starts.push('a');
+					return new Promise<void>((resolve) => (finishFirst = resolve));
+				},
+			},
+			{ start: () => (starts.push('b'), Promise.resolve()) },
+		] as any;
+		const result = mount(ChainFixture, { refs });
+		flushEffects();
+		await Promise.resolve();
+		expect(starts).toEqual(['a']);
+		finishFirst();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		expect(starts).toEqual(['a', 'b']);
+		result.unmount();
 	});
 });
