@@ -1,0 +1,91 @@
+{
+  "name": "@octanejs/swr",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md",
+    "UPSTREAM.md"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-server": "./src/index/index.react-server.ts",
+      "import": {
+        "types": "./src/index/index.ts",
+        "default": "./src/index/index.ts"
+      },
+      "require": {
+        "types": "./src/index/index.ts",
+        "default": "./src/index/index.cts"
+      }
+    },
+    "./infinite": {
+      "react-server": "./src/infinite/index.react-server.ts",
+      "import": {
+        "types": "./src/infinite/index.ts",
+        "default": "./src/infinite/index.ts"
+      },
+      "require": {
+        "types": "./src/infinite/index.ts",
+        "default": "./src/infinite/index.cts"
+      }
+    },
+    "./immutable": {
+      "import": {
+        "types": "./src/immutable/index.ts",
+        "default": "./src/immutable/index.ts"
+      },
+      "require": {
+        "types": "./src/immutable/index.ts",
+        "default": "./src/immutable/index.cts"
+      }
+    },
+    "./subscription": {
+      "import": {
+        "types": "./src/subscription/index.ts",
+        "default": "./src/subscription/index.ts"
+      },
+      "require": {
+        "types": "./src/subscription/index.ts",
+        "default": "./src/subscription/index.cts"
+      }
+    },
+    "./mutation": {
+      "import": {
+        "types": "./src/mutation/index.ts",
+        "default": "./src/mutation/index.ts"
+      },
+      "require": {
+        "types": "./src/mutation/index.ts",
+        "default": "./src/mutation/index.cts"
+      }
+    },
+    "./_internal": {
+      "react-server": "./src/_internal/index.react-server.ts",
+      "import": {
+        "types": "./src/_internal/index.ts",
+        "default": "./src/_internal/index.ts"
+      },
+      "require": {
+        "types": "./src/_internal/index.ts",
+        "default": "./src/_internal/index.cts"
+      }
+    }
+  },
+  "scripts": {
+    "u1:architecture": "vitest run ./tests/probes/architecture.test.ts ../../packages/octane/tests/hydration/hydration.test.ts ../../packages/octane/tests/hydration/suspense-hydrate.test.ts ../../packages/octane/tests/streaming-ssr.test.ts --config ./tests/probes/vitest.config.mjs",
+    "u1:pack": "node ./tests/probes/packed-exports.test.mjs",
+    "upstream:verify": "node ./audit/verify-provenance.mjs"
+  },
+  "devDependencies": {
+    "@octanejs/testing-library": "workspace:*",
+    "happy-dom": "catalog:",
+    "octane": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "license": "MIT"
+}
