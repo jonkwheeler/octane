@@ -1,0 +1,73 @@
+{
+  "name": "@octanejs/drei",
+  "version": "0.0.1",
+  "description": "Octane port of @react-three/drei",
+  "type": "module",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./web": "./src/web/index.ts",
+    "./core": "./src/core/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "UPSTREAM.md",
+    "LICENSE",
+    "status.json"
+  ],
+  "scripts": {
+    "upstream:generate": "node scripts/generate-upstream-crosswalk.mjs",
+    "upstream:check": "node scripts/check-upstream-crosswalk.mjs",
+    "upstream:ready": "node scripts/check-upstream-crosswalk.mjs --ready",
+    "test": "vitest run --project drei",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "peerDependencies": {
+    "@octanejs/three": "workspace:*",
+    "@types/three": ">=0.159",
+    "octane": "workspace:*",
+    "three": ">=0.159"
+  },
+  "peerDependenciesMeta": {
+    "@types/three": {
+      "optional": true
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/drei"
+  },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@octanejs/three": "workspace:*",
+    "@react-three/drei": "catalog:default",
+    "@react-three/fiber": "catalog:default",
+    "@tsrx/react": "catalog:default",
+    "@types/three": "catalog:default",
+    "octane": "workspace:*",
+    "playwright": "catalog:default",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "three": "catalog:default",
+    "typescript": "catalog:default",
+    "vitest": "catalog:default"
+  }
+}

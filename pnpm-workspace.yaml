@@ -249,6 +249,7 @@ catalogs:
     '@vitejs/plugin-react': ^6.0.3
     '@juggle/resize-observer': ^3.4.0
     '@react-three/fiber': 9.6.1
+    '@react-three/drei': 10.7.7
     '@react-spring/web': ^10.1.2
     '@visx/chord': 4.0.0
     '@visx/annotation': 4.0.0
@@ -418,7 +419,7 @@ minimumReleaseAgeExclude:
   - 'shadcn@4.14.1'
   - 'tailwindcss@4.3.3'
   - '@tailwindcss/vite@4.3.3'
-  - octane@0.1.18 || 0.1.19 || 0.1.21 || 0.1.22
+  - octane@0.1.18 || 0.1.19 || 0.1.21 || 0.1.22 || 0.1.23
 
 # Changesets 2.31.1 assumes npm's error shape and crashes on pnpm 11 duplicate
 # publish errors. Remove this backport once the fix ships on Changesets' stable line.

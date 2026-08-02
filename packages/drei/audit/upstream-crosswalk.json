@@ -1,0 +1,4950 @@
+{
+  "schemaVersion": 1,
+  "upstream": {
+    "repository": "https://github.com/pmndrs/drei",
+    "version": "10.7.7",
+    "commit": "b8b99fd4ca1dfb8d821335671320512daa6efea4",
+    "publicEntry": "src/index.ts",
+    "license": "MIT"
+  },
+  "policy": {
+    "target": "complete-web-api",
+    "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
+    "readyRequiresZeroGaps": true
+  },
+  "expectedTotals": {
+    "runtimeExports": 217,
+    "sourceExports": 379,
+    "gaps": 379
+  },
+  "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
+  "exports": [
+    {
+      "id": "export:AccumulativeShadows",
+      "name": "AccumulativeShadows",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AccumulativeShadows.tsx",
+        "line": 105
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:AccumulativeShadowsProps",
+      "name": "AccumulativeShadowsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AccumulativeShadows.tsx",
+        "line": 17
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:AdaptiveDpr",
+      "name": "AdaptiveDpr",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AdaptiveDpr.tsx",
+        "line": 4
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:AdaptiveEvents",
+      "name": "AdaptiveEvents",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AdaptiveEvents.tsx",
+        "line": 4
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ArcballControls",
+      "name": "ArcballControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ArcballControls.tsx",
+        "line": 26
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ArcballControlsProps",
+      "name": "ArcballControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ArcballControls.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Args",
+      "name": "Args",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:AsciiRenderer",
+      "name": "AsciiRenderer",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AsciiRenderer.tsx",
+        "line": 22
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:AsciiRendererProps",
+      "name": "AsciiRendererProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AsciiRenderer.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BBAnchor",
+      "name": "BBAnchor",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/BBAnchor.tsx",
+        "line": 12
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BBAnchorProps",
+      "name": "BBAnchorProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/BBAnchor.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BVHOptions",
+      "name": "BVHOptions",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bvh.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Backdrop",
+      "name": "Backdrop",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Backdrop.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BackdropProps",
+      "name": "BackdropProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Backdrop.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BakeShadows",
+      "name": "BakeShadows",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/BakeShadows.tsx",
+        "line": 4
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Billboard",
+      "name": "Billboard",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Billboard.tsx",
+        "line": 22
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BillboardProps",
+      "name": "BillboardProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Billboard.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Bounds",
+      "name": "Bounds",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bounds.tsx",
+        "line": 78
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BoundsApi",
+      "name": "BoundsApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bounds.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BoundsProps",
+      "name": "BoundsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bounds.tsx",
+        "line": 30
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Box",
+      "name": "Box",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 24
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Bvh",
+      "name": "Bvh",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bvh.tsx",
+        "line": 69
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:BvhProps",
+      "name": "BvhProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bvh.tsx",
+        "line": 29
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CameraControls",
+      "name": "CameraControls",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CameraControls.tsx",
+        "line": 57
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CameraControlsImpl",
+      "name": "CameraControlsImpl",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CameraControls.tsx",
+        "line": 235
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CameraControlsProps",
+      "name": "CameraControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CameraControls.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CameraShake",
+      "name": "CameraShake",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CameraShake.tsx",
+        "line": 31
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CameraShakeProps",
+      "name": "CameraShakeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CameraShake.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Capsule",
+      "name": "Capsule",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 41
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CatmullRomLine",
+      "name": "CatmullRomLine",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CatmullRomLine.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CatmullRomLineProps",
+      "name": "CatmullRomLineProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CatmullRomLine.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Caustics",
+      "name": "Caustics",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Caustics.tsx",
+        "line": 280
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CausticsProps",
+      "name": "CausticsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Caustics.tsx",
+        "line": 44
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Center",
+      "name": "Center",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Center.tsx",
+        "line": 48
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CenterProps",
+      "name": "CenterProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Center.tsx",
+        "line": 23
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Circle",
+      "name": "Circle",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Clone",
+      "name": "Clone",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Clone.tsx",
+        "line": 84
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CloneProps",
+      "name": "CloneProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Clone.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Cloud",
+      "name": "Cloud",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Cloud.tsx",
+        "line": 323
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CloudInstance",
+      "name": "CloudInstance",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Cloud.tsx",
+        "line": 220
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CloudProps",
+      "name": "CloudProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Cloud.tsx",
+        "line": 62
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Clouds",
+      "name": "Clouds",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Cloud.tsx",
+        "line": 100
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CloudsProps",
+      "name": "CloudsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Cloud.tsx",
+        "line": 49
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ComputedAttribute",
+      "name": "ComputedAttribute",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ComputedAttribute.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ComputedAttributeProps",
+      "name": "ComputedAttributeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ComputedAttribute.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Cone",
+      "name": "Cone",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 26
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ContactShadows",
+      "name": "ContactShadows",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ContactShadows.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ContactShadowsProps",
+      "name": "ContactShadowsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ContactShadows.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ContainerProps",
+      "name": "ContainerProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/View.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubeCamera",
+      "name": "CubeCamera",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
+        "line": 64
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubeCameraOptions",
+      "name": "CubeCameraOptions",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubeCameraProps",
+      "name": "CubeCameraProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
+        "line": 57
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubeTexture",
+      "name": "CubeTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeTexture.tsx",
+        "line": 22
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubeTextureOptions",
+      "name": "CubeTextureOptions",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeTexture.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubeTextureProps",
+      "name": "CubeTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeTexture.tsx",
+        "line": 17
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubicBezierLine",
+      "name": "CubicBezierLine",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubicBezierLine.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CubicBezierLineProps",
+      "name": "CubicBezierLineProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubicBezierLine.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CurveModifier",
+      "name": "CurveModifier",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CurveModifier.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CurveModifierProps",
+      "name": "CurveModifierProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CurveModifier.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CurveModifierRef",
+      "name": "CurveModifierRef",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CurveModifier.tsx",
+        "line": 12
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:CycleRaycast",
+      "name": "CycleRaycast",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/CycleRaycast.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Cylinder",
+      "name": "Cylinder",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 27
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Decal",
+      "name": "Decal",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Decal.tsx",
+        "line": 35
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DecalProps",
+      "name": "DecalProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Decal.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Detailed",
+      "name": "Detailed",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Detailed.tsx",
+        "line": 12
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DetailedProps",
+      "name": "DetailedProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Detailed.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DetectGPU",
+      "name": "DetectGPU",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/DetectGPU.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DetectGPUProps",
+      "name": "DetectGPUProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/DetectGPU.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DeviceOrientationControls",
+      "name": "DeviceOrientationControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/DeviceOrientationControls.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DeviceOrientationControlsProps",
+      "name": "DeviceOrientationControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/DeviceOrientationControls.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Dodecahedron",
+      "name": "Dodecahedron",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 38
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:DragControls",
+      "name": "DragControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/DragControls.tsx",
+        "line": 43
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Edges",
+      "name": "Edges",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Edges.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EdgesProps",
+      "name": "EdgesProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Edges.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EdgesRef",
+      "name": "EdgesRef",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Edges.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Effects",
+      "name": "Effects",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Effects.tsx",
+        "line": 37
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EffectsProps",
+      "name": "EffectsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Effects.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Environment",
+      "name": "Environment",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Environment.tsx",
+        "line": 236
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EnvironmentCube",
+      "name": "EnvironmentCube",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Environment.tsx",
+        "line": 90
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EnvironmentLoaderProps",
+      "name": "EnvironmentLoaderProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useEnvironment.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EnvironmentMap",
+      "name": "EnvironmentMap",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Environment.tsx",
+        "line": 82
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EnvironmentPortal",
+      "name": "EnvironmentPortal",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Environment.tsx",
+        "line": 123
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:EnvironmentProps",
+      "name": "EnvironmentProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Environment.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Example",
+      "name": "Example",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Example.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ExampleApi",
+      "name": "ExampleApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Example.tsx",
+        "line": 20
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ExampleProps",
+      "name": "ExampleProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Example.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Extrude",
+      "name": "Extrude",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 39
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FaceControls",
+      "name": "FaceControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceControls.tsx",
+        "line": 95
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FaceControlsApi",
+      "name": "FaceControlsApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceControls.tsx",
+        "line": 74
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FaceControlsProps",
+      "name": "FaceControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceControls.tsx",
+        "line": 43
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FaceLandmarker",
+      "name": "FaceLandmarker",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
+        "line": 29
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FaceLandmarkerDefaults",
+      "name": "FaceLandmarkerDefaults",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FaceLandmarkerProps",
+      "name": "FaceLandmarkerProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Facemesh",
+      "name": "Facemesh",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 82
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshApi",
+      "name": "FacemeshApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 45
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshDatas",
+      "name": "FacemeshDatas",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 478
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshEye",
+      "name": "FacemeshEye",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 360
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshEyeApi",
+      "name": "FacemeshEyeApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 330
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshEyeDefaults",
+      "name": "FacemeshEyeDefaults",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 341
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshEyeProps",
+      "name": "FacemeshEyeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 326
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FacemeshProps",
+      "name": "FacemeshProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Fbo",
+      "name": "Fbo",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fbo.tsx",
+        "line": 72
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FboProps",
+      "name": "FboProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fbo.tsx",
+        "line": 66
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Fbx",
+      "name": "Fbx",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fbx.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FirstPersonControls",
+      "name": "FirstPersonControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/FirstPersonControls.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FirstPersonControlsProps",
+      "name": "FirstPersonControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/FirstPersonControls.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Fisheye",
+      "name": "Fisheye",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fisheye.tsx",
+        "line": 24
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FisheyeProps",
+      "name": "FisheyeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fisheye.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Float",
+      "name": "Float",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Float.tsx",
+        "line": 16
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FloatProps",
+      "name": "FloatProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Float.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FlyControls",
+      "name": "FlyControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/FlyControls.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FlyControlsProps",
+      "name": "FlyControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/FlyControls.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FontData",
+      "name": "FontData",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useFont.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:FrameData",
+      "name": "FrameData",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GizmoHelper",
+      "name": "GizmoHelper",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GizmoHelper.tsx",
+        "line": 56
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GizmoHelperProps",
+      "name": "GizmoHelperProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GizmoHelper.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GizmoViewcube",
+      "name": "GizmoViewcube",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GizmoViewcube.tsx",
+        "line": 149
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GizmoViewport",
+      "name": "GizmoViewport",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GizmoViewport.tsx",
+        "line": 106
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Gltf",
+      "name": "Gltf",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Gltf.tsx",
+        "line": 58
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GltfProps",
+      "name": "GltfProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Gltf.tsx",
+        "line": 52
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Glyph",
+      "name": "Glyph",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useFont.tsx",
+        "line": 4
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GradientTexture",
+      "name": "GradientTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GradientTexture.tsx",
+        "line": 21
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GradientTextureProps",
+      "name": "GradientTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GradientTexture.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GradientType",
+      "name": "GradientType",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GradientTexture.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Grid",
+      "name": "Grid",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Grid.tsx",
+        "line": 133
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GridMaterialType",
+      "name": "GridMaterialType",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Grid.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:GridProps",
+      "name": "GridProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Grid.tsx",
+        "line": 41
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Helper",
+      "name": "Helper",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Helper.tsx",
+        "line": 47
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:HelperProps",
+      "name": "HelperProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Helper.tsx",
+        "line": 42
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Html",
+      "name": "Html",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Html.tsx",
+        "line": 146
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Hud",
+      "name": "Hud",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Hud.tsx",
+        "line": 39
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:HudProps",
+      "name": "HudProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Hud.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Icosahedron",
+      "name": "Icosahedron",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 36
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Image",
+      "name": "Image",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Image.tsx",
+        "line": 186
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ImageProps",
+      "name": "ImageProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Image.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Instance",
+      "name": "Instance",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 111
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:InstanceProps",
+      "name": "InstanceProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:InstancedAttribute",
+      "name": "InstancedAttribute",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 299
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:InstancedAttributeProps",
+      "name": "InstancedAttributeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 29
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Instances",
+      "name": "Instances",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 124
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:InstancesProps",
+      "name": "InstancesProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:IsObject",
+      "name": "IsObject",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Texture.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:KeyboardControls",
+      "name": "KeyboardControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/KeyboardControls.tsx",
+        "line": 56
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:KeyboardControlsEntry",
+      "name": "KeyboardControlsEntry",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/KeyboardControls.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:KeyboardControlsProps",
+      "name": "KeyboardControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/KeyboardControls.tsx",
+        "line": 37
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Ktx2",
+      "name": "Ktx2",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Ktx2.tsx",
+        "line": 45
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Lathe",
+      "name": "Lathe",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 40
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:LightProps",
+      "name": "LightProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Lightformer.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Lightformer",
+      "name": "Lightformer",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Lightformer.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Line",
+      "name": "Line",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Line.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:LineProps",
+      "name": "LineProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Line.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Loader",
+      "name": "Loader",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Loader.tsx",
+        "line": 16
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MapControls",
+      "name": "MapControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MapControls.tsx",
+        "line": 23
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MapControlsProps",
+      "name": "MapControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MapControls.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MappedTextureType",
+      "name": "MappedTextureType",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Texture.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MarchingCube",
+      "name": "MarchingCube",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
+        "line": 54
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MarchingCubeProps",
+      "name": "MarchingCubeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
+        "line": 48
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MarchingCubes",
+      "name": "MarchingCubes",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
+        "line": 21
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MarchingCubesProps",
+      "name": "MarchingCubesProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MarchingPlane",
+      "name": "MarchingPlane",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
+        "line": 76
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MarchingPlaneProps",
+      "name": "MarchingPlaneProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
+        "line": 70
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Mask",
+      "name": "Mask",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Mask.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MaskProps",
+      "name": "MaskProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Mask.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MatcapTexture",
+      "name": "MatcapTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MatcapTexture.tsx",
+        "line": 53
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MediaPipeFaceMesh",
+      "name": "MediaPipeFaceMesh",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MediaPipePoints",
+      "name": "MediaPipePoints",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Facemesh.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Merged",
+      "name": "Merged",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 229
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MergedProps",
+      "name": "MergedProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 221
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshDiscardMaterial",
+      "name": "MeshDiscardMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshDiscardMaterial.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshDiscardMaterialProps",
+      "name": "MeshDiscardMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshDiscardMaterial.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshDistortMaterial",
+      "name": "MeshDistortMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshDistortMaterial.tsx",
+        "line": 88
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshDistortMaterialProps",
+      "name": "MeshDistortMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshDistortMaterial.tsx",
+        "line": 83
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshLineGeometry",
+      "name": "MeshLineGeometry",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Trail.tsx",
+        "line": 89
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshPortalMaterial",
+      "name": "MeshPortalMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshPortalMaterial.tsx",
+        "line": 82
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshReflectorMaterial",
+      "name": "MeshReflectorMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshReflectorMaterial.tsx",
+        "line": 33
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshReflectorMaterialProps",
+      "name": "MeshReflectorMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshReflectorMaterial.tsx",
+        "line": 27
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshRefractionMaterial",
+      "name": "MeshRefractionMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshRefractionMaterial.tsx",
+        "line": 34
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshRefractionMaterialProps",
+      "name": "MeshRefractionMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshRefractionMaterial.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshTransmissionMaterial",
+      "name": "MeshTransmissionMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshTransmissionMaterial.tsx",
+        "line": 379
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshTransmissionMaterialProps",
+      "name": "MeshTransmissionMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshTransmissionMaterial.tsx",
+        "line": 44
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MeshWobbleMaterial",
+      "name": "MeshWobbleMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshWobbleMaterial.tsx",
+        "line": 74
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MetaData",
+      "name": "MetaData",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MotionPathControls",
+      "name": "MotionPathControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MotionPathControls.tsx",
+        "line": 85
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MotionPathProps",
+      "name": "MotionPathProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MotionPathControls.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MotionPathRef",
+      "name": "MotionPathRef",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MotionPathControls.tsx",
+        "line": 52
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MultiMaterial",
+      "name": "MultiMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MultiMaterial.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:MultiMaterialProps",
+      "name": "MultiMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MultiMaterial.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:NormalTexture",
+      "name": "NormalTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/NormalTexture.tsx",
+        "line": 47
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Octahedron",
+      "name": "Octahedron",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 37
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OnCenterCallbackProps",
+      "name": "OnCenterCallbackProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Center.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OrbitControls",
+      "name": "OrbitControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/OrbitControls.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OrbitControlsChangeEvent",
+      "name": "OrbitControlsChangeEvent",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/OrbitControls.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OrbitControlsProps",
+      "name": "OrbitControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/OrbitControls.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OrthographicCamera",
+      "name": "OrthographicCamera",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/OrthographicCamera.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OrthographicCameraProps",
+      "name": "OrthographicCameraProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/OrthographicCamera.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Outlines",
+      "name": "Outlines",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Outlines.tsx",
+        "line": 84
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:OutlinesProps",
+      "name": "OutlinesProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Outlines.tsx",
+        "line": 64
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PerformanceMonitor",
+      "name": "PerformanceMonitor",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
+        "line": 59
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PerformanceMonitorApi",
+      "name": "PerformanceMonitorApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
+        "line": 12
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PerformanceMonitorProps",
+      "name": "PerformanceMonitorProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
+        "line": 30
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PerspectiveCamera",
+      "name": "PerspectiveCamera",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PerspectiveCamera.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PerspectiveCameraProps",
+      "name": "PerspectiveCameraProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PerspectiveCamera.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PivotControls",
+      "name": "PivotControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/pivotControls/index.tsx",
+        "line": 92
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PivotControlsProps",
+      "name": "PivotControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/pivotControls/index.tsx",
+        "line": 35
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Plane",
+      "name": "Plane",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 29
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Point",
+      "name": "Point",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Points.tsx",
+        "line": 150
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointMaterial",
+      "name": "PointMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PointMaterial.tsx",
+        "line": 37
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointMaterialImpl",
+      "name": "PointMaterialImpl",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PointMaterial.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointMaterialProps",
+      "name": "PointMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PointMaterial.tsx",
+        "line": 35
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointerLockControls",
+      "name": "PointerLockControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PointerLockControls.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointerLockControlsProps",
+      "name": "PointerLockControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PointerLockControls.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Points",
+      "name": "Points",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Points.tsx",
+        "line": 216
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointsBuffer",
+      "name": "PointsBuffer",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Points.tsx",
+        "line": 176
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointsBuffersProps",
+      "name": "PointsBuffersProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Points.tsx",
+        "line": 167
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PointsInstancesProps",
+      "name": "PointsInstancesProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Points.tsx",
+        "line": 17
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Polyhedron",
+      "name": "Polyhedron",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 35
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PortalProps",
+      "name": "PortalProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshPortalMaterial.tsx",
+        "line": 64
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PositionMesh",
+      "name": "PositionMesh",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 54
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PositionPoint",
+      "name": "PositionPoint",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Points.tsx",
+        "line": 27
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PositionalAudio",
+      "name": "PositionalAudio",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PositionalAudio.tsx",
+        "line": 12
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PositionalAudioProps",
+      "name": "PositionalAudioProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PositionalAudio.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Preload",
+      "name": "Preload",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Preload.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PreloadProps",
+      "name": "PreloadProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Preload.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PresentationControlProps",
+      "name": "PresentationControlProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/PresentationControls.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:PresentationControls",
+      "name": "PresentationControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/PresentationControls.tsx",
+        "line": 22
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Progress",
+      "name": "Progress",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Progress.tsx",
+        "line": 55
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:QuadraticBezierLine",
+      "name": "QuadraticBezierLine",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/QuadraticBezierLine.tsx",
+        "line": 23
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:QuadraticBezierLineProps",
+      "name": "QuadraticBezierLineProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/QuadraticBezierLine.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:QuadraticBezierLineRef",
+      "name": "QuadraticBezierLineRef",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/QuadraticBezierLine.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RandomizedLight",
+      "name": "RandomizedLight",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AccumulativeShadows.tsx",
+        "line": 254
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RandomizedLightProps",
+      "name": "RandomizedLightProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AccumulativeShadows.tsx",
+        "line": 226
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RenderCubeTexture",
+      "name": "RenderCubeTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RenderCubeTexture.tsx",
+        "line": 43
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RenderCubeTextureApi",
+      "name": "RenderCubeTextureApi",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RenderCubeTexture.tsx",
+        "line": 37
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RenderCubeTextureProps",
+      "name": "RenderCubeTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RenderCubeTexture.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RenderTexture",
+      "name": "RenderTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RenderTexture.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RenderTextureProps",
+      "name": "RenderTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RenderTexture.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Resize",
+      "name": "Resize",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Resize.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ResizeProps",
+      "name": "ResizeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Resize.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Ring",
+      "name": "Ring",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 34
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RoundedBox",
+      "name": "RoundedBox",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
+        "line": 31
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RoundedBoxGeometry",
+      "name": "RoundedBoxGeometry",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
+        "line": 62
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RoundedBoxGeometryProps",
+      "name": "RoundedBoxGeometryProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:RoundedBoxProps",
+      "name": "RoundedBoxProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Sampler",
+      "name": "Sampler",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sampler.tsx",
+        "line": 149
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SamplerProps",
+      "name": "SamplerProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sampler.tsx",
+        "line": 40
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenQuad",
+      "name": "ScreenQuad",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ScreenQuad.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenQuadProps",
+      "name": "ScreenQuadProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ScreenQuad.tsx",
+        "line": 17
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenSizer",
+      "name": "ScreenSizer",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ScreenSizer.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenSizerProps",
+      "name": "ScreenSizerProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ScreenSizer.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenSpace",
+      "name": "ScreenSpace",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ScreenSpace.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenSpaceProps",
+      "name": "ScreenSpaceProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ScreenSpace.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenVideoTexture",
+      "name": "ScreenVideoTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScreenVideoTexture.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScreenVideoTextureProps",
+      "name": "ScreenVideoTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScreenVideoTexture.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Scroll",
+      "name": "Scroll",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScrollControls.tsx",
+        "line": 276
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScrollControls",
+      "name": "ScrollControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScrollControls.tsx",
+        "line": 55
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScrollControlsProps",
+      "name": "ScrollControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScrollControls.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScrollControlsState",
+      "name": "ScrollControlsState",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScrollControls.tsx",
+        "line": 34
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ScrollProps",
+      "name": "ScrollProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScrollControls.tsx",
+        "line": 274
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Segment",
+      "name": "Segment",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Segments.tsx",
+        "line": 114
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SegmentObject",
+      "name": "SegmentObject",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Segments.tsx",
+        "line": 100
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SegmentProps",
+      "name": "SegmentProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Segments.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Segments",
+      "name": "Segments",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Segments.tsx",
+        "line": 26
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SegmentsProps",
+      "name": "SegmentsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Segments.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Select",
+      "name": "Select",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Select.tsx",
+        "line": 26
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SelectProps",
+      "name": "SelectProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Select.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Shadow",
+      "name": "Shadow",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Shadow.tsx",
+        "line": 16
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ShadowAlpha",
+      "name": "ShadowAlpha",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ShadowAlpha.tsx",
+        "line": 20
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ShadowAlphaProps",
+      "name": "ShadowAlphaProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/ShadowAlpha.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ShadowProps",
+      "name": "ShadowProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Shadow.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ShadowType",
+      "name": "ShadowType",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Shadow.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ShakeController",
+      "name": "ShakeController",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CameraShake.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Shape",
+      "name": "Shape",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 42
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ShapeProps",
+      "name": "ShapeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SharedState",
+      "name": "SharedState",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Splat.tsx",
+        "line": 31
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Size",
+      "name": "Size",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SizeProps",
+      "name": "SizeProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bounds.tsx",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Sky",
+      "name": "Sky",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sky.tsx",
+        "line": 29
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SkyProps",
+      "name": "SkyProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sky.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SoftShadows",
+      "name": "SoftShadows",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/softShadows.tsx",
+        "line": 142
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SoftShadowsProps",
+      "name": "SoftShadowsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/softShadows.tsx",
+        "line": 20
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Sparkles",
+      "name": "Sparkles",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sparkles.tsx",
+        "line": 126
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SparklesProps",
+      "name": "SparklesProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sparkles.tsx",
+        "line": 109
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Sphere",
+      "name": "Sphere",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Splat",
+      "name": "Splat",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Splat.tsx",
+        "line": 623
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SplatMaterialType",
+      "name": "SplatMaterialType",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Splat.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SplatProps",
+      "name": "SplatProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Splat.tsx",
+        "line": 62
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SpotLight",
+      "name": "SpotLight",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/SpotLight.tsx",
+        "line": 276
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SpotLightProps",
+      "name": "SpotLightProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/SpotLight.tsx",
+        "line": 27
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SpotLightShadow",
+      "name": "SpotLightShadow",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/SpotLight.tsx",
+        "line": 271
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SpriteAnimator",
+      "name": "SpriteAnimator",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/SpriteAnimator.tsx",
+        "line": 122
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SpriteAnimatorProps",
+      "name": "SpriteAnimatorProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/SpriteAnimator.tsx",
+        "line": 23
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SpriteData",
+      "name": "SpriteData",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 47
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Stage",
+      "name": "Stage",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Stage.tsx",
+        "line": 76
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:StageProps",
+      "name": "StageProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Stage.tsx",
+        "line": 48
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Stars",
+      "name": "Stars",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Stars.tsx",
+        "line": 60
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:StarsProps",
+      "name": "StarsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Stars.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Stats",
+      "name": "Stats",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Stats.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:StatsGl",
+      "name": "StatsGl",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/StatsGl.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:StatsGlProps",
+      "name": "StatsGlProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/StatsGl.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:StatsProps",
+      "name": "StatsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Stats.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Svg",
+      "name": "Svg",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Svg.tsx",
+        "line": 19
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:SvgProps",
+      "name": "SvgProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Svg.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TargetMesh",
+      "name": "TargetMesh",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Splat.tsx",
+        "line": 22
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Tetrahedron",
+      "name": "Tetrahedron",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 33
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Text",
+      "name": "Text",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Text.tsx",
+        "line": 44
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Text3D",
+      "name": "Text3D",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Text3D.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Text3DProps",
+      "name": "Text3DProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Text3D.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TextProps",
+      "name": "TextProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Text.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Texture",
+      "name": "Texture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Texture.tsx",
+        "line": 70
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Torus",
+      "name": "Torus",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 31
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TorusKnot",
+      "name": "TorusKnot",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TrackballControls",
+      "name": "TrackballControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TrackballControls.tsx",
+        "line": 24
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TrackballControlsProps",
+      "name": "TrackballControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TrackballControls.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Trail",
+      "name": "Trail",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Trail.tsx",
+        "line": 91
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TrailProps",
+      "name": "TrailProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Trail.tsx",
+        "line": 21
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TrailTexture",
+      "name": "TrailTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TrailTexture.tsx",
+        "line": 215
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TrailTextureProps",
+      "name": "TrailTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TrailTexture.tsx",
+        "line": 211
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TransformControls",
+      "name": "TransformControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TransformControls.tsx",
+        "line": 35
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TransformControlsProps",
+      "name": "TransformControlsProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TransformControls.tsx",
+        "line": 11
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:TransformFn",
+      "name": "TransformFn",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sampler.tsx",
+        "line": 23
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Tube",
+      "name": "Tube",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shapes.tsx",
+        "line": 30
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:VideoTexture",
+      "name": "VideoTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/VideoTexture.tsx",
+        "line": 124
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:VideoTextureProps",
+      "name": "VideoTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/VideoTexture.tsx",
+        "line": 119
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:View",
+      "name": "View",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/View.tsx",
+        "line": 274
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ViewProps",
+      "name": "ViewProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/View.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:ViewportProps",
+      "name": "ViewportProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/View.tsx",
+        "line": 270
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:WebcamVideoTexture",
+      "name": "WebcamVideoTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/WebcamVideoTexture.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:WebcamVideoTextureProps",
+      "name": "WebcamVideoTextureProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/web/WebcamVideoTexture.tsx",
+        "line": 7
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:Wireframe",
+      "name": "Wireframe",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Wireframe.tsx",
+        "line": 201
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:WobbleMaterialProps",
+      "name": "WobbleMaterialProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MeshWobbleMaterial.tsx",
+        "line": 69
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:accumulativeContext",
+      "name": "accumulativeContext",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/AccumulativeShadows.tsx",
+        "line": 74
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:calcPosFromAngles",
+      "name": "calcPosFromAngles",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sky.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:calculateScaleFactor",
+      "name": "calculateScaleFactor",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/calculateScaleFactor.ts",
+        "line": 24
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:checkIfFrameIsEmpty",
+      "name": "checkIfFrameIsEmpty",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 67
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:createInstances",
+      "name": "createInstances",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Instances.tsx",
+        "line": 287
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:getFirstFrame",
+      "name": "getFirstFrame",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 58
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:isWebGL2Available",
+      "name": "isWebGL2Available",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Effects.tsx",
+        "line": 28
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:meshBounds",
+      "name": "meshBounds",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/meshBounds.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:shaderMaterial",
+      "name": "shaderMaterial",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/shaderMaterial.tsx",
+        "line": 22
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useAnimations",
+      "name": "useAnimations",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useAnimations.tsx",
+        "line": 13
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useAspect",
+      "name": "useAspect",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useAspect.tsx",
+        "line": 3
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useBVH",
+      "name": "useBVH",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bvh.tsx",
+        "line": 42
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useBounds",
+      "name": "useBounds",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Bounds.tsx",
+        "line": 351
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useBoxProjectedEnv",
+      "name": "useBoxProjectedEnv",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useBoxProjectedEnv.tsx",
+        "line": 89
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useCamera",
+      "name": "useCamera",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useCamera.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useContextBridge",
+      "name": "useContextBridge",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useContextBridge.tsx",
+        "line": 4
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useCubeCamera",
+      "name": "useCubeCamera",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
+        "line": 20
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useCubeTexture",
+      "name": "useCubeTexture",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/CubeTexture.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useCursor",
+      "name": "useCursor",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/useCursor.tsx",
+        "line": 3
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useDepthBuffer",
+      "name": "useDepthBuffer",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useDepthBuffer.ts",
+        "line": 6
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useDetectGPU",
+      "name": "useDetectGPU",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/DetectGPU.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useEnvironment",
+      "name": "useEnvironment",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useEnvironment.tsx",
+        "line": 29
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useFBO",
+      "name": "useFBO",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fbo.tsx",
+        "line": 14
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useFBX",
+      "name": "useFBX",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Fbx.tsx",
+        "line": 8
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useFaceControls",
+      "name": "useFaceControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceControls.tsx",
+        "line": 307
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useFaceLandmarker",
+      "name": "useFaceLandmarker",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
+        "line": 52
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useFont",
+      "name": "useFont",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useFont.tsx",
+        "line": 42
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useGLTF",
+      "name": "useGLTF",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Gltf.tsx",
+        "line": 32
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useGizmoContext",
+      "name": "useGizmoContext",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/GizmoHelper.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useHelper",
+      "name": "useHelper",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Helper.tsx",
+        "line": 10
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useIntersect",
+      "name": "useIntersect",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useIntersect.tsx",
+        "line": 5
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useKTX2",
+      "name": "useKTX2",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Ktx2.tsx",
+        "line": 9
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useKeyboardControls",
+      "name": "useKeyboardControls",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/KeyboardControls.tsx",
+        "line": 118
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useMask",
+      "name": "useMask",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Mask.tsx",
+        "line": 39
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useMatcapTexture",
+      "name": "useMatcapTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MatcapTexture.tsx",
+        "line": 24
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useMotion",
+      "name": "useMotion",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/MotionPathControls.tsx",
+        "line": 58
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useNormalTexture",
+      "name": "useNormalTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/NormalTexture.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:usePerformanceMonitor",
+      "name": "usePerformanceMonitor",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
+        "line": 147
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useProgress",
+      "name": "useProgress",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Progress.tsx",
+        "line": 15
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useScroll",
+      "name": "useScroll",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/ScrollControls.tsx",
+        "line": 51
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useSelect",
+      "name": "useSelect",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/web/Select.tsx",
+        "line": 177
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useSpriteAnimator",
+      "name": "useSpriteAnimator",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/SpriteAnimator.tsx",
+        "line": 111
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useSpriteLoader",
+      "name": "useSpriteLoader",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
+        "line": 76
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useSurfaceSampler",
+      "name": "useSurfaceSampler",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sampler.tsx",
+        "line": 80
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useSurfaceSamplerProps",
+      "name": "useSurfaceSamplerProps",
+      "kind": "type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Sampler.tsx",
+        "line": 74
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useTexture",
+      "name": "useTexture",
+      "kind": "value-and-type",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Texture.tsx",
+        "line": 18
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useTrail",
+      "name": "useTrail",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/Trail.tsx",
+        "line": 42
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useTrailTexture",
+      "name": "useTrailTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/TrailTexture.tsx",
+        "line": 198
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    },
+    {
+      "id": "export:useVideoTexture",
+      "name": "useVideoTexture",
+      "kind": "value",
+      "source": {
+        "path": "packages/drei/upstream/src/core/VideoTexture.tsx",
+        "line": 25
+      },
+      "status": "gap",
+      "implementation": null,
+      "evidence": [],
+      "divergence": null
+    }
+  ]
+}

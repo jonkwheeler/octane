@@ -1,0 +1,6 @@
+{
+  "upstream": "@react-three/drei@10.7.7 (b8b99fd4ca1dfb8d821335671320512daa6efea4)",
+  "surface": "Full pinned Drei web API parity in progress; support is declared only by the executable crosswalk.",
+  "divergences": [],
+  "ssr": "Browser-dependent helpers remain client-only; server-safe behavior is verified per export."
+}
