@@ -189,6 +189,12 @@ export { Example } from './Example.three.tsrx';
 export type { ExampleApi, ExampleProps } from './Example.three.tsrx';
 export { Svg } from './Svg.three.tsrx';
 export type { SvgProps } from './Svg.three.tsrx';
+export { RenderTexture } from './RenderTexture.three.tsrx';
+export type { RenderTextureProps } from './RenderTexture.three.tsrx';
+export { RenderCubeTexture } from './RenderCubeTexture.three.tsrx';
+export type { RenderCubeTextureApi, RenderCubeTextureProps } from './RenderCubeTexture.three.tsrx';
+export { Fisheye } from './Fisheye.three.tsrx';
+export type { FisheyeProps } from './Fisheye.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
