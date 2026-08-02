@@ -10,6 +10,8 @@ export { Text } from './Text.three.tsrx';
 export type { TextProps } from './Text.three.tsrx';
 export { MeshRefractionMaterial } from './MeshRefractionMaterial.three.tsrx';
 export type { MeshRefractionMaterialProps } from './MeshRefractionMaterial.three.tsrx';
+export { MeshReflectorMaterial } from './MeshReflectorMaterial.three.tsrx';
+export type { MeshReflectorMaterialProps } from './MeshReflectorMaterial.three.tsrx';
 export {
 	Box,
 	Capsule,
