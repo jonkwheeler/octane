@@ -186,6 +186,18 @@ describe('bridgeReport', () => {
 		expect(report.plan[0]).toContain('@octanejs/zustand');
 	});
 
+	it('tells the caller to bridge from a pinned copy of the upstream source', async () => {
+		const root = await mkdtemp(join(tmpdir(), 'octane-bridge-'));
+		await writeFakePackage(root, 'widgets', {
+			'index.js': `
+				import { useState } from 'react';
+				export function useWidget() { return useState(0); }
+			`,
+		});
+		const report = await bridgeReport({ packageName: 'widgets', projectRoot: root });
+		expect(report.plan.join('\n')).toContain('Pin the upstream version');
+	});
+
 	it('errors clearly when the package is not installed', async () => {
 		const root = await mkdtemp(join(tmpdir(), 'octane-bridge-'));
 		const report = await bridgeReport({ packageName: 'missing-lib', projectRoot: root });
@@ -253,6 +265,19 @@ describe('bridgeReportFromSource', () => {
 });
 
 describe('KNOWN_BINDINGS', () => {
+	it('maps Streamdown and every official plugin package to the consolidated binding', () => {
+		const upstreamPackages = [
+			'streamdown',
+			'@streamdown/code',
+			'@streamdown/math',
+			'@streamdown/mermaid',
+			'@streamdown/cjk',
+		];
+		expect(upstreamPackages.every((name) => KNOWN_BINDINGS[name] === '@octanejs/streamdown')).toBe(
+			true,
+		);
+	});
+
 	it('maps every public Visx entry point to the aggregate Octane port', async () => {
 		const packagesRoot = fileURLToPath(new URL('../..', import.meta.url));
 		const manifest = JSON.parse(await readFile(join(packagesRoot, 'visx', 'package.json'), 'utf8'));

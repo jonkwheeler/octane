@@ -28,6 +28,7 @@
   "files": [
     "src",
     "README.md",
+    "UPSTREAM.md",
     "status.json"
   ],
   "exports": {
