@@ -6312,6 +6312,9 @@ importers:
       '@octanejs/cmdk':
         specifier: workspace:*
         version: link:../../packages/cmdk
+      '@octanejs/drei':
+        specifier: workspace:*
+        version: link:../../packages/drei
       '@octanejs/lucide':
         specifier: workspace:*
         version: link:../../packages/lucide
@@ -6345,6 +6348,9 @@ importers:
       '@octanejs/tanstack-query':
         specifier: workspace:*
         version: link:../../packages/tanstack-query
+      '@octanejs/three':
+        specifier: workspace:*
+        version: link:../../packages/three
       '@octanejs/usehooks-ts':
         specifier: workspace:*
         version: link:../../packages/usehooks-ts

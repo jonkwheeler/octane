@@ -154,20 +154,33 @@ function readdirRecursive(directory) {
 		.map((entry) => resolve(entry.parentPath, entry.name));
 }
 
-for (const [name, value] of [
+const generatedFiles = [
 	['adapted-runtime.json', inventory],
 	['test-classifications.json', classifications],
 	['runtime-evidence.json', runtimeEvidence],
 	['upstream-test-artifacts.json', upstreamArtifacts],
-]) {
+];
+for (const [name, value] of generatedFiles) {
 	const destination = resolve(auditRoot, name);
 	mkdirSync(dirname(destination), { recursive: true });
 	writeFileSync(destination, `${JSON.stringify(value, null, 2)}\n`);
 	console.log(`${portable(relative(root, destination))}: generated`);
 }
+execFileSync(
+	process.execPath,
+	[
+		'node_modules/prettier/bin/prettier.cjs',
+		'--write',
+		...generatedFiles.map(([name]) => portable(relative(root, resolve(auditRoot, name)))),
+	],
+	{ cwd: root, stdio: 'ignore' },
+);
 
 const manifestPath = resolve(auditRoot, 'react-parity.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+manifest.environments['workspace-node'].lockfileSha256 = digest(
+	readFileSync(resolve(root, manifest.environments['workspace-node'].lockfile)),
+);
 for (const lane of manifest.lanes) {
 	for (const file of lane.files ?? []) {
 		file.sha256 = digest(readFileSync(resolve(root, file.path)));

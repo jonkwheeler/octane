@@ -39,7 +39,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "40105b4973969f25074aa8c0edff838fb2bc2bbec447ae5f647eda087fad2644"
+      "lockfileSha256": "b53610ee862e47204354fba0b53e37ebc6b032bd17f9e3ab842f96ead5b89e4d"
     }
   },
   "lanes": [
@@ -59,7 +59,7 @@
         {
           "path": "packages/drei/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "e48196e0f034805b8b91a0c0f04946762a53b82eed92c7e574836b124f8197a1"
+          "sha256": "47e9c5979ce7cadcb56adad599aef4bf351be1ce896a8a164f00d19cd46318b4"
         },
         {
           "path": "packages/drei/audit/runtime-evidence.json",
@@ -79,7 +79,7 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "a570e1049c2aaf1d6b0e554cca0e8633901388eb85a20f62bfe9549ab34696e7"
+          "sha256": "c709f4aa05b8c6e0326ffaec038b736c23f5b3e2978de8f5173d6e19693191c8"
         }
       ]
     },

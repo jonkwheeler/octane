@@ -8,6 +8,7 @@ import { CommandMenu } from './demos/CommandMenu.tsrx';
 import { Conditional } from './demos/Conditional.tsrx';
 import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
+import { DreiDemo } from './demos/Drei.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
@@ -25,6 +26,7 @@ import commandMenuSource from './demos/CommandMenu.tsrx?raw';
 import conditionalSource from './demos/Conditional.tsrx?raw';
 import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
+import dreiSource from './demos/Drei.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
@@ -99,6 +101,12 @@ export const GROUPS: readonly DemoGroup[] = [
 		id: 'components',
 		label: 'Components',
 		demos: [
+			{
+				id: 'drei',
+				title: 'Drei',
+				Component: DreiDemo,
+				source: dreiSource,
+			},
 			{
 				id: 'cmdk',
 				title: 'Command menu',

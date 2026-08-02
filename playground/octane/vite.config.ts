@@ -2,9 +2,10 @@ import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { octane } from 'octane/compiler/vite';
 import tailwindcss from '@tailwindcss/vite';
+import { dreiRenderers } from '@octanejs/drei/config';
 
 export default defineConfig({
-	plugins: [octane(), tailwindcss()],
+	plugins: [octane({ renderers: dreiRenderers }), tailwindcss()],
 
 	resolve: {
 		// The shadcn CLI installs registry components importing via the `@/`
@@ -35,6 +36,8 @@ export default defineConfig({
 		// which build on the raw-source radix and lucide bindings.
 		exclude: [
 			'octane',
+			'@octanejs/drei',
+			'@octanejs/three',
 			'@octanejs/cmdk',
 			'@octanejs/radix',
 			'@octanejs/lucide',
