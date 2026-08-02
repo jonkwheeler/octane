@@ -6156,6 +6156,9 @@ importers:
         specifier: catalog:default
         version: 2.55.10(typescript@5.9.3)(zod@4.4.3)
     devDependencies:
+      '@tanstack/react-query':
+        specifier: catalog:default
+        version: 5.101.3(react@19.2.7)
       '@tsrx/react':
         specifier: catalog:default
         version: 0.2.56(react@19.2.7)

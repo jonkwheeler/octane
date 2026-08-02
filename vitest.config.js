@@ -1239,6 +1239,7 @@ export default defineConfig({
 					name: 'wagmi',
 					include: ['packages/wagmi/tests/**/*.test.ts'],
 					environment: 'jsdom',
+					globalSetup: ['packages/wagmi/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],

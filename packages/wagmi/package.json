@@ -48,6 +48,7 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@tanstack/react-query": "catalog:default",
     "@tsrx/react": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
