@@ -14,6 +14,11 @@ import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 import {
+	parseReactParityCheckArgs,
+	partitionRequiredLanes,
+	verifyBrowserDeferral,
+} from './check-policy-lib.mjs';
+import {
 	loadManifest,
 	requiredExecutableLanes,
 	verifyLaneEnvironment,
@@ -35,6 +40,8 @@ const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), {
 	.sort();
 const HARNESS_PATH = path.join(REPO, 'scripts/react-parity/harness.mjs');
 const errors = [];
+const checkMode = parseReactParityCheckArgs(process.argv.slice(2));
+const deferredBrowserLanes = [];
 try {
 	verifyHookFormUpstream(REPO);
 } catch (error) {
@@ -156,7 +163,9 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		}
 		await verifyManifestTestSelections(manifest, REPO);
 		if (manifest.provenance.verification === 'verified') {
-			for (const lane of requiredExecutableLanes(manifest)) {
+			const partition = partitionRequiredLanes(requiredExecutableLanes(manifest), checkMode);
+			deferredBrowserLanes.push(...partition.deferred.map((lane) => `${relativeFile}#${lane.id}`));
+			for (const lane of partition.executable) {
 				execFileSync(
 					process.execPath,
 					[HARNESS_PATH, 'run', '--manifest', relativeFile, '--lane', lane.id],
@@ -169,6 +178,12 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	}
 }
 
+try {
+	verifyBrowserDeferral(checkMode, deferredBrowserLanes);
+} catch (error) {
+	errors.push(error.message);
+}
+
 if (errors.length) {
 	console.error(`React parity audit failed:\n  - ${errors.join('\n  - ')}`);
 	process.exit(1);
@@ -179,3 +194,5 @@ console.log(
 		.map((inventory) => `${inventory.baseline}: ${inventory.summary.concreteCases} cases`)
 		.join(', ')}).`,
 );
+if (deferredBrowserLanes.length > 0)
+	console.log(`Deferred browser lanes to dedicated CI: ${deferredBrowserLanes.join(', ')}.`);

@@ -567,7 +567,6 @@ jobs:
             specs: >-
               packages/octane/tests/browser
               packages/dexie/tests/browser
-              packages/react-resizable-panels/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
           - lane: astro
@@ -600,6 +599,13 @@ jobs:
 
       - name: Run ${{ matrix.lane }} integration tests
         run: pnpm vitest run ${{ matrix.specs }} --maxWorkers=1
+
+      - name: Run declared React parity browser lanes
+        if: ${{ matrix.lane == 'browser' }}
+        run: >-
+          node scripts/react-parity/harness.mjs run
+          --manifest packages/react-resizable-panels/audit/react-parity.json
+          --lane react-resizable-panels-browser
 
   lint_checks:
     name: lint checks
@@ -686,7 +692,7 @@ jobs:
       - name: Check React parity inventory and ledger
         run: |
           pnpm react-parity:test
-          pnpm react-parity:check
+          pnpm react-parity:check --defer-browser-lanes
 
       # Redact's issues, pull requests, and tests are mined at a pinned commit
       # into an authored contract ledger. This network-free gate validates its
