@@ -33,3 +33,8 @@ export type { CubeTextureOptions, CubeTextureProps } from './CubeTexture.three.t
 export { Ktx2, useKTX2 } from './Ktx2.three.tsrx';
 export { useFont } from './useFont.three.tsrx';
 export type { FontData, Glyph } from './useFont.three.tsrx';
+export { Clone } from './Clone.three.tsrx';
+export type { CloneProps } from './Clone.three.tsrx';
+export { Gltf, useGLTF } from './Gltf.three.tsrx';
+export type { GltfProps } from './Gltf.three.tsrx';
+export { Fbx, useFBX } from './Fbx.three.tsrx';

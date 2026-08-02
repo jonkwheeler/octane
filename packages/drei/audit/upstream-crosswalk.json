@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 336
+    "gaps": 329
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -504,9 +504,9 @@
         "path": "packages/drei/upstream/src/core/Clone.tsx",
         "line": 84
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Clone.three.tsrx",
+      "evidence": ["packages/drei/tests/clone.test.ts", "packages/drei/typetests/clone.test-d.ts"],
       "divergence": null
     },
     {
@@ -517,9 +517,9 @@
         "path": "packages/drei/upstream/src/core/Clone.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Clone.three.tsrx",
+      "evidence": ["packages/drei/typetests/clone.test-d.ts"],
       "divergence": null
     },
     {
@@ -1390,9 +1390,12 @@
         "path": "packages/drei/upstream/src/core/Fbx.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Fbx.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/models.test.ts",
+        "packages/drei/typetests/models.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -1585,9 +1588,12 @@
         "path": "packages/drei/upstream/src/core/Gltf.tsx",
         "line": 58
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Gltf.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/models.test.ts",
+        "packages/drei/typetests/models.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -1598,9 +1604,9 @@
         "path": "packages/drei/upstream/src/core/Gltf.tsx",
         "line": 52
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Gltf.three.tsrx",
+      "evidence": ["packages/drei/typetests/models.test-d.ts"],
       "divergence": null
     },
     {
@@ -4697,9 +4703,12 @@
         "path": "packages/drei/upstream/src/core/Fbx.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Fbx.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/models.test.ts",
+        "packages/drei/typetests/models.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4749,9 +4758,12 @@
         "path": "packages/drei/upstream/src/core/Gltf.tsx",
         "line": 32
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Gltf.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/models.test.ts",
+        "packages/drei/typetests/models.test-d.ts"
+      ],
       "divergence": null
     },
     {
