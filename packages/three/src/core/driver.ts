@@ -882,7 +882,12 @@ function desiredAttachment(
 				sibling.object,
 				sibling.props.attach as string | null | undefined,
 			);
-			if (typeof siblingPath !== 'string') index++;
+			if (
+				typeof siblingPath !== 'string' ||
+				siblingPath.startsWith(`${autoAttachArray}-`)
+			) {
+				index++;
+			}
 		}
 		return { kind: 'attachment', parent, path: `${autoAttachArray}-${index}` };
 	}
