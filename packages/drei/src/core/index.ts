@@ -195,6 +195,8 @@ export { RenderCubeTexture } from './RenderCubeTexture.three.tsrx';
 export type { RenderCubeTextureApi, RenderCubeTextureProps } from './RenderCubeTexture.three.tsrx';
 export { Fisheye } from './Fisheye.three.tsrx';
 export type { FisheyeProps } from './Fisheye.three.tsrx';
+export { Outlines } from './Outlines.three.tsrx';
+export type { OutlinesProps } from './Outlines.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
