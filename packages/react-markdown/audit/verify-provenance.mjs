@@ -76,7 +76,7 @@ function extractTests(source) {
 			id: `test.jsx:${line}:${title}`,
 			title,
 			line,
-			disposition: 'pending-adaptation',
+			disposition: 'executed-pristine-adapted',
 		});
 	}
 	return {

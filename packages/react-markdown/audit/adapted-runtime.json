@@ -1,0 +1,626 @@
+{
+  "schemaVersion": 1,
+  "project": "react-markdown",
+  "roots": ["packages/react-markdown/tests"],
+  "files": [
+    "packages/react-markdown/tests/adoption/consumer.test.ts",
+    "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+    "packages/react-markdown/tests/conformance/public-types.test.ts",
+    "packages/react-markdown/tests/conformance/sync.server.test.ts",
+    "packages/react-markdown/tests/differential/processor.test.ts",
+    "packages/react-markdown/tests/differential/url-transform.test.ts",
+    "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+    "packages/react-markdown/tests/hydration/hydration.test.ts",
+    "packages/react-markdown/tests/parity/differential.test.ts",
+    "packages/react-markdown/tests/probes/async-component.server.test.ts",
+    "packages/react-markdown/tests/ssr/server.test.ts",
+    "packages/react-markdown/tests/validation.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:c31f095888ccc575",
+      "file": "packages/react-markdown/tests/adoption/consumer.test.ts",
+      "fullName": "frozen adoption inputs freezes every migration-sensitive API family before implementation"
+    },
+    {
+      "id": "runtime:5a4b52e36a45d0a8",
+      "file": "packages/react-markdown/tests/adoption/consumer.test.ts",
+      "fullName": "frozen adoption inputs retains the attribution-compatible public application consumer byte-exact"
+    },
+    {
+      "id": "runtime:1f11b6ce7ab2f1dc",
+      "file": "packages/react-markdown/tests/adoption/consumer.test.ts",
+      "fullName": "frozen adoption inputs separates framework-wide edits from forbidden library redesign"
+    },
+    {
+      "id": "runtime:ce3118d5bc1765a5",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync awaits promise-returning mapped components and their nested children"
+    },
+    {
+      "id": "runtime:49d7135a97858d16",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync keeps synchronous throws distinct from asynchronous rejection"
+    },
+    {
+      "id": "runtime:ed2368ee37c5359d",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync matches pristine async plugin ordering and resolved output"
+    },
+    {
+      "id": "runtime:1cf969a69d0ab162",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync propagates promise-returning mapped-component rejection"
+    },
+    {
+      "id": "runtime:2487ea081191d36a",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync rejects async plugin failures with the pristine error"
+    },
+    {
+      "id": "runtime:648b865f39a56fb4",
+      "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
+      "fullName": "keeps the binding public surface free of React imports and types"
+    },
+    {
+      "id": "runtime:e09ff01a1e9ea7cc",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection maps every upstream-covered intrinsic family with node and stable special keys"
+    },
+    {
+      "id": "runtime:d1f6d19189608d03",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine SVG, comments, and root replacement"
+    },
+    {
+      "id": "runtime:5047fdc74163460b",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine plugin-created GFM output"
+    },
+    {
+      "id": "runtime:b37f6b1a7594a98e",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine projection for plugin-created ARIA and data properties"
+    },
+    {
+      "id": "runtime:2f2355967cac4379",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine projection for plugin-created comma-separated properties"
+    },
+    {
+      "id": "runtime:32b092df5b090cea",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine projection for plugin-created style and vendor prefixes properties"
+    },
+    {
+      "id": "runtime:28a815ad8f068e93",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine rehype-raw behavior"
+    },
+    {
+      "id": "runtime:f6a14f6585be95a5",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: absolute URL"
+    },
+    {
+      "id": "runtime:8ab6d756e0efb565",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: absolute path"
+    },
+    {
+      "id": "runtime:f10bea66a68d797a",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: aligned table"
+    },
+    {
+      "id": "runtime:da16b6b30d515557",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: ampersand URL"
+    },
+    {
+      "id": "runtime:36c2628e4cfb068a",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: block quote"
+    },
+    {
+      "id": "runtime:05f2e97e043ce8c9",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: break"
+    },
+    {
+      "id": "runtime:e3509e4c5c186116",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: delete"
+    },
+    {
+      "id": "runtime:12ad6c80233473aa",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: duplicate definitions"
+    },
+    {
+      "id": "runtime:52c15497958da745",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: emphasis"
+    },
+    {
+      "id": "runtime:75aa0a7b6562aa26",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: empty URL"
+    },
+    {
+      "id": "runtime:b22a7af6bcd4beeb",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: fenced code"
+    },
+    {
+      "id": "runtime:90330ca82b1b319b",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: file URL"
+    },
+    {
+      "id": "runtime:e21febf544107f7c",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: footnote"
+    },
+    {
+      "id": "runtime:18d214ca6e953e79",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: hash URL"
+    },
+    {
+      "id": "runtime:6b57624dac683eb7",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: heading"
+    },
+    {
+      "id": "runtime:c1c8e5a375ca7926",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: image"
+    },
+    {
+      "id": "runtime:f0d20c1db2c89b8a",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: image reference"
+    },
+    {
+      "id": "runtime:a162bcc8641816d1",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: image title"
+    },
+    {
+      "id": "runtime:fe0e95c1235dda49",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: indented code"
+    },
+    {
+      "id": "runtime:467abf057d3bc5e1",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: inline code"
+    },
+    {
+      "id": "runtime:e8551d8b3bcdbe9f",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: javascript URL"
+    },
+    {
+      "id": "runtime:7a247a9d5f71353c",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: link"
+    },
+    {
+      "id": "runtime:685522707e4d6e60",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: link reference"
+    },
+    {
+      "id": "runtime:c8c51e58efd41ce1",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: link title"
+    },
+    {
+      "id": "runtime:54bad030a3708b21",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: ordered list"
+    },
+    {
+      "id": "runtime:e631e708209d8bab",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: paragraph"
+    },
+    {
+      "id": "runtime:74962374091e3157",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: prototype-polluting definitions"
+    },
+    {
+      "id": "runtime:cec002264847ad73",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: query URL"
+    },
+    {
+      "id": "runtime:e9d27c9fe2bbf755",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: raw HTML"
+    },
+    {
+      "id": "runtime:8525cdecca856515",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: strong"
+    },
+    {
+      "id": "runtime:900475c7a7b2a1b9",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: table"
+    },
+    {
+      "id": "runtime:81523bf9cb17d4fe",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: thematic break"
+    },
+    {
+      "id": "runtime:45d2d551298bb978",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: unordered list"
+    },
+    {
+      "id": "runtime:2befada496497227",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: uppercase protocol"
+    },
+    {
+      "id": "runtime:26cbd999b3e4698e",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: uppercase vbscript URL"
+    },
+    {
+      "id": "runtime:1d8f9068cba2602b",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine sync identity: vbscript URL"
+    },
+    {
+      "id": "runtime:a81fdcf413f8faca",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the pristine default renderer for \"![alt](javascript:alert(1) \\\"title\\\")\""
+    },
+    {
+      "id": "runtime:8405d9e64b10e579",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the pristine default renderer for \"# heading\\n\\nA [safe](https://example.com) link.\""
+    },
+    {
+      "id": "runtime:3d589db0ea78609c",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the pristine default renderer for \"<i>raw</i>\""
+    },
+    {
+      "id": "runtime:bc0318700aa533c1",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the pristine default renderer for \"> quote\\n\\n- one\\n- two\\n\\n`code`\""
+    },
+    {
+      "id": "runtime:f790ec86e665b380",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection passes complete intrinsic props and node while keeping key special"
+    },
+    {
+      "id": "runtime:9c4989f9a58cb4ef",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection preserves sibling projection and rejects invalid mappings"
+    },
+    {
+      "id": "runtime:a112bb863ac4ec74",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection supports intrinsic remapping, null components, and fragments"
+    },
+    {
+      "id": "runtime:b59a1f1fdc81060e",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "filters plugin-created nodes"
+    },
+    {
+      "id": "runtime:3398a7c01f1ac2e7",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "keeps plugin order and merges allowDangerousHtml last"
+    },
+    {
+      "id": "runtime:df796150e8d55d22",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "matches pinned raw handling and filtering order"
+    },
+    {
+      "id": "runtime:1d203e88cd5212c0",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "mutates URL properties before allowElement observes the node"
+    },
+    {
+      "id": "runtime:3ca4712df44cbe4d",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "passes exact element index and parent to allowElement"
+    },
+    {
+      "id": "runtime:214542cbffcea7ff",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "unwraps children in place without skipping following siblings"
+    },
+    {
+      "id": "runtime:22e6a46bf9326a75",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle preserves null and undefined custom-transform returns"
+    },
+    {
+      "id": "runtime:c57d9710e2958dca",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \" javascript:alert(1)\" to \"\""
+    },
+    {
+      "id": "runtime:537136ca2595fdb1",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"\" to \"\""
+    },
+    {
+      "id": "runtime:e36b58065dd2722e",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"#x:y\" to \"#x:y\""
+    },
+    {
+      "id": "runtime:43aa4fecb08ac5b9",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"/absolute/path\" to \"/absolute/path\""
+    },
+    {
+      "id": "runtime:714dc7552df1620e",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"?q=x:y\" to \"?q=x:y\""
+    },
+    {
+      "id": "runtime:54bb6b4a6794d42f",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"HTTP://example.com\" to \"HTTP://example.com\""
+    },
+    {
+      "id": "runtime:48468205f4d2e96c",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"data:text/html,x\" to \"\""
+    },
+    {
+      "id": "runtime:20da3def7819e8ea",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"https://example.com\" to \"https://example.com\""
+    },
+    {
+      "id": "runtime:594369208f6bfa60",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"irc://example.com\" to \"irc://example.com\""
+    },
+    {
+      "id": "runtime:fe90c49b8648abbb",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"ircs://example.com\" to \"ircs://example.com\""
+    },
+    {
+      "id": "runtime:265fbea2ccfb95dc",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"java\\nscript:alert(1)\" to \"\""
+    },
+    {
+      "id": "runtime:33ad2cec9a8a1d0c",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"javascript:alert(1)\" to \"\""
+    },
+    {
+      "id": "runtime:2c6884ec66046558",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"mailto:a@example.com\" to \"mailto:a@example.com\""
+    },
+    {
+      "id": "runtime:5e2ad86202f13974",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"relative/path\" to \"relative/path\""
+    },
+    {
+      "id": "runtime:00ffeea6070cddaa",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle transforms \"xmpp:a@example.com\" to \"xmpp:a@example.com\""
+    },
+    {
+      "id": "runtime:c45fcdb6535e1b1d",
+      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+      "fullName": "the pinned URL oracle visits every applicable html-url-attributes property and no inapplicable pair"
+    },
+    {
+      "id": "runtime:bff75afabdbd6ff2",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle cancels stale work and only commits the latest input"
+    },
+    {
+      "id": "runtime:01cbc40342ec4745",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle matches pristine fallback and async resolution"
+    },
+    {
+      "id": "runtime:b1094c6ef37e4ae0",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle prevents pending work from committing after unmount"
+    },
+    {
+      "id": "runtime:ce2d080eb415b5ca",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle recovers on a clean remount after an errored run"
+    },
+    {
+      "id": "runtime:479176e07b5ad096",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle renders fallback then commits resolved async output"
+    },
+    {
+      "id": "runtime:ede90b7def14f725",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle reruns for each pinned effect dependency identity"
+    },
+    {
+      "id": "runtime:ae1ab0e444ff0faa",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle surfaces async errors through rendering"
+    },
+    {
+      "id": "runtime:2e695d4d559ef19e",
+      "file": "packages/react-markdown/tests/hydration/hydration.test.ts",
+      "fullName": "Markdown hydration adopts default nodes, emits no diagnostics, and updates in place"
+    },
+    {
+      "id": "runtime:fcaa6186f61ccaa3",
+      "file": "packages/react-markdown/tests/hydration/hydration.test.ts",
+      "fullName": "Markdown hydration adopts plugin, filtering, URL, and component-override output"
+    },
+    {
+      "id": "runtime:f3f735455f8127a0",
+      "file": "packages/react-markdown/tests/parity/differential.test.ts",
+      "fullName": "image markup matches apart from React framework preloading"
+    },
+    {
+      "id": "runtime:8b51304ecbaee2fb",
+      "file": "packages/react-markdown/tests/parity/differential.test.ts",
+      "fullName": "sync Markdown output matches pristine React"
+    },
+    {
+      "id": "runtime:53fcea5eb49a9c1f",
+      "file": "packages/react-markdown/tests/parity/differential.test.ts",
+      "fullName": "unsafe URL filtering matches pristine React"
+    },
+    {
+      "id": "runtime:a5fc3ff05724856a",
+      "file": "packages/react-markdown/tests/probes/async-component.server.test.ts",
+      "fullName": "promise-returning mapped component architecture seam awaits the mapped component and preserves nested children in server output"
+    },
+    {
+      "id": "runtime:890e8403a722afe0",
+      "file": "packages/react-markdown/tests/probes/async-component.server.test.ts",
+      "fullName": "promise-returning mapped component architecture seam propagates a mapped component rejection through prerender"
+    },
+    {
+      "id": "runtime:8470a4f308c48e01",
+      "file": "packages/react-markdown/tests/ssr/server.test.ts",
+      "fullName": "server execution keeps MarkdownHooks on its pinned fallback during server rendering"
+    },
+    {
+      "id": "runtime:009d1df92d7535c2",
+      "file": "packages/react-markdown/tests/ssr/server.test.ts",
+      "fullName": "server execution renders awaited async deterministically without browser globals"
+    },
+    {
+      "id": "runtime:d8fe949b48a32ec0",
+      "file": "packages/react-markdown/tests/ssr/server.test.ts",
+      "fullName": "server execution renders sync deterministically without browser globals"
+    },
+    {
+      "id": "runtime:8c19aa8c82088d5e",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "accepts pinned empty child \"\""
+    },
+    {
+      "id": "runtime:de5359a9878bbea5",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "accepts pinned empty child null"
+    },
+    {
+      "id": "runtime:6ec71928dd0170b6",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "accepts pinned empty child undefined"
+    },
+    {
+      "id": "runtime:990481e14d5bcc08",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects combined element lists with the pinned message"
+    },
+    {
+      "id": "runtime:03ff8e5ea27a65b7",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects non-string children with the pinned message"
+    },
+    {
+      "id": "runtime:e820231d50268321",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop allowDangerousHtml"
+    },
+    {
+      "id": "runtime:89816de6bfdb41b5",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop allowNode"
+    },
+    {
+      "id": "runtime:1d5723da5889b57b",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop allowedTypes"
+    },
+    {
+      "id": "runtime:ddead6a87dbf3f57",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop astPlugins"
+    },
+    {
+      "id": "runtime:b323c5ac6be8a159",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop className"
+    },
+    {
+      "id": "runtime:89641245557ed84d",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop disallowedTypes"
+    },
+    {
+      "id": "runtime:53446630d895feda",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop escapeHtml"
+    },
+    {
+      "id": "runtime:4ba85cd815613ba7",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop includeElementIndex"
+    },
+    {
+      "id": "runtime:3ef0fd66679d4e89",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop includeNodeIndex"
+    },
+    {
+      "id": "runtime:0c3377cfa7c4e266",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop linkTarget"
+    },
+    {
+      "id": "runtime:17f26aea2e265fe5",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop plugins"
+    },
+    {
+      "id": "runtime:7aed015a7280b5b8",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop rawSourcePos"
+    },
+    {
+      "id": "runtime:5c17dbdee830f664",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop renderers"
+    },
+    {
+      "id": "runtime:8ebf28c5aad28f21",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop source"
+    },
+    {
+      "id": "runtime:aefd7b3b4f46dde8",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop sourcePos"
+    },
+    {
+      "id": "runtime:688d7d6380de185c",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop transformImageUri"
+    },
+    {
+      "id": "runtime:0a2cc4bfe5709b32",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects removed prop transformLinkUri"
+    }
+  ]
+}

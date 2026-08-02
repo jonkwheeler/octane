@@ -18,5 +18,5 @@
     "strict": true
   },
   "include": ["src", "tests/**/*.tsrx", "typetests"],
-  "exclude": ["node_modules", "dist", "upstream"]
+  "exclude": ["node_modules", "dist", "upstream", "typetests/pristine"]
 }

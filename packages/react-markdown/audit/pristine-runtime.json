@@ -1,0 +1,443 @@
+{
+  "schemaVersion": 1,
+  "project": "react-markdown-pristine",
+  "roots": ["packages/react-markdown/tests/pristine"],
+  "files": ["packages/react-markdown/tests/pristine/runtime.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:ad53cde7c76d9dcc",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should allow an empty URL"
+    },
+    {
+      "id": "runtime:999e4b19839aa743",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should expose the public api"
+    },
+    {
+      "id": "runtime:9d6a1b837338f102",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should fail for both `allowedElements` and `disallowedElements`"
+    },
+    {
+      "id": "runtime:97d99fcfd9efddb0",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should fail on an invalid component"
+    },
+    {
+      "id": "runtime:978a8fd581524a1d",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should make a `VBSCRIPT:` URL safe"
+    },
+    {
+      "id": "runtime:cc1cf2ecb9411c88",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should make a `file:` URL safe"
+    },
+    {
+      "id": "runtime:43fef07e6d3290a0",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should make a `javascript:` URL safe"
+    },
+    {
+      "id": "runtime:92a10d4869a9911c",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should make a `vbscript:` URL safe"
+    },
+    {
+      "id": "runtime:5f64bcd64e172f5c",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should not fail on a plugin replacing `root`"
+    },
+    {
+      "id": "runtime:2ad4d44cbbd5573a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should pass `node` to components"
+    },
+    {
+      "id": "runtime:bf47346881da194a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support SVG elements"
+    },
+    {
+      "id": "runtime:7f671eb888a34f95",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `MarkdownAsync` (1)"
+    },
+    {
+      "id": "runtime:0106383718379437",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `MarkdownAsync` (2)"
+    },
+    {
+      "id": "runtime:4d34918540274670",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `MarkdownHooks`"
+    },
+    {
+      "id": "runtime:802adeade476ef69",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `allowedElements` (drop unlisted nodes)"
+    },
+    {
+      "id": "runtime:b94be6ac838a9f57",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `allowedElements` as a function"
+    },
+    {
+      "id": "runtime:4c6957f4cd556b6b",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components`"
+    },
+    {
+      "id": "runtime:28d6a2bdb48e0439",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (code)"
+    },
+    {
+      "id": "runtime:aa9e5a0046833e8c",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (headings)"
+    },
+    {
+      "id": "runtime:1b4e5459b38d490a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (li)"
+    },
+    {
+      "id": "runtime:efcd395059ec81f5",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (ol)"
+    },
+    {
+      "id": "runtime:b22bafa77449e00a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (td, th)"
+    },
+    {
+      "id": "runtime:9f4db91ec7458347",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (tr)"
+    },
+    {
+      "id": "runtime:8d2c5ae47d3b2ab8",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` (ul)"
+    },
+    {
+      "id": "runtime:50e2e7f38f928514",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `components` as functions"
+    },
+    {
+      "id": "runtime:261c24365da86325",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `disallowedElements`"
+    },
+    {
+      "id": "runtime:ac52a1e1c3ad0453",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `fallback`"
+    },
+    {
+      "id": "runtime:ef68ec309df89016",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `null` as children"
+    },
+    {
+      "id": "runtime:19e3e1214e1d69fd",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `remarkRehypeOptions`"
+    },
+    {
+      "id": "runtime:1070ef3eff78a7b9",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `skipHtml`"
+    },
+    {
+      "id": "runtime:d8231468cb088d54",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `style` properties"
+    },
+    {
+      "id": "runtime:ca5576efac482fb8",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `style` properties w/ vendor prefixes"
+    },
+    {
+      "id": "runtime:1e48f9f709b261fc",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `undefined` as children"
+    },
+    {
+      "id": "runtime:5d2e14319930f450",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `unwrapDisallowed` w/ `allowedElements`"
+    },
+    {
+      "id": "runtime:a1dac00d10c9ebb0",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `unwrapDisallowed` w/ `disallowedElements`"
+    },
+    {
+      "id": "runtime:8aada94e6ddb7a8f",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `urlTransform` (`href` on `a`)"
+    },
+    {
+      "id": "runtime:4e4e36c2c5fc7cae",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `urlTransform` (`src` on `img`)"
+    },
+    {
+      "id": "runtime:6c0e1477e3c8ff55",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support `urlTransform` w/ empty URLs"
+    },
+    {
+      "id": "runtime:05d5ce5a28496715",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a URL w/ uppercase protocol"
+    },
+    {
+      "id": "runtime:7daebc67f115cc00",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a block quote"
+    },
+    {
+      "id": "runtime:8409efdaa14c70ed",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a break"
+    },
+    {
+      "id": "runtime:30bb5f3f00598c9b",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a code (block, flow; fenced)"
+    },
+    {
+      "id": "runtime:9112785bfea85c24",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a code (block, flow; indented)"
+    },
+    {
+      "id": "runtime:0a2496f237169cf1",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a delete (GFM)"
+    },
+    {
+      "id": "runtime:067ed7dedcd18fbd",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a footnote (GFM)"
+    },
+    {
+      "id": "runtime:882563bd7ca7557d",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a heading"
+    },
+    {
+      "id": "runtime:355cdf256e4af199",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a link"
+    },
+    {
+      "id": "runtime:affa98b1049931dc",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a link reference / definition"
+    },
+    {
+      "id": "runtime:ee5d6dc7a297a88e",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a link w/ a title"
+    },
+    {
+      "id": "runtime:459e1d269ecf8f2f",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a list (ordered) / list item"
+    },
+    {
+      "id": "runtime:c5420501f90f76f7",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a list (unordered) / list item"
+    },
+    {
+      "id": "runtime:be5c2e4f34297c73",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a paragraph"
+    },
+    {
+      "id": "runtime:2b0e0c271d25f218",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a strong"
+    },
+    {
+      "id": "runtime:175715b3dd204f3d",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a table (GFM)"
+    },
+    {
+      "id": "runtime:251860bce1d88006",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a table (GFM; w/ align)"
+    },
+    {
+      "id": "runtime:a1c00b431b8f2063",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support a thematic break"
+    },
+    {
+      "id": "runtime:60831210dfc9807e",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support ab absolute path"
+    },
+    {
+      "id": "runtime:f5518ade7b62938a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an absolute URL"
+    },
+    {
+      "id": "runtime:0aef95359145f846",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an emphasis"
+    },
+    {
+      "id": "runtime:84f82835f83597e5",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an html (default)"
+    },
+    {
+      "id": "runtime:b8c3856894b9cd1c",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an html (w/ `rehype-raw`)"
+    },
+    {
+      "id": "runtime:f4534532a411ab64",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an image"
+    },
+    {
+      "id": "runtime:e015edbcd5b9ffb9",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an image reference / definition"
+    },
+    {
+      "id": "runtime:edbe48fb6aeb6ddc",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support an image w/ a title"
+    },
+    {
+      "id": "runtime:a338342d7feb4a32",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support aria properties"
+    },
+    {
+      "id": "runtime:44d66364771f524d",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support async plugins w/ `MarkdownAsync` (`rehype-starry-night`)"
+    },
+    {
+      "id": "runtime:b6eb5f899c8ae28c",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support async plugins w/ `MarkdownHooks` (`rehype-starry-night`)"
+    },
+    {
+      "id": "runtime:647c49ade6389923",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support broken `style` properties"
+    },
+    {
+      "id": "runtime:78e8ccf6fddcd0a9",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support code (text, inline)"
+    },
+    {
+      "id": "runtime:3e306659e266c376",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support comma separated properties"
+    },
+    {
+      "id": "runtime:325093d91394d78b",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support comments (ignore them)"
+    },
+    {
+      "id": "runtime:f65d32771a35fe82",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support data properties"
+    },
+    {
+      "id": "runtime:6c936ecb7e956501",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support duplicate definitions"
+    },
+    {
+      "id": "runtime:bc1332e3d3d9ca5c",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support hash (`#`) in a URL"
+    },
+    {
+      "id": "runtime:875a4fac7a35a814",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support hash (`&`) in a URL"
+    },
+    {
+      "id": "runtime:de629cedb3114007",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support plugins (`remark-gfm`)"
+    },
+    {
+      "id": "runtime:09ea392f19ebe2b9",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support plugins (`remark-toc`)"
+    },
+    {
+      "id": "runtime:cd220af365541c9a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support plugins that error"
+    },
+    {
+      "id": "runtime:39e7cf9bb9597d96",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support prototype poluting identifiers"
+    },
+    {
+      "id": "runtime:43e2f774149f6155",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support rerenders"
+    },
+    {
+      "id": "runtime:721b19f9974ebc05",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support search (`?`) in a URL"
+    },
+    {
+      "id": "runtime:c23170d71f091cfe",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should support table cells w/ style"
+    },
+    {
+      "id": "runtime:4e5b1b5da67d619a",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should throw w/ `source`"
+    },
+    {
+      "id": "runtime:7e9d465d059b2602",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should throw w/ non-string children (boolean)"
+    },
+    {
+      "id": "runtime:c3f1f641e1cff1bc",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should throw w/ non-string children (number)"
+    },
+    {
+      "id": "runtime:fdc0151344dc4c1f",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should warn w/ `allowDangerousHtml`"
+    },
+    {
+      "id": "runtime:1f09fd29a022defb",
+      "file": "packages/react-markdown/tests/pristine/runtime.test.ts",
+      "fullName": "pristine react-markdown@10.1.0 should work"
+    }
+  ]
+}
