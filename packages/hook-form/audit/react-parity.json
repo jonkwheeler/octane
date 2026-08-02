@@ -28,7 +28,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "6b825adcc3b5a022099ba37b9523df42c2a2d2d380e60c1d1863d552bc360e4b"
+      "lockfileSha256": "158c20b1be7230db9f6a3af36ea860469e5c4aae8d2ccc03c7a80c74bba519a8"
     }
   },
   "lanes": [
@@ -70,7 +70,7 @@
         {
           "path": "packages/hook-form/audit/upstream-adapted.SHA256SUMS",
           "role": "support",
-          "sha256": "f6a56591be3b990893ec81a8f9399700a89e67a60be2a4860b2516489fee446d"
+          "sha256": "be8367f849b429ad37918bf7de1077a8ffba4594b76fff1068d025b2f3b3d3b7"
         },
         {
           "path": "packages/hook-form/tests/upstream-jest.config.cjs",
