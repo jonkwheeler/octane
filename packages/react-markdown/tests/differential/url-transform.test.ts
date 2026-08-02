@@ -27,8 +27,8 @@ describe('the pinned URL oracle', () => {
 		[' javascript:alert(1)', ''],
 		['java\nscript:alert(1)', ''],
 	])('transforms %j to %j', (input, expected) => {
-		expect(defaultUrlTransform(input, 'href', {} as Element)).toBe(expected);
-		expect(defaultUrlTransform(input, 'href', {} as Element)).toBe(reactDefaultUrlTransform(input));
+		expect(defaultUrlTransform(input)).toBe(expected);
+		expect(defaultUrlTransform(input)).toBe(reactDefaultUrlTransform(input));
 	});
 
 	it('visits every applicable html-url-attributes property and no inapplicable pair', () => {

@@ -17,6 +17,6 @@
     "types": ["node", "vitest/globals"],
     "strict": true
   },
-  "include": ["src", "tests/probes/async-component.tsrx"],
+  "include": ["src", "tests/probes/async-component.tsrx", "typetests"],
   "exclude": ["node_modules", "dist", "upstream"]
 }

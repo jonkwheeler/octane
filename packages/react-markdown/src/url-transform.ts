@@ -1,9 +1,7 @@
-import type { UrlTransform } from './types';
-
 const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
 
 /** Preserve react-markdown's pinned default URL allowlist. */
-export const defaultUrlTransform: UrlTransform = (value) => {
+export function defaultUrlTransform(value: string): string {
 	const colon = value.indexOf(':');
 	const questionMark = value.indexOf('?');
 	const numberSign = value.indexOf('#');
@@ -20,4 +18,4 @@ export const defaultUrlTransform: UrlTransform = (value) => {
 	}
 
 	return '';
-};
+}
