@@ -21,20 +21,27 @@ export function useInView(options: IntersectionOptions | symbol = {}): InViewHoo
 	const callback = useRef(onChange);
 	callback.current = onChange;
 	const lastInView = useRef(initialInView);
+	const observedTarget = useRef<Element | null>(null);
 	const [state, setState] = useState<{
 		inView: boolean;
 		entry?: IntersectionObserverEntry;
 	}>({ inView: Boolean(initialInView) });
 
 	useEffect(() => {
-		if (lastInView.current === undefined) lastInView.current = initialInView;
+		if (observedTarget.current !== ref) {
+			observedTarget.current = ref;
+			lastInView.current = initialInView;
+		} else if (lastInView.current === undefined) {
+			lastInView.current = initialInView;
+		}
 		if (skip || !ref) return;
 		let unobserve: (() => void) | undefined;
 		unobserve = observe(
 			ref,
 			(inView, entry) => {
-				if (lastInView.current === undefined && !inView) return;
+				const previousInView = lastInView.current;
 				lastInView.current = inView;
+				if (previousInView === undefined && !inView) return;
 				setState({ inView, entry });
 				callback.current?.(inView, entry);
 				if (entry.isIntersecting && triggerOnce && unobserve) {

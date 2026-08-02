@@ -55,6 +55,24 @@ describe('observe', () => {
 		expect(second).toHaveBeenCalledTimes(2);
 		stopSecond();
 	});
+
+	it('derives mock intersection state from each observer threshold', () => {
+		const target = document.createElement('div');
+		const callback = vi.fn();
+		const stop = observe(target, callback, { threshold: 0.75 });
+
+		mockIsIntersecting(target, 0.25);
+		expect(callback).toHaveBeenLastCalledWith(
+			false,
+			expect.objectContaining({ isIntersecting: false, intersectionRatio: 0 }),
+		);
+		mockIsIntersecting(target, 0.8);
+		expect(callback).toHaveBeenLastCalledWith(
+			true,
+			expect.objectContaining({ isIntersecting: true, intersectionRatio: 0.75 }),
+		);
+		stop();
+	});
 });
 
 describe('Octane binding', () => {
@@ -66,6 +84,9 @@ describe('Octane binding', () => {
 		expect(target.textContent).toBe('hidden');
 		mockIsIntersecting(target, false);
 		expect(onChange).not.toHaveBeenCalled();
+		mockIsIntersecting(target, false);
+		expect(onChange).toHaveBeenCalledWith(false, expect.objectContaining({ target }));
+		onChange.mockClear();
 		mockIsIntersecting(target, true);
 		expect(target.textContent).toBe('visible');
 		expect(target.getAttribute('data-entry')).toBe('yes');
@@ -90,6 +111,17 @@ describe('Octane binding', () => {
 		const target = result.find('[data-testid="effect"]');
 		mockIsIntersecting(target, true);
 		expect(onChange).toHaveBeenCalledOnce();
+		result.unmount();
+	});
+
+	it('only suppresses the first false useOnInView notification', () => {
+		const onChange = vi.fn();
+		const result = mount(EffectProbe, { onChange });
+		const target = result.find('[data-testid="effect"]');
+		mockIsIntersecting(target, false);
+		expect(onChange).not.toHaveBeenCalled();
+		mockIsIntersecting(target, false);
+		expect(onChange).toHaveBeenCalledWith(false, expect.objectContaining({ target }));
 		result.unmount();
 	});
 

@@ -29,6 +29,17 @@ function entryFor(element: Element, isIntersecting: boolean, ratio: number) {
 	} satisfies IntersectionObserverEntry;
 }
 
+function intersectionState(observer: IntersectionObserver, trigger: boolean | number) {
+	if (typeof trigger === 'boolean') {
+		return { isIntersecting: trigger, ratio: trigger ? 1 : 0 };
+	}
+	const intersectedThresholds = observer.thresholds.filter((threshold) => trigger >= threshold);
+	return {
+		isIntersecting: intersectedThresholds.length > 0,
+		ratio: intersectedThresholds.at(-1) ?? 0,
+	};
+}
+
 export function setupIntersectionMocking(mockFn: MockFn) {
 	originalIntersectionObserver = window.IntersectionObserver;
 	window.IntersectionObserver = mockFn(function IntersectionObserverMock(
@@ -70,11 +81,11 @@ export function destroyIntersectionMocking() {
 }
 
 export function mockAllIsIntersecting(isIntersecting: boolean | number) {
-	const ratio = typeof isIntersecting === 'number' ? isIntersecting : isIntersecting ? 1 : 0;
 	act(() => {
 		observers.forEach(({ callback, elements, instance }) => {
+			const state = intersectionState(instance, isIntersecting);
 			callback(
-				[...elements].map((element) => entryFor(element, ratio > 0, ratio)),
+				[...elements].map((element) => entryFor(element, state.isIntersecting, state.ratio)),
 				instance,
 			);
 		});
@@ -84,10 +95,10 @@ export function mockAllIsIntersecting(isIntersecting: boolean | number) {
 export function mockIsIntersecting(element: Element, isIntersecting: boolean | number) {
 	const matching = [...observers.values()].filter(({ elements }) => elements.has(element));
 	if (matching.length === 0) throw new Error('No IntersectionObserver instance found for element');
-	const ratio = typeof isIntersecting === 'number' ? isIntersecting : isIntersecting ? 1 : 0;
 	act(() => {
 		for (const observer of matching) {
-			observer.callback([entryFor(element, ratio > 0, ratio)], observer.instance);
+			const state = intersectionState(observer.instance, isIntersecting);
+			observer.callback([entryFor(element, state.isIntersecting, state.ratio)], observer.instance);
 		}
 	});
 }

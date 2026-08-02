@@ -23,8 +23,9 @@ export function useOnInView(
 		unobserve.current = observe(
 			node,
 			(inView, entry) => {
-				if (lastInView.current === undefined && !inView) return;
+				const previousInView = lastInView.current;
 				lastInView.current = inView;
+				if (previousInView === undefined && !inView) return;
 				effectCleanup.current?.();
 				effectCleanup.current = callback.current(inView, entry);
 				if (inView && options.triggerOnce) {
