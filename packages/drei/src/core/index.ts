@@ -84,6 +84,22 @@ export {
 } from './catalog-textures.three.tsrx';
 export { GradientTexture, GradientType } from './GradientTexture.three.tsrx';
 export type { GradientTextureProps } from './GradientTexture.three.tsrx';
+export {
+	CatmullRomLine,
+	CubicBezierLine,
+	Edges,
+	Line,
+	QuadraticBezierLine,
+} from './lines.three.tsrx';
+export type {
+	CatmullRomLineProps,
+	CubicBezierLineProps,
+	EdgesProps,
+	EdgesRef,
+	LineProps,
+	QuadraticBezierLineProps,
+	QuadraticBezierLineRef,
+} from './lines.three.tsrx';
 export type {
 	CubeCameraOptions,
 	CubeCameraProps,
