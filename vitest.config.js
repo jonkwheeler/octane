@@ -3042,7 +3042,11 @@ export default defineConfig({
 			{
 				test: {
 					name: 'mobx',
-					include: ['packages/mobx/tests/conformance/**/*.test.ts'],
+					include: [
+						'packages/mobx/tests/conformance/**/*.test.ts',
+						'packages/mobx/tests/differential/**/*.test.ts',
+					],
+					globalSetup: ['packages/mobx/tests/differential/_setup.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
