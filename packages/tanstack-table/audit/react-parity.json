@@ -1,0 +1,241 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/table.git",
+    "version": "@tanstack/react-table@9.0.0-beta.58",
+    "commit": "9fa764702b25d675f97deedd714e8b9133994927",
+    "sourceRoot": "packages/react-table/src",
+    "testRoot": "packages/react-table",
+    "license": "MIT",
+    "integrity": "sha256:924a64009738996f1a2f32ef950aed338a6aafb0dbf85af548c7c98388deb559",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "absent", "types": "insufficient" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-table/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": {
+      "roots": ["packages/tanstack-table/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-table-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-table",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs exact rendering, sorting, filtering/pagination, selection, and visibility/expanding scenarios against @tanstack/react-table@9.0.0-beta.58.",
+      "files": [
+        {
+          "path": "packages/tanstack-table/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "5515b6f6eb7fec526b30f1fcd812b92e5a59cfc34d041faa4430c9bbeac006d4",
+          "cases": [
+            {
+              "id": "differential:tanstack-table-basic",
+              "testName": "BasicTable: flexRender shapes + data swap, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table BasicTable: flexRender shapes + data swap, byte-identical"
+            },
+            {
+              "id": "differential:tanstack-table-sorting",
+              "testName": "SortingTable: asc → desc → cleared → replace, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table SortingTable: asc → desc → cleared → replace, byte-identical"
+            },
+            {
+              "id": "differential:tanstack-table-filter-pagination",
+              "testName": "FilterPaginate: filter input + pagination buttons, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table FilterPaginate: filter input + pagination buttons, byte-identical"
+            },
+            {
+              "id": "differential:tanstack-table-selection",
+              "testName": "SelectionTable: predicate select-all + row toggles, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table SelectionTable: predicate select-all + row toggles, byte-identical"
+            },
+            {
+              "id": "differential:tanstack-table-visibility-expanding",
+              "testName": "VisExpand: visibility toggles + nested expanding, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table VisExpand: visibility toggles + nested expanding, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-table/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "ec7ad41f79b5d1d1c85d12e05942a5fa4017f0a7150071ddb29d3aada6d0d460"
+        },
+        {
+          "path": "packages/tanstack-table/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "dc753997ee0edb8a82dca4fb6a5b737f35b5cd8805326bb970f1a631edf49a95"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/app-table.tsrx",
+          "role": "support",
+          "sha256": "5035133e84b23dbfaff0557998260e4ba5aae1403146211fe557a010c4dae7b7"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/basic-table-diff.tsrx",
+          "role": "support",
+          "sha256": "00af3daa3fbe2a2423edde221157903d640433779f41a36238164aa89d29a620"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/features.tsrx",
+          "role": "support",
+          "sha256": "c217c149cb2d362866078156f9f6cee054c5644e70e4467a2e57875297796679"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/filter-paginate-diff.tsrx",
+          "role": "support",
+          "sha256": "3c231375c46517f2555858d7203e8b1499f664f79770f1b194b59745d779ccd7"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/flex-render.tsrx",
+          "role": "support",
+          "sha256": "9f6e50aa65563fceb30bae8c0c2f4909f76e7bc0af47627ff5d44d83897c903e"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/selection-diff.tsrx",
+          "role": "support",
+          "sha256": "f03f1cc7e0039d75da176fb4360035ff139adba940b37fdf5f3d26637ecb5f6e"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/sorting-diff.tsrx",
+          "role": "support",
+          "sha256": "1b5e45128a12a7c1ea0bee05c20f3b6bc0cccdc177960867e66ff3eb1b3042c8"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/table-basic.tsrx",
+          "role": "support",
+          "sha256": "a8a3af972b735c2f09db3c40b697cd32a6a54f91ea6be3640ee734f2c78fa79b"
+        },
+        {
+          "path": "packages/tanstack-table/tests/_fixtures/visibility-expand-diff.tsrx",
+          "role": "support",
+          "sha256": "cdb2ac532b20a899c96c1aa8932ee674290b39194a6a104c0018453130c32ac8"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-table-adapted-divergences",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-table",
+      "notes": "Authenticates the documented legacy-subpath omission and Octane plain-function component model.",
+      "files": [
+        {
+          "path": "packages/tanstack-table/tests/conformance/parity.test.ts",
+          "role": "test",
+          "sha256": "9d4e0e0a93ee47d493e161852bbe75d9158f5870252ba8339c0b020e7129ff0f",
+          "cases": [
+            {
+              "id": "adapted:tanstack-table-legacy-api",
+              "testName": "does not publish the upstream legacy migration subpath",
+              "fullName": "export surface does not publish the upstream legacy migration subpath"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-table/tests/conformance/flex-render.test.ts",
+          "role": "test",
+          "sha256": "e15b689f82bb7217305580e758bdb9a0593c6856e5c5e441b216cbb12df12f37",
+          "cases": [
+            {
+              "id": "adapted:tanstack-table-component-shapes",
+              "testName": "renders an octane memo()-wrapped component cell (plain function, no exotic sniffing)",
+              "fullName": "flexRender through the octane render path renders an octane memo()-wrapped component cell (plain function, no exotic sniffing)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tanstack-table-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-table-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the checked Octane table options, row, selector, rendering, and scoped-context contract.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-table/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-table/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "6f498ecaca711d36b419f11190e4e08b7a1ab63c79fceae90b7a95bf27b1b3b3",
+          "cases": [
+            {
+              "id": "types:tanstack-table-public-api",
+              "testName": "table options, rows, cells, selectors, and scoped contexts",
+              "fullName": "table options, rows, cells, selectors, and scoped contexts"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-table/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "eb7f432ef8e6247a3444263357a7c64658d3e27a5af45ad0732ace00a5537878"
+        },
+        {
+          "path": "packages/tanstack-table/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "aa2cf60ceb40fe3a6e552acbfb67b1b6a03a8aeb075319584946b1ec58c465a1"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "tanstack-table-component-shapes",
+      "caseIds": ["adapted:tanstack-table-component-shapes"],
+      "upstreamResult": "React flexRender recognizes class components and memo/forwardRef exotic component objects.",
+      "octaneResult": "Octane components, including memo-wrapped components, are plain functions and flexRender uses the function branch.",
+      "rationale": "Octane has no React class-component or exotic-object component model.",
+      "classification": "framework-integration",
+      "consumerImpact": "Octane component functions render with equivalent props; React exotic objects cannot be passed directly.",
+      "migrationGuidance": "Author the cell or header as an Octane function component and use Octane memo when needed.",
+      "owner": "@octanejs/tanstack-table",
+      "reviewCondition": "Review if Octane introduces non-function component descriptors."
+    },
+    {
+      "id": "tanstack-table-legacy-api",
+      "caseIds": ["adapted:tanstack-table-legacy-api"],
+      "upstreamResult": "React Table publishes a ./legacy migration subpath with useLegacyTable and v8 compatibility types.",
+      "octaneResult": "The Octane binding omits the React-v8 migration-only subpath.",
+      "rationale": "There is no prior Octane React Table v8 consumer surface to migrate.",
+      "classification": "intentional-omission",
+      "consumerImpact": "Consumers cannot import the legacy v8 compatibility API.",
+      "migrationGuidance": "Use the v9 useTable API directly.",
+      "owner": "@octanejs/tanstack-table",
+      "reviewCondition": "Review if an Octane v8 compatibility requirement emerges."
+    }
+  ]
+}

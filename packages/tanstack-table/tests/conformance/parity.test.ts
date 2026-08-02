@@ -3,6 +3,8 @@
  * of real @tanstack/react-table, and its table-core re-export must be the SAME
  * module instance the differential oracle uses (shared sorting/filter fns).
  */
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import * as binding from '@octanejs/tanstack-table';
 
@@ -13,6 +15,13 @@ describe('export surface', () => {
 		const port = new Set(Object.keys(binding));
 		const missing = upstream.filter((name) => !port.has(name));
 		expect(missing).toEqual([]);
+	});
+
+	// OCTANE DIVERGENCE[tanstack-table-legacy-api][adapted:tanstack-table-legacy-api]
+	// @parity-case adapted:tanstack-table-legacy-api
+	it('does not publish the upstream legacy migration subpath', () => {
+		const packageJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json'), 'utf8'));
+		expect(packageJson.exports).not.toHaveProperty('./legacy');
 	});
 
 	it('re-exports the same @tanstack/table-core module instance', async () => {

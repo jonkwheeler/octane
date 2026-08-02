@@ -65,6 +65,8 @@ describe('flexRender through the octane render path', () => {
 		r.unmount();
 	});
 
+	// OCTANE DIVERGENCE[tanstack-table-component-shapes][adapted:tanstack-table-component-shapes]
+	// @parity-case adapted:tanstack-table-component-shapes
 	it('renders an octane memo()-wrapped component cell (plain function, no exotic sniffing)', async () => {
 		const r = mount(FlexTable, {});
 		await flush();

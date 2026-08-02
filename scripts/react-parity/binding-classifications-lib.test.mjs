@@ -3,7 +3,7 @@ import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
-import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'hook-form-classifications-'));
@@ -27,6 +27,11 @@ test('rejects an unclassified port-authored test', async (t) => {
 	t.after(() => rm(root, { recursive: true, force: true }));
 	await writeFile(join(root, 'packages/hook-form/tests/new.test.ts'), 'export {};\n');
 	assert.throws(() => verifyPortTestClassifications(root), /exactly one classification/);
+});
+
+test('verifies an arbitrary binding classification ledger', () => {
+	const root = new URL('../..', import.meta.url).pathname;
+	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-table'), { tests: 7 });
 });
 
 test('rejects a parity classification without an oracle', async (t) => {

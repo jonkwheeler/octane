@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:tanstack-table-public-api",
+      "testName": "table options, rows, cells, selectors, and scoped contexts",
+      "fullName": "table options, rows, cells, selectors, and scoped contexts"
+    }
+  ]
+}
