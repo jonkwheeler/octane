@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 146
+    "gaps": 142
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -3980,9 +3980,9 @@
         "path": "packages/drei/upstream/src/core/Stats.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Stats.three.tsrx",
+      "evidence": ["packages/drei/tests/stats.test.ts"],
       "divergence": null
     },
     {
@@ -3993,9 +3993,9 @@
         "path": "packages/drei/upstream/src/core/StatsGl.tsx",
         "line": 18
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/StatsGl.three.tsrx",
+      "evidence": ["packages/drei/tests/stats.test.ts"],
       "divergence": null
     },
     {
@@ -4006,9 +4006,9 @@
         "path": "packages/drei/upstream/src/core/StatsGl.tsx",
         "line": 9
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/StatsGl.three.tsrx",
+      "evidence": ["packages/drei/typetests/stats.test-d.ts"],
       "divergence": null
     },
     {
@@ -4019,9 +4019,9 @@
         "path": "packages/drei/upstream/src/core/Stats.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Stats.three.tsrx",
+      "evidence": ["packages/drei/typetests/stats.test-d.ts"],
       "divergence": null
     },
     {

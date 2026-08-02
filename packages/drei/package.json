@@ -34,6 +34,8 @@
     "@octanejs/zustand": "workspace:*",
     "camera-controls": "^3.1.0",
     "detect-gpu": "^5.0.56",
+    "stats-gl": "^2.2.8",
+    "stats.js": "^0.17.0",
     "three-mesh-bvh": "^0.8.3",
     "three-stdlib": "^2.35.6"
   },
@@ -71,6 +73,7 @@
     "@react-three/fiber": "catalog:default",
     "@tsrx/react": "catalog:default",
     "@types/three": "catalog:default",
+    "@types/stats.js": "^0.17.4",
     "octane": "workspace:*",
     "playwright": "catalog:default",
     "react": "catalog:default",

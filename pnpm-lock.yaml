@@ -4187,6 +4187,12 @@ importers:
       detect-gpu:
         specifier: ^5.0.56
         version: 5.0.70
+      stats-gl:
+        specifier: ^2.2.8
+        version: 2.4.2(@types/three@0.172.0)(three@0.172.0)
+      stats.js:
+        specifier: ^0.17.0
+        version: 0.17.0
       three-mesh-bvh:
         specifier: ^0.8.3
         version: 0.8.3(three@0.172.0)
@@ -4206,6 +4212,9 @@ importers:
       '@tsrx/react':
         specifier: catalog:default
         version: 0.2.56(react@19.2.7)
+      '@types/stats.js':
+        specifier: ^0.17.4
+        version: 0.17.4
       '@types/three':
         specifier: catalog:default
         version: 0.172.0

@@ -163,6 +163,10 @@ export { CameraControls, CameraControlsImpl } from './CameraControls.three.tsrx'
 export type { CameraControlsProps } from './CameraControls.three.tsrx';
 export { DetectGPU, useDetectGPU } from './DetectGPU.three.tsrx';
 export type { DetectGPUProps } from './DetectGPU.three.tsrx';
+export { Stats } from './Stats.three.tsrx';
+export type { StatsProps } from './Stats.three.tsrx';
+export { StatsGl } from './StatsGl.three.tsrx';
+export type { StatsGlProps } from './StatsGl.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
