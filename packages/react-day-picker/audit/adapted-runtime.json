@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "project": "react-day-picker",
+  "roots": ["packages/react-day-picker/tests"],
+  "files": [
+    "packages/react-day-picker/tests/calendar.test.ts",
+    "packages/react-day-picker/tests/exports.test.ts",
+    "packages/react-day-picker/tests/react-oracle.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:cbe47aa8847651cc",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior applies disabled, hidden, outside-day, and custom component contracts"
+    },
+    {
+      "id": "runtime:56e0cb35ee1782de",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior builds a range from two day clicks"
+    },
+    {
+      "id": "runtime:4cff0e3af8f342ca",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior navigates to the next month through the public nav button"
+    },
+    {
+      "id": "runtime:a254d3e870ce747e",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior renders the pinned month as an accessible grid"
+    },
+    {
+      "id": "runtime:4038fcd959c7b754",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior selects a day through the public onSelect contract"
+    },
+    {
+      "id": "runtime:a0e62c7f8b091bc1",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior toggles multiple selected days"
+    },
+    {
+      "id": "runtime:f4a741eb3d44828b",
+      "file": "packages/react-day-picker/tests/exports.test.ts",
+      "fullName": "@octanejs/react-day-picker exports matches the pinned upstream locale runtime entry"
+    },
+    {
+      "id": "runtime:78c18eae9c59f98e",
+      "file": "packages/react-day-picker/tests/exports.test.ts",
+      "fullName": "@octanejs/react-day-picker exports matches the pinned upstream root runtime entry"
+    },
+    {
+      "id": "runtime:5f22746069abe5b4",
+      "file": "packages/react-day-picker/tests/react-oracle.test.ts",
+      "fullName": "react-day-picker v10.0.1 React oracle matches React month navigation output"
+    },
+    {
+      "id": "runtime:69ac6c396dea4b83",
+      "file": "packages/react-day-picker/tests/react-oracle.test.ts",
+      "fullName": "react-day-picker v10.0.1 React oracle matches the default calendar semantic shape and constraints"
+    }
+  ]
+}

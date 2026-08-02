@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "project": "react-day-picker-browser",
+  "roots": ["packages/react-day-picker/tests"],
+  "files": ["packages/react-day-picker/tests/browser/day-picker.browser.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:67426abace68f4da",
+      "file": "packages/react-day-picker/tests/browser/day-picker.browser.test.ts",
+      "fullName": "react-day-picker real-browser evidence preserves styled layout, selection, focus movement, navigation, and animation cleanup"
+    }
+  ]
+}

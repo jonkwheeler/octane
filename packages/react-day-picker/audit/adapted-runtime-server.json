@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "project": "react-day-picker-ssr",
+  "roots": ["packages/react-day-picker/tests"],
+  "files": ["packages/react-day-picker/tests/ssr/server.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:dd8c9e9f8caf9f77",
+      "file": "packages/react-day-picker/tests/ssr/server.test.ts",
+      "fullName": "react-day-picker v10.0.1 server rendering renders the calendar grid without browser globals"
+    }
+  ]
+}

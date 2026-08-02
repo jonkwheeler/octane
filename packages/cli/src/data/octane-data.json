@@ -317,6 +317,22 @@
       "verified": "2026-07-29"
     },
     {
+      "name": "@octanejs/react-day-picker",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": {
+        "package": "react-day-picker",
+        "version": "10.0.1",
+        "commit": "6d3929d655779d178638d8f80171597a579468e8"
+      },
+      "surface": "DayPicker, public components, hooks, date classes, helpers, labels, formatters, locales, styles, and public types.",
+      "divergences": [
+        "React DOM prop types are preserved publicly and normalized at Octane render boundaries."
+      ],
+      "ssr": "Calendar markup and accessibility attributes render without browser globals.",
+      "verified": "2026-08-02"
+    },
+    {
       "name": "@octanejs/react-error-boundary",
       "version": "0.1.4",
       "category": "UI and interaction",
@@ -868,6 +884,7 @@
     "radix-ui": "@octanejs/radix",
     "react-aria": "@octanejs/aria",
     "react-aria-components": "@octanejs/aria",
+    "react-day-picker": "@octanejs/react-day-picker",
     "react-error-boundary": "@octanejs/react-error-boundary",
     "react-hook-form": "@octanejs/hook-form",
     "react-i18next": "@octanejs/i18next",

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/gpbl/react-day-picker.git",
+    "version": "10.0.1",
+    "commit": "6d3929d655779d178638d8f80171597a579468e8",
+    "sourceRoot": "src",
+    "testRoot": "src",
+    "license": "MIT",
+    "integrity": "sha256:bfb5146c055aa4b017bde0ff5e76d9a90e5496b6d03c4df7659d98eb14c450af",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-day-picker/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/react-day-picker/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 12,
+    "uniqueIdentities": 12,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "14066d2b89e14fd5de003a5a455158df19927df2a333594b87acf857b6cd870a"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-day-picker-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-day-picker",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the complete adapted DOM, export, interaction, and bounded React-oracle suite with exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-day-picker/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-day-picker/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "31c2273b3cc3ab97e71e816e434fffc0b0679b55b8cfe844db909cc997a7d6d8"
+        },
+        {
+          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "da40b0d1ecbd4c150f2eefec9783c2cf258892d1cc6b52f1e42050cd2f689ad9"
+        },
+        {
+          "path": "packages/react-day-picker/audit/upstream-integrity.json",
+          "role": "support",
+          "sha256": "89f6591d65ac0c3d42838b2c8c4e531eab7faa005e3978188eac99d9a3f6b263"
+        }
+      ]
+    },
+    {
+      "id": "react-day-picker-adapted-full-suite-server",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-day-picker-ssr",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the complete adapted server-rendering suite with exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-day-picker/audit/adapted-runtime-server.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-day-picker/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "3ff855613de52b31504edc305739759726f976a0cc154f6afaa7a2bd9ea40c36"
+        },
+        {
+          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "da40b0d1ecbd4c150f2eefec9783c2cf258892d1cc6b52f1e42050cd2f689ad9"
+        }
+      ]
+    },
+    {
+      "id": "react-day-picker-real-browser",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-day-picker-browser",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the DayPicker interaction and stylesheet contract in real headless Chromium, covering selection, focus movement, navigation, and animation cleanup.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-day-picker/audit/adapted-runtime-browser.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-day-picker/audit/adapted-runtime-browser.json",
+          "role": "support",
+          "sha256": "83ea1125a41e38766a5c8aeef2ea31b6e51614b3ec328b1f52280f285e04b61f"
+        },
+        {
+          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "da40b0d1ecbd4c150f2eefec9783c2cf258892d1cc6b52f1e42050cd2f689ad9"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

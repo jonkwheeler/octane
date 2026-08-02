@@ -41,6 +41,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/phosphor-icons` | [`packages/phosphor-icons`](../packages/phosphor-icons) | framework binding | `0.0.3` | 2 |
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.22` | 1 |
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.3` | 2 |
+| `@octanejs/react-day-picker` | [`packages/react-day-picker`](../packages/react-day-picker) | framework binding | `0.1.0` | 12 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.4` | 2 |
 | `@octanejs/recharts` | [`packages/recharts`](../packages/recharts) | framework binding | `0.1.20` | 1 |
 | `@octanejs/redux` | [`packages/redux`](../packages/redux) | framework binding | `0.1.20` | 1 |
