@@ -1258,6 +1258,7 @@ export default defineConfig({
 			{
 				test: {
 					name: 'rainbowkit',
+					globalSetup: ['packages/rainbowkit/tests/differential/_setup.ts'],
 					include: [
 						'packages/rainbowkit/tests/**/*.test.ts',
 						'!packages/rainbowkit/tests/ssr/**/*.test.ts',
