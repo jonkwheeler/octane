@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 249
+    "gaps": 247
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -2816,9 +2816,9 @@
         "path": "packages/drei/upstream/src/core/PointerLockControls.tsx",
         "line": 19
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PointerLockControls.three.tsrx",
+      "evidence": ["packages/drei/tests/pointer-lock.test.ts"],
       "divergence": null
     },
     {
@@ -2829,9 +2829,9 @@
         "path": "packages/drei/upstream/src/core/PointerLockControls.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PointerLockControls.three.tsrx",
+      "evidence": ["packages/drei/typetests/pointer-lock.test-d.ts"],
       "divergence": null
     },
     {

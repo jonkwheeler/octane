@@ -100,6 +100,8 @@ export {
 	OrbitControls,
 	TrackballControls,
 } from './basic-controls.three.tsrx';
+export { PointerLockControls } from './PointerLockControls.three.tsrx';
+export type { PointerLockControlsProps } from './PointerLockControls.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
