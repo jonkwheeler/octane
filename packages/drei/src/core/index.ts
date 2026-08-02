@@ -171,6 +171,8 @@ export { VideoTexture, useVideoTexture } from './VideoTexture.three.tsrx';
 export type { VideoTextureProps } from './VideoTexture.three.tsrx';
 export { TrailTexture, useTrailTexture } from './TrailTexture.three.tsrx';
 export type { TrailTextureProps } from './TrailTexture.three.tsrx';
+export { Point, Points, PointsBuffer, PositionPoint } from './Points.three.tsrx';
+export type { PointsBuffersProps, PointsInstancesProps } from './Points.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
