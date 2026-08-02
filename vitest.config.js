@@ -76,6 +76,15 @@ const THREE_ALIASES = [
 		replacement: resolve(THREE_SOURCE, 'intrinsics.ts'),
 	},
 ];
+const DREI_RENDERERS = {
+	...THREE_RENDERERS,
+	boundaries: {
+		...THREE_RENDERERS.boundaries,
+		'@octanejs/drei': {
+			Html: { ownerRenderer: 'three', childRenderer: 'dom', prop: 'children' },
+		},
+	},
+};
 const LYNX_SOURCE = resolve(import.meta.dirname, 'packages/lynx/src');
 const LYNX_ALIASES = [
 	{
@@ -1739,7 +1748,7 @@ export default defineConfig({
 					globals: false,
 					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },
 				},
-				plugins: [octane({ renderers: THREE_RENDERERS })],
+				plugins: [octane({ renderers: DREI_RENDERERS })],
 				resolve: {
 					alias: [
 						...THREE_ALIASES,

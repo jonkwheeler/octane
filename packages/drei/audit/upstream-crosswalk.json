@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 3 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 2 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -1754,9 +1754,12 @@
         "path": "packages/drei/upstream/src/web/Html.tsx",
         "line": 146
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/Html.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/html.test.ts",
+        "packages/drei/typetests/html.test-d.ts"
+      ],
       "divergence": null
     },
     {

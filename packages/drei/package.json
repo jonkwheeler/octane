@@ -13,6 +13,7 @@
     ".": "./src/index.ts",
     "./web": "./src/web/index.ts",
     "./core": "./src/core/index.ts",
+    "./config": "./src/config.ts",
     "./package.json": "./package.json"
   },
   "files": [
