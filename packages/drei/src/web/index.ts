@@ -9,3 +9,5 @@ export type { ScreenVideoTextureProps, WebcamVideoTextureProps } from './media-t
 export { Loader } from './Loader.tsrx';
 export { FaceLandmarker, FaceLandmarkerDefaults, useFaceLandmarker } from './FaceLandmarker.three.tsrx';
 export type { FaceLandmarkerProps } from './FaceLandmarker.three.tsrx';
+export { PresentationControls } from './PresentationControls.three.tsrx';
+export type { PresentationControlProps } from './PresentationControls.three.tsrx';

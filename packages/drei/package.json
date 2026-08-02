@@ -33,6 +33,7 @@
     "@mediapipe/tasks-vision": "0.10.17",
     "@monogrid/gainmap-js": "^3.0.6",
     "@octanejs/zustand": "workspace:*",
+    "@use-gesture/core": "^10.3.1",
     "camera-controls": "^3.1.0",
     "detect-gpu": "^5.0.56",
     "hls.js": "^1.5.17",

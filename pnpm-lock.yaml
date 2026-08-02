@@ -4184,6 +4184,9 @@ importers:
       '@octanejs/zustand':
         specifier: workspace:*
         version: link:../zustand
+      '@use-gesture/core':
+        specifier: ^10.3.1
+        version: 10.3.1
       camera-controls:
         specifier: ^3.1.0
         version: 3.1.2(three@0.172.0)
