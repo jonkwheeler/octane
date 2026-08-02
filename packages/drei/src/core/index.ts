@@ -177,6 +177,8 @@ export { createInstances, Instance, InstancedAttribute, Instances, Merged, Posit
 export type { InstanceProps, InstancedAttributeProps, InstancesProps, MergedProps } from './Instances.three.tsrx';
 export { Sampler, useSurfaceSampler } from './Sampler.three.tsrx';
 export type { SamplerProps, TransformFn, useSurfaceSamplerProps } from './Sampler.three.tsrx';
+export { Cloud, CloudInstance, Clouds } from './Cloud.three.tsrx';
+export type { CloudProps, CloudsProps } from './Cloud.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

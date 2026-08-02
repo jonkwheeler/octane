@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 111
+    "gaps": 106
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -545,9 +545,9 @@
         "path": "packages/drei/upstream/src/core/Cloud.tsx",
         "line": 323
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Cloud.three.tsrx",
+      "evidence": ["packages/drei/tests/cloud.test.ts"],
       "divergence": null
     },
     {
@@ -558,9 +558,9 @@
         "path": "packages/drei/upstream/src/core/Cloud.tsx",
         "line": 220
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Cloud.three.tsrx",
+      "evidence": ["packages/drei/tests/cloud.test.ts"],
       "divergence": null
     },
     {
@@ -571,9 +571,9 @@
         "path": "packages/drei/upstream/src/core/Cloud.tsx",
         "line": 62
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Cloud.three.tsrx",
+      "evidence": ["packages/drei/typetests/cloud.test-d.ts"],
       "divergence": null
     },
     {
@@ -584,9 +584,9 @@
         "path": "packages/drei/upstream/src/core/Cloud.tsx",
         "line": 100
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Cloud.three.tsrx",
+      "evidence": ["packages/drei/tests/cloud.test.ts"],
       "divergence": null
     },
     {
@@ -597,9 +597,9 @@
         "path": "packages/drei/upstream/src/core/Cloud.tsx",
         "line": 49
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Cloud.three.tsrx",
+      "evidence": ["packages/drei/typetests/cloud.test-d.ts"],
       "divergence": null
     },
     {
