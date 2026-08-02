@@ -112,6 +112,8 @@ export function usePositionFixed(
 
 	useEffect(
 		() => {
+			if (!isSafari()) return;
+
 			function onScroll() {
 				scrollPos.current = window.scrollY;
 			}

@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/emilkowalski/vaul.git",
+    "version": "1.1.2",
+    "commit": "73d06cdd3fd990bf4b83214cfe240c246908af0d",
+    "sourceRoot": "src",
+    "testRoot": "test",
+    "license": "MIT",
+    "integrity": "sha256:e952dcf5e2acd1870f767aa2fa6e015d00825da90f433cf446d170d212ca213e",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/vaul/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/vaul/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 5,
+    "uniqueIdentities": 5,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "189a22644fd5da38f79d83b38fcdf2c442fb9fb711043d20502ae2ff8847a5da"
+    }
+  },
+  "lanes": [
+    {
+      "id": "vaul-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Typechecks representative valid and invalid public Vaul props without collapsing the adapted Radix surface to any.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/vaul/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/tests/types/public-api.ts",
+          "role": "test",
+          "sha256": "1163b56729b777e324cea3fc55064bdf40afd60cc958ce714e48375ded83f3b5",
+          "cases": [
+            {
+              "id": "types:adapted-public-api",
+              "testName": "adapted Vaul public API",
+              "fullName": "adapted Vaul public API"
+            }
+          ]
+        },
+        {
+          "path": "packages/vaul/tsconfig.json",
+          "role": "support",
+          "sha256": "a42fbdc850941411a0bda3a8aafa26008bfc772b7964e447a8c042e3096e1605"
+        }
+      ]
+    },
+    {
+      "id": "vaul-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the adapted DOM, export, interaction, and React-oracle suite with exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/vaul/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "031d431b948307a29ae40461b3d75bbfb940dad56d72f59ad689bfd174d19f96"
+        },
+        {
+          "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "bcc5d1c58554479e9b523c22817c25ab6c5bfee188d6899d6f0b28e4b6593287"
+        },
+        {
+          "path": "packages/vaul/audit/upstream-integrity.json",
+          "role": "support",
+          "sha256": "9141868b120f498705d5becdc8102dd8e1b1f47fa298a7711881f314aed2e691"
+        }
+      ]
+    },
+    {
+      "id": "vaul-adapted-full-suite-server",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul-ssr",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the adapted server-rendering suite with exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/vaul/audit/adapted-runtime-server.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "bdaf603d8f2f7f0fc045c5590cb835da3b11c08dfd77ff8abd11a74ebd3c5f2e"
+        },
+        {
+          "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "bcc5d1c58554479e9b523c22817c25ab6c5bfee188d6899d6f0b28e4b6593287"
+        }
+      ]
+    },
+    {
+      "id": "vaul-real-browser",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul-browser",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs Vaul in real headless Chromium, covering dialog semantics, styles, snap points, pointer dragging, close behavior, and portal cleanup.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/vaul/audit/adapted-runtime-browser.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/audit/adapted-runtime-browser.json",
+          "role": "support",
+          "sha256": "19956116615fbf3a754aa8a1cd32a39e15def42e1e4aebbf450dfb9238e46bcd"
+        },
+        {
+          "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "bcc5d1c58554479e9b523c22817c25ab6c5bfee188d6899d6f0b28e4b6593287"
+        },
+        {
+          "path": "packages/vaul/tests/browser/harness/main.tsrx",
+          "role": "fixture",
+          "sha256": "55809da3b107bc9c866d9fb0e5d2095f0b02df8ca06a5c76a058b6ea6cb76062"
+        },
+        {
+          "path": "packages/vaul/tests/browser/harness/index.html",
+          "role": "fixture",
+          "sha256": "d00528ea09d41d860f8bba79f09813259390510ce75400913b3b4d221edf292c"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

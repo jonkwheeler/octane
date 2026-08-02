@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "project": "vaul-browser",
+  "roots": [
+    "packages/vaul/tests"
+  ],
+  "files": [
+    "packages/vaul/tests/browser/vaul.browser.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:1a948b9b9110d6a4",
+      "file": "packages/vaul/tests/browser/vaul.browser.test.ts",
+      "fullName": "vaul real-browser evidence preserves styling, focus semantics, snap points, dragging, and cleanup"
+    }
+  ]
+}

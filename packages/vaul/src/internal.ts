@@ -11,7 +11,3 @@ export function subSlot(slot: symbol | undefined, tag: string): symbol | undefin
 	}
 	return value;
 }
-
-export function S(tag: string): symbol {
-	return Symbol.for(`@octanejs/vaul:${tag}`);
-}

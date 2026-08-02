@@ -3070,6 +3070,16 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'vaul-browser',
+					include: ['packages/vaul/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+			},
+			{
+				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',

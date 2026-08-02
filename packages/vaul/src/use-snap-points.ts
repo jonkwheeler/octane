@@ -23,8 +23,8 @@ export function useSnapPoints(
 		setActiveSnapPointProp?(snapPoint: number | null | string): void;
 		snapPoints?: (number | string)[];
 		fadeFromIndex?: number;
-		drawerRef: React.RefObject<HTMLDivElement>;
-		overlayRef: React.RefObject<HTMLDivElement>;
+		drawerRef: React.RefObject<HTMLDivElement | null>;
+		overlayRef: React.RefObject<HTMLDivElement | null>;
 		onSnapPointChange(activeSnapPointIndex: number): void;
 		direction?: DrawerDirection;
 		container?: HTMLElement | null | undefined;
@@ -53,17 +53,27 @@ export function useSnapPoints(
 
 	useEffect(
 		() => {
+			if (!snapPoints?.length) return;
+
 			function onResize() {
-				setWindowDimensions({
-					innerWidth: window.innerWidth,
-					innerHeight: window.innerHeight,
+				setWindowDimensions((current) => {
+					if (
+						current?.innerWidth === window.innerWidth &&
+						current.innerHeight === window.innerHeight
+					) {
+						return current;
+					}
+					return {
+						innerWidth: window.innerWidth,
+						innerHeight: window.innerHeight,
+					};
 				});
 			}
 			window.addEventListener('resize', onResize);
 
 			return () => window.removeEventListener('resize', onResize);
 		},
-		[],
+		[Boolean(snapPoints?.length)],
 		subSlot(slot, 'resize'),
 	);
 
@@ -89,11 +99,9 @@ export function useSnapPoints(
 
 	const snapPointsOffset = useMemo(
 		() => {
-			const containerSize = container
-				? {
-						width: container.getBoundingClientRect().width,
-						height: container.getBoundingClientRect().height,
-					}
+			const containerRect = container?.getBoundingClientRect();
+			const containerSize = containerRect
+				? { width: containerRect.width, height: containerRect.height }
 				: typeof window !== 'undefined'
 					? { width: window.innerWidth, height: window.innerHeight }
 					: { width: 0, height: 0 };
@@ -179,7 +187,7 @@ export function useSnapPoints(
 				});
 			}
 
-			setActiveSnapPoint(snapPoints?.[Math.max(newSnapPointIndex, 0)]);
+			setActiveSnapPoint(snapPoints?.[Math.max(newSnapPointIndex, 0)]!);
 		},
 		[
 			drawerRef.current,

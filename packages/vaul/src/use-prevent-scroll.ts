@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect } from 'octane';
 import { isIOS } from './browser';
+import { chain } from './helpers';
 import { subSlot } from './internal';
 
 const KEYBOARD_BUFFER = 24;
@@ -13,16 +14,6 @@ interface PreventScrollOptions {
 	/** Whether the scroll lock is disabled. */
 	isDisabled?: boolean;
 	focusCallback?: () => void;
-}
-
-function chain(...callbacks: any[]): (...args: any[]) => void {
-	return (...args: any[]) => {
-		for (let callback of callbacks) {
-			if (typeof callback === 'function') {
-				callback(...args);
-			}
-		}
-	};
 }
 
 // @ts-ignore

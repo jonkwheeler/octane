@@ -67,8 +67,7 @@ export const DrawerContext = createContext<DrawerContextValue>({
 	autoFocus: false,
 });
 
+// Plain-TS hooks pass a compiler-injected slot; context reads do not consume it.
 export function useDrawerContext(_slot?: symbol) {
-	const context = useContext(DrawerContext);
-	if (!context) throw new Error('useDrawerContext must be used within a Drawer.Root');
-	return context;
+	return useContext(DrawerContext);
 }

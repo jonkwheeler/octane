@@ -1,4 +1,3 @@
-// @ts-nocheck -- React-compatible public DOM props normalize at Octane boundaries.
 'use client';
 
 import { Dialog as DialogPrimitive } from '@octanejs/radix';
@@ -170,7 +169,7 @@ export function Root({
 	container,
 	autoFocus = false,
 }: DialogProps) @{
-	const [isOpen = false, setIsOpen] = useControllableState({
+	const [isOpen = false, setIsOpen] = useControllableState<boolean>({
 		defaultProp: defaultOpen,
 		prop: openProp,
 		onChange: (o: boolean) => {
@@ -207,7 +206,7 @@ export function Root({
 	const dragEndTime = useRef<Date | null>(null);
 	const lastTimeDragPrevented = useRef<Date | null>(null);
 	const isAllowedToDrag = useRef<boolean>(false);
-	const nestedOpenChangeTimer = useRef<NodeJS.Timeout | null>(null);
+	const nestedOpenChangeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const pointerStart = useRef(0);
 	const keyboardIsOpen = useRef(false);
 	const shouldAnimate = useRef(!defaultOpen);
@@ -706,6 +705,16 @@ export function Root({
 		};
 	}, [isOpen]);
 
+	useEffect(
+		() => () => {
+			if (nestedOpenChangeTimer.current) {
+				window.clearTimeout(nestedOpenChangeTimer.current);
+				nestedOpenChangeTimer.current = null;
+			}
+		},
+		[],
+	);
+
 	function onNestedOpenChange(o: boolean) {
 		const scale = o ? (window.innerWidth - NESTED_DISPLACEMENT) / window.innerWidth : 1;
 
@@ -778,7 +787,7 @@ export function Root({
 
 	<DialogPrimitive.Root
 		defaultOpen={defaultOpen}
-		onOpenChange={(open) => {
+		onOpenChange={(open: boolean) => {
 			if (!dismissible && !open) return;
 			if (open) {
 				setHasBeenOpened(true);
@@ -827,7 +836,8 @@ export function Root({
 }
 
 export type OverlayProps =
-	React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> & {
+	React.ComponentPropsWithoutRef<'div'> & {
+		forceMount?: true;
 		ref?: React.Ref<HTMLDivElement>;
 	};
 
@@ -857,7 +867,18 @@ export function Overlay({ ref, ...rest }: OverlayProps) @{
 	/>
 }
 
-export type ContentProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>;
+type PreventableEvent = Event & { defaultPrevented: boolean; preventDefault(): void };
+
+export type ContentProps =
+	React.ComponentPropsWithoutRef<'div'> & {
+		forceMount?: true;
+		onOpenAutoFocus?: (event: PreventableEvent) => void;
+		onCloseAutoFocus?: (event: PreventableEvent) => void;
+		onEscapeKeyDown?: (event: KeyboardEvent) => void;
+		onPointerDownOutside?: (event: PreventableEvent) => void;
+		onFocusOutside?: (event: PreventableEvent) => void;
+		onInteractOutside?: (event: PreventableEvent) => void;
+	};
 
 export function Content({
 	ref,
@@ -949,20 +970,20 @@ export function Content({
 					...style,
 				} as React.CSSProperties
 			: style}
-		onPointerDown={(event) => {
+		onPointerDown={(event: any) => {
 			if (handleOnly) return;
 			rest.onPointerDown?.(event);
 			pointerStartRef.current = { x: event.pageX, y: event.pageY };
 			onPress(event);
 		}}
-		onOpenAutoFocus={(e) => {
+		onOpenAutoFocus={(e: any) => {
 			onOpenAutoFocus?.(e);
 
 			if (!autoFocus) {
 				e.preventDefault();
 			}
 		}}
-		onPointerDownOutside={(e) => {
+		onPointerDownOutside={(e: any) => {
 			onPointerDownOutside?.(e);
 
 			if (!modal || e.defaultPrevented) {
@@ -974,13 +995,13 @@ export function Content({
 				keyboardIsOpen.current = false;
 			}
 		}}
-		onFocusOutside={(e) => {
+		onFocusOutside={(e: any) => {
 			if (!modal) {
 				e.preventDefault();
 				return;
 			}
 		}}
-		onPointerMove={(event) => {
+		onPointerMove={(event: any) => {
 			lastKnownPointerEventRef.current = event;
 			if (handleOnly) return;
 			rest.onPointerMove?.(event);
@@ -1000,17 +1021,17 @@ export function Content({
 				pointerStartRef.current = null;
 			}
 		}}
-		onPointerUp={(event) => {
+		onPointerUp={(event: any) => {
 			rest.onPointerUp?.(event);
 			pointerStartRef.current = null;
 			wasBeyondThePointRef.current = false;
 			onRelease(event);
 		}}
-		onPointerOut={(event) => {
+		onPointerOut={(event: any) => {
 			rest.onPointerOut?.(event);
 			handleOnPointerUp(lastKnownPointerEventRef.current);
 		}}
-		onContextMenu={(event) => {
+		onContextMenu={(event: any) => {
 			rest.onContextMenu?.(event);
 			if (lastKnownPointerEventRef.current) {
 				handleOnPointerUp(lastKnownPointerEventRef.current);
@@ -1044,7 +1065,16 @@ export function Handle({ ref, preventCycle = false, children, ...rest }: HandleP
 	} = useDrawerContext();
 
 	const closeTimeoutIdRef = useRef<number | null>(null);
+	const cycleTimeoutIdRef = useRef<number | null>(null);
 	const shouldCancelInteractionRef = useRef(false);
+
+	useEffect(
+		() => () => {
+			if (closeTimeoutIdRef.current) window.clearTimeout(closeTimeoutIdRef.current);
+			if (cycleTimeoutIdRef.current) window.clearTimeout(cycleTimeoutIdRef.current);
+		},
+		[],
+	);
 
 	function handleStartCycle() {
 		// Stop if this is the second click of a double click
@@ -1052,7 +1082,9 @@ export function Handle({ ref, preventCycle = false, children, ...rest }: HandleP
 			handleCancelInteraction();
 			return;
 		}
-		window.setTimeout(() => {
+		if (cycleTimeoutIdRef.current) window.clearTimeout(cycleTimeoutIdRef.current);
+		cycleTimeoutIdRef.current = window.setTimeout(() => {
+			cycleTimeoutIdRef.current = null;
 			handleCycleSnapPoints();
 		}, DOUBLE_TAP_TIMEOUT);
 	}
@@ -1087,6 +1119,7 @@ export function Handle({ ref, preventCycle = false, children, ...rest }: HandleP
 	}
 
 	function handleStartInteraction() {
+		if (closeTimeoutIdRef.current) window.clearTimeout(closeTimeoutIdRef.current);
 		closeTimeoutIdRef.current = window.setTimeout(() => {
 			// Cancel click interaction on a long press
 			shouldCancelInteractionRef.current = true;
@@ -1096,6 +1129,7 @@ export function Handle({ ref, preventCycle = false, children, ...rest }: HandleP
 	function handleCancelInteraction() {
 		if (closeTimeoutIdRef.current) {
 			window.clearTimeout(closeTimeoutIdRef.current);
+			closeTimeoutIdRef.current = null;
 		}
 		shouldCancelInteractionRef.current = false;
 	}
@@ -1104,18 +1138,18 @@ export function Handle({ ref, preventCycle = false, children, ...rest }: HandleP
 		onClick={handleStartCycle}
 		onPointerCancel={handleCancelInteraction}
 		onPointerDown={(e) => {
-			if (handleOnly) onPress(e);
+			if (handleOnly) onPress(e as any);
 			handleStartInteraction();
 		}}
 		onPointerMove={(e) => {
-			if (handleOnly) onDrag(e);
+			if (handleOnly) onDrag(e as any);
 		}}
 		// onPointerUp is already handled by the content component
 		ref={ref}
 		data-vaul-drawer-visible={isOpen ? 'true' : 'false'}
 		data-vaul-handle=""
 		aria-hidden="true"
-		{...rest}
+		{...rest as any}
 	>
 		{/* Expand handle's hit area beyond what's visible to ensure a 44x44 tap target for touch devices */}
 		<span data-vaul-handle-hitarea="" aria-hidden="true">{children}</span>
@@ -1150,7 +1184,11 @@ export function NestedRoot({ onDrag, onOpenChange, open: nestedIsOpen, ...rest }
 	/>
 }
 
-type PortalProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Portal>;
+export type PortalProps = {
+	children?: React.ReactNode;
+	container?: HTMLElement | null;
+	forceMount?: true;
+};
 
 export function Portal(props: PortalProps) @{
 	const context = useDrawerContext();
@@ -1159,15 +1197,28 @@ export function Portal(props: PortalProps) @{
 	<DialogPrimitive.Portal container={container} {...portalProps} />
 }
 
+type ButtonPrimitiveProps =
+	React.ComponentPropsWithoutRef<'button'> & {
+		ref?: React.Ref<HTMLButtonElement>;
+	};
+type TitlePrimitiveProps =
+	React.ComponentPropsWithoutRef<'h2'> & {
+		ref?: React.Ref<HTMLHeadingElement>;
+	};
+type DescriptionPrimitiveProps =
+	React.ComponentPropsWithoutRef<'p'> & {
+		ref?: React.Ref<HTMLParagraphElement>;
+	};
+
 export const Drawer = {
 	Root,
 	NestedRoot,
 	Content,
 	Overlay,
-	Trigger: DialogPrimitive.Trigger,
+	Trigger: DialogPrimitive.Trigger as (props: ButtonPrimitiveProps) => any,
 	Portal,
 	Handle,
-	Close: DialogPrimitive.Close,
-	Title: DialogPrimitive.Title,
-	Description: DialogPrimitive.Description,
+	Close: DialogPrimitive.Close as (props: ButtonPrimitiveProps) => any,
+	Title: DialogPrimitive.Title as (props: TitlePrimitiveProps) => any,
+	Description: DialogPrimitive.Description as (props: DescriptionPrimitiveProps) => any,
 };

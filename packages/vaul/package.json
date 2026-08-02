@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "Octane binding for Vaul drawers",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "author": "Emil Kowalski <e@emilkowal.ski>",
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": [
     "./src/style.css"
   ],
@@ -20,18 +27,19 @@
   ],
   "scripts": {
     "test": "pnpm upstream:check && vitest run --root ../.. --project vaul --project vaul-ssr --project vaul-browser",
+    "parity:inventory": "node ../../scripts/react-parity/vaul-runtime-inventory.mjs",
     "upstream:check": "node audit/check-upstream.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@octanejs/radix": "workspace:*"
+    "@octanejs/radix": "workspace:*",
+    "@types/react": "catalog:default"
   },
   "peerDependencies": {
     "octane": "workspace:*"
   },
-	"devDependencies": {
-		"@types/react": "catalog:default",
-		"@types/react-dom": "catalog:default",
+  "devDependencies": {
+    "@types/react-dom": "catalog:default",
     "octane": "workspace:*",
     "playwright": "catalog:default",
     "react": "catalog:default",

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "project": "vaul",
+  "roots": [
+    "packages/vaul/tests"
+  ],
+  "files": [
+    "packages/vaul/tests/drawer.test.ts",
+    "packages/vaul/tests/exports.test.ts",
+    "packages/vaul/tests/react-oracle.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:6190e5f0dc689735",
+      "file": "packages/vaul/tests/drawer.test.ts",
+      "fullName": "vaul v1.1.2 adapted drawer behavior opens and closes through the public trigger and close controls"
+    },
+    {
+      "id": "runtime:097bbda6ded4a279",
+      "file": "packages/vaul/tests/exports.test.ts",
+      "fullName": "@octanejs/vaul exports matches the pinned upstream root runtime entry"
+    },
+    {
+      "id": "runtime:d9acd4ec02d98e31",
+      "file": "packages/vaul/tests/react-oracle.test.ts",
+      "fullName": "vaul v1.1.2 React oracle matches React drawer semantics after opening"
+    }
+  ]
+}
