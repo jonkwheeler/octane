@@ -95,12 +95,16 @@ describe('CI workflow aggregation', () => {
 		}
 	});
 
-	test('runs the Embla browser suite only in the Chromium integration lane', () => {
+	test('isolates Embla browser coverage to Chromium-provisioned jobs', () => {
 		assert.match(
 			jobSource('test_shard'),
 			/--exclude "packages\/embla-carousel\/tests\/browser\/\*\*\/\*\.test\.ts"/,
 		);
 		assert.match(jobSource('heavy_integration'), /packages\/embla-carousel\/tests\/browser/);
+		const lint = jobSource('lint_checks');
+		const install = lint.indexOf('Install Playwright Chromium');
+		const parity = lint.indexOf('Check React parity inventory and ledger');
+		assert.ok(install >= 0 && install < parity);
 	});
 
 	test('skips expensive jobs only after the committed scope classifier opts out', () => {

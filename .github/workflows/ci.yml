@@ -673,6 +673,12 @@ jobs:
       - name: Check parity-gap index is current
         run: pnpm parity:gaps:check
 
+      # The aggregate parity audit executes every available required oracle.
+      # Embla's required browser oracle therefore needs the same real Chromium
+      # prerequisite as the dedicated browser integration lane below.
+      - name: Install Playwright Chromium for parity audit
+        run: pnpm --filter website exec playwright install --with-deps chromium
+
       # React's stable release and current main are inventoried separately at
       # pinned commits. This network-free gate checks the extracted case IDs,
       # ledger dispositions/evidence, and generated coverage report so public
