@@ -100,6 +100,7 @@ interface SuspensePromiseCache {
 }
 
 /**
+ * OCTANE DIVERGENCE[tanstack-query-octane-suspense][adapted:tanstack-query-suspense]
  * Suspend through a stable `use()` occurrence for one query-hook call site.
  *
  * `use()` tracks thenables by dynamic call order. A component with two

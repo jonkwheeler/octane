@@ -23,6 +23,7 @@ async function flush() {
 }
 
 describe('suspense query', () => {
+	// @parity-case adapted:tanstack-query-suspense
 	it('shows @pending while loading, then the data', async () => {
 		let resolveFn: (v: string) => void = () => {};
 		const queryFn = () => new Promise<string>((res) => (resolveFn = res));

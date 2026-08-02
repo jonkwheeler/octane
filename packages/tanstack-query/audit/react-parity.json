@@ -1,0 +1,199 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/query.git",
+    "version": "@tanstack/react-query@5.101.3",
+    "commit": "172ea730d03564a6f3df995b50c42d6ccad9b603",
+    "sourceRoot": "packages/react-query/src",
+    "testRoot": "packages/react-query/src/__tests__",
+    "license": "MIT",
+    "integrity": "sha256:1effc6149825d93d72c8a735d9790ee7cb4d96fa149749c7eb2bba39c180755f",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-query/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": {
+      "roots": ["packages/tanstack-query/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-query-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-query",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs exact cached query, asynchronous query, and mutation scenarios against @tanstack/react-query@5.101.3.",
+      "files": [
+        {
+          "path": "packages/tanstack-query/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "99f37a8ef2a625987b316485370f1a3ce6afd5b9e174b0d4a752e9fd75da0ef5",
+          "cases": [
+            {
+              "id": "differential:tanstack-query-cached",
+              "testName": "CachedApp: initialData query renders byte-identical result shape",
+              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query CachedApp: initialData query renders byte-identical result shape"
+            },
+            {
+              "id": "differential:tanstack-query-async",
+              "testName": "AsyncApp: pending → success renders byte-identical at both steps",
+              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query AsyncApp: pending → success renders byte-identical at both steps"
+            },
+            {
+              "id": "differential:tanstack-query-mutation",
+              "testName": "MutationApp: idle → pending → success renders byte-identical",
+              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query MutationApp: idle → pending → success renders byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-query/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "8cf12195e5fe493461684961480acaf19ca03acc614bd2d7f2ef71c4f17a3dbf"
+        },
+        {
+          "path": "packages/tanstack-query/tests/_fixtures/cached-diff.tsrx",
+          "role": "support",
+          "sha256": "b126b97eae02fa46b2681df67a7856998f1c7357f7e86f3d5769eaff69cd4b9e"
+        },
+        {
+          "path": "packages/tanstack-query/tests/_fixtures/async-diff.tsrx",
+          "role": "support",
+          "sha256": "12015b62a30e93c32120d866f8124ab758a789043a8d351da627b3d8b11b515e"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-query-adapted-suspense",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-query",
+      "notes": "Authenticates the documented Octane pending-boundary adaptation and its consumer-visible loading-to-data lifecycle.",
+      "files": [
+        {
+          "path": "packages/tanstack-query/tests/conformance/suspense.test.ts",
+          "role": "test",
+          "sha256": "e6d61a427964a529c4549bdf6e87a1ae31d18288f54f49352d9541119faa5153",
+          "cases": [
+            {
+              "id": "adapted:tanstack-query-suspense",
+              "testName": "shows @pending while loading, then the data",
+              "fullName": "suspense query shows @pending while loading, then the data"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-query/tests/_fixtures/suspense.tsrx",
+          "role": "support",
+          "sha256": "de5cd83e50d65cd0b86615b5fcf665204fd8f6186bfa50c3e9c6099f71605025"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-query-adapted-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-query-ssr",
+      "notes": "Authenticates initial query rendering in Octane's DOM-free server environment.",
+      "files": [
+        {
+          "path": "packages/tanstack-query/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "767c6859d05010b50d88e8e6daff4fb4c132a0cccd321bc6aad77f2a805e6815",
+          "cases": [
+            {
+              "id": "adapted:tanstack-query-ssr",
+              "testName": "renders initial query data without a DOM",
+              "fullName": "@octanejs/tanstack-query SSR renders initial query data without a DOM"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-query/tests/_fixtures/server.tsrx",
+          "role": "support",
+          "sha256": "065b17df7610d685e65e8514a9892e775594b2d51a95f4c2eb53911ae57d9ca5"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-query-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-query-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the checked Octane generic query inference and cache lookup contract.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-query/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-query/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "6d1563f95a35a13d96882d28d1f39503b02aaf4efdf4e68252b685e41f4d9d67",
+          "cases": [
+            {
+              "id": "types:tanstack-query-public-api",
+              "testName": "generic query inference and cache lookup",
+              "fullName": "generic query inference and cache lookup"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-query/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "cc3353fa75d55fd170cb70d87c802e98c9cc65e3a8ee871c2ef8a6abe6347277"
+        },
+        {
+          "path": "packages/tanstack-query/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "2f9f73a560e301d0a647f7c80c7a4f35f25ecb4c135b7ee1a0dcf70a33bdf7a1"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "tanstack-query-octane-suspense",
+      "caseIds": ["adapted:tanstack-query-suspense"],
+      "upstreamResult": "React Query suspends by throwing the in-flight promise to React Suspense.",
+      "octaneResult": "The Octane binding passes the in-flight thenable through Octane use() to @pending or Suspense boundaries.",
+      "rationale": "Octane uses its native thenable and pending-boundary integration instead of React's thrown-promise mechanism.",
+      "classification": "framework-integration",
+      "consumerImpact": "Consumers observe the same loading fallback and resolved data lifecycle through Octane boundary syntax.",
+      "migrationGuidance": "Wrap suspense queries in @pending or Octane Suspense instead of React Suspense.",
+      "owner": "@octanejs/tanstack-query",
+      "reviewCondition": "Review if Octane adopts React's thrown-promise Suspense mechanism."
+    }
+  ]
+}

@@ -1369,7 +1369,10 @@ export default defineConfig({
 			{
 				test: {
 					name: 'tanstack-query',
-					include: ['packages/tanstack-query/tests/**/*.test.ts'],
+					include: [
+						'packages/tanstack-query/tests/conformance/**/*.test.ts',
+						'packages/tanstack-query/tests/differential/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					// Differential precompile for query fixtures: rewrites
 					// `@octanejs/tanstack-query` → `@tanstack/react-query` so the React side runs
@@ -1387,6 +1390,27 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/tanstack-query\/(.*)$/,
 							replacement: resolve(import.meta.dirname, 'packages/tanstack-query/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'tanstack-query-ssr',
+					include: ['packages/tanstack-query/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-query$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-query/src/index.ts'),
 						},
 					],
 				},
