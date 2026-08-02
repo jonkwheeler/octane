@@ -10,6 +10,6 @@
     "React Strict Mode double invocation is not emulated."
   ],
   "ssr": "Supported at the binding boundary: server rendering reads existing synchronous state without running passive subscriptions or browser-only store work; client Suspense and hydration are covered separately.",
-  "verified": "2026-07-30",
-  "docs": ["docs/livestore-port.md"]
+  "verified": "2026-08-02",
+  "docs": ["docs/livestore-port.md", "packages/livestore/UPSTREAM.md"]
 }

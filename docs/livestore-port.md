@@ -22,3 +22,7 @@ adapter.
 The framework toolkit’s public query error label is set to `octane`. The pinned
 toolkit still records an internal refresh-reason renderer tag as `react`; that
 diagnostic-only upstream detail is documented rather than forked.
+
+The immutable upstream pin, byte-exact source/test inventory, public export
+crosswalk, and disposition of every upstream test artifact live in
+`packages/livestore/UPSTREAM.md`.

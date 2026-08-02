@@ -7,6 +7,9 @@ Octane bindings for [LiveStore](https://livestore.dev/), ported from
 The package reuses LiveStore's published framework-neutral store, schema,
 query, registry, and framework-toolkit packages. It replaces only the React
 context, Suspense, hook, and component layer with Octane equivalents.
+The exact upstream source, tests, snapshots, package metadata, and license are
+vendored byte-for-byte under `upstream/`; [UPSTREAM.md](./UPSTREAM.md) records
+the export and test crosswalk.
 
 ```sh
 pnpm add @octanejs/livestore @livestore/adapter-web
@@ -37,3 +40,6 @@ compatibility, but attach Octane hooks and do not depend on React.
 
 LiveStore is Apache-2.0 licensed. This adaptation preserves that license and
 documents Octane-specific changes in this repository.
+
+Maintainers can verify the pinned evidence with
+`pnpm --dir packages/livestore upstream:verify`.

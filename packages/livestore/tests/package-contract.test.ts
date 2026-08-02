@@ -26,7 +26,7 @@ describe('published package contract', () => {
 		expect(experimental.LiveList).toBe(root.LiveList);
 	});
 
-	it('depends only on Octane and the released framework-neutral closure', async () => {
+	it('publishes only Octane and the released framework-neutral closure', async () => {
 		const manifest = JSON.parse(await readFile(packagePath, 'utf8')) as {
 			dependencies: Record<string, string>;
 			peerDependencies: Record<string, string>;
@@ -41,7 +41,7 @@ describe('published package contract', () => {
 		]);
 		expect(manifest.peerDependencies).toEqual({ octane: 'workspace:*' });
 		expect(manifest.dependencies).not.toHaveProperty('react');
-		expect(manifest.devDependencies).not.toHaveProperty('react');
-		expect(manifest.devDependencies).not.toHaveProperty('@types/react');
+		expect(manifest.devDependencies.react).toBe('catalog:livestore-react-oracle');
+		expect(manifest.devDependencies['@types/react']).toBe('catalog:livestore-react-oracle');
 	});
 });
