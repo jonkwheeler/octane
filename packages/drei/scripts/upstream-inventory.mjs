@@ -24,7 +24,9 @@ export async function deriveUpstreamInventory() {
 
 	const runtimeModule = await import('@react-three/drei');
 	const runtimeNames = new Set(
-		Object.keys(runtimeModule).filter((name) => name !== 'default' && name !== '__esModule'),
+		Object.keys(runtimeModule).filter(
+			(name) => name !== 'default' && name !== '__esModule' && name !== 'module.exports',
+		),
 	);
 	const valueFlags =
 		ts.SymbolFlags.Function |
