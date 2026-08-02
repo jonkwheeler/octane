@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/bvaughn/react-resizable-panels.git",
+    "version": "4.12.2",
+    "commit": "a1eeb7aefdb024bb5879a323218e0ac05f77f28e",
+    "sourceRoot": "lib",
+    "testRoot": "lib",
+    "license": "MIT",
+    "npmIntegrity": "sha256:099742808fafbe3a0288d758271aaf1c35dc9b66ec85077e60f0861e58e89e61",
+    "verification": "verified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "published declarations present; no dedicated upstream type-test tree" },
+  "lanes": [
+    { "id": "react-resizable-panels-pristine", "type": "pristine-upstream", "status": "registered-pending-U2" },
+    { "id": "react-resizable-panels", "type": "adapted-octane", "status": "registered-pending-U2" },
+    { "id": "react-resizable-panels-server", "type": "server", "status": "registered-pending-U4" },
+    { "id": "react-resizable-panels-public-types", "type": "adapted-types", "status": "strict strategy accepted; full parity pending-U5" }
+  ]
+}

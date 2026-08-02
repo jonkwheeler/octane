@@ -1597,6 +1597,59 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-resizable-panels-pristine',
+					include: ['packages/react-resizable-panels/upstream/source/lib/**/*.test.{ts,tsx}'],
+					environment: 'jsdom',
+					globals: false,
+					sequence: { groupOrder: 1 },
+				},
+			},
+			{
+				test: {
+					name: 'react-resizable-panels',
+					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-resizable-panels$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-resizable-panels/src/index.tsrx',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-resizable-panels-server',
+					include: ['packages/react-resizable-panels/tests/**/*.server.test.{ts,tsx,tsrx}'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-resizable-panels$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-resizable-panels/src/index.tsrx',
+							),
+						},
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'hook-form-pristine',
 					include: ['packages/hook-form/tests/upstream-original.test.ts'],
 					environment: 'node',

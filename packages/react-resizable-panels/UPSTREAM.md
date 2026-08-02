@@ -1,0 +1,56 @@
+# react-resizable-panels upstream contract
+
+## Pin and source boundary
+
+| Field | Value |
+|---|---|
+| Package | `react-resizable-panels` |
+| Version | `4.12.2` |
+| Canonical repository | `https://github.com/bvaughn/react-resizable-panels.git` |
+| Canonical tag commit | `a1eeb7aefdb024bb5879a323218e0ac05f77f28e` |
+| Supported upstream range | exactly `4.12.2` |
+| npm tarball SHA-256 | `099742808fafbe3a0288d758271aaf1c35dc9b66ec85077e60f0861e58e89e61` |
+| License | MIT, copyright Brian Vaughn |
+
+`upstream/source/` contains the byte-exact canonical `lib/` source and tests plus
+the package, TypeScript, and Vitest metadata needed to execute them.
+`upstream/npm/` contains the complete unpacked npm publication artifact. Both
+boundaries are development evidence, excluded from the published `files`, and
+locked file-by-file by `upstream/SHA256SUMS`.
+
+Run `pnpm --dir packages/react-resizable-panels upstream:verify` to reject a
+modified, missing, or extra vendored file and drift in the export, type, or test
+inventories. The verifier's negative-control mode proves each fail-closed path.
+
+## Public runtime export crosswalk
+
+All entries are explicit U1 gaps pending the behavior port: `Group`, `Panel`,
+`Separator`, `isCoarsePointer`, `useDefaultLayout`, `useGroupCallbackRef`,
+`useGroupRef`, `usePanelCallbackRef`, and `usePanelRef`. Their authoritative
+source modules and exact names are recorded in `audit/public-api.json`.
+
+## Public type crosswalk
+
+All 13 public types are explicit U1 gaps pending adapted declarations:
+`GroupImperativeHandle`, `GroupProps`, `Layout`, `LayoutChangedMeta`,
+`LayoutStorage`, `OnGroupLayoutChange`, `Orientation`, `OnPanelResize`,
+`PanelImperativeHandle`, `PanelProps`, `PanelSize`, `SizeUnit`, and
+`SeparatorProps`.
+
+The npm declaration imports React's node, intrinsic attribute, CSS, ref,
+dispatch/set-state, and JSX result types. `audit/type-expressibility.json` and
+`audit/type-probes/` preserve equal strictness by deriving host attributes, CSS,
+events, and refs from Octane's existing strict JSX intrinsic surface. Octane's
+type declarations intentionally derive that surface from React types, and
+`@types/react` is a normal dependency of `octane`; this type-only lineage is
+acceptable. The binding itself has no React runtime dependency and no required
+React or ReactDOM peer. It must not replace the intrinsic surface with a
+hand-written or `any`-based map.
+
+## Upstream test disposition
+
+The canonical `lib/` tree contains the exact test artifacts and registrations
+enumerated in `audit/test-inventory.json`. U1 classifies every artifact as
+`pending-adaptation`; none is silently skipped or counted as Octane evidence.
+Pristine, adapted, and server projects are registered now so subsequent units
+must replace the proof-first sentinel with executable parity evidence.
