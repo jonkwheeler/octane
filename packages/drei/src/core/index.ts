@@ -183,6 +183,10 @@ export { Trail, useTrail } from './Trail.three.tsrx';
 export type { MeshLineGeometry, TrailProps } from './Trail.three.tsrx';
 export { Environment, EnvironmentCube, EnvironmentMap, EnvironmentPortal } from './Environment.three.tsrx';
 export type { EnvironmentProps } from './Environment.three.tsrx';
+export { Text3D } from './Text3D.three.tsrx';
+export type { Text3DProps } from './Text3D.three.tsrx';
+export { Example } from './Example.three.tsrx';
+export type { ExampleApi, ExampleProps } from './Example.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
