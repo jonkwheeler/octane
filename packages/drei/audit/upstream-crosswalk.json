@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 313
+    "gaps": 303
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -2177,9 +2177,9 @@
         "path": "packages/drei/upstream/src/core/Mask.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/tests/simple-materials.test.ts"],
       "divergence": null
     },
     {
@@ -2190,9 +2190,9 @@
         "path": "packages/drei/upstream/src/core/Mask.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/typetests/simple-materials.test-d.ts"],
       "divergence": null
     },
     {
@@ -2268,9 +2268,9 @@
         "path": "packages/drei/upstream/src/core/MeshDiscardMaterial.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/tests/simple-materials.test.ts"],
       "divergence": null
     },
     {
@@ -2281,9 +2281,9 @@
         "path": "packages/drei/upstream/src/core/MeshDiscardMaterial.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/typetests/simple-materials.test-d.ts"],
       "divergence": null
     },
     {
@@ -2771,9 +2771,9 @@
         "path": "packages/drei/upstream/src/core/PointMaterial.tsx",
         "line": 37
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/tests/simple-materials.test.ts"],
       "divergence": null
     },
     {
@@ -2784,9 +2784,12 @@
         "path": "packages/drei/upstream/src/core/PointMaterial.tsx",
         "line": 9
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/simple-materials.test.ts",
+        "packages/drei/typetests/simple-materials.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2797,9 +2800,9 @@
         "path": "packages/drei/upstream/src/core/PointMaterial.tsx",
         "line": 35
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/typetests/simple-materials.test-d.ts"],
       "divergence": null
     },
     {
@@ -3293,9 +3296,9 @@
         "path": "packages/drei/upstream/src/core/ScreenQuad.tsx",
         "line": 19
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/tests/simple-materials.test.ts"],
       "divergence": null
     },
     {
@@ -3306,9 +3309,9 @@
         "path": "packages/drei/upstream/src/core/ScreenQuad.tsx",
         "line": 17
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": ["packages/drei/typetests/simple-materials.test-d.ts"],
       "divergence": null
     },
     {
@@ -4869,9 +4872,12 @@
         "path": "packages/drei/upstream/src/core/Mask.tsx",
         "line": 39
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/simple-materials.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/simple-materials.test.ts",
+        "packages/drei/typetests/simple-materials.test-d.ts"
+      ],
       "divergence": null
     },
     {

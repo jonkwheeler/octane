@@ -52,3 +52,17 @@ export { MultiMaterial } from './MultiMaterial.three.tsrx';
 export type { MultiMaterialProps } from './MultiMaterial.three.tsrx';
 export { useCamera } from './useCamera.three.tsrx';
 export { useIntersect } from './useIntersect.three.tsrx';
+export {
+	Mask,
+	MeshDiscardMaterial,
+	PointMaterial,
+	PointMaterialImpl,
+	ScreenQuad,
+	useMask,
+} from './simple-materials.three.tsrx';
+export type {
+	MaskProps,
+	MeshDiscardMaterialProps,
+	PointMaterialProps,
+	ScreenQuadProps,
+} from './simple-materials.three.tsrx';
