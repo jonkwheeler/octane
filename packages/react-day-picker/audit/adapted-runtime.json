@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-day-picker",
-  "roots": [
-    "packages/react-day-picker/tests"
-  ],
+  "roots": ["packages/react-day-picker/tests"],
   "files": [
     "packages/react-day-picker/tests/calendar.test.ts",
     "packages/react-day-picker/tests/exports.test.ts",
