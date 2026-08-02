@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 264
+    "gaps": 249
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -85,9 +85,9 @@
         "path": "packages/drei/upstream/src/core/ArcballControls.tsx",
         "line": 26
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -98,9 +98,9 @@
         "path": "packages/drei/upstream/src/core/ArcballControls.tsx",
         "line": 9
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -944,9 +944,9 @@
         "path": "packages/drei/upstream/src/core/DeviceOrientationControls.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -957,9 +957,9 @@
         "path": "packages/drei/upstream/src/core/DeviceOrientationControls.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -1421,9 +1421,9 @@
         "path": "packages/drei/upstream/src/core/FirstPersonControls.tsx",
         "line": 11
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -1434,9 +1434,9 @@
         "path": "packages/drei/upstream/src/core/FirstPersonControls.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -1499,9 +1499,9 @@
         "path": "packages/drei/upstream/src/core/FlyControls.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -1512,9 +1512,9 @@
         "path": "packages/drei/upstream/src/core/FlyControls.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -2063,9 +2063,9 @@
         "path": "packages/drei/upstream/src/core/MapControls.tsx",
         "line": 23
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -2076,9 +2076,9 @@
         "path": "packages/drei/upstream/src/core/MapControls.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -2563,9 +2563,9 @@
         "path": "packages/drei/upstream/src/core/OrbitControls.tsx",
         "line": 32
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -2576,9 +2576,9 @@
         "path": "packages/drei/upstream/src/core/OrbitControls.tsx",
         "line": 11
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -2589,9 +2589,9 @@
         "path": "packages/drei/upstream/src/core/OrbitControls.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {
@@ -4178,9 +4178,9 @@
         "path": "packages/drei/upstream/src/core/TrackballControls.tsx",
         "line": 24
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/tests/basic-controls.test.ts"],
       "divergence": null
     },
     {
@@ -4191,9 +4191,9 @@
         "path": "packages/drei/upstream/src/core/TrackballControls.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/basic-controls.three.tsrx",
+      "evidence": ["packages/drei/typetests/basic-controls.test-d.ts"],
       "divergence": null
     },
     {

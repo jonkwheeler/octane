@@ -91,6 +91,25 @@ export {
 	Line,
 	QuadraticBezierLine,
 } from './lines.three.tsrx';
+export {
+	ArcballControls,
+	DeviceOrientationControls,
+	FirstPersonControls,
+	FlyControls,
+	MapControls,
+	OrbitControls,
+	TrackballControls,
+} from './basic-controls.three.tsrx';
+export type {
+	ArcballControlsProps,
+	DeviceOrientationControlsProps,
+	FirstPersonControlsProps,
+	FlyControlsProps,
+	MapControlsProps,
+	OrbitControlsChangeEvent,
+	OrbitControlsProps,
+	TrackballControlsProps,
+} from './basic-controls.three.tsrx';
 export type {
 	CatmullRomLineProps,
 	CubicBezierLineProps,
