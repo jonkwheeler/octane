@@ -2038,6 +2038,16 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-spring-browser',
+					include: ['packages/react-spring/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+			},
+			{
+				test: {
 					name: 'dnd-kit',
 					include: [
 						'packages/dnd-kit/tests/conformance/**/*.test.ts',

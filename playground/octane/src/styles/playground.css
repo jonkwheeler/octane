@@ -259,6 +259,7 @@ pre.boom {
 	border-radius: var(--radius);
 }
 .react-spring-parallax {
+	position: relative;
 	height: 260px;
 	margin-top: 16px;
 	border: 1px solid var(--border);

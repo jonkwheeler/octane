@@ -39,6 +39,7 @@ export default defineConfig({
 			'@octanejs/radix',
 			'@octanejs/lucide',
 			'@octanejs/rainbowkit',
+			'@octanejs/react-spring',
 			'@octanejs/tanstack-query',
 			'@octanejs/wagmi',
 		],
