@@ -10,7 +10,10 @@ export function useSyncStatus(
 	const [, slot] = splitSlot(rest);
 	const { store } = options;
 	const [, rerender] = useState(0, subSlot(slot, 'sync:status'));
-	const current = useRef({ store, status: store.syncStatus() });
+	const current = useRef(
+		{ store, status: store.syncStatus() },
+		subSlot(slot, 'sync:current'),
+	);
 	if (current.current.store !== store) {
 		current.current = { store, status: store.syncStatus() };
 	}
