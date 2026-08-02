@@ -118,6 +118,8 @@ export { Shadow, ShadowAlpha } from './shadows.three.tsrx';
 export type { ShadowAlphaProps, ShadowProps, ShadowType } from './shadows.three.tsrx';
 export { Grid } from './Grid.three.tsrx';
 export type { GridMaterialType, GridProps } from './Grid.three.tsrx';
+export { Helper, useHelper } from './Helper.three.tsrx';
+export type { HelperProps } from './Helper.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
