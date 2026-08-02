@@ -76,6 +76,14 @@ export {
 	useCubeCamera,
 } from './cameras.three.tsrx';
 export { useDepthBuffer } from './useDepthBuffer.three.tsrx';
+export {
+	MatcapTexture,
+	NormalTexture,
+	useMatcapTexture,
+	useNormalTexture,
+} from './catalog-textures.three.tsrx';
+export { GradientTexture, GradientType } from './GradientTexture.three.tsrx';
+export type { GradientTextureProps } from './GradientTexture.three.tsrx';
 export type {
 	CubeCameraOptions,
 	CubeCameraProps,

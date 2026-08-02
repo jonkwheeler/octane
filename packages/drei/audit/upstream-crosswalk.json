@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 283
+    "gaps": 276
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -1645,9 +1645,9 @@
         "path": "packages/drei/upstream/src/core/GradientTexture.tsx",
         "line": 21
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GradientTexture.three.tsrx",
+      "evidence": ["packages/drei/tests/catalog-textures.test.ts"],
       "divergence": null
     },
     {
@@ -1658,9 +1658,9 @@
         "path": "packages/drei/upstream/src/core/GradientTexture.tsx",
         "line": 10
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GradientTexture.three.tsrx",
+      "evidence": ["packages/drei/typetests/catalog-textures.test-d.ts"],
       "divergence": null
     },
     {
@@ -1671,9 +1671,12 @@
         "path": "packages/drei/upstream/src/core/GradientTexture.tsx",
         "line": 5
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/gradient-types.ts",
+      "evidence": [
+        "packages/drei/tests/catalog-textures.test.ts",
+        "packages/drei/typetests/catalog-textures.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2203,9 +2206,9 @@
         "path": "packages/drei/upstream/src/core/MatcapTexture.tsx",
         "line": 53
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/catalog-textures.three.tsrx",
+      "evidence": ["packages/drei/tests/catalog-textures.test.ts"],
       "divergence": null
     },
     {
@@ -2518,9 +2521,9 @@
         "path": "packages/drei/upstream/src/core/NormalTexture.tsx",
         "line": 47
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/catalog-textures.three.tsrx",
+      "evidence": ["packages/drei/tests/catalog-textures.test.ts"],
       "divergence": null
     },
     {
@@ -4894,9 +4897,12 @@
         "path": "packages/drei/upstream/src/core/MatcapTexture.tsx",
         "line": 24
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/catalog-textures.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/catalog-textures.test.ts",
+        "packages/drei/typetests/catalog-textures.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4920,9 +4926,12 @@
         "path": "packages/drei/upstream/src/core/NormalTexture.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/catalog-textures.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/catalog-textures.test.ts",
+        "packages/drei/typetests/catalog-textures.test-d.ts"
+      ],
       "divergence": null
     },
     {
