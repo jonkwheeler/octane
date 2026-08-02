@@ -10,6 +10,7 @@ import {
 	detectVanillaCore,
 	scanSource,
 	KNOWN_BINDINGS,
+	KNOWN_VANILLA_CORES,
 	KNOWN_NATIVE_BINDINGS,
 	KNOWN_BINDING_PACKAGE_DIRS,
 } from './bridge.js';

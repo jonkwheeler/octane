@@ -31,13 +31,15 @@
   "types": "src/index.ts",
   "files": [
     "src",
-    "README.md"
+    "README.md",
+    "UPSTREAM.md"
   ],
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "upstream:verify": "cd upstream && shasum -a 256 -c SHA256SUMS"
   },
   "dependencies": {
     "alien-signals": "catalog:default"

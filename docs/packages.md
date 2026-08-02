@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**66 publishable package(s), including 52 framework binding(s) and 3 framework integration(s).**
+**67 publishable package(s), including 53 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22`.
 
@@ -14,6 +14,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | --- | --- | --- | --- | --- |
 | `@octanejs/adapter-cloudflare` | [`packages/adapter-cloudflare`](../packages/adapter-cloudflare) | deployment adapter | `0.0.13` | 1 |
 | `@octanejs/adapter-vercel` | [`packages/adapter-vercel`](../packages/adapter-vercel) | deployment adapter | `0.0.20` | 1 |
+| `@octanejs/alien-signals` | [`packages/alien-signals`](../packages/alien-signals) | framework binding | `0.0.1` | 1 |
 | `@octanejs/apollo-client` | [`packages/apollo-client`](../packages/apollo-client) | framework binding | `0.1.18` | 6 |
 | `@octanejs/app-core` | [`packages/app-core`](../packages/app-core) | metaframework core | `0.0.19` | 9 |
 | `@octanejs/aria` | [`packages/aria`](../packages/aria) | framework binding | `0.0.17` | 3 |
