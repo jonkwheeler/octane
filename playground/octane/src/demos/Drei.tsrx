@@ -9,7 +9,12 @@ export function DreiDemo() @{
 		</p>
 		<div
 			data-drei-playground="ready"
-			style={{ height: 'min(62vh, 560px)', minHeight: '360px', overflow: 'hidden', borderRadius: '12px' }}
+			style={{
+				height: 'min(62vh, 560px)',
+				minHeight: '360px',
+				overflow: 'hidden',
+				borderRadius: '12px',
+			}}
 		>
 			<Canvas camera={{ position: [4, 3, 6], fov: 45 }} dpr={[1, 2]}>
 				<DreiScene />
