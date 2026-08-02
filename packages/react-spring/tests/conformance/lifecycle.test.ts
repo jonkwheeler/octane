@@ -1,0 +1,88 @@
+import { raf } from '@react-spring/rafz';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { Controller, SpringValue } from '../../src/core/index';
+
+afterEach(() => {
+	raf.frameLoop = 'always';
+	vi.useRealTimers();
+});
+
+function advance(frames = 20): void {
+	const now = raf.now;
+	let time = now();
+	raf.now = () => (time += 10);
+	try {
+		for (let index = 0; index < frames; index++) raf.advance();
+	} finally {
+		raf.now = now;
+	}
+}
+
+describe('upstream lifecycle parity', () => {
+	it('freezes duration progress while paused and resumes the same start', async () => {
+		raf.frameLoop = 'demand';
+		const spring = new SpringValue(0);
+		const result = spring.start({ to: 1, config: { duration: 100 } });
+		advance(3);
+		const pausedAt = spring.get();
+		spring.pause();
+		advance(10);
+		expect(spring.get()).toBe(pausedAt);
+		spring.resume();
+		advance(20);
+		expect(await result).toMatchObject({ value: 1, finished: true, cancelled: false });
+	});
+
+	it('cancels a delayed update without firing lifecycle callbacks', async () => {
+		vi.useFakeTimers();
+		const onStart = vi.fn();
+		const onRest = vi.fn();
+		const spring = new SpringValue(0);
+		const result = spring.start({ to: 1, delay: 100, onStart, onRest });
+		spring.stop(true);
+		await vi.advanceTimersByTimeAsync(100);
+		expect(await result).toMatchObject({ finished: false, cancelled: true });
+		expect(onStart).not.toHaveBeenCalled();
+		expect(onRest).not.toHaveBeenCalled();
+	});
+
+	it('runs an async controller script in sequence', async () => {
+		const controller = new Controller({ from: { x: 0 } });
+		const result = await controller.start({
+			immediate: true,
+			to: async (next) => {
+				await next({ x: 1 });
+				await next({ x: 2 });
+			},
+		});
+		expect(result).toMatchObject({ value: { x: 2 }, finished: true, cancelled: false });
+	});
+
+	it('loops while the loop function returns an update', async () => {
+		const spring = new SpringValue(0);
+		let loops = 0;
+		const result = await spring.start({
+			from: 0,
+			to: 1,
+			immediate: true,
+			loop: () => (++loops < 2 ? { reset: true } : false),
+		});
+		expect(result.finished).toBe(true);
+		expect(loops).toBe(2);
+	});
+
+	it('fires immediate lifecycle callbacks in resolution order', async () => {
+		const calls: string[] = [];
+		const spring = new SpringValue(0);
+		const result = await spring.start({
+			to: 1,
+			immediate: true,
+			onStart: () => calls.push('start'),
+			onChange: () => calls.push('change'),
+			onRest: () => calls.push('rest'),
+			onResolve: () => calls.push('resolve'),
+		});
+		expect(result).toMatchObject({ value: 1, finished: true, cancelled: false });
+		expect(calls).toEqual(['start', 'change', 'rest', 'resolve']);
+	});
+});

@@ -13,11 +13,6 @@ export class BailSignal extends Error {
 	}
 }
 
-export abstract class FrameValue<T = unknown> {
-	abstract readonly idle: boolean;
-	abstract get(): T;
-}
-
 export const Globals = {
 	skipAnimation: false,
 	assign(values: { skipAnimation?: boolean }) {
