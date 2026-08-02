@@ -135,7 +135,7 @@
         {
           "path": "packages/shadcn/audit/test-classifications.json",
           "role": "support",
-          "sha256": "6d0754a4233c26646758ecc6125b2b2ee2ac3522798dd605b3a3a4924bb5fcf3"
+          "sha256": "2d74cfe418e8cdc5d0a3f3368ad872e11c9493b4a7e310d981e7405101706716"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -209,7 +209,7 @@
         {
           "path": "packages/shadcn/audit/test-classifications.json",
           "role": "support",
-          "sha256": "6d0754a4233c26646758ecc6125b2b2ee2ac3522798dd605b3a3a4924bb5fcf3"
+          "sha256": "2d74cfe418e8cdc5d0a3f3368ad872e11c9493b4a7e310d981e7405101706716"
         },
         {
           "path": "vitest.config.js",
