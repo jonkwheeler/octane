@@ -20,7 +20,7 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -65,26 +65,20 @@ function compileUpstream(name: string, ext: '.ts' | '.tsx'): void {
 
 function compileFixture(srcPath: string): void {
 	const source = readFileSync(srcPath, 'utf8');
-	let compiled;
-	try {
-		compiled = compileToReact(source, srcPath);
-	} catch {
-		return;
+	const compiled = compileToReact(source, srcPath);
+	if (compiled.errors && compiled.errors.length > 0) {
+		throw new Error(
+			`React differential precompile failed for ${srcPath}:\n${compiled.errors.join('\n')}`,
+		);
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
-	let transformed;
-	try {
-		transformed = esbuildTransformSync(compiled.code, {
-			loader: 'tsx',
-			jsx: 'automatic',
-			jsxImportSource: 'react',
-			target: 'esnext',
-			format: 'esm',
-			sourcefile: srcPath,
-		});
-	} catch {
-		return;
-	}
+	const transformed = esbuildTransformSync(compiled.code, {
+		loader: 'tsx',
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+		target: 'esnext',
+		format: 'esm',
+		sourcefile: srcPath,
+	});
 	// `@octanejs/shadcn` → the vendored pinned upstream barrel (shadcn has no npm
 	// runtime package to rewrite to); relative `src/bases/<base>/ui/*.tsrx`
 	// imports → the same barrel; `octane` → `react`. The base segment is matched
@@ -103,7 +97,8 @@ function compileFixture(srcPath: string): void {
 }
 
 export async function setup(): Promise<void> {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
 	compileUpstream('utils', '.ts');
 	compileUpstream('icon-placeholder', '.tsx');
 	compileUpstream('badge', '.tsx');
@@ -112,17 +107,7 @@ export async function setup(): Promise<void> {
 	compileUpstream('dialog', '.tsx');
 	compileUpstream('dropdown-menu', '.tsx');
 	compileUpstream('index', '.ts');
-	if (!existsSync(FIXTURE_DIR)) return;
-	const walk = (dir: string): string[] => {
-		const out: string[] = [];
-		for (const name of readdirSync(dir)) {
-			const full = join(dir, name);
-			if (statSync(full).isDirectory()) out.push(...walk(full));
-			else if (full.endsWith('.tsrx')) out.push(full);
-		}
-		return out;
-	};
-	for (const file of walk(FIXTURE_DIR)) compileFixture(file);
+	compileFixture(join(FIXTURE_DIR, 'shadcn-diff.tsrx'));
 }
 
 export async function teardown(): Promise<void> {

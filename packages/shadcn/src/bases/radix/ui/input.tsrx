@@ -1,5 +1,5 @@
 // Default-Tailwind (package canonical) input — user-supplied flavor, class string verbatim.
-// OCTANE DIVERGENCE: per-keystroke handling is the native onInput event.
+// OCTANE DIVERGENCE[shadcn-native-input-events][adapted:shadcn-native-input-events]: per-keystroke handling is the native onInput event.
 import { cn } from '../../../lib/utils';
 import type { HostProps } from '../../../lib/types';
 

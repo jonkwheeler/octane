@@ -425,7 +425,7 @@
         "The Base UI base's derived components carry unverified class strings. This is tracked rather than assumed safe: the bases genuinely diverge (the radix base's Skeleton is `bg-accent` where react-aria's is `bg-muted`), so identity is verified per component. `badge` was deliberately NOT derived — the react-aria version takes `render` as a function while Base UI's takes an element, so deriving it would ship the wrong API."
       ],
       "ssr": "Tier 1 is fully server-rendered and tested (17 families through renderToString with no browser globals, including Slot-composed hosts), with hydration adoption pinned for representative shapes (plain host, Button-asChild anchor, nested Table) — zero mismatch, preserved node identity. Tier 2's portal-free components (Checkbox, RadioGroup, Switch, Slider, Tabs, Toggle, ToggleGroup, Accordion, Collapsible, AspectRatio, Progress) are server-rendered and tested. Field is SSR-safe (no portals/browser globals); Sidebar server-renders its static desktop branch (useIsMobile is false on the server; the mobile Sheet branch and tooltip portals are client-only). Portal-backed overlays/menus/Select are excluded until the radix binding supports overlay SSR; ScrollArea awaits verification of its viewport style injection on the server.",
-      "verified": "2026-08-01"
+      "verified": "2026-08-02"
     },
     {
       "name": "@octanejs/sonner",
