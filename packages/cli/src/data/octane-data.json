@@ -785,6 +785,7 @@
     "@rainbow-me/rainbowkit": "@octanejs/rainbowkit",
     "@react-rxjs/core": "@octanejs/rxjs",
     "@react-rxjs/utils": "@octanejs/rxjs",
+    "@react-three/drei": "@octanejs/drei",
     "@react-three/fiber": "@octanejs/three",
     "@reduxjs/toolkit": "@octanejs/redux-toolkit",
     "@streamdown/cjk": "@octanejs/streamdown",

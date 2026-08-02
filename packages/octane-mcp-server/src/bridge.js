@@ -59,6 +59,7 @@ export const KNOWN_BINDINGS = {
 	shadcn: '@octanejs/shadcn',
 	recharts: '@octanejs/recharts',
 	'@react-three/fiber': '@octanejs/three',
+	'@react-three/drei': '@octanejs/drei',
 	'@visx/visx': '@octanejs/visx',
 	'@visx/a11y': '@octanejs/visx',
 	'@visx/a11y/react': '@octanejs/visx',
