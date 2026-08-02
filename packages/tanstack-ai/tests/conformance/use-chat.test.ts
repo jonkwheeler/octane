@@ -197,6 +197,8 @@ describe('useChat', () => {
 			expect(typeof messageId).toBe('string');
 		});
 
+		// OCTANE DIVERGENCE[tanstack-ai-octane-id-lifecycle][adapted:tanstack-ai-octane-id-lifecycle]
+		// @parity-case adapted:tanstack-ai-octane-id-lifecycle
 		it('should generate id if not provided', async () => {
 			const chunks = createTextChunks('Response');
 			const adapter = createMockConnectionAdapter({ chunks });
@@ -965,7 +967,7 @@ describe('useChat', () => {
 				chunks: createTextChunks('strict response'),
 			});
 
-			// OCTANE DIVERGENCE: Octane has no StrictMode double-invoke
+			// OCTANE DIVERGENCE[tanstack-ai-octane-id-lifecycle][adapted:tanstack-ai-octane-id-lifecycle]
 			const { result } = renderHook(() =>
 				useChat({
 					connection: adapter,

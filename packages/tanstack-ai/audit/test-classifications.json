@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/tanstack-ai/tests/conformance/exports.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the Octane root export surface; it is not a React runtime oracle."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-audio-recorder.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the Octane media lifecycle; it is not a React runtime oracle."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-chat-fetcher.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-live-chat-transport",
+      "reason": "Authenticates transport replacement while retaining conversation state."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-chat-options-probe.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the Octane option type contract at runtime; it is not a React oracle."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-chat-structured-output.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane structured-output state; it is not a React runtime oracle."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-chat.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-octane-id-lifecycle",
+      "reason": "Contains the exact Octane identifier and effect-lifecycle contract."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-generation.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-devtools-framework",
+      "reason": "Executes the client initialization path that identifies the Octane framework."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-mcp-app-bridge.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the portable MCP bridge hook; it is not a React runtime oracle."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/use-realtime-chat.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-live-realtime-options",
+      "reason": "Authenticates current realtime callbacks, authentication, and adapters."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs one exact same-fixture streamed-chat scenario against @tanstack/ai-react@0.17.0."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/divergences.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-no-mcp-app-resource",
+      "reason": "Authenticates the omitted React-only MCP renderer and unavailable auto-resume API."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane server rendering; it is not compared with React SSR."
+    }
+  ]
+}

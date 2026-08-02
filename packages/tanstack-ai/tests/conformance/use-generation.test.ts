@@ -98,6 +98,8 @@ function createErrorChunks(message: string): Array<StreamChunk> {
 
 describe('useGeneration', () => {
 	describe('initialization', () => {
+		// OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
+		// @parity-case adapted:tanstack-ai-devtools-framework
 		it('should initialize with default state', () => {
 			const adapter = createMockConnectionAdapter();
 			const { result } = renderHook(() => useGeneration({ connection: adapter }));

@@ -26,6 +26,8 @@ describe('useChat — fetcher transport', () => {
 		expect(textPart && 'content' in textPart && textPart.content).toBe('Hello world');
 	});
 
+	// OCTANE DIVERGENCE[tanstack-ai-live-chat-transport][adapted:tanstack-ai-live-chat-transport]
+	// @parity-case adapted:tanstack-ai-live-chat-transport
 	it('uses an updated fetcher without losing conversation state', async () => {
 		const firstFetcher = vi.fn<ChatFetcher>(async function* () {
 			yield* createTextChunks('First response', 'first-response');
