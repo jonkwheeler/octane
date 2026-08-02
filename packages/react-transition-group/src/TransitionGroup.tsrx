@@ -60,9 +60,7 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 			? renderedChildren
 			: createElement(component, wrapperProps, ...renderedChildren);
 
-	<TransitionGroupContext.Provider
-		value={{ isMounting }}
-	>{output}</TransitionGroupContext.Provider>
+	<TransitionGroupContext.Provider value={{ isMounting }}>{output}</TransitionGroupContext.Provider>
 }
 
 export default TransitionGroup;
