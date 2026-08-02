@@ -153,6 +153,8 @@ export { PositionalAudio } from './PositionalAudio.three.tsrx';
 export type { PositionalAudioProps } from './PositionalAudio.three.tsrx';
 export { AsciiRenderer } from './AsciiRenderer.three.tsrx';
 export type { AsciiRendererProps } from './AsciiRenderer.three.tsrx';
+export { TransformControls } from './TransformControls.three.tsrx';
+export type { TransformControlsProps } from './TransformControls.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
