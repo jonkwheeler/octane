@@ -18,3 +18,9 @@ export function FboScene(props) @{
 		}}
 	/>
 }
+
+export function FboBlockScene() @{
+	<Fbo>
+		<group name="fbo-block-child" />
+	</Fbo>
+}

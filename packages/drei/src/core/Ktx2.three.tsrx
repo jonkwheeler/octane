@@ -1,10 +1,10 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
 import { useLoader, useThree } from '@octanejs/three';
 import { useEffect } from '@octanejs/three/renderer';
-import type { OctaneNode } from 'octane';
 import type { Texture } from 'three';
 import { KTX2Loader } from 'three-stdlib';
 import { IsObject } from './Texture.three.tsrx';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 const cdn = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master';
 
@@ -46,12 +46,12 @@ export function Ktx2({
 	input,
 	basisPath,
 }: {
-	children?: (texture: ReturnType<typeof useKTX2>) => OctaneNode;
+	children?: RenderChildren<ReturnType<typeof useKTX2>>;
 	input: Parameters<typeof useKTX2>[0];
 	basisPath?: Parameters<typeof useKTX2>[1];
 }) @{
 	const texture = useKTX2(input, basisPath);
 	<>
-		{children?.(texture)}
+		{resolveRenderChildren(children, texture)}
 	</>
 }

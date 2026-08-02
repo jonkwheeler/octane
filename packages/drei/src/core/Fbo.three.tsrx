@@ -1,6 +1,7 @@
 import { useThree } from '@octanejs/three';
 import { useEffect, useLayoutEffect, useMemo } from '@octanejs/three/renderer';
 import * as THREE from 'three';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 type FBOSettings =
 	{
@@ -44,7 +45,7 @@ type FBO = ReturnType<typeof useFBO>;
 
 export type FboProps =
 	{
-		children?: (target: FBO) => unknown;
+		children?: RenderChildren<FBO>;
 		width?: UseFBOParams[0];
 		height?: UseFBOParams[1];
 	} & FBOSettings;
@@ -61,7 +62,5 @@ export function Fbo({ children, width, height, ref, ...settings }: FboProps & {
 			else if (ref) ref.current = null;
 		};
 	}, [ref, target]);
-	{
-		children?.(target);
-	}
+	<>{resolveRenderChildren(children, target)}</>
 }

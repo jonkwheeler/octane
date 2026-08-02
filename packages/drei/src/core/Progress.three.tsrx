@@ -1,7 +1,7 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
 import { create } from '@octanejs/zustand/universal';
-import type { OctaneNode } from 'octane';
 import { DefaultLoadingManager } from 'three';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 interface Data {
 	errors: string[];
@@ -39,9 +39,9 @@ export const useProgress = /* @__PURE__ */ create<Data>((set) => {
 	return { errors: [], active: false, progress: 0, item: '', loaded: 0, total: 0 };
 });
 
-export function Progress({ children }: { children?: (result: Data) => OctaneNode }) @{
+export function Progress({ children }: { children?: RenderChildren<Data> }) @{
 	const result = useProgress();
 	<>
-		{children?.(result)}
+		{resolveRenderChildren(children, result)}
 	</>
 }

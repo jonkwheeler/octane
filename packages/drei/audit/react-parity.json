@@ -59,12 +59,12 @@
         {
           "path": "packages/drei/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "47e9c5979ce7cadcb56adad599aef4bf351be1ce896a8a164f00d19cd46318b4"
+          "sha256": "8ef6c25b0437123355f7eba75d4523aa123f2ce897217e22d26b75700373c3c9"
         },
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "6bfb177dccea620cdfb54638a5c1f90b7dce483d2f82530ca9fbae0a9c7cf18a"
+          "sha256": "76be5f7086e47d6a8ff601a5ab8bf2874989a316c914d38d650dc336d5028f9a"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",

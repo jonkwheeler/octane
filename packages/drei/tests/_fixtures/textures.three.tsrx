@@ -13,6 +13,20 @@ export function TextureBoundary(props) @{
 	}
 }
 
+function LoadedTextureBlock(props) @{
+	<Texture input={props.input}>
+		<group name="texture-block-child" />
+	</Texture>
+}
+
+export function TextureBlockBoundary(props) @{
+	@try {
+		<LoadedTextureBlock {...props} />
+	} @pending {
+		<group name="loading" />
+	}
+}
+
 function LoadedCubeTexture(props) @{
 	<CubeTexture files={props.files} path={props.path} children={props.children} />
 }

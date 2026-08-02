@@ -595,6 +595,11 @@
       "fullName": "framebuffer objects matches viewport-sized targets and resize behavior"
     },
     {
+      "id": "runtime:162169d047bda7d6",
+      "file": "packages/drei/tests/fbo.test.ts",
+      "fullName": "framebuffer objects renders natural TSRX block children without invoking them as render props"
+    },
+    {
       "id": "runtime:d09c2bd8afd018ae",
       "file": "packages/drei/tests/fisheye.test.ts",
       "fullName": "Fisheye matches React radius, sphere segments, cube texture projection, portal ownership, and camera synchronization"
@@ -983,6 +988,11 @@
       "id": "runtime:a2f6b0db3eb95f3f",
       "file": "packages/drei/tests/progress.test.ts",
       "fullName": "Progress and useProgress matches the pinned React Drei loading-manager state and render-prop output"
+    },
+    {
+      "id": "runtime:f56fe7ca1d35e5cb",
+      "file": "packages/drei/tests/progress.test.ts",
+      "fullName": "Progress and useProgress renders natural TSRX block children without invoking them as render props"
     },
     {
       "id": "runtime:ea39846ba1a55ada",
@@ -1483,6 +1493,11 @@
       "id": "runtime:3b38d50071cff5cc",
       "file": "packages/drei/tests/textures.test.ts",
       "fullName": "Texture and useTexture matches the pinned React Drei oracle for single input"
+    },
+    {
+      "id": "runtime:b097e6fac08b1350",
+      "file": "packages/drei/tests/textures.test.ts",
+      "fullName": "Texture and useTexture renders natural TSRX block children without invoking them as render props"
     },
     {
       "id": "runtime:d1b0c362dd3f2833",

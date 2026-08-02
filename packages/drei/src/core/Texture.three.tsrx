@@ -1,8 +1,8 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
 import { useLoader, useThree } from '@octanejs/three';
 import { useEffect, useLayoutEffect, useMemo } from '@octanejs/three/renderer';
-import type { OctaneNode } from 'octane';
 import { Texture as ThreeTexture, TextureLoader } from 'three';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 export const IsObject = (url: unknown): url is Record<string, string> =>
 	url === Object(url) && !Array.isArray(url) && typeof url !== 'function';
@@ -59,12 +59,12 @@ export function Texture({
 	input,
 	onLoad,
 }: {
-	children?: (texture: ReturnType<typeof useTexture>) => OctaneNode;
+	children?: RenderChildren<ReturnType<typeof useTexture>>;
 	input: Parameters<typeof useTexture>[0];
 	onLoad?: Parameters<typeof useTexture>[1];
 }) @{
 	const texture = useTexture(input, onLoad);
 	<>
-		{children?.(texture)}
+		{resolveRenderChildren(children, texture)}
 	</>
 }

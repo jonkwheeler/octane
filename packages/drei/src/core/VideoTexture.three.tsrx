@@ -3,8 +3,8 @@ import { type ThreeRef, useThree } from '@octanejs/three';
 import { use, useEffect, useLayoutEffect, useRef } from '@octanejs/three/renderer';
 import type Hls from 'hls.js';
 import { Events } from 'hls.js';
-import type { OctaneNode } from 'octane';
 import * as THREE from 'three';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 import { resourcePromise } from './resource.js';
 import { getHls, IS_BROWSER } from './video-texture-resource.js';
 
@@ -90,7 +90,7 @@ export function useVideoTexture(
 }
 
 export type VideoTextureProps = {
-	children?: (texture: THREE.VideoTexture) => OctaneNode;
+	children?: RenderChildren<THREE.VideoTexture>;
 	src: Parameters<typeof useVideoTexture>[0];
 	ref?: ThreeRef<THREE.VideoTexture>;
 } & Parameters<typeof useVideoTexture>[1];
@@ -109,6 +109,6 @@ export function VideoTexture({ children, src, ref, ...config }: VideoTextureProp
 		return () => assignRef(ref, null);
 	}, [ref, texture]);
 	<>
-		{children?.(texture)}
+		{resolveRenderChildren(children, texture)}
 	</>
 }

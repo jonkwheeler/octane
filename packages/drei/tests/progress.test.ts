@@ -9,7 +9,7 @@ import { DefaultLoadingManager, NoToneMapping, SRGBColorSpace, type WebGLRendere
 import * as THREE from 'three';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { useProgress as octaneUseProgress } from '../src/index.js';
-import { ProgressScene } from './_fixtures/progress.three.tsrx';
+import { ProgressBlockScene, ProgressScene } from './_fixtures/progress.three.tsrx';
 
 const previousActEnvironment = (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean })
 	.IS_REACT_ACT_ENVIRONMENT;
@@ -47,6 +47,12 @@ function renderer(canvas: HTMLCanvasElement): WebGLRenderer {
 }
 
 describe('Progress and useProgress', () => {
+	it('renders natural TSRX block children without invoking them as render props', async () => {
+		const root = await createOctaneThree(ProgressBlockScene);
+		expect(root.scene.getObjectByName('progress-block-child')).toBeDefined();
+		root.unmount();
+	});
+
 	it('matches the pinned React Drei loading-manager state and render-prop output', async () => {
 		const ReactDrei = await import('@react-three/drei');
 		ReactDrei.useProgress.setState({

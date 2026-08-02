@@ -1,10 +1,13 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
 import { type ThreeElements, type ThreeRef, useFrame, useThree } from '@octanejs/three';
-import type { OctaneNode } from 'octane';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from '@octanejs/three/renderer';
 import * as THREE from 'three';
 import { useFBO } from './Fbo.three.tsrx';
-import { isRenderFunction } from './octane-children.js';
+import {
+	isRenderFunction,
+	resolveRenderChildren,
+	type RenderChildren,
+} from './octane-children.js';
 
 function assignRef<T>(ref: ThreeRef<T> | undefined, value: T | null): void {
 	if (Array.isArray(ref)) for (const item of ref) assignRef(item, value);
@@ -12,7 +15,7 @@ function assignRef<T>(ref: ThreeRef<T> | undefined, value: T | null): void {
 	else if (ref && 'current' in ref) ref.current = value;
 }
 
-type CameraChildren = OctaneNode | ((texture: THREE.Texture) => OctaneNode);
+type CameraChildren = RenderChildren<THREE.Texture>;
 
 export type PerspectiveCameraProps =
 	Omit<ThreeElements['perspectiveCamera'], 'ref' | 'children'> & {
@@ -195,7 +198,7 @@ export function useCubeCamera(
 
 export type CubeCameraProps =
 	Omit<ThreeElements['group'], 'children'> & CubeCameraOptions & {
-		children?: (texture: THREE.Texture) => OctaneNode;
+		children?: CameraChildren;
 		frames?: number;
 	};
 
@@ -222,8 +225,6 @@ export function CubeCamera({
 	});
 	<group {...props}>
 		<primitive object={camera} />
-		<group ref={ref}>
-			{children?.(fbo.texture)}
-		</group>
+		<group ref={ref}>{resolveRenderChildren(children, fbo.texture)}</group>
 	</group>
 }

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, use } from '@octanejs/three/renderer';
-import type { OctaneNode } from 'octane';
 import { RepeatWrapping, type Texture, Vector2 } from 'three';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 import { resourcePromise } from './resource.js';
 import { useTexture } from './Texture.three.tsrx';
 import {
@@ -51,15 +51,13 @@ export function MatcapTexture({
 	format,
 	onLoad,
 }: {
-	children?: (texture: ReturnType<typeof useMatcapTexture>) => OctaneNode;
+	children?: RenderChildren<ReturnType<typeof useMatcapTexture>>;
 	id?: Parameters<typeof useMatcapTexture>[0];
 	format?: Parameters<typeof useMatcapTexture>[1];
 	onLoad?: Parameters<typeof useMatcapTexture>[2];
 }) @{
 	const texture = useMatcapTexture(id, format, onLoad);
-	{
-		children?.(texture);
-	}
+	<>{resolveRenderChildren(children, texture)}</>
 }
 
 type Settings = {
@@ -91,12 +89,10 @@ export function useNormalTexture(
 }
 
 export function NormalTexture({ children, id, onLoad, ...settings }: {
-	children?: (texture: ReturnType<typeof useNormalTexture>) => OctaneNode;
+	children?: RenderChildren<ReturnType<typeof useNormalTexture>>;
 	id?: Parameters<typeof useNormalTexture>[0];
 	onLoad?: Parameters<typeof useNormalTexture>[2];
 } & Settings) @{
 	const value = useNormalTexture(id, settings, onLoad);
-	{
-		children?.(value);
-	}
+	<>{resolveRenderChildren(children, value)}</>
 }

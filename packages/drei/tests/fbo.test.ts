@@ -9,7 +9,7 @@ import { Fbo as ReactFbo, useFBO as reactUseFBO } from '@react-three/drei/core/F
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { FboScene, UseFBOScene } from './_fixtures/fbo.three.tsrx';
+import { FboBlockScene, FboScene, UseFBOScene } from './_fixtures/fbo.three.tsrx';
 
 function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 	return {
@@ -63,6 +63,12 @@ function snapshot(target: THREE.WebGLRenderTarget) {
 }
 
 describe('framebuffer objects', () => {
+	it('renders natural TSRX block children without invoking them as render props', async () => {
+		const root = await createOctaneThree(FboBlockScene);
+		expect(root.scene.getObjectByName('fbo-block-child')).toBeDefined();
+		root.unmount();
+	});
+
 	it('matches explicit dimensions, defaults, multisampling, and depth aliases', async () => {
 		let reactTarget!: THREE.WebGLRenderTarget;
 		function ReactHook() {

@@ -1,8 +1,8 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
 import { useFrame } from '@octanejs/three';
 import { useCallback, useMemo } from '@octanejs/three/renderer';
-import type { OctaneNode } from 'octane';
 import { Texture } from 'three';
+import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 type Point = { x: number; y: number; age: number; force: number };
 
@@ -158,12 +158,12 @@ export function useTrailTexture(
 }
 
 export type TrailTextureProps = {
-	children?: (texture: ReturnType<typeof useTrailTexture>) => OctaneNode;
+	children?: RenderChildren<ReturnType<typeof useTrailTexture>>;
 } & TrailConfig;
 
 export function TrailTexture({ children, ...config }: TrailTextureProps) @{
 	const result = useTrailTexture(config);
 	<>
-		{children?.(result)}
+		{resolveRenderChildren(children, result)}
 	</>
 }

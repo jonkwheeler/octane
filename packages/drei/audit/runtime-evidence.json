@@ -208,9 +208,9 @@
     },
     {
       "path": "packages/drei/tests/fbo.test.ts",
-      "sha256": "e54729bf3476aef831c11f3cc62b870ba6ef6979cdfcc9e893f02150db4cebb8",
-      "assertionCount": 3,
-      "assertionInventorySha256": "34d34028aa24b563cb81fb252d46f3d70f126356f16983c92dcd016571bdfd95"
+      "sha256": "1a70e287f8e08e65537fab6039b87ba5b2599d3edfb36592b3b7ba4530b12fea",
+      "assertionCount": 4,
+      "assertionInventorySha256": "d1e373035c086e9ca2f9b603b666802acb2b803ec099a4914baa9d5d6a3fe569"
     },
     {
       "path": "packages/drei/tests/fisheye.test.ts",
@@ -400,9 +400,9 @@
     },
     {
       "path": "packages/drei/tests/progress.test.ts",
-      "sha256": "7282adcfd16bb68924200e7aa34eeed8321ce7e5807a0567be06db40fece3557",
-      "assertionCount": 1,
-      "assertionInventorySha256": "056ee81682f5352027fefbd6cdad1b4c7be9f1a06c2631ecb3c1384e42d5bcf0"
+      "sha256": "fa320a801d90614f4e02842ebfd087678ea1f75e83de3f9d2b4ac8c8c17670ee",
+      "assertionCount": 2,
+      "assertionInventorySha256": "a5178d52ed69cf229726a7ebc3bc40cb52df99315fcdf9612cb01065eedda9c9"
     },
     {
       "path": "packages/drei/tests/react-parity-guard.test.ts",
@@ -574,9 +574,9 @@
     },
     {
       "path": "packages/drei/tests/textures.test.ts",
-      "sha256": "93d9cd15a754b086abcbcdb2afc34a622cf6f11f163ceb2ad16e95afc44b4e8a",
-      "assertionCount": 8,
-      "assertionInventorySha256": "bb57f5e9c090904997f9a48a238d7b5c3b81c0eb25626e2d8825e5800e0f04dc"
+      "sha256": "5d179d5b0db7a4cc2f474b62875b89f795f47fe1b460b36658ac6007d135105b",
+      "assertionCount": 9,
+      "assertionInventorySha256": "d2464aa89e6401fc05833efed598e4ca2bf271c3056ebadc6a9ab83442ff9cf7"
     },
     {
       "path": "packages/drei/tests/trail-texture.test.ts",
