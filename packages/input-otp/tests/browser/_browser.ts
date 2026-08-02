@@ -18,7 +18,7 @@ export let page: import('playwright').Page;
 
 export async function goto(path: string): Promise<void> {
 	await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
-	await page.locator('[data-ready="true"]').waitFor();
+	await page.locator('[data-ready="true"]').waitFor({ state: 'attached', timeout: 5_000 });
 }
 
 function getFreePort(): Promise<number> {
@@ -42,10 +42,12 @@ export function setupBrowser(path = '/base'): void {
 			logLevel: 'error',
 			server: { host: '127.0.0.1', port, strictPort: true },
 			plugins: [octane()],
-			resolve: { alias: [
-				{ find: /^@octanejs\/input-otp$/, replacement: bindingSource },
-				{ find: /^octane$/, replacement: octaneSource },
-			] },
+			resolve: {
+				alias: [
+					{ find: /^@octanejs\/input-otp$/, replacement: bindingSource },
+					{ find: /^octane$/, replacement: octaneSource },
+				],
+			},
 		});
 		await viteServer.listen();
 		origin = `http://127.0.0.1:${port}`;
@@ -54,12 +56,16 @@ export function setupBrowser(path = '/base'): void {
 		pageErrors = [];
 		context = await browser.newContext({ viewport: { width: 900, height: 700 } });
 		page = await context.newPage();
-		page.on('pageerror', (error) => pageErrors.push(error.message));
+		page.on('pageerror', (error) => pageErrors.push(error.stack ?? error.message));
 		await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
-		await page.locator('[data-ready="true"]').waitFor();
+		await page.locator('[data-ready="true"]').waitFor({ state: 'attached', timeout: 5_000 });
 	});
 	afterEach(async () => {
-		try { expect(pageErrors).toEqual([]); } finally { await context.close(); }
+		try {
+			expect(pageErrors).toEqual([]);
+		} finally {
+			await context.close();
+		}
 	});
 	afterAll(async () => {
 		await browser?.close().catch(() => {});

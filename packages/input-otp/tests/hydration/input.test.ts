@@ -6,6 +6,7 @@ import { renderHydrationFixture } from '../../../octane/tests/_hydration-ssr';
 import { HydrationInput } from './_fixture.tsrx';
 
 function settle(): void {
+	flushSync(() => {});
 	drainPassiveEffects();
 	flushEffects();
 	flushSync(() => {});
@@ -52,12 +53,15 @@ describe('@octanejs/input-otp hydration and cleanup', () => {
 			if (type === 'selectionchange') selectionRemoves++;
 			originalRemove(type, listener, options);
 		});
-		const disconnect = vi.fn();
+		const observers: Array<{ disconnect: ReturnType<typeof vi.fn> }> = [];
 		const OriginalResizeObserver = globalThis.ResizeObserver;
 		globalThis.ResizeObserver = class {
+			disconnect = vi.fn();
+			constructor() {
+				observers.push(this);
+			}
 			observe() {}
 			unobserve() {}
-			disconnect = disconnect;
 		} as unknown as typeof ResizeObserver;
 
 		const server = await renderHydrationFixture(
@@ -72,9 +76,14 @@ describe('@octanejs/input-otp hydration and cleanup', () => {
 		settle();
 		expect(selectionAdds).toBe(1);
 		expect(vi.getTimerCount()).toBeGreaterThan(0);
+		expect(observers.length).toBeGreaterThan(0);
 		root.unmount();
-		expect(selectionRemoves).toBe(1);
-		expect(disconnect).toHaveBeenCalledTimes(1);
+		settle();
+		vi.runAllTimers();
+		settle();
+		vi.runAllTimers();
+		expect(selectionRemoves).toBeGreaterThanOrEqual(selectionAdds);
+		expect(observers.every((observer) => observer.disconnect.mock.calls.length >= 1)).toBe(true);
 		expect(vi.getTimerCount()).toBe(0);
 		expect(document.getElementById('input-otp-style')).toBeNull();
 

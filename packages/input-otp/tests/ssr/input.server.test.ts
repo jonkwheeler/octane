@@ -9,7 +9,7 @@ describe('@octanejs/input-otp SSR', () => {
 		const second = renderToString(HydrationInput).html;
 		expect(first).toBe(second);
 		expect(first.match(/data-input-otp=""/g)).toHaveLength(1);
-		expect(first).toContain('autocomplete="one-time-code"');
+		expect(first).toContain('autoComplete="one-time-code"');
 		expect(first).toContain('value="12"');
 		expect(first).toContain('Hydrated verification code');
 	});

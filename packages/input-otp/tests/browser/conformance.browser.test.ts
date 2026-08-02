@@ -23,7 +23,9 @@ it('detects known and geometry-derived password-manager badges and increases wid
 		document.body.appendChild(badge);
 	});
 	await input.focus();
-	await expect.poll(() => input.evaluate((element) => element.style.width)).toContain('+ 40px');
+	await expect
+		.poll(() => input.evaluate((element) => element.style.width), { timeout: 7_000 })
+		.toContain('+ 40px');
 
 	await goto('/base');
 	await page.evaluate(() => {
@@ -31,7 +33,9 @@ it('detects known and geometry-derived password-manager badges and increases wid
 	});
 	const geometryInput = page.getByRole('textbox');
 	await geometryInput.focus();
-	await expect.poll(() => geometryInput.evaluate((element) => element.style.width)).toContain('+ 40px');
+	await expect
+		.poll(() => geometryInput.evaluate((element) => element.style.width), { timeout: 7_000 })
+		.toContain('+ 40px');
 });
 
 it('does not push a badge without viewport space or when strategy is none', async () => {

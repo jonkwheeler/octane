@@ -15,6 +15,8 @@ it('should expose focus flags', async () => {
 it('should expose hover flags', async () => {
 	const renderer = page.getByTestId('input-otp-renderer');
 	expect(await renderer.getAttribute('data-test-render-is-hovering')).toBeNull();
-	await renderer.hover();
-	expect(await renderer.getAttribute('data-test-render-is-hovering')).toBe('true');
+	const rect = await renderer.boundingBox();
+	expect(rect).not.toBeNull();
+	await page.mouse.move(rect!.x + rect!.width / 2, rect!.y + rect!.height / 2);
+	await expect.poll(() => renderer.getAttribute('data-test-render-is-hovering')).toBe('true');
 });

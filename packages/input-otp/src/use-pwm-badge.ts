@@ -73,6 +73,7 @@ export function usePasswordManagerBadge(
 			}
 
 			const bounds = container.getBoundingClientRect();
+			setHasPWMBadgeSpace(window.innerWidth - bounds.right >= PWM_BADGE_SPACE_WIDTH_PX);
 			const x = bounds.left + container.offsetWidth - PWM_BADGE_MARGIN_RIGHT;
 			const y = bounds.top + container.offsetHeight / 2;
 			const knownBadges = document.querySelectorAll(PASSWORD_MANAGERS_SELECTORS);

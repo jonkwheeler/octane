@@ -18,6 +18,7 @@ import { usePrevious } from './use-previous';
 import { usePasswordManagerBadge } from './use-pwm-badge';
 
 export const OTPInputContext = createContext<RenderProps>({} as RenderProps);
+const PASSWORD_MANAGER_BADGE_SLOT = Symbol('input-otp:password-manager-badge');
 
 export function OTPInput(props: OTPInputProps) {
 	const {
@@ -52,13 +53,10 @@ export function OTPInput(props: OTPInputProps) {
 	);
 	const value = controlledValue ?? internalValue;
 	const previousValue = usePrevious(value);
-	const onChange = useCallback(
-		(newValue: string) => {
-			consumerOnChange?.(newValue);
-			setInternalValue(newValue);
-		},
-		[consumerOnChange],
-	);
+	const onChange = useCallback((newValue: string) => {
+		consumerOnChange?.(newValue);
+		setInternalValue(newValue);
+	}, [consumerOnChange]);
 	const regexp = useMemo(
 		() => (pattern ? (typeof pattern === 'string' ? new RegExp(pattern) : pattern) : null),
 		[pattern],
@@ -69,8 +67,7 @@ export function OTPInput(props: OTPInputProps) {
 	const initialLoadRef = useRef({
 		value,
 		onChange,
-		isIOS:
-			typeof window !== 'undefined' &&
+		isIOS: typeof window !== 'undefined' &&
 			window.CSS?.supports?.('-webkit-touch-callout', 'none') === true,
 	});
 	const inputMetadataRef = useRef<{
@@ -119,7 +116,7 @@ export function OTPInput(props: OTPInputProps) {
 				const isSingleCaret = selectionStart === selectionEnd;
 				const isInsertMode =
 					selectionStart === mountedInput.value.length &&
-					mountedInput.value.length < mountedInput.maxLength;
+						mountedInput.value.length < mountedInput.maxLength;
 				if (isSingleCaret && !isInsertMode) {
 					const caret = selectionStart;
 					if (caret === 0) {
@@ -147,8 +144,10 @@ export function OTPInput(props: OTPInputProps) {
 				}
 			}
 
-			const nextStart = start !== -1 ? start : selectionStart;
-			const nextEnd = end !== -1 ? end : selectionEnd;
+			const nextStart =
+				start !== -1 ? start : selectionStart;
+			const nextEnd =
+				end !== -1 ? end : selectionEnd;
 			setMirrorSelectionStart(nextStart);
 			setMirrorSelectionEnd(nextEnd);
 			inputMetadataRef.current.prev = [
@@ -170,12 +169,13 @@ export function OTPInput(props: OTPInputProps) {
 		const resizeObserver =
 			typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateRootHeight);
 		resizeObserver?.observe(input);
+		const disconnectResizeObserver = () => resizeObserver?.disconnect();
 
 		return () => {
 			document.removeEventListener('selectionchange', onDocumentSelectionChange, {
 				capture: true,
 			});
-			resizeObserver?.disconnect();
+			disconnectResizeObserver();
 			releaseInputStyles();
 		};
 	}, []);
@@ -198,21 +198,22 @@ export function OTPInput(props: OTPInputProps) {
 
 	useEffect(() => {
 		if (
-			previousValue !== undefined &&
-			value !== previousValue &&
-			previousValue.length < maxLength &&
-			value.length === maxLength
+			previousValue !== undefined && value !== previousValue && previousValue.length < maxLength &&
+				value.length === maxLength
 		) {
 			onComplete?.(value);
 		}
 	}, [maxLength, onComplete, previousValue, value]);
 
-	const passwordManagerBadge = usePasswordManagerBadge({
-		containerRef,
-		inputRef,
-		pushPasswordManagerStrategy,
-		isFocused,
-	});
+	const passwordManagerBadge = usePasswordManagerBadge(
+		{
+			containerRef,
+			inputRef,
+			pushPasswordManagerStrategy,
+			isFocused,
+		},
+		PASSWORD_MANAGER_BADGE_SLOT,
+	);
 
 	const rootStyle = useMemo(
 		() => ({
@@ -240,7 +241,6 @@ export function OTPInput(props: OTPInputProps) {
 			opacity: '1',
 			color: 'transparent',
 			pointerEvents: 'all' as const,
-			background: 'transparent',
 			caretColor: 'transparent',
 			border: '0 solid transparent',
 			outline: '0 solid transparent',
@@ -262,14 +262,12 @@ export function OTPInput(props: OTPInputProps) {
 		return {
 			slots: Array.from({ length: maxLength }).map((_, slotIndex) => {
 				const isActive =
-					isFocused &&
-					mirrorSelectionStart !== null &&
-					mirrorSelectionEnd !== null &&
-					((mirrorSelectionStart === mirrorSelectionEnd &&
-						slotIndex === mirrorSelectionStart) ||
-						(slotIndex >= mirrorSelectionStart && slotIndex < mirrorSelectionEnd));
+					isFocused && mirrorSelectionStart !== null && mirrorSelectionEnd !== null &&
+						(mirrorSelectionStart === mirrorSelectionEnd && slotIndex === mirrorSelectionStart ||
+							slotIndex >= mirrorSelectionStart && slotIndex < mirrorSelectionEnd);
 				const char = value[slotIndex] ?? null;
-				const placeholderChar = value[0] !== undefined ? null : (placeholder?.[slotIndex] ?? null);
+				const placeholderChar =
+					value[0] !== undefined ? null : placeholder?.[slotIndex] ?? null;
 				return {
 					char,
 					placeholderChar,
@@ -295,17 +293,14 @@ export function OTPInput(props: OTPInputProps) {
 	if (render) {
 		renderedChildren = render(contextValue);
 	} else {
-		renderedChildren = (
-			<OTPInputContext.Provider value={contextValue}>{children}</OTPInputContext.Provider>
-		);
+		renderedChildren = <OTPInputContext.Provider
+			value={contextValue}
+		>{children}</OTPInputContext.Provider>;
 	}
 	const noScriptStyle =
-		noScriptCSSFallback === null
-			? null
-			: createElement('style', null, noScriptCSSFallback);
+		noScriptCSSFallback === null ? null : createElement('style', null, noScriptCSSFallback);
 
-	return (
-		<>
+	return <>
 		@if (noScriptStyle !== null) {
 			<noscript>{noScriptStyle}</noscript>
 		}
@@ -329,6 +324,7 @@ export function OTPInput(props: OTPInputProps) {
 					aria-placeholder={placeholder}
 					style={inputStyle}
 					maxLength={maxLength}
+					suppressHydrationWarning
 					value={value}
 					ref={inputRef}
 					onInput={(event) => {
@@ -338,21 +334,20 @@ export function OTPInput(props: OTPInputProps) {
 							event.currentTarget.value = value;
 							return;
 						}
-						if (newValue.length < value.length && typeof document !== 'undefined') {
+						onChange(newValue);
+						if (typeof document !== 'undefined') {
 							document.dispatchEvent(new Event('selectionchange'));
 						}
-						onChange(newValue);
 						consumerOnInput?.(event);
 					}}
 					onPaste={(event) => {
 						const input = inputRef.current;
 						if (
-							input &&
-							event.clipboardData &&
-							(pasteTransformer || initialLoadRef.current.isIOS)
+							input && event.clipboardData && (pasteTransformer || initialLoadRef.current.isIOS)
 						) {
 							const pasted = event.clipboardData.getData('text/plain');
-							const content = pasteTransformer ? pasteTransformer(pasted) : pasted;
+							const content =
+								pasteTransformer ? pasteTransformer(pasted) : pasted;
 							event.preventDefault();
 							const start = input.selectionStart ?? value.length;
 							const end = input.selectionEnd ?? start;
@@ -397,8 +392,7 @@ export function OTPInput(props: OTPInputProps) {
 				/>
 			</div>
 		</div>
-		</>
-	);
+	</>;
 }
 
 OTPInput.displayName = 'Input';
@@ -426,8 +420,7 @@ function installInputStyles(): void {
 	document.head.appendChild(style);
 	ownedInputStyle = style;
 	if (!style.sheet) return;
-	const autofillStyles =
-		'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;';
+	const autofillStyles = 'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;';
 	safeInsertRule(
 		style.sheet,
 		'[data-input-otp]::selection { background: transparent !important; color: transparent !important; }',

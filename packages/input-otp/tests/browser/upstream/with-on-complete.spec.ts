@@ -7,5 +7,5 @@ it('should change the input value', async () => {
 	const input = page.getByRole('textbox');
 	await input.pressSequentially('123456');
 	expect(await input.inputValue()).toBe('123456');
-	expect(await input.isDisabled()).toBe(true);
+	await expect.poll(() => input.isDisabled()).toBe(true);
 });
