@@ -21,6 +21,7 @@ export function TransitionFixture(props) @{
 			<animated.div
 				key={transition.key}
 				data-key={transition.key}
+				data-label={item.label}
 				data-phase={transition.phase}
 				style={styles}
 			>{item.label}</animated.div>,

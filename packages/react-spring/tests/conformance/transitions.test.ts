@@ -37,6 +37,7 @@ describe('useTransition', () => {
 			'b',
 			'c',
 		]);
+		expect(result.find('[data-key="b"]').getAttribute('data-label')).toBe('B2');
 		expect(result.find('[data-key="b"]').textContent).toBe('B2');
 		result.unmount();
 		raf.frameLoop = 'always';
