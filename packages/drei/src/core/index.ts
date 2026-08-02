@@ -205,6 +205,8 @@ export { Stage } from './Stage.three.tsrx';
 export type { StageProps } from './Stage.three.tsrx';
 export { Image } from './Image.three.tsrx';
 export type { ImageProps } from './Image.three.tsrx';
+export { MotionPathControls, useMotion } from './MotionPathControls.three.tsrx';
+export type { MotionPathProps, MotionPathRef } from './MotionPathControls.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
