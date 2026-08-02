@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "project": "react-transition-group",
+  "roots": [
+    "packages/react-transition-group/tests"
+  ],
+  "files": [
+    "packages/react-transition-group/tests/exports.test.ts",
+    "packages/react-transition-group/tests/transition.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:ab839dac8670525a",
+      "file": "packages/react-transition-group/tests/exports.test.ts",
+      "fullName": "@octanejs/react-transition-group exports matches the pinned upstream root entry"
+    },
+    {
+      "id": "runtime:643c03927bb25cba",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior applies and cleans CSS transition classes"
+    },
+    {
+      "id": "runtime:d402a53e63f5bf86",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior keeps removed group children mounted until their exit completes"
+    },
+    {
+      "id": "runtime:188a759251834639",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior mounts the child before starting a mountOnEnter CSS transition"
+    },
+    {
+      "id": "runtime:78655a253968f469",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior moves through enter and exit states in callback order"
+    },
+    {
+      "id": "runtime:f686cc74ba9d739e",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior omits the node argument when nodeRef is provided"
+    },
+    {
+      "id": "runtime:c27189b30d15fd1b",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior preserves a keyed cloned transition while its props change"
+    },
+    {
+      "id": "runtime:2e56ba3708f5d072",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior selects and replaces the two ReplaceTransition children"
+    },
+    {
+      "id": "runtime:43378d9915f78ed6",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior sequences SwitchTransition in-out replacements"
+    },
+    {
+      "id": "runtime:a9729674127082b5",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior sequences SwitchTransition out-in replacements"
+    },
+    {
+      "id": "runtime:f0a9f1b943c31faf",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior updates a TransitionGroup child when its key remains stable"
+    }
+  ]
+}

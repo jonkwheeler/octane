@@ -42,6 +42,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.22` | 1 |
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.3` | 2 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.4` | 2 |
+| `@octanejs/react-transition-group` | [`packages/react-transition-group`](../packages/react-transition-group) | framework binding | `0.1.0` | 7 |
 | `@octanejs/recharts` | [`packages/recharts`](../packages/recharts) | framework binding | `0.1.20` | 1 |
 | `@octanejs/redux` | [`packages/redux`](../packages/redux) | framework binding | `0.1.20` | 1 |
 | `@octanejs/redux-toolkit` | [`packages/redux-toolkit`](../packages/redux-toolkit) | framework binding | `0.1.18` | 4 |

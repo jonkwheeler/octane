@@ -3071,6 +3071,53 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-transition-group',
+					include: [
+						'packages/react-transition-group/tests/**/*.test.ts',
+						'!packages/react-transition-group/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-transition-group$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-transition-group/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-transition-group-ssr',
+					include: ['packages/react-transition-group/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-transition-group$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-transition-group/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',

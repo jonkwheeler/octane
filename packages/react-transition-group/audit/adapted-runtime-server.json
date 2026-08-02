@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "project": "react-transition-group-ssr",
+  "roots": [
+    "packages/react-transition-group/tests"
+  ],
+  "files": [
+    "packages/react-transition-group/tests/ssr/server.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:c8fcd165f507e8b8",
+      "file": "packages/react-transition-group/tests/ssr/server.test.ts",
+      "fullName": "react-transition-group v4.4.5 server rendering renders TransitionGroup wrapper and children"
+    },
+    {
+      "id": "runtime:d6fd90bdd92512ad",
+      "file": "packages/react-transition-group/tests/ssr/server.test.ts",
+      "fullName": "react-transition-group v4.4.5 server rendering renders the initial transition state without running effects"
+    }
+  ]
+}

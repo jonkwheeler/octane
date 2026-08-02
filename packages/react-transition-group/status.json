@@ -1,0 +1,15 @@
+{
+  "upstream": {
+    "package": "react-transition-group",
+    "version": "4.4.5",
+    "commit": "4cb51a9be0ebf508cb8f6506452097f7ebb874fe"
+  },
+  "surface": "Transition, CSSTransition, TransitionGroup, SwitchTransition, ReplaceTransition, config, and their documented subpath exports.",
+  "divergences": [
+    "Octane does not implement ReactDOM.findDOMNode; DOM-aware callbacks and CSSTransition require nodeRef.",
+    "TransitionGroup collections must be supplied as inspectable descriptor values, normally with children={items.map(...)}; compiler-generated opaque children blocks cannot be enumerated.",
+    "The complete pinned upstream suite is retained as audit evidence but has not yet been adapted test-for-test; executable Octane lanes cover the public export surface, DOM transition behavior, switch and replacement sequencing, keyed groups, nodeRef semantics, mount-on-enter sequencing, and server rendering."
+  ],
+  "ssr": "Transition state and wrapper markup render on the server; DOM class mutation begins only after client mount and requires nodeRef.",
+  "verified": "2026-08-02"
+}

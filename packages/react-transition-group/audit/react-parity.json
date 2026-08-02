@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/reactjs/react-transition-group.git",
+    "version": "4.4.5",
+    "commit": "4cb51a9be0ebf508cb8f6506452097f7ebb874fe",
+    "sourceRoot": "src",
+    "testRoot": "test",
+    "license": "BSD-3-Clause",
+    "integrity": "sha256:3d7afd4e95d7ac4fdbbc105c1775556da892de229363736659957ed3c3de40de",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-transition-group/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/react-transition-group/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 13,
+    "uniqueIdentities": 13,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "b1b67787af41f0fd414bfc1ece743b9f42ea6f0f0c013090a8664999f66723cc"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-transition-group-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs every collected adapted DOM and export test and verifies exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-transition-group/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "5a6a7c6b73d64d0e55a7216552cb1434c9f137e5b980f18db759bb486481ea02"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "2460855aa9f6bedba76fa1a45f6f361162f6555cbf3a328d3b7ca9fb4e9525b7"
+        }
+      ]
+    },
+    {
+      "id": "react-transition-group-adapted-full-suite-server",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-ssr",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs every collected adapted server-rendering test and verifies exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-transition-group/audit/adapted-runtime-server.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "44b9fa4bd15685f07427b449c75351d3e584a695524b3ecd4480539be421df33"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "2460855aa9f6bedba76fa1a45f6f361162f6555cbf3a328d3b7ca9fb4e9525b7"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}
