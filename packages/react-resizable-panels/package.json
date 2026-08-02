@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
+    "@testing-library/jest-dom": "catalog:default",
     "@testing-library/react": "catalog:default",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
