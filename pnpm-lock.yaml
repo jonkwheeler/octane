@@ -4175,6 +4175,9 @@ importers:
 
   packages/drei:
     dependencies:
+      '@mediapipe/tasks-vision':
+        specifier: 0.10.17
+        version: 0.10.17
       '@monogrid/gainmap-js':
         specifier: ^3.0.6
         version: 3.4.0(three@0.172.0)

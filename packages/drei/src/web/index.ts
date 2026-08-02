@@ -7,3 +7,5 @@ export type { SelectProps } from './Select.three.tsrx';
 export { ScreenVideoTexture, WebcamVideoTexture } from './media-textures.three.tsrx';
 export type { ScreenVideoTextureProps, WebcamVideoTextureProps } from './media-textures.three.tsrx';
 export { Loader } from './Loader.tsrx';
+export { FaceLandmarker, FaceLandmarkerDefaults, useFaceLandmarker } from './FaceLandmarker.three.tsrx';
+export type { FaceLandmarkerProps } from './FaceLandmarker.three.tsrx';

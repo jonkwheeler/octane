@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 57 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 53 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -1238,9 +1238,9 @@
         "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
         "line": 29
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/FaceLandmarker.three.tsrx",
+      "evidence": ["packages/drei/tests/face-landmarker.test.ts"],
       "divergence": null
     },
     {
@@ -1251,9 +1251,9 @@
         "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/FaceLandmarker.three.tsrx",
+      "evidence": ["packages/drei/tests/face-landmarker.test.ts"],
       "divergence": null
     },
     {
@@ -1264,9 +1264,9 @@
         "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
         "line": 9
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/FaceLandmarker.three.tsrx",
+      "evidence": ["packages/drei/typetests/face-landmarker.test-d.ts"],
       "divergence": null
     },
     {
@@ -4806,9 +4806,9 @@
         "path": "packages/drei/upstream/src/web/FaceLandmarker.tsx",
         "line": 52
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/FaceLandmarker.three.tsrx",
+      "evidence": ["packages/drei/tests/face-landmarker.test.ts"],
       "divergence": null
     },
     {

@@ -30,6 +30,7 @@
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "0.10.17",
     "@monogrid/gainmap-js": "^3.0.6",
     "@octanejs/zustand": "workspace:*",
     "camera-controls": "^3.1.0",
