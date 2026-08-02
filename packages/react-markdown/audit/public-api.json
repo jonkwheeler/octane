@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "package": "react-markdown",
+  "version": "10.1.0",
+  "runtimeExports": ["default", "MarkdownAsync", "MarkdownHooks", "defaultUrlTransform"],
+  "typeExports": [
+    "AllowElement",
+    "Components",
+    "ExtraProps",
+    "HooksOptions",
+    "Options",
+    "UrlTransform"
+  ]
+}
