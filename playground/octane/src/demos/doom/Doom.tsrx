@@ -148,7 +148,8 @@ export function DoomDemo() @{
 		const keyup = (event: KeyboardEvent) => setKey(event, false);
 		const mousemove = (event: MouseEvent) => {
 			if (
-				document.pointerLockElement !== shellRef.current || phaseRef.current !== 'playing'
+				document.pointerLockElement !== shellRef.current || phaseRef.current !== 'playing' ||
+					pausedRef.current
 			) return;
 			stateRef.current = turnPlayer(stateRef.current, -event.movementX * 0.0022);
 		};

@@ -27,6 +27,7 @@ export function Svg({
 }: SvgProps & { ref?: ThreeRef<Object3D> }) @{
 	const url = !src.startsWith('<svg') ? src : `data:image/svg+xml;utf8,${src}`;
 	const svg = useLoader(SVGLoader, url);
+	const fillShapes = useMemo(() => svg.paths.map((path) => SVGLoader.createShapes(path)), [svg]);
 	const strokeGeometries = useMemo(
 		() => skipStrokes
 			? []
@@ -46,7 +47,7 @@ export function Svg({
 			@for (const path of svg.paths; key svg.paths.indexOf(path)) {
 				<>
 				@if (!skipFill && path.userData?.style.fill !== undefined && path.userData.style.fill !== 'none') {
-					@for (const shape of SVGLoader.createShapes(path); key shape.uuid) {
+					@for (const shape of fillShapes[svg.paths.indexOf(path)]!; key fillShapes[svg.paths.indexOf(path)]!.indexOf(shape)) {
 						<mesh {...fillMeshProps} renderOrder={renderOrder++}>
 							<shapeGeometry args={[shape as any]} />
 							<meshBasicMaterial
@@ -61,7 +62,7 @@ export function Svg({
 					}
 				}
 				@if (!skipStrokes && path.userData?.style.stroke !== undefined && path.userData.style.stroke !== 'none') {
-					@for (const subPath of path.subPaths; key subPath.curves.length) {
+					@for (const subPath of path.subPaths; key path.subPaths.indexOf(subPath)) {
 						<mesh geometry={strokeGeometries[svg.paths.indexOf(path)]?.[path.subPaths.indexOf(subPath)] as any} {...strokeMeshProps} renderOrder={renderOrder++}>
 							<meshBasicMaterial
 								color={path.userData!.style.stroke}
