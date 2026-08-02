@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 47 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 46 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -988,9 +988,9 @@
         "path": "packages/drei/upstream/src/web/DragControls.tsx",
         "line": 43
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/DragControls.three.tsrx",
+      "evidence": ["packages/drei/tests/drag-controls.test.ts"],
       "divergence": null
     },
     {

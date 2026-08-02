@@ -11,3 +11,4 @@ export { FaceLandmarker, FaceLandmarkerDefaults, useFaceLandmarker } from './Fac
 export type { FaceLandmarkerProps } from './FaceLandmarker.three.tsrx';
 export { PresentationControls } from './PresentationControls.three.tsrx';
 export type { PresentationControlProps } from './PresentationControls.three.tsrx';
+export { DragControls } from './DragControls.three.tsrx';
