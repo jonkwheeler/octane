@@ -8,6 +8,8 @@ export { GizmoViewport } from './GizmoViewport.three.tsrx';
 export { useContextBridge } from './useContextBridge.three.tsrx';
 export { Text } from './Text.three.tsrx';
 export type { TextProps } from './Text.three.tsrx';
+export { MeshRefractionMaterial } from './MeshRefractionMaterial.three.tsrx';
+export type { MeshRefractionMaterialProps } from './MeshRefractionMaterial.three.tsrx';
 export {
 	Box,
 	Capsule,

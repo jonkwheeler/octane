@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 53 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 51 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -2377,9 +2377,9 @@
         "path": "packages/drei/upstream/src/core/MeshRefractionMaterial.tsx",
         "line": 34
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MeshRefractionMaterial.three.tsrx",
+      "evidence": ["packages/drei/tests/mesh-refraction-material.test.ts"],
       "divergence": null
     },
     {
@@ -2390,9 +2390,9 @@
         "path": "packages/drei/upstream/src/core/MeshRefractionMaterial.tsx",
         "line": 14
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MeshRefractionMaterial.three.tsrx",
+      "evidence": ["packages/drei/typetests/mesh-refraction-material.test-d.ts"],
       "divergence": null
     },
     {
