@@ -97,12 +97,15 @@ describe('@octanejs/input-otp component state and projection', () => {
 
 	it('exposes the native input through the public ref', () => {
 		const inputRef: { current: HTMLInputElement | null } = { current: null };
-		const app = mount(RefInput, { inputRef });
+		const callbackRef = vi.fn();
+		const app = mount(RefInput, { inputRef: [inputRef, callbackRef] });
 		expect(inputRef.current).toBe(app.find('input'));
+		expect(callbackRef).toHaveBeenLastCalledWith(inputRef.current);
 		inputRef.current?.focus();
 		expect(document.activeElement).toBe(inputRef.current);
 		app.unmount();
 		expect(inputRef.current).toBeNull();
+		expect(callbackRef).toHaveBeenLastCalledWith(null);
 	});
 
 	it('projects placeholder, focus, active slot, fake caret, and hover state', () => {

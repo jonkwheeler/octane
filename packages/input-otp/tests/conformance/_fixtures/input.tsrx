@@ -2,6 +2,7 @@ import { useContext } from 'octane';
 
 import { OTPInput, OTPInputContext } from '../../../src/input.tsrx';
 import { REGEXP_ONLY_DIGITS } from '../../../src/regexp';
+import type { OTPInputProps } from '../../../src/types';
 
 function ContextProjection() @{
 	const state = useContext(OTPInputContext);
@@ -61,7 +62,7 @@ export function EmptyInput() @{
 	</OTPInput>
 }
 
-export function RefInput(props: { inputRef: { current: HTMLInputElement | null } }) @{
+export function RefInput(props: { inputRef: OTPInputProps['ref'] }) @{
 	<OTPInput maxLength={4} ref={props.inputRef}>
 		<ContextProjection />
 	</OTPInput>

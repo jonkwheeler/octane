@@ -5,7 +5,6 @@ import {
 	createElement,
 	useCallback,
 	useEffect,
-	useImperativeHandle,
 	useMemo,
 	useRef,
 	useState,
@@ -74,8 +73,6 @@ export function OTPInput(props: OTPInputProps) {
 		prev: [number | null, number | null, 'none' | 'forward' | 'backward' | null];
 	}>({ prev: [null, null, null] });
 	const syncSelectionRef = useRef<(() => void) | null>(null);
-
-	useImperativeHandle(ref as never, () => inputRef.current, []);
 
 	const [isHoveringInput, setIsHoveringInput] = useState(false);
 	const [isFocused, setIsFocused] = useState(false);
@@ -329,7 +326,7 @@ export function OTPInput(props: OTPInputProps) {
 					maxLength={maxLength}
 					suppressHydrationWarning
 					value={value}
-					ref={inputRef}
+					ref={[inputRef, ref ?? null]}
 					onInput={(event) => {
 						consumerOnInput?.(event);
 						const newValue = event.currentTarget.value.slice(0, maxLength);
