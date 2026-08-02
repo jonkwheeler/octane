@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 238
+    "gaps": 236
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -4606,9 +4606,12 @@
         "path": "packages/drei/upstream/src/core/useBoxProjectedEnv.tsx",
         "line": 89
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useBoxProjectedEnv.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/box-projected-env.test.ts",
+        "packages/drei/typetests/box-projected-env.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4677,9 +4680,12 @@
         "path": "packages/drei/upstream/src/web/useCursor.tsx",
         "line": 3
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/useCursor.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/use-cursor.test.ts",
+        "packages/drei/typetests/use-cursor.test-d.ts"
+      ],
       "divergence": null
     },
     {
