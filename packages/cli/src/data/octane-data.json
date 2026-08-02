@@ -893,6 +893,7 @@
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
     "react-stately": "@octanejs/aria",
+    "react-transition-group": "@octanejs/react-transition-group",
     "recharts": "@octanejs/recharts",
     "shadcn": "@octanejs/shadcn",
     "sonner": "@octanejs/sonner",
