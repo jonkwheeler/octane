@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 182
+    "gaps": 180
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -3760,9 +3760,9 @@
         "path": "packages/drei/upstream/src/core/Sparkles.tsx",
         "line": 126
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sparkles.three.tsrx",
+      "evidence": ["packages/drei/tests/sparkles.test.ts"],
       "divergence": null
     },
     {
@@ -3773,9 +3773,9 @@
         "path": "packages/drei/upstream/src/core/Sparkles.tsx",
         "line": 109
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sparkles.three.tsrx",
+      "evidence": ["packages/drei/typetests/sparkles.test-d.ts"],
       "divergence": null
     },
     {

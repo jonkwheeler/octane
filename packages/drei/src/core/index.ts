@@ -139,6 +139,8 @@ export { Effects } from './Effects.three.tsrx';
 export type { EffectsProps } from './Effects.three.tsrx';
 export { Hud } from './Hud.three.tsrx';
 export type { HudProps } from './Hud.three.tsrx';
+export { Sparkles } from './Sparkles.three.tsrx';
+export type { SparklesProps } from './Sparkles.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
