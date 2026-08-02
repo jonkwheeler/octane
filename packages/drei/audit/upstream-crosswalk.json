@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 303
+    "gaps": 295
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -150,9 +150,9 @@
         "path": "packages/drei/upstream/src/core/BBAnchor.tsx",
         "line": 12
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/tests/scene-motion.test.ts"],
       "divergence": null
     },
     {
@@ -163,9 +163,9 @@
         "path": "packages/drei/upstream/src/core/BBAnchor.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-motion.test-d.ts"],
       "divergence": null
     },
     {
@@ -189,9 +189,9 @@
         "path": "packages/drei/upstream/src/core/Backdrop.tsx",
         "line": 14
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/tests/scene-motion.test.ts"],
       "divergence": null
     },
     {
@@ -202,9 +202,9 @@
         "path": "packages/drei/upstream/src/core/Backdrop.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-motion.test-d.ts"],
       "divergence": null
     },
     {
@@ -231,9 +231,9 @@
         "path": "packages/drei/upstream/src/core/Billboard.tsx",
         "line": 22
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/tests/scene-motion.test.ts"],
       "divergence": null
     },
     {
@@ -244,9 +244,9 @@
         "path": "packages/drei/upstream/src/core/Billboard.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-motion.test-d.ts"],
       "divergence": null
     },
     {
@@ -1473,9 +1473,9 @@
         "path": "packages/drei/upstream/src/core/Float.tsx",
         "line": 16
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/tests/scene-motion.test.ts"],
       "divergence": null
     },
     {
@@ -1486,9 +1486,9 @@
         "path": "packages/drei/upstream/src/core/Float.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/scene-motion.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-motion.test-d.ts"],
       "divergence": null
     },
     {

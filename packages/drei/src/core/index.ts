@@ -60,6 +60,13 @@ export {
 	ScreenQuad,
 	useMask,
 } from './simple-materials.three.tsrx';
+export { Backdrop, BBAnchor, Billboard, Float } from './scene-motion.three.tsrx';
+export type {
+	BackdropProps,
+	BBAnchorProps,
+	BillboardProps,
+	FloatProps,
+} from './scene-motion.three.tsrx';
 export type {
 	MaskProps,
 	MeshDiscardMaterialProps,
