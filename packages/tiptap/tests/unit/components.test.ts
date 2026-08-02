@@ -20,6 +20,8 @@ afterEach(() => {
 });
 
 describe('@octanejs/tiptap components', () => {
+	// OCTANE DIVERGENCE[tiptap-editor-consumer][adapted:tiptap-editor-consumer]
+	// @parity-case adapted:tiptap-editor-consumer
 	it('provides modern and legacy context while useTiptapState follows editor changes and transactions', () => {
 		const editor = new Editor({ extensions, content: '<p>Initial context</p>' });
 		const replacementEditor = new Editor({

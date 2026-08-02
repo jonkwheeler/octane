@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:tiptap-public-api",
+      "testName": "root and menus public declaration contracts",
+      "fullName": "root and menus public declaration contracts"
+    }
+  ]
+}

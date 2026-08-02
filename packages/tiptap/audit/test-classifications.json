@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/tiptap/tests/browser/editor.browser.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks real Chromium integration and geometry; it is not same-scenario React execution."
+    },
+    {
+      "path": "packages/tiptap/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs exact editor and custom-view lifecycle scenarios against @tiptap/react@3.28.0."
+    },
+    {
+      "path": "packages/tiptap/tests/differential/setup.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
+    },
+    {
+      "path": "packages/tiptap/tests/hydration/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane hydration adoption and live editor/custom-view activation."
+    },
+    {
+      "path": "packages/tiptap/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane server rendering without a DOM; it is not compared with React SSR."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/client-boundary.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks package client directives; it is not React behavioral evidence."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/components.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tiptap-editor-consumer",
+      "reason": "Authenticates the EditorConsumer render-prop context adaptation."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/custom-views.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceIds": [
+        "tiptap-ordinary-ref-props",
+        "tiptap-node-view-as-prop",
+        "tiptap-mark-view-cleanup"
+      ],
+      "reason": "Authenticates ordinary refs, consumed as props, and mark-view cleanup."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/editor.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks adapted editor hook lifecycle; it is not same-scenario React execution."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/menus.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tiptap-native-menu-events",
+      "reason": "Authenticates native menu callback events."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/public-surface.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tiptap-native-external-store",
+      "reason": "Authenticates the React-free subscription dependency surface."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/stage4-lifecycle.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks advanced Octane renderer and menu lifecycle races."
+    }
+  ]
+}

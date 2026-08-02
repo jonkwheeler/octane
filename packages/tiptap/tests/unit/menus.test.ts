@@ -19,6 +19,8 @@ function settle(): void {
 }
 
 describe('@octanejs/tiptap menus', () => {
+	// OCTANE DIVERGENCE[tiptap-native-menu-events][adapted:tiptap-native-menu-events]
+	// @parity-case adapted:tiptap-native-menu-events
 	it('registers real menu plugins and syncs the detached menu element', () => {
 		const editor = new Editor({ extensions, content: '<p></p>' });
 		const bubblePluginKey = new PluginKey('octaneBubbleMenu');

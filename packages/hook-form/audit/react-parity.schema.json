@@ -323,7 +323,7 @@
             "then": {
               "properties": {
                 "execution": {
-                  "properties": { "compiler": { "const": "tsrx-tsc" } },
+                  "properties": { "compiler": { "enum": ["tsc", "tsrx-tsc"] } },
                   "required": ["compiler"]
                 }
               },

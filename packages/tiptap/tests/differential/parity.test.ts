@@ -25,6 +25,7 @@ async function waitForPublishedSelection(...mounts: { container: HTMLElement }[]
 }
 
 describe('differential: @octanejs/tiptap vs @tiptap/react', () => {
+	// @parity-case differential:tiptap-editor
 	it('renders and updates a StarterKit editor identically', async () => {
 		const editors: any[] = [];
 		const differential = await mountDifferential(
@@ -54,6 +55,7 @@ describe('differential: @octanejs/tiptap vs @tiptap/react', () => {
 		differential.unmount();
 	});
 
+	// @parity-case differential:tiptap-custom-views
 	it('matches renderer, node-view, and mark-view behavior through their visible lifecycles', async () => {
 		const lifecycle: string[] = [];
 		const differential = await mountDifferential(

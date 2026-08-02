@@ -39,6 +39,8 @@ afterEach(() => {
 });
 
 describe('@octanejs/tiptap custom views', () => {
+	// OCTANE DIVERGENCE[tiptap-ordinary-ref-props][adapted:tiptap-ordinary-ref-props]
+	// @parity-case adapted:tiptap-ordinary-ref-props
 	it('updates and destroys a public ReactRenderer while preserving context, state, effects, and refs', async () => {
 		let editor: Editor | undefined;
 		let renderer: any;
@@ -109,6 +111,35 @@ describe('@octanejs/tiptap custom views', () => {
 		editor?.destroy();
 	});
 
+	// OCTANE DIVERGENCE[tiptap-node-view-as-prop][adapted:tiptap-node-view-as-prop]
+	// @parity-case adapted:tiptap-node-view-as-prop
+	it('consumes the node view as prop without forwarding it to the DOM', async () => {
+		let editor: Editor | undefined;
+		const result = mount(CustomViewsEditor as any, {
+			theme: 'day',
+			onEditor: (currentEditor: Editor) => {
+				editor = currentEditor;
+			},
+			onRenderer: () => {},
+			onDirectLifecycle: () => {},
+			onNodeLifecycle: () => {},
+			onNodeRef: () => {},
+			onMarkLifecycle: () => {},
+			onMarkRef: () => {},
+		});
+		await settlePortals();
+
+		const nodeView = result.find('[data-panel-node-view]');
+		expect(nodeView.tagName).toBe('ARTICLE');
+		expect(nodeView.hasAttribute('as')).toBe(false);
+
+		result.unmount();
+		flushEffects();
+		editor?.destroy();
+	});
+
+	// OCTANE DIVERGENCE[tiptap-mark-view-cleanup][adapted:tiptap-custom-view-cleanup]
+	// @parity-case adapted:tiptap-custom-view-cleanup
 	it('keeps non-leaf node and mark content live across updates, then cleans both views up', async () => {
 		let editor: Editor | undefined;
 		const nodeLifecycle: string[] = [];
@@ -145,6 +176,7 @@ describe('@octanejs/tiptap custom views', () => {
 		expect(nodeRenderer.getAttribute('data-panel-label')).toBe('initial');
 		expect(nodeRenderer.getAttribute('data-panel-shell')).toBe('true');
 		expect(nodeView.tagName).toBe('ARTICLE');
+		expect(nodeView.hasAttribute('as')).toBe(false);
 		expect(nodeView.hasAttribute('data-node-view-wrapper')).toBe(true);
 		expect(nodeContent.tagName).toBe('SECTION');
 		expect(nodeContent.textContent).toBe('Editable panel content');
