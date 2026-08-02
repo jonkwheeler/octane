@@ -30,6 +30,7 @@
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
+    "@monogrid/gainmap-js": "^3.0.6",
     "@octanejs/zustand": "workspace:*",
     "three-mesh-bvh": "^0.8.3",
     "three-stdlib": "^2.35.6"

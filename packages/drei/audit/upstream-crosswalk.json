@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 329
+    "gaps": 327
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -1075,9 +1075,9 @@
         "path": "packages/drei/upstream/src/core/useEnvironment.tsx",
         "line": 19
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/environment-loader.ts",
+      "evidence": ["packages/drei/typetests/environment.test-d.ts"],
       "divergence": null
     },
     {
@@ -4677,9 +4677,12 @@
         "path": "packages/drei/upstream/src/core/useEnvironment.tsx",
         "line": 29
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useEnvironment.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/environment.test.ts",
+        "packages/drei/typetests/environment.test-d.ts"
+      ],
       "divergence": null
     },
     {

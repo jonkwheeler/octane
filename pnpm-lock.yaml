@@ -4175,6 +4175,9 @@ importers:
 
   packages/drei:
     dependencies:
+      '@monogrid/gainmap-js':
+        specifier: ^3.0.6
+        version: 3.4.0(three@0.172.0)
       '@octanejs/zustand':
         specifier: workspace:*
         version: link:../zustand

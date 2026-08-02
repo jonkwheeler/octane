@@ -38,3 +38,5 @@ export type { CloneProps } from './Clone.three.tsrx';
 export { Gltf, useGLTF } from './Gltf.three.tsrx';
 export type { GltfProps } from './Gltf.three.tsrx';
 export { Fbx, useFBX } from './Fbx.three.tsrx';
+export { useEnvironment } from './useEnvironment.three.tsrx';
+export type { EnvironmentLoaderProps } from './environment-loader.js';
