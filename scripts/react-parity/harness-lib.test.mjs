@@ -159,6 +159,7 @@ test('accepts explicit TypeScript lanes and builds portable compiler argv withou
 		...manifest().lanes[0],
 		id: 'pristine-types',
 		type: 'pristine-types',
+		evidenceOrigin: 'upstream-suite',
 		project: 'hook-form-pristine-types',
 		execution: {
 			kind: 'typescript',
@@ -240,6 +241,7 @@ test('rejects adapted type evidence that bypasses the TSRX compiler', () => {
 		...manifest().lanes[0],
 		id: 'adapted-types',
 		type: 'adapted-types',
+		evidenceOrigin: 'upstream-suite',
 		execution: {
 			kind: 'typescript',
 			compiler: 'tsgo',
