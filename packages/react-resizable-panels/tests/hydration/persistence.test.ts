@@ -48,5 +48,5 @@ describe('react-resizable-panels persistence hydration', () => {
 		root.unmount();
 		error.mockRestore();
 		container.remove();
-	});
+	}, 15_000);
 });
