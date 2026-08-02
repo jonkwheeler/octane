@@ -77,19 +77,19 @@ export function CSSTransition(props: CSSTransitionProps) @{
 			const { appearing } = resolveEnterArguments(maybeNode, maybeAppearing);
 			clear('exit');
 			add(appearing ? 'appear' : 'enter', 'base');
-			onEnter?.(maybeNode, appearing);
+			onEnter?.(maybeNode, maybeAppearing);
 		}}
 		onEntering={(maybeNode, maybeAppearing) => {
 			const { appearing } = resolveEnterArguments(maybeNode, maybeAppearing);
 			add(appearing ? 'appear' : 'enter', 'active');
-			onEntering?.(maybeNode, appearing);
+			onEntering?.(maybeNode, maybeAppearing);
 		}}
 		onEntered={(maybeNode, maybeAppearing) => {
 			const { appearing } = resolveEnterArguments(maybeNode, maybeAppearing);
 			const type = appearing ? 'appear' : 'enter';
 			clear(type);
 			add(type, 'done');
-			onEntered?.(maybeNode, appearing);
+			onEntered?.(maybeNode, maybeAppearing);
 		}}
 		onExit={(maybeNode) => {
 			clear('appear');

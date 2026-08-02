@@ -45,6 +45,11 @@
       "fullName": "react-transition-group v4.4.5 adapted transition behavior preserves a keyed cloned transition while its props change"
     },
     {
+      "id": "runtime:9bd42508499f1bc4",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior preserves upstream nodeRef callback arguments through CSSTransition"
+    },
+    {
       "id": "runtime:2e56ba3708f5d072",
       "file": "packages/react-transition-group/tests/transition.test.ts",
       "fullName": "react-transition-group v4.4.5 adapted transition behavior selects and replaces the two ReplaceTransition children"
@@ -60,9 +65,19 @@
       "fullName": "react-transition-group v4.4.5 adapted transition behavior sequences SwitchTransition out-in replacements"
     },
     {
+      "id": "runtime:91900f613453b5ae",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior updates a SwitchTransition child when its key remains stable"
+    },
+    {
       "id": "runtime:f0a9f1b943c31faf",
       "file": "packages/react-transition-group/tests/transition.test.ts",
       "fullName": "react-transition-group v4.4.5 adapted transition behavior updates a TransitionGroup child when its key remains stable"
+    },
+    {
+      "id": "runtime:95af4af3340ce4d8",
+      "file": "packages/react-transition-group/tests/transition.test.ts",
+      "fullName": "react-transition-group v4.4.5 adapted transition behavior uses the latest completion callback after props change mid-transition"
     }
   ]
 }

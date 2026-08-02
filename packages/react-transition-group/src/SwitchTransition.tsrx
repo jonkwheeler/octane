@@ -43,9 +43,12 @@ export function SwitchTransition(props: SwitchTransitionProps) @{
 			setCurrent(null);
 			return;
 		}
-		if (current && different(current, next) && status === ENTERED) setStatus(EXITING);
-		else if (!current) setCurrent(cloneElement(next, { in: true }));
-	}, null);
+		if (current && different(current, next) && status === ENTERED) {
+			setStatus(EXITING);
+		} else if (!current || !different(current, next)) {
+			setCurrent(cloneElement(next, { in: true }));
+		}
+	}, [props.children]);
 
 	let output: unknown = current;
 	if (status === EXITING && current && pending) {

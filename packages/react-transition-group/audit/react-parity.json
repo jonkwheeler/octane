@@ -27,8 +27,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 13,
-    "uniqueIdentities": 13,
+    "inventoryEntries": 16,
+    "uniqueIdentities": 16,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -59,7 +59,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "5a6a7c6b73d64d0e55a7216552cb1434c9f137e5b980f18db759bb486481ea02"
+          "sha256": "469918e63637eb5e0b875a81601a13f4b6cd6fec6b23d97d2947a4782c036528"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",

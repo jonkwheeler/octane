@@ -47,6 +47,8 @@ function callEnterCallback(
 
 function TransitionImpl(props: TransitionProps) @{
 	const group = useContext(TransitionGroupContext);
+	const latestProps = useRef(props);
+	latestProps.current = props;
 	const initial = useRef<
 		{ status: TransitionStatus; appearStatus: TransitionStatus | null } | null
 	>(null);
@@ -115,7 +117,12 @@ function TransitionImpl(props: TransitionProps) @{
 		const timeouts = getTimeouts(props.timeout);
 		finishAfter(appearing ? timeouts.appear : timeouts.enter, () => {
 			setStatus(ENTERED);
-			callEnterCallback(props.onEntered, props.nodeRef, node, appearing);
+			callEnterCallback(
+				latestProps.current.onEntered,
+				latestProps.current.nodeRef,
+				node,
+				appearing,
+			);
 		});
 	};
 
@@ -132,7 +139,7 @@ function TransitionImpl(props: TransitionProps) @{
 		props.onExiting?.(props.nodeRef ? undefined : node);
 		finishAfter(getTimeouts(props.timeout).exit, () => {
 			setStatus(EXITED);
-			props.onExited?.(props.nodeRef ? undefined : node);
+			latestProps.current.onExited?.(latestProps.current.nodeRef ? undefined : node);
 		});
 	};
 

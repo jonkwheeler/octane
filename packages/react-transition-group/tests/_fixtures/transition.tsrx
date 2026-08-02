@@ -85,6 +85,32 @@ export function NodeRefAppearFixture(props: { calls: unknown[][] }) @{
 	</Transition>
 }
 
+export function CSSNodeRefAppearFixture(props: { calls: unknown[][] }) @{
+	const nodeRef = useRef<HTMLDivElement | null>(null);
+	<CSSTransition
+		in
+		appear
+		nodeRef={nodeRef}
+		timeout={20}
+		classNames="appear"
+		onEnter={((...args: unknown[]) => props.calls.push(args)) as any}
+	>
+		<div id="css-appear-node" ref={nodeRef}>{'appear'}</div>
+	</CSSTransition>
+}
+
+export function LatestCompletionFixture(props: { trace: string[] }) @{
+	const [shown, setShown] = useState(false);
+	const [version, setVersion] = useState('first');
+	<main>
+		<button id="latest-start" onClick={() => setShown(true)}>{'start'}</button>
+		<button id="latest-swap" onClick={() => setVersion('second')}>{'swap'}</button>
+		<Transition in={shown} timeout={20} onEntered={() => props.trace.push(version)}>
+			<span id="latest-state">{version}</span>
+		</Transition>
+	</main>
+}
+
 export function MountOnEnterFixture() @{
 	const [shown, setShown] = useState(false);
 	const nodeRef = useRef<HTMLDivElement | null>(null);
@@ -116,6 +142,17 @@ export function SwitchFixture(props: { mode: 'out-in' | 'in-out' }) @{
 	<main>
 		<button id="switch-toggle" onClick={() => setSecond(true)}>{'switch'}</button>
 		<SwitchTransition mode={props.mode} children={child} />
+	</main>
+}
+
+export function SameKeySwitchFixture() @{
+	const [label, setLabel] = useState('first');
+	const child = <Transition key="stable" timeout={0}>
+		<span id="same-key-switch-label">{label}</span>
+	</Transition>;
+	<main>
+		<button id="same-key-switch-update" onClick={() => setLabel('second')}>{'update'}</button>
+		<SwitchTransition children={child} />
 	</main>
 }
 

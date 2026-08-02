@@ -2,12 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, mount } from '../../octane/tests/_helpers.ts';
 import {
 	ClonedTransitionFixture,
+	CSSNodeRefAppearFixture,
 	CSSFixture,
 	GroupFixture,
 	MountOnEnterFixture,
 	NodeRefAppearFixture,
+	LatestCompletionFixture,
 	ReplaceFixture,
 	SameKeyGroupFixture,
+	SameKeySwitchFixture,
 	SwitchFixture,
 	TransitionFixture,
 } from './_fixtures/transition.tsrx';
@@ -88,6 +91,26 @@ describe('react-transition-group v4.4.5 adapted transition behavior', () => {
 		view.unmount();
 	});
 
+	// @parity-case runtime:css-node-ref-callback-arguments
+	it('preserves upstream nodeRef callback arguments through CSSTransition', async () => {
+		const calls: unknown[][] = [];
+		const view = mount(CSSNodeRefAppearFixture, { calls });
+		expect(calls).toEqual([[true, undefined]]);
+		await act(() => vi.runAllTimers());
+		view.unmount();
+	});
+
+	// @parity-case runtime:latest-completion-callback
+	it('uses the latest completion callback after props change mid-transition', async () => {
+		const trace: string[] = [];
+		const view = mount(LatestCompletionFixture, { trace });
+		await act(() => (view.container.querySelector('#latest-start') as HTMLButtonElement).click());
+		await act(() => (view.container.querySelector('#latest-swap') as HTMLButtonElement).click());
+		await act(() => vi.runAllTimers());
+		expect(trace).toEqual(['second']);
+		view.unmount();
+	});
+
 	// @parity-case runtime:mount-on-enter-sequencing
 	it('mounts the child before starting a mountOnEnter CSS transition', async () => {
 		const view = mount(MountOnEnterFixture);
@@ -138,6 +161,17 @@ describe('react-transition-group v4.4.5 adapted transition behavior', () => {
 		await act(() => vi.advanceTimersByTime(20));
 		expect(view.container.querySelectorAll('[data-switch]')).toHaveLength(1);
 		expect(view.container.querySelector('[data-switch="second"]')).not.toBeNull();
+		view.unmount();
+	});
+
+	// @parity-case runtime:switch-same-key-update
+	it('updates a SwitchTransition child when its key remains stable', async () => {
+		const view = mount(SameKeySwitchFixture);
+		expect(view.container.querySelector('#same-key-switch-label')?.textContent).toBe('first');
+		await act(() =>
+			(view.container.querySelector('#same-key-switch-update') as HTMLButtonElement).click(),
+		);
+		expect(view.container.querySelector('#same-key-switch-label')?.textContent).toBe('second');
 		view.unmount();
 	});
 
