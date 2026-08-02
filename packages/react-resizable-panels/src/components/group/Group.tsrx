@@ -1,85 +1,154 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'octane';
+import { useEffect, useMemo, useRef } from 'octane';
+import { calculatePanelConstraints } from '../../global/dom/calculatePanelConstraints';
+import { mountGroup } from '../../global/mountGroup';
+import { getMountedGroupState, getRegisteredGroup, subscribeToMountedGroup, updateMountedGroup } from '../../global/mutable-state/groups';
+import { getInteractionState } from '../../global/mutable-state/interactions';
+import { getImperativeGroupMethods } from '../../global/utils/getImperativeGroupMethods';
+import { layoutNumbersEqual } from '../../global/utils/layoutNumbersEqual';
+import { layoutsEqual } from '../../global/utils/layoutsEqual';
+import { useForceUpdate } from '../../hooks/useForceUpdate';
+import { useId } from '../../hooks/useId';
+import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
+import { useMergedRefs } from '../../hooks/useMergedRefs';
+import { useStableCallback } from '../../hooks/useStableCallback';
+import { useStableObject } from '../../hooks/useStableObject';
+import type { RegisteredPanel } from '../panel/types';
+import type { RegisteredSeparator } from '../separator/types';
 import { GroupContext, type GroupContextValue } from './GroupContext';
-import type { GroupImperativeHandle, GroupProps, Layout } from './types';
+import { sortByElementOffset } from './sortByElementOffset';
+import type { GroupProps, Layout, RegisteredGroup, ResizeTargetMinimumSize } from './types';
+import { useGroupImperativeHandle } from './useGroupImperativeHandle';
 
-function setRef<T>(ref: GroupProps['elementRef'] | GroupProps['groupRef'], value: T | null) {
-	if (Array.isArray(ref)) {
-		for (const child of ref) setRef(child as GroupProps['elementRef'], value);
-	} else if (typeof ref === 'function') ref(value as never);
-	else if (ref) (ref as { current: unknown }).current = value;
-}
-function percent(value: number | string | undefined): number | undefined {
-	if (value === undefined) return undefined;
-	const parsed = Number.parseFloat(String(value));
-	return Number.isFinite(parsed) ? parsed : undefined;
-}
+export function Group(props: GroupProps) @{
+	const {
+		children, className, defaultLayout, disableCursor, disabled, elementRef: elementRefProp,
+		groupRef, id: idProp, onLayoutChange: onLayoutChangeUnstable,
+		onLayoutChanged: onLayoutChangedUnstable, orientation = 'horizontal',
+		resizeTargetMinimumSize = { coarse: 20, fine: 10 }, style, ...rest
+	} = props;
+	const previousLayouts = useRef({ onLayoutChange: {} as Layout, onLayoutChanged: {} as Layout });
+	const onLayoutChange = useStableCallback((layout: Layout) => {
+		if (layoutsEqual(previousLayouts.current.onLayoutChange, layout)) return;
+		previousLayouts.current.onLayoutChange = layout;
+		onLayoutChangeUnstable?.(layout);
+	});
+	const onLayoutChanged = useStableCallback((layout: Layout, isUserInteraction: boolean) => {
+		if (layoutsEqual(previousLayouts.current.onLayoutChanged, layout)) return;
+		previousLayouts.current.onLayoutChanged = layout;
+		onLayoutChangedUnstable?.(layout, { isUserInteraction });
+	});
 
-export function Group({ children, defaultLayout, disabled = false, elementRef, groupRef, id: idProp, onLayoutChange, onLayoutChanged, orientation = 'horizontal', style, ...rest }: GroupProps) @{
-	const dynamicId = useId();
-	const id = String(idProp ?? dynamicId);
-	const element = useRef<HTMLDivElement | null>(null);
-	const panelIds = useRef<string[]>([]);
-	const [layout, setLayout] = useState<Layout>({ ...(defaultLayout ?? {}) });
+	const id = useId(idProp);
+	const elementRef = useRef<HTMLDivElement | null>(null);
+	const [panelOrSeparatorChangeSigil, forceUpdate] = useForceUpdate();
+	const valuesRef = useRef<{
+		lastExpandedPanelSizes: Record<string, number>;
+		layouts: Record<string, Layout>;
+		panels: RegisteredPanel[];
+		resizeTargetMinimumSize: ResizeTargetMinimumSize;
+		separators: RegisteredSeparator[];
+	}>({ lastExpandedPanelSizes: {}, layouts: {}, panels: [], resizeTargetMinimumSize, separators: [] });
+	valuesRef.current.resizeTargetMinimumSize = resizeTargetMinimumSize;
+	const mergedRef = useMergedRefs(elementRef, elementRefProp);
+	useGroupImperativeHandle(id, groupRef);
+
+	const getPanelStyles = useStableCallback((groupId: string, panelId: string) => {
+		const interaction = getInteractionState();
+		const group = getRegisteredGroup(groupId);
+		const state = getMountedGroupState(groupId);
+		if (state) {
+			const dragActive = interaction.state === 'active' && interaction.hitRegions.some((region) => region.group === group);
+			return { flexGrow: state.layout[panelId] ?? 1, pointerEvents: dragActive ? 'none' as const : undefined };
+		}
+		const initialSize = defaultLayout?.[panelId];
+		return initialSize === undefined ? undefined : { flexGrow: initialSize };
+	});
+	const stableProps = useStableObject({ defaultLayout, disableCursor });
+	const context = useMemo<GroupContextValue>(() => ({
+		get disableCursor() { return !!stableProps.disableCursor; },
+		getPanelStyles,
+		id,
+		orientation,
+		registerPanel(panel) {
+			valuesRef.current.panels = sortByElementOffset(orientation, [...valuesRef.current.panels, panel]);
+			forceUpdate();
+			return () => { valuesRef.current.panels = valuesRef.current.panels.filter((current) => current !== panel); forceUpdate(); };
+		},
+		registerSeparator(separator) {
+			valuesRef.current.separators = sortByElementOffset(orientation, [...valuesRef.current.separators, separator]);
+			forceUpdate();
+			return () => { valuesRef.current.separators = valuesRef.current.separators.filter((current) => current !== separator); forceUpdate(); };
+		},
+		updatePanelProps(panelId, next) {
+			const panel = valuesRef.current.panels.find((current) => current.id === panelId);
+			if (panel) panel.panelConstraints.disabled = next.disabled;
+			const group = getRegisteredGroup(id);
+			const state = getMountedGroupState(id);
+			if (group && state) updateMountedGroup(group, { ...state, derivedPanelConstraints: calculatePanelConstraints(group) });
+		},
+		updateSeparatorProps(separatorId, next) {
+			const separator = valuesRef.current.separators.find((current) => current.id === separatorId);
+			if (separator) Object.assign(separator, next);
+		},
+	}), [forceUpdate, getPanelStyles, id, orientation, stableProps]);
+
+	const registeredGroupRef = useRef<RegisteredGroup | null>(null);
 	const adoptedDefinedDefault = useRef(defaultLayout !== undefined);
 	const layoutChangedAfterMount = useRef(false);
-
-	function apply(next: Layout, user: boolean, completed = true, protectFromRestore = user): Layout {
-		if (protectFromRestore) layoutChangedAfterMount.current = true;
-		setLayout(next);
-		onLayoutChange?.(next);
-		if (completed) onLayoutChanged?.(next, { isUserInteraction: user });
-		return next;
-	}
-	useEffect(() => {
-		if (
-			!adoptedDefinedDefault.current &&
-			defaultLayout !== undefined &&
-			!layoutChangedAfterMount.current
-		) {
-			adoptedDefinedDefault.current = true;
-			apply({ ...defaultLayout }, false);
+	useIsomorphicLayoutEffect(() => {
+		const element = elementRef.current;
+		if (element === null) return;
+		const values = valuesRef.current;
+		let sortedDefaultLayout: Layout | undefined;
+		if (stableProps.defaultLayout && Object.keys(stableProps.defaultLayout).length === values.panels.length) {
+			sortedDefaultLayout = {};
+			for (const panel of values.panels) {
+				const size = stableProps.defaultLayout[panel.id];
+				if (size !== undefined) sortedDefaultLayout[panel.id] = size;
+			}
 		}
-	}, [defaultLayout]);
-	const api = useMemo<GroupContextValue>(() => ({
-		id, orientation, disabled,
-		registerPanel(panelId, defaultSize) {
-			if (!panelIds.current.includes(panelId)) {
-				panelIds.current.push(panelId);
-				if (layout[panelId] === undefined) {
-					const explicit = percent(defaultSize);
-					const size = explicit ?? 100 / panelIds.current.length;
-					const next = { ...layout, [panelId]: size };
-					for (const other of panelIds.current) if (other !== panelId && explicit === undefined) next[other] = size;
-					apply(next, false);
+		const group: RegisteredGroup = {
+			disabled: !!disabled, element, id,
+			mutableState: { defaultLayout: sortedDefaultLayout, disableCursor: !!stableProps.disableCursor, expandedPanelSizes: values.lastExpandedPanelSizes, layouts: values.layouts },
+			orientation, panels: values.panels, resizeTargetMinimumSize: values.resizeTargetMinimumSize, separators: values.separators,
+		};
+		registeredGroupRef.current = group;
+		const unmount = mountGroup(group);
+		const initial = getMountedGroupState(id, true);
+		if (!initial.defaultLayoutDeferred && initial.derivedPanelConstraints.length > 0) {
+			onLayoutChange(initial.layout);
+			onLayoutChanged(initial.layout, false);
+		}
+		const unsubscribe = subscribeToMountedGroup(id, (event) => {
+			const { defaultLayoutDeferred, derivedPanelConstraints, layout } = event.next;
+			if (defaultLayoutDeferred || derivedPanelConstraints.length === 0) return;
+			const panelIdsKey = group.panels.map((panel) => panel.id).join(',');
+			group.mutableState.layouts[panelIdsKey] = layout;
+			for (const constraints of derivedPanelConstraints) {
+				const previousLayout = event.prev?.layout;
+				if (constraints.collapsible && previousLayout && layoutNumbersEqual(constraints.collapsedSize, layout[constraints.panelId]) && !layoutNumbersEqual(constraints.collapsedSize, previousLayout[constraints.panelId])) {
+					group.mutableState.expandedPanelSizes[constraints.panelId] = previousLayout[constraints.panelId];
 				}
 			}
-			return () => { panelIds.current = panelIds.current.filter((current) => current !== panelId); };
-		},
-		resizeSeparator(separator, delta, completed) {
-			const children = [...(separator.parentElement?.children ?? [])];
-			const separatorIndex = children.indexOf(separator);
-			const before = children.slice(0, separatorIndex).reverse().find((node) => (node as HTMLElement).hasAttribute('data-panel')) as HTMLElement | undefined;
-			const after = children.slice(separatorIndex + 1).find((node) => (node as HTMLElement).hasAttribute('data-panel')) as HTMLElement | undefined;
-			if (!before || !after) return;
-			const groupSize = orientation === 'horizontal' ? element.current?.clientWidth : element.current?.clientHeight;
-			if (!groupSize) return;
-			const amount = delta / groupSize * 100;
-			const beforeId = before.id, afterId = after.id;
-			const nextBefore = Math.max(0, Math.min(100, (layout[beforeId] ?? 50) + amount));
-			const next = { ...layout, [beforeId]: nextBefore, [afterId]: (layout[beforeId] ?? 50) + (layout[afterId] ?? 50) - nextBefore };
-			apply(next, true, completed);
-		},
-		getPanelSize: (panelId) => layout[panelId] ?? 0,
-		setPanelSize(panelId, size) { apply({ ...layout, [panelId]: Math.max(0, Math.min(100, size)) }, false, true, true); },
-		getLayout: () => ({ ...layout }),
-	}), [id, orientation, disabled, layout, onLayoutChange, onLayoutChanged]);
+			if (event.prev && !layoutsEqual(event.prev.layout, layout)) layoutChangedAfterMount.current = true;
+			onLayoutChange(layout);
+			if (getInteractionState().state !== 'active') onLayoutChanged(layout, event.isUserInteraction);
+		});
+		return () => { registeredGroupRef.current = null; unmount(); unsubscribe(); };
+	}, [disabled, id, onLayoutChange, onLayoutChanged, orientation, panelOrSeparatorChangeSigil, stableProps]);
 
 	useEffect(() => {
-		const handle: GroupImperativeHandle = { getLayout: api.getLayout, setLayout: (next) => apply({ ...next }, false, true, true) };
-		setRef(groupRef, handle);
-		return () => setRef(groupRef, null);
-	}, [api, groupRef]);
+		const group = registeredGroupRef.current;
+		if (!group) return;
+		group.mutableState.defaultLayout = defaultLayout;
+		group.mutableState.disableCursor = !!disableCursor;
+		if (!adoptedDefinedDefault.current && defaultLayout !== undefined && !layoutChangedAfterMount.current) {
+			adoptedDefinedDefault.current = true;
+			getImperativeGroupMethods({ groupId: id }).setLayout(defaultLayout);
+		}
+	}, [defaultLayout, disableCursor, id]);
 
-	return <GroupContext.Provider value={api}><div {...rest} data-group data-testid={id} id={id} ref={(node) => { element.current = node; setRef(elementRef, node); }} style={{ height: '100%', width: '100%', overflow: 'hidden', ...style, display: 'flex', flexDirection: orientation === 'horizontal' ? 'row' : 'column', flexWrap: 'nowrap', touchAction: orientation === 'horizontal' ? 'pan-y' : 'pan-x' }}>{children}</div></GroupContext.Provider>;
+	return <GroupContext.Provider value={context}><div {...rest} className={className} data-group data-testid={id} id={id} ref={mergedRef} style={{ height: '100%', width: '100%', overflow: 'hidden', ...style, display: 'flex', flexDirection: orientation === 'horizontal' ? 'row' : 'column', flexWrap: 'nowrap', touchAction: orientation === 'horizontal' ? 'pan-y' : 'pan-x' }}>{children}</div></GroupContext.Provider>;
 }
+
 (Group as { displayName?: string }).displayName = 'Group';

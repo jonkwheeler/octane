@@ -23,13 +23,13 @@ export type PanelConstraints = {
 	minSize: number;
 	panelId: string;
 };
-export type OnPanelResize = (size: PanelSize, id: string | number | undefined, previousSize: PanelSize | undefined) => void;
+type PanelResizeCallback = (size: PanelSize, id: string | number | undefined, previousSize: PanelSize | undefined) => void;
 export type RegisteredPanel = {
 	id: string;
 	idIsStable: boolean;
 	element: HTMLDivElement;
 	mutableValues: { expandToSize: number | undefined; prevSize: PanelSize | undefined };
-	onResize: OnPanelResize | undefined;
+	onResize: PanelResizeCallback | undefined;
 	panelConstraints: PanelConstraintProps;
 };
 export interface PanelImperativeHandle {
@@ -52,7 +52,8 @@ export type PanelProps = DivProps & {
 	id?: string | number;
 	maxSize?: number | string;
 	minSize?: number | string;
-	onResize?: OnPanelResize;
+	onResize?: PanelResizeCallback;
 	panelRef?: Octane.Ref<PanelImperativeHandle | null>;
 	style?: DivStyle;
 };
+export type OnPanelResize = PanelProps['onResize'];

@@ -45,3 +45,6 @@ export type GroupProps = DivProps & {
 	resizeTargetMinimumSize?: ResizeTargetMinimumSize;
 	style?: DivStyle;
 };
+
+export type OnGroupLayoutChange = GroupProps['onLayoutChange'];
+export type OnGroupLayoutChanged = GroupProps['onLayoutChanged'];
