@@ -9,6 +9,7 @@ import { Conditional } from './demos/Conditional.tsrx';
 import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { DreiDemo } from './demos/Drei.tsrx';
+import { DoomDemo } from './demos/doom/Doom.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
@@ -27,6 +28,10 @@ import conditionalSource from './demos/Conditional.tsrx?raw';
 import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import dreiSource from './demos/Drei.tsrx?raw';
+import doomShellSource from './demos/doom/Doom.tsrx?raw';
+import doomSceneSource from './demos/doom/Doom.three.tsrx?raw';
+import doomModelSource from './demos/doom/model.ts?raw';
+import doomAssetsSource from './demos/doom/assets.ts?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
@@ -55,6 +60,27 @@ export interface DemoGroup {
 }
 
 export const GROUPS: readonly DemoGroup[] = [
+	{
+		id: 'games',
+		label: 'Games',
+		demos: [
+			{
+				id: 'doom',
+				title: 'Doom',
+				Component: DoomDemo,
+				source: [
+					'// Doom.tsrx',
+					doomShellSource,
+					'// Doom.three.tsrx',
+					doomSceneSource,
+					'// model.ts',
+					doomModelSource,
+					'// assets.ts',
+					doomAssetsSource,
+				].join('\n\n'),
+			},
+		],
+	},
 	{
 		id: 'language',
 		label: 'Language',
