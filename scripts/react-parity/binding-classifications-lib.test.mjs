@@ -3,7 +3,7 @@ import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
-import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'hook-form-classifications-'));
@@ -54,4 +54,41 @@ test('rejects a stale divergence classification', async (t) => {
 		'missing-divergence';
 	await writeFile(path, `${JSON.stringify(config)}\n`);
 	assert.throws(() => verifyPortTestClassifications(root), /not present in the parity manifest/);
+});
+
+test('verifies an arbitrary binding classification ledger', async (t) => {
+	const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
+	t.after(() => rm(root, { recursive: true, force: true }));
+	await cp(
+		new URL('../../packages/tanstack-form/tests', import.meta.url),
+		join(root, 'packages/tanstack-form/tests'),
+		{ recursive: true },
+	);
+	for (const file of ['test-classifications.json', 'react-parity.json']) {
+		await cp(
+			new URL(`../../packages/tanstack-form/audit/${file}`, import.meta.url),
+			join(root, `packages/tanstack-form/audit/${file}`),
+			{ recursive: true },
+		);
+	}
+	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-form'), { tests: 10 });
+	const classificationPath = join(root, 'packages/tanstack-form/audit/test-classifications.json');
+	const classifications = JSON.parse(await readFile(classificationPath, 'utf8'));
+	classifications.tests.find((entry) => entry.divergenceIds).divergenceIds[1] =
+		'missing-divergence';
+	await writeFile(classificationPath, `${JSON.stringify(classifications)}\n`);
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'tanstack-form'),
+		/divergence id is not present/,
+	);
+
+	await cp(
+		new URL('../../packages/tanstack-form/audit/test-classifications.json', import.meta.url),
+		classificationPath,
+	);
+	await writeFile(join(root, 'packages/tanstack-form/tests/unclassified.test.ts'), 'export {};\n');
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'tanstack-form'),
+		/every port-authored tanstack-form test must have exactly one classification/,
+	);
 });

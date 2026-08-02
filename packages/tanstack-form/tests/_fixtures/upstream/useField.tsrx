@@ -737,7 +737,7 @@ describe('useField', () => {
 			);
 		}
 
-		// OCTANE DIVERGENCE: Octane has no StrictMode double-invoke wrapper.
+		// OCTANE DIVERGENCE[tanstack-form-id-lifecycle][adapted:tanstack-form-id-lifecycle]
 		const { getByText, findByText, queryByText } = render(<Comp />);
 
 		await user.click(getByText('Submit'));

@@ -103,7 +103,7 @@ describe('Octane adapter - onChangeListenTo race', () => {
 			);
 		}
 
-		// OCTANE DIVERGENCE: Octane has no StrictMode double-invoke wrapper.
+		// OCTANE DIVERGENCE[tanstack-form-id-lifecycle][adapted:tanstack-form-id-lifecycle]
 		const { getByTestId } = render(<Comp />);
 
 		const street = getByTestId('street') as HTMLInputElement;

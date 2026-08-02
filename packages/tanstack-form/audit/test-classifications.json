@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/tanstack-form/tests/conformance/createFormHook.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Adapts packages/react-form/tests/createFormHook.test.tsx from the pinned repository into the TSRX fixture."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/divergences.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceIds": ["tanstack-form-id-lifecycle", "tanstack-form-function-components"],
+      "reason": "Authenticates stable Octane identifiers and callable function-component factories."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/exports.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the Octane TanStack Store re-export surface; it is not a React runtime oracle."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/onChangeListenTo.adapter.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Adapts the pinned onChangeListenTo regression into the Octane renderer."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/parity.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks package identity and Octane adapter wiring; it is not same-scenario React execution."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/useField.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Adapts packages/react-form/tests/useField.test.tsx from the pinned repository into the TSRX fixture."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/useForm.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Adapts packages/react-form/tests/useForm.test.tsx from the pinned repository into the TSRX fixture."
+    },
+    {
+      "path": "packages/tanstack-form/tests/conformance/useFormGroup.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Adapts packages/react-form/tests/useFormGroup.test.tsx from the pinned repository into the TSRX fixture."
+    },
+    {
+      "path": "packages/tanstack-form/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs one exact shared interaction fixture against @tanstack/react-form@1.33.2."
+    },
+    {
+      "path": "packages/tanstack-form/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane server rendering; it is not compared with React SSR."
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'octane/server';
 import { ServerForm } from '../_fixtures/server.tsrx';
 
 describe('@octanejs/tanstack-form SSR', () => {
+	// @parity-case adapted:tanstack-form-ssr
 	it('renders field and form snapshots without a DOM', () => {
 		expect(typeof document).toBe('undefined');
 
