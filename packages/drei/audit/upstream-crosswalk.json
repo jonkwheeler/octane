@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 106
+    "gaps": 102
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -2329,9 +2329,9 @@
         "path": "packages/drei/upstream/src/core/Trail.tsx",
         "line": 89
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Trail.three.tsrx",
+      "evidence": ["packages/drei/typetests/trail.test-d.ts"],
       "divergence": null
     },
     {
@@ -4219,9 +4219,9 @@
         "path": "packages/drei/upstream/src/core/Trail.tsx",
         "line": 91
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Trail.three.tsrx",
+      "evidence": ["packages/drei/tests/trail.test.ts"],
       "divergence": null
     },
     {
@@ -4232,9 +4232,9 @@
         "path": "packages/drei/upstream/src/core/Trail.tsx",
         "line": 21
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Trail.three.tsrx",
+      "evidence": ["packages/drei/typetests/trail.test-d.ts"],
       "divergence": null
     },
     {
@@ -5116,9 +5116,9 @@
         "path": "packages/drei/upstream/src/core/Trail.tsx",
         "line": 42
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Trail.three.tsrx",
+      "evidence": ["packages/drei/tests/trail.test.ts"],
       "divergence": null
     },
     {

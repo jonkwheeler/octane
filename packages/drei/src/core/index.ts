@@ -179,6 +179,8 @@ export { Sampler, useSurfaceSampler } from './Sampler.three.tsrx';
 export type { SamplerProps, TransformFn, useSurfaceSamplerProps } from './Sampler.three.tsrx';
 export { Cloud, CloudInstance, Clouds } from './Cloud.three.tsrx';
 export type { CloudProps, CloudsProps } from './Cloud.three.tsrx';
+export { Trail, useTrail } from './Trail.three.tsrx';
+export type { MeshLineGeometry, TrailProps } from './Trail.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
