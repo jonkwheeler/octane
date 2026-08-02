@@ -254,6 +254,12 @@ those checks after the final push; a review fix or a moving base can invalidate
 an earlier clean result. Agents leave drafts alone unless explicitly authorized
 to mark one ready, and that authorization never authorizes merging.
 
+Because Actions starts on `ready_for_review`, the initial authorized transition
+is the bootstrap that creates the required checks. It may happen only after the
+non-CI gates above and relevant local validation pass. Keep the PR ready while
+CI runs, but do not call it fully ready or merge-ready until every required
+check is terminal and successful.
+
 ## AI-assisted contributions
 
 Agent-written changes are welcome, with one rule: tick the provenance box in the

@@ -119,7 +119,11 @@ both labels as a bot, which does.
 Open every PR as a draft. Nothing has run against the pushed diff yet, and the
 draft state is what says so. By default, leave readiness and merging to a
 maintainer. When the user explicitly authorizes the agent to mark the PR ready,
-do so only after checking every gate below against the current head and live base:
+check every gate below against the current head and live base. The required-check
+gate has one bootstrap exception: when Actions has produced no required checks
+for the current head because the PR is still a draft, the first transition to
+ready is allowed after every non-CI gate and all relevant local validation pass.
+That transition starts CI; it is not evidence that CI passed.
 
 - every required check is terminal and successful;
 - every actionable review comment and review thread is resolved on the current head;
@@ -130,6 +134,9 @@ do so only after checking every gate below against the current head and live bas
 
 These are independent gates. Green checks do not prove that review feedback is
 resolved, and resolved feedback does not prove that the branch still merges.
+After the bootstrap transition, keep the PR ready while required checks run. Do
+not describe it as fully ready or merge-ready until those checks are terminal
+and successful; if a required check fails, address it and restart the gates.
 Re-check mergeability and the live base after the last push and immediately
 before `gh pr ready`. If the base moved, incorporate it without rewriting a
 published branch, rerun sync and validation, push, and start the gates again.
