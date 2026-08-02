@@ -108,6 +108,8 @@ export { Bounds, useBounds } from './Bounds.three.tsrx';
 export type { BoundsApi, BoundsProps, SizeProps } from './Bounds.three.tsrx';
 export { useAnimations } from './useAnimations.three.tsrx';
 export { useBoxProjectedEnv } from './useBoxProjectedEnv.three.tsrx';
+export { Resize } from './Resize.three.tsrx';
+export type { ResizeProps } from './Resize.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
