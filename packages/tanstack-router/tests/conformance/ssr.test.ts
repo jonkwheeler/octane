@@ -9,6 +9,7 @@ import { makeSsrRouter } from '../_fixtures/ssr.tsrx';
 describe('@octanejs/tanstack-router SSR', () => {
 	// Per TanStack/router PR #7847 snapshot 753f919e,
 	// packages/octane-router/tests/conformance/ssr.test.ts:14.
+	// @parity-case adapted:tanstack-router-ssr
 	it('renders the route-owned document and app mount boundary', async () => {
 		const router = makeSsrRouter();
 		attachRouterServerSsrUtils({ router, manifest: undefined });
@@ -85,6 +86,7 @@ describe('@octanejs/tanstack-router SSR', () => {
 	// Per TanStack/router PR #7847 snapshot 753f919e,
 	// packages/octane-router/tests/conformance/ssr.test.ts:90, as retained by
 	// the native StreamOptions.injection patch in this repository.
+	// @parity-case adapted:tanstack-router-ssr-stream
 	it('places shell styles inside the route-owned head when streaming', async () => {
 		const router = makeSsrRouter();
 		attachRouterServerSsrUtils({ router, manifest: undefined });
