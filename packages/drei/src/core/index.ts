@@ -102,6 +102,8 @@ export {
 } from './basic-controls.three.tsrx';
 export { PointerLockControls } from './PointerLockControls.three.tsrx';
 export type { PointerLockControlsProps } from './PointerLockControls.three.tsrx';
+export { Center } from './Center.three.tsrx';
+export type { CenterProps, OnCenterCallbackProps } from './Center.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

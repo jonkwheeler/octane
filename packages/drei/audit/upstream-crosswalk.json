@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 247
+    "gaps": 244
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -471,9 +471,9 @@
         "path": "packages/drei/upstream/src/core/Center.tsx",
         "line": 48
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Center.three.tsrx",
+      "evidence": ["packages/drei/tests/center.test.ts"],
       "divergence": null
     },
     {
@@ -484,9 +484,9 @@
         "path": "packages/drei/upstream/src/core/Center.tsx",
         "line": 23
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Center.three.tsrx",
+      "evidence": ["packages/drei/typetests/center.test-d.ts"],
       "divergence": null
     },
     {
@@ -2550,9 +2550,9 @@
         "path": "packages/drei/upstream/src/core/Center.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Center.three.tsrx",
+      "evidence": ["packages/drei/typetests/center.test-d.ts"],
       "divergence": null
     },
     {
