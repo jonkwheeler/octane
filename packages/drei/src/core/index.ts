@@ -15,6 +15,8 @@ export type { MeshReflectorMaterialProps } from './MeshReflectorMaterial.three.t
 export { Wireframe } from './Wireframe.three.tsrx';
 export { Caustics } from './Caustics.three.tsrx';
 export type { CausticsProps } from './Caustics.three.tsrx';
+export { MeshTransmissionMaterial } from './MeshTransmissionMaterial.three.tsrx';
+export type { MeshTransmissionMaterialProps } from './MeshTransmissionMaterial.three.tsrx';
 export {
 	Box,
 	Capsule,
