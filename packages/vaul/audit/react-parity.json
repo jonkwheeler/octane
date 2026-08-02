@@ -156,12 +156,12 @@
         },
         {
           "path": "packages/vaul/tests/browser/harness/main.tsrx",
-          "role": "fixture",
+          "role": "support",
           "sha256": "55809da3b107bc9c866d9fb0e5d2095f0b02df8ca06a5c76a058b6ea6cb76062"
         },
         {
           "path": "packages/vaul/tests/browser/harness/index.html",
-          "role": "fixture",
+          "role": "support",
           "sha256": "d00528ea09d41d860f8bba79f09813259390510ce75400913b3b4d221edf292c"
         }
       ]
