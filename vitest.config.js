@@ -110,6 +110,29 @@ const VISX_ALIASES = [
 		replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
 	},
 ];
+const STREAMDOWN_SOURCE = resolve(import.meta.dirname, 'packages/streamdown/src');
+const STREAMDOWN_ALIASES = [
+	{
+		find: /^@octanejs\/streamdown\/code$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'code.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown\/math$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'math.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown\/mermaid$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'mermaid-plugin.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown\/cjk$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'cjk.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'index.tsrx'),
+	},
+];
 // Octane's template source map contains zero-width generated segments that are
 // valid in Vite but currently rejected by Vitest's Istanbul/V8 remappers. The
 // Visx coverage project measures the compiled package source directly instead;
@@ -1525,12 +1548,25 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'hook-form-pristine',
+					include: ['packages/hook-form/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+				},
+			},
+			{
+				test: {
 					name: 'hook-form',
 					include: [
 						'packages/hook-form/tests/**/*.test.ts',
 						'packages/hook-form/tests/**/*.test.tsx',
 					],
-					exclude: [...configDefaults.exclude, 'packages/hook-form/tests/**/*.server.test.tsx'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/hook-form/tests/**/*.server.test.tsx',
+						'packages/hook-form/tests/upstream-original.test.ts',
+					],
 					environment: 'jsdom',
 					// Differential precompile: rewrites `@octanejs/hook-form` →
 					// `react-hook-form` so the React side runs the real binding.
@@ -1540,6 +1576,7 @@ export default defineConfig({
 					// jest setup. clear/reset/restore mirror upstream's jest config so
 					// spy state never leaks between ported tests.
 					setupFiles: ['packages/hook-form/tests/_setup.ts'],
+					fileParallelism: false,
 					clearMocks: true,
 					mockReset: true,
 					restoreMocks: true,
@@ -2220,10 +2257,6 @@ export default defineConfig({
 				plugins: [octane()],
 				resolve: {
 					alias: [
-						{
-							find: /^@octanejs\/shadcn$/,
-							replacement: resolve(import.meta.dirname, 'packages/shadcn/src/index.ts'),
-						},
 						// @octanejs/radix deliberately carries no alias: it resolves through
 						// node_modules like any other dependency. That used to mean the pinned
 						// published release (maintainer policy from the cmdk review); since the
@@ -2245,10 +2278,6 @@ export default defineConfig({
 						{
 							find: /^octane$/,
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
-						},
-						{
-							find: /^@octanejs\/shadcn$/,
-							replacement: resolve(import.meta.dirname, 'packages/shadcn/src/index.ts'),
 						},
 					],
 				},
@@ -2437,6 +2466,42 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'streamdown',
+					include: [
+						'packages/streamdown/tests/**/*.test.ts',
+						'!packages/streamdown/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globalSetup: ['packages/streamdown/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+					alias: STREAMDOWN_ALIASES,
+				},
+			},
+			{
+				test: {
+					name: 'streamdown-ssr',
+					include: ['packages/streamdown/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						...STREAMDOWN_ALIASES,
+					],
+				},
+			},
+			{
+				test: {
 					name: 'cmdk',
 					include: ['packages/cmdk/tests/**/*.test.ts', '!packages/cmdk/tests/ssr/**/*.test.ts'],
 					environment: 'jsdom',
@@ -2536,6 +2601,11 @@ export default defineConfig({
 					name: 'testing-library',
 					include: ['packages/testing-library/tests/**/*.test.ts'],
 					environment: 'jsdom',
+					// hydrate.test.ts renders its server markup through the shared
+					// hydration harness, which boots a real Vite SSR server in beforeAll —
+					// the same reason the other harness-using projects lift the 5s default.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					globals: false,
 				},
 				// The binding's `.ts` sources call hooks with EXPLICIT slot symbols
@@ -2653,6 +2723,47 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'astro',
+					include: ['packages/astro/tests/**/*.test.ts'],
+					exclude: ['packages/astro/tests/**/*.e2e.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				resolve: {
+					alias: [
+						{
+							find: /^astro:octane:opts$/,
+							replacement: resolve(import.meta.dirname, 'packages/astro/tests/_fixtures/opts.js'),
+						},
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^octane\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^octane\/compiler\/vite$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/compiler/vite.js'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'astro-e2e',
+					include: ['packages/astro/tests/astro.e2e.test.ts'],
+					environment: 'node',
+					globals: false,
+					hookTimeout: 320_000,
+					testTimeout: 60_000,
+					fileParallelism: false,
+					...(process.env.CI ? { maxWorkers: 1 } : {}),
+				},
+			},
+			{
+				test: {
 					name: 'octane-mcp-server',
 					include: ['packages/octane-mcp-server/src/**/*.test.js'],
 					environment: 'node',
@@ -2663,6 +2774,14 @@ export default defineConfig({
 				test: {
 					name: 'cli',
 					include: ['packages/cli/tests/**/*.test.js'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'create-octane',
+					include: ['packages/create-octane/tests/**/*.test.js'],
 					environment: 'node',
 					globals: false,
 				},

@@ -15,6 +15,7 @@
     "debug-tsx": "pnpm run debug-volar"
   },
   "dependencies": {
+    "@octanejs/aria": "workspace:*",
     "@octanejs/cmdk": "workspace:*",
     "@octanejs/gsap": "workspace:*",
     "@octanejs/lucide": "workspace:*",
@@ -25,6 +26,7 @@
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
     "@octanejs/rxjs": "workspace:*",
+    "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/wagmi": "workspace:*",
