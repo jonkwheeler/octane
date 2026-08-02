@@ -43,16 +43,20 @@ export function TwoResourceReaders(props: {
 	</div>
 }
 
-function RegistryValue(props: { override?: StoreRegistry }) @{
+function RegistryValue(props: { override?: StoreRegistry; expected?: StoreRegistry }) @{
 	const registry = useStoreRegistry(props.override);
 	<div id="registry">
-		{registry === props.override ? 'override' : 'context'}
+		{registry === props.override
+			? 'override'
+			: registry === props.expected
+				? 'context'
+				: 'unexpected'}
 	</div>
 }
 
 export function ContextRegistryReader(props: { registry: StoreRegistry }) @{
 	<StoreRegistryProvider storeRegistry={props.registry}>
-		<RegistryValue />
+		<RegistryValue expected={props.registry} />
 	</StoreRegistryProvider>
 }
 

@@ -2,6 +2,7 @@ import { SessionIdSymbol } from '@livestore/common';
 import { createTodoMvcStore, events, tables } from '@livestore/framework-toolkit/testing';
 import type { Store, SyncStatus } from '@livestore/livestore';
 import { Effect } from '@livestore/utils/effect';
+import { drainPassiveEffects, flushSync, hydrateRoot } from 'octane';
 import { describe, expect, it, vi } from 'vitest';
 import { withReactApi } from '../src/useStore';
 import { act, flushEffects, mount } from './_helpers';
@@ -96,5 +97,35 @@ describe('sync status', () => {
 		expect(second.listeners.size).toBe(0);
 		expect(first.unsubscribe).toHaveBeenCalledTimes(1);
 		expect(second.unsubscribe).toHaveBeenCalledTimes(1);
+	});
+
+	it('hydrates existing DOM and keeps the adopted host reactive', async () => {
+		let status = { isSynced: false, pendingCount: 1 } as SyncStatus;
+		const listeners = new Set<(value: SyncStatus) => void>();
+		const store = {
+			syncStatus: () => status,
+			subscribeSyncStatus(listener: (value: SyncStatus) => void) {
+				listeners.add(listener);
+				return () => listeners.delete(listener);
+			},
+		} as unknown as Store<any>;
+		const container = document.createElement('div');
+		container.innerHTML = `<div id="sync">${JSON.stringify(status)}</div>`;
+		document.body.appendChild(container);
+		const serverHost = container.querySelector('#sync');
+
+		const root = hydrateRoot(container, SyncReader, { store });
+		drainPassiveEffects();
+		expect(container.querySelector('#sync')).toBe(serverHost);
+
+		status = { isSynced: true, pendingCount: 0 } as SyncStatus;
+		await act(() => {
+			for (const listener of listeners) listener(status);
+		});
+		expect(container.querySelector('#sync')).toBe(serverHost);
+		expect(serverHost?.textContent).toContain('"isSynced":true');
+
+		flushSync(() => root.unmount());
+		container.remove();
 	});
 });

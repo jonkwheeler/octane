@@ -38,6 +38,7 @@ export default defineConfig({
 			'@octanejs/cmdk',
 			'@octanejs/radix',
 			'@octanejs/lucide',
+			'@octanejs/livestore',
 			'@octanejs/rainbowkit',
 			'@octanejs/tanstack-query',
 			'@octanejs/wagmi',
