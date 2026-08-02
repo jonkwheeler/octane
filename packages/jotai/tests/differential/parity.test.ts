@@ -22,6 +22,7 @@ const CACHE = resolve(__dirname, '.react-cache');
 const settle = (ms = 40) => new Promise((r) => setTimeout(r, ms));
 
 describe('differential: @octanejs/jotai vs real jotai on React', () => {
+	// @parity-case differential:jotai-counter
 	it('Counter: primitive + derived + write-only setter, byte-identical', async () => {
 		const d = await mountDifferential(COUNTER, 'Counter', undefined, CACHE);
 		await d.step('mount', () => {});
@@ -40,6 +41,7 @@ describe('differential: @octanejs/jotai vs real jotai on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:jotai-providers
 	it('Providers: default / outer / nested-shadowing scopes, byte-identical', async () => {
 		const d = await mountDifferential(PROVIDERS, 'Providers', undefined, CACHE);
 		await d.step('mount', () => {});
@@ -60,6 +62,7 @@ describe('differential: @octanejs/jotai vs real jotai on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:jotai-split-atom
 	it('Todos: splitAtom add/toggle/remove keyed list, byte-identical', async () => {
 		const d = await mountDifferential(SPLIT, 'Todos', undefined, CACHE);
 		await d.step('mount', () => {});
@@ -82,6 +85,7 @@ describe('differential: @octanejs/jotai vs real jotai on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:jotai-async-atom
 	it('AsyncApp: pending fallback → resolved value, byte-identical at both steps', async () => {
 		const d = await mountDifferential(ASYNC, 'AsyncApp', undefined, CACHE);
 		await d.step('mount (pending)', async () => {
