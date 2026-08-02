@@ -865,6 +865,15 @@ function desiredAttachment(
 	if (typeof path === 'string') {
 		return instance.visible ? { kind: 'attachment', parent, path } : { kind: 'none' };
 	}
+	const autoAttachArray = (parent as { __octaneAutoAttachArray?: unknown }).__octaneAutoAttachArray;
+	if (typeof autoAttachArray === 'string' && autoAttachArray.length > 0 && instance.visible) {
+		let index = 0;
+		for (const sibling of state.instances.values()) {
+			if (sibling.id === instance.id) break;
+			if (sibling.parent === instance.parent && !destroyed.has(sibling.id) && sibling.visible) index++;
+		}
+		return { kind: 'attachment', parent, path: `${autoAttachArray}-${index}` };
+	}
 	if (isObject3D(parent) && isObject3D(instance.object)) {
 		return { kind: 'object3d', parent };
 	}
