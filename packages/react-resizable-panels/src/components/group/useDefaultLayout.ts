@@ -23,27 +23,17 @@ export function useDefaultLayout(options: UseDefaultLayoutOptions, ...rest: [sym
 	} = options;
 	const id = 'id' in identity ? identity.id : identity.groupId;
 	const hasPanelIds = panelIds !== undefined;
-	const panelIdsKey = panelIds?.join(':') ?? '';
 	const storage = resolveStorage(storageProp);
 	const readStorageKey = getStorageKey(id, panelIds ?? []);
 	const defaultLayoutString = useSyncExternalStore(
 		subscribe,
-		() => readStorageItem(storage, readStorageKey),
+		() => readDefaultLayoutString(storage, readStorageKey, id, panelIds),
 		() => null,
 		subSlot(slot, 'stored-layout'),
 	);
 	const defaultLayout = useMemo(
-		() => {
-			const modern = readModernLayout(defaultLayoutString);
-			if (modern) return modern;
-			if (!storage) return undefined;
-			try {
-				return readLegacyLayout({ id, panelIds, storage });
-			} catch {
-				return undefined;
-			}
-		},
-		[defaultLayoutString, id, panelIdsKey, storage],
+		() => readModernLayout(defaultLayoutString),
+		[defaultLayoutString],
 		subSlot(slot, 'default-layout'),
 	);
 	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null, subSlot(slot, 'timeout'));
@@ -117,6 +107,23 @@ function readStorageItem(storage: LayoutStorage | undefined, key: string): strin
 	if (!storage) return null;
 	try {
 		return storage.getItem(key);
+	} catch {
+		return null;
+	}
+}
+
+function readDefaultLayoutString(
+	storage: LayoutStorage | undefined,
+	modernKey: string,
+	id: string,
+	panelIds: readonly string[] | undefined,
+): string | null {
+	const modernString = readStorageItem(storage, modernKey);
+	if (readModernLayout(modernString)) return modernString;
+	if (!storage) return null;
+	try {
+		const legacy = readLegacyLayout({ id, panelIds, storage });
+		return legacy ? JSON.stringify(legacy) : null;
 	} catch {
 		return null;
 	}

@@ -48,5 +48,34 @@ describe('react-resizable-panels persistence hydration', () => {
 		root.unmount();
 		error.mockRestore();
 		container.remove();
+
+		const legacyValues = new Map([
+			[
+				'react-resizable-panels:hydrated',
+				JSON.stringify({ 'left,right': { expandToSizes: {}, layout: [45, 55] } }),
+			],
+		]);
+		const legacyStorage = {
+			getItem: vi.fn((key: string) => legacyValues.get(key) ?? null),
+			setItem: vi.fn((key: string, value: string) => legacyValues.set(key, value)),
+		};
+		const legacyContainer = document.createElement('div');
+		legacyContainer.innerHTML = serverResult.html;
+		document.body.appendChild(legacyContainer);
+		const legacyServerButton = legacyContainer.querySelector('button');
+		const legacyError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		const legacyRoot = hydrateRoot(legacyContainer, PersistenceHydrationFixture, {
+			storage: legacyStorage,
+		});
+		await settle();
+
+		expect(legacyError).not.toHaveBeenCalled();
+		expect(legacyContainer.querySelector('button')).toBe(legacyServerButton);
+		expect(legacyServerButton?.getAttribute('data-layout')).toBe('{"left":45,"right":55}');
+
+		legacyRoot.unmount();
+		legacyError.mockRestore();
+		legacyContainer.remove();
 	}, 15_000);
 });
