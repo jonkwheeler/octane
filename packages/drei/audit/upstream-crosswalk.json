@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 191
+    "gaps": 187
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -2297,9 +2297,9 @@
         "path": "packages/drei/upstream/src/core/MeshDistortMaterial.tsx",
         "line": 88
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/motion-materials.three.tsrx",
+      "evidence": ["packages/drei/tests/motion-materials.test.ts"],
       "divergence": null
     },
     {
@@ -2310,9 +2310,9 @@
         "path": "packages/drei/upstream/src/core/MeshDistortMaterial.tsx",
         "line": 83
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/motion-materials.three.tsrx",
+      "evidence": ["packages/drei/typetests/motion-materials.test-d.ts"],
       "divergence": null
     },
     {
@@ -2427,9 +2427,9 @@
         "path": "packages/drei/upstream/src/core/MeshWobbleMaterial.tsx",
         "line": 74
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/motion-materials.three.tsrx",
+      "evidence": ["packages/drei/tests/motion-materials.test.ts"],
       "divergence": null
     },
     {
@@ -4415,9 +4415,9 @@
         "path": "packages/drei/upstream/src/core/MeshWobbleMaterial.tsx",
         "line": 69
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/motion-materials.three.tsrx",
+      "evidence": ["packages/drei/typetests/motion-materials.test-d.ts"],
       "divergence": null
     },
     {

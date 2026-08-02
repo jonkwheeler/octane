@@ -132,6 +132,8 @@ export { checkIfFrameIsEmpty, getFirstFrame } from './sprite-loader.js';
 export type { FrameData, MetaData, Size, SpriteData } from './sprite-loader.js';
 export { Lightformer } from './Lightformer.three.tsrx';
 export type { LightProps } from './Lightformer.three.tsrx';
+export { MeshDistortMaterial, MeshWobbleMaterial } from './motion-materials.three.tsrx';
+export type { MeshDistortMaterialProps, WobbleMaterialProps } from './motion-materials.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
