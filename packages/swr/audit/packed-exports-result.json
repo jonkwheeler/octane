@@ -3,23 +3,23 @@
   "node": "v22.14.0",
   "tarball": "octanejs-swr-0.0.0.tgz",
   "esm": {
-    "r": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/index/index.ts",
-    "i": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/infinite/index.ts",
-    "m": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/immutable/index.ts",
-    "u": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/mutation/index.ts",
-    "s": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/subscription/index.ts",
-    "x": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/_internal/index.ts"
+    "r": "@octanejs/swr/src/index/index.ts",
+    "i": "@octanejs/swr/src/infinite/index.ts",
+    "m": "@octanejs/swr/src/immutable/index.ts",
+    "u": "@octanejs/swr/src/mutation/index.ts",
+    "s": "@octanejs/swr/src/subscription/index.ts",
+    "x": "@octanejs/swr/src/_internal/index.ts"
   },
   "cjs": {
-    "r": "/private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/index/index.cts",
-    "i": "/private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/infinite/index.cts",
+    "r": "@octanejs/swr/src/index/index.cts",
+    "i": "@octanejs/swr/src/infinite/index.cts",
     "name": "@octanejs/swr",
     "version": "0.0.0"
   },
   "server": {
-    "r": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/index/index.react-server.ts",
-    "i": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/infinite/index.react-server.ts",
-    "x": "file:///private/var/folders/rj/p112yq592fq2gzrv2d0y_1vh0000gn/T/octane-swr-pack-0u8ybJ/consumer/node_modules/@octanejs/swr/src/_internal/index.react-server.ts"
+    "r": "@octanejs/swr/src/index/index.react-server.ts",
+    "i": "@octanejs/swr/src/infinite/index.react-server.ts",
+    "x": "@octanejs/swr/src/_internal/index.react-server.ts"
   },
   "typescriptProjects": 3
 }

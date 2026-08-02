@@ -2,7 +2,16 @@
 
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+	cpSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	realpathSync,
+	rmSync,
+	symlinkSync,
+	writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, resolve } from 'node:path';
 import { createRequire } from 'node:module';
@@ -35,6 +44,18 @@ try {
 	mkdirSync(unpack);
 	execFileSync('tar', ['-xzf', tarball, '-C', unpack]);
 	cpSync(resolve(unpack, 'package'), installedPackage, { recursive: true });
+	// Model the dependency links a package-manager install creates around the
+	// extracted tarball. The gate remains network-free and exercises the packed
+	// package's declared authored-source imports.
+	symlinkSync(resolve(packageRoot, '../octane'), resolve(installRoot, 'node_modules/octane'));
+	symlinkSync(
+		realpathSync(resolve(packageRoot, 'node_modules/dequal')),
+		resolve(installRoot, 'node_modules/dequal'),
+	);
+	symlinkSync(
+		realpathSync(resolve(packageRoot, '../../node_modules/@types')),
+		resolve(installRoot, 'node_modules/@types'),
+	);
 
 	const esm = JSON.parse(
 		runNode([
@@ -103,7 +124,33 @@ try {
 
 	writeFileSync(
 		resolve(packageRoot, 'audit/packed-exports-result.json'),
-		`${JSON.stringify({ schemaVersion: 1, node: process.version, tarball: basename(tarball), esm, cjs, server, typescriptProjects: 3 }, null, 2)}\n`,
+		`${JSON.stringify(
+			{
+				schemaVersion: 1,
+				node: process.version,
+				tarball: basename(tarball),
+				esm: Object.fromEntries(
+					Object.entries(esm).map(([key, value]) => [
+						key,
+						new URL(value).pathname.split('/node_modules/')[1],
+					]),
+				),
+				cjs: {
+					...cjs,
+					r: cjs.r.split('/node_modules/')[1],
+					i: cjs.i.split('/node_modules/')[1],
+				},
+				server: Object.fromEntries(
+					Object.entries(server).map(([key, value]) => [
+						key,
+						new URL(value).pathname.split('/node_modules/')[1],
+					]),
+				),
+				typescriptProjects: 3,
+			},
+			null,
+			2,
+		)}\n`,
 	);
 	console.log(
 		'SWR packed export gate passed: ESM, CJS, react-server, NodeNext, Bundler, package.json',

@@ -1,79 +1,29 @@
-export const SWRConfig = { __u1: true };
-export const revalidateEvents = {
-	FOCUS_EVENT: 0,
-	RECONNECT_EVENT: 1,
-	MUTATE_EVENT: 2,
-	ERROR_REVALIDATE_EVENT: 3,
-};
-export const INFINITE_PREFIX = '$inf$';
-export const initCache = () => undefined;
-export const defaultConfig = {};
-export const cache = new Map();
-export const mutate = () => undefined;
-export const compare = Object.is;
-export const IS_REACT_LEGACY = false;
-export const IS_SERVER = typeof window === 'undefined';
-export const rAF = (callback: () => void) => setTimeout(callback, 0);
-export const useIsomorphicLayoutEffect = () => undefined;
-export const slowConnection = false;
-export const SWRGlobalState = new WeakMap();
-export const stableHash = (value: unknown) => JSON.stringify(value);
-export const isWindowDefined = typeof window !== 'undefined';
-export const isDocumentDefined = typeof document !== 'undefined';
-export const isLegacyDeno = false;
-export const hasRequestAnimationFrame = () => typeof requestAnimationFrame !== 'undefined';
-export const createCacheHelper = () => [];
-export const noop = () => undefined;
-export const UNDEFINED = undefined;
-export const OBJECT = Object;
-export const isUndefined = (value: unknown): value is undefined => value === undefined;
-export const isFunction = (value: unknown): value is Function => typeof value === 'function';
-export const mergeObjects = (a: object, b?: object) => ({ ...a, ...b });
-export const isPromiseLike = (value: any) => value?.then != null;
-export const mergeConfigs = mergeObjects;
-export const internalMutate = mutate;
-export const normalize = (value: unknown) => value;
-export const withArgs = (value: unknown) => value;
-export const serialize = (value: unknown) => [JSON.stringify(value), value];
-export const subscribeCallback = () => () => undefined;
-export let timestamp = 0;
-export const getTimestamp = () => ++timestamp;
-export const useSWRConfig = () => ({});
-export const preset = {};
-export const defaultConfigOptions = {};
-export const withMiddleware = (value: unknown) => value;
-export const preload = () => undefined;
-export type GlobalState = unknown;
-export type FetcherResponse<Data = unknown> = Data | Promise<Data>;
-export type BareFetcher = (...args: unknown[]) => unknown;
-export type Fetcher = BareFetcher;
-export type BlockingData = unknown;
-export type InternalConfiguration = unknown;
-export type PublicConfiguration = unknown;
-export type FullConfiguration = unknown;
-export type ProviderConfiguration = unknown;
-export type SWRHook = unknown;
-export type Middleware = unknown;
-export type Arguments = unknown;
-export type Key = unknown;
-export type StrictTupleKey = unknown;
-export type MutatorCallback = unknown;
-export type MutatorOptions = unknown;
-export type MutatorConfig = unknown;
-export type Broadcaster = unknown;
-export type State = unknown;
-export type MutatorFn = unknown;
-export type MutatorWrapper<T> = T;
-export type Mutator = unknown;
-export type ScopedMutator = unknown;
-export type KeyedMutator = unknown;
-export type SWRConfiguration = unknown;
-export type IsLoadingResponse = unknown;
-export type SWRResponse = unknown;
-export type KeyLoader = unknown;
-export type RevalidatorOptions = unknown;
-export type Revalidator = unknown;
-export type RevalidateEvent = unknown;
-export type RevalidateCallback = unknown;
-export type Cache = Map<unknown, unknown>;
-export type StateDependencies = unknown;
+import SWRConfig from './utils/config-context.js';
+import * as revalidateEvents from './events.js';
+import { INFINITE_PREFIX } from './constants.js';
+
+export { SWRConfig, revalidateEvents, INFINITE_PREFIX };
+
+export { initCache } from './utils/cache.js';
+export { defaultConfig, cache, mutate, compare } from './utils/config.js';
+import { setupDevTools } from './utils/devtools.js';
+export * from './utils/env.js';
+export { SWRGlobalState } from './utils/global-state.js';
+export { stableHash } from './utils/hash.js';
+export * from './utils/helper.js';
+export * from './utils/shared.js';
+export { mergeConfigs } from './utils/merge-config.js';
+export { internalMutate } from './utils/mutate.js';
+export { normalize } from './utils/normalize-args.js';
+export { withArgs } from './utils/resolve-args.js';
+export { serialize } from './utils/serialize.js';
+export { subscribeCallback } from './utils/subscribe-key.js';
+export { getTimestamp } from './utils/timestamp.js';
+export { useSWRConfig } from './utils/use-swr-config.js';
+export { preset, defaultConfigOptions } from './utils/web-preset.js';
+export { withMiddleware } from './utils/with-middleware.js';
+export { preload } from './utils/preload.js';
+
+export * from './types.js';
+
+setupDevTools();

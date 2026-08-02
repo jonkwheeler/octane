@@ -78,7 +78,15 @@
   "scripts": {
     "u1:architecture": "vitest run ./tests/probes/architecture.test.ts ../../packages/octane/tests/hydration/hydration.test.ts ../../packages/octane/tests/hydration/suspense-hydrate.test.ts ../../packages/octane/tests/streaming-ssr.test.ts --config ./tests/probes/vitest.config.mjs",
     "u1:pack": "node ./tests/probes/packed-exports.test.mjs",
+    "u2:test": "vitest run ./tests/unit ./tests/differential --config ./tests/probes/vitest.config.mjs",
+    "u2:types": "tsc -p ./typetests/internal/tsconfig.json",
     "upstream:verify": "node ./audit/verify-provenance.mjs"
+  },
+  "dependencies": {
+    "dequal": "^2.0.3"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
   },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",

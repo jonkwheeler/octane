@@ -1,7 +1,7 @@
-export function readDevtoolsMiddleware(target: object): readonly unknown[] {
+export function readDevtoolsMiddleware<T = unknown>(target: object): T[] {
 	const descriptor = Object.getOwnPropertyDescriptor(target, '__SWR_DEVTOOLS_USE__');
 	if (!descriptor || !('value' in descriptor) || !Array.isArray(descriptor.value)) return [];
-	return descriptor.value.slice();
+	return descriptor.value.slice() as T[];
 }
 
 export function setupOctaneDevtools(target: object, runtime: unknown): void {
