@@ -2,9 +2,13 @@ import { type FormSchema, INTERNAL, type SubmitEventHandler } from '../../core/i
 import { handleSubmit } from '../../methods/index.ts';
 import type { FormStore } from '../../types/index.ts';
 import type { OctaneNode } from 'octane';
+import type { Octane } from 'octane/jsx-runtime';
 
 export type FormProps<TSchema extends FormSchema = FormSchema> =
-	Record<string, unknown> & {
+	Omit<
+		Octane.FormHTMLAttributes<HTMLFormElement>,
+		'onSubmit' | 'novalidate' | 'noValidate' | 'children'
+	> & {
 		readonly of: FormStore<TSchema>;
 		readonly onSubmit: SubmitEventHandler<TSchema>;
 		readonly children?: OctaneNode;
