@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/sonner/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs one exact same-fixture lifecycle scenario against published sonner@2.0.7 on React."
+    },
+    {
+      "path": "packages/sonner/tests/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane server-host adoption; it is not compared with React hydration."
+    },
+    {
+      "path": "packages/sonner/tests/ssr/server.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "sonner-ssr-visibility-guard",
+      "reason": "Authenticates the documented SSR visibility guard."
+    },
+    {
+      "path": "packages/sonner/tests/state.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the Octane state API and promise behavior; it is not a React oracle."
+    },
+    {
+      "path": "packages/sonner/tests/toaster.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "sonner-native-action-events",
+      "reason": "Checks broad Octane Toaster behavior and authenticates native-event and normal-ref contracts."
+    }
+  ]
+}

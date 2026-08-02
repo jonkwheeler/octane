@@ -55,3 +55,28 @@ test('rejects a stale divergence classification', async (t) => {
 	await writeFile(path, `${JSON.stringify(config)}\n`);
 	assert.throws(() => verifyPortTestClassifications(root), /not present in the parity manifest/);
 });
+
+test('verifies an arbitrary binding classification ledger', async (t) => {
+	const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
+	t.after(() => rm(root, { recursive: true, force: true }));
+	await cp(
+		new URL('../../packages/sonner/tests', import.meta.url),
+		join(root, 'packages/sonner/tests'),
+		{
+			recursive: true,
+		},
+	);
+	for (const file of ['test-classifications.json', 'react-parity.json']) {
+		await cp(
+			new URL(`../../packages/sonner/audit/${file}`, import.meta.url),
+			join(root, `packages/sonner/audit/${file}`),
+			{ recursive: true },
+		);
+	}
+	assert.deepEqual(verifyPortTestClassifications(root, 'sonner'), { tests: 5 });
+	await writeFile(join(root, 'packages/sonner/tests/unclassified.test.ts'), 'export {};\n');
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'sonner'),
+		/every port-authored sonner test must have exactly one classification/,
+	);
+});

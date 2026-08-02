@@ -4,6 +4,7 @@ import { toast } from '@octanejs/sonner';
 import { ServerToaster } from './_fixtures/server.tsrx';
 
 describe('@octanejs/sonner — server rendering', () => {
+	// @parity-case adapted:sonner-ssr-visibility-guard
 	it('renders the accessible empty host without reading browser globals', () => {
 		const { html } = renderToString(ServerToaster);
 		expect(html).toContain('<h1>Toast host</h1>');
