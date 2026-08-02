@@ -36,6 +36,7 @@
     "src",
     "LICENSE",
     "README.md",
+    "UPSTREAM.md",
     "status.json"
   ],
   "exports": {

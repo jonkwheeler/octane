@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@octanejs/animejs": "workspace:*",
+    "@octanejs/aria": "workspace:*",
     "@octanejs/cmdk": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/mantine-hooks": "workspace:*",
@@ -25,6 +26,7 @@
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
     "@octanejs/rxjs": "workspace:*",
+    "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/three": "workspace:*",

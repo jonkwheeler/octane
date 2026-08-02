@@ -4,6 +4,9 @@
 The package re-exports Anime.js and adds an Octane lifecycle hook for scoped DOM
 animations.
 
+The exact upstream pin, supported entry points, explicit subpath gaps, and test
+dispositions are recorded in [`UPSTREAM.md`](./UPSTREAM.md).
+
 ```tsx
 import { animate, useAnimeScope } from '@octanejs/animejs';
 
