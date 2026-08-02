@@ -112,6 +112,8 @@ export { Resize } from './Resize.three.tsrx';
 export type { ResizeProps } from './Resize.three.tsrx';
 export { CameraShake } from './CameraShake.three.tsrx';
 export type { CameraShakeProps, ShakeController } from './CameraShake.three.tsrx';
+export { Decal } from './Decal.three.tsrx';
+export type { DecalProps } from './Decal.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
