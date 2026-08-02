@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 239
+    "gaps": 238
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -4545,9 +4545,12 @@
         "path": "packages/drei/upstream/src/core/useAnimations.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useAnimations.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/use-animations.test.ts",
+        "packages/drei/typetests/use-animations.test-d.ts"
+      ],
       "divergence": null
     },
     {

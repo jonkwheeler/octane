@@ -106,6 +106,7 @@ export { Center } from './Center.three.tsrx';
 export type { CenterProps, OnCenterCallbackProps } from './Center.three.tsrx';
 export { Bounds, useBounds } from './Bounds.three.tsrx';
 export type { BoundsApi, BoundsProps, SizeProps } from './Bounds.three.tsrx';
+export { useAnimations } from './useAnimations.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
