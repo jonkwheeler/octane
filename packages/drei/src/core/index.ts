@@ -148,6 +148,8 @@ export { checkIfFrameIsEmpty, getFirstFrame, useSpriteLoader } from './useSprite
 export type { FrameData, MetaData, Size, SpriteData } from './useSpriteLoader.three.tsrx';
 export { SpriteAnimator, useSpriteAnimator } from './SpriteAnimator.three.tsrx';
 export type { SpriteAnimatorProps } from './SpriteAnimator.three.tsrx';
+export { SpotLight, SpotLightShadow } from './SpotLight.three.tsrx';
+export type { SpotLightProps } from './SpotLight.three.tsrx';
 export { Lightformer } from './Lightformer.three.tsrx';
 export type { LightProps } from './Lightformer.three.tsrx';
 export { MeshDistortMaterial, MeshWobbleMaterial } from './motion-materials.three.tsrx';
