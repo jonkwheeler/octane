@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -32,10 +32,13 @@ const expectedTypes = [
 ].sort();
 
 function walk(root) {
-	return readdirSync(root, { recursive: true })
-		.map((path) => join(root, path))
-		.filter((path) => statSync(path).isFile())
-		.sort();
+	const files = [];
+	for (const entry of readdirSync(root, { withFileTypes: true })) {
+		const path = join(root, entry.name);
+		if (entry.isDirectory()) files.push(...walk(path));
+		else if (entry.isFile()) files.push(path);
+	}
+	return files.sort();
 }
 
 function fail(message) {

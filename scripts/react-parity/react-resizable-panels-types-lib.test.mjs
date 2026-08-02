@@ -12,7 +12,7 @@ describe('react-resizable-panels public type parity evidence', () => {
 		execFileSync(
 			path.join(repo, 'node_modules/.bin/tsrx-tsc'),
 			['--noEmit', '-p', path.join(packageRoot, 'audit/type-probes/tsconfig.json')],
-			{ cwd: repo },
+			{ cwd: repo, stdio: 'inherit' },
 		);
 	});
 
