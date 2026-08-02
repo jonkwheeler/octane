@@ -54,6 +54,16 @@ describe('useDefaultLayout persistence', () => {
 		};
 		const denied = renderHook(() => useDefaultLayout({ id: 'blocked', storage: blocked }));
 		expect(denied.result.current.defaultLayout).toBeUndefined();
+		act(() =>
+			denied.result.current.onLayoutChanged(
+				{ list: 45, detail: 55 },
+				{ isUserInteraction: true },
+			),
+		);
+		expect(blocked.setItem).toHaveBeenCalledWith(
+			'react-resizable-panels:blocked',
+			'{"list":45,"detail":55}',
+		);
 	});
 
 	it('saves committed layouts immediately and filters non-user commits when requested', () => {

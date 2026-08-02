@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'octane';
+import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'octane';
 import { splitSlot, subSlot } from '../../internal';
 import { getStorageKey } from './auto-save/getStorageKey';
 import { readLegacyLayout } from './auto-save/readLegacyLayout';
@@ -24,12 +24,31 @@ export function useDefaultLayout(options: UseDefaultLayoutOptions, ...rest: [sym
 	const id = 'id' in identity ? identity.id : identity.groupId;
 	const hasPanelIds = panelIds !== undefined;
 	const panelIdsKey = panelIds?.join(':') ?? '';
-	const [defaultLayout, setDefaultLayout] = useState<Layout | undefined>(
-		undefined,
+	const storage = resolveStorage(storageProp);
+	const readStorageKey = getStorageKey(id, panelIds ?? []);
+	const defaultLayoutString = useSyncExternalStore(
+		subscribe,
+		() => readStorageItem(storage, readStorageKey),
+		() => null,
+		subSlot(slot, 'stored-layout'),
+	);
+	const defaultLayout = useMemo(
+		() => {
+			const modern = readModernLayout(defaultLayoutString);
+			if (modern) return modern;
+			if (!storage) return undefined;
+			try {
+				return readLegacyLayout({ id, panelIds, storage });
+			} catch {
+				return undefined;
+			}
+		},
+		[defaultLayoutString, id, panelIdsKey, storage],
 		subSlot(slot, 'default-layout'),
 	);
 	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null, subSlot(slot, 'timeout'));
-	const storageRef = useRef<LayoutStorage | undefined>(storageProp, subSlot(slot, 'storage'));
+	const storageRef = useRef<LayoutStorage | undefined>(storage, subSlot(slot, 'storage'));
+	storageRef.current = storage;
 
 	const clearPendingTimeout = useCallback(
 		() => {
@@ -40,22 +59,6 @@ export function useDefaultLayout(options: UseDefaultLayoutOptions, ...rest: [sym
 		},
 		[],
 		subSlot(slot, 'clear-timeout'),
-	);
-
-	useEffect(
-		() => {
-			try {
-				const storage = storageProp ?? globalThis.localStorage;
-				storageRef.current = storage;
-				const modern = readModernLayout(storage.getItem(getStorageKey(id, panelIds ?? [])));
-				setDefaultLayout(modern ?? readLegacyLayout({ id, panelIds, storage }));
-			} catch {
-				storageRef.current = undefined;
-				setDefaultLayout(undefined);
-			}
-		},
-		[id, panelIdsKey, storageProp],
-		subSlot(slot, 'restore-effect'),
 	);
 
 	useEffect(() => clearPendingTimeout, [clearPendingTimeout], subSlot(slot, 'cleanup-effect'));
@@ -95,6 +98,28 @@ export function useDefaultLayout(options: UseDefaultLayoutOptions, ...rest: [sym
 	);
 
 	return { defaultLayout, onLayoutChange, onLayoutChanged };
+}
+
+function subscribe() {
+	return () => {};
+}
+
+function resolveStorage(storage: LayoutStorage | undefined): LayoutStorage | undefined {
+	if (storage) return storage;
+	try {
+		return globalThis.localStorage;
+	} catch {
+		return undefined;
+	}
+}
+
+function readStorageItem(storage: LayoutStorage | undefined, key: string): string | null {
+	if (!storage) return null;
+	try {
+		return storage.getItem(key);
+	} catch {
+		return null;
+	}
 }
 
 function readModernLayout(value: string | null): Layout | undefined {
