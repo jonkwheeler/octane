@@ -70,13 +70,32 @@ const renderAndChildren: OTPInputProps = { maxLength: 6, render: () => child, ch
 // @ts-expect-error one of render or children is required
 const missingProjection: OTPInputProps = { maxLength: 6 };
 
-// @ts-expect-error the public callback receives a string, not the native input event
-const nativeChangeLeak: OTPInputProps = { maxLength: 6, children: child, onChange: (event: Event) => event };
+const nativeChangeLeak: OTPInputProps = {
+	maxLength: 6,
+	children: child,
+	// @ts-expect-error the public callback receives a string, not the native input event
+	onChange: (event: Event) => event,
+};
 
-// @ts-expect-error invalid password-manager strategies are rejected
-const invalidStrategy: OTPInputProps = { maxLength: 6, children: child, pushPasswordManagerStrategy: 'overlay' };
+const invalidStrategy: OTPInputProps = {
+	maxLength: 6,
+	children: child,
+	// @ts-expect-error invalid password-manager strategies are rejected
+	pushPasswordManagerStrategy: 'overlay',
+};
 
-// @ts-expect-error intrinsic input props remain strict
-const unknownIntrinsicProp: OTPInputProps = { maxLength: 6, children: child, imaginaryInputProp: true };
+const unknownIntrinsicProp: OTPInputProps = {
+	maxLength: 6,
+	children: child,
+	// @ts-expect-error intrinsic input props remain strict
+	imaginaryInputProp: true,
+};
 
-void [missingMaxLength, renderAndChildren, missingProjection, nativeChangeLeak, invalidStrategy, unknownIntrinsicProp];
+void [
+	missingMaxLength,
+	renderAndChildren,
+	missingProjection,
+	nativeChangeLeak,
+	invalidStrategy,
+	unknownIntrinsicProp,
+];

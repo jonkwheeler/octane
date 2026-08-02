@@ -247,7 +247,7 @@
         {
           "path": "packages/input-otp/typetests/public-api.test-d.ts",
           "role": "test",
-          "sha256": "6f59ab89c499964d864feeebf4f279c9c3ac3d092fdcdb12ec3704b4585605fa",
+          "sha256": "f98458e6bb07d08c8575800b29a0c943665f0ed65a520ff5923d2c7bbd8ed91d",
           "cases": [
             {
               "id": "types:input-otp-adapted-public",

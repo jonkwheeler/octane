@@ -18,9 +18,15 @@
       "disposition": "adapted",
       "adaptedPath": "tests/browser/upstream/base.delete-word.spec.ts",
       "cases": [
-        { "identity": "should backspace previous word (even if there is not a selected character)", "adaptedActive": true },
+        {
+          "identity": "should backspace previous word (even if there is not a selected character)",
+          "adaptedActive": true
+        },
         { "identity": "should backspace selected char", "adaptedActive": true },
-        { "identity": "should forward-delete character when pressing delete", "adaptedActive": true }
+        {
+          "identity": "should forward-delete character when pressing delete",
+          "adaptedActive": true
+        }
       ]
     },
     {
@@ -28,9 +34,7 @@
       "caseCount": 1,
       "disposition": "adapted",
       "adaptedPath": "tests/browser/upstream/base.props.spec.ts",
-      "cases": [
-        { "identity": "should receive props accordingly", "adaptedActive": true }
-      ]
+      "cases": [{ "identity": "should receive props accordingly", "adaptedActive": true }]
     },
     {
       "path": "base.render.spec.ts",
@@ -51,7 +55,10 @@
       "adaptedSkipDisposition": "removed; all cases must execute in CI",
       "cases": [
         { "identity": "should replace selected char if another is pressed", "adaptedActive": true },
-        { "identity": "should replace multi-selected chars if another is pressed", "adaptedActive": true },
+        {
+          "identity": "should replace multi-selected chars if another is pressed",
+          "adaptedActive": true
+        },
         { "identity": "should replace last char if another one is pressed", "adaptedActive": true }
       ]
     },
@@ -60,9 +67,7 @@
       "caseCount": 1,
       "disposition": "adapted",
       "adaptedPath": "tests/browser/upstream/base.slot.spec.ts",
-      "cases": [
-        { "identity": "should expose the slot value", "adaptedActive": true }
-      ]
+      "cases": [{ "identity": "should expose the slot value", "adaptedActive": true }]
     },
     {
       "path": "base.typing.spec.ts",
@@ -80,18 +85,14 @@
       "caseCount": 1,
       "disposition": "adapted",
       "adaptedPath": "tests/browser/upstream/with-autofocus.spec.ts",
-      "cases": [
-        { "identity": "should autofocus", "adaptedActive": true }
-      ]
+      "cases": [{ "identity": "should autofocus", "adaptedActive": true }]
     },
     {
       "path": "with-on-complete.spec.ts",
       "caseCount": 1,
       "disposition": "adapted",
       "adaptedPath": "tests/browser/upstream/with-on-complete.spec.ts",
-      "cases": [
-        { "identity": "should change the input value", "adaptedActive": true }
-      ]
+      "cases": [{ "identity": "should change the input value", "adaptedActive": true }]
     }
   ]
 }

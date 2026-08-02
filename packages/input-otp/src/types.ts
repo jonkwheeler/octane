@@ -15,10 +15,7 @@ export interface RenderProps {
 }
 
 type OTPInputRef<T> =
-	| ((value: T | null) => void)
-	| { current: T | null }
-	| readonly OTPInputRef<T>[]
-	| null;
+	((value: T | null) => void) | { current: T | null } | readonly OTPInputRef<T>[] | null;
 
 type OverrideProps<T, R> = Omit<T, keyof R> & R;
 type InputElementProps = Omit<Octane.JSX.IntrinsicElements['input'], 'ref'>;
