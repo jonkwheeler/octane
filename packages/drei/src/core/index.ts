@@ -143,6 +143,8 @@ export { Sparkles } from './Sparkles.three.tsrx';
 export type { SparklesProps } from './Sparkles.three.tsrx';
 export { CurveModifier } from './CurveModifier.three.tsrx';
 export type { CurveModifierProps, CurveModifierRef } from './CurveModifier.three.tsrx';
+export { Stars } from './Stars.three.tsrx';
+export type { StarsProps } from './Stars.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
