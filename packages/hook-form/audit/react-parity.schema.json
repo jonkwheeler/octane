@@ -81,9 +81,10 @@
                   "properties": {
                     "type": { "const": "pristine-types" },
                     "oracle": { "const": "required" },
-                    "available": { "not": { "const": false } }
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "upstream-suite" }
                   },
-                  "required": ["type", "oracle"]
+                  "required": ["type", "oracle", "evidenceOrigin"]
                 }
               },
               {
@@ -91,9 +92,51 @@
                   "properties": {
                     "type": { "const": "adapted-types" },
                     "oracle": { "const": "required" },
-                    "available": { "not": { "const": false } }
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "upstream-suite" }
                   },
-                  "required": ["type", "oracle"]
+                  "required": ["type", "oracle", "evidenceOrigin"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provenance": { "properties": { "verification": { "const": "verified" } } },
+          "upstreamSuites": {
+            "properties": { "types": { "enum": ["absent", "insufficient"] } }
+          }
+        },
+        "required": ["provenance", "upstreamSuites"]
+      },
+      "then": {
+        "properties": {
+          "lanes": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "pristine-types" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "repo-authored" }
+                  },
+                  "required": ["type", "oracle", "evidenceOrigin"]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "adapted-types" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "repo-authored" }
+                  },
+                  "required": ["type", "oracle", "evidenceOrigin"]
                 }
               }
             ]
@@ -194,6 +237,31 @@
               },
               "required": ["execution"]
             }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "pristine-types" } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "execution": {
+                  "properties": { "compiler": { "const": "tsc" } },
+                  "required": ["compiler"]
+                }
+              },
+              "required": ["execution", "evidenceOrigin"]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": { "enum": ["pristine-types", "adapted-types"] }
+              },
+              "required": ["type"]
+            },
+            "then": { "required": ["evidenceOrigin"] },
+            "else": { "not": { "required": ["evidenceOrigin"] } }
           }
         ],
         "required": ["id", "type", "oracle", "environment", "project", "files"],
@@ -214,6 +282,7 @@
           "environment": { "type": "string", "minLength": 1 },
           "project": { "type": "string", "minLength": 1 },
           "notes": { "type": "string" },
+          "evidenceOrigin": { "enum": ["upstream-suite", "repo-authored"] },
           "execution": {
             "type": "object",
             "additionalProperties": false,
