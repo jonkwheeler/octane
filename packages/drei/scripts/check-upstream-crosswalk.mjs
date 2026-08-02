@@ -3,6 +3,7 @@
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { deriveUpstreamInventory } from './upstream-inventory.mjs';
 
 const repositoryRoot = new URL('../../../', import.meta.url);
 const crosswalkUrl = process.env.OCTANE_DREI_CROSSWALK_PATH
@@ -21,17 +22,32 @@ if (crosswalk.upstream?.version !== '10.7.7')
 if (crosswalk.upstream?.commit !== 'b8b99fd4ca1dfb8d821335671320512daa6efea4') {
 	fail('upstream commit does not match the v10.7.7 pin.');
 }
-if (!Array.isArray(crosswalk.exports) || crosswalk.exports.length !== 379) {
-	fail(`expected 379 source exports, received ${crosswalk.exports?.length ?? 'no inventory'}.`);
-}
-if (crosswalk.expectedTotals?.runtimeExports !== 217) {
+const { entries: upstreamEntries, runtimeNames, digest } = await deriveUpstreamInventory();
+if (!Array.isArray(crosswalk.exports) || crosswalk.exports.length !== upstreamEntries.length) {
 	fail(
-		`expected 217 public runtime exports, received ${crosswalk.expectedTotals?.runtimeExports}.`,
+		`expected ${upstreamEntries.length} source exports, received ${crosswalk.exports?.length ?? 'no inventory'}.`,
 	);
 }
+if (crosswalk.expectedTotals?.sourceExports !== upstreamEntries.length)
+	fail('recorded source export total does not match the pinned inventory.');
+if (crosswalk.expectedTotals?.runtimeExports !== runtimeNames.size)
+	fail('recorded runtime export total does not match the pinned runtime inventory.');
+if (crosswalk.inventorySha256 !== digest)
+	fail('inventorySha256 does not match the pinned upstream inventory.');
 
 const names = new Set();
-for (const entry of crosswalk.exports) {
+for (let index = 0; index < crosswalk.exports.length; index += 1) {
+	const entry = crosswalk.exports[index];
+	const upstreamEntry = upstreamEntries[index];
+	if (
+		entry.id !== `export:${upstreamEntry.name}` ||
+		entry.name !== upstreamEntry.name ||
+		entry.kind !== upstreamEntry.kind ||
+		entry.source?.path !== upstreamEntry.source.path ||
+		entry.source?.line !== upstreamEntry.source.line
+	) {
+		fail(`export inventory differs from pinned upstream at index ${index}.`);
+	}
 	if (names.has(entry.name)) fail(`duplicate export ${JSON.stringify(entry.name)}.`);
 	names.add(entry.name);
 	if (!['value', 'type', 'value-and-type'].includes(entry.kind)) {

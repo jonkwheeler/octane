@@ -56,8 +56,34 @@ describe('Drei crosswalk guard', () => {
 		expect(result.stderr).toContain('points to missing evidence');
 	});
 
+	it('rejects a same-count export identity mutation', async () => {
+		const result = await runMutation((manifest) => {
+			manifest.exports[0].name = `${manifest.exports[0].name}Renamed`;
+			manifest.exports[0].id = `export:${manifest.exports[0].name}`;
+		});
+
+		expect(result.status).not.toBe(0);
+		expect(result.stderr).toContain('export inventory differs from pinned upstream');
+	});
+
+	it('rejects an inventory digest mismatch', async () => {
+		const result = await runMutation((manifest) => {
+			manifest.inventorySha256 = '0'.repeat(64);
+		});
+
+		expect(result.status).not.toBe(0);
+		expect(result.stderr).toContain('inventorySha256 does not match');
+	});
+
 	it('rejects readiness while any public export remains a gap', async () => {
-		const result = await runMutation(() => {}, ['--ready']);
+		const result = await runMutation(
+			(manifest) => {
+				const entry = manifest.exports.find((candidate) => candidate.status !== 'gap');
+				entry.status = 'gap';
+				manifest.expectedTotals.gaps += 1;
+			},
+			['--ready'],
+		);
 
 		expect(result.status).not.toBe(0);
 		expect(result.stderr).toContain('exports remain unported');

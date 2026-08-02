@@ -870,7 +870,19 @@ function desiredAttachment(
 		let index = 0;
 		for (const sibling of state.instances.values()) {
 			if (sibling.id === instance.id) break;
-			if (sibling.parent === instance.parent && !destroyed.has(sibling.id) && sibling.visible) index++;
+			if (
+				sibling.parent !== instance.parent ||
+				destroyed.has(sibling.id) ||
+				!sibling.visible ||
+				sibling.localCallbacks.has('attach')
+			) {
+				continue;
+			}
+			const siblingPath = getEffectiveAttachment(
+				sibling.object,
+				sibling.props.attach as string | null | undefined,
+			);
+			if (typeof siblingPath !== 'string') index++;
 		}
 		return { kind: 'attachment', parent, path: `${autoAttachArray}-${index}` };
 	}
