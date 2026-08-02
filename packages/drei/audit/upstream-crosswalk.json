@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 180
+    "gaps": 177
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -795,9 +795,9 @@
         "path": "packages/drei/upstream/src/core/CurveModifier.tsx",
         "line": 14
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/CurveModifier.three.tsrx",
+      "evidence": ["packages/drei/tests/curve-modifier.test.ts"],
       "divergence": null
     },
     {
@@ -808,9 +808,9 @@
         "path": "packages/drei/upstream/src/core/CurveModifier.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/CurveModifier.three.tsrx",
+      "evidence": ["packages/drei/typetests/curve-modifier.test-d.ts"],
       "divergence": null
     },
     {
@@ -821,9 +821,9 @@
         "path": "packages/drei/upstream/src/core/CurveModifier.tsx",
         "line": 12
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/CurveModifier.three.tsrx",
+      "evidence": ["packages/drei/typetests/curve-modifier.test-d.ts"],
       "divergence": null
     },
     {

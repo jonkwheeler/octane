@@ -141,6 +141,8 @@ export { Hud } from './Hud.three.tsrx';
 export type { HudProps } from './Hud.three.tsrx';
 export { Sparkles } from './Sparkles.three.tsrx';
 export type { SparklesProps } from './Sparkles.three.tsrx';
+export { CurveModifier } from './CurveModifier.three.tsrx';
+export type { CurveModifierProps, CurveModifierRef } from './CurveModifier.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
