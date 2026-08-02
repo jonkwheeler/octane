@@ -3,6 +3,7 @@
   "project": "react-markdown",
   "roots": ["packages/react-markdown/tests"],
   "files": [
+    "packages/react-markdown/tests/adoption/consumer.server.test.ts",
     "packages/react-markdown/tests/adoption/consumer.test.ts",
     "packages/react-markdown/tests/async/markdown-async.server.test.ts",
     "packages/react-markdown/tests/conformance/public-types.test.ts",
@@ -17,6 +18,21 @@
     "packages/react-markdown/tests/validation.test.ts"
   ],
   "tests": [
+    {
+      "id": "runtime:ac88e37123a9fa8c",
+      "file": "packages/react-markdown/tests/adoption/consumer.server.test.ts",
+      "fullName": "mapped-equivalent public consumer executes the awaited consumer through the public package entry point"
+    },
+    {
+      "id": "runtime:82340a19141fd403",
+      "file": "packages/react-markdown/tests/adoption/consumer.server.test.ts",
+      "fullName": "mapped-equivalent public consumer executes the synchronous consumer through the public package entry point"
+    },
+    {
+      "id": "runtime:95de5fc30ed1eca4",
+      "file": "packages/react-markdown/tests/adoption/consumer.server.test.ts",
+      "fullName": "mapped-equivalent public consumer preserves the hooks fallback during server rendering"
+    },
     {
       "id": "runtime:c31f095888ccc575",
       "file": "packages/react-markdown/tests/adoption/consumer.test.ts",

@@ -40,8 +40,8 @@ const manifest = {
 		},
 	},
 	adaptedRuntimeSummary: {
-		inventoryEntries: 121,
-		uniqueIdentities: 121,
+		inventoryEntries: 124,
+		uniqueIdentities: 124,
 		duplicateEntriesWithinLanes: 0,
 		identitiesSharedAcrossLanes: 0,
 	},

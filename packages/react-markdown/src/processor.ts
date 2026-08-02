@@ -7,6 +7,7 @@ import type { PluggableList } from 'unified';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
+import { isChildrenBlock } from 'octane';
 import type { Options } from './types';
 import { defaultUrlTransform } from './url-transform';
 
@@ -47,7 +48,10 @@ export function createProcessor(options: Readonly<Options>) {
 }
 
 export function createFile(options: Readonly<Options>): VFile {
-	const children = options.children || '';
+	const rawChildren = options.children;
+	const children = isChildrenBlock(rawChildren)
+		? (rawChildren as unknown as () => unknown)()
+		: rawChildren || '';
 	const file = new VFile();
 
 	if (typeof children === 'string') file.value = children;

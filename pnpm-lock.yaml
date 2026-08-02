@@ -6361,6 +6361,9 @@ importers:
       '@octanejs/react-error-boundary':
         specifier: workspace:*
         version: link:../../packages/react-error-boundary
+      '@octanejs/react-markdown':
+        specifier: workspace:*
+        version: link:../../packages/react-markdown
       '@octanejs/rxjs':
         specifier: workspace:*
         version: link:../../packages/rxjs

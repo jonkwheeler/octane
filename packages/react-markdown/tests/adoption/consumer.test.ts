@@ -40,6 +40,7 @@ describe('frozen adoption inputs', () => {
 		const ledger = read('MIGRATION.md');
 		expect(ledger).toContain('ordinary React-to-Octane conversion');
 		expect(ledger).toContain('Must remain unchanged');
-		expect(ledger).toContain('not a claim that the unfinished binding already passes');
+		expect(ledger).toContain('requires no new renderer API');
+		expect(ledger).toContain('public package entry point');
 	});
 });

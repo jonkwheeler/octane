@@ -29,10 +29,8 @@ export function SyncConsumer() @{
 	<Markdown {...options}>{'# Hello'}</Markdown>
 }
 
-export function AsyncConsumer() @{
-	{
-		MarkdownAsync({ ...options, children: '# Awaited' });
-	}
+export function AsyncConsumer() {
+	return MarkdownAsync({ ...options, children: '# Awaited' });
 }
 
 export function HooksConsumer() @{

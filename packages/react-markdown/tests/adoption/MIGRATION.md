@@ -30,8 +30,9 @@
 | Component mappings | keys, callback props, `node`, nullability, and intrinsic forwarding retained | Must remain unchanged |
 | Filtering and URL APIs | callback signatures and ordering retained | Must remain unchanged |
 
-The implementation must stop if it requires a new renderer API, changed plugin
-shape, changed component keys/props, a rewritten callback contract, or another
-react-markdown-specific consumer edit. U6 records the actual diff and executes
-both the canonical and public-app scenarios; this ledger is the frozen baseline,
-not a claim that the unfinished binding already passes.
+The completed port requires no new renderer API, changed plugin shape, changed
+component keys or props, rewritten callback contract, or other
+react-markdown-specific consumer edit. The executable Octane consumer imports
+the public package entry point and exercises the synchronous, awaited, and hooks
+models with the same plugins, components, options, and exported types. The
+public-app fixture remains byte-exact as the attributable real-world baseline.

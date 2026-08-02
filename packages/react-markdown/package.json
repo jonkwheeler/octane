@@ -21,14 +21,22 @@
   "types": "src/index.ts",
   "files": [
     "src",
+    "LICENSE",
     "README.md",
     "UPSTREAM.md"
   ],
   "exports": {
     ".": "./src/index.ts"
   },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
   "scripts": {
-    "test": "pnpm upstream:verify && vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts tests/adoption/consumer.test.ts tests/differential tests/conformance tests/async tests/hooks tests/validation.test.ts",
+    "test": "pnpm upstream:verify && vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts tests/adoption/consumer.test.ts tests/adoption/consumer.server.test.ts tests/differential tests/conformance tests/async tests/hooks tests/validation.test.ts",
     "test:architecture": "vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts",
     "upstream:verify": "node audit/verify-provenance.mjs --self-test",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
