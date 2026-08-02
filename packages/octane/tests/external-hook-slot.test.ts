@@ -656,6 +656,7 @@ describe('manifest-declared manual hook slots', () => {
 			'dexie',
 			'dnd-kit',
 			'drei',
+			'electron',
 			'floating-ui',
 			'i18next',
 			'jotai',
