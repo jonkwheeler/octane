@@ -137,6 +137,8 @@ export type { MeshDistortMaterialProps, WobbleMaterialProps } from './motion-mat
 export { isWebGL2Available } from './effects-utils.js';
 export { Effects } from './Effects.three.tsrx';
 export type { EffectsProps } from './Effects.three.tsrx';
+export { Hud } from './Hud.three.tsrx';
+export type { HudProps } from './Hud.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
