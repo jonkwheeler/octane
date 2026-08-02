@@ -12,11 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": {
-    "runtimeExports": 217,
-    "sourceExports": 379,
-    "gaps": 102
-  },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 97 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -1070,9 +1066,9 @@
         "path": "packages/drei/upstream/src/core/Environment.tsx",
         "line": 236
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Environment.three.tsrx",
+      "evidence": ["packages/drei/tests/environment-components.test.ts"],
       "divergence": null
     },
     {
@@ -1083,9 +1079,9 @@
         "path": "packages/drei/upstream/src/core/Environment.tsx",
         "line": 90
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Environment.three.tsrx",
+      "evidence": ["packages/drei/tests/environment-components.test.ts"],
       "divergence": null
     },
     {
@@ -1109,9 +1105,9 @@
         "path": "packages/drei/upstream/src/core/Environment.tsx",
         "line": 82
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Environment.three.tsrx",
+      "evidence": ["packages/drei/tests/environment-components.test.ts"],
       "divergence": null
     },
     {
@@ -1122,9 +1118,9 @@
         "path": "packages/drei/upstream/src/core/Environment.tsx",
         "line": 123
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Environment.three.tsrx",
+      "evidence": ["packages/drei/tests/environment-components.test.ts"],
       "divergence": null
     },
     {
@@ -1135,9 +1131,9 @@
         "path": "packages/drei/upstream/src/core/Environment.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Environment.three.tsrx",
+      "evidence": ["packages/drei/typetests/environment-components.test-d.ts"],
       "divergence": null
     },
     {

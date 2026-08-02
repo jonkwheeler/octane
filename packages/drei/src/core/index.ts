@@ -181,6 +181,8 @@ export { Cloud, CloudInstance, Clouds } from './Cloud.three.tsrx';
 export type { CloudProps, CloudsProps } from './Cloud.three.tsrx';
 export { Trail, useTrail } from './Trail.three.tsrx';
 export type { MeshLineGeometry, TrailProps } from './Trail.three.tsrx';
+export { Environment, EnvironmentCube, EnvironmentMap, EnvironmentPortal } from './Environment.three.tsrx';
+export type { EnvironmentProps } from './Environment.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
