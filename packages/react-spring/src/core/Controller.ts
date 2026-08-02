@@ -15,6 +15,7 @@ export type ControllerTo<State extends StateRecord> =
 	  ) => Promise<void> | void);
 
 export interface ControllerUpdate<State extends StateRecord> {
+	default?: boolean | Partial<ControllerUpdate<State>>;
 	from?: Partial<State>;
 	to?: ControllerTo<State>;
 	config?: SpringConfig | ((key: keyof State) => SpringConfig);
@@ -34,7 +35,10 @@ export class Controller<State extends StateRecord = StateRecord> {
 	springs: { [Key in keyof State]: SpringValue<State[Key]> } = {} as any;
 	private runId = 0;
 	private paused = false;
+	private defaults: Partial<ControllerUpdate<State>> = {};
 	constructor(props: ControllerUpdate<State> = {}) {
+		if (props.default === true) this.defaults = withoutTargets(props);
+		else if (typeof props.default === 'object') this.defaults = props.default;
 		const initial = {
 			...props.from,
 			...(props.from ? undefined : typeof props.to === 'object' ? props.to : undefined),
@@ -52,6 +56,10 @@ export class Controller<State extends StateRecord = StateRecord> {
 		return this;
 	}
 	start(update: ControllerUpdate<State> = {}): Promise<AnimationResult<State>> {
+		if (update.default === true) this.defaults = { ...this.defaults, ...withoutTargets(update) };
+		else if (typeof update.default === 'object')
+			this.defaults = { ...this.defaults, ...update.default };
+		update = { ...this.defaults, ...update };
 		const runId = ++this.runId;
 		return this.run(update, runId);
 	}
@@ -164,6 +172,13 @@ export class Controller<State extends StateRecord = StateRecord> {
 	private ensure<Key extends keyof State>(key: Key, initial: State[Key]): SpringValue<State[Key]> {
 		return (this.springs[key] ??= new SpringValue(initial));
 	}
+}
+
+function withoutTargets<State extends StateRecord>(
+	update: ControllerUpdate<State>,
+): Partial<ControllerUpdate<State>> {
+	const { from: _from, to: _to, default: _default, ...defaults } = update;
+	return defaults;
 }
 
 function isControllerUpdate<State extends StateRecord>(

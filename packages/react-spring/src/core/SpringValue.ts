@@ -7,6 +7,7 @@ import {
 	getNoopResult,
 } from './AnimationResult';
 import { FrameValue } from './FrameValue';
+import { interpolateValue, isAnimatable } from './valueInterpolation';
 
 export interface SpringConfig {
 	mass?: number;
@@ -14,7 +15,13 @@ export interface SpringConfig {
 	friction?: number;
 	precision?: number;
 	velocity?: number;
+	restVelocity?: number;
 	clamp?: boolean;
+	frequency?: number;
+	damping?: number;
+	bounce?: number;
+	decay?: boolean | number;
+	round?: number;
 	duration?: number;
 	easing?: (value: number) => number;
 }
@@ -22,7 +29,7 @@ export interface SpringConfig {
 export type LoopProp<T> = boolean | (() => boolean | Partial<SpringUpdate<T>>);
 
 export interface SpringUpdate<T> {
-	to: T;
+	to: T | FrameValue<T>;
 	from?: T;
 	config?: SpringConfig;
 	delay?: number;
@@ -128,11 +135,11 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		else if (props.from !== undefined) this.setValue(props.from);
 		active.started = true;
 		this.velocity = props.config?.velocity ?? 0;
-		const target = props.to;
+		const target = goal(props.to);
 		const immediate =
 			props.immediate === true ||
-			typeof this.value !== 'number' ||
-			typeof target !== 'number' ||
+			!isAnimatable(this.value) ||
+			!isAnimatable(target) ||
 			Object.is(this.value, target);
 		props.onStart?.(
 			Object.is(this.value, target)
@@ -147,33 +154,56 @@ export class SpringValue<T = number> extends FrameValue<T> {
 			return;
 		}
 		let elapsed = 0;
-		const from = this.value as number;
+		const from = this.value;
+		let progress = 0;
 		active.frame = (dt) => {
 			if (this.active !== active || active.settled) return false;
 			if (this.paused) return true;
-			const options = { ...config.default, ...props.config };
+			const options = { mass: 1, damping: 1, ...config.default, ...props.config };
+			if (options.frequency !== undefined) {
+				const frequency = Math.max(0.01, options.frequency);
+				options.tension = Math.pow((2 * Math.PI) / frequency, 2) * options.mass;
+				options.friction = (4 * Math.PI * Math.max(0, options.damping) * options.mass) / frequency;
+			}
+			const currentTarget = goal(props.to);
 			let next: number;
 			let done: boolean;
-			if (options.duration !== undefined) {
+			if (options.decay) {
+				const decay = options.decay === true ? 0.998 : options.decay;
+				const step = (dt || 16.667) / 16.667;
+				this.velocity *= Math.pow(decay, step);
+				next = (this.value as number) + this.velocity * step;
+				done = Math.abs(this.velocity) <= (options.restVelocity ?? options.precision ?? 0.01);
+			} else if (options.duration !== undefined) {
 				elapsed += dt || 16.667;
-				const progress = Math.min(1, elapsed / Math.max(1, options.duration));
-				next = from + ((target as number) - from) * (options.easing?.(progress) ?? progress);
+				progress = Math.min(1, elapsed / Math.max(1, options.duration));
+				next = options.easing?.(progress) ?? progress;
 				done = progress >= 1;
 			} else {
 				const step = Math.min(64, dt || 16.667) / 1000;
-				const displacement = (target as number) - (this.value as number);
+				const displacement = 1 - progress;
 				this.velocity +=
 					((options.tension * displacement - options.friction * this.velocity) /
 						(options.mass ?? 1)) *
 					step;
-				next = (this.value as number) + this.velocity * step;
+				next = progress + this.velocity * step;
 				const precision = options.precision ?? 0.01;
 				done = Math.abs(this.velocity) <= precision && Math.abs(displacement) <= precision;
-				if (options.clamp && Math.sign((target as number) - next) !== Math.sign(displacement))
-					done = true;
+				if (next > 1 && options.bounce !== undefined) {
+					next = 1;
+					this.velocity *= -1 + options.bounce;
+				} else if (options.clamp && Math.sign(1 - next) !== Math.sign(displacement)) done = true;
 			}
-			if (done) next = target as number;
-			this.setValue(next as T);
+			if (options.decay) {
+				if (options.round) next = Math.round(next / options.round) * options.round;
+				this.setValue(next as T);
+			} else {
+				progress = done ? 1 : next;
+				let shaped = interpolateValue(from, currentTarget, progress);
+				if (options.round && typeof shaped === 'number' && !done)
+					shaped = (Math.round(shaped / options.round) * options.round) as T;
+				this.setValue(done ? currentTarget : shaped);
+			}
 			props.onChange?.(this.value, this);
 			if (done) {
 				void this.completeIteration(active);
@@ -219,4 +249,8 @@ function asUpdate<T>(update: T | SpringUpdate<T>): SpringUpdate<T> {
 	return typeof update === 'object' && update !== null && 'to' in update
 		? (update as SpringUpdate<T>)
 		: { to: update as T };
+}
+
+function goal<T>(value: T | FrameValue<T>): T {
+	return value instanceof FrameValue ? value.get() : value;
 }
