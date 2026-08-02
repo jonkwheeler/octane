@@ -17,7 +17,12 @@ function* walk(directory) {
 	for (const entry of readdirSync(directory, { withFileTypes: true })) {
 		const absolute = path.join(directory, entry.name);
 		if (entry.isDirectory()) {
-			if (entry.name !== 'node_modules' && entry.name !== 'dist' && entry.name !== 'coverage') {
+			if (
+				entry.name !== 'node_modules' &&
+				entry.name !== 'dist' &&
+				entry.name !== 'coverage' &&
+				entry.name !== 'upstream'
+			) {
 				yield* walk(absolute);
 			}
 		} else if (TEST_FILE.test(entry.name)) {
