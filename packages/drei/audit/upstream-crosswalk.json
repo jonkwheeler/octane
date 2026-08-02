@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 187
+    "gaps": 186
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -4506,9 +4506,9 @@
         "path": "packages/drei/upstream/src/core/Effects.tsx",
         "line": 28
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/effects-utils.ts",
+      "evidence": ["packages/drei/tests/effects-utils.test.ts"],
       "divergence": null
     },
     {

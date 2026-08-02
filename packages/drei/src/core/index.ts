@@ -134,6 +134,7 @@ export { Lightformer } from './Lightformer.three.tsrx';
 export type { LightProps } from './Lightformer.three.tsrx';
 export { MeshDistortMaterial, MeshWobbleMaterial } from './motion-materials.three.tsrx';
 export type { MeshDistortMaterialProps, WobbleMaterialProps } from './motion-materials.three.tsrx';
+export { isWebGL2Available } from './effects-utils.js';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
