@@ -3,6 +3,7 @@ import { raf } from '@react-spring/rafz';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
 import {
 	ContextSpringFixture,
+	ChainFixture,
 	NestedContextSpringFixture,
 	SpringHookFixture,
 	SpringsCohortFixture,
@@ -121,5 +122,25 @@ describe('React Spring hooks', () => {
 		flushEffects();
 		expect(styles.x.get()).toBe(1);
 		result.unmount();
+	});
+
+	it('starts useChain refs at explicit timesteps and clears pending starts on cleanup', async () => {
+		vi.useFakeTimers();
+		const starts: string[] = [];
+		const refs = ['a', 'b', 'c'].map((name) => ({
+			start: () => {
+				starts.push(name);
+				return Promise.resolve([]);
+			},
+		}));
+		const result = mount(ChainFixture, { refs, timeSteps: [0.2, 0, 0.1], timeFrame: 100 });
+		flushEffects();
+		await vi.advanceTimersByTimeAsync(0);
+		expect(starts).toEqual(['b']);
+		await vi.advanceTimersByTimeAsync(10);
+		expect(starts).toEqual(['b', 'c']);
+		result.unmount();
+		await vi.runAllTimersAsync();
+		expect(starts).toEqual(['b', 'c']);
 	});
 });

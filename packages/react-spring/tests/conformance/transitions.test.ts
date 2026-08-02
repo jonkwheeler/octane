@@ -93,4 +93,76 @@ describe('useTransition', () => {
 		expect(started).toHaveLength(3);
 		result.unmount();
 	});
+
+	it('sorts rendered transitions independently from input order', () => {
+		const result = mount(TransitionFixture, {
+			items: [
+				{ id: 'b', label: 'B' },
+				{ id: 'a', label: 'A' },
+			],
+			sort: (a: any, b: any) => a.id.localeCompare(b.id),
+		});
+		flushEffects();
+		expect(result.findAll('[data-key]').map((node) => node.getAttribute('data-key'))).toEqual([
+			'a',
+			'b',
+		]);
+		result.unmount();
+	});
+
+	it('keeps expired=false leaves mounted and honours cancellation and pause', async () => {
+		const starts: unknown[] = [];
+		const result = mount(TransitionFixture, {
+			items: [{ id: 'a', label: 'A' }],
+			expires: false,
+			cancel: true,
+			onStart: (...args: unknown[]) => starts.push(args),
+		});
+		flushEffects();
+		expect(starts).toHaveLength(0);
+		result.update(TransitionFixture, { items: [], expires: false, pause: true });
+		flushEffects();
+		await act(async () => await Promise.resolve());
+		expect(result.find('[data-key="a"]').getAttribute('data-phase')).toBe('leave');
+		result.unmount();
+	});
+
+	it('cancels delayed expiration when the same key re-enters', async () => {
+		vi.useFakeTimers();
+		const item = { id: 'a', label: 'A' };
+		const result = mount(TransitionFixture, { items: [item], expires: 100 });
+		flushEffects();
+		result.update(TransitionFixture, { items: [], expires: 100 });
+		flushEffects();
+		await act(async () => await Promise.resolve());
+		expect(result.find('[data-key="a"]').getAttribute('data-phase')).toBe('leave');
+		result.update(TransitionFixture, { items: [item], expires: 100 });
+		flushEffects();
+		await vi.advanceTimersByTimeAsync(100);
+		expect(result.find('[data-key="a"]').getAttribute('data-phase')).not.toBe('leave');
+		result.unmount();
+	});
+
+	it('reverses item-specific leave start order', async () => {
+		vi.useFakeTimers();
+		const order: string[] = [];
+		const leave = (item: any) => ({ opacity: 0, onStart: () => order.push(item.id) });
+		const result = mount(TransitionFixture, {
+			items: [
+				{ id: 'a', label: 'A' },
+				{ id: 'b', label: 'B' },
+				{ id: 'c', label: 'C' },
+			],
+			trail: 100,
+			reverse: true,
+			leave,
+		});
+		flushEffects();
+		await vi.runAllTimersAsync();
+		result.update(TransitionFixture, { items: [], trail: 100, reverse: true, leave });
+		flushEffects();
+		await vi.runAllTimersAsync();
+		expect(order).toEqual(['c', 'b', 'a']);
+		result.unmount();
+	});
 });

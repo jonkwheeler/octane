@@ -1,4 +1,11 @@
-import { animated, SpringContext, useSpring, useSprings, useTrail } from '@octanejs/react-spring';
+import {
+	animated,
+	SpringContext,
+	useChain,
+	useSpring,
+	useSprings,
+	useTrail,
+} from '@octanejs/react-spring';
 
 export function SpringHookFixture(props) @{
 	props.onRender();
@@ -58,4 +65,9 @@ export function NestedContextSpringFixture(props) @{
 			<ContextSpringChild onReady={props.onReady} />
 		</SpringContext>
 	</SpringContext>
+}
+
+export function ChainFixture(props) @{
+	useChain(props.refs, props.timeSteps, props.timeFrame);
+	<div>{'chain'}</div>
 }
