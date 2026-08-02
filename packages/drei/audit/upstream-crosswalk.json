@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 66 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 61 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -1553,9 +1553,9 @@
         "path": "packages/drei/upstream/src/core/GizmoHelper.tsx",
         "line": 56
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GizmoHelper.three.tsrx",
+      "evidence": ["packages/drei/tests/gizmo-helper.test.ts"],
       "divergence": null
     },
     {
@@ -1566,9 +1566,9 @@
         "path": "packages/drei/upstream/src/core/GizmoHelper.tsx",
         "line": 28
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GizmoHelper.three.tsrx",
+      "evidence": ["packages/drei/typetests/gizmo-helper.test-d.ts"],
       "divergence": null
     },
     {
@@ -1579,9 +1579,9 @@
         "path": "packages/drei/upstream/src/core/GizmoViewcube.tsx",
         "line": 149
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GizmoViewcube.three.tsrx",
+      "evidence": ["packages/drei/tests/gizmo-widgets.test.ts"],
       "divergence": null
     },
     {
@@ -1592,9 +1592,9 @@
         "path": "packages/drei/upstream/src/core/GizmoViewport.tsx",
         "line": 106
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GizmoViewport.three.tsrx",
+      "evidence": ["packages/drei/tests/gizmo-widgets.test.ts"],
       "divergence": null
     },
     {
@@ -4851,9 +4851,9 @@
         "path": "packages/drei/upstream/src/core/GizmoHelper.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/GizmoHelper.three.tsrx",
+      "evidence": ["packages/drei/tests/gizmo-helper.test.ts"],
       "divergence": null
     },
     {

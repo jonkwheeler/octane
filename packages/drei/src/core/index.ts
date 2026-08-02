@@ -3,6 +3,8 @@ export { meshBounds } from './meshBounds.js';
 export { shaderMaterial } from './shaderMaterial.js';
 export { RoundedBox, RoundedBoxGeometry } from './RoundedBox.three.tsrx';
 export type { RoundedBoxGeometryProps, RoundedBoxProps } from './RoundedBox.three.tsrx';
+export { GizmoViewcube } from './GizmoViewcube.three.tsrx';
+export { GizmoViewport } from './GizmoViewport.three.tsrx';
 export {
 	Box,
 	Capsule,
@@ -207,6 +209,8 @@ export { Image } from './Image.three.tsrx';
 export type { ImageProps } from './Image.three.tsrx';
 export { MotionPathControls, useMotion } from './MotionPathControls.three.tsrx';
 export type { MotionPathProps, MotionPathRef } from './MotionPathControls.three.tsrx';
+export { GizmoHelper, useGizmoContext } from './GizmoHelper.three.tsrx';
+export type { GizmoHelperProps } from './GizmoHelper.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

@@ -32,7 +32,7 @@ export type HudProps = {
 	renderPriority?: number;
 };
 
-export function Hud({ children, renderPriority = 1 }: HudProps) @{
+export function Hud({ children, renderPriority = 1 }: { children?: OctaneNode; renderPriority?: number }) @{
 	const { scene: defaultScene, camera: defaultCamera } = useThree();
 	const [hudScene] = useState(() => new THREE.Scene());
 	<>
