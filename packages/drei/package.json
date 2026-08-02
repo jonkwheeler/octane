@@ -33,6 +33,7 @@
     "@monogrid/gainmap-js": "^3.0.6",
     "@octanejs/zustand": "workspace:*",
     "camera-controls": "^3.1.0",
+    "detect-gpu": "^5.0.56",
     "three-mesh-bvh": "^0.8.3",
     "three-stdlib": "^2.35.6"
   },

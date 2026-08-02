@@ -161,6 +161,8 @@ export { PerformanceMonitor, usePerformanceMonitor } from './PerformanceMonitor.
 export type { PerformanceMonitorApi, PerformanceMonitorProps } from './PerformanceMonitor.three.tsrx';
 export { CameraControls, CameraControlsImpl } from './CameraControls.three.tsrx';
 export type { CameraControlsProps } from './CameraControls.three.tsrx';
+export { DetectGPU, useDetectGPU } from './DetectGPU.three.tsrx';
+export type { DetectGPUProps } from './DetectGPU.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

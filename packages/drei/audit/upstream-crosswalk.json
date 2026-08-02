@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 149
+    "gaps": 146
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -924,9 +924,9 @@
         "path": "packages/drei/upstream/src/core/DetectGPU.tsx",
         "line": 11
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/DetectGPU.three.tsrx",
+      "evidence": ["packages/drei/tests/detect-gpu.test.ts"],
       "divergence": null
     },
     {
@@ -937,9 +937,9 @@
         "path": "packages/drei/upstream/src/core/DetectGPU.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/DetectGPU.three.tsrx",
+      "evidence": ["packages/drei/typetests/detect-gpu.test-d.ts"],
       "divergence": null
     },
     {
@@ -4727,9 +4727,9 @@
         "path": "packages/drei/upstream/src/core/DetectGPU.tsx",
         "line": 5
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/DetectGPU.three.tsrx",
+      "evidence": ["packages/drei/tests/detect-gpu.test.ts"],
       "divergence": null
     },
     {
