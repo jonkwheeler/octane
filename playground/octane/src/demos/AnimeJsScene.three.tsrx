@@ -25,7 +25,10 @@ export function AnimeJsScene({ reducedMotion }: { reducedMotion: boolean | undef
 				onRender: () => invalidate(),
 			});
 		});
-		return () => scope.revert();
+		return () => {
+			scope.revert();
+			invalidate();
+		};
 	}, [invalidate, reducedMotion]);
 
 	<mesh ref={mesh}>
