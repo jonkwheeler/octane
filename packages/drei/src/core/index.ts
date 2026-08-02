@@ -50,3 +50,5 @@ export { ComputedAttribute } from './ComputedAttribute.three.tsrx';
 export type { ComputedAttributeProps } from './ComputedAttribute.three.tsrx';
 export { MultiMaterial } from './MultiMaterial.three.tsrx';
 export type { MultiMaterialProps } from './MultiMaterial.three.tsrx';
+export { useCamera } from './useCamera.three.tsrx';
+export { useIntersect } from './useIntersect.three.tsrx';

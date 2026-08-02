@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 315
+    "gaps": 313
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -4607,9 +4607,9 @@
         "path": "packages/drei/upstream/src/core/useCamera.tsx",
         "line": 5
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useCamera.three.tsrx",
+      "evidence": ["packages/drei/tests/hooks.test.ts", "packages/drei/typetests/hooks.test-d.ts"],
       "divergence": null
     },
     {
@@ -4827,9 +4827,9 @@
         "path": "packages/drei/upstream/src/core/useIntersect.tsx",
         "line": 5
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useIntersect.three.tsrx",
+      "evidence": ["packages/drei/tests/hooks.test.ts", "packages/drei/typetests/hooks.test-d.ts"],
       "divergence": null
     },
     {
