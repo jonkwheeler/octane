@@ -17,6 +17,8 @@ export { Caustics } from './Caustics.three.tsrx';
 export type { CausticsProps } from './Caustics.three.tsrx';
 export { MeshTransmissionMaterial } from './MeshTransmissionMaterial.three.tsrx';
 export type { MeshTransmissionMaterialProps } from './MeshTransmissionMaterial.three.tsrx';
+export { MeshPortalMaterial } from './MeshPortalMaterial.three.tsrx';
+export type { PortalProps } from './MeshPortalMaterial.three.tsrx';
 export {
 	Box,
 	Capsule,
