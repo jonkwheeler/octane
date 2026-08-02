@@ -3,6 +3,8 @@ import { useLayoutEffect, useState } from 'octane';
 import { SpringValue, type ControllerUpdate } from './engine';
 
 type ElementRef<T> = { current: T | null };
+
+export const useIsomorphicLayoutEffect = useLayoutEffect;
 const browserSubCache = new Map<symbol, Map<string, symbol>>();
 
 function browserSub(slot: symbol | undefined, tag: string): symbol | undefined {

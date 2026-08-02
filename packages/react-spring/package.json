@@ -39,7 +39,9 @@
     "./parallax": "./src/parallax.ts"
   },
   "scripts": {
-    "test": "vitest run --project react-spring"
+    "test": "pnpm upstream:verify && vitest run --project react-spring",
+    "upstream:verify": "node ../../scripts/react-parity/react-spring-upstream.mjs",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@react-spring/rafz": "10.1.2"
@@ -48,6 +50,7 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@react-spring/parallax": "10.1.2",
     "@react-spring/web": "catalog:default",
     "octane": "workspace:*",
     "vitest": "catalog:default"
