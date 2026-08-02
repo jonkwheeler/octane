@@ -3028,6 +3028,48 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'vaul',
+					include: [
+						'packages/vaul/tests/**/*.test.ts',
+						'!packages/vaul/tests/ssr/**/*.test.ts',
+						'!packages/vaul/tests/browser/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/vaul$/,
+							replacement: resolve(import.meta.dirname, 'packages/vaul/src/index.tsrx'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'vaul-ssr',
+					include: ['packages/vaul/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/vaul$/,
+							replacement: resolve(import.meta.dirname, 'packages/vaul/src/index.tsrx'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',

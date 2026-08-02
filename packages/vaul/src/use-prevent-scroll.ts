@@ -1,7 +1,8 @@
 // This code comes from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/overlays/src/usePreventScroll.ts
 
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'octane';
 import { isIOS } from './browser';
+import { subSlot } from './internal';
 
 const KEYBOARD_BUFFER = 24;
 
@@ -66,28 +67,32 @@ let restore: () => void;
  * restores it on unmount. Also ensures that content does not
  * shift due to the scrollbars disappearing.
  */
-export function usePreventScroll(options: PreventScrollOptions = {}) {
+export function usePreventScroll(options: PreventScrollOptions = {}, slot?: symbol) {
 	let { isDisabled } = options;
 
-	useIsomorphicLayoutEffect(() => {
-		if (isDisabled) {
-			return;
-		}
-
-		preventScrollCount++;
-		if (preventScrollCount === 1) {
-			if (isIOS()) {
-				restore = preventScrollMobileSafari();
+	useIsomorphicLayoutEffect(
+		() => {
+			if (isDisabled) {
+				return;
 			}
-		}
 
-		return () => {
-			preventScrollCount--;
-			if (preventScrollCount === 0) {
-				restore?.();
+			preventScrollCount++;
+			if (preventScrollCount === 1) {
+				if (isIOS()) {
+					restore = preventScrollMobileSafari();
+				}
 			}
-		};
-	}, [isDisabled]);
+
+			return () => {
+				preventScrollCount--;
+				if (preventScrollCount === 0) {
+					restore?.();
+				}
+			};
+		},
+		[isDisabled],
+		subSlot(slot, 'effect'),
+	);
 }
 
 // Mobile Safari is a whole different beast. Even with overflow: hidden,

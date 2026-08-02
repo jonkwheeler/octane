@@ -29,8 +29,9 @@
   "peerDependencies": {
     "octane": "workspace:*"
   },
-  "devDependencies": {
-    "@types/react": "catalog:default",
+	"devDependencies": {
+		"@types/react": "catalog:default",
+		"@types/react-dom": "catalog:default",
     "octane": "workspace:*",
     "playwright": "catalog:default",
     "react": "catalog:default",
