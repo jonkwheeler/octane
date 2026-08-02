@@ -1,0 +1,186 @@
+{
+  "$schema": "./react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/davidjerleke/embla-carousel.git",
+    "version": "8.6.0",
+    "commit": "0fe65834136f1aa35e4c1a4a477e5ccb4bb5ee54",
+    "sourceRoot": "packages/embla-carousel-react/src",
+    "testRoot": "packages/embla-carousel-react",
+    "license": "MIT",
+    "integrity": "sha256:61f0e7114c52478a770d114c4b265d0753e80ecd3d362aa6c377e0f70c48f063",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/embla-carousel/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/embla-carousel/tests/conformance"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 5,
+    "uniqueIdentities": 5,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "000cfafba8f83bb5cb1aeb585030e95f591984a488658cbea0e1fe4da7bcf367"
+    }
+  },
+  "lanes": [
+    {
+      "id": "embla-adapted-runtime",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "embla-carousel",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the complete repo-authored adapter lifecycle suite because the pinned React adapter publishes no runtime tests.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/embla-carousel/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/embla-carousel/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "08d74e4183a1d3c624b578e74f0a0acda11de6c85fc36c05f6fb3d5d839848e9"
+        },
+        {
+          "path": "packages/embla-carousel/tests/conformance/binding.test.ts",
+          "role": "support",
+          "sha256": "2be32bf3905610bc444058077bc1852a481c392ce3f9798d78b82b051539f50f"
+        }
+      ]
+    },
+    {
+      "id": "embla-react-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "embla-carousel-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the pinned React and Octane adapters through the same lifecycle sequence against one controlled Embla constructor boundary.",
+      "files": [
+        {
+          "path": "packages/embla-carousel/tests/differential/react-adapter.test.ts",
+          "role": "test",
+          "sha256": "d5e77bfcf7584a498d0917b963b0acb3aacf6277c5eb56c62152254f686356c0",
+          "cases": [
+            {
+              "id": "embla:differential:lifecycle",
+              "testName": "matches the pinned React adapter lifecycle across attachment, updates, and cleanup",
+              "fullName": "@octanejs/embla-carousel React differential matches the pinned React adapter lifecycle across attachment, updates, and cleanup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "embla-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "embla-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles a repo-authored consumer matrix against the pinned React declarations because upstream publishes no type-test suite.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/embla-carousel/typetests/pristine.tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/embla-carousel/typetests/pristine.test-d.ts",
+          "role": "test",
+          "sha256": "1348aba907eac53f4cd4d91a302fa3b83fd66f660a2b912f38c357839a962d1f",
+          "cases": [
+            {
+              "id": "embla:types:pristine",
+              "testName": "pinned React declaration consumer matrix",
+              "fullName": "pinned React declaration consumer matrix"
+            }
+          ]
+        },
+        {
+          "path": "packages/embla-carousel/typetests/pristine.tsconfig.json",
+          "role": "support",
+          "sha256": "625c0ff7ad87bff9c70f6991741b0ca77ea0937c8c87f6123dbe3ad11f35b5c8"
+        }
+      ]
+    },
+    {
+      "id": "embla-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "embla-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the one-for-one Octane consumer matrix with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/embla-carousel/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/embla-carousel/typetests/public.test-d.ts",
+          "role": "test",
+          "sha256": "282f5432e493f5b1be6bc592e1df4c582fcbd3cee6e47f2ef27280a937c61ac3",
+          "cases": [
+            {
+              "id": "embla:types:adapted",
+              "testName": "adapted Octane declaration consumer matrix",
+              "fullName": "adapted Octane declaration consumer matrix"
+            }
+          ]
+        },
+        {
+          "path": "packages/embla-carousel/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "8dd585aac58fa2bd20b53179e9e8595062dee0c8e7c7316b9c57cdd3aa1d557c"
+        }
+      ]
+    },
+    {
+      "id": "embla-browser",
+      "type": "browser",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "embla-carousel-browser",
+      "notes": "Runs the Octane adapter with Chromium, real nonzero layout, scrolling, selection updates, and destroy cleanup.",
+      "files": [
+        {
+          "path": "packages/embla-carousel/tests/browser/carousel.browser.test.ts",
+          "role": "test",
+          "sha256": "28c32f9b746d33f89f6db0efdb7913efe1147ce96e16d407f636ac437daf6a5f",
+          "cases": [
+            {
+              "id": "embla:browser:layout-scroll-cleanup",
+              "testName": "uses real layout to scroll and destroys the instance on root cleanup",
+              "fullName": "@octanejs/embla-carousel real-browser behavior uses real layout to scroll and destroys the instance on root cleanup"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

@@ -3069,6 +3069,82 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'embla-carousel',
+					include: ['packages/embla-carousel/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/embla-carousel$/,
+							replacement: resolve(import.meta.dirname, 'packages/embla-carousel/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'embla-carousel-pristine-utils',
+					include: [
+						'packages/embla-carousel/upstream/embla-carousel-reactive-utils/src/__tests__/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: true,
+				},
+			},
+			{
+				test: {
+					name: 'embla-carousel-audit',
+					include: ['packages/embla-carousel/tests/audit/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'embla-carousel-browser',
+					include: ['packages/embla-carousel/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+			},
+			{
+				test: {
+					name: 'embla-carousel-differential',
+					include: ['packages/embla-carousel/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^embla-carousel-react$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/embla-carousel/upstream/embla-carousel-react/src/index.ts',
+							),
+						},
+						{
+							find: /^embla-carousel$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/embla-carousel/tests/test-support/mock-embla.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/embla-carousel$/,
+							replacement: resolve(import.meta.dirname, 'packages/embla-carousel/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-hooks-ssr',
 					include: ['packages/mantine-hooks/tests/ssr/**/*.test.ts'],
 					environment: 'node',
@@ -3084,6 +3160,44 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/mantine-hooks$/,
 							replacement: resolve(import.meta.dirname, 'packages/mantine-hooks/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'embla-carousel-hydration',
+					include: ['packages/embla-carousel/tests/hydration/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/embla-carousel$/,
+							replacement: resolve(import.meta.dirname, 'packages/embla-carousel/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'embla-carousel-ssr',
+					include: ['packages/embla-carousel/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/embla-carousel$/,
+							replacement: resolve(import.meta.dirname, 'packages/embla-carousel/src/index.ts'),
 						},
 					],
 				},

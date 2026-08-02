@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "project": "embla-carousel",
+  "roots": ["packages/embla-carousel/tests/conformance"],
+  "files": ["packages/embla-carousel/tests/conformance/binding.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:embla:lifecycle:globals",
+      "file": "packages/embla-carousel/tests/conformance/binding.test.ts",
+      "fullName": "@octanejs/embla-carousel lifecycle adapter applies global options before construction"
+    },
+    {
+      "id": "runtime:embla:lifecycle:plugins",
+      "file": "packages/embla-carousel/tests/conformance/binding.test.ts",
+      "fullName": "@octanejs/embla-carousel lifecycle adapter bails out equivalent plugins and reinitializes changed plugin options"
+    },
+    {
+      "id": "runtime:embla:lifecycle:options",
+      "file": "packages/embla-carousel/tests/conformance/binding.test.ts",
+      "fullName": "@octanejs/embla-carousel lifecycle adapter does not reinitialize equivalent options and reinitializes changed options"
+    },
+    {
+      "id": "runtime:embla:lifecycle:attach-cleanup",
+      "file": "packages/embla-carousel/tests/conformance/binding.test.ts",
+      "fullName": "@octanejs/embla-carousel lifecycle adapter publishes one API after viewport attachment and destroys it on unmount"
+    },
+    {
+      "id": "runtime:embla:lifecycle:detach-replace",
+      "file": "packages/embla-carousel/tests/conformance/binding.test.ts",
+      "fullName": "@octanejs/embla-carousel lifecycle adapter resets the API on detach and constructs one fresh instance for a replacement viewport"
+    }
+  ]
+}

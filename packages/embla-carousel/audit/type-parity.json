@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "pristine": "packages/embla-carousel/typetests/pristine.test-d.ts",
+  "adapted": "packages/embla-carousel/typetests/public.test-d.ts",
+  "assertions": ["positive:tuple", "positive:global-options", "negative:unknown-option"],
+  "allowedTransformations": ["import root embla-carousel-react -> @octanejs/embla-carousel"]
+}
