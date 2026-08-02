@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 116
+    "gaps": 111
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -3285,9 +3285,9 @@
         "path": "packages/drei/upstream/src/core/Sampler.tsx",
         "line": 149
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sampler.three.tsrx",
+      "evidence": ["packages/drei/tests/sampler.test.ts"],
       "divergence": null
     },
     {
@@ -3298,9 +3298,9 @@
         "path": "packages/drei/upstream/src/core/Sampler.tsx",
         "line": 40
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sampler.three.tsrx",
+      "evidence": ["packages/drei/typetests/sampler.test-d.ts"],
       "divergence": null
     },
     {
@@ -4297,9 +4297,9 @@
         "path": "packages/drei/upstream/src/core/Sampler.tsx",
         "line": 23
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sampler.three.tsrx",
+      "evidence": ["packages/drei/typetests/sampler.test-d.ts"],
       "divergence": null
     },
     {
@@ -5074,9 +5074,9 @@
         "path": "packages/drei/upstream/src/core/Sampler.tsx",
         "line": 80
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sampler.three.tsrx",
+      "evidence": ["packages/drei/tests/sampler.test.ts"],
       "divergence": null
     },
     {
@@ -5087,9 +5087,9 @@
         "path": "packages/drei/upstream/src/core/Sampler.tsx",
         "line": 74
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sampler.three.tsrx",
+      "evidence": ["packages/drei/typetests/sampler.test-d.ts"],
       "divergence": null
     },
     {

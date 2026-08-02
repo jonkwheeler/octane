@@ -175,6 +175,8 @@ export { Point, Points, PointsBuffer, PositionPoint } from './Points.three.tsrx'
 export type { PointsBuffersProps, PointsInstancesProps } from './Points.three.tsrx';
 export { createInstances, Instance, InstancedAttribute, Instances, Merged, PositionMesh } from './Instances.three.tsrx';
 export type { InstanceProps, InstancedAttributeProps, InstancesProps, MergedProps } from './Instances.three.tsrx';
+export { Sampler, useSurfaceSampler } from './Sampler.three.tsrx';
+export type { SamplerProps, TransformFn, useSurfaceSamplerProps } from './Sampler.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
