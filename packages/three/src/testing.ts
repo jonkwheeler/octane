@@ -25,6 +25,8 @@ export interface CreateThreeTestRendererOptions {
 	readonly width?: number;
 	/** Logical canvas height. Defaults to 800. */
 	readonly height?: number;
+	/** Optional camera used by the configured root. Defaults to a perspective camera. */
+	readonly camera?: THREE.Camera;
 }
 
 /** Renderer recorder injected into a deterministic Three test root. */
@@ -234,6 +236,7 @@ export async function createThreeTestRenderer<P>(
 	try {
 		await root.configure({
 			gl: renderer,
+			camera: options.camera,
 			size: { width, height, top: 0, left: 0 },
 			dpr: 1,
 			frameloop: 'never',

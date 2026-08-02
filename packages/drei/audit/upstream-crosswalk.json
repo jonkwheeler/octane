@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 244
+    "gaps": 239
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -257,9 +257,9 @@
         "path": "packages/drei/upstream/src/core/Bounds.tsx",
         "line": 78
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Bounds.three.tsrx",
+      "evidence": ["packages/drei/tests/bounds.test.ts"],
       "divergence": null
     },
     {
@@ -270,9 +270,9 @@
         "path": "packages/drei/upstream/src/core/Bounds.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Bounds.three.tsrx",
+      "evidence": ["packages/drei/typetests/bounds.test-d.ts"],
       "divergence": null
     },
     {
@@ -283,9 +283,9 @@
         "path": "packages/drei/upstream/src/core/Bounds.tsx",
         "line": 30
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Bounds.three.tsrx",
+      "evidence": ["packages/drei/typetests/bounds.test-d.ts"],
       "divergence": null
     },
     {
@@ -3695,9 +3695,9 @@
         "path": "packages/drei/upstream/src/core/Bounds.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Bounds.three.tsrx",
+      "evidence": ["packages/drei/typetests/bounds.test-d.ts"],
       "divergence": null
     },
     {
@@ -4587,9 +4587,12 @@
         "path": "packages/drei/upstream/src/core/Bounds.tsx",
         "line": 351
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Bounds.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/bounds.test.ts",
+        "packages/drei/typetests/bounds.test-d.ts"
+      ],
       "divergence": null
     },
     {
