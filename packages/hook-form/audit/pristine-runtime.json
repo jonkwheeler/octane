@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "root": "packages/hook-form/upstream",
   "tests": [
     {
       "file": "src/__tests__/controller.server.test.tsx",
@@ -5966,5 +5967,6 @@
       "fullName": "Watch when disabled prop is used should be able to toggle the subscription and start with disabled false",
       "status": "passed"
     }
-  ]
+  ],
+  "snapshots": 8
 }

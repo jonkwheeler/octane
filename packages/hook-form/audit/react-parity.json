@@ -44,29 +44,34 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form-pristine",
-      "notes": "Runs the byte-exact react-hook-form 7.81.0 Jest suite against its original React binding and verifies every upstream test artifact has an adapted Octane counterpart.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-hook-form 7.81.0 Jest suite directly against its original React binding, checks every executed identity and snapshot against the committed inventory, and verifies every upstream test artifact has an adapted Octane counterpart.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/hook-form/tests/upstream-jest.config.cjs",
+        "root": "packages/hook-form/upstream",
+        "inventory": "packages/hook-form/audit/pristine-runtime.json"
+      },
       "files": [
         {
           "path": "packages/hook-form/tests/upstream-original.test.ts",
-          "role": "test",
-          "sha256": "e1ad5f6651c539087c69fdfe800253f084abdf7f8d468dde1dd2a2584f9354e0",
-          "cases": [
-            {
-              "id": "pristine:react-hook-form-original-suite",
-              "testName": "runs all 1,193 pinned react-hook-form tests unchanged",
-              "fullName": "runs all 1,193 pinned react-hook-form tests unchanged"
-            }
-          ]
+          "role": "support",
+          "sha256": "e1ad5f6651c539087c69fdfe800253f084abdf7f8d468dde1dd2a2584f9354e0"
         },
         {
           "path": "packages/hook-form/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "a49eb10306a768c1ceb01d767a9283b516903d02b84ccc6811390807fbc19188"
+          "sha256": "81c281f38c4cac409f55ecb40005c9c1bd68a32b35a97635462624a0db2ff4bd"
         },
         {
           "path": "scripts/react-parity/hook-form-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "9e410071f34e884265f003e869e752e032c22e2b1dc65764e2ab2199bf18b3b1"
+          "sha256": "997d9d6ca5d870f908bfc8605cc2067f2ce6e11fa2fd7330794b5e74416721d5"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
         },
         {
           "path": "packages/hook-form/upstream/SHA256SUMS",
@@ -177,6 +182,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form",
+      "evidenceOrigin": "upstream-suite",
       "notes": "Runs the complete adapted upstream DOM suite without a title filter and verifies exact collected and executed test identities.",
       "execution": {
         "kind": "vitest-full",
@@ -201,6 +207,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form-server",
+      "evidenceOrigin": "upstream-suite",
       "notes": "Runs the complete adapted upstream server suite without a title filter and verifies exact collected and executed test identities.",
       "execution": {
         "kind": "vitest-full",
@@ -247,6 +254,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form",
+      "evidenceOrigin": "repo-authored",
       "notes": "The same fixture runs through Octane and real react-hook-form via the shared differential rig.",
       "files": [
         {

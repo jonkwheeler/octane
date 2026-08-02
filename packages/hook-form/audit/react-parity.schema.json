@@ -24,12 +24,12 @@
     {
       "if": {
         "properties": {
-          "provenance": {
-            "properties": { "verification": { "const": "verified" } },
-            "required": ["verification"]
+          "provenance": { "properties": { "verification": { "const": "verified" } } },
+          "upstreamSuites": {
+            "properties": { "runtime": { "enum": ["present", "insufficient"] } }
           }
         },
-        "required": ["provenance"]
+        "required": ["provenance", "upstreamSuites"]
       },
       "then": {
         "properties": {
@@ -40,9 +40,16 @@
                   "properties": {
                     "type": { "const": "pristine-upstream" },
                     "oracle": { "const": "required" },
-                    "available": { "not": { "const": false } }
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "upstream-suite" },
+                    "execution": {
+                      "properties": {
+                        "kind": { "enum": ["vitest-full", "jest-full"] }
+                      },
+                      "required": ["kind"]
+                    }
                   },
-                  "required": ["type", "oracle"]
+                  "required": ["type", "oracle", "evidenceOrigin", "execution"]
                 }
               },
               {
@@ -51,12 +58,80 @@
                     "type": { "const": "adapted-octane" },
                     "oracle": { "const": "required" },
                     "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "upstream-suite" },
                     "execution": {
                       "properties": { "kind": { "const": "vitest-full" } },
                       "required": ["kind"]
                     }
                   },
-                  "required": ["type", "oracle", "execution"]
+                  "required": ["type", "oracle", "evidenceOrigin", "execution"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provenance": { "properties": { "verification": { "const": "verified" } } },
+          "upstreamSuites": { "properties": { "runtime": { "const": "insufficient" } } }
+        },
+        "required": ["provenance", "upstreamSuites"]
+      },
+      "then": {
+        "properties": {
+          "lanes": {
+            "contains": {
+              "properties": {
+                "type": { "const": "differential" },
+                "oracle": { "const": "required" },
+                "available": { "not": { "const": false } },
+                "evidenceOrigin": { "const": "repo-authored" }
+              },
+              "required": ["type", "oracle", "evidenceOrigin"]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provenance": { "properties": { "verification": { "const": "verified" } } },
+          "upstreamSuites": { "properties": { "runtime": { "const": "absent" } } }
+        },
+        "required": ["provenance", "upstreamSuites"]
+      },
+      "then": {
+        "properties": {
+          "lanes": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "adapted-octane" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "repo-authored" },
+                    "execution": {
+                      "properties": { "kind": { "const": "vitest-full" } },
+                      "required": ["kind"]
+                    }
+                  },
+                  "required": ["type", "oracle", "evidenceOrigin", "execution"]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "differential" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } },
+                    "evidenceOrigin": { "const": "repo-authored" }
+                  },
+                  "required": ["type", "oracle", "evidenceOrigin"]
                 }
               }
             ]
@@ -260,8 +335,69 @@
               },
               "required": ["type"]
             },
-            "then": { "required": ["evidenceOrigin"] },
-            "else": { "not": { "required": ["evidenceOrigin"] } }
+            "then": { "required": ["evidenceOrigin"] }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": { "enum": ["pristine-upstream", "adapted-octane"] },
+                "execution": {
+                  "properties": { "kind": { "enum": ["vitest-full", "jest-full"] } },
+                  "required": ["kind"]
+                }
+              },
+              "required": ["type", "execution"]
+            },
+            "then": { "required": ["evidenceOrigin"] }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "differential" } },
+              "required": ["type", "evidenceOrigin"]
+            },
+            "then": { "properties": { "evidenceOrigin": { "const": "repo-authored" } } }
+          },
+          {
+            "if": { "required": ["evidenceOrigin"] },
+            "then": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "type": { "enum": ["pristine-types", "adapted-types"] }
+                  },
+                  "required": ["type"]
+                },
+                {
+                  "properties": {
+                    "type": { "enum": ["pristine-upstream", "adapted-octane"] },
+                    "execution": {
+                      "properties": { "kind": { "enum": ["vitest-full", "jest-full"] } },
+                      "required": ["kind"]
+                    }
+                  },
+                  "required": ["type", "execution"]
+                },
+                {
+                  "properties": { "type": { "const": "differential" } },
+                  "required": ["type"]
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "execution": {
+                  "properties": { "kind": { "const": "jest-full" } },
+                  "required": ["kind"]
+                }
+              },
+              "required": ["execution"]
+            },
+            "then": {
+              "properties": { "type": { "const": "pristine-upstream" } },
+              "required": ["type"]
+            }
           }
         ],
         "required": ["id", "type", "oracle", "environment", "project", "files"],
@@ -290,18 +426,42 @@
             "oneOf": [
               {
                 "properties": { "kind": { "const": "typescript" } },
-                "required": ["kind", "compiler", "project"]
+                "required": ["kind", "compiler", "project"],
+                "not": {
+                  "anyOf": [
+                    { "required": ["inventory"] },
+                    { "required": ["config"] },
+                    { "required": ["root"] }
+                  ]
+                }
               },
               {
                 "properties": { "kind": { "const": "vitest-full" } },
-                "required": ["kind", "inventory"]
+                "required": ["kind", "inventory"],
+                "not": {
+                  "anyOf": [
+                    { "required": ["compiler"] },
+                    { "required": ["project"] },
+                    { "required": ["config"] },
+                    { "required": ["root"] }
+                  ]
+                }
+              },
+              {
+                "properties": { "kind": { "const": "jest-full" } },
+                "required": ["kind", "config", "root", "inventory"],
+                "not": {
+                  "anyOf": [{ "required": ["compiler"] }, { "required": ["project"] }]
+                }
               }
             ],
             "properties": {
-              "kind": { "enum": ["typescript", "vitest-full"] },
+              "kind": { "enum": ["typescript", "vitest-full", "jest-full"] },
               "compiler": { "enum": ["tsc", "tsgo", "tsrx-tsc"] },
               "project": { "type": "string", "minLength": 1 },
-              "inventory": { "type": "string", "minLength": 1 }
+              "inventory": { "type": "string", "minLength": 1 },
+              "config": { "type": "string", "minLength": 1 },
+              "root": { "type": "string", "minLength": 1 }
             }
           },
           "files": {

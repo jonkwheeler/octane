@@ -59,9 +59,10 @@ const LANE_KEYS = new Set([
 	'execution',
 	'evidenceOrigin',
 ]);
-const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory']);
+const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory', 'config', 'root']);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
 const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
+const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full']);
 const ADAPTED_ROOT_KEYS = new Set(['source', 'tests']);
 const ADAPTED_SCAN_KEYS = new Set(['roots', 'include', 'exclude']);
 const DIVERGENCE_FIELDS = [
@@ -261,7 +262,7 @@ export function validateManifest(manifest) {
 		if (lane.execution !== undefined) {
 			for (const key of Object.keys(lane.execution))
 				if (!EXECUTION_KEYS.has(key)) fail(`lane ${lane.id} execution has unknown key "${key}"`);
-			if (!['typescript', 'vitest-full'].includes(lane.execution.kind))
+			if (!['typescript', 'vitest-full', 'jest-full'].includes(lane.execution.kind))
 				fail(`lane ${lane.id} execution kind is unsupported`);
 			if (lane.execution.kind === 'typescript') {
 				if (!['tsc', 'tsgo', 'tsrx-tsc'].includes(lane.execution.compiler))
@@ -269,20 +270,44 @@ export function validateManifest(manifest) {
 				exactPath(lane.execution.project, `lane ${lane.id} execution project`);
 				if (lane.execution.inventory !== undefined)
 					fail(`lane ${lane.id} TypeScript execution must not declare an inventory`);
+				if (lane.execution.config !== undefined || lane.execution.root !== undefined)
+					fail(`lane ${lane.id} TypeScript execution only accepts compiler and project`);
+			} else if (lane.execution.kind === 'vitest-full') {
+				if (
+					lane.execution.compiler !== undefined ||
+					lane.execution.project !== undefined ||
+					lane.execution.config !== undefined ||
+					lane.execution.root !== undefined
+				)
+					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
+				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
 			} else {
 				if (lane.execution.compiler !== undefined || lane.execution.project !== undefined)
-					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
+					fail(`lane ${lane.id} Jest execution must not declare a compiler or project`);
+				exactPath(lane.execution.config, `lane ${lane.id} execution config`);
+				exactPath(lane.execution.root, `lane ${lane.id} execution root`);
 				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
 			}
 		}
 		if (lane.type.endsWith('-types') !== (lane.execution?.kind === 'typescript'))
 			fail(`lane ${lane.id} type and execution kind must agree`);
+		const fullRuntimeLane =
+			['pristine-upstream', 'adapted-octane'].includes(lane.type) &&
+			FULL_RUNTIME_EXECUTIONS.has(lane.execution?.kind);
 		if (lane.type.endsWith('-types')) {
 			if (!TYPE_EVIDENCE_ORIGINS.has(lane.evidenceOrigin))
 				fail(`lane ${lane.id} type evidenceOrigin must be upstream-suite or repo-authored`);
+		} else if (fullRuntimeLane) {
+			if (!TYPE_EVIDENCE_ORIGINS.has(lane.evidenceOrigin))
+				fail(`lane ${lane.id} full runtime evidenceOrigin must be upstream-suite or repo-authored`);
+		} else if (lane.type === 'differential') {
+			if (lane.evidenceOrigin !== undefined && lane.evidenceOrigin !== 'repo-authored')
+				fail(`lane ${lane.id} differential evidenceOrigin must be repo-authored`);
 		} else if (lane.evidenceOrigin !== undefined) {
 			fail(`lane ${lane.id} non-type lane must not declare evidenceOrigin`);
 		}
+		if (lane.execution?.kind === 'jest-full' && lane.type !== 'pristine-upstream')
+			fail(`lane ${lane.id} jest-full execution is only valid for pristine-upstream lanes`);
 		if (lane.type === 'pristine-types' && lane.execution.compiler !== 'tsc')
 			fail(`lane ${lane.id} pristine-types execution must use tsc`);
 		if (lane.type === 'adapted-types' && lane.execution.compiler !== 'tsrx-tsc')
@@ -314,31 +339,49 @@ export function validateManifest(manifest) {
 				laneCaseCount++;
 			}
 		}
-		if (laneCaseCount === 0 && lane.execution?.kind !== 'vitest-full')
+		if (laneCaseCount === 0 && !FULL_RUNTIME_EXECUTIONS.has(lane.execution?.kind))
 			fail(`lane ${lane.id} must declare at least one executable case`);
 	}
-	if (
-		manifest.provenance.verification === 'verified' &&
-		!manifest.lanes.some(
+	if (manifest.provenance.verification === 'verified') {
+		const requiredFullRuntime = (type, evidenceOrigin) =>
+			manifest.lanes.some(
+				(lane) =>
+					lane.type === type &&
+					lane.oracle === 'required' &&
+					lane.available !== false &&
+					FULL_RUNTIME_EXECUTIONS.has(lane.execution?.kind) &&
+					lane.evidenceOrigin === evidenceOrigin,
+			);
+		const requiredDifferential = manifest.lanes.some(
 			(lane) =>
-				lane.type === 'pristine-upstream' && lane.oracle === 'required' && lane.available !== false,
-		)
-	) {
-		fail('verified provenance requires an available required pristine-upstream lane');
-	}
-	if (
-		manifest.provenance.verification === 'verified' &&
-		!manifest.lanes.some(
-			(lane) =>
-				lane.type === 'adapted-octane' &&
+				lane.type === 'differential' &&
 				lane.oracle === 'required' &&
 				lane.available !== false &&
-				lane.execution?.kind === 'vitest-full',
-		)
-	) {
-		fail('verified provenance requires an available required adapted-octane full-suite lane');
-	}
-	if (manifest.provenance.verification === 'verified') {
+				lane.evidenceOrigin === 'repo-authored',
+		);
+		if (manifest.upstreamSuites.runtime === 'present') {
+			if (
+				!requiredFullRuntime('pristine-upstream', 'upstream-suite') ||
+				!requiredFullRuntime('adapted-octane', 'upstream-suite')
+			)
+				fail(
+					'verified provenance with present upstream runtime tests requires required full pristine-upstream and adapted-octane lanes with upstream-suite evidence',
+				);
+		} else if (manifest.upstreamSuites.runtime === 'insufficient') {
+			if (
+				!requiredFullRuntime('pristine-upstream', 'upstream-suite') ||
+				!requiredFullRuntime('adapted-octane', 'upstream-suite') ||
+				!requiredDifferential
+			)
+				fail(
+					'verified provenance with insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence',
+				);
+		} else if (!requiredFullRuntime('adapted-octane', 'repo-authored') || !requiredDifferential) {
+			fail(
+				'verified provenance with absent upstream runtime tests requires full adapted-octane and differential lanes with repo-authored evidence',
+			);
+		}
+
 		const expectedOrigin =
 			manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
 		const requiredTypeEvidence = (type) =>
@@ -392,6 +435,7 @@ export async function verifyManifestFiles(manifest, root) {
 		if (
 			lane.oracle === 'required' &&
 			lane.available !== false &&
+			lane.type === 'adapted-octane' &&
 			lane.execution?.kind === 'vitest-full'
 		) {
 			const inventory = JSON.parse(
@@ -399,6 +443,15 @@ export async function verifyManifestFiles(manifest, root) {
 			);
 			validateRuntimeInventory(inventory, lane, manifest.adaptedRoots.tests.roots);
 			for (const test of inventory.tests) runtimeCaseIds.add(test.id);
+		} else if (
+			lane.oracle === 'required' &&
+			lane.available !== false &&
+			lane.execution?.kind === 'jest-full'
+		) {
+			const inventory = JSON.parse(
+				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
+			);
+			validateJestRuntimeInventory(inventory, lane);
 		}
 		for (const file of lane.files) {
 			const absolute = resolve(absoluteRoot, file.path);
@@ -446,6 +499,7 @@ export async function verifyManifestFiles(manifest, root) {
 		(candidate) =>
 			candidate.oracle === 'required' &&
 			candidate.available !== false &&
+			candidate.type === 'adapted-octane' &&
 			candidate.execution?.kind === 'vitest-full',
 	);
 	const discoveredTests = await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.tests);
@@ -530,6 +584,26 @@ function validateRuntimeInventory(inventory, lane, expectedRoots) {
 		throw new Error(`lane ${lane.id} runtime inventory has invalid or duplicate test identities`);
 }
 
+function validateJestRuntimeInventory(inventory, lane) {
+	if (
+		inventory?.schemaVersion !== 1 ||
+		inventory.root !== lane.execution.root ||
+		!Number.isInteger(inventory.snapshots) ||
+		inventory.snapshots < 0 ||
+		!Array.isArray(inventory.tests) ||
+		inventory.tests.some(
+			(test) =>
+				typeof test?.file !== 'string' ||
+				test.file.length === 0 ||
+				typeof test.fullName !== 'string' ||
+				test.fullName.length === 0 ||
+				test.status !== 'passed',
+		)
+	)
+		throw new Error(`lane ${lane.id} has an invalid Jest runtime inventory`);
+	for (const test of inventory.tests) exactPath(test.file, `lane ${lane.id} Jest test file`);
+}
+
 async function discoverAdaptedFiles(root, scan) {
 	const include = scan.include.map((pattern) => new RegExp(pattern));
 	const exclude = scan.exclude.map((pattern) => new RegExp(pattern));
@@ -606,7 +680,9 @@ export function verifyLaneCollectedTests(lane, collectedTests, root) {
 export async function verifyManifestTestSelections(manifest, root) {
 	const testsByProject = new Map();
 	for (const lane of manifest.lanes.filter(
-		(candidate) => candidate.available !== false && candidate.execution?.kind !== 'typescript',
+		(candidate) =>
+			candidate.available !== false &&
+			!['typescript', 'jest-full'].includes(candidate.execution?.kind),
 	)) {
 		let collectedTests = testsByProject.get(lane.project);
 		if (!collectedTests) {
@@ -665,6 +741,16 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 			'--reporter=json',
 		];
 	}
+	if (lane.execution?.kind === 'jest-full') {
+		return [
+			process.execPath,
+			'scripts/react-parity/jest-full-runner.mjs',
+			'--config',
+			lane.execution.config,
+			'--root',
+			lane.execution.root,
+		];
+	}
 	const fullNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.fullName));
 	if (fullNames.length === 0) throw new Error(`lane ${lane.id} has no executable cases`);
 	const escaped = fullNames.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -706,6 +792,22 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 		if (JSON.stringify(executed) !== JSON.stringify(expected))
 			throw new Error(
 				`lane ${lane.id} did not execute every inventoried test identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
+			);
+		return true;
+	}
+	if (lane.execution?.kind === 'jest-full') {
+		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
+		if (result?.schemaVersion !== 1 || !Array.isArray(result.tests))
+			throw new Error(`lane ${lane.id} returned an invalid Jest full-suite result`);
+		const executed = result.tests.sort(compareTestIdentities);
+		const expected = inventory.tests.sort(compareTestIdentities);
+		if (JSON.stringify(executed) !== JSON.stringify(expected))
+			throw new Error(
+				`lane ${lane.id} did not execute every inventoried Jest identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
+			);
+		if (result.snapshots !== inventory.snapshots)
+			throw new Error(
+				`lane ${lane.id} executed ${result.snapshots ?? 0} of ${inventory.snapshots} inventoried snapshots`,
 			);
 		return true;
 	}

@@ -113,6 +113,67 @@ function divergence(overrides = {}) {
 	};
 }
 
+function fullRuntimeLane(type, evidenceOrigin = 'upstream-suite') {
+	const inventory = `audit/${type}.json`;
+	return {
+		...manifest().lanes[0],
+		id: `full-${type}`,
+		type,
+		evidenceOrigin,
+		files: [{ path: inventory, role: 'support', sha256: '0'.repeat(64) }],
+		execution:
+			type === 'pristine-upstream'
+				? {
+						kind: 'jest-full',
+						config: 'packages/example/jest.config.cjs',
+						root: 'packages/example/upstream',
+						inventory,
+					}
+				: { kind: 'vitest-full', inventory },
+	};
+}
+
+function typeLane(type, evidenceOrigin = 'upstream-suite') {
+	return {
+		...manifest().lanes[0],
+		id: type,
+		type,
+		evidenceOrigin,
+		files: [
+			{
+				...manifest().lanes[0].files[0],
+				cases: [{ id: `types:${type}`, testName: type, fullName: type }],
+			},
+		],
+		execution: {
+			kind: 'typescript',
+			compiler: type === 'adapted-types' ? 'tsrx-tsc' : 'tsc',
+			project: 'packages/example/tsconfig.json',
+		},
+	};
+}
+
+function differentialLane() {
+	return {
+		...manifest().lanes[0],
+		id: 'repo-authored-differential',
+		type: 'differential',
+		evidenceOrigin: 'repo-authored',
+	};
+}
+
+function verifiedManifest() {
+	const value = manifest();
+	value.provenance.verification = 'verified';
+	value.lanes = [
+		fullRuntimeLane('pristine-upstream'),
+		fullRuntimeLane('adapted-octane'),
+		typeLane('pristine-types'),
+		typeLane('adapted-types'),
+	];
+	return value;
+}
+
 test('accepts distinct lane types and builds deterministic argv without a shell', () => {
 	const value = manifest();
 	assert.deepEqual(validateManifest(value), value);
@@ -222,6 +283,42 @@ test('normalizes Windows identity paths and resolves full-suite inventories from
 		'packages/example.test.ts',
 		'--reporter=json',
 	]);
+});
+
+test('runs Jest full suites directly and rejects identity or snapshot drift', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-jest-root-'));
+	const lane = fullRuntimeLane('pristine-upstream');
+	const inventory = {
+		schemaVersion: 1,
+		root: lane.execution.root,
+		tests: [{ file: 'src/example.test.ts', fullName: 'suite works', status: 'passed' }],
+		snapshots: 2,
+	};
+	await mkdir(join(root, 'audit'), { recursive: true });
+	await writeFile(join(root, lane.execution.inventory), JSON.stringify(inventory));
+
+	assert.deepEqual(buildLaneArgv(lane, root), [
+		process.execPath,
+		'scripts/react-parity/jest-full-runner.mjs',
+		'--config',
+		lane.execution.config,
+		'--root',
+		lane.execution.root,
+	]);
+	assert.equal(verifyLaneRunResult(lane, JSON.stringify(inventory), root), true);
+
+	assert.throws(
+		() => verifyLaneRunResult(lane, JSON.stringify({ ...inventory, tests: [] }), root),
+		/did not execute every inventoried Jest identity exactly once/,
+	);
+	assert.throws(
+		() => verifyLaneRunResult(lane, JSON.stringify({ ...inventory, snapshots: 1 }), root),
+		/executed 1 of 2 inventoried snapshots/,
+	);
+	assert.throws(
+		() => verifyLaneRunResult(lane, JSON.stringify({ tests: inventory.tests, snapshots: 2 }), root),
+		/returned an invalid Jest full-suite result/,
+	);
 });
 
 test('sorts test identities by locale-independent code-unit order', () => {
@@ -343,51 +440,57 @@ test('requires complete immutable provenance and environment identity', () => {
 	assert.throws(() => validateManifest(partialIntegrity), /complete sha256 digest/);
 });
 
-test('requires live pristine and adapted full-suite lanes before provenance can be verified', () => {
-	const value = manifest();
-	value.provenance.verification = 'verified';
-	assert.throws(
-		() => validateManifest(value),
-		/requires an available required pristine-upstream lane/,
-	);
-	value.lanes[0].type = 'pristine-upstream';
-	assert.throws(
-		() => validateManifest(value),
-		/requires an available required adapted-octane full-suite lane/,
-	);
-	const adapted = {
+test('makes every upstream runtime suite state an executable verified requirement', () => {
+	const present = verifiedManifest();
+	assert.doesNotThrow(() => validateManifest(present));
+
+	const focusedPristine = structuredClone(present);
+	focusedPristine.lanes[0] = {
 		...manifest().lanes[0],
-		id: 'adapted-full',
-		files: [{ path: 'audit/inventory.json', role: 'support', sha256: '0'.repeat(64) }],
-		execution: { kind: 'vitest-full', inventory: 'audit/inventory.json' },
+		id: 'focused-pristine-upstream',
+		type: 'pristine-upstream',
 	};
-	value.lanes.push(adapted);
-	for (const type of ['pristine-types', 'adapted-types']) {
-		value.lanes.push({
-			...manifest().lanes[0],
-			id: type,
-			type,
-			evidenceOrigin: 'upstream-suite',
-			files: [
-				{
-					...manifest().lanes[0].files[0],
-					cases: [{ id: `types:${type}`, testName: type, fullName: type }],
-				},
-			],
-			execution: {
-				kind: 'typescript',
-				compiler: type === 'adapted-types' ? 'tsrx-tsc' : 'tsc',
-				project: 'packages/example/tsconfig.json',
-			},
-		});
+	assert.throws(
+		() => validateManifest(focusedPristine),
+		/present upstream runtime tests requires required full pristine-upstream and adapted-octane lanes with upstream-suite evidence/,
+	);
+
+	for (const mutation of [
+		(candidate) => (candidate.lanes[1].oracle = 'optional'),
+		(candidate) => (candidate.lanes[1].available = false),
+		(candidate) => (candidate.lanes[1].evidenceOrigin = 'repo-authored'),
+	]) {
+		const invalidPresent = structuredClone(present);
+		mutation(invalidPresent);
+		assert.throws(
+			() => validateManifest(invalidPresent),
+			/present upstream runtime tests requires required full pristine-upstream and adapted-octane lanes with upstream-suite evidence/,
+		);
 	}
-	assert.doesNotThrow(() => validateManifest(value));
-	const optional = structuredClone(value);
-	optional.lanes[1].oracle = 'optional';
-	assert.throws(() => validateManifest(optional), /adapted-octane full-suite lane/);
-	const unavailable = structuredClone(value);
-	unavailable.lanes[1].available = false;
-	assert.throws(() => validateManifest(unavailable), /adapted-octane full-suite lane/);
+
+	const insufficient = structuredClone(present);
+	insufficient.upstreamSuites.runtime = 'insufficient';
+	assert.throws(
+		() => validateManifest(insufficient),
+		/insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence/,
+	);
+	insufficient.lanes.push(differentialLane());
+	assert.doesNotThrow(() => validateManifest(insufficient));
+
+	const absent = structuredClone(present);
+	absent.upstreamSuites.runtime = 'absent';
+	absent.lanes = absent.lanes.filter((lane) => lane.type !== 'pristine-upstream');
+	absent.lanes.find((lane) => lane.type === 'adapted-octane').evidenceOrigin = 'repo-authored';
+	assert.throws(
+		() => validateManifest(absent),
+		/absent upstream runtime tests requires full adapted-octane and differential lanes with repo-authored evidence/,
+	);
+	absent.lanes.push(differentialLane());
+	assert.doesNotThrow(() => validateManifest(absent));
+});
+
+test('requires paired executable type lanes for every upstream type suite state', () => {
+	const value = verifiedManifest();
 	for (const mutation of [
 		(candidate) =>
 			candidate.lanes.splice(
@@ -420,6 +523,7 @@ test('requires live pristine and adapted full-suite lanes before provenance can 
 			...manifest().lanes[0],
 			id: 'fake-type-differential',
 			type: 'differential',
+			evidenceOrigin: 'repo-authored',
 			files: [
 				{
 					...manifest().lanes[0].files[0],
@@ -480,6 +584,20 @@ test('requires explicit type evidence origins and the framework-appropriate comp
 	assert.throws(
 		() => validateManifest(runtimeLane),
 		/non-type lane must not declare evidenceOrigin/,
+	);
+
+	const fullRuntime = fullRuntimeLane('adapted-octane');
+	delete fullRuntime.evidenceOrigin;
+	assert.throws(
+		() => validateManifest(manifest({ lanes: [fullRuntime] })),
+		/full runtime evidenceOrigin/,
+	);
+
+	const adaptedJest = fullRuntimeLane('pristine-upstream');
+	adaptedJest.type = 'adapted-octane';
+	assert.throws(
+		() => validateManifest(manifest({ lanes: [adaptedJest] })),
+		/jest-full execution is only valid for pristine-upstream lanes/,
 	);
 });
 
@@ -568,6 +686,7 @@ test('rejects unstructured, undeclared, and unlinked full-suite divergences', as
 						...manifest().lanes[0],
 						id: 'full',
 						project: 'example',
+						evidenceOrigin: 'upstream-suite',
 						files: [{ path: inventoryPath, role: 'support', sha256: sha256(inventory) }],
 						execution: { kind: 'vitest-full', inventory: inventoryPath },
 					},
@@ -638,6 +757,7 @@ test('discovers divergence markers in tsrx source roots independently from test 
 				...manifest().lanes[0],
 				id: 'full',
 				project: 'example',
+				evidenceOrigin: 'upstream-suite',
 				files: [{ path: inventoryPath, role: 'support', sha256: sha256(inventory) }],
 				execution: { kind: 'vitest-full', inventory: inventoryPath },
 			},

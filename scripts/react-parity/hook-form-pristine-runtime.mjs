@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -45,8 +45,25 @@ if (process.argv.includes('--write')) {
 		],
 		{ cwd: root, encoding: 'utf8' },
 	);
-	if (result.status !== 0) throw new Error(`${result.stdout}\n${result.stderr}`);
-	const tests = pristineTestIdentities(JSON.parse(readFileSync(report, 'utf8')));
-	writeFileSync(destination, `${JSON.stringify({ schemaVersion: 1, tests }, null, 2)}\n`);
-	console.log(`packages/hook-form/audit/pristine-runtime.json: ${tests.length} tests`);
+	try {
+		if (result.status !== 0) throw new Error(`${result.stdout}\n${result.stderr}`);
+		const reportJson = JSON.parse(readFileSync(report, 'utf8'));
+		const tests = pristineTestIdentities(reportJson);
+		writeFileSync(
+			destination,
+			`${JSON.stringify(
+				{
+					schemaVersion: 1,
+					root: 'packages/hook-form/upstream',
+					tests,
+					snapshots: reportJson.snapshot?.total ?? 0,
+				},
+				null,
+				2,
+			)}\n`,
+		);
+		console.log(`packages/hook-form/audit/pristine-runtime.json: ${tests.length} tests`);
+	} finally {
+		rmSync(report, { force: true });
+	}
 }
