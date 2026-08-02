@@ -44,9 +44,11 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@tsrx/react": "catalog:default",
     "@types/lodash.debounce": "4.0.9",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
+    "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default",

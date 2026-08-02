@@ -742,6 +742,7 @@ export default defineConfig({
 					include: ['packages/usehooks-ts/tests/**/*.test.ts'],
 					exclude: ['packages/usehooks-ts/tests/ssr.test.ts'],
 					environment: 'jsdom',
+					globalSetup: ['packages/usehooks-ts/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
