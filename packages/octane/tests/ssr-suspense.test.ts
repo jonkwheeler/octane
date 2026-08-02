@@ -44,6 +44,59 @@ function deferred<T>() {
 }
 
 describe('SSR Phase 4 — render() awaits use(promise)', () => {
+	it('renders fulfilled plain async components after replay', async () => {
+		const out = await prerender(m.AsyncComponentBoundary, {
+			component: async () => RT.createElement('span', { className: 'async-component-ok' }, 'ready'),
+		});
+
+		expect(out.html).toContain('<span class="async-component-ok">ready</span>');
+		expect(out.html).not.toContain('async-component-loading');
+	});
+
+	it('routes plain async component rejection to @catch without an unhandled replay rejection', async () => {
+		const reason = new Error('async-component-nope');
+		const caught: unknown[] = [];
+		const unhandled: unknown[] = [];
+		const onUnhandledRejection = (error: unknown) => unhandled.push(error);
+		process.on('unhandledRejection', onUnhandledRejection);
+		try {
+			const out = await prerender(m.AsyncComponentBoundary, {
+				onCatch: (error: unknown) => caught.push(error),
+				component: async () => {
+					throw reason;
+				},
+			});
+
+			expect(out.html).toContain('<span class="async-component-error">async-component-nope</span>');
+			expect(caught).toEqual([reason]);
+			await new Promise<void>((resolve) => setTimeout(resolve, 0));
+			expect(unhandled).toEqual([]);
+		} finally {
+			process.off('unhandledRejection', onUnhandledRejection);
+		}
+	});
+
+	it('keeps repeated and concurrent plain async component renders isolated', async () => {
+		const component = (value: string) => async () =>
+			RT.createElement('span', { className: 'async-component-value' }, value);
+
+		const [left, right] = await Promise.all([
+			prerender(m.AsyncComponentBoundary, { component: component('left') }),
+			prerender(m.AsyncComponentBoundary, { component: component('right') }),
+		]);
+		const repeated = await prerender(m.AsyncComponentBoundary, {
+			component: component('again'),
+		});
+
+		expect(left.html).toContain('<span class="async-component-value">left</span>');
+		expect(left.html).not.toContain('right');
+		expect(right.html).toContain('<span class="async-component-value">right</span>');
+		expect(right.html).not.toContain('left');
+		expect(repeated.html).toContain('<span class="async-component-value">again</span>');
+		expect(repeated.html).not.toContain('left');
+		expect(repeated.html).not.toContain('right');
+	});
+
 	it('@try awaits use(promise) and renders the resolved success arm + seed', async () => {
 		const out = await prerender(m.Boundary, { promise: Promise.resolve('hi') });
 		// Nested ranges: outer = try-slot, inner = the resolved success arm.

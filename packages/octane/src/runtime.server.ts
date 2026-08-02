@@ -3942,6 +3942,14 @@ export function use<T>(
 	const resolved = RESOLVED;
 	if (resolved !== null && resolved.has(key)) {
 		const entry = resolved.get(key)!;
+		// A component may recreate this thenable on every replay (a plain async
+		// component necessarily does). The string-keyed result from the earlier
+		// pass remains authoritative, but the newly-created thenable still needs a
+		// rejection observer or Node reports its otherwise handled rejection as
+		// unhandled. Do not let a hostile/custom then() replace the cached outcome.
+		try {
+			(usable as PromiseLike<unknown>).then(NOOP, NOOP);
+		} catch {}
 		// Rejected on a prior pass → throw so the enclosing @try renders @catch.
 		// Serialize a typed rejection seed first so hydration takes the same catch
 		// arm even when the client receives a fresh, still-pending thenable.
