@@ -2,6 +2,7 @@
 import { type ThreeElements, type ThreeRef, useFrame, useThree } from '@octanejs/three';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from '@octanejs/three/renderer';
 import * as THREE from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { useFBO } from './Fbo.three.tsrx';
 import {
 	isRenderFunction,
@@ -170,9 +171,8 @@ export type CubeCameraOptions = {
 	fog?: THREE.Fog | THREE.FogExp2;
 };
 
-export function useCubeCamera(
-	{ resolution = 256, near = 0.1, far = 1000, envMap, fog }: CubeCameraOptions = {},
-) {
+export function useCubeCamera(options: CubeCameraOptions = {}) {
+	const { resolution = 256, near = 0.1, far = 1000, envMap, fog } = slotDefault(options, {});
 	const gl = useThree((state) => state.gl);
 	const scene = useThree((state) => state.scene);
 	const fbo = useMemo(() => {

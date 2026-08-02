@@ -2,6 +2,7 @@
 import { type RefObject, useFrame, useThree } from '@octanejs/three';
 import { useLayoutEffect, useRef } from '@octanejs/three/renderer';
 import { Object3D } from 'three';
+import { stripTrailingSlot } from './compiler-slot.js';
 
 type Falsey = false | null | undefined;
 type HelperType = Object3D & { update?: () => void; dispose?: () => void };
@@ -13,6 +14,7 @@ export function useHelper<T extends HelperConstructor>(
 	helperConstructor: T,
 	...args: HelperArgs<ConstructorParameters<T>>
 ) {
+	args = stripTrailingSlot(args) as HelperArgs<ConstructorParameters<T>>;
 	const helper = useRef<HelperType | null | undefined>(null);
 	const scene = useThree((state) => state.scene);
 	useLayoutEffect(() => {

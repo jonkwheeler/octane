@@ -1,6 +1,7 @@
 import { useFrame, type RefObject } from '@octanejs/three';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from '@octanejs/three/renderer';
 import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from 'three';
+import { slotDefault } from './compiler-slot.js';
 
 type Api<T extends AnimationClip> = {
 	ref: RefObject<Object3D | undefined | null>;
@@ -14,6 +15,7 @@ export function useAnimations<T extends AnimationClip>(
 	clips: T[],
 	root?: RefObject<Object3D | undefined | null> | Object3D,
 ): Api<T> {
+	root = slotDefault(root, undefined);
 	const ref = useRef<Object3D | null>(null);
 	const [actualRef] = useState(
 		() => root ? (root instanceof Object3D ? { current: root } : root) : ref,

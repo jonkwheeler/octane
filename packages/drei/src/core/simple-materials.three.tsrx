@@ -2,6 +2,7 @@
 import type { ThreeElements, ThreeRef } from '@octanejs/three';
 import { useLayoutEffect, useMemo, useRef, useState } from '@octanejs/three/renderer';
 import * as THREE from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { shaderMaterial } from './shaderMaterial.js';
 
 export const DiscardMaterialImpl = shaderMaterial(
@@ -111,6 +112,7 @@ export function Mask({
 }
 
 export function useMask(id: number, inverse = false) {
+	inverse = slotDefault(inverse, false);
 	return {
 		stencilWrite: true,
 		stencilRef: id,

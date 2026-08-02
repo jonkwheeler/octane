@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, use } from '@octanejs/three/renderer';
 import { RepeatWrapping, type Texture, Vector2 } from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 import { resourcePromise } from './resource.js';
 import { useTexture } from './Texture.three.tsrx';
@@ -31,6 +32,9 @@ export function useMatcapTexture(
 	format = 1024,
 	onLoad?: (texture: Texture | Texture[]) => void,
 ): [Texture, string, number] {
+	id = slotDefault(id, 0);
+	format = slotDefault(format, 1024);
+	onLoad = slotDefault(onLoad, undefined);
 	const matcapList = use(resourcePromise(loadCatalogList, [MATCAP_LIST_URL]));
 	const defaultMatcap = matcapList[0];
 	const total = useMemo(() => Object.keys(matcapList).length, []);
@@ -71,6 +75,9 @@ export function useNormalTexture(
 	settings: Settings = {},
 	onLoad?: (texture: Texture | Texture[]) => void,
 ): [Texture, string, number] {
+	id = slotDefault(id, 0);
+	settings = slotDefault(settings, {});
+	onLoad = slotDefault(onLoad, undefined);
 	const { repeat = [1, 1], anisotropy = 1, offset = [0, 0] } = settings;
 	const normalsList = use(resourcePromise(loadCatalogList, [NORMAL_LIST_URL]));
 	const total = useMemo(() => Object.keys(normalsList).length, []);

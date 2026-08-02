@@ -9,6 +9,7 @@ import {
 	SAH,
 	type SplitStrategy,
 } from 'three-mesh-bvh';
+import { slotDefault } from './compiler-slot.js';
 
 const acceleratedRaycastCompat = acceleratedRaycast as unknown as Mesh['raycast'];
 const computeBoundsTreeCompat = computeBoundsTree as any;
@@ -36,6 +37,7 @@ function assignRef<T>(ref: ThreeRef<T> | undefined, value: T | null): void {
 }
 
 export function useBVH(mesh: RefObject<Mesh | undefined>, options?: BVHOptions) {
+	options = slotDefault(options, undefined);
 	const resolved = {
 		strategy: SAH,
 		verbose: false,

@@ -1,6 +1,7 @@
 import { applyProps, type Vector3 as Vector3Prop } from '@octanejs/three';
 import { useLayoutEffect, useMemo, useRef, useState } from '@octanejs/three/renderer';
 import * as THREE from 'three';
+import { slotDefault } from './compiler-slot.js';
 
 const worldposReplace = /* glsl */ `
 #if defined( USE_ENVMAP ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP )
@@ -87,6 +88,8 @@ export function useBoxProjectedEnv(
 	position: Vector3Prop = new THREE.Vector3(),
 	size: Vector3Prop = new THREE.Vector3(),
 ) {
+	position = slotDefault(position, new THREE.Vector3());
+	size = slotDefault(size, new THREE.Vector3());
 	const [config] = useState(() => ({ position: new THREE.Vector3(), size: new THREE.Vector3() }));
 	applyProps(config as any, { position, size });
 	const ref = useRef<THREE.Material | null>(null);

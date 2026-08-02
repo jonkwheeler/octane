@@ -450,6 +450,11 @@
       "fullName": "useDepthBuffer matches texture configuration and frame limits for size=128"
     },
     {
+      "id": "runtime:64761cd3b118d7cd",
+      "file": "packages/drei/tests/depth-buffer.test.ts",
+      "fullName": "useDepthBuffer restores defaults after the compiler-injected trailing slot"
+    },
+    {
       "id": "runtime:bbd45fa51fcf22be",
       "file": "packages/drei/tests/detect-gpu.test.ts",
       "fullName": "DetectGPU matches the pinned React Drei suspension, result, render callback, and global cache key"
@@ -538,6 +543,11 @@
       "id": "runtime:894dbc8755ef0ee6",
       "file": "packages/drei/tests/environment.test.ts",
       "fullName": "useEnvironment matches validation and static API behavior"
+    },
+    {
+      "id": "runtime:42025575d026e746",
+      "file": "packages/drei/tests/environment.test.ts",
+      "fullName": "useEnvironment restores defaults after the compiler-injected trailing slot"
     },
     {
       "id": "runtime:25c2fa3018d93f62",
@@ -1543,6 +1553,11 @@
       "id": "runtime:b4d53466bb633d51",
       "file": "packages/drei/tests/use-cursor.test.ts",
       "fullName": "useCursor matches hover, prop updates, custom containers, and cleanup"
+    },
+    {
+      "id": "runtime:0835f4a2b2dcdddc",
+      "file": "packages/drei/tests/use-cursor.test.ts",
+      "fullName": "useCursor restores defaults after the compiler-injected trailing slot"
     },
     {
       "id": "runtime:5ad82c5576d173e2",

@@ -6,7 +6,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { EXRLoader, RGBELoader } from 'three-stdlib';
 import { useEnvironment, type EnvironmentLoaderProps } from '../src/index.js';
-import { EnvironmentBoundary } from './_fixtures/environment.three.tsrx';
+import {
+	DefaultEnvironmentBoundary,
+	EnvironmentBoundary,
+} from './_fixtures/environment.three.tsrx';
 
 const originalCubeLoad = THREE.CubeTextureLoader.prototype.load;
 const originalRgbeLoad = RGBELoader.prototype.load;
@@ -68,6 +71,17 @@ function snapshot(texture: THREE.Texture) {
 }
 
 describe('useEnvironment', () => {
+	it('restores defaults after the compiler-injected trailing slot', async () => {
+		const textures: THREE.Texture[] = [];
+		const root = await createOctaneThree(DefaultEnvironmentBoundary, {
+			onLoad: (texture: THREE.Texture) => textures.push(texture),
+		});
+		await flush();
+		expect(textures.at(-1)).toBeInstanceOf(THREE.CubeTexture);
+		root.unmount();
+		useEnvironment.clear();
+	});
+
 	it.each([
 		['cube', { files: ['/px', '/nx', '/py', '/ny', '/pz', '/nz'], path: '/cube/' }],
 		['hdr', { files: '/studio.hdr', path: '/hdr/' }],

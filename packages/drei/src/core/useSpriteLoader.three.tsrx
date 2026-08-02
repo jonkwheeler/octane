@@ -1,6 +1,7 @@
 import { useLoader, useThree } from '@octanejs/three';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from '@octanejs/three/renderer';
 import * as THREE from 'three';
+import { slotDefault } from './compiler-slot.js';
 
 export type Size = { w: number; h: number };
 
@@ -52,6 +53,11 @@ export function useSpriteLoader<Url extends string>(
 	onLoad?: (texture: THREE.Texture, textureData?: SpriteData | null) => void,
 	canvasRenderingContext2DSettings?: CanvasRenderingContext2DSettings,
 ) {
+	json = slotDefault(json, undefined);
+	animationNames = slotDefault(animationNames, undefined);
+	numberOfFrames = slotDefault(numberOfFrames, undefined);
+	onLoad = slotDefault(onLoad, undefined);
+	canvasRenderingContext2DSettings = slotDefault(canvasRenderingContext2DSettings, undefined);
 	const viewportRef = useRef(useThree((state) => state.viewport));
 	const spriteDataRef = useRef<SpriteData | null>(null);
 	const totalFrames = useRef(0);

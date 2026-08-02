@@ -10,7 +10,7 @@ import { useDepthBuffer as reactUseDepthBuffer } from '@react-three/drei/core/us
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { DepthBufferScene } from './_fixtures/depth-buffer.three.tsrx';
+import { DepthBufferDefaultsScene, DepthBufferScene } from './_fixtures/depth-buffer.three.tsrx';
 
 type Recorder = THREE.WebGLRenderer & { renderCount: number };
 
@@ -67,6 +67,17 @@ function snapshot(texture: THREE.DepthTexture | null) {
 }
 
 describe('useDepthBuffer', () => {
+	it('restores defaults after the compiler-injected trailing slot', async () => {
+		let texture: THREE.DepthTexture | null = null;
+		const root = await createOctaneThree(
+			DepthBufferDefaultsScene,
+			{ onTexture: (value: THREE.DepthTexture | null) => (texture = value) },
+			{ width: 320, height: 180 },
+		);
+		expect(snapshot(texture)).toMatchObject({ width: 256, height: 256 });
+		root.unmount();
+	});
+
 	it.each([
 		{ size: 128, expected: [128, 128] },
 		{ size: 0, expected: [320, 180] },

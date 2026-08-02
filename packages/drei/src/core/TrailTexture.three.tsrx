@@ -2,6 +2,7 @@
 import { useFrame } from '@octanejs/three';
 import { useCallback, useMemo } from '@octanejs/three/renderer';
 import { Texture } from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 type Point = { x: number; y: number; age: number; force: number };
@@ -147,6 +148,7 @@ class TrailTextureImpl {
 export function useTrailTexture(
 	config: Partial<TrailConfig> = {},
 ): [Texture, (event: { uv: { x: number; y: number } }) => void] {
+	config = slotDefault(config, {});
 	const { size, maxAge, radius, intensity, interpolate, smoothing, minForce, blend, ease } = config;
 	const trail = useMemo(
 		() => new TrailTextureImpl(config),

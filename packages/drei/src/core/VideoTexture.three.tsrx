@@ -4,6 +4,7 @@ import { use, useEffect, useLayoutEffect, useRef } from '@octanejs/three/rendere
 import type Hls from 'hls.js';
 import { Events } from 'hls.js';
 import * as THREE from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 import { resourcePromise } from './resource.js';
 import { getHls, IS_BROWSER } from './video-texture-resource.js';
@@ -30,7 +31,9 @@ function useVideoFrame(video: HTMLVideoElement, callbackValue?: VideoFrameReques
 
 export function useVideoTexture(
 	srcOrSrcObject: HTMLVideoElement['src' | 'srcObject'],
-	{
+	options: UseVideoTextureOptions = {},
+): THREE.VideoTexture {
+	const {
 		unsuspend = 'loadedmetadata',
 		start = true,
 		hls: hlsConfig = {},
@@ -40,8 +43,7 @@ export function useVideoTexture(
 		playsInline = true,
 		onVideoFrame,
 		...videoProps
-	}: UseVideoTextureOptions = {},
-): THREE.VideoTexture {
+	} = slotDefault(options, {});
 	const gl = useThree((state) => state.gl);
 	const hlsRef = useRef<Hls | null>(null);
 	const texture = use(

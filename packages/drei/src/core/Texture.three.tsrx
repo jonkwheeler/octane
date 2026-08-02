@@ -2,6 +2,7 @@
 import { useLoader, useThree } from '@octanejs/three';
 import { useEffect, useLayoutEffect, useMemo } from '@octanejs/three/renderer';
 import { Texture as ThreeTexture, TextureLoader } from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 export const IsObject = (url: unknown): url is Record<string, string> =>
@@ -19,6 +20,7 @@ export function useTexture<Url extends string[] | string | Record<string, string
 	input: Url,
 	onLoad?: (texture: MappedTextureType<Url>) => void,
 ): MappedTextureType<Url> {
+	onLoad = slotDefault(onLoad, undefined);
 	const gl = useThree((state) => state.gl);
 	const textures = useLoader(
 		TextureLoader,

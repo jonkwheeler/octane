@@ -1,6 +1,7 @@
 import { useThree } from '@octanejs/three';
 import { useEffect, useLayoutEffect, useMemo } from '@octanejs/three/renderer';
 import * as THREE from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
 type FBOSettings =
@@ -10,6 +11,9 @@ type FBOSettings =
 	} & THREE.RenderTargetOptions;
 
 export function useFBO(width?: number | FBOSettings, height?: number, settings?: FBOSettings) {
+	width = slotDefault(width, undefined);
+	height = slotDefault(height, undefined);
+	settings = slotDefault(settings, undefined);
 	const size = useThree((state) => state.size);
 	const viewport = useThree((state) => state.viewport);
 	const targetWidth =

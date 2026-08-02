@@ -14,8 +14,10 @@ import {
 	type EnvironmentLoaderProps,
 	resolveEnvironmentOptions,
 } from './environment-loader.js';
+import { slotDefault } from './compiler-slot.js';
 
 export function useEnvironment(options: Partial<EnvironmentLoaderProps> = {}) {
+	options = slotDefault(options, {});
 	const { files, path, colorSpace, extensions } = resolveEnvironmentOptions(options);
 	const { extension, isCubemap, multiple } = environmentExtension(files);
 	const loader = environmentLoader(extension);

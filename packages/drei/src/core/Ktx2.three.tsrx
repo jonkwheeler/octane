@@ -3,6 +3,7 @@ import { useLoader, useThree } from '@octanejs/three';
 import { useEffect } from '@octanejs/three/renderer';
 import type { Texture } from 'three';
 import { KTX2Loader } from 'three-stdlib';
+import { slotDefault } from './compiler-slot.js';
 import { IsObject } from './Texture.three.tsrx';
 import { resolveRenderChildren, type RenderChildren } from './octane-children.js';
 
@@ -12,6 +13,7 @@ export function useKTX2<Url extends string[] | string | Record<string, string>>(
 	input: Url,
 	basisPath = `${cdn}/basis/`,
 ): Url extends any[] ? Texture[] : Url extends object ? { [key in keyof Url]: Texture } : Texture {
+	basisPath = slotDefault(basisPath, `${cdn}/basis/`);
 	const gl = useThree((state) => state.gl);
 	const textures = useLoader(KTX2Loader, IsObject(input) ? Object.values(input) : input, (
 		loader,

@@ -12,6 +12,7 @@ import {
 	Vector3,
 } from 'three';
 import { MeshSurfaceSampler } from 'three-stdlib';
+import { slotDefault } from './compiler-slot.js';
 
 type SamplePayload = {
 	position: Vector3;
@@ -48,6 +49,10 @@ export function useSurfaceSampler(
 	weight?: string,
 	instanceMesh?: RefObject<InstancedMesh> | null,
 ): InstancedBufferAttribute {
+	count = slotDefault(count, 16);
+	transform = slotDefault(transform, undefined);
+	weight = slotDefault(weight, undefined);
+	instanceMesh = slotDefault(instanceMesh, undefined);
 	const [buffer, setBuffer] = useState(() => {
 		const values = Array.from(
 			{ length: count },

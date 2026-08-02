@@ -13,3 +13,17 @@ export function EnvironmentBoundary(props) @{
 		null;
 	}
 }
+
+function LoadedDefaultEnvironment(props) @{
+	const texture = useEnvironment();
+	props.onLoad(texture);
+	null;
+}
+
+export function DefaultEnvironmentBoundary(props) @{
+	@try {
+		<LoadedDefaultEnvironment {...props} />
+	} @pending {
+		null;
+	}
+}

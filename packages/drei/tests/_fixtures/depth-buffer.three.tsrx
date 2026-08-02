@@ -5,3 +5,9 @@ export function DepthBufferScene(props) @{
 	props.onTexture(texture);
 	null;
 }
+
+export function DepthBufferDefaultsScene(props) @{
+	const texture = useDepthBuffer();
+	props.onTexture(texture);
+	null;
+}

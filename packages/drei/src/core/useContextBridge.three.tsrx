@@ -1,6 +1,7 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
 import { type Context, type OctaneNode, useContext, useMemo, useRef } from 'octane';
 import { defineUniversalComponent, universalComponent, universalContext, type UniversalRenderable } from 'octane/universal';
+import { stripTrailingSlot } from './compiler-slot.js';
 
 type BridgeProps = { children?: OctaneNode };
 type BridgeRendererProps = BridgeProps & { contexts: Array<Context<any>>; values: { current: unknown[] } };
@@ -14,6 +15,7 @@ function BridgeRenderer({ children, contexts, values }: BridgeRendererProps) @{
 }
 
 export function useContextBridge(...contexts: Array<Context<any>>) {
+	contexts = stripTrailingSlot(contexts);
 	const values = useRef<unknown[]>([]);
 	values.current = contexts.map((context) => useContext(context));
 	return useMemo(() => defineUniversalComponent<BridgeProps>(

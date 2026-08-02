@@ -1,17 +1,16 @@
 import { useFrame, useThree } from '@octanejs/three';
 import { useMemo } from '@octanejs/three/renderer';
 import { DepthFormat, DepthTexture, UnsignedShortType } from 'three';
+import { slotDefault } from './compiler-slot.js';
 import { useFBO } from './Fbo.three.tsrx';
 
-export function useDepthBuffer(
-	{
-		size = 256,
-		frames = Infinity,
-	}: {
+type DepthBufferOptions = {
 		size?: number;
 		frames?: number;
-	} = {},
-) {
+	};
+
+export function useDepthBuffer(options: DepthBufferOptions = {}) {
+	const { size = 256, frames = Infinity } = slotDefault(options, {});
 	const dpr = useThree((state) => state.viewport.dpr);
 	const { width, height } = useThree((state) => state.size);
 	const targetWidth = size || width * dpr;

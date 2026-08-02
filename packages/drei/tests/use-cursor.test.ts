@@ -4,7 +4,7 @@ import { useCursor as reactUseCursor } from '@react-three/drei/web/useCursor.js'
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { UseCursorScene } from './_fixtures/use-cursor.three.tsrx';
+import { UseCursorDefaultsScene, UseCursorScene } from './_fixtures/use-cursor.three.tsrx';
 
 beforeAll(() => {
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -25,6 +25,15 @@ function renderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
 }
 
 describe('useCursor', () => {
+	it('restores defaults after the compiler-injected trailing slot', async () => {
+		document.body.style.cursor = '';
+		const root = await createOctaneThree(UseCursorDefaultsScene, { hovered: true });
+		expect(document.body.style.cursor).toBe('pointer');
+		root.unmount();
+		await Promise.resolve();
+		expect(document.body.style.cursor).toBe('auto');
+	});
+
 	it('matches hover, prop updates, custom containers, and cleanup', async () => {
 		const reactContainer = document.createElement('div');
 		const octaneContainer = document.createElement('div');

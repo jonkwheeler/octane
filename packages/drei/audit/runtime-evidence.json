@@ -142,9 +142,9 @@
     },
     {
       "path": "packages/drei/tests/depth-buffer.test.ts",
-      "sha256": "a8b43886ab5215ed34b6c0f3e5e8fca74fc2a80596131baee4386e71df727163",
-      "assertionCount": 2,
-      "assertionInventorySha256": "9cc5049161cd6bc8e20cc870f47dfcd7bdd65288c07be050933df6a2bd849714"
+      "sha256": "bfe2c696d6ad7036b6d6cb04d4c5a7e3441daaf0e8131a184a87edffdceee0ff",
+      "assertionCount": 3,
+      "assertionInventorySha256": "0b50807b2c5aff4c600fefb17bc014ca19fc67c07c8279c4e84a20608e81fc14"
     },
     {
       "path": "packages/drei/tests/detect-gpu.test.ts",
@@ -178,9 +178,9 @@
     },
     {
       "path": "packages/drei/tests/environment.test.ts",
-      "sha256": "0356df55353708b06457bceedefe09f0a68bb414add204ee0620c5177e027a4b",
-      "assertionCount": 5,
-      "assertionInventorySha256": "64279b50757fe22873417750871260df5623eaf10871e614fa973b02c272a44b"
+      "sha256": "c5bf2f6b4f35ab3474d1e8878d08c680ba317edc3f36e4019e58ebe3f7503280",
+      "assertionCount": 6,
+      "assertionInventorySha256": "900c8b445ef5758e4b95aac69dde81dbca73e65a0c41cb15edae5bc79538611d"
     },
     {
       "path": "packages/drei/tests/example.test.ts",
@@ -604,9 +604,9 @@
     },
     {
       "path": "packages/drei/tests/use-cursor.test.ts",
-      "sha256": "d3399302044f9f8c2f09c9291f18668d438ea4591bd0a755a1c0ac448727fd9a",
-      "assertionCount": 1,
-      "assertionInventorySha256": "b407bffd90e515238e9e99f05f3dd09f4e4830ce88b859886dfc2da719f1ea73"
+      "sha256": "a6d392cea61d5fef7276c7d0f36f9a56ce1c7b6ce452c678c47b6b34dbe5b56c",
+      "assertionCount": 2,
+      "assertionInventorySha256": "f44343bcd40d5811fb12064fc2c0ddbef2e64e563b01cc9747269a2414ed44fc"
     },
     {
       "path": "packages/drei/tests/video-textures.test.ts",

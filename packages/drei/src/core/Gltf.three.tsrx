@@ -3,6 +3,7 @@ import { type ObjectMap, useLoader, type ThreeRef } from '@octanejs/three';
 import type { Group } from 'three';
 import { GLTFLoader, type GLTF } from 'three-stdlib';
 import { Clone, type CloneProps } from './Clone.three.tsrx';
+import { slotDefault } from './compiler-slot.js';
 import {
 	type ExtendLoader,
 	gltfExtensions,
@@ -20,11 +21,16 @@ export const useGLTF = Object.assign(
 		useDraco?: UseDraco,
 		useMeshopt?: UseMeshopt,
 		extendLoader?: ExtendLoader,
-	): T extends any[] ? GltfResult[] : GltfResult => useLoader(
-		GLTFLoader,
-		path,
-		gltfExtensions(useDraco, useMeshopt, extendLoader) as any,
-	) as unknown as T extends any[] ? GltfResult[] : GltfResult,
+	): T extends any[] ? GltfResult[] : GltfResult => {
+		useDraco = slotDefault(useDraco, undefined);
+		useMeshopt = slotDefault(useMeshopt, undefined);
+		extendLoader = slotDefault(extendLoader, undefined);
+		return useLoader(
+			GLTFLoader,
+			path,
+			gltfExtensions(useDraco, useMeshopt, extendLoader) as any,
+		) as unknown as T extends any[] ? GltfResult[] : GltfResult;
+	},
 	{
 		preload(path: Path, useDraco?: UseDraco, useMeshopt?: UseMeshopt, extendLoader?: ExtendLoader) {
 			useLoader.preload(
