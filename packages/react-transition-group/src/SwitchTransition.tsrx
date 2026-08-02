@@ -41,9 +41,11 @@ export function SwitchTransition(props: SwitchTransitionProps) @{
 	if (!pending) {
 		current.current = null;
 		status.current = ENTERED;
+	} else if (status.current === ENTERING && mode === modes.in) {
+		// Keep the in-out pair stable until the entering child finishes.
 	} else if (current.current && different(current.current, pending)) {
-		if (status.current === ENTERED) status.current = EXITING;
-	} else if (status.current === ENTERED) {
+		status.current = EXITING;
+	} else {
 		current.current = cloneElement(pending, { in: true });
 	}
 

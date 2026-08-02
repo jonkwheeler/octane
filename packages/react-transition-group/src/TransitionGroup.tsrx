@@ -14,6 +14,7 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 	const previousChildren = useRef<ChildMapping>({});
 	const mapping = useRef<ChildMapping>({});
 	const children = useRef(props.children);
+	const [isMounting, setIsMounting] = useState(true);
 	const [, rerender] = useState(0);
 
 	const handleExited = (child: ElementDescriptor, node?: Element) => {
@@ -38,6 +39,7 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 
 	useLayoutEffect(() => {
 		mounted.current = true;
+		setIsMounting(false);
 		return () => {
 			mounted.current = false;
 		};
@@ -59,7 +61,7 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 			: createElement(component, wrapperProps, ...renderedChildren);
 
 	<TransitionGroupContext.Provider
-		value={{ isMounting: !mounted.current }}
+		value={{ isMounting }}
 	>{output}</TransitionGroupContext.Provider>
 }
 
