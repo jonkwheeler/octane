@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "react-day-picker",
-  "roots": ["packages/react-day-picker/tests"],
+  "roots": [
+    "packages/react-day-picker/tests"
+  ],
   "files": [
     "packages/react-day-picker/tests/calendar.test.ts",
     "packages/react-day-picker/tests/exports.test.ts",
@@ -27,6 +29,11 @@
       "id": "runtime:a254d3e870ce747e",
       "file": "packages/react-day-picker/tests/calendar.test.ts",
       "fullName": "react-day-picker v10.0.1 adapted calendar behavior renders the pinned month as an accessible grid"
+    },
+    {
+      "id": "runtime:79895431d94bb752",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior resets an uncontrolled month when the time zone changes"
     },
     {
       "id": "runtime:4038fcd959c7b754",

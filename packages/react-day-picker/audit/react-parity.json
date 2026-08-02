@@ -27,8 +27,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 12,
-    "uniqueIdentities": 12,
+    "inventoryEntries": 13,
+    "uniqueIdentities": 13,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -59,7 +59,7 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "31c2273b3cc3ab97e71e816e434fffc0b0679b55b8cfe844db909cc997a7d6d8"
+          "sha256": "94fd887dc2ea30f5541a2fdb0e7ad54b6833dfb70dc3f48e67a3164d97bdf63c"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
@@ -89,7 +89,7 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "3ff855613de52b31504edc305739759726f976a0cc154f6afaa7a2bd9ea40c36"
+          "sha256": "52195ca5b501debf0fcae0f3ffc0f42799b11f3f2c51a6d39f118a4d0a4a0dba"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
@@ -114,7 +114,7 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime-browser.json",
           "role": "support",
-          "sha256": "83ea1125a41e38766a5c8aeef2ea31b6e51614b3ec328b1f52280f285e04b61f"
+          "sha256": "84d95b31beee6e6e4aedb16f0607808724f4fbac1a18397ea8c9d6c70fee1088"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",

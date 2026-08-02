@@ -23,6 +23,14 @@ export function NavigationFixture() @{
 	<DayPicker defaultMonth={new Date(2026, 7, 1)} />
 }
 
+export function TimeZoneNavigationFixture() @{
+	const [timeZone, setTimeZone] = useState('UTC');
+	<main>
+		<button onClick={() => setTimeZone('America/Los_Angeles')}>Use Los Angeles</button>
+		<DayPicker defaultMonth={new Date('2026-08-01T01:00:00.000Z')} timeZone={timeZone} />
+	</main>
+}
+
 export function MultipleFixture() @{
 	const [selected, setSelected] = useState<Date[]>([]);
 	<main>

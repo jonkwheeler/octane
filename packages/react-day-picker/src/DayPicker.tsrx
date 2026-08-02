@@ -1,5 +1,5 @@
 // @ts-nocheck -- React-compatible DOM props cross Octane's stricter event boundary here.
-import { useCallback, useMemo, useRef, useState } from 'octane';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'octane';
 import type { ChangeEvent, FocusEvent, KeyboardEvent, MouseEvent } from 'react';
 import type { CalendarDay } from './classes/CalendarDay.js';
 import { DateLib, defaultLocale } from './classes/DateLib.js';
@@ -8,9 +8,11 @@ import { getClassNamesForModifiers } from './helpers/getClassNamesForModifiers.j
 import { getComponents } from './helpers/getComponents.js';
 import { getDataAttributes } from './helpers/getDataAttributes.js';
 import { getDefaultClassNames } from './helpers/getDefaultClassNames.js';
+import { getInitialMonth } from './helpers/getInitialMonth.js';
 import { getFormatters } from './helpers/getFormatters.js';
 import { getLabels } from './helpers/getLabels.js';
 import { getMonthOptions } from './helpers/getMonthOptions.js';
+import { getNavMonths } from './helpers/getNavMonth.js';
 import { getStyleForModifiers } from './helpers/getStyleForModifiers.js';
 import { getWeekdays } from './helpers/getWeekdays.js';
 import { getYearOptions } from './helpers/getYearOptions.js';
@@ -33,6 +35,8 @@ import { convertMatchersToTimeZone } from './utils/convertMatchersToTimeZone.js'
 import { rangeIncludesDate } from './utils/rangeIncludesDate.js';
 import { toTimeZone } from './utils/toTimeZone.js';
 import { isDateRange } from './utils/typeguards.js';
+
+const noDateSelected = () => false;
 
 /**
  * Renders the DayPicker calendar component.
@@ -153,6 +157,16 @@ export function DayPicker(initialProps: DayPickerProps) @{
 	const [uncontrolledMonth, setUncontrolledMonth] = useState(
 		() => props.month ?? props.defaultMonth ?? props.today,
 	);
+	const previousTimeZone = useRef(props.timeZone);
+	useEffect(() => {
+		if (previousTimeZone.current === props.timeZone) return;
+		previousTimeZone.current = props.timeZone;
+		if (monthIsControlled) return;
+		const [navStart, navEnd] = getNavMonths(props, dateLib);
+		setUncontrolledMonth(
+			getInitialMonth({ ...props, month: undefined }, navStart, navEnd, dateLib),
+		);
+	}, [props.timeZone]);
 	if (!monthIsControlled) {
 		const onMonthChange = props.onMonthChange;
 		props = {
@@ -199,7 +213,7 @@ export function DayPicker(initialProps: DayPickerProps) @{
 	const getModifiers = createGetModifiers(days, props, navStart, navEnd, dateLib);
 
 	const { isSelected, select, selected: selectedValue } = useSelection(props, dateLib) ?? {};
-	const isDateSelected = isSelected ?? (() => false);
+	const isDateSelected = isSelected ?? noDateSelected;
 
 	const { blur, focused, isFocusTarget, moveFocus, setFocused } = useFocus(
 		props,

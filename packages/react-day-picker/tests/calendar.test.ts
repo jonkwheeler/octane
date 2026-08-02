@@ -6,6 +6,7 @@ import {
 	MultipleFixture,
 	NavigationFixture,
 	RangeFixture,
+	TimeZoneNavigationFixture,
 } from './_fixtures/calendar.tsrx';
 
 const dayButton = (container: HTMLElement, label: string) =>
@@ -38,6 +39,16 @@ describe('react-day-picker v10.0.1 adapted calendar behavior', () => {
 		const next = view.container.querySelector('button[aria-label*="next"]') as HTMLButtonElement;
 		await act(() => next.click());
 		expect(view.container.textContent).toContain('September 2026');
+		view.unmount();
+	});
+
+	// @parity-case runtime:uncontrolled-time-zone-reset
+	it('resets an uncontrolled month when the time zone changes', async () => {
+		const view = mount(TimeZoneNavigationFixture);
+		expect(view.container.textContent).toContain('August 2026');
+		const changeZone = dayButton(view.container, 'Use Los Angeles');
+		await act(() => changeZone.click());
+		expect(view.container.textContent).toContain('July 2026');
 		view.unmount();
 	});
 
