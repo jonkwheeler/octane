@@ -145,6 +145,8 @@ export { CurveModifier } from './CurveModifier.three.tsrx';
 export type { CurveModifierProps, CurveModifierRef } from './CurveModifier.three.tsrx';
 export { Stars } from './Stars.three.tsrx';
 export type { StarsProps } from './Stars.three.tsrx';
+export { Segment, SegmentObject, Segments } from './Segments.three.tsrx';
+export type { SegmentProps, SegmentsProps } from './Segments.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
