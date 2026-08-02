@@ -8,10 +8,7 @@ export interface IntersectionObserverInitWithOptions extends IntersectionObserve
 
 export type ObserverInstanceCallback = (inView: boolean, entry: IntersectionObserverEntry) => void;
 
-export type IntersectionChangeEffect = (
-	inView: boolean,
-	entry: IntersectionObserverEntry,
-) => void | (() => void);
+export type IntersectionChangeEffect = (inView: boolean, entry: IntersectionObserverEntry) => void;
 
 export interface IntersectionOptions extends IntersectionObserverInitWithOptions {
 	triggerOnce?: boolean;

@@ -10,14 +10,11 @@ export function useOnInView(
 	const callback = useRef(onChange);
 	callback.current = onChange;
 	const unobserve = useRef<void | (() => void)>(undefined);
-	const effectCleanup = useRef<void | (() => void)>(undefined);
 	const lastInView = useRef<boolean | undefined>(undefined);
 
 	return useCallback((node: Element | null) => {
 		unobserve.current?.();
 		unobserve.current = undefined;
-		effectCleanup.current?.();
-		effectCleanup.current = undefined;
 		lastInView.current = undefined;
 		if (!node || options.skip) return;
 		unobserve.current = observe(
@@ -26,8 +23,7 @@ export function useOnInView(
 				const previousInView = lastInView.current;
 				lastInView.current = inView;
 				if (previousInView === undefined && !inView) return;
-				effectCleanup.current?.();
-				effectCleanup.current = callback.current(inView, entry);
+				callback.current(inView, entry);
 				if (inView && options.triggerOnce) {
 					unobserve.current?.();
 					unobserve.current = undefined;
@@ -47,8 +43,6 @@ export function useOnInView(
 		return () => {
 			unobserve.current?.();
 			unobserve.current = undefined;
-			effectCleanup.current?.();
-			effectCleanup.current = undefined;
 			lastInView.current = undefined;
 		};
 	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.fallbackInView, options.delay, options.scrollMargin]);
