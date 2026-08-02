@@ -43,6 +43,8 @@ export interface TestingRenderer extends Renderer {
 	readonly renderTarget: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null;
 	/** Scene/camera pairs submitted for eager shader compilation. */
 	readonly compileCalls: readonly (readonly [THREE.Object3D, THREE.Camera])[];
+	/** Scene/camera pairs submitted for rendering. */
+	readonly renderCalls: readonly (readonly [THREE.Scene, THREE.Camera])[];
 	/** WebGLRenderer-compatible automatic clearing flag. */
 	autoClear: boolean;
 }
@@ -95,6 +97,7 @@ class FrameRecorder implements TestingRenderer {
 	#disposed = false;
 	#renderTarget: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null = null;
 	readonly compileCalls: Array<readonly [THREE.Object3D, THREE.Camera]> = [];
+	readonly renderCalls: Array<readonly [THREE.Scene, THREE.Camera]> = [];
 	autoClear = true;
 
 	constructor(canvas: CanvasLike) {
@@ -125,6 +128,7 @@ class FrameRecorder implements TestingRenderer {
 		this.#frameCount++;
 		this.#lastScene = scene;
 		this.#lastCamera = camera;
+		this.renderCalls.push([scene, camera]);
 	}
 
 	compile(scene: THREE.Object3D, camera: THREE.Camera): void {
