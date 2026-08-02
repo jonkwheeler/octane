@@ -7,6 +7,7 @@ import {
 	GroupFixture,
 	MountOnEnterFixture,
 	NodeRefAppearFixture,
+	NullNodeRefFixture,
 	LatestCompletionFixture,
 	ReplaceFixture,
 	SameKeyGroupFixture,
@@ -88,6 +89,15 @@ describe('react-transition-group v4.4.5 adapted transition behavior', () => {
 		const view = mount(NodeRefAppearFixture, { calls });
 		expect(calls).toEqual([[true]]);
 		await act(() => vi.runAllTimers());
+		view.unmount();
+	});
+
+	// @parity-case runtime:null-node-ref-end-listener
+	it('completes immediately without invoking an end listener for a null nodeRef', async () => {
+		const trace: string[] = [];
+		const view = mount(NullNodeRefFixture, { trace });
+		await act(() => vi.advanceTimersByTime(0));
+		expect(trace).toEqual(['entered']);
 		view.unmount();
 	});
 

@@ -85,6 +85,20 @@ export function NodeRefAppearFixture(props: { calls: unknown[][] }) @{
 	</Transition>
 }
 
+export function NullNodeRefFixture(props: { trace: string[] }) @{
+	const nodeRef = useRef<HTMLDivElement | null>(null);
+	<Transition
+		in
+		appear
+		nodeRef={nodeRef}
+		timeout={1_000}
+		addEndListener={() => props.trace.push('listener')}
+		onEntered={() => props.trace.push('entered')}
+	>
+		<div id="null-ref-node">{'no attached ref'}</div>
+	</Transition>
+}
+
 export function CSSNodeRefAppearFixture(props: { calls: unknown[][] }) @{
 	const nodeRef = useRef<HTMLDivElement | null>(null);
 	<CSSTransition

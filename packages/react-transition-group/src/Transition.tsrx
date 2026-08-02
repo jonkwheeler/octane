@@ -91,6 +91,10 @@ function TransitionImpl(props: TransitionProps) @{
 			done();
 		};
 		const node = props.nodeRef?.current ?? undefined;
+		if (props.nodeRef && !node) {
+			timer.current = setTimeout(finish, 0);
+			return;
+		}
 		if (props.addEndListener) {
 			if (props.nodeRef) (props.addEndListener as (done: () => void) => void)(finish);
 			else if (node) (props.addEndListener as (node: Element, done: () => void) => void)(

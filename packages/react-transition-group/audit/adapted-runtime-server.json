@@ -1,8 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "react-transition-group-ssr",
-  "roots": ["packages/react-transition-group/tests"],
-  "files": ["packages/react-transition-group/tests/ssr/server.test.ts"],
+  "roots": [
+    "packages/react-transition-group/tests"
+  ],
+  "files": [
+    "packages/react-transition-group/tests/ssr/server.test.ts"
+  ],
   "tests": [
     {
       "id": "runtime:c8fcd165f507e8b8",
