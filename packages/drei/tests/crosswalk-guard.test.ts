@@ -24,14 +24,15 @@ async function runMutation(mutate: (manifest: Record<string, any>) => void, args
 }
 
 describe('Drei crosswalk guard', () => {
-	it('accepts the committed inventory while work remains explicitly classified as gaps', () => {
+	it('accepts the committed inventory while work remains explicitly classified as gaps', async () => {
+		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 		const result = spawnSync(process.execPath, [checker], {
 			cwd: repositoryRoot,
 			encoding: 'utf8',
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout).toContain('379 exports, 376 gaps');
+		expect(result.stdout).toContain(`379 exports, ${manifest.expectedTotals.gaps as number} gaps`);
 	});
 
 	it('rejects duplicate upstream exports', async () => {

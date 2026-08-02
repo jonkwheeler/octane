@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 376
+    "gaps": 351
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -105,9 +105,9 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": ["packages/drei/typetests/shapes.test-d.ts"],
       "divergence": null
     },
     {
@@ -287,9 +287,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 24
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -391,9 +394,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 41
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -482,9 +488,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 25
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -612,9 +621,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 26
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -820,9 +832,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 27
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -937,9 +952,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 38
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -1145,9 +1163,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 39
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -1743,9 +1764,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 36
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -1925,9 +1949,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 40
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2471,9 +2498,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 37
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2679,9 +2709,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 29
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2822,9 +2855,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 35
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3121,9 +3157,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 34
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3134,9 +3173,12 @@
         "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
         "line": 31
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/RoundedBox.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/rounded-box.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3147,9 +3189,12 @@
         "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
         "line": 62
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/RoundedBox.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/rounded-box.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3160,9 +3205,9 @@
         "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
         "line": 28
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/RoundedBox.three.tsrx",
+      "evidence": ["packages/drei/typetests/shapes.test-d.ts"],
       "divergence": null
     },
     {
@@ -3173,9 +3218,9 @@
         "path": "packages/drei/upstream/src/core/RoundedBox.tsx",
         "line": 19
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/RoundedBox.three.tsrx",
+      "evidence": ["packages/drei/typetests/shapes.test-d.ts"],
       "divergence": null
     },
     {
@@ -3550,9 +3595,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 42
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3563,9 +3611,9 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": ["packages/drei/typetests/shapes.test-d.ts"],
       "divergence": null
     },
     {
@@ -3693,9 +3741,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 28
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3966,9 +4017,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 33
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4044,9 +4098,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 31
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4057,9 +4114,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 32
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4187,9 +4247,12 @@
         "path": "packages/drei/upstream/src/core/shapes.tsx",
         "line": 30
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/shapes.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/shapes.test.ts",
+        "packages/drei/typetests/shapes.test-d.ts"
+      ],
       "divergence": null
     },
     {
