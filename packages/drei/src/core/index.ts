@@ -203,6 +203,8 @@ export { AccumulativeShadows, RandomizedLight, accumulativeContext } from './Acc
 export type { AccumulativeShadowsProps, RandomizedLightProps } from './AccumulativeShadows.three.tsrx';
 export { Stage } from './Stage.three.tsrx';
 export type { StageProps } from './Stage.three.tsrx';
+export { Image } from './Image.three.tsrx';
+export type { ImageProps } from './Image.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
