@@ -1604,6 +1604,9 @@ export default defineConfig({
 					globals: false,
 					sequence: { groupOrder: 1 },
 				},
+				resolve: {
+					dedupe: ['vitest'],
+				},
 			},
 			{
 				test: {
