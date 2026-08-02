@@ -75,6 +75,12 @@ export interface ThreeTestRenderer {
 class FrameRecorder implements TestingRenderer {
 	readonly domElement: CanvasLike;
 	readonly renderLists = { dispose() {} };
+	readonly shadowMap: NonNullable<Renderer['shadowMap']> = {
+		enabled: false,
+		type: 1 as THREE.ShadowMapType,
+		autoUpdate: true,
+		needsUpdate: false,
+	};
 	#frameCount = 0;
 	#lastScene: THREE.Scene | null = null;
 	#lastCamera: THREE.Camera | null = null;

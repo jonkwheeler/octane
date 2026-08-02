@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 327
+    "gaps": 315
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -53,9 +53,12 @@
         "path": "packages/drei/upstream/src/core/AdaptiveDpr.tsx",
         "line": 4
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/AdaptivePerformance.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/adaptive-performance.test.ts",
+        "packages/drei/typetests/adaptive-performance.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -66,9 +69,12 @@
         "path": "packages/drei/upstream/src/core/AdaptiveEvents.tsx",
         "line": 4
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/AdaptivePerformance.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/adaptive-performance.test.ts",
+        "packages/drei/typetests/adaptive-performance.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -209,9 +215,12 @@
         "path": "packages/drei/upstream/src/core/BakeShadows.tsx",
         "line": 4
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/AdaptivePerformance.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/adaptive-performance.test.ts",
+        "packages/drei/typetests/adaptive-performance.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -595,9 +604,12 @@
         "path": "packages/drei/upstream/src/core/ComputedAttribute.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/ComputedAttribute.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/scene-helpers.test.ts",
+        "packages/drei/typetests/scene-helpers.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -608,9 +620,9 @@
         "path": "packages/drei/upstream/src/core/ComputedAttribute.tsx",
         "line": 5
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/ComputedAttribute.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-helpers.test-d.ts"],
       "divergence": null
     },
     {
@@ -877,9 +889,12 @@
         "path": "packages/drei/upstream/src/core/Detailed.tsx",
         "line": 12
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Detailed.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/scene-helpers.test.ts",
+        "packages/drei/typetests/scene-helpers.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -890,9 +905,9 @@
         "path": "packages/drei/upstream/src/core/Detailed.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Detailed.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-helpers.test-d.ts"],
       "divergence": null
     },
     {
@@ -2474,9 +2489,12 @@
         "path": "packages/drei/upstream/src/core/MultiMaterial.tsx",
         "line": 11
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MultiMaterial.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/scene-helpers.test.ts",
+        "packages/drei/typetests/scene-helpers.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -2487,9 +2505,9 @@
         "path": "packages/drei/upstream/src/core/MultiMaterial.tsx",
         "line": 9
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MultiMaterial.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-helpers.test-d.ts"],
       "divergence": null
     },
     {
@@ -3327,9 +3345,12 @@
         "path": "packages/drei/upstream/src/core/ScreenSpace.tsx",
         "line": 10
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/ScreenSpace.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/scene-helpers.test.ts",
+        "packages/drei/typetests/scene-helpers.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -3340,9 +3361,9 @@
         "path": "packages/drei/upstream/src/core/ScreenSpace.tsx",
         "line": 6
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/ScreenSpace.three.tsrx",
+      "evidence": ["packages/drei/typetests/scene-helpers.test-d.ts"],
       "divergence": null
     },
     {
@@ -4531,9 +4552,12 @@
         "path": "packages/drei/upstream/src/core/useAspect.tsx",
         "line": 3
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useAspect.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/adaptive-performance.test.ts",
+        "packages/drei/typetests/adaptive-performance.test-d.ts"
+      ],
       "divergence": null
     },
     {
