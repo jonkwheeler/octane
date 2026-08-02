@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 170
+    "gaps": 164
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -2102,9 +2102,9 @@
         "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
         "line": 54
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MarchingCubes.three.tsrx",
+      "evidence": ["packages/drei/tests/marching-cubes.test.ts"],
       "divergence": null
     },
     {
@@ -2115,9 +2115,9 @@
         "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
         "line": 48
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MarchingCubes.three.tsrx",
+      "evidence": ["packages/drei/typetests/marching-cubes.test-d.ts"],
       "divergence": null
     },
     {
@@ -2128,9 +2128,9 @@
         "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
         "line": 21
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MarchingCubes.three.tsrx",
+      "evidence": ["packages/drei/tests/marching-cubes.test.ts"],
       "divergence": null
     },
     {
@@ -2141,9 +2141,9 @@
         "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
         "line": 14
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MarchingCubes.three.tsrx",
+      "evidence": ["packages/drei/typetests/marching-cubes.test-d.ts"],
       "divergence": null
     },
     {
@@ -2154,9 +2154,9 @@
         "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
         "line": 76
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MarchingCubes.three.tsrx",
+      "evidence": ["packages/drei/tests/marching-cubes.test.ts"],
       "divergence": null
     },
     {
@@ -2167,9 +2167,9 @@
         "path": "packages/drei/upstream/src/core/MarchingCubes.tsx",
         "line": 70
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/MarchingCubes.three.tsrx",
+      "evidence": ["packages/drei/typetests/marching-cubes.test-d.ts"],
       "divergence": null
     },
     {
