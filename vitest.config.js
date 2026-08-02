@@ -2980,7 +2980,11 @@ export default defineConfig({
 			{
 				test: {
 					name: 'mantine-hooks',
-					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
+					include: [
+						'packages/mantine-hooks/tests/conformance/**/*.test.ts',
+						'packages/mantine-hooks/tests/differential/**/*.test.ts',
+					],
+					globalSetup: ['packages/mantine-hooks/tests/differential/_setup.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},

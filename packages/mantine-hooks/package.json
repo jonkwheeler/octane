@@ -37,7 +37,9 @@
   },
   "devDependencies": {
     "@mantine/hooks": "9.5.0",
+    "@tsrx/react": "catalog:default",
     "@types/react": "catalog:default",
+    "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
     "vitest": "catalog:default"
