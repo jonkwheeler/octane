@@ -2962,6 +2962,7 @@ export default defineConfig({
 						'!packages/react-error-boundary/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
+					globalSetup: ['packages/react-error-boundary/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
