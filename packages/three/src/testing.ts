@@ -110,6 +110,9 @@ class FrameRecorder implements TestingRenderer {
 
 	setSize(_width: number, _height: number, _updateStyle?: boolean): void {}
 
+	/** Mirrors WebGLRenderer's eager texture-upload hook for loader integrations. */
+	initTexture(_texture: THREE.Texture): void {}
+
 	forceContextLoss(): void {}
 
 	dispose(): void {

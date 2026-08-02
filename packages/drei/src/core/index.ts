@@ -26,3 +26,10 @@ export {
 } from './shapes.three.tsrx';
 export type { Args, ShapeProps } from './shapes.three.tsrx';
 export { Progress, useProgress } from './Progress.three.tsrx';
+export { IsObject, Texture, useTexture } from './Texture.three.tsrx';
+export type { MappedTextureType } from './Texture.three.tsrx';
+export { CubeTexture, useCubeTexture } from './CubeTexture.three.tsrx';
+export type { CubeTextureOptions, CubeTextureProps } from './CubeTexture.three.tsrx';
+export { Ktx2, useKTX2 } from './Ktx2.three.tsrx';
+export { useFont } from './useFont.three.tsrx';
+export type { FontData, Glyph } from './useFont.three.tsrx';
