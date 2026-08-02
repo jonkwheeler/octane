@@ -1,5 +1,9 @@
 import { createElement, Fragment, isChildrenBlock } from 'octane';
-import { SpringContext as SpringContextObject, type SpringContextValue } from './context';
+import {
+	SpringContext as SpringContextObject,
+	type SpringContextValue,
+	useSpringContext,
+} from './context';
 import { useSpring, useTrail, useTransition } from './hooks';
 
 function itemKey(item: any, index: number): string | number {
@@ -13,7 +17,8 @@ function keyed(value: unknown, key: string | number): unknown {
 
 export function SpringContext(props: SpringContextValue & { children?: unknown }) @{
 	const { children, ...value } = props;
-	<SpringContextObject value={value}>{children}</SpringContextObject>
+	const inherited = useSpringContext();
+	<SpringContextObject value={{ ...inherited, ...value }}>{children}</SpringContextObject>
 }
 
 export function Spring(props: any) @{

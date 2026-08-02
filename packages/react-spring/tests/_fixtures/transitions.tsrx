@@ -6,7 +6,12 @@ export function TransitionFixture(props) @{
 		from: { opacity: 0 },
 		enter: { opacity: 1 },
 		leave: { opacity: 0 },
-		immediate: true,
+		immediate: props.immediate ?? true,
+		exitBeforeEnter: props.exitBeforeEnter,
+		expires: props.expires,
+		trail: props.trail,
+		reverse: props.reverse,
+		onStart: props.onStart,
 	});
 	<div id="transition-list">{transitions(
 		(styles: any, item: any, transition: any) =>

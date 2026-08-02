@@ -1,7 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { raf } from '@react-spring/rafz';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
-import { ContextSpringFixture, SpringHookFixture, TrailHookFixture } from '../_fixtures/hooks.tsrx';
+import {
+	ContextSpringFixture,
+	NestedContextSpringFixture,
+	SpringHookFixture,
+	SpringsCohortFixture,
+	TrailHookFixture,
+} from '../_fixtures/hooks.tsrx';
 
 afterEach(() => {
 	vi.useRealTimers();
@@ -66,6 +72,52 @@ describe('React Spring hooks', () => {
 		expect(styles.x.get()).toBe(0);
 
 		result.update(ContextSpringFixture, { pause: false, onReady });
+		flushEffects();
+		expect(styles.x.get()).toBe(1);
+		result.unmount();
+	});
+
+	it('reuses a spring cohort, only evaluates changed deps, and resizes the ref', () => {
+		const created: number[] = [];
+		let styles: any[] = [];
+		let api: any;
+		const onReady = (nextStyles: any[], nextApi: any) => {
+			styles = nextStyles;
+			api = nextApi;
+		};
+		const onCreate = (index: number) => created.push(index);
+		const result = mount(SpringsCohortFixture, { count: 2, goal: 1, onCreate, onReady });
+		flushEffects();
+		const first = styles.slice();
+		expect(created).toEqual([0, 1]);
+
+		result.update(SpringsCohortFixture, { count: 2, goal: 1, onCreate, onReady });
+		flushEffects();
+		expect(created).toEqual([0, 1]);
+		expect(styles).toEqual(first);
+
+		result.update(SpringsCohortFixture, { count: 3, goal: 1, onCreate, onReady });
+		flushEffects();
+		expect(created).toEqual([0, 1, 2]);
+		expect(api.current).toHaveLength(3);
+		expect(styles.slice(0, 2)).toEqual(first);
+
+		result.update(SpringsCohortFixture, { count: 1, goal: 2, onCreate, onReady });
+		flushEffects();
+		expect(created).toEqual([0, 1, 2, 0]);
+		expect(api.current).toHaveLength(1);
+		expect(styles[0]).toBe(first[0]);
+		result.unmount();
+	});
+
+	it('merges nested SpringContext values while allowing replacement', () => {
+		let styles: any;
+		const onReady = (value: any) => (styles = value);
+		const result = mount(NestedContextSpringFixture, { pause: true, onReady });
+		flushEffects();
+		expect(styles.x.get()).toBe(0);
+
+		result.update(NestedContextSpringFixture, { pause: false, onReady });
 		flushEffects();
 		expect(styles.x.get()).toBe(1);
 		result.unmount();

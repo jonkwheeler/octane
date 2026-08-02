@@ -17,7 +17,8 @@ export interface TrailProps<
 	State extends Record<string, unknown>,
 > extends ControllerUpdate<State> {
 	items?: Item[];
-	children?: ((item: Item) => (styles: SpringValues<State> | undefined) => unknown) | unknown;
+	children?:
+		((item: Item, index: number) => (styles: SpringValues<State> | undefined) => unknown) | unknown;
 }
 
 export interface TransitionProps<
@@ -25,7 +26,7 @@ export interface TransitionProps<
 	State extends Record<string, unknown>,
 > extends UseTransitionProps<Item, State> {
 	items?: Item | Item[];
-	children?: ((item: Item) => (styles: SpringValues<State>) => unknown) | unknown;
+	children?: ((item: Item, index: number) => (styles: SpringValues<State>) => unknown) | unknown;
 }
 
 export declare function SpringContext(

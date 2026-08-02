@@ -1,4 +1,4 @@
-import { animated, SpringContext, useSpring, useTrail } from '@octanejs/react-spring';
+import { animated, SpringContext, useSpring, useSprings, useTrail } from '@octanejs/react-spring';
 
 export function SpringHookFixture(props) @{
 	props.onRender();
@@ -40,5 +40,22 @@ function ContextSpringChild(props) @{
 export function ContextSpringFixture(props) @{
 	<SpringContext immediate={true} pause={props.pause}>
 		<ContextSpringChild onReady={props.onReady} />
+	</SpringContext>
+}
+
+export function SpringsCohortFixture(props) @{
+	const [styles, api] = useSprings(props.count, (index: number) => {
+		props.onCreate(index);
+		return { from: { x: 0 }, to: { x: props.goal + index }, immediate: true };
+	}, [props.goal]);
+	props.onReady(styles, api);
+	<div>{'springs cohort'}</div>
+}
+
+export function NestedContextSpringFixture(props) @{
+	<SpringContext immediate={true} pause={true}>
+		<SpringContext pause={props.pause}>
+			<ContextSpringChild onReady={props.onReady} />
+		</SpringContext>
 	</SpringContext>
 }
