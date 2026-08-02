@@ -25,7 +25,7 @@ export function SpringHookFixture(props) @{
 }
 
 export function TrailHookFixture(props) @{
-	const [styles] = useTrail(2, {
+	const styles = useTrail(2, {
 		from: { x: 0 },
 		to: { x: 1 },
 		immediate: true,
@@ -33,6 +33,16 @@ export function TrailHookFixture(props) @{
 	});
 	props.onReady(styles);
 	<div>{'trail'}</div>
+}
+
+export function UpdatingTrailHookFixture(props) @{
+	const styles = useTrail(1, {
+		from: { x: 0 },
+		to: { x: props.x },
+		immediate: true,
+	});
+	props.onReady(styles);
+	<div>{'updating trail'}</div>
 }
 
 function ContextSpringChild(props) @{

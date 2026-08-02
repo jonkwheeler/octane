@@ -31,7 +31,7 @@ export function Spring(props: any) @{
 
 export function Trail(props: any) @{
 	const { children, items = [], ...update } = props;
-	const [styles] = useTrail(items.length, update);
+	const styles = useTrail(items.length, update);
 	<>
 		{typeof children === 'function' && !isChildrenBlock(children)
 			? items.map(

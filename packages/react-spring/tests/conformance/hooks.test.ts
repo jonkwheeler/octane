@@ -8,6 +8,7 @@ import {
 	SpringHookFixture,
 	SpringsCohortFixture,
 	TrailHookFixture,
+	UpdatingTrailHookFixture,
 } from '../_fixtures/hooks.tsrx';
 
 afterEach(() => {
@@ -62,6 +63,19 @@ describe('React Spring hooks', () => {
 
 		await vi.advanceTimersByTimeAsync(16);
 		expect(styles![1].x.get()).toBe(1);
+		result.unmount();
+	});
+
+	it('restarts object-form trails when props change', () => {
+		let styles: any[] = [];
+		const onReady = (value: any[]) => (styles = value);
+		const result = mount(UpdatingTrailHookFixture, { x: 1, onReady });
+		flushEffects();
+		expect(styles.map((style) => style.x.get())).toEqual([1]);
+
+		result.update(UpdatingTrailHookFixture, { x: 2, onReady });
+		flushEffects();
+		expect(styles.map((style) => style.x.get())).toEqual([2]);
 		result.unmount();
 	});
 

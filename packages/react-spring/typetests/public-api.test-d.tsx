@@ -34,8 +34,11 @@ expectType<ReturnType<typeof useSpringRef<{ x: number }>>>(useSpringRef<{ x: num
 
 const [springs] = useSprings(2, [{ from: { x: 0 }, to: { x: 1 } }]);
 expectType<SpringValue<number>>(springs[0]!.x);
-const [trail] = useTrail(2, { from: { x: 0 }, to: { x: 1 } });
+const trail = useTrail(2, { from: { x: 0 }, to: { x: 1 } });
 expectType<SpringValue<number>>(trail[0]!.x);
+const [controlledTrail, trailApi] = useTrail(2, { from: { x: 0 }, to: { x: 1 } }, []);
+expectType<SpringValue<number>>(controlledTrail[0]!.x);
+expectType<ReturnType<typeof useSpringRef<{ x: number }>>>(trailApi);
 
 const transitions = useTransition([{ id: 'a', label: 'A' }], {
 	keys: (item) => item.id,

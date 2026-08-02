@@ -174,21 +174,40 @@ export function useSprings<State extends Record<string, any>>(
 
 export function useTrail<State extends Record<string, any>>(
 	length: number,
+	props: ControllerUpdate<State>,
+): Array<{ [Key in keyof State]: SpringValue<State[Key]> }>;
+export function useTrail<State extends Record<string, any>>(
+	length: number,
+	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
+	deps: any[],
+): [Array<{ [Key in keyof State]: SpringValue<State[Key]> }>, SpringRef<State>];
+export function useTrail<State extends Record<string, any>>(
+	length: number,
+	props: () => ControllerUpdate<State>,
+): [Array<{ [Key in keyof State]: SpringValue<State[Key]> }>, SpringRef<State>];
+export function useTrail<State extends Record<string, any>>(
+	length: number,
 	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
 	...args: any[]
-) {
+):
+	| Array<{ [Key in keyof State]: SpringValue<State[Key]> }>
+	| [Array<{ [Key in keyof State]: SpringValue<State[Key]> }>, SpringRef<State>] {
 	const slot = trailingSlot(args);
-	const update = updateFrom(props);
-	return useSprings(
+	const deps = args.find(Array.isArray) as any[] | undefined;
+	const functionProps = typeof props === 'function';
+	const result = useSprings(
 		length,
-		(index) => ({
-			...update,
-			config: update.config,
-			to: update.to,
-			delay: (update.delay ?? 0) + index * 16,
-		}),
+		(index) => {
+			const update = updateFrom(props);
+			return {
+				...update,
+				delay: (update.delay ?? 0) + index * 16,
+			};
+		},
+		deps ?? [{}],
 		slot,
 	);
+	return functionProps || deps !== undefined ? result : result[0];
 }
 
 export function useSpringRef<State extends Record<string, any>>(...args: any[]): SpringRef<State> {
