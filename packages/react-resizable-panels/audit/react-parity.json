@@ -36,7 +36,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "87f56a90313cfacb4bc54ea07d0c0b4100c1c85f12420780fc0379329146f04d"
+      "lockfileSha256": "38271a8aaa30de7d54ed05d4a47adb77c5a5bf4e36106eb7eb3312d864991aa6"
     }
   },
   "lanes": [

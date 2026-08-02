@@ -51,6 +51,7 @@
     "react-dom": "catalog:default",
     "react-resizable-panels": "catalog:default",
     "vite": "catalog:default",
-    "vitest": "catalog:default"
+    "vitest": "catalog:default",
+    "vitest-fail-on-console": "^0.10.1"
   }
 }
