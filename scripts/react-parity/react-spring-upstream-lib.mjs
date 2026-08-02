@@ -54,5 +54,42 @@ export function verifyReactSpringUpstream(repoRoot) {
 	for (const path of required) {
 		if (!expected.has(path)) throw new Error(`required upstream boundary is missing: ${path}`);
 	}
-	return { files: actual.length, checksum: digest(inventoryPath) };
+	const testFiles = actual.filter((path) => /\.test(?:-d)?\.tsx?$/.test(path));
+	const dispositionsPath = join(
+		repoRoot,
+		'packages/react-spring/audit/upstream-test-dispositions.json',
+	);
+	if (!existsSync(dispositionsPath)) throw new Error('upstream test dispositions are missing');
+	const dispositions = JSON.parse(readFileSync(dispositionsPath, 'utf8'));
+	const dispositionFiles = Object.keys(dispositions).sort();
+	if (
+		dispositionFiles.length !== testFiles.length ||
+		dispositionFiles.some((path, index) => path !== testFiles[index])
+	) {
+		throw new Error('upstream test disposition inventory drifted');
+	}
+	for (const [path, disposition] of Object.entries(dispositions)) {
+		if (!['adapted', 'adapted-types', 'reused-dependency'].includes(disposition.disposition)) {
+			throw new Error(`invalid upstream test disposition: ${path}`);
+		}
+		if (!Array.isArray(disposition.evidence) || disposition.evidence.length === 0) {
+			throw new Error(`upstream test disposition lacks evidence: ${path}`);
+		}
+		for (const evidence of disposition.evidence) {
+			if (!existsSync(join(repoRoot, 'packages/react-spring', evidence))) {
+				throw new Error(`upstream test evidence is missing: ${path} -> ${evidence}`);
+			}
+		}
+	}
+	const runtimeSource = filesUnder(join(repoRoot, 'packages/react-spring/src'));
+	for (const path of runtimeSource) {
+		if (/from\s+['"](?:react|react-dom)(?:\/|['"])/.test(readFileSync(path, 'utf8'))) {
+			throw new Error(`React import leaked into published source: ${relative(repoRoot, path)}`);
+		}
+	}
+	return {
+		files: actual.length,
+		checksum: digest(inventoryPath),
+		testDispositions: testFiles.length,
+	};
 }

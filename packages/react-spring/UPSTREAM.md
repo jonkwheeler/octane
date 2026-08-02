@@ -43,30 +43,30 @@ until its cited lanes pass.
 
 | Upstream export | Disposition | Evidence |
 |---|---|---|
-| `Any` | Ported type sentinel | export inventory; adapted type lane pending |
-| `BailSignal` | Ported interruption signal | export inventory; async-chain parity pending |
-| `Controller` | Ported | `tests/conformance/engine.test.ts`; upstream controller adaptation pending |
-| `FrameValue` | Ported public base | export inventory; graph parity pending |
-| `Globals` | Ported global configuration | export inventory; reduced-motion/global parity pending |
-| `Interpolation` | Ported | `tests/conformance/engine.test.ts`; upstream interpolation adaptation pending |
+| `Any` | Ported type sentinel | export inventory and `typetests/public-api.test-d.tsx` |
+| `BailSignal` | Ported interruption signal | export inventory and lifecycle conformance |
+| `Controller` | Ported | engine, controller, and lifecycle conformance |
+| `FrameValue` | Ported public base | animated graph and host conformance |
+| `Globals` | Ported global configuration | reduced-motion and browser conformance |
+| `Interpolation` | Ported | interpolation and animated graph conformance |
 | `Spring` | Ported to Octane render-prop component | `tests/conformance/components.test.ts` |
 | `SpringContext` | Ported to Octane context component | `tests/conformance/components.test.ts` |
 | `SpringRef` | Ported | `tests/conformance/hooks.test.ts` |
-| `SpringValue` | Ported | `tests/conformance/engine.test.ts`; upstream spring-value adaptation pending |
+| `SpringValue` | Ported | engine, advanced-engine, lifecycle, and public type lanes |
 | `Trail` | Ported to keyed Octane renderables | `tests/conformance/components.test.ts` |
 | `Transition` | Ported to keyed Octane renderables | `tests/conformance/components.test.ts` |
 | `a` | Ported alias | export inventory and animated-host fixture |
 | `animated` | Ported to Octane host components | `tests/conformance/prerequisite-seams.test.ts` |
 | `config` | Ported | `tests/conformance/engine.test.ts` |
-| `createInterpolator` | Ported | export inventory; upstream interpolation adaptation pending |
-| `easings` | Ported | export inventory; upstream easing parity pending |
-| `inferTo` | Ported | export inventory; upstream helper adaptation pending |
+| `createInterpolator` | Ported | interpolation conformance |
+| `easings` | Ported | advanced-engine and export conformance |
+| `inferTo` | Ported | export and public type conformance |
 | `interpolate` | Ported alias | `tests/conformance/engine.test.ts` |
 | `to` | Ported | `tests/conformance/engine.test.ts` |
-| `update` | Reused from exact `rafz` | export inventory; controlled-frame lane pending |
+| `update` | Reused from exact `rafz` | controlled frame-loop conformance |
 | `useChain` | Ported to Octane hooks | `tests/conformance/hooks.test.ts` |
 | `useInView` | Ported to native observer lifecycle | `tests/conformance/browser-hooks.test.ts` |
-| `useIsomorphicLayoutEffect` | Ported to Octane layout effect | export inventory; SSR lane pending |
+| `useIsomorphicLayoutEffect` | Ported to Octane layout effect | SSR, hydration, and browser-hook lanes |
 | `useReducedMotion` | Ported to native media-query lifecycle | `tests/conformance/browser-hooks.test.ts` |
 | `useResize` | Ported to native observer lifecycle | `tests/conformance/browser-hooks.test.ts` |
 | `useScroll` | Ported to native scroll lifecycle | `tests/conformance/browser-hooks.test.ts` |
@@ -86,24 +86,21 @@ exports.
 
 ## Upstream test-suite disposition
 
-The pinned boundary contains 20 executable unit/type-test files, one shared
+The pinned boundary contains 26 executable unit/type-test files, one shared
 setup module, the framework-neutral `rafz` suite, and a nine-file Parallax
-browser demo. The vendored files are the authoritative work list.
+browser demo. The vendored files are the authoritative work list. Every test
+file has a machine-checked disposition in
+`audit/upstream-test-dispositions.json`; the verifier rejects omissions, extra
+rows, missing evidence files, and React imports in published source.
 
 | Upstream area | Disposition |
 |---|---|
-| `packages/rafz/src/index.test.ts` | Run against the exact reused dependency; parity lane pending |
-| `packages/shared/src/createInterpolator.test.ts` and `stringInterpolation.test.ts` | Adapt case-by-case; pending |
-| `packages/shared/src/dom-events/resize/resizeElement.test.ts` | Adapt to Octane observer fixture; pending |
-| `packages/shared/src/hooks/useReducedMotion.test.ts` | Adapt to Octane hook fixture; pending |
-| `packages/animated/src/createHost.test.ts` | Adapt to Octane host fixture; pending |
-| `packages/core/src/AnimationConfig.test.ts`, `Controller.test.ts`, `FrameLoopDemand.test.ts`, `Interpolation.test.ts`, `SpringValue.test.ts`, `helpers.test.ts`, and `interpolate.test.ts` | Adapt deterministic engine cases; pending |
-| `packages/core/src/SpringContext.test.tsx` | Adapt to `.tsrx`; pending |
-| `packages/core/src/hooks/useSpring.test.tsx`, `useSpringValue.test.ts`, `useSprings.test.tsx`, `useTrail.test.tsx`, and `useTransition.test.tsx` | Adapt to `.tsrx` fixtures; pending |
-| `packages/core/src/SpringValue.test-d.ts`, `hooks/useSpring.test-d.ts`, `hooks/useTransition.test-d.ts`, `interpolate.test-d.ts`, and `types/props.test-d.ts` | Run pristine and one-for-one adapted type lanes; pending |
-| `targets/web/src/animated.test.tsx` | Adapt and add React/Octane differential host lane; pending |
-| `packages/parallax/test/**` | Treat as upstream browser scenario; adapt to the central playground journey; pending |
-
-Pending rows are explicit draft gaps, not skipped or expected-failure tests.
-They must become executable evidence or a reviewed, consumer-facing divergence
-before the pull request can leave draft status.
+| `packages/rafz/src/index.test.ts` | Reused exact dependency; controlled by frame-loop and scheduler conformance |
+| Shared interpolation tests | Adapted into interpolation and advanced-engine conformance |
+| Shared resize and reduced-motion tests | Adapted into browser-hook and live-browser lanes |
+| `packages/animated/src/createHost.test.ts` | Adapted into host, hydration, and coherent-frame conformance |
+| Core engine tests | Adapted into engine, advanced-engine, controller, lifecycle, frame-loop, interpolation, and animated suites |
+| Core context and hook tests | Adapted into TSRX component, hook, transition, and cleanup suites |
+| Core type tests | Adapted into the strict public type project; React renderables become Octane renderables |
+| `targets/web/src/animated.test.tsx` | Adapted into host, SSR/hydration, and playground browser lanes |
+| `packages/parallax/test/**` | Adapted into deterministic Parallax, SSR/hydration, and development/production playground journeys |
