@@ -76,7 +76,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22`.
 | `@octanejs/visx` | [`packages/visx`](../packages/visx) | framework binding | `0.1.17` | 49 |
 | `@octanejs/vite-plugin` | [`packages/vite-plugin-octane`](../packages/vite-plugin-octane) | metaframework | `0.1.23` | 3 |
 | `@octanejs/wagmi` | [`packages/wagmi`](../packages/wagmi) | framework binding | `0.0.3` | 3 |
-| `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.22` | 5 |
+| `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.22` | 6 |
 | `create-octane` | [`packages/create-octane`](../packages/create-octane) | project scaffolder | `0.0.3` | 1 |
 | `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.23` | 20 |
 
