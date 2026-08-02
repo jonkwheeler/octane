@@ -151,6 +151,8 @@ export { MarchingCube, MarchingCubes, MarchingPlane } from './MarchingCubes.thre
 export type { MarchingCubeProps, MarchingCubesProps, MarchingPlaneProps } from './MarchingCubes.three.tsrx';
 export { PositionalAudio } from './PositionalAudio.three.tsrx';
 export type { PositionalAudioProps } from './PositionalAudio.three.tsrx';
+export { AsciiRenderer } from './AsciiRenderer.three.tsrx';
+export type { AsciiRendererProps } from './AsciiRenderer.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
