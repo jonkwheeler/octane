@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 32 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 27 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -3680,9 +3680,9 @@
         "path": "packages/drei/upstream/src/core/Splat.tsx",
         "line": 31
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/splat-resource.ts",
+      "evidence": ["packages/drei/typetests/splat.test-d.ts"],
       "divergence": null
     },
     {
@@ -3813,9 +3813,9 @@
         "path": "packages/drei/upstream/src/core/Splat.tsx",
         "line": 623
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Splat.three.tsrx",
+      "evidence": ["packages/drei/tests/splat.test.ts"],
       "divergence": null
     },
     {
@@ -3826,9 +3826,9 @@
         "path": "packages/drei/upstream/src/core/Splat.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/splat-resource.ts",
+      "evidence": ["packages/drei/typetests/splat.test-d.ts"],
       "divergence": null
     },
     {
@@ -3839,9 +3839,9 @@
         "path": "packages/drei/upstream/src/core/Splat.tsx",
         "line": 62
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/splat-resource.ts",
+      "evidence": ["packages/drei/typetests/splat.test-d.ts"],
       "divergence": null
     },
     {
@@ -4060,9 +4060,9 @@
         "path": "packages/drei/upstream/src/core/Splat.tsx",
         "line": 22
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/splat-resource.ts",
+      "evidence": ["packages/drei/typetests/splat.test-d.ts"],
       "divergence": null
     },
     {
