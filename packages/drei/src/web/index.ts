@@ -7,8 +7,21 @@ export type { SelectProps } from './Select.three.tsrx';
 export { ScreenVideoTexture, WebcamVideoTexture } from './media-textures.three.tsrx';
 export type { ScreenVideoTextureProps, WebcamVideoTextureProps } from './media-textures.three.tsrx';
 export { Loader } from './Loader.tsrx';
-export { FaceLandmarker, FaceLandmarkerDefaults, useFaceLandmarker } from './FaceLandmarker.three.tsrx';
+export {
+	FaceLandmarker,
+	FaceLandmarkerDefaults,
+	useFaceLandmarker,
+} from './FaceLandmarker.three.tsrx';
 export type { FaceLandmarkerProps } from './FaceLandmarker.three.tsrx';
+export { Facemesh, FacemeshDatas, FacemeshEye, FacemeshEyeDefaults } from './Facemesh.three.tsrx';
+export type {
+	FacemeshApi,
+	FacemeshEyeApi,
+	FacemeshEyeProps,
+	FacemeshProps,
+	MediaPipeFaceMesh,
+	MediaPipePoints,
+} from './Facemesh.three.tsrx';
 export { PresentationControls } from './PresentationControls.three.tsrx';
 export type { PresentationControlProps } from './PresentationControls.three.tsrx';
 export { DragControls } from './DragControls.three.tsrx';
