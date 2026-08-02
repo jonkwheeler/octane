@@ -73,6 +73,7 @@ export function OTPInput(props: OTPInputProps) {
 	const inputMetadataRef = useRef<{
 		prev: [number | null, number | null, 'none' | 'forward' | 'backward' | null];
 	}>({ prev: [null, null, null] });
+	const syncSelectionRef = useRef<(() => void) | null>(null);
 
 	useImperativeHandle(ref as never, () => inputRef.current, []);
 
@@ -158,6 +159,7 @@ export function OTPInput(props: OTPInputProps) {
 		}
 
 		document.addEventListener('selectionchange', onDocumentSelectionChange, { capture: true });
+		syncSelectionRef.current = onDocumentSelectionChange;
 		onDocumentSelectionChange();
 		if (document.activeElement === input) setIsFocused(true);
 
@@ -169,13 +171,13 @@ export function OTPInput(props: OTPInputProps) {
 		const resizeObserver =
 			typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateRootHeight);
 		resizeObserver?.observe(input);
-		const disconnectResizeObserver = () => resizeObserver?.disconnect();
 
 		return () => {
+			syncSelectionRef.current = null;
 			document.removeEventListener('selectionchange', onDocumentSelectionChange, {
 				capture: true,
 			});
-			disconnectResizeObserver();
+			resizeObserver?.disconnect();
 			releaseInputStyles();
 		};
 	}, []);
@@ -241,6 +243,7 @@ export function OTPInput(props: OTPInputProps) {
 			opacity: '1',
 			color: 'transparent',
 			pointerEvents: 'all' as const,
+			background: 'transparent',
 			caretColor: 'transparent',
 			border: '0 solid transparent',
 			outline: '0 solid transparent',
@@ -328,17 +331,21 @@ export function OTPInput(props: OTPInputProps) {
 					value={value}
 					ref={inputRef}
 					onInput={(event) => {
+						consumerOnInput?.(event);
 						const newValue = event.currentTarget.value.slice(0, maxLength);
 						if (newValue.length > 0 && regexp && !regexp.test(newValue)) {
 							event.preventDefault();
 							event.currentTarget.value = value;
 							return;
 						}
-						onChange(newValue);
-						if (typeof document !== 'undefined') {
+						const hasDeleted = newValue.length < value.length;
+						if (hasDeleted && typeof document !== 'undefined') {
 							document.dispatchEvent(new Event('selectionchange'));
 						}
-						consumerOnInput?.(event);
+						onChange(newValue);
+						if (!hasDeleted) {
+							syncSelectionRef.current?.();
+						}
 					}}
 					onPaste={(event) => {
 						const input = inputRef.current;

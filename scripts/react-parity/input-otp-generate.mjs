@@ -45,6 +45,17 @@ const lanes = [
 ];
 
 const upstreamFiles = ['packages/input-otp/tests/pristine/upstream.browser.test.ts'];
+const pristineLedgerPath = 'packages/input-otp/audit/pristine-adaptation-ledger.json';
+const pinnedUpstreamFiles = [
+	'packages/input-otp/upstream/source/apps/test/src/tests/base.delete-word.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/base.props.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/base.render.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/base.selections.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/base.slot.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/base.typing.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/with-autofocus.spec.ts',
+	'packages/input-otp/upstream/source/apps/test/src/tests/with-on-complete.spec.ts',
+];
 
 function sha(contents) {
 	return createHash('sha256').update(contents).digest('hex');
@@ -54,12 +65,31 @@ async function fileSha(file) {
 	return sha(await readFile(path.join(repo, file)));
 }
 
+async function behaviorCases(file) {
+	const source = await readFile(path.join(repo, file), 'utf8');
+	const matches = [...source.matchAll(/\b(?:it|test)\s*\(\s*(['"])((?:\\.|(?!\1)[\s\S])*?)\1/g)];
+	return matches.map((match, index) => {
+		const behavior = source
+			.slice(match.index, matches[index + 1]?.index ?? source.length)
+			.replace(/\/\/[^\n]*/g, '')
+			.replace(/\s+/g, ' ')
+			.trim();
+		return {
+			id: `${file}#${index + 1}`,
+			path: file,
+			ordinal: index + 1,
+			title: match[2],
+			behaviorSha256: sha(behavior),
+		};
+	});
+}
+
 function stringLiteral(source, offset) {
 	const match = /^\s*(['"])((?:\\.|(?!\1)[\s\S])*)\1/.exec(source.slice(offset));
 	return match?.[2].replaceAll("\\'", "'").replaceAll('\\"', '"');
 }
 
-async function identities(files, project, prefix) {
+async function identities(files, prefix) {
 	const tests = [];
 	for (const file of files) {
 		const source = await readFile(path.join(repo, file), 'utf8');
@@ -93,6 +123,32 @@ async function writeJson(relative, value) {
 	);
 }
 
+const pinnedBehaviorCases = (
+	await Promise.all(pinnedUpstreamFiles.map((file) => behaviorCases(file)))
+).flat();
+const rewrittenBehaviorCases = await behaviorCases(upstreamFiles[0]);
+const adaptationLedger = JSON.parse(await readFile(path.join(repo, pristineLedgerPath), 'utf8'));
+if (
+	adaptationLedger.cases.length !== pinnedBehaviorCases.length ||
+	pinnedBehaviorCases.length !== rewrittenBehaviorCases.length
+) {
+	throw new Error('The pristine adaptation ledger case count is stale.');
+}
+for (const [index, pinnedCase] of pinnedBehaviorCases.entries()) {
+	const rewrittenCase = rewrittenBehaviorCases[index];
+	const [sourceFile, sourceOrdinal, sourceHash, rewrittenOrdinal, rewrittenHash] =
+		adaptationLedger.cases[index];
+	const ledgerId = `${pinnedCase.path.slice(pinnedCase.path.lastIndexOf('/') + 1)}#${sourceOrdinal}`;
+	if (
+		`${sourceFile}#${sourceOrdinal}` !== ledgerId ||
+		rewrittenOrdinal !== rewrittenCase.ordinal ||
+		sourceHash !== pinnedCase.behaviorSha256 ||
+		rewrittenHash !== rewrittenCase.behaviorSha256
+	) {
+		throw new Error(`Pristine adaptation ledger mismatch at ${pinnedCase.id}.`);
+	}
+}
+
 const inventories = [];
 for (const [id, project, inventoryPath, files] of lanes) {
 	const inventory = {
@@ -100,23 +156,60 @@ for (const [id, project, inventoryPath, files] of lanes) {
 		project,
 		roots: adaptedRoots,
 		files,
-		tests: await identities(files, project, project),
+		tests: await identities(files, project),
 	};
 	await writeJson(inventoryPath, inventory);
 	inventories.push({ id, project, path: inventoryPath, inventory });
 }
 
 const pristinePath = `${audit}/pristine-runtime-browser.json`;
+const pristineCrosswalkPath = `${audit}/pristine-runtime-crosswalk.json`;
+const pinnedIdentities = await identities(pinnedUpstreamFiles, 'pinned-input-otp');
+const rewrittenIdentities = await identities(upstreamFiles, 'input-otp-pristine-browser');
+const unmatchedRewritten = [...rewrittenIdentities];
+const identityCrosswalk = pinnedIdentities.map(({ file, fullName }) => {
+	const rewrittenIndex = unmatchedRewritten.findIndex(
+		(test) => fullName === test.fullName || fullName.endsWith(` ${test.fullName}`),
+	);
+	if (rewrittenIndex === -1) return null;
+	const [rewritten] = unmatchedRewritten.splice(rewrittenIndex, 1);
+	return {
+		pinned: { path: file, fullName },
+		rewritten: { path: upstreamFiles[0], fullName: rewritten.fullName },
+	};
+});
+if (identityCrosswalk.some((entry) => entry === null) || unmatchedRewritten.length > 0) {
+	throw new Error(
+		'The adapted pristine suite does not map exactly to the pinned upstream identities.',
+	);
+}
+await writeJson(pristineCrosswalkPath, {
+	schemaVersion: 1,
+	classification: 'adapted-execution-of-pinned-upstream-suite',
+	pinnedSources: await Promise.all(
+		pinnedUpstreamFiles.map(async (file) => ({ path: file, sha256: await fileSha(file) })),
+	),
+	rewrittenExecution: {
+		path: upstreamFiles[0],
+		sha256: await fileSha(upstreamFiles[0]),
+	},
+	identityCrosswalk,
+	allowedTransforms: [
+		'Consolidate the eight upstream Playwright spec modules into one Vitest module.',
+		'Replace Playwright test imports and webServer routing with the local Vite/Chromium harness.',
+		'Preserve each upstream test title, interaction sequence, and assertion outcome.',
+	],
+	adaptationLedger: {
+		path: pristineLedgerPath,
+		sha256: await fileSha(pristineLedgerPath),
+	},
+});
 const pristine = {
 	schemaVersion: 1,
 	project: 'input-otp-pristine-browser',
-	roots: ['packages/input-otp/upstream/source/apps/test/src/tests'],
+	roots: ['packages/input-otp/tests/pristine'],
 	files: upstreamFiles,
-	tests: await identities(
-		upstreamFiles,
-		'input-otp-pristine-browser',
-		'input-otp-pristine-browser',
-	),
+	tests: rewrittenIdentities,
 };
 await writeJson(pristinePath, pristine);
 
@@ -127,7 +220,7 @@ const differential = {
 	project: 'input-otp-differential',
 	roots: adaptedRoots,
 	files: differentialFiles,
-	tests: await identities(differentialFiles, 'input-otp-differential', 'input-otp-differential'),
+	tests: await identities(differentialFiles, 'input-otp-differential'),
 };
 await writeJson(differentialPath, differential);
 
@@ -194,9 +287,15 @@ const manifest = {
 			project: 'input-otp-pristine-browser',
 			evidenceOrigin: 'upstream-suite',
 			notes:
-				'Case-for-case pinned React oracle running all 15 upstream identities in real Chromium through Vite.',
+				'Adapted execution of all 15 pinned upstream React identities in real Chromium; complete pinned-source hashes, rewritten-source hash, and allowed transforms are recorded in the crosswalk.',
 			execution: { kind: 'vitest-full', inventory: pristinePath },
-			files: [await support(pristinePath)],
+			files: [
+				await support(pristinePath),
+				await support(pristineCrosswalkPath),
+				await support(pristineLedgerPath),
+				await support(upstreamFiles[0]),
+				...(await Promise.all(pinnedUpstreamFiles.map(support))),
+			],
 		},
 		...inventories.map(({ id, project, path: inventoryPath }, index) => ({
 			id,

@@ -74,20 +74,57 @@ describe('@octanejs/input-otp hydration and cleanup', () => {
 		document.body.appendChild(container);
 		const root = hydrateRoot(container, HydrationInput);
 		settle();
+		const input = container.querySelector('input') as HTMLInputElement;
+		const elementFromPoint = vi.fn(() => container.querySelector('[data-input-otp-container]'));
+		Object.defineProperty(document, 'elementFromPoint', {
+			configurable: true,
+			value: elementFromPoint,
+		});
+		input.focus();
+		settle();
+		vi.advanceTimersByTime(0);
+		settle();
+		expect(elementFromPoint).toHaveBeenCalledTimes(1);
+		input.blur();
+		settle();
+		vi.advanceTimersByTime(2000);
+		settle();
+		vi.advanceTimersByTime(3000);
+		settle();
+		vi.advanceTimersByTime(1000);
+		settle();
+		expect(elementFromPoint).toHaveBeenCalledTimes(1);
+		input.focus();
+		settle();
+		vi.advanceTimersByTime(0);
+		settle();
+		expect(elementFromPoint).toHaveBeenCalledTimes(2);
+		vi.advanceTimersByTime(2000);
+		settle();
+		expect(elementFromPoint).toHaveBeenCalledTimes(3);
+		vi.advanceTimersByTime(3000);
+		settle();
+		expect(elementFromPoint).toHaveBeenCalledTimes(4);
+		vi.advanceTimersByTime(1000);
+		settle();
+		expect(elementFromPoint).toHaveBeenCalledTimes(4);
 		expect(selectionAdds).toBe(1);
 		expect(vi.getTimerCount()).toBeGreaterThan(0);
 		expect(observers.length).toBeGreaterThan(0);
 		root.unmount();
 		settle();
+		const callsAtUnmount = elementFromPoint.mock.calls.length;
 		vi.runAllTimers();
 		settle();
 		vi.runAllTimers();
 		expect(selectionRemoves).toBeGreaterThanOrEqual(selectionAdds);
 		expect(observers.every((observer) => observer.disconnect.mock.calls.length >= 1)).toBe(true);
 		expect(vi.getTimerCount()).toBe(0);
+		expect(elementFromPoint).toHaveBeenCalledTimes(callsAtUnmount);
 		expect(document.getElementById('input-otp-style')).toBeNull();
 
 		vi.restoreAllMocks();
+		delete (document as { elementFromPoint?: unknown }).elementFromPoint;
 		globalThis.ResizeObserver = OriginalResizeObserver;
 		vi.useRealTimers();
 		container.remove();

@@ -31,10 +31,29 @@ it('should forward-delete character when pressing delete', async () => {
 	await input.pressSequentially('123456');
 	await input.press('Delete');
 	expect(await input.inputValue()).toBe('12345');
-	await input.evaluate((node) => node.setSelectionRange(0, 1));
+	for (const expected of [
+		[4, 5],
+		[3, 4],
+		[2, 3],
+		[1, 2],
+		[0, 1],
+	]) {
+		await input.press('ArrowLeft');
+		await expect
+			.poll(() => input.evaluate((node) => [node.selectionStart, node.selectionEnd]))
+			.toEqual(expected);
+	}
 	await input.press('Delete');
 	expect(await input.inputValue()).toBe('2345');
-	await input.evaluate((node) => node.setSelectionRange(2, 3));
+	for (const expected of [
+		[1, 2],
+		[2, 3],
+	]) {
+		await input.press('ArrowRight');
+		await expect
+			.poll(() => input.evaluate((node) => [node.selectionStart, node.selectionEnd]))
+			.toEqual(expected);
+	}
 	await input.press('Delete');
 	expect(await input.inputValue()).toBe('235');
 });

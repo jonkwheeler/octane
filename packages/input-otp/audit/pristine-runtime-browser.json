@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "input-otp-pristine-browser",
-  "roots": ["packages/input-otp/upstream/source/apps/test/src/tests"],
+  "roots": ["packages/input-otp/tests/pristine"],
   "files": ["packages/input-otp/tests/pristine/upstream.browser.test.ts"],
   "tests": [
     {

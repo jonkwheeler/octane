@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render } from '@testing-library/react';
 import { OTPInput as ReactOTPInput, OTPInputContext as ReactContext } from 'input-otp';
-import { createElement, useContext as useReactContext } from 'react';
+import { createElement, useContext as useReactContext, type FormEvent } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { flushSync } from 'octane';
 import { mount } from '../../../octane/tests/_helpers';
@@ -19,7 +19,10 @@ function ReactProjection() {
 		'data-slots': state.slots.map((slot) => slot.char ?? slot.placeholderChar ?? '_').join('|'),
 	});
 }
-function ReactFixture(props: { onChange?: (value: string) => void }) {
+function ReactFixture(props: {
+	onChange?: (value: string) => void;
+	onInput?: (event: FormEvent<HTMLInputElement>) => void;
+}) {
 	return createElement(
 		ReactOTPInput,
 		{
@@ -28,6 +31,7 @@ function ReactFixture(props: { onChange?: (value: string) => void }) {
 			pattern: '^\\d+$',
 			placeholder: '0000',
 			onChange: props.onChange,
+			onInput: props.onInput,
 			'aria-label': 'Verification code',
 			name: 'verification-code',
 		},
@@ -72,8 +76,10 @@ describe('@octanejs/input-otp differential React oracle', () => {
 		octane.unmount();
 	});
 	it('matches pattern rejection after an invalid edit', () => {
-		const react = render(createElement(ReactFixture));
-		const octane = mount(UncontrolledInput, {});
+		const reactInputEvents = vi.fn();
+		const octaneInputEvents = vi.fn();
+		const react = render(createElement(ReactFixture, { onInput: reactInputEvents }));
+		const octane = mount(UncontrolledInput, { onInput: octaneInputEvents });
 		const reactInput = react.container.querySelector('input') as HTMLInputElement;
 		const octaneInput = octane.find('input') as HTMLInputElement;
 		fireEvent.input(reactInput, { target: { value: '12a' } });
@@ -81,6 +87,7 @@ describe('@octanejs/input-otp differential React oracle', () => {
 		octaneInput.dispatchEvent(new Event('input', { bubbles: true }));
 		flushSync(() => {});
 		expect(octaneInput.value).toBe(reactInput.value);
+		expect(octaneInputEvents).toHaveBeenCalledTimes(reactInputEvents.mock.calls.length);
 		octane.unmount();
 	});
 });

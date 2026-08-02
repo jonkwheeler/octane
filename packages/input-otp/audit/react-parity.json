@@ -50,7 +50,7 @@
       "environment": "workspace-node",
       "project": "input-otp-pristine-browser",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Case-for-case pinned React oracle running all 15 upstream identities in real Chromium through Vite.",
+      "notes": "Adapted execution of all 15 pinned upstream React identities in real Chromium; complete pinned-source hashes, rewritten-source hash, and allowed transforms are recorded in the crosswalk.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/input-otp/audit/pristine-runtime-browser.json"
@@ -59,7 +59,62 @@
         {
           "path": "packages/input-otp/audit/pristine-runtime-browser.json",
           "role": "support",
-          "sha256": "6e0abd680f8acea6e5dd64f689d2b1f4fc0c3d8dea5aa2bd1a4d43ee23a28035"
+          "sha256": "39dc394785d83f1d7c4beefb59448736c89b7f0d8b7d43a629e310efa7e3298a"
+        },
+        {
+          "path": "packages/input-otp/audit/pristine-runtime-crosswalk.json",
+          "role": "support",
+          "sha256": "79ee335d8ec5b177523b1b708c703bbc42c71ece57463e35062680faf896c1f0"
+        },
+        {
+          "path": "packages/input-otp/audit/pristine-adaptation-ledger.json",
+          "role": "support",
+          "sha256": "73082fb47aa4641a92634a4275c3605d275b4af0955f05516f2f16207f7e650d"
+        },
+        {
+          "path": "packages/input-otp/tests/pristine/upstream.browser.test.ts",
+          "role": "support",
+          "sha256": "79a171312f143f4bbe0f265774189b198905aa1d941420a6f4661f73175adf71"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/base.delete-word.spec.ts",
+          "role": "support",
+          "sha256": "311a845d1566d6c4b978ced1881da6d3df297d7ebecf3474423e7ffe7cd365ba"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/base.props.spec.ts",
+          "role": "support",
+          "sha256": "9a6ed238323b02cb34efef3224982597ac5130d5ec117903d32de955feebc666"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/base.render.spec.ts",
+          "role": "support",
+          "sha256": "b7924a0b71da35dbd0ca95bc6882a5980c082878c92b050bcdd9b85b7d868c99"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/base.selections.spec.ts",
+          "role": "support",
+          "sha256": "648aef080f80ecdf7f3d618d40f1301aa18c738e4923bc6e2c335583e0de08cd"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/base.slot.spec.ts",
+          "role": "support",
+          "sha256": "370090e7e678b2099aa4f00126d98b3d0ff479a7fc336d3b25c31b19845e68ec"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/base.typing.spec.ts",
+          "role": "support",
+          "sha256": "4440f5cfbc0284de6815a08f02167d1d7fb83b97fc978fd47033b964a290ec5b"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/with-autofocus.spec.ts",
+          "role": "support",
+          "sha256": "df34526e673189c1561d61d82089736344bb670f528ab649193f60954570c939"
+        },
+        {
+          "path": "packages/input-otp/upstream/source/apps/test/src/tests/with-on-complete.spec.ts",
+          "role": "support",
+          "sha256": "3b380592c0f0374ff423b9d346377e9e1cd285455c6f1985b03af68778233452"
         }
       ]
     },

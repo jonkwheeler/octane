@@ -19,6 +19,7 @@ function ContextProjection() @{
 export function UncontrolledInput(props: {
 	onChange?: (value: string) => void;
 	onComplete?: (value: string) => void;
+	onInput?: (event: InputEvent) => void;
 }) @{
 	<OTPInput
 		maxLength={4}
@@ -27,6 +28,7 @@ export function UncontrolledInput(props: {
 		placeholder="0000"
 		onChange={props.onChange}
 		onComplete={props.onComplete}
+		onInput={props.onInput}
 		aria-label="Verification code"
 		name="verification-code"
 	>
@@ -39,12 +41,11 @@ export function RenderPropInput(props: { value: string; onChange: (value: string
 		maxLength={4}
 		value={props.value}
 		onChange={props.onChange}
-		render={(state) => (
+		render={(state) =>
 			<output
 				data-testid="render"
 				data-slots={state.slots.map((slot) => slot.char ?? '_').join('|')}
-			/>
-		)}
+			/>}
 	/>
 }
 

@@ -36,16 +36,27 @@ describe('@octanejs/input-otp component state and projection', () => {
 
 	it('updates uncontrolled state through native input and rejects pattern-invalid edits', () => {
 		const onChange = vi.fn();
-		const app = mount(UncontrolledInput, { onChange });
+		const onInput = vi.fn();
+		const onSelectionChange = vi.fn();
+		document.addEventListener('selectionchange', onSelectionChange);
+		const app = mount(UncontrolledInput, { onChange, onInput });
 		const input = app.find('input') as HTMLInputElement;
 		edit(input, '123');
 		expect(input.value).toBe('123');
 		expect(onChange).toHaveBeenLastCalledWith('123');
+		expect(onInput).toHaveBeenCalledTimes(1);
 		expect(app.find('[data-testid="context"]').getAttribute('data-slots')).toBe('1|2|3|_');
+		expect(onSelectionChange).not.toHaveBeenCalled();
 		edit(input, '12a');
 		expect(input.value).toBe('123');
 		expect(onChange).not.toHaveBeenCalledWith('12a');
+		expect(onInput).toHaveBeenCalledTimes(2);
+		expect(onSelectionChange).not.toHaveBeenCalled();
+		edit(input, '12');
+		expect(onInput).toHaveBeenCalledTimes(3);
+		expect(onSelectionChange).toHaveBeenCalledTimes(1);
 		app.unmount();
+		document.removeEventListener('selectionchange', onSelectionChange);
 	});
 
 	it('keeps controlled value authoritative and exposes render-prop slots', () => {
