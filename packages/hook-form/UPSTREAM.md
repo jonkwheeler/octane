@@ -68,6 +68,13 @@ counterpart under `tests/upstream/`. The verifier extracts registrations from
 both trees and currently accounts for 1,178 upstream registrations and 1,181
 adapted registrations.
 
+The unfiltered execution inventories are a separate collection-time
+measurement. They contain 1,187 entries representing 1,178 unique
+file/full-name identities. All nine duplicate entries are repeated titles
+within the DOM inventory; the server inventory shares no file or test identity
+with it. The manifest records these measurements structurally, and validation
+recomputes them from the committed inventories.
+
 Three upstream titles are deliberately mapped to their Octane equivalents:
 
 - `field.onChange` → `field.onInput` in the controller promise case;

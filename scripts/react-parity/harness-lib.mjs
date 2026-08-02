@@ -42,6 +42,7 @@ const ROOT_KEYS = new Set([
 	'divergences',
 	'upstreamSuites',
 	'adaptedRoots',
+	'adaptedRuntimeSummary',
 ]);
 const PROVENANCE_KEYS = new Set([...PROVENANCE_FIELDS, 'verification']);
 const ENVIRONMENT_KEYS = new Set(ENVIRONMENT_FIELDS);
@@ -65,6 +66,12 @@ const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
 const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full']);
 const ADAPTED_ROOT_KEYS = new Set(['source', 'tests']);
 const ADAPTED_SCAN_KEYS = new Set(['roots', 'include', 'exclude']);
+const ADAPTED_RUNTIME_SUMMARY_KEYS = new Set([
+	'inventoryEntries',
+	'uniqueIdentities',
+	'duplicateEntriesWithinLanes',
+	'identitiesSharedAcrossLanes',
+]);
 const DIVERGENCE_FIELDS = [
 	'upstreamResult',
 	'octaneResult',
@@ -129,6 +136,32 @@ export function compareTestIdentities(left, right) {
 	const leftKey = `${left.file}\0${left.fullName}`;
 	const rightKey = `${right.file}\0${right.fullName}`;
 	return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+}
+
+export function summarizeRuntimeInventories(inventories) {
+	const allIdentities = new Set();
+	const identityLaneCounts = new Map();
+	let inventoryEntries = 0;
+	let duplicateEntriesWithinLanes = 0;
+	for (const inventory of inventories) {
+		const laneIdentities = new Set();
+		for (const test of inventory.tests) {
+			const identity = `${test.file}\0${test.fullName}`;
+			inventoryEntries++;
+			allIdentities.add(identity);
+			laneIdentities.add(identity);
+		}
+		duplicateEntriesWithinLanes += inventory.tests.length - laneIdentities.size;
+		for (const identity of laneIdentities)
+			identityLaneCounts.set(identity, (identityLaneCounts.get(identity) ?? 0) + 1);
+	}
+	return {
+		inventoryEntries,
+		uniqueIdentities: allIdentities.size,
+		duplicateEntriesWithinLanes,
+		identitiesSharedAcrossLanes: [...identityLaneCounts.values()].filter((count) => count > 1)
+			.length,
+	};
 }
 
 function formatTestIdentity(test) {
@@ -223,6 +256,22 @@ export function validateManifest(manifest) {
 				}
 			}
 		}
+	}
+	if (
+		!manifest.adaptedRuntimeSummary ||
+		typeof manifest.adaptedRuntimeSummary !== 'object' ||
+		Array.isArray(manifest.adaptedRuntimeSummary)
+	)
+		fail('adaptedRuntimeSummary must be an object');
+	for (const key of Object.keys(manifest.adaptedRuntimeSummary))
+		if (!ADAPTED_RUNTIME_SUMMARY_KEYS.has(key))
+			fail(`adaptedRuntimeSummary has unknown key "${key}"`);
+	for (const field of ADAPTED_RUNTIME_SUMMARY_KEYS) {
+		if (
+			!Number.isInteger(manifest.adaptedRuntimeSummary[field]) ||
+			manifest.adaptedRuntimeSummary[field] < 0
+		)
+			fail(`adaptedRuntimeSummary.${field} must be a non-negative integer`);
 	}
 
 	if (!manifest.environments || typeof manifest.environments !== 'object') {
@@ -431,6 +480,7 @@ export async function loadManifest(path) {
 export async function verifyManifestFiles(manifest, root) {
 	const absoluteRoot = resolve(root);
 	const runtimeCaseIds = new Set();
+	const adaptedRuntimeInventories = [];
 	for (const lane of manifest.lanes) {
 		if (
 			lane.oracle === 'required' &&
@@ -442,6 +492,7 @@ export async function verifyManifestFiles(manifest, root) {
 				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
 			);
 			validateRuntimeInventory(inventory, lane, manifest.adaptedRoots.tests.roots);
+			adaptedRuntimeInventories.push(inventory);
 			for (const test of inventory.tests) runtimeCaseIds.add(test.id);
 		} else if (
 			lane.oracle === 'required' &&
@@ -495,26 +546,25 @@ export async function verifyManifestFiles(manifest, root) {
 			}
 		}
 	}
-	const fullSuiteLanes = manifest.lanes.filter(
-		(candidate) =>
-			candidate.oracle === 'required' &&
-			candidate.available !== false &&
-			candidate.type === 'adapted-octane' &&
-			candidate.execution?.kind === 'vitest-full',
-	);
 	const discoveredTests = await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.tests);
 	const inventoried = new Set();
-	for (const lane of fullSuiteLanes) {
-		const inventory = JSON.parse(
-			await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
-		);
+	for (const inventory of adaptedRuntimeInventories) {
 		for (const path of inventory.files) inventoried.add(path);
 	}
 	if (
-		fullSuiteLanes.length > 0 &&
+		adaptedRuntimeInventories.length > 0 &&
 		JSON.stringify([...discoveredTests].sort()) !== JSON.stringify([...inventoried].sort())
 	)
 		throw new Error('adapted test roots drifted from the union of full-suite inventories');
+	const actualRuntimeSummary = summarizeRuntimeInventories(adaptedRuntimeInventories);
+	if (
+		[...ADAPTED_RUNTIME_SUMMARY_KEYS].some(
+			(field) => actualRuntimeSummary[field] !== manifest.adaptedRuntimeSummary[field],
+		)
+	)
+		throw new Error(
+			`adapted runtime inventory summary drifted: expected ${JSON.stringify(manifest.adaptedRuntimeSummary)}, received ${JSON.stringify(actualRuntimeSummary)}`,
+		);
 	for (const divergence of manifest.divergences) {
 		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('runtime:'))) {
 			if (!runtimeCaseIds.has(caseId))

@@ -225,6 +225,7 @@
     "provenance",
     "upstreamSuites",
     "adaptedRoots",
+    "adaptedRuntimeSummary",
     "environments",
     "lanes",
     "divergences"
@@ -272,6 +273,22 @@
       "properties": {
         "source": { "$ref": "#/$defs/adaptedScan" },
         "tests": { "$ref": "#/$defs/adaptedScan" }
+      }
+    },
+    "adaptedRuntimeSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inventoryEntries",
+        "uniqueIdentities",
+        "duplicateEntriesWithinLanes",
+        "identitiesSharedAcrossLanes"
+      ],
+      "properties": {
+        "inventoryEntries": { "type": "integer", "minimum": 0 },
+        "uniqueIdentities": { "type": "integer", "minimum": 0 },
+        "duplicateEntriesWithinLanes": { "type": "integer", "minimum": 0 },
+        "identitiesSharedAcrossLanes": { "type": "integer", "minimum": 0 }
       }
     },
     "environments": {

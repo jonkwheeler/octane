@@ -48,10 +48,10 @@ The remaining adapted behavior — validation modes, `formState` proxy subscript
 automated parity checks run all 1,193 tests and eight snapshots unchanged
 against the pinned React package as a pristine baseline. The Octane port
 separately runs its byte-locked adapted DOM and server suites without title
-filters. Their manifests record all 1,187 static registrations across the DOM
-and server inventories (1,178 unique file/full-name identities because the
-server inventory intentionally overlaps nine DOM registrations) and require
-every registration to execute and pass. The structured divergence ledger in
+filters. Their manifests record 1,187 collected entries representing 1,178
+unique file/full-name identities and require every entry to execute and pass.
+The nine duplicate entries are repeated titles within the DOM inventory; the
+server inventory is disjoint. The structured divergence ledger in
 [`audit/react-parity.json`](./audit/react-parity.json) records the native-event,
 scheduling, render-bailout, and test-flush differences, including consumer
 impact and migration guidance. Differential tests also assert byte-identical

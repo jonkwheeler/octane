@@ -13,6 +13,7 @@ import {
 	describeTestIdentityMismatch,
 	nodeMajorSatisfies,
 	requiredExecutableLanes,
+	summarizeRuntimeInventories,
 	toPortablePath,
 	validateManifest,
 	verifyLaneCollectedTests,
@@ -29,6 +30,22 @@ test('describeTestIdentityMismatch reports missing, unexpected, and duplicate id
 	assert.match(message, /test\.ts :: works \[passed\]/);
 	assert.match(message, /unexpected \(1\):/);
 	assert.match(message, /test\.ts :: works \[skipped\]/);
+});
+
+test('summarizes inventory entries, within-lane duplicates, and cross-lane overlap separately', () => {
+	const works = { file: 'example.test.ts', fullName: 'suite works' };
+	assert.deepEqual(
+		summarizeRuntimeInventories([
+			{ tests: [works, works, { file: 'example.test.ts', fullName: 'suite other' }] },
+			{ tests: [works, { file: 'server.test.ts', fullName: 'server works' }] },
+		]),
+		{
+			inventoryEntries: 5,
+			uniqueIdentities: 3,
+			duplicateEntriesWithinLanes: 1,
+			identitiesSharedAcrossLanes: 1,
+		},
+	);
 });
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -58,6 +75,12 @@ function manifest(overrides = {}) {
 				include: ['\\.test\\.(?:ts|tsx)$'],
 				exclude: [],
 			},
+		},
+		adaptedRuntimeSummary: {
+			inventoryEntries: 0,
+			uniqueIdentities: 0,
+			duplicateEntriesWithinLanes: 0,
+			identitiesSharedAcrossLanes: 0,
 		},
 		environments: {
 			local: {
@@ -438,6 +461,10 @@ test('requires complete immutable provenance and environment identity', () => {
 	const partialIntegrity = manifest();
 	partialIntegrity.provenance.integrity = 'sha256:0123456789abcdef';
 	assert.throws(() => validateManifest(partialIntegrity), /complete sha256 digest/);
+
+	const missingRuntimeSummary = manifest();
+	delete missingRuntimeSummary.adaptedRuntimeSummary;
+	assert.throws(() => validateManifest(missingRuntimeSummary), /adaptedRuntimeSummary/);
 });
 
 test('makes every upstream runtime suite state an executable verified requirement', () => {
@@ -669,6 +696,12 @@ test('rejects unstructured, undeclared, and unlinked full-suite divergences', as
 		return {
 			inventory,
 			value: manifest({
+				adaptedRuntimeSummary: {
+					inventoryEntries: 1,
+					uniqueIdentities: 1,
+					duplicateEntriesWithinLanes: 0,
+					identitiesSharedAcrossLanes: 0,
+				},
 				adaptedRoots: {
 					source: {
 						roots: ['packages/example/tests/upstream'],
@@ -696,7 +729,16 @@ test('rejects unstructured, undeclared, and unlinked full-suite divergences', as
 		};
 	};
 
-	let fixture = makeValue('// OCTANE DIVERGENCE: old form\ntest("works", () => {})\n', []);
+	let fixture = makeValue('test("works", () => {})\n', []);
+	fixture.value.adaptedRuntimeSummary.inventoryEntries = 2;
+	await writeFile(join(root, sourcePath), 'test("works", () => {})\n');
+	await writeFile(join(root, inventoryPath), fixture.inventory);
+	await assert.rejects(
+		() => verifyManifestFiles(validateManifest(fixture.value), root),
+		/adapted runtime inventory summary drifted/,
+	);
+
+	fixture = makeValue('// OCTANE DIVERGENCE: old form\ntest("works", () => {})\n', []);
 	await writeFile(
 		join(root, sourcePath),
 		'// OCTANE DIVERGENCE: old form\ntest("works", () => {})\n',
@@ -740,6 +782,12 @@ test('discovers divergence markers in tsrx source roots independently from test 
 		tests: [{ id: 'runtime:example', file: sourcePath, fullName: 'works' }],
 	});
 	const value = manifest({
+		adaptedRuntimeSummary: {
+			inventoryEntries: 1,
+			uniqueIdentities: 1,
+			duplicateEntriesWithinLanes: 0,
+			identitiesSharedAcrossLanes: 0,
+		},
 		adaptedRoots: {
 			source: {
 				roots: ['packages/example/src'],

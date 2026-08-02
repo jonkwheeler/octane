@@ -27,6 +27,12 @@
       "exclude": []
     }
   },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 1187,
+    "uniqueIdentities": 1178,
+    "duplicateEntriesWithinLanes": 9,
+    "identitiesSharedAcrossLanes": 0
+  },
   "environments": {
     "workspace-node": {
       "node": ">=22",
