@@ -47,9 +47,28 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "provenance": { "properties": { "verification": { "const": "verified" } } },
+          "upstreamSuites": { "properties": { "types": { "const": "present" } } }
+        },
+        "required": ["provenance", "upstreamSuites"]
+      },
+      "then": {
+        "properties": {
+          "lanes": {
+            "allOf": [
+              { "contains": { "properties": { "type": { "const": "pristine-types" }, "oracle": { "const": "required" }, "available": { "not": { "const": false } } }, "required": ["type", "oracle"] } },
+              { "contains": { "properties": { "type": { "const": "adapted-types" }, "oracle": { "const": "required" }, "available": { "not": { "const": false } } }, "required": ["type", "oracle"] } }
+            ]
+          }
+        }
+      }
     }
   ],
-  "required": ["schemaVersion", "provenance", "environments", "lanes", "divergences"],
+  "required": ["schemaVersion", "provenance", "upstreamSuites", "adaptedRoots", "environments", "lanes", "divergences"],
   "properties": {
     "schemaVersion": { "const": 1 },
     "$schema": { "type": "string" },
@@ -75,6 +94,26 @@
         "license": { "type": "string", "minLength": 1 },
         "integrity": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
         "verification": { "enum": ["recorded-unverified", "verified"] }
+      }
+    },
+    "upstreamSuites": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime", "types"],
+      "properties": {
+        "runtime": { "enum": ["present", "absent", "insufficient"] },
+        "types": { "enum": ["present", "absent", "insufficient"] }
+      }
+    },
+    "adaptedRoots": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "tests", "include", "exclude"],
+      "properties": {
+        "source": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "tests": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "include": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "exclude": { "type": "array", "items": { "type": "string", "minLength": 1 } }
       }
     },
     "environments": {

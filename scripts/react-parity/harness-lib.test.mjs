@@ -46,6 +46,13 @@ function manifest(overrides = {}) {
 			integrity: `sha256:${'0'.repeat(64)}`,
 			verification: 'recorded-unverified',
 		},
+		upstreamSuites: { runtime: 'present', types: 'present' },
+		adaptedRoots: {
+			source: ['packages/hook-form/tests/upstream'],
+			tests: ['packages/hook-form/tests/upstream'],
+			include: ['\\.(?:ts|tsx)$'],
+			exclude: [],
+		},
 		environments: {
 			local: {
 				node: '>=22',
@@ -347,6 +354,22 @@ test('requires live pristine and adapted full-suite lanes before provenance can 
 		execution: { kind: 'vitest-full', inventory: 'audit/inventory.json' },
 	};
 	value.lanes.push(adapted);
+	for (const type of ['pristine-types', 'adapted-types']) {
+		value.lanes.push({
+			...manifest().lanes[0],
+			id: type,
+			type,
+			files: [{
+				...manifest().lanes[0].files[0],
+				cases: [{ id: `types:${type}`, testName: type, fullName: type }],
+			}],
+			execution: {
+				kind: 'typescript',
+				compiler: type === 'adapted-types' ? 'tsrx-tsc' : 'tsc',
+				project: 'packages/example/tsconfig.json',
+			},
+		});
+	}
 	assert.doesNotThrow(() => validateManifest(value));
 	const optional = structuredClone(value);
 	optional.lanes[1].oracle = 'optional';
@@ -354,6 +377,15 @@ test('requires live pristine and adapted full-suite lanes before provenance can 
 	const unavailable = structuredClone(value);
 	unavailable.lanes[1].available = false;
 	assert.throws(() => validateManifest(unavailable), /adapted-octane full-suite lane/);
+	for (const mutation of [
+		(candidate) => candidate.lanes.splice(candidate.lanes.findIndex((lane) => lane.type === 'adapted-types'), 1),
+		(candidate) => (candidate.lanes.find((lane) => lane.type === 'pristine-types').oracle = 'optional'),
+		(candidate) => (candidate.lanes.find((lane) => lane.type === 'adapted-types').available = false),
+	]) {
+		const invalidTypes = structuredClone(value);
+		mutation(invalidTypes);
+		assert.throws(() => validateManifest(invalidTypes), /requires available required pristine-types and adapted-types lanes/);
+	}
 });
 
 test('evaluates exact and minimum Node major requirements', () => {
@@ -417,16 +449,24 @@ test('rejects unstructured, undeclared, and unlinked full-suite divergences', as
 		const inventory = JSON.stringify({
 			schemaVersion: 1,
 			project: 'example',
+			roots: ['packages/example/tests/upstream'],
 			files: [sourcePath],
 			tests: [{ id: 'runtime:example', file: sourcePath, fullName: 'suite works' }],
 		});
 		return {
 			inventory,
 			value: manifest({
+				adaptedRoots: {
+					source: ['packages/example/tests/upstream'],
+					tests: ['packages/example/tests/upstream'],
+					include: ['\\.ts$'],
+					exclude: [],
+				},
 				lanes: [
 					{
 						...manifest().lanes[0],
 						id: 'full',
+						project: 'example',
 						files: [{ path: inventoryPath, role: 'support', sha256: sha256(inventory) }],
 						execution: { kind: 'vitest-full', inventory: inventoryPath },
 					},
@@ -454,6 +494,12 @@ test('rejects unstructured, undeclared, and unlinked full-suite divergences', as
 	await assert.rejects(
 		() => verifyManifestFiles(validateManifest(fixture.value), root),
 		/has no structured source or test marker/,
+	);
+
+	await writeFile(join(root, 'packages/example/tests/upstream/unlisted.test.ts'), 'test("unlisted", () => {})\n');
+	await assert.rejects(
+		() => verifyManifestFiles(validateManifest(fixture.value), root),
+		/adapted test roots drifted from the union of full-suite inventories/,
 	);
 });
 

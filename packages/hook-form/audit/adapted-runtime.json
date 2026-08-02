@@ -1,6 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "hook-form",
+  "roots": [
+    "packages/hook-form/tests/upstream"
+  ],
   "files": [
     "packages/hook-form/tests/upstream/controller.test.tsx",
     "packages/hook-form/tests/upstream/form.test.tsx",
@@ -625,7 +628,7 @@
       "fullName": "getDirtyFields should reset dirtyFields fields"
     },
     {
-      "id": "runtime:6d5e642f0cbd291a",
+      "id": "runtime:6d5e642f0cbd291a:2",
       "file": "packages/hook-form/tests/upstream/logic/getDirtyFields.test.ts",
       "fullName": "getDirtyFields should reset dirtyFields fields"
     },
@@ -4325,7 +4328,7 @@
       "fullName": "setValue with dirty should be dirtyFields when dirty is defined when shouldDirty is true with array fields"
     },
     {
-      "id": "runtime:6ec378a987179253",
+      "id": "runtime:6ec378a987179253:2",
       "file": "packages/hook-form/tests/upstream/useForm/setValue.test.tsx",
       "fullName": "setValue with dirty should be dirtyFields when dirty is defined when shouldDirty is true with array fields"
     },
@@ -4345,7 +4348,7 @@
       "fullName": "setValue with dirty should be dirtyFields when isDirty is defined when shouldDirty is true with array fields"
     },
     {
-      "id": "runtime:dc19818f5b2477dd",
+      "id": "runtime:dc19818f5b2477dd:2",
       "file": "packages/hook-form/tests/upstream/useForm/setValue.test.tsx",
       "fullName": "setValue with dirty should be dirtyFields when isDirty is defined when shouldDirty is true with array fields"
     },
@@ -4365,7 +4368,7 @@
       "fullName": "setValue with dirty should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined"
     },
     {
-      "id": "runtime:0383724201e4c14b",
+      "id": "runtime:0383724201e4c14b:2",
       "file": "packages/hook-form/tests/upstream/useForm/setValue.test.tsx",
       "fullName": "setValue with dirty should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined"
     },
@@ -4375,7 +4378,7 @@
       "fullName": "setValue with dirty should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined"
     },
     {
-      "id": "runtime:9e7cdb11d99f4293",
+      "id": "runtime:9e7cdb11d99f4293:2",
       "file": "packages/hook-form/tests/upstream/useForm/setValue.test.tsx",
       "fullName": "setValue with dirty should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined"
     },
@@ -4525,7 +4528,7 @@
       "fullName": "call setValue within subscribe does not infinitely recurse when setValue call is conditional"
     },
     {
-      "id": "runtime:de769e3d2a98fd72",
+      "id": "runtime:de769e3d2a98fd72:2",
       "file": "packages/hook-form/tests/upstream/useForm/subscribe.test.tsx",
       "fullName": "call setValue within subscribe does not infinitely recurse when setValue call is conditional"
     },
@@ -4625,7 +4628,7 @@
       "fullName": "trigger should remove all errors before set new errors when trigger entire form"
     },
     {
-      "id": "runtime:6c3fd6fcc7f6dc01",
+      "id": "runtime:6c3fd6fcc7f6dc01:2",
       "file": "packages/hook-form/tests/upstream/useForm/trigger.test.tsx",
       "fullName": "trigger should remove all errors before set new errors when trigger entire form"
     },
@@ -4965,7 +4968,7 @@
       "fullName": "useFormState should only re-render when subscribed field names updated"
     },
     {
-      "id": "runtime:090971c8f2d98610",
+      "id": "runtime:090971c8f2d98610:2",
       "file": "packages/hook-form/tests/upstream/useFormState.test.tsx",
       "fullName": "useFormState should only re-render when subscribed field names updated"
     },
@@ -5325,7 +5328,7 @@
       "fullName": "clone should not override prototype of nested object"
     },
     {
-      "id": "runtime:c94cfd30d740262e",
+      "id": "runtime:c94cfd30d740262e:2",
       "file": "packages/hook-form/tests/upstream/utils/cloneObject.test.ts",
       "fullName": "clone should not override prototype of nested object"
     },

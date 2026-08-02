@@ -11,6 +11,16 @@
     "integrity": "sha256:2d49ffe1a26427eb579201d574fa6a76903f8a15bae5b0bab20c434273ebc8bd",
     "verification": "verified"
   },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": ["packages/hook-form/src"],
+    "tests": ["packages/hook-form/tests/upstream"],
+    "include": ["\\.(?:ts|tsx)$"],
+    "exclude": []
+  },
   "environments": {
     "workspace-node": {
       "node": ">=22",
@@ -168,12 +178,12 @@
         {
           "path": "packages/hook-form/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "27568ec8f4f89c8d37a121728bbbba3a075a119ffdca0f78cf63b77efdd6751c"
+          "sha256": "6f698373abdaa321ae718b69e35be9f37b39d266e1cea1c9f15e3a7ed9592e6e"
         },
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "c6d57caa823f390a6a88f8c59ffbc0044e041c9e8ce55849be1eba42db786cce"
+          "sha256": "26f1db54fbb820fdf5657cb9606f343e59be36e5a040a22ea5ff552a72dab86a"
         }
       ]
     },
@@ -192,12 +202,12 @@
         {
           "path": "packages/hook-form/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "62ff99be3fcb8e173e8e676b5ed7fba609c6d0806d905f783da98ee5f1e12125"
+          "sha256": "ec68c853ad3033fbdaa4775e8ecfb35e1d9fc874a5df9debb914f44ce2200ff2"
         },
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "c6d57caa823f390a6a88f8c59ffbc0044e041c9e8ce55849be1eba42db786cce"
+          "sha256": "26f1db54fbb820fdf5657cb9606f343e59be36e5a040a22ea5ff552a72dab86a"
         }
       ]
     },
@@ -212,7 +222,7 @@
         {
           "path": "packages/hook-form/tests/upstream/useController.test.tsx",
           "role": "test",
-          "sha256": "1310ca66fc0a79a3dd12af8952da60cf985a5ac777e4bc5678adc5aabd3f7517",
+          "sha256": "bdcd1b2ff94d9b1b81f847b300c64de2e39af5978748751563755129f193c5f7",
           "cases": [
             {
               "id": "adapted:controller-on-input",

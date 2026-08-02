@@ -13,6 +13,7 @@ const lanes = [
 ];
 
 for (const [project, destination] of lanes) {
+	const idOccurrences = new Map();
 	const output = execFileSync(
 		process.execPath,
 		['node_modules/vitest/vitest.mjs', 'list', '--project', project, '--json'],
@@ -21,18 +22,24 @@ for (const [project, destination] of lanes) {
 	const tests = JSON.parse(output)
 		.map((test) => ({ ...test, relativeFile: toPortablePath(relative(root, test.file)) }))
 		.filter((test) => test.relativeFile.startsWith('packages/hook-form/tests/upstream/'))
-		.map((test) => ({
-			id: `runtime:${createHash('sha256')
+		.map((test) => {
+			const baseId = `runtime:${createHash('sha256')
 				.update(`${test.relativeFile}\0${test.name.replaceAll(' > ', ' ')}`)
 				.digest('hex')
-				.slice(0, 16)}`,
-			file: test.relativeFile,
-			fullName: test.name.replaceAll(' > ', ' '),
-		}))
+				.slice(0, 16)}`;
+			const occurrence = idOccurrences.get(baseId) ?? 0;
+			idOccurrences.set(baseId, occurrence + 1);
+			return {
+				id: occurrence === 0 ? baseId : `${baseId}:${occurrence + 1}`,
+				file: test.relativeFile,
+				fullName: test.name.replaceAll(' > ', ' '),
+			};
+		})
 		.sort(compareTestIdentities);
 	const inventory = {
 		schemaVersion: 1,
 		project,
+		roots: ['packages/hook-form/tests/upstream'],
 		files: [...new Set(tests.map((test) => test.file))],
 		tests,
 	};
