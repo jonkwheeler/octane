@@ -42,6 +42,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "catalog:default",
     "shadcn": "catalog:default",
+    "playwright": "catalog:default",
     "tailwindcss": "catalog:default",
     "tw-animate-css": "catalog:default",
     "typescript": "catalog:default",

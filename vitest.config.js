@@ -1742,6 +1742,22 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'doom',
+					include: ['playground/octane/src/demos/doom/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'doom-browser',
+					include: ['playground/octane/tests/doom/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
 					name: 'drei',
 					include: ['packages/drei/tests/**/*.test.ts'],
 					environment: 'jsdom',

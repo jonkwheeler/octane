@@ -35,6 +35,7 @@ const complete = {
 		{
 			id: 'procedural-visuals',
 			path: 'playground/octane/src/demos/doom/assets.ts',
+			sha256: '5263057279fbe972332489c50716e9dfab646b59fa87f34b60d8920c426fd5dd',
 			kind: 'source-authored',
 			license: 'MIT',
 			creator: 'Octane contributors',
@@ -80,5 +81,13 @@ test('rejects unclassified constructs and unlicensed assets', () => {
 				assets: [{ ...complete.assets[0], license: 'NOASSERTION' }],
 			}),
 		/asset procedural-visuals lacks redistribution permission/,
+	);
+	assert.throws(
+		() =>
+			validateDoomAudit({
+				...complete,
+				assets: [{ ...complete.assets[0], sha256: 'not-a-digest' }],
+			}),
+		/sha256 must be a full digest/,
 	);
 });

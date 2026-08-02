@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,7 +20,7 @@ function uniqueIds(entries, label) {
 	}
 }
 
-export function validateDoomAudit(audit) {
+export function validateDoomAudit(audit, options = {}) {
 	if (!audit || typeof audit !== 'object') throw new Error('audit must be an object');
 	requireText(audit.provenance?.repository, 'provenance repository');
 	if (!/^[a-f0-9]{40}$/.test(audit.provenance?.commit ?? '')) {
@@ -69,11 +70,21 @@ export function validateDoomAudit(audit) {
 	}
 	uniqueIds(audit.assets, 'asset');
 	for (const asset of audit.assets) {
-		for (const key of ['path', 'kind', 'license', 'creator', 'role']) {
+		for (const key of ['path', 'sha256', 'kind', 'license', 'creator', 'role']) {
 			requireText(asset[key], `asset ${asset.id} ${key}`);
+		}
+		if (!/^[a-f0-9]{64}$/.test(asset.sha256)) {
+			throw new Error(`asset ${asset.id} sha256 must be a full digest`);
 		}
 		if (asset.license === 'NOASSERTION') {
 			throw new Error(`asset ${asset.id} lacks redistribution permission`);
+		}
+		if (options.root) {
+			const assetPath = resolve(options.root, asset.path);
+			if (!existsSync(assetPath))
+				throw new Error(`asset ${asset.id} is missing from ${asset.path}`);
+			const digest = createHash('sha256').update(readFileSync(assetPath)).digest('hex');
+			if (digest !== asset.sha256) throw new Error(`asset ${asset.id} checksum does not match`);
 		}
 	}
 	return audit;
@@ -82,6 +93,6 @@ export function validateDoomAudit(audit) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 	const auditPath = resolve(root, 'playground/octane/doom-audit/audit.json');
-	validateDoomAudit(JSON.parse(readFileSync(auditPath, 'utf8')));
+	validateDoomAudit(JSON.parse(readFileSync(auditPath, 'utf8')), { root });
 	console.log('Doom clean-room completeness audit is valid.');
 }

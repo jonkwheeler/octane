@@ -215,7 +215,7 @@
       "id": "drei-web-helpers",
       "family": "Drei",
       "classification": "unchanged",
-      "evidence": "Public @octanejs/drei Loader, Stats, Instance, and Instances exports are consumed by the playground."
+      "evidence": "Public @octanejs/drei Stats, Instance, and Instances exports are consumed by the WebGL scene. The loading shell is app-owned because Loader depends on client-only renderer progress during SSR."
     },
     {
       "id": "zustand-action-store",
@@ -234,6 +234,7 @@
     {
       "id": "procedural-visual-audio",
       "path": "playground/octane/src/demos/doom/assets.ts",
+      "sha256": "5263057279fbe972332489c50716e9dfab646b59fa87f34b60d8920c426fd5dd",
       "kind": "source-authored",
       "license": "MIT",
       "creator": "Octane contributors",
