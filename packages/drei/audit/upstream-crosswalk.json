@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 38 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 35 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -3891,9 +3891,9 @@
         "path": "packages/drei/upstream/src/core/SpriteAnimator.tsx",
         "line": 122
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/SpriteAnimator.three.tsrx",
+      "evidence": ["packages/drei/tests/sprite-animator.test.ts"],
       "divergence": null
     },
     {
@@ -3904,9 +3904,9 @@
         "path": "packages/drei/upstream/src/core/SpriteAnimator.tsx",
         "line": 23
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/SpriteAnimator.three.tsrx",
+      "evidence": ["packages/drei/typetests/sprite-animator.test-d.ts"],
       "divergence": null
     },
     {
@@ -5044,9 +5044,9 @@
         "path": "packages/drei/upstream/src/core/SpriteAnimator.tsx",
         "line": 111
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/SpriteAnimator.three.tsrx",
+      "evidence": ["packages/drei/tests/sprite-animator.test.ts"],
       "divergence": null
     },
     {

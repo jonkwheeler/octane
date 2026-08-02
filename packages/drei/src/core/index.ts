@@ -146,6 +146,8 @@ export { Sky, calcPosFromAngles } from './Sky.three.tsrx';
 export type { SkyProps } from './Sky.three.tsrx';
 export { checkIfFrameIsEmpty, getFirstFrame, useSpriteLoader } from './useSpriteLoader.three.tsrx';
 export type { FrameData, MetaData, Size, SpriteData } from './useSpriteLoader.three.tsrx';
+export { SpriteAnimator, useSpriteAnimator } from './SpriteAnimator.three.tsrx';
+export type { SpriteAnimatorProps } from './SpriteAnimator.three.tsrx';
 export { Lightformer } from './Lightformer.three.tsrx';
 export type { LightProps } from './Lightformer.three.tsrx';
 export { MeshDistortMaterial, MeshWobbleMaterial } from './motion-materials.three.tsrx';
