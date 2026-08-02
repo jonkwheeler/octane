@@ -53,25 +53,30 @@ export function makeSDFGenerator(clientWidth: number, clientHeight: number, rend
 				else gl_FragColor = vec4(-i, 0.0, 0.0, 0.0);
 			}`,
 	}));
+	const runJumpFlood = (initialTarget: THREE.WebGLRenderTarget, alternateTarget: THREE.WebGLRenderTarget) => {
+		const passes = Math.ceil(Math.log(Math.max(clientWidth, clientHeight)) / Math.log(2));
+		let lastTarget = initialTarget;
+		let target = initialTarget;
+		for (let index = 0; index < passes; index++) {
+			const offset = Math.pow(2, passes - index - 1);
+			target = lastTarget === initialTarget ? alternateTarget : initialTarget;
+			jumpFloodRender.material.uniforms.level.value = index;
+			jumpFloodRender.material.uniforms.maxSteps.value = passes;
+			jumpFloodRender.material.uniforms.offset.value = offset;
+			jumpFloodRender.material.uniforms.tex.value = lastTarget.texture;
+			renderer.setRenderTarget(target);
+			jumpFloodRender.render(renderer);
+			lastTarget = target;
+		}
+		return target;
+	};
 	return (image: THREE.Texture) => {
 		image.minFilter = THREE.NearestFilter; image.magFilter = THREE.NearestFilter;
 		uvRender.material.uniforms.tex.value = image; renderer.setRenderTarget(outsideRenderTarget); uvRender.render(renderer);
-		const passes = Math.ceil(Math.log(Math.max(clientWidth, clientHeight)) / Math.log(2));
-		let lastTarget = outsideRenderTarget; let target: THREE.WebGLRenderTarget = outsideRenderTarget;
-		for (let index = 0; index < passes; index++) {
-			const offset = Math.pow(2, passes - index - 1); target = lastTarget === outsideRenderTarget ? outsideRenderTarget2 : outsideRenderTarget;
-			jumpFloodRender.material.uniforms.level.value = index; jumpFloodRender.material.uniforms.maxSteps.value = passes;
-			jumpFloodRender.material.uniforms.offset.value = offset; jumpFloodRender.material.uniforms.tex.value = lastTarget.texture;
-			renderer.setRenderTarget(target); jumpFloodRender.render(renderer); lastTarget = target;
-		}
+		let target = runJumpFlood(outsideRenderTarget, outsideRenderTarget2);
 		renderer.setRenderTarget(outsideRenderTargetFinal); distanceFieldRender.material.uniforms.tex.value = target.texture; distanceFieldRender.render(renderer);
-		uvRenderInside.material.uniforms.tex.value = image; renderer.setRenderTarget(insideRenderTarget); uvRenderInside.render(renderer); lastTarget = insideRenderTarget;
-		for (let index = 0; index < passes; index++) {
-			const offset = Math.pow(2, passes - index - 1); target = lastTarget === insideRenderTarget ? insideRenderTarget2 : insideRenderTarget;
-			jumpFloodRender.material.uniforms.level.value = index; jumpFloodRender.material.uniforms.maxSteps.value = passes;
-			jumpFloodRender.material.uniforms.offset.value = offset; jumpFloodRender.material.uniforms.tex.value = lastTarget.texture;
-			renderer.setRenderTarget(target); jumpFloodRender.render(renderer); lastTarget = target;
-		}
+		uvRenderInside.material.uniforms.tex.value = image; renderer.setRenderTarget(insideRenderTarget); uvRenderInside.render(renderer);
+		target = runJumpFlood(insideRenderTarget, insideRenderTarget2);
 		renderer.setRenderTarget(insideRenderTargetFinal); distanceFieldRender.material.uniforms.tex.value = target.texture; distanceFieldRender.render(renderer);
 		renderer.setRenderTarget(finalTarget); compositeRender.material.uniforms.tex.value = image; compositeRender.render(renderer); renderer.setRenderTarget(null);
 		return finalTarget;

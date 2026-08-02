@@ -57,7 +57,7 @@ export function Caustics({
 		boundsVertices[4].set(bounds.max.x, bounds.min.y, bounds.min.z); boundsVertices[5].set(bounds.max.x, bounds.min.y, bounds.max.z);
 		boundsVertices[6].set(bounds.max.x, bounds.max.y, bounds.min.z); boundsVertices[7].set(bounds.max.x, bounds.max.y, bounds.max.z);
 		for (let index = 0; index < 8; index++) worldVerts[index].copy(boundsVertices[index]);
-		bounds.getCenter(focusPos); boundsVertices.map((point) => point.sub(focusPos));
+		bounds.getCenter(focusPos); boundsVertices.forEach((point) => point.sub(focusPos));
 		const lightPlane = lpP.set(lightDirInv, 0);
 		boundsVertices.map((point, index) => lightPlane.projectPoint(point, projectedVerts[index]));
 		const centralVert = projectedVerts.reduce((a, b) => a.add(b), v.set(0, 0, 0)).divideScalar(projectedVerts.length);
