@@ -25,3 +25,4 @@ export {
 	Tube,
 } from './shapes.three.tsrx';
 export type { Args, ShapeProps } from './shapes.three.tsrx';
+export { Progress, useProgress } from './Progress.three.tsrx';

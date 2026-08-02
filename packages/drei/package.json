@@ -30,6 +30,7 @@
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
+    "@octanejs/zustand": "workspace:*",
     "three-mesh-bvh": "^0.8.3",
     "three-stdlib": "^2.35.6"
   },
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@octanejs/three": "workspace:*",
+    "@octanejs/zustand": "workspace:*",
     "@react-three/drei": "catalog:default",
     "@react-three/fiber": "catalog:default",
     "@tsrx/react": "catalog:default",

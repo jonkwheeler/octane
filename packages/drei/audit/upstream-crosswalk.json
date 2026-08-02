@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 351
+    "gaps": 349
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -2988,9 +2988,12 @@
         "path": "packages/drei/upstream/src/core/Progress.tsx",
         "line": 55
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Progress.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/progress.test.ts",
+        "packages/drei/typetests/progress.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4874,9 +4877,12 @@
         "path": "packages/drei/upstream/src/core/Progress.tsx",
         "line": 15
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Progress.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/progress.test.ts",
+        "packages/drei/typetests/progress.test-d.ts"
+      ],
       "divergence": null
     },
     {
