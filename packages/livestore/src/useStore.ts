@@ -1,4 +1,5 @@
 import type { LiveStoreSchema } from '@livestore/common/schema';
+import { SessionIdSymbol } from '@livestore/common';
 import type { RegistryStoreOptions, Store, SyncStatus } from '@livestore/livestore';
 import type { Schema } from '@livestore/utils/effect';
 import { use, useEffect } from 'octane';
@@ -48,11 +49,11 @@ export const withReactApi = <TSchema extends LiveStoreSchema, TContext = {}>(
 	augmented.useQuery = (queryable: unknown, ...rest: unknown[]) =>
 		(useQuery as (...args: unknown[]) => unknown)(queryable, { store }, ...rest);
 	augmented.useClientDocument = (table: unknown, ...rest: unknown[]) => {
-		const slot = typeof rest.at(-1) === 'symbol' ? rest.pop() : undefined;
+		const [args, slot] = splitSlot(rest, (value) => value === SessionIdSymbol);
 		return (useClientDocument as (...args: unknown[]) => unknown)(
 			table,
-			rest[0],
-			rest[1],
+			args[0],
+			args[1],
 			{ store },
 			slot,
 		);

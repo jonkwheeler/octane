@@ -63,7 +63,7 @@ export function useClientDocument<TTableDef extends State.SQLite.ClientDocumentT
 		slot?: symbol,
 	]
 ): UseClientDocumentResult<TTableDef> {
-	const [args, slot] = splitSlot(rest);
+	const [args, slot] = splitSlot(rest, (value) => value === SessionIdSymbol);
 	const idOrOptions = args[0] as
 		string | SessionIdSymbol | Partial<RowQuery.GetOrCreateOptions<TTableDef>> | undefined;
 	const optionsArgument = args[1] as Partial<RowQuery.GetOrCreateOptions<TTableDef>> | undefined;
