@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 295
+    "gaps": 284
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -688,9 +688,9 @@
         "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
         "line": 64
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/tests/cameras.test.ts"],
       "divergence": null
     },
     {
@@ -701,9 +701,9 @@
         "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/typetests/cameras.test-d.ts"],
       "divergence": null
     },
     {
@@ -714,9 +714,9 @@
         "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
         "line": 57
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/typetests/cameras.test-d.ts"],
       "divergence": null
     },
     {
@@ -1379,9 +1379,9 @@
         "path": "packages/drei/upstream/src/core/Fbo.tsx",
         "line": 72
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Fbo.three.tsrx",
+      "evidence": ["packages/drei/tests/fbo.test.ts"],
       "divergence": null
     },
     {
@@ -1392,9 +1392,9 @@
         "path": "packages/drei/upstream/src/core/Fbo.tsx",
         "line": 66
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Fbo.three.tsrx",
+      "evidence": ["packages/drei/typetests/fbo.test-d.ts"],
       "divergence": null
     },
     {
@@ -2599,9 +2599,9 @@
         "path": "packages/drei/upstream/src/core/OrthographicCamera.tsx",
         "line": 25
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/tests/cameras.test.ts"],
       "divergence": null
     },
     {
@@ -2612,9 +2612,9 @@
         "path": "packages/drei/upstream/src/core/OrthographicCamera.tsx",
         "line": 10
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/typetests/cameras.test-d.ts"],
       "divergence": null
     },
     {
@@ -2690,9 +2690,9 @@
         "path": "packages/drei/upstream/src/core/PerspectiveCamera.tsx",
         "line": 25
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/tests/cameras.test.ts"],
       "divergence": null
     },
     {
@@ -2703,9 +2703,9 @@
         "path": "packages/drei/upstream/src/core/PerspectiveCamera.tsx",
         "line": 10
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": ["packages/drei/typetests/cameras.test-d.ts"],
       "divergence": null
     },
     {
@@ -4636,9 +4636,12 @@
         "path": "packages/drei/upstream/src/core/CubeCamera.tsx",
         "line": 20
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/cameras.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/cameras.test.ts",
+        "packages/drei/typetests/cameras.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4720,9 +4723,9 @@
         "path": "packages/drei/upstream/src/core/Fbo.tsx",
         "line": 14
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Fbo.three.tsrx",
+      "evidence": ["packages/drei/tests/fbo.test.ts", "packages/drei/typetests/fbo.test-d.ts"],
       "divergence": null
     },
     {

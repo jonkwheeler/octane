@@ -37,6 +37,10 @@ export interface TestingRenderer extends Renderer {
 	readonly lastCamera: THREE.Camera | null;
 	/** Whether root teardown disposed the recorder. */
 	readonly disposed: boolean;
+	/** The currently selected render target, matching WebGLRenderer state. */
+	readonly renderTarget: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null;
+	/** WebGLRenderer-compatible automatic clearing flag. */
+	autoClear: boolean;
 }
 
 /** Additional values copied onto a directly-fired testing event. */
@@ -85,6 +89,8 @@ class FrameRecorder implements TestingRenderer {
 	#lastScene: THREE.Scene | null = null;
 	#lastCamera: THREE.Camera | null = null;
 	#disposed = false;
+	#renderTarget: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null = null;
+	autoClear = true;
 
 	constructor(canvas: CanvasLike) {
 		this.domElement = canvas;
@@ -106,6 +112,10 @@ class FrameRecorder implements TestingRenderer {
 		return this.#disposed;
 	}
 
+	get renderTarget(): THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null {
+		return this.#renderTarget;
+	}
+
 	render(scene: THREE.Scene, camera: THREE.Camera): void {
 		this.#frameCount++;
 		this.#lastScene = scene;
@@ -115,6 +125,16 @@ class FrameRecorder implements TestingRenderer {
 	setPixelRatio(_dpr: number): void {}
 
 	setSize(_width: number, _height: number, _updateStyle?: boolean): void {}
+
+	setRenderTarget(target: THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null): void {
+		this.#renderTarget = target;
+	}
+
+	getRenderTarget(): THREE.WebGLRenderTarget | THREE.WebGLCubeRenderTarget | null {
+		return this.#renderTarget;
+	}
+
+	clearDepth(): void {}
 
 	/** Mirrors WebGLRenderer's eager texture-upload hook for loader integrations. */
 	initTexture(_texture: THREE.Texture): void {}

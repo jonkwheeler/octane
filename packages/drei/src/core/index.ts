@@ -67,6 +67,20 @@ export type {
 	BillboardProps,
 	FloatProps,
 } from './scene-motion.three.tsrx';
+export { Fbo, useFBO } from './Fbo.three.tsrx';
+export type { FboProps } from './Fbo.three.tsrx';
+export {
+	CubeCamera,
+	OrthographicCamera,
+	PerspectiveCamera,
+	useCubeCamera,
+} from './cameras.three.tsrx';
+export type {
+	CubeCameraOptions,
+	CubeCameraProps,
+	OrthographicCameraProps,
+	PerspectiveCameraProps,
+} from './cameras.three.tsrx';
 export type {
 	MaskProps,
 	MeshDiscardMaterialProps,
