@@ -184,7 +184,7 @@
         {
           "path": "packages/hook-form/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "6f698373abdaa321ae718b69e35be9f37b39d266e1cea1c9f15e3a7ed9592e6e"
+          "sha256": "4cc119f593b073ec1afe862295ac18365caebecc5b85a1f70e9d78ea5b7808e0"
         },
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",
@@ -208,7 +208,7 @@
         {
           "path": "packages/hook-form/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "ec68c853ad3033fbdaa4775e8ecfb35e1d9fc874a5df9debb914f44ce2200ff2"
+          "sha256": "ad5086018d102b6809504c0ebff953bba574b6e449e6383e9477440c1b58a67e"
         },
         {
           "path": "scripts/react-parity/hook-form-runtime-inventory.mjs",

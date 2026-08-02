@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "hook-form-server",
-  "roots": [
-    "packages/hook-form/tests/upstream"
-  ],
+  "roots": ["packages/hook-form/tests/upstream"],
   "files": [
     "packages/hook-form/tests/upstream/controller.server.test.tsx",
     "packages/hook-form/tests/upstream/formStateSubscribe.server.test.tsx",
