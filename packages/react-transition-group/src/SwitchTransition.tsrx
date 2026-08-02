@@ -26,10 +26,11 @@ function chain(element: ElementDescriptor, name: keyof TransitionCallbacks, call
 
 export function SwitchTransition(props: SwitchTransitionProps) @{
 	const appeared = useRef(false);
-	const [status, setStatus] = useState<TransitionStatus>(ENTERED);
-	const [current, setCurrent] = useState<ElementDescriptor | null>(
+	const status = useRef<TransitionStatus>(ENTERED);
+	const current = useRef<ElementDescriptor | null>(
 		props.children ? cloneElement(props.children, { in: true }) : null,
 	);
+	const [, rerender] = useState(0);
 	const pending = props.children ?? null;
 	const mode = props.mode ?? modes.out;
 
@@ -37,54 +38,56 @@ export function SwitchTransition(props: SwitchTransitionProps) @{
 		appeared.current = true;
 	}, []);
 
-	useLayoutEffect(() => {
-		const next = props.children ?? null;
-		if (!next) {
-			setCurrent(null);
-			return;
-		}
-		if (current && different(current, next) && status === ENTERED) {
-			setStatus(EXITING);
-		} else if (!current || !different(current, next)) {
-			setCurrent(cloneElement(next, { in: true }));
-		}
-	}, [props.children]);
+	if (!pending) {
+		current.current = null;
+		status.current = ENTERED;
+	} else if (current.current && different(current.current, pending)) {
+		if (status.current === ENTERED) status.current = EXITING;
+	} else if (status.current === ENTERED) {
+		current.current = cloneElement(pending, { in: true });
+	}
 
-	let output: unknown = current;
-	if (status === EXITING && current && pending) {
+	let output: unknown = current.current;
+	if (status.current === EXITING && current.current && pending) {
 		if (mode === modes.out) {
-			output = cloneElement(current, {
+			output = cloneElement(current.current, {
 				in: false,
-				onExited: chain(current, 'onExited', () => {
-					setCurrent(null);
-					setStatus(ENTERING);
+				onExited: chain(current.current, 'onExited', () => {
+					current.current = null;
+					status.current = ENTERING;
+					rerender((value) => value + 1);
 				}),
 			});
 		} else {
 			output = [
-				current,
+				current.current,
 				cloneElement(pending, {
 					in: true,
-					onEntered: chain(pending, 'onEntered', () => setStatus(ENTERING)),
+					onEntered: chain(pending, 'onEntered', () => {
+						status.current = ENTERING;
+						rerender((value) => value + 1);
+					}),
 				}),
 			];
 		}
-	} else if (status === ENTERING && pending) {
+	} else if (status.current === ENTERING && pending) {
 		if (mode === modes.out) {
 			output = cloneElement(pending, {
 				in: true,
 				onEntered: chain(pending, 'onEntered', () => {
-					setCurrent(cloneElement(pending, { in: true }));
-					setStatus(ENTERED);
+					current.current = cloneElement(pending, { in: true });
+					status.current = ENTERED;
+					rerender((value) => value + 1);
 				}),
 			});
-		} else if (current) {
+		} else if (current.current) {
 			output = [
-				cloneElement(current, {
+				cloneElement(current.current, {
 					in: false,
-					onExited: chain(current, 'onExited', () => {
-						setCurrent(cloneElement(pending, { in: true }));
-						setStatus(ENTERED);
+					onExited: chain(current.current, 'onExited', () => {
+						current.current = cloneElement(pending, { in: true });
+						status.current = ENTERED;
+						rerender((value) => value + 1);
 					}),
 				}),
 				cloneElement(pending, { in: true }),

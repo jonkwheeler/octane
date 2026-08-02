@@ -13,7 +13,7 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 	const first = useRef(true);
 	const previousChildren = useRef<ChildMapping>({});
 	const mapping = useRef<ChildMapping>({});
-	const observedChildren = useRef(false);
+	const children = useRef(props.children);
 	const [, rerender] = useState(0);
 
 	const handleExited = (child: ElementDescriptor, node?: Element) => {
@@ -28,7 +28,12 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 	if (first.current) {
 		mapping.current = getInitialChildMapping(props, handleExited);
 		previousChildren.current = getChildMapping(props.children);
+		children.current = props.children;
 		first.current = false;
+	} else if (children.current !== props.children) {
+		mapping.current = getNextChildMapping(props, mapping.current, handleExited);
+		previousChildren.current = getChildMapping(props.children);
+		children.current = props.children;
 	}
 
 	useLayoutEffect(() => {
@@ -37,17 +42,6 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 			mounted.current = false;
 		};
 	}, []);
-
-	useLayoutEffect(() => {
-		if (!observedChildren.current) {
-			observedChildren.current = true;
-			return;
-		}
-		const nextChildren = getChildMapping(props.children);
-		mapping.current = getNextChildMapping(props, mapping.current, handleExited);
-		previousChildren.current = nextChildren;
-		rerender((value) => value + 1);
-	}, [props.children]);
 
 	const {
 		children: _children,
