@@ -36,6 +36,30 @@ export interface IParallax {
 	stop(): void;
 }
 
+export interface ParallaxProps {
+	pages: number;
+	config?: ConfigProp;
+	horizontal?: boolean;
+	enabled?: boolean;
+	innerStyle?: Record<string, unknown>;
+	ref?: RefObject<IParallax> | ((value: IParallax | null) => void);
+	style?: Record<string, unknown>;
+	children?: unknown;
+	[key: string]: unknown;
+}
+
+export interface ParallaxLayerProps {
+	horizontal?: boolean;
+	offset?: number;
+	speed?: number;
+	factor?: number;
+	sticky?: StickyConfig;
+	ref?: RefObject<IParallaxLayer> | ((value: IParallaxLayer | null) => void);
+	style?: Record<string, unknown>;
+	children?: unknown;
+	[key: string]: unknown;
+}
+
 interface ParallaxState extends IParallax {
 	enabled: boolean;
 	pages: number;

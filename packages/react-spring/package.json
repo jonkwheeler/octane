@@ -52,9 +52,9 @@
   "devDependencies": {
     "@react-spring/parallax": "10.1.2",
     "@react-spring/web": "catalog:default",
-		"octane": "workspace:*",
-		"playwright": "catalog:default",
-		"vite": "catalog:default",
-		"vitest": "catalog:default"
+    "octane": "workspace:*",
+    "playwright": "catalog:default",
+    "vite": "catalog:default",
+    "vitest": "catalog:default"
   }
 }
