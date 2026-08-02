@@ -114,6 +114,8 @@ export { CameraShake } from './CameraShake.three.tsrx';
 export type { CameraShakeProps, ShakeController } from './CameraShake.three.tsrx';
 export { Decal } from './Decal.three.tsrx';
 export type { DecalProps } from './Decal.three.tsrx';
+export { Shadow, ShadowAlpha } from './shadows.three.tsrx';
+export type { ShadowAlphaProps, ShadowProps, ShadowType } from './shadows.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
