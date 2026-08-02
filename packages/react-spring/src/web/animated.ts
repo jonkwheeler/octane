@@ -1,5 +1,5 @@
 import { raf } from '@react-spring/rafz';
-import { componentSlotVoid, hostComponent, useLayoutEffect, useState } from 'octane';
+import { createElement, useLayoutEffect, useState } from 'octane';
 import { FrameValue } from '../core/FrameValue';
 import { resolveAnimatedStyle } from './AnimatedStyle';
 import { applyAnimatedValues } from './applyAnimatedValues';
@@ -44,10 +44,9 @@ function forwardRef(ref: any, value: any): void {
 }
 
 function createAnimatedComponent(Component: any) {
-	return function AnimatedComponent(props: Record<string, any>, scope: any): void {
+	return function AnimatedComponent(props: Record<string, any>): unknown {
 		const deps = [...collect(props)];
 		const initial = snapshot(props);
-		const isHost = typeof Component === 'string';
 		const [state] = useState(
 			() => ({ node: null as any, deps, props, pending: false, live: true }),
 			STATE,
@@ -56,24 +55,10 @@ function createAnimatedComponent(Component: any) {
 		state.deps = deps;
 		state.props = props;
 		state.live = true;
-
-		if (isHost) {
-			state.node = hostComponent(scope, 0, Component, initial, props.children);
-		} else {
-			const givenRef = props.ref;
-			const ref = (node: any) => {
-				state.node = node;
-				forwardRef(givenRef, node);
-			};
-			componentSlotVoid(
-				scope,
-				0,
-				scope.block.parentNode,
-				Component,
-				{ ...initial, ref },
-				scope.block.endMarker,
-			);
-		}
+		const ref = (node: any) => {
+			state.node = node;
+			forwardRef(props.ref, node);
+		};
 
 		useLayoutEffect(
 			() => {
@@ -107,6 +92,7 @@ function createAnimatedComponent(Component: any) {
 			deps,
 			EFFECT,
 		);
+		return createElement(Component, { ...initial, ref });
 	};
 }
 

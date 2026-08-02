@@ -1989,13 +1989,42 @@ export default defineConfig({
 			{
 				test: {
 					name: 'react-spring',
-					include: ['packages/react-spring/tests/**/*.test.ts'],
+					include: [
+						'packages/react-spring/tests/conformance/**/*.test.ts',
+						'packages/react-spring/tests/hydration/**/*.test.ts',
+						'packages/react-spring/tests/pack/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
 				plugins: [octane()],
 				resolve: {
 					alias: [
+						{
+							find: /^@octanejs\/react-spring$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-spring/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-spring\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-spring/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-spring-ssr',
+					include: ['packages/react-spring/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
 						{
 							find: /^@octanejs\/react-spring$/,
 							replacement: resolve(import.meta.dirname, 'packages/react-spring/src/index.ts'),

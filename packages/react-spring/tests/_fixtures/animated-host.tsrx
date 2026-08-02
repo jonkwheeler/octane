@@ -7,6 +7,14 @@ export function AnimatedHostFixture(props) @{
 	<animated.div id="animated-host" style={{ left: x, top: y }}>{'spring'}</animated.div>
 }
 
+export function AnimatedSsrFixture(props) @{
+	<animated.div
+		id="animated-ssr"
+		data-state="initial"
+		style={{ left: props.left, opacity: props.opacity }}
+	>{'hydrated spring'}</animated.div>
+}
+
 export function AnimatedHostSurfaceFixture(props) @{
 	<animated.div
 		id="animated-surface"
