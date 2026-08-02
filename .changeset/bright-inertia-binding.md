@@ -1,5 +1,5 @@
 ---
-'@octanejs/inertia': minor
+'@octanejs/inertia': patch
 ---
 
 Add the Inertia.js 3 binding foundation with framework-neutral core exports,

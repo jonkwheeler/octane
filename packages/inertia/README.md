@@ -7,6 +7,8 @@ The package reuses `@inertiajs/core` unchanged and ports the renderer-specific
 
 The initial port is pinned to `@inertiajs/react@3.6.1` and the Inertia 3.x
 source tree at commit `68b13b662d7a6ecdd504026ee18733192b0c7d73`.
+The exact React adapter source is retained in `upstream/` so each ported module
+and future version update can be reviewed against its immutable baseline.
 
 ## Upstream ledger
 
