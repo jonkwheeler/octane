@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 126
+    "gaps": 116
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -1839,9 +1839,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 111
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/tests/instances.test.ts"],
       "divergence": null
     },
     {
@@ -1852,9 +1852,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 25
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/typetests/instances.test-d.ts"],
       "divergence": null
     },
     {
@@ -1865,9 +1865,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 299
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/tests/instances.test.ts"],
       "divergence": null
     },
     {
@@ -1878,9 +1878,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 29
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/typetests/instances.test-d.ts"],
       "divergence": null
     },
     {
@@ -1891,9 +1891,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 124
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/tests/instances.test.ts"],
       "divergence": null
     },
     {
@@ -1904,9 +1904,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 18
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/typetests/instances.test-d.ts"],
       "divergence": null
     },
     {
@@ -2251,9 +2251,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 229
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/tests/instances.test.ts"],
       "divergence": null
     },
     {
@@ -2264,9 +2264,9 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 221
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": ["packages/drei/typetests/instances.test-d.ts"],
       "divergence": null
     },
     {
@@ -2929,9 +2929,12 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 54
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/instances.test.ts",
+        "packages/drei/typetests/instances.test-d.ts"
+      ],
       "divergence": null
     },
     {
@@ -4492,9 +4495,12 @@
         "path": "packages/drei/upstream/src/core/Instances.tsx",
         "line": 287
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Instances.three.tsrx",
+      "evidence": [
+        "packages/drei/tests/instances.test.ts",
+        "packages/drei/typetests/instances.test-d.ts"
+      ],
       "divergence": null
     },
     {
