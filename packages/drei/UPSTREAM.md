@@ -30,3 +30,14 @@ type surfaces. Every public web export must have an Octane implementation and
 executable evidence before this package claims parity. Missing, placeholder, or
 unclassified entries fail validation; intentional Octane differences require a
 consumer-visible rationale and evidence from both implementations.
+
+## Intentional renderer divergence
+
+`View` supports Drei's inline Canvas form, including tracked rectangles, portal
+scenes, scissor rendering, event computation, and render ordering. React Drei
+also lets the same component render in a DOM root and transports its Three
+children through `View.Port` using `tunnel-rat`. Octane components are
+statically owned by one renderer, so a Three component cannot switch to the DOM
+renderer or move authored children between independent DOM and Three roots.
+Calling `View` from a DOM root therefore raises Octane's renderer-boundary
+diagnostic, and `View.Port` remains a callable, type-compatible no-op.

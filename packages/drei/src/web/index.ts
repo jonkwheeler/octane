@@ -26,6 +26,8 @@ export { FaceControls, useFaceControls } from './FaceControls.three.tsrx';
 export type { FaceControlsApi, FaceControlsProps } from './FaceControls.three.tsrx';
 export { Scroll, ScrollControls, useScroll } from './ScrollControls.three.tsrx';
 export type { ScrollControlsProps, ScrollControlsState, ScrollProps } from './ScrollControls.three.tsrx';
+export { View } from './View.three.tsrx';
+export type { ContainerProps, ViewportProps, ViewProps } from './View.three.tsrx';
 export { PresentationControls } from './PresentationControls.three.tsrx';
 export type { PresentationControlProps } from './PresentationControls.three.tsrx';
 export { DragControls } from './DragControls.three.tsrx';
