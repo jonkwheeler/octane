@@ -120,6 +120,8 @@ export { Grid } from './Grid.three.tsrx';
 export type { GridMaterialType, GridProps } from './Grid.three.tsrx';
 export { Helper, useHelper } from './Helper.three.tsrx';
 export type { HelperProps } from './Helper.three.tsrx';
+export { ScreenSizer } from './ScreenSizer.three.tsrx';
+export type { ScreenSizerProps } from './ScreenSizer.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

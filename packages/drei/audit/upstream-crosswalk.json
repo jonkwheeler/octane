@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 218
+    "gaps": 216
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -3325,9 +3325,9 @@
         "path": "packages/drei/upstream/src/core/ScreenSizer.tsx",
         "line": 28
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/ScreenSizer.three.tsrx",
+      "evidence": ["packages/drei/tests/screen-sizer.test.ts"],
       "divergence": null
     },
     {
@@ -3338,9 +3338,9 @@
         "path": "packages/drei/upstream/src/core/ScreenSizer.tsx",
         "line": 10
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/ScreenSizer.three.tsrx",
+      "evidence": ["packages/drei/typetests/screen-sizer.test-d.ts"],
       "divergence": null
     },
     {
