@@ -139,4 +139,3 @@ export function unmockBoundingClientRect() {
 
   elementToDOMRect.clear();
 }
-
