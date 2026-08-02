@@ -178,6 +178,13 @@ execFileSync(
 
 const manifestPath = resolve(auditRoot, 'react-parity.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+const runtimeIdentities = new Set(tests.map((test) => `${test.file}\0${test.fullName}`));
+manifest.adaptedRuntimeSummary = {
+	inventoryEntries: tests.length,
+	uniqueIdentities: runtimeIdentities.size,
+	duplicateEntriesWithinLanes: tests.length - runtimeIdentities.size,
+	identitiesSharedAcrossLanes: 0,
+};
 manifest.environments['workspace-node'].lockfileSha256 = digest(
 	readFileSync(resolve(root, manifest.environments['workspace-node'].lockfile)),
 );
