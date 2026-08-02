@@ -24,6 +24,15 @@ export function SpringHookFixture(props) @{
 	>{'spring'}</animated.div>
 }
 
+export function ObjectSpringHookFixture(props) @{
+	const [styles, api] = useSpring({
+		from: { x: 0 },
+		to: { x: props.x },
+	});
+	props.onReady(styles, api);
+	<div>{'object spring'}</div>
+}
+
 export function TrailHookFixture(props) @{
 	const styles = useTrail(2, {
 		from: { x: 0 },

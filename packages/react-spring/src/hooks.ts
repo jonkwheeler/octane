@@ -88,12 +88,16 @@ export function useSpring<State extends Record<string, any>>(
 	useLayoutEffect(
 		() => {
 			void controller.start(update);
-			return () => {
-				controller.stop(true);
-			};
 		},
 		deps ?? [update],
 		sub(slot, 'effect'),
+	);
+	useLayoutEffect(
+		() => () => {
+			controller.stop(true);
+		},
+		[],
+		sub(slot, 'cleanup'),
 	);
 	return [controller.springs, controller];
 }

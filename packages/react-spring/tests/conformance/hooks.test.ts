@@ -5,6 +5,7 @@ import {
 	ContextSpringFixture,
 	ChainFixture,
 	NestedContextSpringFixture,
+	ObjectSpringHookFixture,
 	SpringHookFixture,
 	SpringsCohortFixture,
 	TrailHookFixture,
@@ -17,6 +18,21 @@ afterEach(() => {
 });
 
 describe('React Spring hooks', () => {
+	it('does not cancel object-form springs on parent rerenders', () => {
+		let api: any;
+		const onReady = (_styles: any, nextApi: any) => (api = nextApi);
+		const result = mount(ObjectSpringHookFixture, { x: 10, onReady });
+		flushEffects();
+		const stop = vi.spyOn(api, 'stop');
+
+		result.update(ObjectSpringHookFixture, { x: 10, onReady });
+		flushEffects();
+		expect(stop).not.toHaveBeenCalled();
+
+		result.unmount();
+		expect(stop).toHaveBeenCalledWith(true);
+	});
+
 	it('keeps spring values and the imperative API stable across updates', () => {
 		raf.frameLoop = 'demand';
 		const apis: unknown[] = [];
