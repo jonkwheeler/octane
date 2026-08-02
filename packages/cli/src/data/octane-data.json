@@ -858,6 +858,7 @@
     "@visx/zoom": "@octanejs/visx",
     "cmdk": "@octanejs/cmdk",
     "dexie-react-hooks": "@octanejs/dexie",
+    "embla-carousel-react": "@octanejs/embla-carousel",
     "framer-motion": "@octanejs/motion",
     "jotai": "@octanejs/jotai",
     "lucide-react": "@octanejs/lucide",
