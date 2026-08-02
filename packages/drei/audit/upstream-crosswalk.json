@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 202
+    "gaps": 199
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -3708,9 +3708,9 @@
         "path": "packages/drei/upstream/src/core/Sky.tsx",
         "line": 29
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sky.three.tsrx",
+      "evidence": ["packages/drei/tests/sky.test.ts"],
       "divergence": null
     },
     {
@@ -3721,9 +3721,9 @@
         "path": "packages/drei/upstream/src/core/Sky.tsx",
         "line": 7
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sky.three.tsrx",
+      "evidence": ["packages/drei/typetests/sky.test-d.ts"],
       "divergence": null
     },
     {
@@ -4441,9 +4441,9 @@
         "path": "packages/drei/upstream/src/core/Sky.tsx",
         "line": 18
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Sky.three.tsrx",
+      "evidence": ["packages/drei/tests/sky.test.ts"],
       "divergence": null
     },
     {

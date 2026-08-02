@@ -126,6 +126,8 @@ export { Preload } from './Preload.three.tsrx';
 export type { PreloadProps } from './Preload.three.tsrx';
 export { Bvh, useBVH } from './Bvh.three.tsrx';
 export type { BVHOptions, BvhProps } from './Bvh.three.tsrx';
+export { Sky, calcPosFromAngles } from './Sky.three.tsrx';
+export type { SkyProps } from './Sky.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
