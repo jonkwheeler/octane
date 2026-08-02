@@ -1,6 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushEffects, mount } from '../../octane/tests/_helpers';
-import { ABOVE, BELOW, INSIDE, getBounds, getCurrentPosition, parseOffset } from '../src';
+import {
+	ABOVE,
+	BELOW,
+	INSIDE,
+	INVISIBLE,
+	Waypoint,
+	findScrollableAncestor,
+	getBounds,
+	getCurrentPosition,
+	parseOffset,
+} from '../src';
 import { ChildProbe, WaypointProbe } from './_fixtures/probes.tsrx';
 
 function rect(top: number, bottom: number, left = 0, right = 100): DOMRect {
@@ -71,9 +81,24 @@ describe('geometry', () => {
 			viewportBottom: 80,
 		});
 	});
+
+	it('uses window for body and document scrolling', () => {
+		const node = document.createElement('div');
+		document.body.append(node);
+		document.body.style.overflowY = 'scroll';
+		expect(findScrollableAncestor(node)).toBe(window);
+		document.body.style.overflowY = '';
+	});
 });
 
 describe('Waypoint', () => {
+	it('exposes the upstream position statics', () => {
+		expect(Waypoint.above).toBe(ABOVE);
+		expect(Waypoint.below).toBe(BELOW);
+		expect(Waypoint.inside).toBe(INSIDE);
+		expect(Waypoint.invisible).toBe(INVISIBLE);
+	});
+
 	it('reports initial entry and leaves on scroll', () => {
 		const onEnter = vi.fn();
 		const onLeave = vi.fn();
@@ -139,5 +164,23 @@ describe('Waypoint', () => {
 
 		result.unmount();
 		expect(childRef).toHaveBeenLastCalledWith(null);
+	});
+
+	it('remeasures after an update when layout moves without scrolling', () => {
+		const onEnter = vi.fn();
+		const result = mount(ChildProbe, { onEnter, label: 'first' });
+		flushEffects();
+		const child = result.find('[data-testid="child"]');
+		let childRect = rect(120, 140);
+		child.getBoundingClientRect = () => childRect;
+		vi.runAllTimers();
+		expect(onEnter).not.toHaveBeenCalled();
+
+		childRect = rect(20, 40);
+		result.update(ChildProbe, { onEnter, label: 'second' });
+		flushEffects();
+		vi.runAllTimers();
+		expect(onEnter).toHaveBeenCalledOnce();
+		result.unmount();
 	});
 });

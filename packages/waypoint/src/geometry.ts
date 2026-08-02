@@ -12,6 +12,7 @@ export function findScrollableAncestor(node: Element, horizontal = false): Eleme
 	let ancestor = node.parentElement;
 	const overflowProperty = horizontal ? 'overflowX' : 'overflowY';
 	while (ancestor) {
+		if (ancestor === document.body || ancestor === document.documentElement) return window;
 		const overflow = window.getComputedStyle(ancestor)[overflowProperty];
 		if (overflow === 'auto' || overflow === 'scroll' || overflow === 'overlay') return ancestor;
 		ancestor = ancestor.parentElement;
