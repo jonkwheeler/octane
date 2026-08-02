@@ -128,6 +128,8 @@ export { Bvh, useBVH } from './Bvh.three.tsrx';
 export type { BVHOptions, BvhProps } from './Bvh.three.tsrx';
 export { Sky, calcPosFromAngles } from './Sky.three.tsrx';
 export type { SkyProps } from './Sky.three.tsrx';
+export { checkIfFrameIsEmpty, getFirstFrame } from './sprite-loader.js';
+export type { FrameData, MetaData, Size, SpriteData } from './sprite-loader.js';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,

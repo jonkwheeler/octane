@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 199
+    "gaps": 193
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -1538,9 +1538,9 @@
         "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
         "line": 13
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/sprite-loader.ts",
+      "evidence": ["packages/drei/typetests/sprite-loader-utils.test-d.ts"],
       "divergence": null
     },
     {
@@ -2440,9 +2440,9 @@
         "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
         "line": 32
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/sprite-loader.ts",
+      "evidence": ["packages/drei/typetests/sprite-loader-utils.test-d.ts"],
       "divergence": null
     },
     {
@@ -3682,9 +3682,9 @@
         "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/sprite-loader.ts",
+      "evidence": ["packages/drei/typetests/sprite-loader-utils.test-d.ts"],
       "divergence": null
     },
     {
@@ -3906,9 +3906,9 @@
         "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
         "line": 47
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/sprite-loader.ts",
+      "evidence": ["packages/drei/typetests/sprite-loader-utils.test-d.ts"],
       "divergence": null
     },
     {
@@ -4467,9 +4467,9 @@
         "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
         "line": 67
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/sprite-loader.ts",
+      "evidence": ["packages/drei/tests/sprite-loader-utils.test.ts"],
       "divergence": null
     },
     {
@@ -4493,9 +4493,9 @@
         "path": "packages/drei/upstream/src/core/useSpriteLoader.tsx",
         "line": 58
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/sprite-loader.ts",
+      "evidence": ["packages/drei/tests/sprite-loader-utils.test.ts"],
       "divergence": null
     },
     {
