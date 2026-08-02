@@ -1824,6 +1824,7 @@ export default defineConfig({
 						'!packages/phosphor-icons/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
+					globalSetup: ['packages/phosphor-icons/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],

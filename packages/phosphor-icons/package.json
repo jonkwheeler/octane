@@ -50,6 +50,7 @@
   "devDependencies": {
     "@phosphor-icons/core": "catalog:default",
     "@phosphor-icons/react": "catalog:default",
+    "@tsrx/react": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
     "prettier": "catalog:default",
