@@ -199,6 +199,8 @@ export { Outlines } from './Outlines.three.tsrx';
 export type { OutlinesProps } from './Outlines.three.tsrx';
 export { ContactShadows } from './ContactShadows.three.tsrx';
 export type { ContactShadowsProps } from './ContactShadows.three.tsrx';
+export { AccumulativeShadows, RandomizedLight, accumulativeContext } from './AccumulativeShadows.three.tsrx';
+export type { AccumulativeShadowsProps, RandomizedLightProps } from './AccumulativeShadows.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
