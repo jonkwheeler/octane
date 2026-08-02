@@ -30,6 +30,8 @@ export { View } from './View.three.tsrx';
 export type { ContainerProps, ViewportProps, ViewProps } from './View.three.tsrx';
 export { Html, defaultCalculatePosition } from './Html.three.tsrx';
 export type { CalculatePosition, HtmlProps, PointerEventsProperties } from './Html.three.tsrx';
+export { PivotControls } from './pivotControls/index.three.tsrx';
+export type { PivotControlsProps } from './pivotControls/index.three.tsrx';
 export { PresentationControls } from './PresentationControls.three.tsrx';
 export type { PresentationControlProps } from './PresentationControls.three.tsrx';
 export { DragControls } from './DragControls.three.tsrx';
