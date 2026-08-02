@@ -1211,12 +1211,12 @@ export default defineConfig({
 				// `octane/server` (the website's octane-ssr-server-alias pattern) so
 				// the binding's plain-.ts hooks run against the server runtime.
 				// Node environment; the React side renders via react-dom/server over
-				// the same react-cache compilation the client differential uses.
+				// an isolated SSR cache so concurrent client setup cannot delete it.
 				test: {
 					name: 'remix-router-ssr',
 					include: ['packages/remix-router/tests/ssr/**/*.test.ts'],
 					environment: 'node',
-					globalSetup: ['packages/remix-router/tests/differential/_setup.ts'],
+					globalSetup: ['packages/remix-router/tests/differential/_setup-ssr.ts'],
 					globals: false,
 				},
 				plugins: [octane({ ssr: true })],

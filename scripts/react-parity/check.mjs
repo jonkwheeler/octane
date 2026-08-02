@@ -42,11 +42,6 @@ try {
 } catch (error) {
 	errors.push(`react-hook-form type evidence is invalid: ${error.message}`);
 }
-try {
-	verifyPortTestClassifications(REPO);
-} catch (error) {
-	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
-}
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
 // (BenchmarkExplorer, BenchBars, …). Scan both trees so a misleading claim can't
@@ -123,6 +118,10 @@ for (const relativeFile of CLAIM_FILES) {
 for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
+		const binding = relativeFile.split('/')[1];
+		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))) {
+			verifyPortTestClassifications(REPO, binding);
+		}
 		await verifyManifestFiles(manifest, REPO);
 		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
 		for (const lane of manifest.lanes) {
