@@ -6,6 +6,7 @@ const fixture = resolve(__dirname, '../_fixtures/parity.tsrx');
 const cache = resolve(__dirname, '.react-cache');
 
 describe('differential: @octanejs/tanstack-store vs @tanstack/react-store', () => {
+	// @parity-case differential:tanstack-store-public-contract
 	it('updates selectors, atoms, created stores, actions, and context identically', async () => {
 		const differential = await mountDifferential(fixture, 'StoreParity', undefined, cache);
 

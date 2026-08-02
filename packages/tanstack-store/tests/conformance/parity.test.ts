@@ -7,6 +7,8 @@ import { describe, expect, it } from 'vitest';
 import * as binding from '@octanejs/tanstack-store';
 
 describe('export surface', () => {
+	// OCTANE DIVERGENCE[tanstack-store-experimental-use-store][adapted:tanstack-store-experimental-use-store]
+	// @parity-case adapted:tanstack-store-experimental-use-store
 	it('matches the supported @tanstack/react-store runtime exports', async () => {
 		const real = await import('@tanstack/react-store');
 		const expected = Object.keys(real)

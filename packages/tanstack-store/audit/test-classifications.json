@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/tanstack-store/tests/conformance/binding.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane subscription, creation, context, and cleanup behavior; it is not same-scenario React execution."
+    },
+    {
+      "path": "packages/tanstack-store/tests/conformance/parity.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-store-experimental-use-store",
+      "reason": "Authenticates the documented omission of the upstream experimental _useStore export."
+    },
+    {
+      "path": "packages/tanstack-store/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs the exact selector, atom, created-store, action, and context scenario against @tanstack/react-store@0.11.0."
+    },
+    {
+      "path": "packages/tanstack-store/tests/differential/setup.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
+    },
+    {
+      "path": "packages/tanstack-store/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane server rendering without a DOM; it is not compared with React SSR."
+    }
+  ]
+}

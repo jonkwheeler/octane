@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:tanstack-store-public-api",
+      "testName": "store, atom, selector, action, and context inference",
+      "fullName": "store, atom, selector, action, and context inference"
+    }
+  ]
+}

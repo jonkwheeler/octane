@@ -1,0 +1,194 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/store.git",
+    "version": "@tanstack/react-store@0.11.0",
+    "commit": "83e2978f627ec53616249b2bda1037749b18b6ab",
+    "sourceRoot": "packages/react-store/src",
+    "testRoot": "packages/react-store/tests",
+    "license": "MIT",
+    "integrity": "sha256:00e8fa1891d1b70a83838b15aec65ea5817c7b88aa737ead07dea9dbce14897f",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-store/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": {
+      "roots": ["packages/tanstack-store/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-store-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-store",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the exact selector, atom, created-store, action, and context scenario against @tanstack/react-store@0.11.0.",
+      "files": [
+        {
+          "path": "packages/tanstack-store/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "5436a86835735e858432ff26a5b8ba2548409363cc53c09f729d0cfab83b1baf",
+          "cases": [
+            {
+              "id": "differential:tanstack-store-public-contract",
+              "testName": "updates selectors, atoms, created stores, actions, and context identically",
+              "fullName": "differential: @octanejs/tanstack-store vs @tanstack/react-store updates selectors, atoms, created stores, actions, and context identically"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-store/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "cf56991aebd796dcc37f9b679f8ec60b8d7ee75946423d45b683ca604cdb258b"
+        },
+        {
+          "path": "packages/tanstack-store/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "e4fb3b47e0916dbb117721a1cf06e58b4bcbeeb2966eb2ac761ae79c10fc3592"
+        },
+        {
+          "path": "packages/tanstack-store/tests/_fixtures/parity.tsrx",
+          "role": "support",
+          "sha256": "7aff5688701aaba0cd483a9231c2834d2b2a1525f04b52583fe204402a3e61e7"
+        },
+        {
+          "path": "packages/tanstack-store/tests/_fixtures/conformance.tsrx",
+          "role": "support",
+          "sha256": "a3bec0cadcca27c1c8460a622e50764c0ca616b2ae07d69fa9ec455fd961ef59"
+        },
+        {
+          "path": "packages/tanstack-store/tests/_fixtures/server.tsrx",
+          "role": "support",
+          "sha256": "e4a7acf86189deedfe9e760d5205a5fd305e96c1f271d9d0323581e5db2d85db"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-store-adapted-divergence",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-store",
+      "notes": "Authenticates the documented omission of the experimental upstream _useStore export.",
+      "files": [
+        {
+          "path": "packages/tanstack-store/tests/conformance/parity.test.ts",
+          "role": "test",
+          "sha256": "f3cee47ad3de0a6ff65c4fa029c0f78a545e79b5ff51b24e6b50a83293eb27c6",
+          "cases": [
+            {
+              "id": "adapted:tanstack-store-experimental-use-store",
+              "testName": "matches the supported @tanstack/react-store runtime exports",
+              "fullName": "export surface matches the supported @tanstack/react-store runtime exports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tanstack-store-adapted-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-store-ssr",
+      "notes": "Authenticates DOM-free server reads for store, atom, and contextual snapshots.",
+      "files": [
+        {
+          "path": "packages/tanstack-store/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "56fc40d4267882d7d87ea042cb5516dcf37343fc58db0ac4e7f21a5d2873d56e",
+          "cases": [
+            {
+              "id": "adapted:tanstack-store-ssr",
+              "testName": "reads store, atom, and contextual snapshots without a DOM",
+              "fullName": "@octanejs/tanstack-store SSR reads store, atom, and contextual snapshots without a DOM"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-store/tests/_fixtures/server.tsrx",
+          "role": "support",
+          "sha256": "e4a7acf86189deedfe9e760d5205a5fd305e96c1f271d9d0323581e5db2d85db"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-store-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-store-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the checked Octane store, atom, selector, action, and context inference contract.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-store/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-store/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "efe44c6ef983e2535852f8c84599bf6f942929f9c560a7d05b1c17690676f11c",
+          "cases": [
+            {
+              "id": "types:tanstack-store-public-api",
+              "testName": "store, atom, selector, action, and context inference",
+              "fullName": "store, atom, selector, action, and context inference"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-store/typetests/test.test-d.ts",
+          "role": "support",
+          "sha256": "e7809783338e82b8b87d00dd390175987e54d89fb2091087b1b991850da79c56"
+        },
+        {
+          "path": "packages/tanstack-store/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "e26bb60e0685abfe077efd6c0e779ee06874a73aabf9e6ff07e5ec635cee32ee"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "tanstack-store-experimental-use-store",
+      "caseIds": ["adapted:tanstack-store-experimental-use-store"],
+      "upstreamResult": "@tanstack/react-store exports the experimental _useStore hook.",
+      "octaneResult": "@octanejs/tanstack-store intentionally omits _useStore while retaining the stable useSelector and useStore APIs.",
+      "rationale": "The experimental hook is not part of the supported stable binding surface.",
+      "classification": "intentional-omission",
+      "consumerImpact": "Consumers cannot import _useStore from the Octane binding.",
+      "migrationGuidance": "Use useSelector with store actions or setState, or the deprecated stable useStore compatibility hook.",
+      "owner": "@octanejs/tanstack-store",
+      "reviewCondition": "Review if TanStack promotes _useStore to a stable public API."
+    }
+  ]
+}

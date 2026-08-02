@@ -12,5 +12,5 @@
     "Differential coverage runs one shared fixture through this adapter and real `@tanstack/react-store@0.11.0`, covering selectors, comparator bailouts, atom writes, component-created atoms and stores, actions, and context.",
     "Behavioral conformance coverage additionally checks source replacement, independent call sites, nested provider resolution, subscription cleanup, deprecated `useStore`, and server output; type tests cover all overload families."
   ],
-  "verified": "2026-07-15"
+  "verified": "2026-08-02"
 }
