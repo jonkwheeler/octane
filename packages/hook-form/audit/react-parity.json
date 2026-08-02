@@ -101,6 +101,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form-pristine-types",
+      "evidenceOrigin": "upstream-suite",
       "notes": "Runs the pinned upstream type suite unchanged with tsc and pinned React type dependencies.",
       "execution": {
         "kind": "typescript",
@@ -138,6 +139,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "hook-form-adapted-types",
+      "evidenceOrigin": "upstream-suite",
       "notes": "Runs every adapted type-test counterpart with tsrx-tsc after structural verification of all assertion groups and permitted transformations.",
       "execution": {
         "kind": "typescript",

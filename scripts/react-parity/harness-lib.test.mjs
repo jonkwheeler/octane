@@ -365,6 +365,7 @@ test('requires live pristine and adapted full-suite lanes before provenance can 
 			...manifest().lanes[0],
 			id: type,
 			type,
+			evidenceOrigin: 'upstream-suite',
 			files: [
 				{
 					...manifest().lanes[0].files[0],
@@ -400,9 +401,84 @@ test('requires live pristine and adapted full-suite lanes before provenance can 
 		mutation(invalidTypes);
 		assert.throws(
 			() => validateManifest(invalidTypes),
-			/requires available required pristine-types and adapted-types lanes/,
+			/requires available required pristine-types and adapted-types lanes with upstream-suite evidence/,
 		);
 	}
+
+	for (const suiteState of ['absent', 'insufficient']) {
+		const repoAuthored = structuredClone(value);
+		repoAuthored.upstreamSuites.types = suiteState;
+		for (const lane of repoAuthored.lanes.filter((candidate) => candidate.type.endsWith('-types')))
+			lane.evidenceOrigin = 'repo-authored';
+		assert.doesNotThrow(() => validateManifest(repoAuthored));
+
+		const fakeDifferential = structuredClone(repoAuthored);
+		fakeDifferential.lanes = fakeDifferential.lanes.filter((lane) => !lane.type.endsWith('-types'));
+		fakeDifferential.lanes.push({
+			...manifest().lanes[0],
+			id: 'fake-type-differential',
+			type: 'differential',
+			files: [
+				{
+					...manifest().lanes[0].files[0],
+					cases: [
+						{
+							id: 'types:fake-runtime-case',
+							testName: 'fake type case',
+							fullName: 'fake type case',
+						},
+					],
+				},
+			],
+		});
+		assert.throws(
+			() => validateManifest(fakeDifferential),
+			new RegExp(`with ${suiteState} upstream type tests.*repo-authored evidence`),
+		);
+
+		const wrongOrigin = structuredClone(repoAuthored);
+		wrongOrigin.lanes.find((lane) => lane.type === 'adapted-types').evidenceOrigin =
+			'upstream-suite';
+		assert.throws(
+			() => validateManifest(wrongOrigin),
+			new RegExp(`with ${suiteState} upstream type tests.*repo-authored evidence`),
+		);
+	}
+});
+
+test('requires explicit type evidence origins and the framework-appropriate compilers', () => {
+	for (const type of ['pristine-types', 'adapted-types']) {
+		const value = manifest();
+		value.lanes[0] = {
+			...value.lanes[0],
+			type,
+			evidenceOrigin: 'upstream-suite',
+			execution: {
+				kind: 'typescript',
+				compiler: type === 'pristine-types' ? 'tsc' : 'tsrx-tsc',
+				project: 'packages/example/tsconfig.json',
+			},
+		};
+		assert.doesNotThrow(() => validateManifest(value));
+
+		const missingOrigin = structuredClone(value);
+		delete missingOrigin.lanes[0].evidenceOrigin;
+		assert.throws(() => validateManifest(missingOrigin), /type evidenceOrigin/);
+
+		const wrongCompiler = structuredClone(value);
+		wrongCompiler.lanes[0].execution.compiler = type === 'pristine-types' ? 'tsrx-tsc' : 'tsc';
+		assert.throws(
+			() => validateManifest(wrongCompiler),
+			new RegExp(`${type} execution must use ${type === 'pristine-types' ? 'tsc' : 'tsrx-tsc'}`),
+		);
+	}
+
+	const runtimeLane = manifest();
+	runtimeLane.lanes[0].evidenceOrigin = 'repo-authored';
+	assert.throws(
+		() => validateManifest(runtimeLane),
+		/non-type lane must not declare evidenceOrigin/,
+	);
 });
 
 test('evaluates exact and minimum Node major requirements', () => {

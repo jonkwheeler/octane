@@ -57,9 +57,11 @@ const LANE_KEYS = new Set([
 	'files',
 	'notes',
 	'execution',
+	'evidenceOrigin',
 ]);
 const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory']);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
+const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
 const ADAPTED_ROOT_KEYS = new Set(['source', 'tests']);
 const ADAPTED_SCAN_KEYS = new Set(['roots', 'include', 'exclude']);
 const DIVERGENCE_FIELDS = [
@@ -275,6 +277,14 @@ export function validateManifest(manifest) {
 		}
 		if (lane.type.endsWith('-types') !== (lane.execution?.kind === 'typescript'))
 			fail(`lane ${lane.id} type and execution kind must agree`);
+		if (lane.type.endsWith('-types')) {
+			if (!TYPE_EVIDENCE_ORIGINS.has(lane.evidenceOrigin))
+				fail(`lane ${lane.id} type evidenceOrigin must be upstream-suite or repo-authored`);
+		} else if (lane.evidenceOrigin !== undefined) {
+			fail(`lane ${lane.id} non-type lane must not declare evidenceOrigin`);
+		}
+		if (lane.type === 'pristine-types' && lane.execution.compiler !== 'tsc')
+			fail(`lane ${lane.id} pristine-types execution must use tsc`);
 		if (lane.type === 'adapted-types' && lane.execution.compiler !== 'tsrx-tsc')
 			fail(`lane ${lane.id} adapted-types execution must use tsrx-tsc`);
 		if (!Array.isArray(lane.files) || lane.files.length === 0)
@@ -329,28 +339,20 @@ export function validateManifest(manifest) {
 		fail('verified provenance requires an available required adapted-octane full-suite lane');
 	}
 	if (manifest.provenance.verification === 'verified') {
-		const requiredAvailable = (type) =>
+		const expectedOrigin =
+			manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
+		const requiredTypeEvidence = (type) =>
 			manifest.lanes.some(
-				(lane) => lane.type === type && lane.oracle === 'required' && lane.available !== false,
-			);
-		if (manifest.upstreamSuites.types === 'present') {
-			if (!requiredAvailable('pristine-types') || !requiredAvailable('adapted-types'))
-				fail(
-					'verified provenance with upstream type tests requires available required pristine-types and adapted-types lanes',
-				);
-		} else {
-			const pairedOracle = manifest.lanes.some(
 				(lane) =>
-					lane.type === 'differential' &&
+					lane.type === type &&
 					lane.oracle === 'required' &&
 					lane.available !== false &&
-					lane.files.some((file) => file.cases?.some((entry) => entry.id.startsWith('types:'))),
+					lane.evidenceOrigin === expectedOrigin,
 			);
-			if (!pairedOracle)
-				fail(
-					'verified provenance without sufficient upstream type tests requires a paired repo-authored type oracle',
-				);
-		}
+		if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
+			fail(
+				`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
+			);
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');
