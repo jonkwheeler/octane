@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 156
+    "gaps": 152
   },
   "inventorySha256": "ab1658f35de494e0aa276e20aa13bbe48f6b028c7eb89bfcf3edc201192c7f06",
   "exports": [
@@ -2657,9 +2657,9 @@
         "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
         "line": 59
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PerformanceMonitor.three.tsrx",
+      "evidence": ["packages/drei/tests/performance-monitor.test.ts"],
       "divergence": null
     },
     {
@@ -2670,9 +2670,9 @@
         "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
         "line": 12
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PerformanceMonitor.three.tsrx",
+      "evidence": ["packages/drei/typetests/performance-monitor.test-d.ts"],
       "divergence": null
     },
     {
@@ -2683,9 +2683,9 @@
         "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
         "line": 30
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PerformanceMonitor.three.tsrx",
+      "evidence": ["packages/drei/typetests/performance-monitor.test-d.ts"],
       "divergence": null
     },
     {
@@ -4981,9 +4981,9 @@
         "path": "packages/drei/upstream/src/core/PerformanceMonitor.tsx",
         "line": 147
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/PerformanceMonitor.three.tsrx",
+      "evidence": ["packages/drei/tests/performance-monitor.test.ts"],
       "divergence": null
     },
     {
