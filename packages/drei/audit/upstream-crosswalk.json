@@ -15,7 +15,7 @@
   "expectedTotals": {
     "runtimeExports": 217,
     "sourceExports": 379,
-    "gaps": 135
+    "gaps": 132
   },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
@@ -4239,9 +4239,9 @@
         "path": "packages/drei/upstream/src/core/TrailTexture.tsx",
         "line": 215
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/TrailTexture.three.tsrx",
+      "evidence": ["packages/drei/tests/trail-texture.test.ts"],
       "divergence": null
     },
     {
@@ -4252,9 +4252,9 @@
         "path": "packages/drei/upstream/src/core/TrailTexture.tsx",
         "line": 211
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/TrailTexture.three.tsrx",
+      "evidence": ["packages/drei/typetests/trail-texture.test-d.ts"],
       "divergence": null
     },
     {
@@ -5120,9 +5120,9 @@
         "path": "packages/drei/upstream/src/core/TrailTexture.tsx",
         "line": 198
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/TrailTexture.three.tsrx",
+      "evidence": ["packages/drei/tests/trail-texture.test.ts"],
       "divergence": null
     },
     {
