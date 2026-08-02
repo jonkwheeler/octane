@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "vaul",
-  "roots": [
-    "packages/vaul/tests"
-  ],
+  "roots": ["packages/vaul/tests"],
   "files": [
     "packages/vaul/tests/drawer.test.ts",
     "packages/vaul/tests/exports.test.ts",

@@ -1,12 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "vaul-browser",
-  "roots": [
-    "packages/vaul/tests"
-  ],
-  "files": [
-    "packages/vaul/tests/browser/vaul.browser.test.ts"
-  ],
+  "roots": ["packages/vaul/tests"],
+  "files": ["packages/vaul/tests/browser/vaul.browser.test.ts"],
   "tests": [
     {
       "id": "runtime:1a948b9b9110d6a4",
