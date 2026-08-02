@@ -15,6 +15,7 @@ import {
 import { syncTimeouts } from './sync-timeouts';
 import type { OTPInputProps, RenderProps } from './types';
 import { usePrevious } from './use-previous';
+import { usePasswordManagerBadge } from './use-pwm-badge';
 
 export const OTPInputContext = createContext<RenderProps>({} as RenderProps);
 
@@ -28,7 +29,7 @@ export function OTPInput(props: OTPInputProps) {
 		placeholder,
 		inputMode = 'numeric',
 		onComplete,
-		pushPasswordManagerStrategy: _pushPasswordManagerStrategy = 'increase-width',
+		pushPasswordManagerStrategy = 'increase-width',
 		pasteTransformer,
 		containerClassName,
 		noScriptCSSFallback = NOSCRIPT_CSS_FALLBACK,
@@ -161,7 +162,7 @@ export function OTPInput(props: OTPInputProps) {
 		onDocumentSelectionChange();
 		if (document.activeElement === input) setIsFocused(true);
 
-		if (!document.getElementById('input-otp-style')) installInputStyles();
+		const releaseInputStyles = acquireInputStyles();
 		const updateRootHeight = () => {
 			container.style.setProperty('--root-height', `${input.clientHeight}px`);
 		};
@@ -175,6 +176,7 @@ export function OTPInput(props: OTPInputProps) {
 				capture: true,
 			});
 			resizeObserver?.disconnect();
+			releaseInputStyles();
 		};
 	}, []);
 
@@ -205,6 +207,13 @@ export function OTPInput(props: OTPInputProps) {
 		}
 	}, [maxLength, onComplete, previousValue, value]);
 
+	const passwordManagerBadge = usePasswordManagerBadge({
+		containerRef,
+		inputRef,
+		pushPasswordManagerStrategy,
+		isFocused,
+	});
+
 	const rootStyle = useMemo(
 		() => ({
 			position: 'relative' as const,
@@ -219,7 +228,12 @@ export function OTPInput(props: OTPInputProps) {
 		() => ({
 			position: 'absolute' as const,
 			inset: 0,
-			width: '100%',
+			width: passwordManagerBadge.willPushPWMBadge
+				? `calc(100% + ${passwordManagerBadge.PWM_BADGE_SPACE_WIDTH})`
+				: '100%',
+			clipPath: passwordManagerBadge.willPushPWMBadge
+				? `inset(0 ${passwordManagerBadge.PWM_BADGE_SPACE_WIDTH} 0 0)`
+				: undefined,
 			height: '100%',
 			display: 'flex',
 			textAlign,
@@ -237,7 +251,11 @@ export function OTPInput(props: OTPInputProps) {
 			fontFamily: 'monospace',
 			fontVariantNumeric: 'tabular-nums',
 		}),
-		[textAlign],
+		[
+			passwordManagerBadge.PWM_BADGE_SPACE_WIDTH,
+			passwordManagerBadge.willPushPWMBadge,
+			textAlign,
+		],
 	);
 
 	const contextValue = useMemo<RenderProps>(() => {
@@ -385,10 +403,28 @@ export function OTPInput(props: OTPInputProps) {
 
 OTPInput.displayName = 'Input';
 
+let ownedInputStyle: HTMLStyleElement | null = null;
+let inputStyleUsers = 0;
+
+function acquireInputStyles(): () => void {
+	const existing = document.getElementById('input-otp-style');
+	if (existing && existing !== ownedInputStyle) return () => {};
+	inputStyleUsers++;
+	if (!ownedInputStyle) installInputStyles();
+	return () => {
+		inputStyleUsers--;
+		if (inputStyleUsers === 0) {
+			ownedInputStyle?.remove();
+			ownedInputStyle = null;
+		}
+	};
+}
+
 function installInputStyles(): void {
 	const style = document.createElement('style');
 	style.id = 'input-otp-style';
 	document.head.appendChild(style);
+	ownedInputStyle = style;
 	if (!style.sheet) return;
 	const autofillStyles =
 		'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;';
