@@ -110,6 +110,8 @@ export { useAnimations } from './useAnimations.three.tsrx';
 export { useBoxProjectedEnv } from './useBoxProjectedEnv.three.tsrx';
 export { Resize } from './Resize.three.tsrx';
 export type { ResizeProps } from './Resize.three.tsrx';
+export { CameraShake } from './CameraShake.three.tsrx';
+export type { CameraShakeProps, ShakeController } from './CameraShake.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
