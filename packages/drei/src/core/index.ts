@@ -5,6 +5,7 @@ export { RoundedBox, RoundedBoxGeometry } from './RoundedBox.three.tsrx';
 export type { RoundedBoxGeometryProps, RoundedBoxProps } from './RoundedBox.three.tsrx';
 export { GizmoViewcube } from './GizmoViewcube.three.tsrx';
 export { GizmoViewport } from './GizmoViewport.three.tsrx';
+export { useContextBridge } from './useContextBridge.three.tsrx';
 export {
 	Box,
 	Capsule,

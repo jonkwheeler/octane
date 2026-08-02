@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 61 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 60 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -4655,9 +4655,9 @@
         "path": "packages/drei/upstream/src/core/useContextBridge.tsx",
         "line": 4
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/useContextBridge.three.tsrx",
+      "evidence": ["packages/drei/tests/context-bridge.test.ts"],
       "divergence": null
     },
     {
