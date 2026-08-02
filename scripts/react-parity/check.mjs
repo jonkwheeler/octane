@@ -26,7 +26,9 @@ const AUDIT = path.join(REPO, 'packages/octane/audit');
 const UPSTREAMS_PATH = path.join(AUDIT, 'react-upstreams.json');
 const LEDGER_PATH = path.join(AUDIT, 'react-conformance-ledger.json');
 const REPORT_PATH = path.join(REPO, 'docs/react-parity-coverage.md');
-const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), { withFileTypes: true })
+const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), {
+	withFileTypes: true,
+})
 	.filter((entry) => entry.isDirectory())
 	.map((entry) => `packages/${entry.name}/audit/react-parity.json`)
 	.filter((manifest) => existsSync(path.join(REPO, manifest)))
@@ -49,15 +51,23 @@ try {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
 }
 try {
-	execFileSync(process.execPath, [
-		path.join(REPO, 'packages/react-resizable-panels/audit/verify-provenance.mjs'),
-		'--negative-controls',
-	], { cwd: REPO, stdio: 'inherit' });
-	execFileSync(path.join(REPO, 'node_modules/.bin/tsrx-tsc'), [
-		'--noEmit',
-		'-p',
-		path.join(REPO, 'packages/react-resizable-panels/audit/type-probes/tsconfig.json'),
-	], { cwd: REPO, stdio: 'inherit' });
+	execFileSync(
+		process.execPath,
+		[
+			path.join(REPO, 'packages/react-resizable-panels/audit/verify-provenance.mjs'),
+			'--negative-controls',
+		],
+		{ cwd: REPO, stdio: 'inherit' },
+	);
+	execFileSync(
+		path.join(REPO, 'node_modules/.bin/tsrx-tsc'),
+		[
+			'--noEmit',
+			'-p',
+			path.join(REPO, 'packages/react-resizable-panels/audit/type-probes/tsconfig.json'),
+		],
+		{ cwd: REPO, stdio: 'inherit' },
+	);
 } catch (error) {
 	errors.push(`react-resizable-panels parity evidence is invalid: ${error.message}`);
 }
@@ -138,7 +148,9 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		await verifyManifestFiles(manifest, REPO);
-		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
+		const pnpmVersion = execFileSync('pnpm', ['--version'], {
+			encoding: 'utf8',
+		});
 		for (const lane of manifest.lanes) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}

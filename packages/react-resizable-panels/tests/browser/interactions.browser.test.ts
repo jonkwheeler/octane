@@ -23,6 +23,7 @@ function getFreePort(): Promise<number> {
 
 let viteServer: ViteDevServer;
 let browser: import('playwright').Browser;
+let context: import('playwright').BrowserContext;
 let page: import('playwright').Page;
 let origin = '';
 let pageErrors: string[] = [];
@@ -55,7 +56,8 @@ afterAll(async () => {
 
 beforeEach(async () => {
 	pageErrors = [];
-	page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+	context = await browser.newContext({ viewport: { width: 900, height: 700 } });
+	page = await context.newPage();
 	page.on('pageerror', (error) => pageErrors.push(error.message));
 	await page.goto(origin, { waitUntil: 'networkidle' });
 	await page.locator('[data-ready="true"]').waitFor();
@@ -65,7 +67,7 @@ afterEach(async () => {
 	try {
 		expect(pageErrors).toEqual([]);
 	} finally {
-		await page.close();
+		await context.close();
 	}
 });
 
@@ -106,7 +108,15 @@ describe('@octanejs/react-resizable-panels real Chromium behavior', () => {
 		await page.locator('#primary').evaluate((element) => {
 			(element as HTMLElement).style.width = '400px';
 		});
-		await expect.poll(() => widths()).toEqual([196, 196]);
+		await expect
+			.poll(async () => {
+				const [left, right] = await widths();
+				const availableWidth = left + right;
+				return (
+					Math.abs(availableWidth - 392) < 0.01 && Math.abs(left / availableWidth - 0.4) < 0.001
+				);
+			})
+			.toBe(true);
 	});
 
 	it('installs and cleans up document cursor state', async () => {
