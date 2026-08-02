@@ -187,6 +187,8 @@ export { Text3D } from './Text3D.three.tsrx';
 export type { Text3DProps } from './Text3D.three.tsrx';
 export { Example } from './Example.three.tsrx';
 export type { ExampleApi, ExampleProps } from './Example.three.tsrx';
+export { Svg } from './Svg.three.tsrx';
+export type { SvgProps } from './Svg.three.tsrx';
 export type {
 	ArcballControlsProps,
 	DeviceOrientationControlsProps,
