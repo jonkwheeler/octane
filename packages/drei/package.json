@@ -40,7 +40,8 @@
     "stats-gl": "^2.2.8",
     "stats.js": "^0.17.0",
     "three-mesh-bvh": "^0.8.3",
-    "three-stdlib": "^2.35.6"
+    "three-stdlib": "^2.35.6",
+    "troika-three-text": "^0.52.4"
   },
   "engines": {
     "node": ">=22"

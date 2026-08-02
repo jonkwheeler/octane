@@ -12,7 +12,7 @@
     "allowedStatuses": ["ported", "reused", "divergence", "not-applicable"],
     "readyRequiresZeroGaps": true
   },
-  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 60 },
+  "expectedTotals": { "runtimeExports": 217, "sourceExports": 379, "gaps": 57 },
   "inventorySha256": "d3af794826c65ace278e9fb0bd11f124dd37878ae7f3f3af505ceda2bb486383",
   "exports": [
     {
@@ -2052,9 +2052,9 @@
         "path": "packages/drei/upstream/src/web/Loader.tsx",
         "line": 16
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/web/Loader.tsrx",
+      "evidence": ["packages/drei/tests/loader.test.ts"],
       "divergence": null
     },
     {
@@ -4089,9 +4089,9 @@
         "path": "packages/drei/upstream/src/core/Text.tsx",
         "line": 44
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Text.three.tsrx",
+      "evidence": ["packages/drei/tests/text.test.ts"],
       "divergence": null
     },
     {
@@ -4128,9 +4128,9 @@
         "path": "packages/drei/upstream/src/core/Text.tsx",
         "line": 8
       },
-      "status": "gap",
-      "implementation": null,
-      "evidence": [],
+      "status": "ported",
+      "implementation": "packages/drei/src/core/Text.three.tsrx",
+      "evidence": ["packages/drei/typetests/text.test-d.ts"],
       "divergence": null
     },
     {

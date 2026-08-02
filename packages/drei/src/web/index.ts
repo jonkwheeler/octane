@@ -6,3 +6,4 @@ export { Select, useSelect } from './Select.three.tsrx';
 export type { SelectProps } from './Select.three.tsrx';
 export { ScreenVideoTexture, WebcamVideoTexture } from './media-textures.three.tsrx';
 export type { ScreenVideoTextureProps, WebcamVideoTextureProps } from './media-textures.three.tsrx';
+export { Loader } from './Loader.tsrx';
