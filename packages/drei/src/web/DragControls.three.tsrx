@@ -59,9 +59,9 @@ export function DragControls({
 			const previousWorldMatrix = ref.current!.matrixWorld.clone();
 			const intendedNewPosition = new THREE.Vector3(mousePosition3D.x - dragOffset.x, mousePosition3D.y - dragOffset.y, mousePosition3D.z - dragOffset.z);
 			if (dragLimits) {
-				intendedNewPosition.x = dragLimits[0] ? Math.max(Math.min(intendedNewPosition.x, dragLimits[0][1]), dragLimits[0][0]) : intendedNewPosition.x;
-				intendedNewPosition.y = dragLimits[1] ? Math.max(Math.min(intendedNewPosition.y, dragLimits[1][1]), dragLimits[1][0]) : intendedNewPosition.y;
-				intendedNewPosition.z = dragLimits[2] ? Math.max(Math.min(intendedNewPosition.z, dragLimits[2][1]), dragLimits[2][0]) : intendedNewPosition.z;
+				intendedNewPosition.x = dragLimits[0] ? THREE.MathUtils.clamp(intendedNewPosition.x, ...dragLimits[0]) : intendedNewPosition.x;
+				intendedNewPosition.y = dragLimits[1] ? THREE.MathUtils.clamp(intendedNewPosition.y, ...dragLimits[1]) : intendedNewPosition.y;
+				intendedNewPosition.z = dragLimits[2] ? THREE.MathUtils.clamp(intendedNewPosition.z, ...dragLimits[2]) : intendedNewPosition.z;
 			}
 			const localMatrix = autoTransform ? ref.current!.matrix : new THREE.Matrix4().copy(ref.current!.matrix);
 			localMatrix.setPosition(intendedNewPosition);
