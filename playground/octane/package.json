@@ -15,6 +15,7 @@
     "debug-tsx": "pnpm run debug-volar"
   },
   "dependencies": {
+    "@octanejs/aria": "workspace:*",
     "@octanejs/cmdk": "workspace:*",
     "@octanejs/lucide": "workspace:*",
     "@octanejs/mantine-hooks": "workspace:*",
@@ -23,6 +24,8 @@
     "@octanejs/radix": "workspace:*",
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
+    "@octanejs/rxjs": "workspace:*",
+    "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/wagmi": "workspace:*",
@@ -32,6 +35,7 @@
     "class-variance-authority": "catalog:default",
     "clsx": "catalog:default",
     "octane": "workspace:*",
+    "rxjs": "catalog:default",
     "tailwind-merge": "catalog:default"
   },
   "devDependencies": {
