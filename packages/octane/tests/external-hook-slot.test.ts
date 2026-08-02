@@ -667,6 +667,7 @@ describe('manifest-declared manual hook slots', () => {
 			'radix',
 			'rainbowkit',
 			'react-error-boundary',
+			'react-spring',
 			'remix-router',
 			'rxjs',
 			'styled-components',

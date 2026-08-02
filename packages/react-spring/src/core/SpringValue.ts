@@ -132,8 +132,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 
 	private run(active: Active<T>): void {
 		const props = active.props;
-		if (props.reset && props.from !== undefined) this.setValue(props.from);
-		else if (props.from !== undefined) this.setValue(props.from);
+		if (props.from !== undefined) this.setValue(props.from);
 		active.started = true;
 		this.velocity = props.config?.velocity ?? 0;
 		const target = goal(props.to);
@@ -158,15 +157,15 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		let elapsed = 0;
 		const from = this.value;
 		let progress = 0;
+		const options = { mass: 1, damping: 1, ...config.default, ...props.config };
+		if (options.frequency !== undefined) {
+			const frequency = Math.max(0.01, options.frequency);
+			options.tension = Math.pow((2 * Math.PI) / frequency, 2) * options.mass;
+			options.friction = (4 * Math.PI * Math.max(0, options.damping) * options.mass) / frequency;
+		}
 		active.frame = (dt) => {
 			if (this.active !== active || active.settled) return false;
 			if (this.paused) return true;
-			const options = { mass: 1, damping: 1, ...config.default, ...props.config };
-			if (options.frequency !== undefined) {
-				const frequency = Math.max(0.01, options.frequency);
-				options.tension = Math.pow((2 * Math.PI) / frequency, 2) * options.mass;
-				options.friction = (4 * Math.PI * Math.max(0, options.damping) * options.mass) / frequency;
-			}
 			const currentTarget = goal(props.to);
 			let next: number;
 			let done: boolean;

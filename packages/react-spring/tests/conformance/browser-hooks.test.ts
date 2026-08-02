@@ -4,6 +4,28 @@ import { Globals } from '../../src/index';
 import { BrowserHooksFixture } from '../_fixtures/browser-hooks.tsrx';
 
 describe('React Spring browser hooks', () => {
+	it('stops resize springs when ResizeObserver is unavailable', () => {
+		vi.stubGlobal('ResizeObserver', undefined);
+		const target = document.createElement('div');
+		vi.spyOn(target, 'getBoundingClientRect').mockReturnValue({
+			width: 320,
+			height: 180,
+		} as DOMRect);
+		let latest: any;
+		const result = mount(BrowserHooksFixture, {
+			container: { current: target },
+			onReady: (value: any) => (latest = value),
+		});
+		flushEffects();
+		const stopWidth = vi.spyOn(latest.resize.width, 'stop');
+		const stopHeight = vi.spyOn(latest.resize.height, 'stop');
+
+		result.unmount();
+
+		expect(stopWidth).toHaveBeenCalledWith(true);
+		expect(stopHeight).toHaveBeenCalledWith(true);
+	});
+
 	it('reports scroll, resize, intersection, and reduced motion and cleans up', async () => {
 		const listeners = new Map<string, EventListener>();
 		const target = document.createElement('div');

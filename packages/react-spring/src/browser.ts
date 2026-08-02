@@ -106,8 +106,21 @@ export function useResize(
 			if (typeof window === 'undefined') return;
 			const element = options.container?.current;
 			const update = (width: number, height: number) => {
-				void values.width.start({ to: width, immediate: options.immediate as boolean });
-				void values.height.start({ to: height, immediate: options.immediate as boolean });
+				for (const [key, value] of [
+					['width', width],
+					['height', height],
+				] as const) {
+					void values[key].start({
+						to: value,
+						config: typeof options.config === 'function' ? options.config(key) : options.config,
+						immediate:
+							typeof options.immediate === 'function' ? options.immediate(key) : options.immediate,
+					});
+				}
+			};
+			const stop = () => {
+				values.width.stop(true);
+				values.height.stop(true);
 			};
 			if (element === undefined || element === null) {
 				const onResize = () => update(window.innerWidth, window.innerHeight);
@@ -115,21 +128,19 @@ export function useResize(
 				window.addEventListener('resize', onResize);
 				return () => {
 					window.removeEventListener('resize', onResize);
-					values.width.stop(true);
-					values.height.stop(true);
+					stop();
 				};
 			}
 			const rect = element.getBoundingClientRect();
 			update(rect.width, rect.height);
-			if (typeof ResizeObserver === 'undefined') return;
+			if (typeof ResizeObserver === 'undefined') return stop;
 			const observer = new ResizeObserver(([entry]) => {
 				if (entry !== undefined) update(entry.contentRect.width, entry.contentRect.height);
 			});
 			observer.observe(element);
 			return () => {
 				observer.disconnect();
-				values.width.stop(true);
-				values.height.stop(true);
+				stop();
 			};
 		},
 		[options.container?.current],
