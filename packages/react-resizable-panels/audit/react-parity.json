@@ -1,21 +1,210 @@
 {
   "schemaVersion": 1,
-  "provenance": { "repo": "https://github.com/bvaughn/react-resizable-panels.git", "version": "4.12.2", "commit": "a1eeb7aefdb024bb5879a323218e0ac05f77f28e", "sourceRoot": "lib", "testRoot": "lib", "license": "MIT", "integrity": "sha256:099742808fafbe3a0288d758271aaf1c35dc9b66ec85077e60f0861e58e89e61", "verification": "verified" },
+  "provenance": {
+    "repo": "https://github.com/bvaughn/react-resizable-panels.git",
+    "version": "4.12.2",
+    "commit": "a1eeb7aefdb024bb5879a323218e0ac05f77f28e",
+    "sourceRoot": "lib",
+    "testRoot": "lib",
+    "license": "MIT",
+    "integrity": "sha256:099742808fafbe3a0288d758271aaf1c35dc9b66ec85077e60f0861e58e89e61",
+    "verification": "verified"
+  },
   "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
-    "source": { "roots": ["packages/react-resizable-panels/src"], "include": ["\\.(?:ts|tsrx)$"], "exclude": [] },
-    "tests": { "roots": ["packages/react-resizable-panels/tests"], "include": ["\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"], "exclude": ["/tests/(?:browser|differential)/"] }
+    "source": {
+      "roots": ["packages/react-resizable-panels/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/react-resizable-panels/tests"],
+      "include": ["\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"],
+      "exclude": ["/tests/(?:browser|differential)/"]
+    }
   },
-  "adaptedRuntimeSummary": { "inventoryEntries": 433, "uniqueIdentities": 328, "duplicateEntriesWithinLanes": 105, "identitiesSharedAcrossLanes": 0 },
-  "environments": { "workspace-node": { "node": ">=22", "platform": "any", "arch": "any", "packageManager": "pnpm@11.15.1", "lockfile": "pnpm-lock.yaml", "lockfileSha256": "361983834ff60f29cde34879fd0c1e86916005638ad502d8a2044a5c954d3e72" } },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 433,
+    "uniqueIdentities": 328,
+    "duplicateEntriesWithinLanes": 105,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "361983834ff60f29cde34879fd0c1e86916005638ad502d8a2044a5c954d3e72"
+    }
+  },
   "lanes": [
-    { "id": "react-resizable-panels-pristine", "type": "pristine-upstream", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels-pristine", "evidenceOrigin": "upstream-suite", "notes": "Pinned byte-exact React suite inventory under its pinned jsdom 26 environment.", "execution": { "kind": "vitest-full", "inventory": "packages/react-resizable-panels/audit/pristine-runtime.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/pristine-runtime.json", "role": "support", "sha256": "84dfba3e347d2232c703312d2fb20f40db3e5228cd151ff78f77e9b1e2a952dc" }] },
-    { "id": "react-resizable-panels-adapted", "type": "adapted-octane", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels", "evidenceOrigin": "upstream-suite", "notes": "Complete adapted DOM suite and port-authored conformance/hydration evidence.", "execution": { "kind": "vitest-full", "inventory": "packages/react-resizable-panels/audit/adapted-runtime.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/adapted-runtime.json", "role": "support", "sha256": "d81700260596f93a07ef6cefcbf31322c97a87eac2b163f4a4b497a6b76cdc19" }] },
-    { "id": "react-resizable-panels-server", "type": "adapted-octane", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels-server", "evidenceOrigin": "repo-authored", "notes": "React-free SSR persistence lane.", "execution": { "kind": "vitest-full", "inventory": "packages/react-resizable-panels/audit/adapted-runtime-server.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/adapted-runtime-server.json", "role": "support", "sha256": "2bc848da9cafe9c9529c0c3bd5724a93ce78617720ccde2d0621b3b6ade7d6bc" }] },
-    { "id": "react-resizable-panels-browser", "type": "browser", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels-browser", "notes": "Six real Chromium interaction cases.", "execution": { "kind": "vitest-full", "inventory": "packages/react-resizable-panels/audit/adapted-runtime-browser.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/adapted-runtime-browser.json", "role": "support", "sha256": "dffda50decf47df8e048c89d314cbed9bdbcb3cc3e0ed1bbb0587bffcd4382dd" }] },
-    { "id": "react-resizable-panels-differential", "type": "differential", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels-differential", "evidenceOrigin": "repo-authored", "notes": "React-oracle differential persistence cases through both public package entry points.", "execution": { "kind": "vitest-full", "inventory": "packages/react-resizable-panels/audit/differential-runtime.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/differential-runtime.json", "role": "support", "sha256": "18c958d1f9ebb5a89fa2bfc6fa3210af58e701aa156f404777b04a4c7b76239a" }] },
-    { "id": "react-resizable-panels-pristine-types", "type": "pristine-types", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels-pristine-types", "evidenceOrigin": "repo-authored", "notes": "Pinned published React declaration probes.", "execution": { "kind": "typescript", "compiler": "tsc", "project": "packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/type-probes/pristine.ts", "role": "test", "sha256": "7eea96b19e3766b6cc270886fbf3e35ad302efa15f41d2343811e68ff8bdb46b", "cases": [{ "id": "types:rrp-pristine", "testName": "pinned published declaration probes", "fullName": "pinned published declaration probes" }] }, { "path": "packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json", "role": "support", "sha256": "2702ac755a5e6db057236773a0358a448f4d11806585a6804e4a412f83e02ccf" }] },
-    { "id": "react-resizable-panels-adapted-types", "type": "adapted-types", "oracle": "required", "environment": "workspace-node", "project": "react-resizable-panels-public-types", "evidenceOrigin": "repo-authored", "notes": "Strict Octane public type probes.", "execution": { "kind": "typescript", "compiler": "tsrx-tsc", "project": "packages/react-resizable-panels/audit/type-probes/tsconfig.json" }, "files": [{ "path": "packages/react-resizable-panels/audit/type-probes/expressibility.ts", "role": "test", "sha256": "0f605a9bb46c0e9145c6cc0bf62ae32c47742b39833e0e5c7e4bf1e433f92791", "cases": [{ "id": "types:rrp-adapted", "testName": "strict public type probes", "fullName": "strict public type probes" }] }, { "path": "packages/react-resizable-panels/audit/type-probes/tsconfig.json", "role": "support", "sha256": "2eead3db801ce7810835fe6af4184b68d78aa76a7c968799b3ca9d0f25558d0b" }] }
+    {
+      "id": "react-resizable-panels-pristine",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Pinned byte-exact React suite inventory under its pinned jsdom 26 environment.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-resizable-panels/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "84dfba3e347d2232c703312d2fb20f40db3e5228cd151ff78f77e9b1e2a952dc"
+        }
+      ]
+    },
+    {
+      "id": "react-resizable-panels-adapted",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Complete adapted DOM suite and port-authored conformance/hydration evidence.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-resizable-panels/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "d81700260596f93a07ef6cefcbf31322c97a87eac2b163f4a4b497a6b76cdc19"
+        }
+      ]
+    },
+    {
+      "id": "react-resizable-panels-server",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels-server",
+      "evidenceOrigin": "repo-authored",
+      "notes": "React-free SSR persistence lane.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-resizable-panels/audit/adapted-runtime-server.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "2bc848da9cafe9c9529c0c3bd5724a93ce78617720ccde2d0621b3b6ade7d6bc"
+        }
+      ]
+    },
+    {
+      "id": "react-resizable-panels-browser",
+      "type": "browser",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels-browser",
+      "notes": "Six real Chromium interaction cases.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-resizable-panels/audit/adapted-runtime-browser.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/adapted-runtime-browser.json",
+          "role": "support",
+          "sha256": "dffda50decf47df8e048c89d314cbed9bdbcb3cc3e0ed1bbb0587bffcd4382dd"
+        }
+      ]
+    },
+    {
+      "id": "react-resizable-panels-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "React-oracle differential persistence cases through both public package entry points.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-resizable-panels/audit/differential-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/differential-runtime.json",
+          "role": "support",
+          "sha256": "18c958d1f9ebb5a89fa2bfc6fa3210af58e701aa156f404777b04a4c7b76239a"
+        }
+      ]
+    },
+    {
+      "id": "react-resizable-panels-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Pinned published React declaration probes.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/type-probes/pristine.ts",
+          "role": "test",
+          "sha256": "7eea96b19e3766b6cc270886fbf3e35ad302efa15f41d2343811e68ff8bdb46b",
+          "cases": [
+            {
+              "id": "types:rrp-pristine",
+              "testName": "pinned published declaration probes",
+              "fullName": "pinned published declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "2702ac755a5e6db057236773a0358a448f4d11806585a6804e4a412f83e02ccf"
+        }
+      ]
+    },
+    {
+      "id": "react-resizable-panels-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-resizable-panels-public-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Strict Octane public type probes.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-resizable-panels/audit/type-probes/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-resizable-panels/audit/type-probes/expressibility.ts",
+          "role": "test",
+          "sha256": "0f605a9bb46c0e9145c6cc0bf62ae32c47742b39833e0e5c7e4bf1e433f92791",
+          "cases": [
+            {
+              "id": "types:rrp-adapted",
+              "testName": "strict public type probes",
+              "fullName": "strict public type probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-resizable-panels/audit/type-probes/tsconfig.json",
+          "role": "support",
+          "sha256": "2eead3db801ce7810835fe6af4184b68d78aa76a7c968799b3ca9d0f25558d0b"
+        }
+      ]
+    }
   ],
   "divergences": []
 }

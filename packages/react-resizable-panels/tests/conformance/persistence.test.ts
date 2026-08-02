@@ -16,7 +16,9 @@ describe('useDefaultLayout persistence', () => {
 	beforeEach(() => vi.useRealTimers());
 
 	it('restores modern layouts and uses the panel-id-specific storage key', () => {
-		const storage = createStorage({ 'react-resizable-panels:mail:list:detail': '{"list":35,"detail":65}' });
+		const storage = createStorage({
+			'react-resizable-panels:mail:list:detail': '{"list":35,"detail":65}',
+		});
 		const { result } = renderHook(() =>
 			useDefaultLayout({ id: 'mail', panelIds: ['list', 'detail'], storage }),
 		);
@@ -57,12 +59,21 @@ describe('useDefaultLayout persistence', () => {
 	it('saves committed layouts immediately and filters non-user commits when requested', () => {
 		const storage = createStorage();
 		const { result } = renderHook(() =>
-			useDefaultLayout({ id: 'mail', panelIds: ['list', 'detail'], storage, onlySaveAfterUserInteractions: true }),
+			useDefaultLayout({
+				id: 'mail',
+				panelIds: ['list', 'detail'],
+				storage,
+				onlySaveAfterUserInteractions: true,
+			}),
 		);
 
-		act(() => result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: false }));
+		act(() =>
+			result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: false }),
+		);
 		expect(storage.setItem).not.toHaveBeenCalled();
-		act(() => result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: true }));
+		act(() =>
+			result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: true }),
+		);
 		expect(storage.setItem).toHaveBeenCalledWith(
 			'react-resizable-panels:mail:list:detail',
 			'{"list":45,"detail":55}',
@@ -73,10 +84,10 @@ describe('useDefaultLayout persistence', () => {
 		localStorage.clear();
 		const { result } = renderHook(() => useDefaultLayout({ id: 'local' }));
 
-		act(() => result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: true }));
-		expect(localStorage.getItem('react-resizable-panels:local')).toBe(
-			'{"list":45,"detail":55}',
+		act(() =>
+			result.current.onLayoutChanged({ list: 45, detail: 55 }, { isUserInteraction: true }),
 		);
+		expect(localStorage.getItem('react-resizable-panels:local')).toBe('{"list":45,"detail":55}');
 	});
 
 	it('keeps the deprecated callback debounced and cancels pending saves on unmount', () => {

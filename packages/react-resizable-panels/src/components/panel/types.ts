@@ -23,7 +23,11 @@ export type PanelConstraints = {
 	minSize: number;
 	panelId: string;
 };
-type PanelResizeCallback = (size: PanelSize, id: string | number | undefined, previousSize: PanelSize | undefined) => void;
+type PanelResizeCallback = (
+	size: PanelSize,
+	id: string | number | undefined,
+	previousSize: PanelSize | undefined,
+) => void;
 export type RegisteredPanel = {
 	id: string;
 	idIsStable: boolean;
@@ -40,7 +44,10 @@ export interface PanelImperativeHandle {
 	resize(size: number | string): void;
 }
 type DivStyle = Exclude<Octane.JSX.IntrinsicElements['div']['style'], string | undefined>;
-type DivProps = Omit<Octane.JSX.IntrinsicElements['div'], 'children' | 'id' | 'ref' | 'onResize' | 'style'>;
+type DivProps = Omit<
+	Octane.JSX.IntrinsicElements['div'],
+	'children' | 'id' | 'ref' | 'onResize' | 'style'
+>;
 export type PanelProps = DivProps & {
 	children?: OctaneNode;
 	collapsedSize?: number | string;

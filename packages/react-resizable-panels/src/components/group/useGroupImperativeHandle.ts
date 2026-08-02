@@ -5,17 +5,28 @@ import { subSlot } from '../../internal';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import type { GroupImperativeHandle, GroupProps } from './types';
 
-export function useGroupImperativeHandle(groupId: string, groupRef: GroupProps['groupRef'], slot?: symbol) {
-	const imperativeGroupRef = useRef<GroupImperativeHandle>({
-		getLayout: () => ({}),
-		setLayout: IDENTITY_FUNCTION,
-	}, subSlot(slot, 'ref'));
+export function useGroupImperativeHandle(
+	groupId: string,
+	groupRef: GroupProps['groupRef'],
+	slot?: symbol,
+) {
+	const imperativeGroupRef = useRef<GroupImperativeHandle>(
+		{
+			getLayout: () => ({}),
+			setLayout: IDENTITY_FUNCTION,
+		},
+		subSlot(slot, 'ref'),
+	);
 
-	useIsomorphicLayoutEffect(() => {
-		Object.assign(imperativeGroupRef.current, getImperativeGroupMethods({ groupId }));
-		assignRef(groupRef, imperativeGroupRef.current);
-		return () => assignRef(groupRef, null);
-	}, [groupId, groupRef], subSlot(slot, 'effect'));
+	useIsomorphicLayoutEffect(
+		() => {
+			Object.assign(imperativeGroupRef.current, getImperativeGroupMethods({ groupId }));
+			assignRef(groupRef, imperativeGroupRef.current);
+			return () => assignRef(groupRef, null);
+		},
+		[groupId, groupRef],
+		subSlot(slot, 'effect'),
+	);
 }
 
 function assignRef(ref: GroupProps['groupRef'], value: GroupImperativeHandle | null): void {
@@ -28,6 +39,8 @@ function assignRef(ref: GroupProps['groupRef'], value: GroupImperativeHandle | n
 	}
 }
 
-function isRefArray(ref: GroupProps['groupRef']): ref is readonly NonNullable<GroupProps['groupRef']>[] {
+function isRefArray(
+	ref: GroupProps['groupRef'],
+): ref is readonly NonNullable<GroupProps['groupRef']>[] {
 	return Array.isArray(ref);
 }

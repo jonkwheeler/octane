@@ -1,12 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "react-resizable-panels-server",
-  "roots": [
-    "packages/react-resizable-panels/tests"
-  ],
-  "files": [
-    "packages/react-resizable-panels/tests/ssr/persistence.server.test.ts"
-  ],
+  "roots": ["packages/react-resizable-panels/tests"],
+  "files": ["packages/react-resizable-panels/tests/ssr/persistence.server.test.ts"],
   "tests": [
     {
       "id": "runtime:react-resizable-panels-server:0001",

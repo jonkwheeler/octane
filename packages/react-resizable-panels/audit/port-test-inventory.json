@@ -41,17 +41,13 @@
     {
       "path": "tests/hydration/persistence.test.ts",
       "registrationCount": 1,
-      "identities": [
-        "adopts server markup, restores storage, and saves through live events"
-      ],
+      "identities": ["adopts server markup, restores storage, and saves through live events"],
       "classification": "port-authored"
     },
     {
       "path": "tests/ssr/persistence.server.test.ts",
       "registrationCount": 1,
-      "identities": [
-        "renders deterministic defaults without resolving or reading browser storage"
-      ],
+      "identities": ["renders deterministic defaults without resolving or reading browser storage"],
       "classification": "port-authored"
     }
   ]

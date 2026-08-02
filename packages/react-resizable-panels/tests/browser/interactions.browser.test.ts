@@ -36,10 +36,12 @@ beforeAll(async () => {
 		logLevel: 'error',
 		server: { host: '127.0.0.1', port, strictPort: true },
 		plugins: [octane()],
-		resolve: { alias: [
-			{ find: /^@octanejs\/react-resizable-panels$/, replacement: bindingSource },
-			{ find: /^octane$/, replacement: octaneSource },
-		] },
+		resolve: {
+			alias: [
+				{ find: /^@octanejs\/react-resizable-panels$/, replacement: bindingSource },
+				{ find: /^octane$/, replacement: octaneSource },
+			],
+		},
 	});
 	await viteServer.listen();
 	origin = `http://127.0.0.1:${port}`;
@@ -60,7 +62,11 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-	try { expect(pageErrors).toEqual([]); } finally { await page.close(); }
+	try {
+		expect(pageErrors).toEqual([]);
+	} finally {
+		await page.close();
+	}
 });
 
 async function widths(groupId = 'primary') {
@@ -97,7 +103,9 @@ describe('@octanejs/react-resizable-panels real Chromium behavior', () => {
 	});
 
 	it('revalidates percentages through a real ResizeObserver', async () => {
-		await page.locator('#primary').evaluate((element) => { (element as HTMLElement).style.width = '400px'; });
+		await page.locator('#primary').evaluate((element) => {
+			(element as HTMLElement).style.width = '400px';
+		});
 		await expect.poll(() => widths()).toEqual([196, 196]);
 	});
 
@@ -105,9 +113,13 @@ describe('@octanejs/react-resizable-panels real Chromium behavior', () => {
 		const separator = await page.locator('#primary-separator').boundingBox();
 		if (!separator) throw new Error('separator has no bounds');
 		await page.mouse.move(separator.x + 2, separator.y + separator.height / 2);
-		expect(await page.locator('body').evaluate((element) => getComputedStyle(element).cursor)).toContain('resize');
+		expect(
+			await page.locator('body').evaluate((element) => getComputedStyle(element).cursor),
+		).toContain('resize');
 		await page.mouse.move(850, 650);
-		expect(await page.locator('body').evaluate((element) => getComputedStyle(element).cursor)).toBe('auto');
+		expect(await page.locator('body').evaluate((element) => getComputedStyle(element).cursor)).toBe(
+			'auto',
+		);
 	});
 
 	it('isolates sibling group layout state', async () => {

@@ -1,11 +1,11 @@
 import type {
-  Dispatch,
-  ProposedProps,
-  PublicComponentResult,
-  PublicNode,
-  PublicRef,
-  PublicStyle,
-  SetStateAction,
+	Dispatch,
+	ProposedProps,
+	PublicComponentResult,
+	PublicNode,
+	PublicRef,
+	PublicStyle,
+	SetStateAction,
 } from './proposed-public-types.js';
 
 const nodeAccepted: PublicNode = 'panel';
@@ -26,11 +26,11 @@ dispatchAccepted((previous) => previous + 1);
 dispatchAccepted('1');
 
 const propsAccepted: ProposedProps = {
-  'aria-label': 'panels',
-  children: nodeAccepted,
-  elementRef: refAccepted,
-  onPointerDown: (event) => event.preventDefault(),
-  style: styleAccepted,
+	'aria-label': 'panels',
+	children: nodeAccepted,
+	elementRef: refAccepted,
+	onPointerDown: (event) => event.preventDefault(),
+	style: styleAccepted,
 };
 // @ts-expect-error invalid intrinsic attributes remain rejected
 const propsRejected: ProposedProps = { definitelyNotADivAttribute: true };
@@ -39,4 +39,11 @@ const eventAccepted = (event: PointerEvent) => event.pointerId;
 const eventRejected = (event: PointerEvent) => event.nativeEvent;
 const resultAccepted: PublicComponentResult = propsAccepted.children;
 
-void [opaqueNodeAccepted, styleRejected, propsRejected, eventAccepted, eventRejected, resultAccepted];
+void [
+	opaqueNodeAccepted,
+	styleRejected,
+	propsRejected,
+	eventAccepted,
+	eventRejected,
+	resultAccepted,
+];

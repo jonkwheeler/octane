@@ -16,7 +16,10 @@ export type GroupContextValue = {
 	registerPanel(panel: RegisteredPanel): () => void;
 	registerSeparator(separator: RegisteredSeparator): () => void;
 	updatePanelProps(id: string, props: { disabled: boolean | undefined }): void;
-	updateSeparatorProps(id: string, props: { disabled: boolean | undefined; disableDoubleClick: boolean | undefined }): void;
+	updateSeparatorProps(
+		id: string,
+		props: { disabled: boolean | undefined; disableDoubleClick: boolean | undefined },
+	): void;
 };
 
 export const GroupContext = createContext<GroupContextValue | null>(null);

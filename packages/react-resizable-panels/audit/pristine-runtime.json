@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-resizable-panels-pristine",
-  "roots": [
-    "packages/react-resizable-panels/upstream/source/lib"
-  ],
+  "roots": ["packages/react-resizable-panels/upstream/source/lib"],
   "files": [
     "packages/react-resizable-panels/upstream/source/lib/components/group/Group.test.tsx",
     "packages/react-resizable-panels/upstream/source/lib/components/group/sortByElementOffset.test.ts",

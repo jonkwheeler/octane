@@ -5,6 +5,8 @@ export function PersistenceHydrationFixture({ storage }: { storage?: LayoutStora
 	const layout = persistence.defaultLayout;
 	return <button
 		data-layout={layout ? JSON.stringify(layout) : 'default'}
-		onClick={() => persistence.onLayoutChanged({ left: 30, right: 70 }, { isUserInteraction: true })}
+		onClick={() => persistence.onLayoutChanged({ left: 30, right: 70 }, {
+			isUserInteraction: true,
+		})}
 	>save</button>;
 }

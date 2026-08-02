@@ -4,7 +4,8 @@ const bareTagCache = new Map<string, symbol>();
 export function subSlot(slot: symbol | undefined, tag: string): symbol {
 	if (slot === undefined) {
 		let bare = bareTagCache.get(tag);
-		if (bare === undefined) bareTagCache.set(tag, (bare = Symbol.for(`react-resizable-panels:${tag}`)));
+		if (bare === undefined)
+			bareTagCache.set(tag, (bare = Symbol.for(`react-resizable-panels:${tag}`)));
 		return bare;
 	}
 

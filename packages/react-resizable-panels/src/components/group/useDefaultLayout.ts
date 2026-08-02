@@ -2,11 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'octane';
 import { splitSlot, subSlot } from '../../internal';
 import { getStorageKey } from './auto-save/getStorageKey';
 import { readLegacyLayout } from './auto-save/readLegacyLayout';
-import type {
-	Layout,
-	LayoutChangedMeta,
-	LayoutStorage,
-} from './types';
+import type { Layout, LayoutChangedMeta, LayoutStorage } from './types';
 
 type UseDefaultLayoutOptions = {
 	debounceSaveMs?: number;
@@ -15,10 +11,7 @@ type UseDefaultLayoutOptions = {
 	storage?: LayoutStorage;
 } & ({ groupId: string } | { id: string });
 
-export function useDefaultLayout(
-	options: UseDefaultLayoutOptions,
-	...rest: [symbol?]
-) {
+export function useDefaultLayout(options: UseDefaultLayoutOptions, ...rest: [symbol?]) {
 	const [args, slot] = splitSlot(rest);
 	if (args.length !== 0) throw new TypeError('useDefaultLayout() accepts one options argument.');
 	const {
@@ -31,28 +24,39 @@ export function useDefaultLayout(
 	const id = 'id' in identity ? identity.id : identity.groupId;
 	const hasPanelIds = panelIds !== undefined;
 	const panelIdsKey = panelIds?.join(':') ?? '';
-	const [defaultLayout, setDefaultLayout] = useState<Layout | undefined>(undefined, subSlot(slot, 'default-layout'));
+	const [defaultLayout, setDefaultLayout] = useState<Layout | undefined>(
+		undefined,
+		subSlot(slot, 'default-layout'),
+	);
 	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null, subSlot(slot, 'timeout'));
 	const storageRef = useRef<LayoutStorage | undefined>(storageProp, subSlot(slot, 'storage'));
 
-	const clearPendingTimeout = useCallback(() => {
-		if (timeoutRef.current !== null) {
-			clearTimeout(timeoutRef.current);
-			timeoutRef.current = null;
-		}
-	}, [], subSlot(slot, 'clear-timeout'));
+	const clearPendingTimeout = useCallback(
+		() => {
+			if (timeoutRef.current !== null) {
+				clearTimeout(timeoutRef.current);
+				timeoutRef.current = null;
+			}
+		},
+		[],
+		subSlot(slot, 'clear-timeout'),
+	);
 
-	useEffect(() => {
-		try {
-			const storage = storageProp ?? globalThis.localStorage;
-			storageRef.current = storage;
-			const modern = readModernLayout(storage.getItem(getStorageKey(id, panelIds ?? [])));
-			setDefaultLayout(modern ?? readLegacyLayout({ id, panelIds, storage }));
-		} catch {
-			storageRef.current = undefined;
-			setDefaultLayout(undefined);
-		}
-	}, [id, panelIdsKey, storageProp], subSlot(slot, 'restore-effect'));
+	useEffect(
+		() => {
+			try {
+				const storage = storageProp ?? globalThis.localStorage;
+				storageRef.current = storage;
+				const modern = readModernLayout(storage.getItem(getStorageKey(id, panelIds ?? [])));
+				setDefaultLayout(modern ?? readLegacyLayout({ id, panelIds, storage }));
+			} catch {
+				storageRef.current = undefined;
+				setDefaultLayout(undefined);
+			}
+		},
+		[id, panelIdsKey, storageProp],
+		subSlot(slot, 'restore-effect'),
+	);
 
 	useEffect(() => clearPendingTimeout, [clearPendingTimeout], subSlot(slot, 'cleanup-effect'));
 

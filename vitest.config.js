@@ -1599,6 +1599,7 @@ export default defineConfig({
 				test: {
 					name: 'react-resizable-panels-pristine',
 					include: ['packages/react-resizable-panels/upstream/source/lib/**/*.test.{ts,tsx}'],
+					setupFiles: ['packages/react-resizable-panels/upstream/source/vitest.setup.ts'],
 					environment: 'jsdom',
 					globals: false,
 					sequence: { groupOrder: 1 },

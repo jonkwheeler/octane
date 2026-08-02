@@ -7,8 +7,12 @@ export function useStableCallback<Args extends readonly unknown[], Result>(
 	slot?: symbol,
 ): (...args: Args) => Result {
 	const ref = useRef(fn, subSlot(slot, 'ref'));
-	useIsomorphicLayoutEffect(() => {
-		ref.current = fn;
-	}, [fn], subSlot(slot, 'effect'));
+	useIsomorphicLayoutEffect(
+		() => {
+			ref.current = fn;
+		},
+		[fn],
+		subSlot(slot, 'effect'),
+	);
 	return useCallback((...args: Args) => ref.current(...args), [], subSlot(slot, 'callback'));
 }

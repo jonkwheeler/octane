@@ -1,434 +1,390 @@
 // Fidelity: exact pinned upstream test identities and assertions; imports and DOM harness are Octane-adapted.
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  vi,
-  type Mock
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi, type Mock } from 'vitest';
 import type {
-  PanelConstraints,
-  PanelImperativeHandle
-} from "../../../../src/components/panel/types";
+	PanelConstraints,
+	PanelImperativeHandle,
+} from '../../../../src/components/panel/types';
 import {
-  mockGetComputedStyle,
-  setDefaultElementStyle,
-  unmockGetComputedStyle
-} from "../../utils/test/mockGetComputedStyle";
-import { mountGroup } from "../../../../src/global/mountGroup";
-import { subscribeToMountedGroup } from "../../../../src/global/mutable-state/groups";
-import { mockGroup } from "../../global/test/mockGroup";
-import { getImperativePanelMethods } from "../../../../src/global/utils/getImperativePanelMethods";
-import { resetMockGroupIdCounter } from "../../global/test/mockGroup";
-import { mockBoundingClientRect, unmockBoundingClientRect } from "../../utils/test/mockBoundingClientRect";
-import { mockResizeObserver, unmockResizeObserver } from "../../utils/test/mockResizeObserver";
+	mockGetComputedStyle,
+	setDefaultElementStyle,
+	unmockGetComputedStyle,
+} from '../../utils/test/mockGetComputedStyle';
+import { mountGroup } from '../../../../src/global/mountGroup';
+import { subscribeToMountedGroup } from '../../../../src/global/mutable-state/groups';
+import { mockGroup } from '../../global/test/mockGroup';
+import { getImperativePanelMethods } from '../../../../src/global/utils/getImperativePanelMethods';
+import { resetMockGroupIdCounter } from '../../global/test/mockGroup';
+import {
+	mockBoundingClientRect,
+	unmockBoundingClientRect,
+} from '../../utils/test/mockBoundingClientRect';
+import { mockResizeObserver, unmockResizeObserver } from '../../utils/test/mockResizeObserver';
 
 beforeEach(() => {
-  mockBoundingClientRect();
-  mockGetComputedStyle();
-  mockResizeObserver();
+	mockBoundingClientRect();
+	mockGetComputedStyle();
+	mockResizeObserver();
 });
 
 afterEach(() => {
-  resetMockGroupIdCounter();
-  unmockResizeObserver();
-  unmockGetComputedStyle();
-  unmockBoundingClientRect();
+	resetMockGroupIdCounter();
+	unmockResizeObserver();
+	unmockGetComputedStyle();
+	unmockBoundingClientRect();
 });
 
-describe("getImperativePanelMethods", () => {
-  test.each([
-    ["collapse"],
-    ["expand"],
-    ["getSize"],
-    ["isCollapsed"],
-    ["resize"]
-  ])("method %o: throws if group or panel not mounted", (name) => {
-    const key = name as keyof PanelImperativeHandle;
+describe('getImperativePanelMethods', () => {
+	test.each([['collapse'], ['expand'], ['getSize'], ['isCollapsed'], ['resize']])(
+		'method %o: throws if group or panel not mounted',
+		(name) => {
+			const key = name as keyof PanelImperativeHandle;
 
-    const group = mockGroup(new DOMRect(), {
-      id: "group",
-      orientation: "horizontal"
-    });
+			const group = mockGroup(new DOMRect(), {
+				id: 'group',
+				orientation: 'horizontal',
+			});
 
-    const api = getImperativePanelMethods({
-      groupId: "group",
-      panelId: "B"
-    });
+			const api = getImperativePanelMethods({
+				groupId: 'group',
+				panelId: 'B',
+			});
 
-    expect(() => (key === "resize" ? api[key](1) : api[key]())).toThrow(
-      "Group group not found"
-    );
+			expect(() => (key === 'resize' ? api[key](1) : api[key]())).toThrow('Group group not found');
 
-    const unmountGroup = mountGroup(group);
+			const unmountGroup = mountGroup(group);
 
-    expect(() => (key === "resize" ? api[key](1) : api[key]())).toThrow(
-      /not found for Panel B/
-    );
+			expect(() => (key === 'resize' ? api[key](1) : api[key]())).toThrow(/not found for Panel B/);
 
-    unmountGroup();
-  });
+			unmountGroup();
+		},
+	);
 
-  describe("mounted", () => {
-    let onLayoutChange: Mock;
-    let removeChangeListener: (() => void) | undefined = undefined;
-    let unmountGroup: (() => void) | undefined = undefined;
+	describe('mounted', () => {
+		let onLayoutChange: Mock;
+		let removeChangeListener: (() => void) | undefined = undefined;
+		let unmountGroup: (() => void) | undefined = undefined;
 
-    function init(panelConstraints: Partial<PanelConstraints>[]) {
-      const bounds = new DOMRect(0, 0, 1000, 50);
-      const group = mockGroup(bounds, {
-        id: "group",
-        orientation: "horizontal"
-      });
+		function init(panelConstraints: Partial<PanelConstraints>[]) {
+			const bounds = new DOMRect(0, 0, 1000, 50);
+			const group = mockGroup(bounds, {
+				id: 'group',
+				orientation: 'horizontal',
+			});
 
-      panelConstraints.forEach(
-        ({
-          collapsedSize,
-          collapsible,
-          defaultSize,
-          disabled,
-          maxSize,
-          minSize
-        }) => {
-          group.addPanel(
-            new DOMRect(
-              0,
-              0,
-              defaultSize !== undefined
-                ? defaultSize * 10
-                : 1000 / panelConstraints.length,
-              50
-            ),
-            undefined,
-            {
-              collapsedSize:
-                collapsedSize !== undefined ? `${collapsedSize}%` : 0,
-              collapsible,
-              defaultSize:
-                defaultSize !== undefined ? `${defaultSize}%` : undefined,
-              disabled,
-              maxSize: maxSize !== undefined ? `${maxSize}%` : undefined,
-              minSize: minSize !== undefined ? `${minSize}%` : 0
-            }
-          );
-        }
-      );
+			panelConstraints.forEach(
+				({ collapsedSize, collapsible, defaultSize, disabled, maxSize, minSize }) => {
+					group.addPanel(
+						new DOMRect(
+							0,
+							0,
+							defaultSize !== undefined ? defaultSize * 10 : 1000 / panelConstraints.length,
+							50,
+						),
+						undefined,
+						{
+							collapsedSize: collapsedSize !== undefined ? `${collapsedSize}%` : 0,
+							collapsible,
+							defaultSize: defaultSize !== undefined ? `${defaultSize}%` : undefined,
+							disabled,
+							maxSize: maxSize !== undefined ? `${maxSize}%` : undefined,
+							minSize: minSize !== undefined ? `${minSize}%` : 0,
+						},
+					);
+				},
+			);
 
-      unmountGroup = mountGroup(group);
+			unmountGroup = mountGroup(group);
 
-      removeChangeListener = subscribeToMountedGroup("group", ({ next }) => {
-        onLayoutChange(Object.values(next.layout));
-      });
+			removeChangeListener = subscribeToMountedGroup('group', ({ next }) => {
+				onLayoutChange(Object.values(next.layout));
+			});
 
-      return {
-        group,
-        panelApis: panelConstraints.map((_, index) =>
-          getImperativePanelMethods({
-            groupId: group.id,
-            panelId: group.panels[index].id
-          })
-        )
-      };
-    }
+			return {
+				group,
+				panelApis: panelConstraints.map((_, index) =>
+					getImperativePanelMethods({
+						groupId: group.id,
+						panelId: group.panels[index].id,
+					}),
+				),
+			};
+		}
 
-    beforeEach(() => {
-      onLayoutChange = vi.fn();
-    });
+		beforeEach(() => {
+			onLayoutChange = vi.fn();
+		});
 
-    afterEach(() => {
-      if (removeChangeListener) {
-        removeChangeListener();
-      }
+		afterEach(() => {
+			if (removeChangeListener) {
+				removeChangeListener();
+			}
 
-      if (unmountGroup) {
-        unmountGroup();
-      }
-    });
+			if (unmountGroup) {
+				unmountGroup();
+			}
+		});
 
-    describe("collapse", () => {
-      test("does nothing if panel is not collapsible", () => {
-        const { panelApis } = init([{}, {}]);
-        panelApis[0].collapse();
+		describe('collapse', () => {
+			test('does nothing if panel is not collapsible', () => {
+				const { panelApis } = init([{}, {}]);
+				panelApis[0].collapse();
 
-        expect(onLayoutChange).not.toHaveBeenCalled();
-      });
+				expect(onLayoutChange).not.toHaveBeenCalled();
+			});
 
-      test("does nothing if panel is already collapsed", () => {
-        const { panelApis } = init([
-          {
-            defaultSize: 0,
-            collapsible: true
-          },
-          {}
-        ]);
-        panelApis[0].collapse();
+			test('does nothing if panel is already collapsed', () => {
+				const { panelApis } = init([
+					{
+						defaultSize: 0,
+						collapsible: true,
+					},
+					{},
+				]);
+				panelApis[0].collapse();
 
-        expect(onLayoutChange).not.toHaveBeenCalled();
-      });
+				expect(onLayoutChange).not.toHaveBeenCalled();
+			});
 
-      test("resizes panel to collapsed size", () => {
-        const { panelApis } = init([
-          {
-            defaultSize: 50,
-            collapsible: true
-          },
-          {}
-        ]);
-        panelApis[0].collapse();
+			test('resizes panel to collapsed size', () => {
+				const { panelApis } = init([
+					{
+						defaultSize: 50,
+						collapsible: true,
+					},
+					{},
+				]);
+				panelApis[0].collapse();
 
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([0, 100]);
-      });
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([0, 100]);
+			});
 
-      test("allows disabled panel to be collapsed", () => {
-        const { panelApis } = init([
-          {
-            collapsible: true,
-            defaultSize: 50,
-            disabled: true
-          },
-          {}
-        ]);
-        panelApis[0].collapse();
+			test('allows disabled panel to be collapsed', () => {
+				const { panelApis } = init([
+					{
+						collapsible: true,
+						defaultSize: 50,
+						disabled: true,
+					},
+					{},
+				]);
+				panelApis[0].collapse();
 
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([0, 100]);
-      });
-    });
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([0, 100]);
+			});
+		});
 
-    describe("expand", () => {
-      test("does nothing if panel is not collapsible", () => {
-        const { panelApis } = init([{ defaultSize: 0 }, {}]);
-        panelApis[0].expand();
+		describe('expand', () => {
+			test('does nothing if panel is not collapsible', () => {
+				const { panelApis } = init([{ defaultSize: 0 }, {}]);
+				panelApis[0].expand();
 
-        expect(onLayoutChange).not.toHaveBeenCalled();
-      });
+				expect(onLayoutChange).not.toHaveBeenCalled();
+			});
 
-      test("does nothing if panel is not collapsed", () => {
-        const { panelApis } = init([
-          { collapsible: true, defaultSize: 50 },
-          {}
-        ]);
-        panelApis[0].expand();
+			test('does nothing if panel is not collapsed', () => {
+				const { panelApis } = init([{ collapsible: true, defaultSize: 50 }, {}]);
+				panelApis[0].expand();
 
-        expect(onLayoutChange).not.toHaveBeenCalled();
-      });
+				expect(onLayoutChange).not.toHaveBeenCalled();
+			});
 
-      test("expands the panel to the previous pre-collapse size", () => {
-        const { panelApis } = init([
-          { collapsible: true, defaultSize: 50, minSize: 25 },
-          {}
-        ]);
+			test('expands the panel to the previous pre-collapse size', () => {
+				const { panelApis } = init([{ collapsible: true, defaultSize: 50, minSize: 25 }, {}]);
 
-        panelApis[0].resize("35");
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenLastCalledWith([35, 65]);
+				panelApis[0].resize('35');
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenLastCalledWith([35, 65]);
 
-        panelApis[0].collapse();
-        expect(onLayoutChange).toHaveBeenCalledTimes(2);
-        expect(onLayoutChange).toHaveBeenLastCalledWith([0, 100]);
+				panelApis[0].collapse();
+				expect(onLayoutChange).toHaveBeenCalledTimes(2);
+				expect(onLayoutChange).toHaveBeenLastCalledWith([0, 100]);
 
-        panelApis[0].expand();
-        expect(onLayoutChange).toHaveBeenCalledTimes(3);
-        expect(onLayoutChange).toHaveBeenLastCalledWith([35, 65]);
-      });
+				panelApis[0].expand();
+				expect(onLayoutChange).toHaveBeenCalledTimes(3);
+				expect(onLayoutChange).toHaveBeenLastCalledWith([35, 65]);
+			});
 
-      test("expands panel to the minimum size as a fallback", () => {
-        const { panelApis } = init([
-          { collapsible: true, defaultSize: 0, minSize: 25 },
-          {}
-        ]);
-        panelApis[0].expand();
+			test('expands panel to the minimum size as a fallback', () => {
+				const { panelApis } = init([{ collapsible: true, defaultSize: 0, minSize: 25 }, {}]);
+				panelApis[0].expand();
 
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([25, 75]);
-      });
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([25, 75]);
+			});
 
-      // See github.com/bvaughn/react-resizable-panels/issues/561
-      test("edge case: expands panel to a non-zero size if minSize is 0", () => {
-        const { panelApis } = init([
-          { collapsible: true, defaultSize: 0, minSize: 0 },
-          {}
-        ]);
-        panelApis[0].expand();
+			// See github.com/bvaughn/react-resizable-panels/issues/561
+			test('edge case: expands panel to a non-zero size if minSize is 0', () => {
+				const { panelApis } = init([{ collapsible: true, defaultSize: 0, minSize: 0 }, {}]);
+				panelApis[0].expand();
 
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([1, 99]);
-      });
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([1, 99]);
+			});
 
-      test("allows disabled panel to be expanded", () => {
-        const { panelApis } = init([
-          { defaultSize: 0, collapsible: true, disabled: true, minSize: 10 },
-          {}
-        ]);
+			test('allows disabled panel to be expanded', () => {
+				const { panelApis } = init([
+					{ defaultSize: 0, collapsible: true, disabled: true, minSize: 10 },
+					{},
+				]);
 
-        panelApis[0].expand();
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([10, 90]);
-      });
-    });
+				panelApis[0].expand();
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([10, 90]);
+			});
+		});
 
-    describe("getSize", () => {
-      test("returns the current panel size", () => {
-        const { panelApis } = init([{ defaultSize: 25 }, { defaultSize: 75 }]);
+		describe('getSize', () => {
+			test('returns the current panel size', () => {
+				const { panelApis } = init([{ defaultSize: 25 }, { defaultSize: 75 }]);
 
-        expect(panelApis[0].getSize()).toMatchInlineSnapshot(`
+				expect(panelApis[0].getSize()).toMatchInlineSnapshot(`
           {
             "asPercentage": 25,
             "inPixels": 250,
           }
         `);
-        expect(panelApis[1].getSize()).toMatchInlineSnapshot(`
+				expect(panelApis[1].getSize()).toMatchInlineSnapshot(`
           {
             "asPercentage": 75,
             "inPixels": 750,
           }
         `);
-      });
-    });
+			});
+		});
 
-    describe("isCollapsed", () => {
-      test("returns true if collapsible and collapsed", () => {
-        const { panelApis } = init([
-          { collapsible: true, collapsedSize: 10, defaultSize: 10 },
-          {}
-        ]);
+		describe('isCollapsed', () => {
+			test('returns true if collapsible and collapsed', () => {
+				const { panelApis } = init([{ collapsible: true, collapsedSize: 10, defaultSize: 10 }, {}]);
 
-        expect(panelApis[0].isCollapsed()).toBe(true);
-      });
+				expect(panelApis[0].isCollapsed()).toBe(true);
+			});
 
-      test("returns false if collapsible and expanded", () => {
-        const { panelApis } = init([
-          { collapsible: true, collapsedSize: 10, defaultSize: 25 },
-          {}
-        ]);
+			test('returns false if collapsible and expanded', () => {
+				const { panelApis } = init([{ collapsible: true, collapsedSize: 10, defaultSize: 25 }, {}]);
 
-        expect(panelApis[0].isCollapsed()).toBe(false);
-      });
+				expect(panelApis[0].isCollapsed()).toBe(false);
+			});
 
-      test("returns false if not collapsible", () => {
-        const { panelApis } = init([{ defaultSize: 0 }, {}]);
+			test('returns false if not collapsible', () => {
+				const { panelApis } = init([{ defaultSize: 0 }, {}]);
 
-        expect(panelApis[0].isCollapsed()).toBe(false);
-      });
-    });
+				expect(panelApis[0].isCollapsed()).toBe(false);
+			});
+		});
 
-    describe("resize", () => {
-      describe("units", () => {
-        test("accepts percentage units", () => {
-          const { panelApis } = init([{}, {}]);
-          panelApis[0].resize("35%");
+		describe('resize', () => {
+			describe('units', () => {
+				test('accepts percentage units', () => {
+					const { panelApis } = init([{}, {}]);
+					panelApis[0].resize('35%');
 
-          expect(onLayoutChange).toHaveBeenCalledTimes(1);
-          expect(onLayoutChange).toHaveBeenCalledWith([35, 65]);
-        });
+					expect(onLayoutChange).toHaveBeenCalledTimes(1);
+					expect(onLayoutChange).toHaveBeenCalledWith([35, 65]);
+				});
 
-        test("accepts pixel units", () => {
-          // Computed group size is 1,000
-          const { panelApis } = init([{}, {}]);
-          panelApis[0].resize(400);
+				test('accepts pixel units', () => {
+					// Computed group size is 1,000
+					const { panelApis } = init([{}, {}]);
+					panelApis[0].resize(400);
 
-          expect(onLayoutChange).toHaveBeenCalledTimes(1);
-          expect(onLayoutChange).toHaveBeenCalledWith([40, 60]);
-        });
+					expect(onLayoutChange).toHaveBeenCalledTimes(1);
+					expect(onLayoutChange).toHaveBeenCalledWith([40, 60]);
+				});
 
-        test("accepts rem units", () => {
-          setDefaultElementStyle({
-            fontSize: 16,
-            writingMode: ""
-          } as unknown as CSSStyleDeclaration);
-          mockGetComputedStyle();
+				test('accepts rem units', () => {
+					setDefaultElementStyle({
+						fontSize: 16,
+						writingMode: '',
+					} as unknown as CSSStyleDeclaration);
+					mockGetComputedStyle();
 
-          const { panelApis } = init([{}, {}]);
-          panelApis[0].resize("10rem");
+					const { panelApis } = init([{}, {}]);
+					panelApis[0].resize('10rem');
 
-          expect(onLayoutChange).toHaveBeenCalledTimes(1);
-          expect(onLayoutChange).toHaveBeenCalledWith([16, 84]);
-        });
+					expect(onLayoutChange).toHaveBeenCalledTimes(1);
+					expect(onLayoutChange).toHaveBeenCalledWith([16, 84]);
+				});
 
-        test("accepts viewport units", () => {
-          window.innerHeight = 2000;
-          window.innerWidth = 2000;
+				test('accepts viewport units', () => {
+					window.innerHeight = 2000;
+					window.innerWidth = 2000;
 
-          const { panelApis } = init([{}, {}]);
-          panelApis[0].resize("15vw");
+					const { panelApis } = init([{}, {}]);
+					panelApis[0].resize('15vw');
 
-          expect(onLayoutChange).toHaveBeenCalledTimes(1);
-          expect(onLayoutChange).toHaveBeenCalledWith([30, 70]);
-        });
-      });
+					expect(onLayoutChange).toHaveBeenCalledTimes(1);
+					expect(onLayoutChange).toHaveBeenCalledWith([30, 70]);
+				});
+			});
 
-      test("ignores a no-op size update", () => {
-        const { panelApis } = init([{ defaultSize: 10 }, {}]);
-        panelApis[0].resize("10%");
+			test('ignores a no-op size update', () => {
+				const { panelApis } = init([{ defaultSize: 10 }, {}]);
+				panelApis[0].resize('10%');
 
-        expect(onLayoutChange).not.toHaveBeenCalled();
-      });
+				expect(onLayoutChange).not.toHaveBeenCalled();
+			});
 
-      test("ignores an invalid size update", () => {
-        const { panelApis } = init([{ defaultSize: 10, minSize: 10 }, {}]);
-        panelApis[0].resize("0%");
+			test('ignores an invalid size update', () => {
+				const { panelApis } = init([{ defaultSize: 10, minSize: 10 }, {}]);
+				panelApis[0].resize('0%');
 
-        expect(onLayoutChange).not.toHaveBeenCalled();
-      });
+				expect(onLayoutChange).not.toHaveBeenCalled();
+			});
 
-      test("validates and updates the panel size", () => {
-        const { panelApis } = init([{ defaultSize: 25, minSize: 10 }, {}]);
-        panelApis[0].resize("0%");
+			test('validates and updates the panel size', () => {
+				const { panelApis } = init([{ defaultSize: 25, minSize: 10 }, {}]);
+				panelApis[0].resize('0%');
 
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([10, 90]);
-      });
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([10, 90]);
+			});
 
-      test("allows disabled panel to be resized", () => {
-        const { panelApis } = init([
-          { defaultSize: 25, disabled: true, minSize: 10 },
-          {}
-        ]);
+			test('allows disabled panel to be resized', () => {
+				const { panelApis } = init([{ defaultSize: 25, disabled: true, minSize: 10 }, {}]);
 
-        panelApis[0].resize("0%");
+				panelApis[0].resize('0%');
 
-        expect(onLayoutChange).toHaveBeenCalledTimes(1);
-        expect(onLayoutChange).toHaveBeenCalledWith([10, 90]);
-      });
+				expect(onLayoutChange).toHaveBeenCalledTimes(1);
+				expect(onLayoutChange).toHaveBeenCalledWith([10, 90]);
+			});
 
-      describe("edge cases", () => {
-        test("does not throw when resizing the only panel in the group", () => {
-          const { panelApis } = init([{ defaultSize: 100 }]);
+			describe('edge cases', () => {
+				test('does not throw when resizing the only panel in the group', () => {
+					const { panelApis } = init([{ defaultSize: 100 }]);
 
-          expect(() => panelApis[0].resize("50%")).not.toThrow();
-          expect(onLayoutChange).not.toHaveBeenCalled();
-        });
+					expect(() => panelApis[0].resize('50%')).not.toThrow();
+					expect(onLayoutChange).not.toHaveBeenCalled();
+				});
 
-        test("last panel keeps the remainder when all preceding panels are collapsed and it is resized smaller", () => {
-          const { panelApis } = init([
-            { collapsible: true, defaultSize: 0, minSize: 20 },
-            { collapsible: true, defaultSize: 0, minSize: 20 },
-            { defaultSize: 100 }
-          ]);
+				test('last panel keeps the remainder when all preceding panels are collapsed and it is resized smaller', () => {
+					const { panelApis } = init([
+						{ collapsible: true, defaultSize: 0, minSize: 20 },
+						{ collapsible: true, defaultSize: 0, minSize: 20 },
+						{ defaultSize: 100 },
+					]);
 
-          panelApis[2].resize("50%");
+					panelApis[2].resize('50%');
 
-          // The last panel should remain at 100% (the remainder) rather than
-          // cascading the freed space to the first panel.
-          expect(onLayoutChange).not.toHaveBeenCalled();
-        });
+					// The last panel should remain at 100% (the remainder) rather than
+					// cascading the freed space to the first panel.
+					expect(onLayoutChange).not.toHaveBeenCalled();
+				});
 
-        test("last panel can still be resized normally when preceding panels are not all collapsed", () => {
-          const { panelApis } = init([
-            { defaultSize: 30 },
-            { defaultSize: 30 },
-            { defaultSize: 40 }
-          ]);
+				test('last panel can still be resized normally when preceding panels are not all collapsed', () => {
+					const { panelApis } = init([
+						{ defaultSize: 30 },
+						{ defaultSize: 30 },
+						{ defaultSize: 40 },
+					]);
 
-          panelApis[2].resize("20%");
+					panelApis[2].resize('20%');
 
-          expect(onLayoutChange).toHaveBeenCalledTimes(1);
-          expect(onLayoutChange).toHaveBeenCalledWith([30, 50, 20]);
-        });
-      });
-    });
-  });
+					expect(onLayoutChange).toHaveBeenCalledTimes(1);
+					expect(onLayoutChange).toHaveBeenCalledWith([30, 50, 20]);
+				});
+			});
+		});
+	});
 });

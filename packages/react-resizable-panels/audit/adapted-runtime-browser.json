@@ -1,12 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "react-resizable-panels-browser",
-  "roots": [
-    "packages/react-resizable-panels/tests"
-  ],
-  "files": [
-    "packages/react-resizable-panels/tests/browser/interactions.browser.test.ts"
-  ],
+  "roots": ["packages/react-resizable-panels/tests"],
+  "files": ["packages/react-resizable-panels/tests/browser/interactions.browser.test.ts"],
   "tests": [
     {
       "id": "runtime:react-resizable-panels-browser:0001",

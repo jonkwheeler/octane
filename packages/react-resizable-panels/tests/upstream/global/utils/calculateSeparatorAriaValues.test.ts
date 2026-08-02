@@ -1,43 +1,43 @@
-import { describe, expect, test } from "vitest";
-import type { PanelConstraints } from "../../../../src/components/panel/types";
-import { calculateSeparatorAriaValues } from "../../../../src/global/utils/calculateSeparatorAriaValues";
+import { describe, expect, test } from 'vitest';
+import type { PanelConstraints } from '../../../../src/components/panel/types';
+import { calculateSeparatorAriaValues } from '../../../../src/global/utils/calculateSeparatorAriaValues';
 
 const DEFAULT_PANEL_CONSTRAINTS = {
-  collapsedSize: 0,
-  collapsible: false,
-  defaultSize: undefined,
-  disabled: undefined,
-  minSize: 0,
-  maxSize: 100
+	collapsedSize: 0,
+	collapsible: false,
+	defaultSize: undefined,
+	disabled: undefined,
+	minSize: 0,
+	maxSize: 100,
 };
 
-describe("calculateSeparatorAriaValues", () => {
-  test("should calculate the correct min/max/now values for collapsible panels", () => {
-    const panelConstraints: PanelConstraints[] = [
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        collapsedSize: 5,
-        collapsible: true,
-        disabled: undefined,
-        maxSize: 70,
-        minSize: 20,
-        panelId: "left"
-      },
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        minSize: 20,
-        panelId: "right"
-      }
-    ];
+describe('calculateSeparatorAriaValues', () => {
+	test('should calculate the correct min/max/now values for collapsible panels', () => {
+		const panelConstraints: PanelConstraints[] = [
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				collapsedSize: 5,
+				collapsible: true,
+				disabled: undefined,
+				maxSize: 70,
+				minSize: 20,
+				panelId: 'left',
+			},
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				minSize: 20,
+				panelId: 'right',
+			},
+		];
 
-    expect(
-      calculateSeparatorAriaValues({
-        layout: { left: 35, right: 65 },
-        panelId: "left",
-        panelConstraints,
-        panelIndex: 0
-      })
-    ).toMatchInlineSnapshot(`
+		expect(
+			calculateSeparatorAriaValues({
+				layout: { left: 35, right: 65 },
+				panelId: 'left',
+				panelConstraints,
+				panelIndex: 0,
+			}),
+		).toMatchInlineSnapshot(`
       {
         "valueControls": "left",
         "valueMax": 70,
@@ -45,35 +45,35 @@ describe("calculateSeparatorAriaValues", () => {
         "valueNow": 35,
       }
     `);
-  });
+	});
 
-  test("should consider other panel constraints when computing min/max values", () => {
-    const panelConstraints: PanelConstraints[] = [
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        minSize: 10,
-        panelId: "left"
-      },
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        minSize: 20,
-        panelId: "center"
-      },
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        minSize: 30,
-        panelId: "right"
-      }
-    ];
+	test('should consider other panel constraints when computing min/max values', () => {
+		const panelConstraints: PanelConstraints[] = [
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				minSize: 10,
+				panelId: 'left',
+			},
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				minSize: 20,
+				panelId: 'center',
+			},
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				minSize: 30,
+				panelId: 'right',
+			},
+		];
 
-    expect(
-      calculateSeparatorAriaValues({
-        layout: { left: 35, center: 25, right: 40 },
-        panelConstraints,
-        panelId: "center",
-        panelIndex: 1
-      })
-    ).toMatchInlineSnapshot(`
+		expect(
+			calculateSeparatorAriaValues({
+				layout: { left: 35, center: 25, right: 40 },
+				panelConstraints,
+				panelId: 'center',
+				panelIndex: 1,
+			}),
+		).toMatchInlineSnapshot(`
       {
         "valueControls": "center",
         "valueMax": 35,
@@ -82,14 +82,14 @@ describe("calculateSeparatorAriaValues", () => {
       }
     `);
 
-    expect(
-      calculateSeparatorAriaValues({
-        layout: { left: 10, center: 35, right: 55 },
-        panelConstraints,
-        panelId: "center",
-        panelIndex: 1
-      })
-    ).toMatchInlineSnapshot(`
+		expect(
+			calculateSeparatorAriaValues({
+				layout: { left: 10, center: 35, right: 55 },
+				panelConstraints,
+				panelId: 'center',
+				panelIndex: 1,
+			}),
+		).toMatchInlineSnapshot(`
       {
         "valueControls": "center",
         "valueMax": 60,
@@ -97,33 +97,33 @@ describe("calculateSeparatorAriaValues", () => {
         "valueNow": 35,
       }
     `);
-  });
+	});
 
-  test("should assign aria-controls if an explicit id was passed as a prop", () => {
-    const panelConstraints: PanelConstraints[] = [
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        collapsedSize: 5,
-        collapsible: true,
-        maxSize: 70,
-        minSize: 20,
-        panelId: "left"
-      },
-      {
-        ...DEFAULT_PANEL_CONSTRAINTS,
-        minSize: 20,
-        panelId: "right"
-      }
-    ];
+	test('should assign aria-controls if an explicit id was passed as a prop', () => {
+		const panelConstraints: PanelConstraints[] = [
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				collapsedSize: 5,
+				collapsible: true,
+				maxSize: 70,
+				minSize: 20,
+				panelId: 'left',
+			},
+			{
+				...DEFAULT_PANEL_CONSTRAINTS,
+				minSize: 20,
+				panelId: 'right',
+			},
+		];
 
-    expect(
-      calculateSeparatorAriaValues({
-        layout: { left: 35, right: 65 },
-        panelId: "left",
-        panelConstraints,
-        panelIndex: 0
-      })
-    ).toMatchInlineSnapshot(`
+		expect(
+			calculateSeparatorAriaValues({
+				layout: { left: 35, right: 65 },
+				panelId: 'left',
+				panelConstraints,
+				panelIndex: 0,
+			}),
+		).toMatchInlineSnapshot(`
       {
         "valueControls": "left",
         "valueMax": 70,
@@ -131,5 +131,5 @@ describe("calculateSeparatorAriaValues", () => {
         "valueNow": 35,
       }
     `);
-  });
+	});
 });

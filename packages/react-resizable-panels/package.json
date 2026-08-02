@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "description": "Octane port of react-resizable-panels 4.12.2.",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
@@ -14,8 +18,14 @@
   "main": "src/index.tsrx",
   "module": "src/index.tsrx",
   "types": "src/index.tsrx",
-  "files": ["src", "README.md", "UPSTREAM.md"],
-  "exports": { ".": "./src/index.tsrx" },
+  "files": [
+    "src",
+    "README.md",
+    "UPSTREAM.md"
+  ],
+  "exports": {
+    ".": "./src/index.tsrx"
+  },
   "scripts": {
     "test": "pnpm upstream:verify && vitest run --root ../.. --project react-resizable-panels && vitest run --root ../.. --project react-resizable-panels-server && vitest run --root ../.. --project react-resizable-panels-pristine && vitest run --root ../.. --project react-resizable-panels-browser",
     "test:upstream": "vitest run --config upstream/source/vitest.config.ts",
@@ -24,7 +34,9 @@
     "typecheck:probes": "tsrx-tsc --noEmit -p audit/type-probes/tsconfig.json",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
-  "peerDependencies": { "octane": "workspace:*" },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
     "@testing-library/react": "catalog:default",

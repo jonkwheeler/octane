@@ -1,4 +1,4 @@
-import { EventEmitter } from "stream";
+import { EventEmitter } from 'stream';
 
 const elementToStyle = new Map<Element, CSSStyleDeclaration>();
 
@@ -12,34 +12,33 @@ export const emitter = new EventEmitter();
 emitter.setMaxListeners(100);
 
 export function mockGetComputedStyle() {
-  window.getComputedStyle = function getComputedStyle(element: Element) {
-    return new Proxy(emptyStyle, {
-      get(_, name) {
-        const key = name as keyof CSSStyleDeclaration;
+	window.getComputedStyle = function getComputedStyle(element: Element) {
+		return new Proxy(emptyStyle, {
+			get(_, name) {
+				const key = name as keyof CSSStyleDeclaration;
 
-        const mockedStyle =
-          elementToStyle.get(element) ?? defaultStyle ?? emptyStyle;
+				const mockedStyle = elementToStyle.get(element) ?? defaultStyle ?? emptyStyle;
 
-        const actualStyle = originalGetComputedStyle(element);
+				const actualStyle = originalGetComputedStyle(element);
 
-        return name in mockedStyle ? mockedStyle[key] : actualStyle[key];
-      }
-    });
-  };
+				return name in mockedStyle ? mockedStyle[key] : actualStyle[key];
+			},
+		});
+	};
 }
 
 export function setDefaultElementStyle(style: CSSStyleDeclaration) {
-  defaultStyle = style;
+	defaultStyle = style;
 
-  emitter.emit("change");
+	emitter.emit('change');
 }
 
 export function setElementStyle(element: Element, style: CSSStyleDeclaration) {
-  elementToStyle.set(element, style);
+	elementToStyle.set(element, style);
 
-  emitter.emit("change", element);
+	emitter.emit('change', element);
 }
 
 export function unmockGetComputedStyle() {
-  window.getComputedStyle = originalGetComputedStyle;
+	window.getComputedStyle = originalGetComputedStyle;
 }

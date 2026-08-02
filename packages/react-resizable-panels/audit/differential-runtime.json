@@ -1,12 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "react-resizable-panels-differential",
-  "roots": [
-    "packages/react-resizable-panels/tests/differential"
-  ],
-  "files": [
-    "packages/react-resizable-panels/tests/differential/useDefaultLayout.test.ts"
-  ],
+  "roots": ["packages/react-resizable-panels/tests/differential"],
+  "files": ["packages/react-resizable-panels/tests/differential/useDefaultLayout.test.ts"],
   "tests": [
     {
       "id": "runtime:react-resizable-panels-differential:0001",

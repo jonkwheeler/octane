@@ -17,10 +17,23 @@ async function pointer(steps: PointerStep[]): Promise<void> {
 		clientY = step.coords?.clientY ?? clientY;
 		let type = 'pointermove';
 		let button = -1;
-		if (step.keys === '[MouseLeft>]') { type = 'pointerdown'; button = 0; buttons |= 1; }
-		else if (step.keys === '[/MouseLeft]') { type = 'pointerup'; button = 0; buttons &= ~1; }
-		else if (step.keys === '[MouseRight>]') { type = 'pointerdown'; button = 2; buttons |= 2; }
-		else if (step.keys === '[/MouseRight]') { type = 'pointerup'; button = 2; buttons &= ~2; }
+		if (step.keys === '[MouseLeft>]') {
+			type = 'pointerdown';
+			button = 0;
+			buttons |= 1;
+		} else if (step.keys === '[/MouseLeft]') {
+			type = 'pointerup';
+			button = 0;
+			buttons &= ~1;
+		} else if (step.keys === '[MouseRight>]') {
+			type = 'pointerdown';
+			button = 2;
+			buttons |= 2;
+		} else if (step.keys === '[/MouseRight]') {
+			type = 'pointerup';
+			button = 2;
+			buttons &= ~2;
+		}
 		const event = new PointerEvent(type, {
 			bubbles: true,
 			button,
@@ -37,7 +50,11 @@ async function pointer(steps: PointerStep[]): Promise<void> {
 		act(() => document.dispatchEvent(event));
 		if (step.keys === '[/MouseRight]') {
 			if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-			act(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX, clientY })));
+			act(() =>
+				document.dispatchEvent(
+					new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX, clientY }),
+				),
+			);
 		}
 		await Promise.resolve();
 	}
@@ -45,7 +62,9 @@ async function pointer(steps: PointerStep[]): Promise<void> {
 
 async function type(element: HTMLElement, text: string): Promise<void> {
 	for (const match of text.matchAll(/\{([^}]+)\}/g)) {
-		act(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: match[1] })));
+		act(() =>
+			element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: match[1] })),
+		);
 		await Promise.resolve();
 	}
 }

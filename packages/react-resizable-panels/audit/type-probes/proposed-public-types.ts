@@ -11,8 +11,8 @@ export type Dispatch<T> = (action: T) => void;
 export type PublicComponentResult = OctaneNode;
 
 export type ProposedProps = DivAttributes & {
-  children?: PublicNode;
-  elementRef?: PublicRef<HTMLDivElement>;
-  style?: PublicStyle;
-  onPointerDown?: (event: PointerEvent) => void;
+	children?: PublicNode;
+	elementRef?: PublicRef<HTMLDivElement>;
+	style?: PublicStyle;
+	onPointerDown?: (event: PointerEvent) => void;
 };
