@@ -98,6 +98,7 @@ describe('StyleSheetManager / sheet', () => {
 		m.unmount();
 	});
 
+	// @parity-case adapted:styled-components-unnamed-stylis-plugin
 	it('throws error 15 for unnamed stylis plugins', () => {
 		const Anon = styled.div`
 			color: black;

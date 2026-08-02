@@ -14,6 +14,7 @@ const CACHE = resolve(__dirname, '.react-cache');
 const fixture = (name: string) => resolve(__dirname, `../_fixtures/${name}.tsrx`);
 
 describe('differential: @octanejs/styled-components vs styled-components', () => {
+	// @parity-case differential:styled-components-basic
 	it('basic styling with a transient-prop toggle', async () => {
 		const d = await mountDifferential(fixture('basic-smoke'), 'SmokeApp', undefined, CACHE);
 		await d.step('initial render', () => {});
@@ -24,6 +25,7 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 		d.unmount();
 	});
 
+	// @parity-case differential:styled-components-theming
 	it('nested theme providers with a function theme and a theme toggle', async () => {
 		const d = await mountDifferential(fixture('themed-card'), 'ThemedCard', undefined, CACHE);
 		await d.step('initial themed render', () => {});
@@ -34,6 +36,7 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 		d.unmount();
 	});
 
+	// @parity-case differential:styled-components-attrs
 	it('attrs resolution and shouldForwardProp filtering', async () => {
 		const d = await mountDifferential(fixture('attrs-input'), 'AttrsInput', undefined, CACHE);
 		await d.step('initial attrs', () => {});
@@ -44,6 +47,7 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 		d.unmount();
 	});
 
+	// @parity-case differential:styled-components-polymorphism
 	it('state-driven `as` polymorphism', async () => {
 		const d = await mountDifferential(fixture('as-polymorph'), 'AsPolymorph', undefined, CACHE);
 		await d.step('button form', () => {});
@@ -55,6 +59,7 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 		d.unmount();
 	});
 
+	// @parity-case differential:styled-components-global-keyframes
 	it('createGlobalStyle + keyframes with a dynamic global prop', async () => {
 		const d = await mountDifferential(
 			fixture('global-keyframes'),
@@ -70,6 +75,7 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 		d.unmount();
 	});
 
+	// @parity-case differential:styled-components-composition
 	it('styled(Styled) folding with a component selector', async () => {
 		const d = await mountDifferential(fixture('compose'), 'Compose', undefined, CACHE);
 		await d.step('mild tone', () => {});

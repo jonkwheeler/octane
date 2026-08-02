@@ -3,7 +3,7 @@ import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
-import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'hook-form-classifications-'));
@@ -54,4 +54,27 @@ test('rejects a stale divergence classification', async (t) => {
 		'missing-divergence';
 	await writeFile(path, `${JSON.stringify(config)}\n`);
 	assert.throws(() => verifyPortTestClassifications(root), /not present in the parity manifest/);
+});
+
+test('verifies an arbitrary binding classification ledger', async (t) => {
+	const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
+	t.after(() => rm(root, { recursive: true, force: true }));
+	await cp(
+		new URL('../../packages/styled-components/tests', import.meta.url),
+		join(root, 'packages/styled-components/tests'),
+		{ recursive: true },
+	);
+	for (const file of ['test-classifications.json', 'react-parity.json']) {
+		await cp(
+			new URL(`../../packages/styled-components/audit/${file}`, import.meta.url),
+			join(root, `packages/styled-components/audit/${file}`),
+			{ recursive: true },
+		);
+	}
+	assert.deepEqual(verifyPortTestClassifications(root, 'styled-components'), { tests: 15 });
+	await writeFile(join(root, 'packages/styled-components/tests/unclassified.test.ts'), 'export {};\n');
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'styled-components'),
+		/every port-authored styled-components test must have exactly one classification/,
+	);
 });

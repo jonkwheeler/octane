@@ -1,0 +1,440 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/styled-components/styled-components.git",
+    "version": "styled-components@6.4.3",
+    "commit": "e0663410f631e0ce82681947edf03bfabd6aef9c",
+    "sourceRoot": "packages/styled-components/src",
+    "testRoot": "packages/styled-components/src/test",
+    "license": "MIT",
+    "integrity": "sha256:cfc845f944613860155a65afb548b0ac0d234af56ac332e14f99ed150ab38549",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": [
+        "packages/styled-components/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
+    },
+    "tests": {
+      "roots": [
+        "packages/styled-components/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "158c20b1be7230db9f6a3af36ea860469e5c4aae8d2ccc03c7a80c74bba519a8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "styled-components-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "styled-components",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs six exact same-fixture React/Octane cases against styled-components 6.4.3.",
+      "files": [
+        {
+          "path": "packages/styled-components/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "58bd2f2218b745f511bd3688a2788e5d0c56f46a14e68685e2789538ff88c808",
+          "cases": [
+            {
+              "id": "differential:styled-components-basic",
+              "testName": "basic styling with a transient-prop toggle",
+              "fullName": "differential: @octanejs/styled-components vs styled-components basic styling with a transient-prop toggle"
+            },
+            {
+              "id": "differential:styled-components-theming",
+              "testName": "nested theme providers with a function theme and a theme toggle",
+              "fullName": "differential: @octanejs/styled-components vs styled-components nested theme providers with a function theme and a theme toggle"
+            },
+            {
+              "id": "differential:styled-components-attrs",
+              "testName": "attrs resolution and shouldForwardProp filtering",
+              "fullName": "differential: @octanejs/styled-components vs styled-components attrs resolution and shouldForwardProp filtering"
+            },
+            {
+              "id": "differential:styled-components-polymorphism",
+              "testName": "state-driven `as` polymorphism",
+              "fullName": "differential: @octanejs/styled-components vs styled-components state-driven `as` polymorphism"
+            },
+            {
+              "id": "differential:styled-components-global-keyframes",
+              "testName": "createGlobalStyle + keyframes with a dynamic global prop",
+              "fullName": "differential: @octanejs/styled-components vs styled-components createGlobalStyle + keyframes with a dynamic global prop"
+            },
+            {
+              "id": "differential:styled-components-composition",
+              "testName": "styled(Styled) folding with a component selector",
+              "fullName": "differential: @octanejs/styled-components vs styled-components styled(Styled) folding with a component selector"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "e939eafcf56ffb6649b72a1f2efd2fa29897ab56d9445b43ae92acdae139e78b"
+        },
+        {
+          "path": "packages/styled-components/tests/_fixtures/basic-smoke.tsrx",
+          "role": "support",
+          "sha256": "5067809fb722225c4b6c340279f1a0a2d72879fc82f0f7d56818a70d5091e164"
+        },
+        {
+          "path": "packages/styled-components/tests/_fixtures/themed-card.tsrx",
+          "role": "support",
+          "sha256": "5d4f302e89a36cfc7e3e17fff9f64c8c5661ef05a4750d3764e83a5ac5a9c3a4"
+        },
+        {
+          "path": "packages/styled-components/tests/_fixtures/attrs-input.tsrx",
+          "role": "support",
+          "sha256": "21fcfec8804079391542b7792463bf23846f9d68f2e040d5bb6aa0a27cef59b5"
+        },
+        {
+          "path": "packages/styled-components/tests/_fixtures/as-polymorph.tsrx",
+          "role": "support",
+          "sha256": "e564107a75958b7ca983d5a9fbbfb5e314ed6076b3713cd28faffd8cefd0d1ee"
+        },
+        {
+          "path": "packages/styled-components/tests/_fixtures/global-keyframes.tsrx",
+          "role": "support",
+          "sha256": "7351ad01f46ec11756ca9c2477b7d3ef917125a15d672423395af2808737a177"
+        },
+        {
+          "path": "packages/styled-components/tests/_fixtures/compose.tsrx",
+          "role": "support",
+          "sha256": "0d271e4010701ddad53ddb2c144cc54896dcb1028e10ddcb6cedadd899316f1b"
+        },
+        {
+          "path": "packages/styled-components/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "29e1a0d17eb5d9dd4dfae01ad60be44636fedf97c6cbcb2842d20459c14fa1f5"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "714d61df0d7ccb78ee2a6bc88b816bac26046fefed2ee7c5dfa2a5c023d8b18e"
+        }
+      ]
+    },
+    {
+      "id": "styled-components-adapted-divergences",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "styled-components",
+      "notes": "Runs exact DOM and distribution contracts for five documented adaptations.",
+      "files": [
+        {
+          "path": "packages/styled-components/tests/conformance/api.test.ts",
+          "role": "test",
+          "sha256": "75714e3ca68e004f776dfdd38401dcd9adbb7a13027b7d65cb1afb7da8cb2d6c",
+          "cases": [
+            {
+              "id": "adapted:styled-components-brand-symbol",
+              "testName": "isStyledComponent identifies styled components but not wrappers or plain fns",
+              "fullName": "factory API isStyledComponent identifies styled components but not wrappers or plain fns"
+            },
+            {
+              "id": "adapted:styled-components-default-props",
+              "testName": "folds defaultProps through styled(Styled) with deep merge, driving the theme",
+              "fullName": "factory API folds defaultProps through styled(Styled) with deep merge, driving the theme"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/tests/conformance/transient-props.test.ts",
+          "role": "test",
+          "sha256": "b538106041db604ff532b54efc2181680adfff0e0411177105878bb81a842f8b",
+          "cases": [
+            {
+              "id": "adapted:styled-components-ref-prop",
+              "testName": "always attaches ref even when shouldForwardProp rejects it",
+              "fullName": "transient props and shouldForwardProp always attaches ref even when shouldForwardProp rejects it"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/tests/conformance/sheet.test.ts",
+          "role": "test",
+          "sha256": "f33d0d36859bd6ceb38d165cca6847fd25fa277fb2d946bcb973d5ab270926c2",
+          "cases": [
+            {
+              "id": "adapted:styled-components-unnamed-stylis-plugin",
+              "testName": "throws error 15 for unnamed stylis plugins",
+              "fullName": "StyleSheetManager / sheet throws error 15 for unnamed stylis plugins"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/tests/divergences.test.ts",
+          "role": "test",
+          "sha256": "917bf9ad65867ad8371983031b4bbaf78f48b885db8771071b358cfab36bad5c",
+          "cases": [
+            {
+              "id": "adapted:styled-components-no-css-prop-transform",
+              "testName": "publishes no Babel css-prop transform entry point",
+              "fullName": "@octanejs/styled-components documented divergences publishes no Babel css-prop transform entry point"
+            },
+            {
+              "id": "adapted:styled-components-dynamic-creation-heuristic",
+              "testName": "warns once after 200 creations sharing one displayName",
+              "fullName": "@octanejs/styled-components documented divergences warns once after 200 creations sharing one displayName"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "29e1a0d17eb5d9dd4dfae01ad60be44636fedf97c6cbcb2842d20459c14fa1f5"
+        },
+        {
+          "path": "packages/octane/tests/_helpers.ts",
+          "role": "support",
+          "sha256": "a4a9ee179a2dcaf20a96cb5807f5584f484deddc2bf25fb94cc90ade9e920572"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "714d61df0d7ccb78ee2a6bc88b816bac26046fefed2ee7c5dfa2a5c023d8b18e"
+        }
+      ]
+    },
+    {
+      "id": "styled-components-adapted-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "styled-components-ssr",
+      "notes": "Authenticates automatic CSS collection, compatibility capture, and the deliberate streaming API rejection.",
+      "files": [
+        {
+          "path": "packages/styled-components/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "5c41e1334227bb37c35c1ab7ff019cffb4e23566742b63fac13743018d342855",
+          "cases": [
+            {
+              "id": "adapted:styled-components-automatic-ssr",
+              "testName": "collects styled/keyframes/global css into RenderResult.css with zero config",
+              "fullName": "@octanejs/styled-components — server rendering collects styled/keyframes/global css into RenderResult.css with zero config"
+            },
+            {
+              "id": "adapted:styled-components-server-sheet-compat",
+              "testName": "ServerStyleSheet compat: collectStyles + getStyleTags/getStyleElement still work",
+              "fullName": "@octanejs/styled-components — server rendering ServerStyleSheet compat: collectStyles + getStyleTags/getStyleElement still work"
+            },
+            {
+              "id": "adapted:styled-components-no-node-stream-interleave",
+              "testName": "throws the documented seal/stream errors",
+              "fullName": "@octanejs/styled-components — server rendering throws the documented seal/stream errors"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/tests/ssr/_fixtures/server-app.tsrx",
+          "role": "support",
+          "sha256": "27832f37fa07168fca89fa85aa8bceb3c180567dab319ecf10c0733e331db224"
+        },
+        {
+          "path": "packages/styled-components/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "29e1a0d17eb5d9dd4dfae01ad60be44636fedf97c6cbcb2842d20459c14fa1f5"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "714d61df0d7ccb78ee2a6bc88b816bac26046fefed2ee7c5dfa2a5c023d8b18e"
+        }
+      ]
+    },
+    {
+      "id": "styled-components-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "styled-components-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the package type contract, including the intentionally permissive host-tag polymorphic surface.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/styled-components/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/styled-components/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "6eccff52a1296c7f45030f057270b3e3dc41f20d15d90b6dce310198a3401527",
+          "cases": [
+            {
+              "id": "types:styled-components-polymorphic-hosts",
+              "testName": "permissive host-tag polymorphic type contract",
+              "fullName": "permissive host-tag polymorphic type contract"
+            }
+          ]
+        },
+        {
+          "path": "packages/styled-components/typetests/styled.test-d.ts",
+          "role": "support",
+          "sha256": "56fd83059db0aa4a60633738bde99c714afa1ba51b5690d5b1c0ad3ace52d587"
+        },
+        {
+          "path": "packages/styled-components/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "4f1aba0195954c016fe8b95ce49caa54492277bbb3ded516873704098a532615"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "styled-components-ref-prop",
+      "caseIds": [
+        "adapted:styled-components-ref-prop"
+      ],
+      "upstreamResult": "React forwards ref outside the ordinary prop-filtering path through forwardRef.",
+      "octaneResult": "ref is a plain prop that always attaches to the rendered host and bypasses shouldForwardProp.",
+      "rationale": "Octane components use ref-as-prop semantics and have no forwardRef wrapper.",
+      "classification": "ref-model",
+      "consumerImpact": "A shouldForwardProp callback cannot suppress ref attachment.",
+      "migrationGuidance": "Treat ref as a reserved attachment prop rather than a filterable DOM prop.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if Octane adopts a separate React-compatible ref channel."
+    },
+    {
+      "id": "styled-components-automatic-ssr",
+      "caseIds": [
+        "adapted:styled-components-automatic-ssr",
+        "adapted:styled-components-server-sheet-compat",
+        "adapted:styled-components-no-node-stream-interleave"
+      ],
+      "upstreamResult": "Consumers collect styles through ServerStyleSheet and may interleave them with a Node stream.",
+      "octaneResult": "The renderer automatically emits isolated CSS chunks; ServerStyleSheet remains compatible, while interleaveWithNodeStream throws.",
+      "rationale": "Octane's server renderer owns CSS collection and stream ordering.",
+      "classification": "ssr-model",
+      "consumerImpact": "SSR needs no collection wrapper or manual stream interleaving.",
+      "migrationGuidance": "Read RenderResult.css or use the compatibility wrapper; remove interleaveWithNodeStream calls.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if Octane delegates CSS collection to library-owned sheets."
+    },
+    {
+      "id": "styled-components-default-props",
+      "caseIds": [
+        "adapted:styled-components-default-props"
+      ],
+      "upstreamResult": "React applies component defaultProps at the component call boundary.",
+      "octaneResult": "The styled factory resolves defaultProps during render and folding deep-merges them.",
+      "rationale": "Octane call sites do not apply component defaultProps.",
+      "classification": "component-model",
+      "consumerImpact": "Styled-component defaults and folded themes still resolve despite the renderer difference.",
+      "migrationGuidance": "Assign defaultProps to styled components as usual.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if Octane call sites gain defaultProps resolution."
+    },
+    {
+      "id": "styled-components-polymorphic-host-types",
+      "caseIds": [
+        "types:styled-components-polymorphic-hosts"
+      ],
+      "upstreamResult": "React JSX.IntrinsicElements narrows polymorphic host props per selected tag.",
+      "octaneResult": "Host tags use a permissive prop bag while component targets retain inferred props.",
+      "rationale": "Octane has no JSX.IntrinsicElements map to introspect.",
+      "classification": "type-system",
+      "consumerImpact": "Invalid or cross-tag host props may not be rejected statically.",
+      "migrationGuidance": "Validate host-specific polymorphic props in application types where strictness is required.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if Octane publishes an intrinsic-element prop map."
+    },
+    {
+      "id": "styled-components-no-css-prop-transform",
+      "caseIds": [
+        "adapted:styled-components-no-css-prop-transform"
+      ],
+      "upstreamResult": "The upstream ecosystem supports a Babel transform for the css prop.",
+      "octaneResult": "The package publishes only its runtime entry point and no Babel css-prop transform.",
+      "rationale": "The Octane compiler does not integrate the upstream Babel transform.",
+      "classification": "tooling",
+      "consumerImpact": "The css prop syntax is unavailable.",
+      "migrationGuidance": "Create a styled component or use the css helper explicitly.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if an Octane css-prop compiler transform ships."
+    },
+    {
+      "id": "styled-components-dynamic-creation-heuristic",
+      "caseIds": [
+        "adapted:styled-components-dynamic-creation-heuristic"
+      ],
+      "upstreamResult": "Development builds probe React's dispatcher to detect styled() calls during render.",
+      "octaneResult": "Development builds warn once after 200 creations sharing a displayName.",
+      "rationale": "Octane exposes no React hook dispatcher to probe.",
+      "classification": "diagnostics",
+      "consumerImpact": "Warnings are heuristic and appear only after repeated creation.",
+      "migrationGuidance": "Define styled components outside render functions regardless of whether the warning fires.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if Octane exposes a reliable render-phase probe."
+    },
+    {
+      "id": "styled-components-unnamed-stylis-plugin",
+      "caseIds": [
+        "adapted:styled-components-unnamed-stylis-plugin"
+      ],
+      "upstreamResult": "Version 6.4.3 constructs error 15 for unnamed Stylis plugins but does not throw it.",
+      "octaneResult": "Unnamed Stylis plugins throw documented error 15.",
+      "rationale": "Failing early preserves stable plugin identity and stylesheet hashing.",
+      "classification": "behavior-correction",
+      "consumerImpact": "Anonymous Stylis plugins are rejected immediately.",
+      "migrationGuidance": "Give every Stylis plugin function a stable name.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review when upstream throws the documented error."
+    },
+    {
+      "id": "styled-components-brand-symbol",
+      "caseIds": [
+        "adapted:styled-components-brand-symbol"
+      ],
+      "upstreamResult": "Styled components are identified using React forward-ref identity alongside styled statics.",
+      "octaneResult": "Plain-function styled components carry a dedicated Octane symbol brand.",
+      "rationale": "Octane styled components do not use React forwardRef.",
+      "classification": "component-model",
+      "consumerImpact": "Hoisted wrappers are not misidentified as styled components.",
+      "migrationGuidance": "Use isStyledComponent rather than inspecting internal symbols.",
+      "owner": "@octanejs/styled-components",
+      "reviewCondition": "Review if styled components adopt a renderer-level wrapper identity."
+    }
+  ]
+}

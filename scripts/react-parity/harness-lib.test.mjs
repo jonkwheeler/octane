@@ -11,6 +11,7 @@ import {
 	buildTypeScriptCompilerArgv,
 	compareTestIdentities,
 	describeTestIdentityMismatch,
+	loadManifest,
 	nodeMajorSatisfies,
 	requiredExecutableLanes,
 	summarizeRuntimeInventories,
@@ -20,6 +21,7 @@ import {
 	verifyLaneEnvironment,
 	verifyLaneRunResult,
 	verifyManifestFiles,
+	verifyManifestTestSelections,
 } from './harness-lib.mjs';
 
 test('describeTestIdentityMismatch reports missing, unexpected, and duplicate identities', () => {
@@ -261,6 +263,21 @@ test('selects every available required lane for aggregate execution', () => {
 		requiredExecutableLanes(value).map((lane) => lane.id),
 		['adapted', 'differential'],
 	);
+});
+
+test('styled-components exact selection fails closed when a declared case is renamed', async () => {
+	const value = await loadManifest('packages/styled-components/audit/react-parity.json');
+	await assert.doesNotReject(() => verifyManifestTestSelections(value, process.cwd()));
+	for (const [laneIndex, lane] of value.lanes.entries()) {
+		if (lane.execution?.kind === 'typescript') continue;
+		const fileIndex = lane.files.findIndex((file) => file.cases?.length);
+		const renamed = structuredClone(value);
+		renamed.lanes[laneIndex].files[fileIndex].cases[0].fullName += ' renamed';
+		await assert.rejects(
+			() => verifyManifestTestSelections(renamed, process.cwd()),
+			/must match exactly one collected Vitest test/,
+		);
+	}
 });
 
 test('accepts explicit TypeScript lanes and builds portable compiler argv without a shell', () => {
