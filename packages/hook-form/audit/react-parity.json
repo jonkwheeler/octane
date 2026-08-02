@@ -16,10 +16,16 @@
     "types": "present"
   },
   "adaptedRoots": {
-    "source": ["packages/hook-form/src"],
-    "tests": ["packages/hook-form/tests/upstream"],
-    "include": ["\\.(?:ts|tsx)$"],
-    "exclude": []
+    "source": {
+      "roots": ["packages/hook-form/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/hook-form/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
   },
   "environments": {
     "workspace-node": {

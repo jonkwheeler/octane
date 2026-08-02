@@ -60,7 +60,8 @@ const LANE_KEYS = new Set([
 ]);
 const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory']);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
-const ADAPTED_ROOT_KEYS = new Set(['source', 'tests', 'include', 'exclude']);
+const ADAPTED_ROOT_KEYS = new Set(['source', 'tests']);
+const ADAPTED_SCAN_KEYS = new Set(['roots', 'include', 'exclude']);
 const DIVERGENCE_FIELDS = [
 	'upstreamResult',
 	'octaneResult',
@@ -196,16 +197,28 @@ export function validateManifest(manifest) {
 		fail('upstreamSuites has an unknown key');
 	for (const key of Object.keys(manifest.adaptedRoots ?? {}))
 		if (!ADAPTED_ROOT_KEYS.has(key)) fail(`adaptedRoots has unknown key "${key}"`);
-	for (const key of ['source', 'tests']) {
-		if (!Array.isArray(manifest.adaptedRoots?.[key]) || manifest.adaptedRoots[key].length === 0)
-			fail(`adaptedRoots.${key} must be a non-empty array`);
-		for (const path of manifest.adaptedRoots[key]) exactPath(path, `adaptedRoots.${key}`);
-	}
-	for (const key of ['include', 'exclude']) {
-		if (!Array.isArray(manifest.adaptedRoots?.[key])) fail(`adaptedRoots.${key} must be an array`);
-		for (const pattern of manifest.adaptedRoots[key]) {
-			requiredString(pattern, `adaptedRoots.${key} pattern`);
-			try { new RegExp(pattern); } catch { fail(`adaptedRoots.${key} contains an invalid regex`); }
+	for (const kind of ['source', 'tests']) {
+		const scan = manifest.adaptedRoots?.[kind];
+		if (!scan || typeof scan !== 'object' || Array.isArray(scan))
+			fail(`adaptedRoots.${kind} must be an object`);
+		for (const key of Object.keys(scan))
+			if (!ADAPTED_SCAN_KEYS.has(key)) fail(`adaptedRoots.${kind} has unknown key "${key}"`);
+		if (!Array.isArray(scan.roots) || scan.roots.length === 0)
+			fail(`adaptedRoots.${kind}.roots must be a non-empty array`);
+		for (const path of scan.roots) exactPath(path, `adaptedRoots.${kind}.roots`);
+		for (const key of ['include', 'exclude']) {
+			if (!Array.isArray(scan[key]) || (key === 'include' && scan[key].length === 0))
+				fail(
+					`adaptedRoots.${kind}.${key} must be ${key === 'include' ? 'a non-empty' : 'an'} array`,
+				);
+			for (const pattern of scan[key]) {
+				requiredString(pattern, `adaptedRoots.${kind}.${key} pattern`);
+				try {
+					new RegExp(pattern);
+				} catch {
+					fail(`adaptedRoots.${kind}.${key} contains an invalid regex`);
+				}
+			}
 		}
 	}
 
@@ -316,17 +329,27 @@ export function validateManifest(manifest) {
 		fail('verified provenance requires an available required adapted-octane full-suite lane');
 	}
 	if (manifest.provenance.verification === 'verified') {
-		const requiredAvailable = (type) => manifest.lanes.some((lane) =>
-			lane.type === type && lane.oracle === 'required' && lane.available !== false,
-		);
+		const requiredAvailable = (type) =>
+			manifest.lanes.some(
+				(lane) => lane.type === type && lane.oracle === 'required' && lane.available !== false,
+			);
 		if (manifest.upstreamSuites.types === 'present') {
 			if (!requiredAvailable('pristine-types') || !requiredAvailable('adapted-types'))
-				fail('verified provenance with upstream type tests requires available required pristine-types and adapted-types lanes');
+				fail(
+					'verified provenance with upstream type tests requires available required pristine-types and adapted-types lanes',
+				);
 		} else {
-			const pairedOracle = manifest.lanes.some((lane) => lane.type === 'differential' &&
-				lane.oracle === 'required' && lane.available !== false &&
-				lane.files.some((file) => file.cases?.some((entry) => entry.id.startsWith('types:'))));
-			if (!pairedOracle) fail('verified provenance without sufficient upstream type tests requires a paired repo-authored type oracle');
+			const pairedOracle = manifest.lanes.some(
+				(lane) =>
+					lane.type === 'differential' &&
+					lane.oracle === 'required' &&
+					lane.available !== false &&
+					lane.files.some((file) => file.cases?.some((entry) => entry.id.startsWith('types:'))),
+			);
+			if (!pairedOracle)
+				fail(
+					'verified provenance without sufficient upstream type tests requires a paired repo-authored type oracle',
+				);
 		}
 	}
 
@@ -363,13 +386,16 @@ export async function loadManifest(path) {
 export async function verifyManifestFiles(manifest, root) {
 	const absoluteRoot = resolve(root);
 	const runtimeCaseIds = new Set();
-	const adaptedFiles = new Set();
 	for (const lane of manifest.lanes) {
-		if (lane.oracle === 'required' && lane.available !== false && lane.execution?.kind === 'vitest-full') {
+		if (
+			lane.oracle === 'required' &&
+			lane.available !== false &&
+			lane.execution?.kind === 'vitest-full'
+		) {
 			const inventory = JSON.parse(
 				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
 			);
-			validateRuntimeInventory(inventory, lane, manifest.adaptedRoots.tests);
+			validateRuntimeInventory(inventory, lane, manifest.adaptedRoots.tests.roots);
 			for (const test of inventory.tests) runtimeCaseIds.add(test.id);
 		}
 		for (const file of lane.files) {
@@ -414,19 +440,24 @@ export async function verifyManifestFiles(manifest, root) {
 			}
 		}
 	}
-	const fullSuiteLanes = manifest.lanes.filter((candidate) => candidate.oracle === 'required' && candidate.available !== false && candidate.execution?.kind === 'vitest-full');
-	const discoveredTests = await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.tests, manifest.adaptedRoots);
-	for (const lane of fullSuiteLanes) {
-		const inventory = JSON.parse(await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'));
-		const laneFiles = new Set(inventory.files);
-		for (const path of discoveredTests) if (laneFiles.has(path)) adaptedFiles.add(path);
-	}
+	const fullSuiteLanes = manifest.lanes.filter(
+		(candidate) =>
+			candidate.oracle === 'required' &&
+			candidate.available !== false &&
+			candidate.execution?.kind === 'vitest-full',
+	);
+	const discoveredTests = await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.tests);
 	const inventoried = new Set();
 	for (const lane of fullSuiteLanes) {
-		const inventory = JSON.parse(await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'));
+		const inventory = JSON.parse(
+			await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
+		);
 		for (const path of inventory.files) inventoried.add(path);
 	}
-	if (fullSuiteLanes.length > 0 && JSON.stringify([...discoveredTests].sort()) !== JSON.stringify([...inventoried].sort()))
+	if (
+		fullSuiteLanes.length > 0 &&
+		JSON.stringify([...discoveredTests].sort()) !== JSON.stringify([...inventoried].sort())
+	)
 		throw new Error('adapted test roots drifted from the union of full-suite inventories');
 	for (const divergence of manifest.divergences) {
 		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('runtime:'))) {
@@ -437,7 +468,10 @@ export async function verifyManifestFiles(manifest, root) {
 		}
 	}
 	const markerCounts = new Map();
-	const markerFiles = await discoverAdaptedFiles(absoluteRoot, [...manifest.adaptedRoots.source, ...manifest.adaptedRoots.tests], manifest.adaptedRoots);
+	const markerFiles = new Set([
+		...(await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.source)),
+		...(await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.tests)),
+	]);
 	for (const path of markerFiles) {
 		const source = await readFile(resolve(absoluteRoot, path), 'utf8');
 		if (/OCTANE DIVERGENCE\s*:/.test(source))
@@ -446,8 +480,13 @@ export async function verifyManifestFiles(manifest, root) {
 			if (!manifest.divergences.some((entry) => entry.id === match[1]))
 				throw new Error(`${path}: undeclared divergence marker "${match[1]}"`);
 			const entry = manifest.divergences.find((candidate) => candidate.id === match[1]);
-			if (!entry.caseIds.includes(match[2]) || (!runtimeCaseIds.has(match[2]) && !caseIdsForManifest(manifest).has(match[2])))
-				throw new Error(`${path}: divergence marker "${match[1]}" is not bound to required executed case "${match[2]}"`);
+			if (
+				!entry.caseIds.includes(match[2]) ||
+				(!runtimeCaseIds.has(match[2]) && !caseIdsForManifest(manifest).has(match[2]))
+			)
+				throw new Error(
+					`${path}: divergence marker "${match[1]}" is not bound to required executed case "${match[2]}"`,
+				);
 			markerCounts.set(match[1], (markerCounts.get(match[1]) ?? 0) + 1);
 		}
 		if (/OCTANE DIVERGENCE\[[^\]]+\](?!\[)/.test(source))
@@ -461,32 +500,48 @@ export async function verifyManifestFiles(manifest, root) {
 }
 
 function caseIdsForManifest(manifest) {
-	return new Set(manifest.lanes.filter((lane) => lane.oracle === 'required' && lane.available !== false)
-		.flatMap((lane) => lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.id))));
+	return new Set(
+		manifest.lanes
+			.filter((lane) => lane.oracle === 'required' && lane.available !== false)
+			.flatMap((lane) => lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.id))),
+	);
 }
 
 function validateRuntimeInventory(inventory, lane, expectedRoots) {
-	if (inventory?.schemaVersion !== 1 || inventory.project !== lane.project ||
+	if (
+		inventory?.schemaVersion !== 1 ||
+		inventory.project !== lane.project ||
 		JSON.stringify(inventory.roots) !== JSON.stringify(expectedRoots) ||
-		!Array.isArray(inventory.files) || !Array.isArray(inventory.tests))
+		!Array.isArray(inventory.files) ||
+		!Array.isArray(inventory.tests)
+	)
 		throw new Error(`lane ${lane.id} has an invalid runtime inventory schema or project`);
 	if (new Set(inventory.files).size !== inventory.files.length)
 		throw new Error(`lane ${lane.id} runtime inventory has duplicate files`);
 	const ids = inventory.tests.map((test) => test.id);
-	if (new Set(ids).size !== ids.length || inventory.tests.some((test) => !inventory.files.includes(test.file) || typeof test.fullName !== 'string'))
+	if (
+		new Set(ids).size !== ids.length ||
+		inventory.tests.some(
+			(test) => !inventory.files.includes(test.file) || typeof test.fullName !== 'string',
+		)
+	)
 		throw new Error(`lane ${lane.id} runtime inventory has invalid or duplicate test identities`);
 }
 
-async function discoverAdaptedFiles(root, roots, filters) {
-	const include = filters.include.map((pattern) => new RegExp(pattern));
-	const exclude = filters.exclude.map((pattern) => new RegExp(pattern));
+async function discoverAdaptedFiles(root, scan) {
+	const include = scan.include.map((pattern) => new RegExp(pattern));
+	const exclude = scan.exclude.map((pattern) => new RegExp(pattern));
 	const found = [];
-	for (const declaredRoot of roots) {
+	for (const declaredRoot of scan.roots) {
 		const absolute = resolve(root, declaredRoot);
 		for (const entry of await readdir(absolute, { recursive: true, withFileTypes: true })) {
 			if (!entry.isFile()) continue;
 			const path = toPortablePath(relative(root, resolve(entry.parentPath, entry.name)));
-			if (include.some((pattern) => pattern.test(path)) && !exclude.some((pattern) => pattern.test(path))) found.push(path);
+			if (
+				include.some((pattern) => pattern.test(path)) &&
+				!exclude.some((pattern) => pattern.test(path))
+			)
+				found.push(path);
 		}
 	}
 	return new Set(found);

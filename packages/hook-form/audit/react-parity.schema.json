@@ -4,6 +4,22 @@
   "title": "Bounded React parity evidence manifest",
   "type": "object",
   "additionalProperties": false,
+  "$defs": {
+    "adaptedScan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roots", "include", "exclude"],
+      "properties": {
+        "roots": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "include": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "exclude": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  },
   "allOf": [
     {
       "if": {
@@ -60,15 +76,41 @@
         "properties": {
           "lanes": {
             "allOf": [
-              { "contains": { "properties": { "type": { "const": "pristine-types" }, "oracle": { "const": "required" }, "available": { "not": { "const": false } } }, "required": ["type", "oracle"] } },
-              { "contains": { "properties": { "type": { "const": "adapted-types" }, "oracle": { "const": "required" }, "available": { "not": { "const": false } } }, "required": ["type", "oracle"] } }
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "pristine-types" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } }
+                  },
+                  "required": ["type", "oracle"]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "type": { "const": "adapted-types" },
+                    "oracle": { "const": "required" },
+                    "available": { "not": { "const": false } }
+                  },
+                  "required": ["type", "oracle"]
+                }
+              }
             ]
           }
         }
       }
     }
   ],
-  "required": ["schemaVersion", "provenance", "upstreamSuites", "adaptedRoots", "environments", "lanes", "divergences"],
+  "required": [
+    "schemaVersion",
+    "provenance",
+    "upstreamSuites",
+    "adaptedRoots",
+    "environments",
+    "lanes",
+    "divergences"
+  ],
   "properties": {
     "schemaVersion": { "const": 1 },
     "$schema": { "type": "string" },
@@ -108,12 +150,10 @@
     "adaptedRoots": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source", "tests", "include", "exclude"],
+      "required": ["source", "tests"],
       "properties": {
-        "source": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "tests": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "include": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "exclude": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        "source": { "$ref": "#/$defs/adaptedScan" },
+        "tests": { "$ref": "#/$defs/adaptedScan" }
       }
     },
     "environments": {
