@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog as DialogPrimitive } from '@octanejs/radix';
-import { useCallback, useEffect, useRef, useState } from 'octane';
+import { createPortal, useCallback, useEffect, useRef, useState } from 'octane';
 import type React from 'react';
 import { DrawerContext, useDrawerContext } from './context';
 import './style.css';
@@ -1190,11 +1190,12 @@ export type PortalProps = {
 	forceMount?: true;
 };
 
-export function Portal(props: PortalProps) @{
+export function Portal(props: PortalProps) {
 	const context = useDrawerContext();
-	const { container = context.container, ...portalProps } = props;
+	const { children, container = context.container } = props;
+	const target = container ?? (typeof document === 'undefined' ? null : document.body);
 
-	<DialogPrimitive.Portal container={container} {...portalProps} />
+	return target ? createPortal(children, target) : null;
 }
 
 type ButtonPrimitiveProps =

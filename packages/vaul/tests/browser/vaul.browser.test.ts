@@ -97,6 +97,7 @@ describe('vaul real-browser evidence', () => {
 		await page.waitForFunction(
 			() => document.querySelector('#drawer-state')?.textContent === 'closed',
 		);
+		expect(await page.locator('[data-vaul-drawer]').count()).toBe(1);
 		await page.waitForTimeout(550);
 		expect(await page.locator('[data-vaul-drawer]').count()).toBe(0);
 		await expect
