@@ -2,7 +2,7 @@ import type { LiveStoreSchema } from '@livestore/common/schema';
 import { SessionIdSymbol } from '@livestore/common';
 import type { RegistryStoreOptions, Store, SyncStatus } from '@livestore/livestore';
 import type { Schema } from '@livestore/utils/effect';
-import { use, useEffect } from 'octane';
+import { use, useEffect, useMemo } from 'octane';
 import { useStoreRegistry } from './StoreRegistryContext.tsrx';
 import { splitSlot, subSlot } from './internal';
 import { useClientDocument } from './useClientDocument';
@@ -33,7 +33,12 @@ export function useStore<
 	const [, slot] = splitSlot(rest);
 	const storeRegistry = useStoreRegistry();
 	const storeOrPromise = storeRegistry.getOrLoadPromise(options);
-	const store = storeOrPromise instanceof Promise ? use(storeOrPromise) : storeOrPromise;
+	const storePromise = useMemo(
+		() => Promise.resolve(storeOrPromise),
+		[storeOrPromise],
+		subSlot(slot, 'store:promise'),
+	);
+	const store = use(storePromise);
 	useEffect(
 		() => storeRegistry.retain(options),
 		[storeRegistry, options],
