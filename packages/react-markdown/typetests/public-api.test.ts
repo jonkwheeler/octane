@@ -2,6 +2,8 @@ import type { ComponentBody, ElementDescriptor } from 'octane';
 import type { Octane } from 'octane/jsx-runtime';
 import Markdown, {
 	defaultUrlTransform,
+	MarkdownAsync,
+	MarkdownHooks,
 	type AllowElement,
 	type Components,
 	type ExtraProps,
@@ -25,9 +27,13 @@ const options = {
 	rehypePlugins: [],
 } satisfies Options;
 const rendered: ElementDescriptor = Markdown(options);
+const asyncRendered: Promise<ElementDescriptor> = MarkdownAsync(options);
 const hooks: HooksOptions = { ...options, fallback: rendered };
+const HooksComponent: ComponentBody<HooksOptions> = MarkdownHooks;
 const safe: string = defaultUrlTransform('https://example.com');
 void hooks;
+void HooksComponent;
+void asyncRendered;
 void safe;
 
 // @ts-expect-error children must be a string.

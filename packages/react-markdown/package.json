@@ -28,8 +28,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "pnpm upstream:verify && vitest run --config tsconfig.json --root . tests/probes/async-component.server.test.ts tests/adoption/consumer.test.ts tests/differential tests/conformance tests/validation.test.ts",
-    "test:architecture": "vitest run --config tsconfig.json --root . tests/probes/async-component.server.test.ts",
+    "test": "pnpm upstream:verify && vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts tests/adoption/consumer.test.ts tests/differential tests/conformance tests/async tests/hooks tests/validation.test.ts",
+    "test:architecture": "vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts",
     "upstream:verify": "node audit/verify-provenance.mjs --self-test",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
   },

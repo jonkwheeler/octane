@@ -8,6 +8,8 @@ export function Markdown(options: Readonly<Options>): ElementDescriptor {
 }
 
 export { Markdown as default };
+export { MarkdownAsync } from './markdown-async';
+export { MarkdownHooks } from './markdown-hooks.tsrx';
 export { defaultUrlTransform } from './url-transform';
 export type {
 	AllowElement,
