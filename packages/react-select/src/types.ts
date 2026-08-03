@@ -44,8 +44,10 @@ export interface CreateOptionActionMeta<Option> extends ActionMetaBase<Option> {
 	action: 'create-option';
 	option: Option;
 }
-export interface InitialInputFocusedActionMeta<Option, IsMulti extends boolean>
-	extends ActionMetaBase<Option> {
+export interface InitialInputFocusedActionMeta<
+	Option,
+	IsMulti extends boolean,
+> extends ActionMetaBase<Option> {
 	action: 'initial-input-focus';
 	value: OnChangeValue<Option, IsMulti>;
 	options?: Options<Option>;
@@ -69,10 +71,40 @@ export type MenuPosition = 'absolute' | 'fixed';
 export type FocusDirection = 'up' | 'down' | 'pageup' | 'pagedown' | 'first' | 'last';
 
 export type ClassNamesState = Record<string, boolean>;
-export type CX = (
-	state: ClassNamesState,
-	...classNames: (string | undefined)[]
-) => string;
+export type CX = (state: ClassNamesState, ...classNames: (string | undefined)[]) => string;
+
+export type GetStyles<Option, IsMulti extends boolean, Group extends GroupBase<Option>> = (
+	propertyName: string,
+	props: unknown,
+) => CSSObjectWithLabel;
+
+export interface CommonProps<Option, IsMulti extends boolean, Group extends GroupBase<Option>> {
+	clearValue: () => void;
+	cx: CX;
+	getStyles: GetStyles<Option, IsMulti, Group>;
+	getClassNames: (propertyName: string, props: unknown) => string | undefined;
+	getValue: () => Options<Option>;
+	hasValue: boolean;
+	isMulti: boolean;
+	isRtl: boolean;
+	options: OptionsOrGroups<Option, Group>;
+	selectOption: (newValue: Option) => void;
+	selectProps: Record<string, unknown>;
+	setValue: (
+		newValue: OnChangeValue<Option, IsMulti>,
+		action: SetValueAction,
+		option?: Option,
+	) => void;
+	theme: Theme;
+}
+
+export interface CommonPropsAndClassName<
+	Option,
+	IsMulti extends boolean,
+	Group extends GroupBase<Option>,
+> extends CommonProps<Option, IsMulti, Group> {
+	className?: string;
+}
 
 export interface Colors {
 	primary: string;

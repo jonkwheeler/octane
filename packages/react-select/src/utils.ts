@@ -45,12 +45,27 @@ export function handleInputChange(
 	return inputValue;
 }
 
+export function scrollOptionIntoView(menuElement: HTMLElement, focusedElement: HTMLElement): void {
+	const menuRect = menuElement.getBoundingClientRect();
+	const focusedRect = focusedElement.getBoundingClientRect();
+	const overScroll = focusedElement.offsetHeight / 3;
+	if (focusedRect.bottom + overScroll > menuRect.bottom) {
+		menuElement.scrollTop = Math.min(
+			focusedElement.offsetTop +
+				focusedElement.clientHeight -
+				menuElement.offsetHeight +
+				overScroll,
+			menuElement.scrollHeight,
+		);
+	} else if (focusedRect.top - overScroll < menuRect.top) {
+		menuElement.scrollTop = Math.max(focusedElement.offsetTop - overScroll, 0);
+	}
+}
+
 export function valueTernary<Option, IsMulti extends boolean>(
 	isMulti: IsMulti | undefined,
 	multiValue: readonly Option[],
 	singleValue: Option,
 ): IsMulti extends true ? readonly Option[] : Option {
-	return (isMulti ? multiValue : singleValue) as IsMulti extends true
-		? readonly Option[]
-		: Option;
+	return (isMulti ? multiValue : singleValue) as IsMulti extends true ? readonly Option[] : Option;
 }

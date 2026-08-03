@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:local-public-surface",
+      "testName": "Octane public type surface",
+      "fullName": "Octane public type surface across all six entry points"
+    }
+  ]
+}

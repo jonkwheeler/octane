@@ -2,10 +2,13 @@ import type {
 	ActionMeta,
 	AriaLiveMessages,
 	ClassNamesConfig,
+	CommonProps,
+	CommonPropsAndClassName,
 	ClearIndicatorProps,
 	ControlProps,
 	GroupBase,
 	GroupProps,
+	GetStyles,
 	InputProps,
 	MenuProps,
 	MultiValueProps,
@@ -19,6 +22,8 @@ import type {
 import type { AsyncProps } from '../src/async.tsrx';
 import type { CreatableProps } from '../src/creatable.tsrx';
 import type { AsyncCreatableProps } from '../src/async-creatable.tsrx';
+import type BaseSelect from '../src/base';
+import type makeAnimated from '../src/animated/index';
 
 type Option = { label: string; value: string };
 type Group = GroupBase<Option> & { category: string };
@@ -29,6 +34,11 @@ declare const asyncProps: AsyncProps<Option, false, Group>;
 declare const creatableProps: CreatableProps<Option, true, Group>;
 declare const asyncCreatableProps: AsyncCreatableProps<Option, false, Group>;
 declare const instance: SelectInstance<Option, false, Group>;
+declare const commonProps: CommonProps<Option, false, Group>;
+declare const commonPropsWithClassName: CommonPropsAndClassName<Option, false, Group>;
+declare const getStyles: GetStyles<Option, false, Group>;
+declare const baseSelect: typeof BaseSelect;
+declare const animatedFactory: typeof makeAnimated;
 
 rootProps.getOptionLabel?.({ label: 'One', value: '1' });
 stateProps.onChange?.([], { action: 'clear', removedValues: [] });
@@ -37,6 +47,14 @@ creatableProps.getNewOptionData?.('new', 'New');
 asyncCreatableProps.loadOptions?.('', () => {});
 instance.focus();
 instance.blur();
+instance.clearValue();
+instance.selectOption({ label: 'One', value: '1' });
+instance.setValue({ label: 'One', value: '1' }, 'select-option');
+commonProps.selectOption({ label: 'One', value: '1' });
+void commonPropsWithClassName.className;
+void getStyles;
+void baseSelect;
+void animatedFactory;
 
 const options: OptionsOrGroups<Option, Group> = [
 	{ label: 'One', value: '1' },

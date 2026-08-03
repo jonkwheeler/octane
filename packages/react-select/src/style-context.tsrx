@@ -1,11 +1,7 @@
 import { createContext, useContext, useMemo } from 'octane';
 import type { OctaneNode } from 'octane';
 
-import {
-	createStyleCache,
-	resolveComponentStyle,
-	type StyleCache,
-} from './style-adapter';
+import { createStyleCache, resolveComponentStyle, type StyleCache } from './style-adapter';
 import type { CSSObjectWithLabel } from './types';
 
 interface StyleContextValue {
@@ -32,6 +28,10 @@ export function NonceProvider(props: {
 
 export function useStyleResolver() {
 	const context = useContext(StyleContext);
-	return (cssValue: CSSObjectWithLabel, className?: unknown) =>
-		resolveComponentStyle(cssValue, className, context?.cache, context?.nonce);
+	return (cssValue: CSSObjectWithLabel, className?: unknown) => resolveComponentStyle(
+		cssValue,
+		className,
+		context?.cache,
+		context?.nonce,
+	);
 }

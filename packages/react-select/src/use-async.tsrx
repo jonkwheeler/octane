@@ -7,18 +7,15 @@ import { handleInputChange } from './utils';
 export interface AsyncAdditionalProps<Option, Group extends GroupBase<Option>> {
 	defaultOptions?: OptionsOrGroups<Option, Group> | boolean;
 	cacheOptions?: unknown;
-	loadOptions?: (
-		inputValue: string,
-		callback: (options: OptionsOrGroups<Option, Group>) => void,
-	) => Promise<OptionsOrGroups<Option, Group>> | void;
+	loadOptions?: (inputValue: string, callback: (options: OptionsOrGroups<
+		Option,
+		Group
+	>) => void) => Promise<OptionsOrGroups<Option, Group>> | void;
 	isLoading?: boolean;
 }
 
-export type AsyncProps<
-	Option,
-	IsMulti extends boolean,
-	Group extends GroupBase<Option>,
-> = StateManagerProps<Option, IsMulti, Group> & AsyncAdditionalProps<Option, Group>;
+export type AsyncProps<Option, IsMulti extends boolean, Group extends GroupBase<Option>> =
+	StateManagerProps<Option, IsMulti, Group> & AsyncAdditionalProps<Option, Group>;
 
 export function useAsync<
 	Option,
@@ -49,7 +46,7 @@ export function useAsync<
 		OptionsOrGroups<Option, Group> | boolean | undefined
 	>(Array.isArray(propsDefaultOptions) ? propsDefaultOptions : undefined);
 	const [stateInputValue, setStateInputValue] = useState(
-		typeof propsInputValue !== 'undefined' ? (propsInputValue as string) : '',
+		typeof propsInputValue !== 'undefined' ? propsInputValue as string : '',
 	);
 	const [isLoading, setIsLoading] = useState(propsDefaultOptions === true);
 	const [loadedInputValue, setLoadedInputValue] = useState<string | undefined>(undefined);
@@ -79,17 +76,17 @@ export function useAsync<
 		};
 	}, []);
 
-	const loadOptions = useCallback(
-		(inputValue: string, callback: (options?: OptionsOrGroups<Option, Group>) => void) => {
-			if (!propsLoadOptions) {
-				callback();
-				return;
-			}
-			const loader = propsLoadOptions(inputValue, callback);
-			if (loader && typeof loader.then === 'function') loader.then(callback, () => callback());
-		},
-		[propsLoadOptions],
-	);
+	const loadOptions = useCallback((
+		inputValue: string,
+		callback: (options?: OptionsOrGroups<Option, Group>) => void,
+	) => {
+		if (!propsLoadOptions) {
+			callback();
+			return;
+		}
+		const loader = propsLoadOptions(inputValue, callback);
+		if (loader && typeof loader.then === 'function') loader.then(callback, () => callback());
+	}, [propsLoadOptions]);
 
 	useEffect(() => {
 		if (propsDefaultOptions === true) {
@@ -101,48 +98,46 @@ export function useAsync<
 		}
 	}, []);
 
-	const onInputChange = useCallback(
-		(newValue: string, actionMeta: InputActionMeta) => {
-			const inputValue = handleInputChange(newValue, actionMeta, propsOnInputChange);
-			if (!inputValue) {
-				lastRequest.current = undefined;
-				setStateInputValue('');
-				setLoadedInputValue('');
-				setLoadedOptions([]);
-				setIsLoading(false);
-				setPassEmptyOptions(false);
-				return;
-			}
-			if (cacheOptions && optionsCache[inputValue]) {
-				setStateInputValue(inputValue);
-				setLoadedInputValue(inputValue);
-				setLoadedOptions(optionsCache[inputValue]);
-				setIsLoading(false);
-				setPassEmptyOptions(false);
-				return;
-			}
-			const request = (lastRequest.current = {});
+	const onInputChange = useCallback((newValue: string, actionMeta: InputActionMeta) => {
+		const inputValue = handleInputChange(newValue, actionMeta, propsOnInputChange);
+		if (!inputValue) {
+			lastRequest.current = undefined;
+			setStateInputValue('');
+			setLoadedInputValue('');
+			setLoadedOptions([]);
+			setIsLoading(false);
+			setPassEmptyOptions(false);
+			return;
+		}
+		if (cacheOptions && optionsCache[inputValue]) {
 			setStateInputValue(inputValue);
-			setIsLoading(true);
-			setPassEmptyOptions(!loadedInputValue);
-			loadOptions(inputValue, (options) => {
-				if (!mounted.current || request !== lastRequest.current) return;
-				lastRequest.current = undefined;
-				setIsLoading(false);
-				setLoadedInputValue(inputValue);
-				setLoadedOptions(options || []);
-				setPassEmptyOptions(false);
-				setOptionsCache(options ? { ...optionsCache, [inputValue]: options } : optionsCache);
-			});
-		},
-		[cacheOptions, loadOptions, loadedInputValue, optionsCache, propsOnInputChange],
-	);
+			setLoadedInputValue(inputValue);
+			setLoadedOptions(optionsCache[inputValue]);
+			setIsLoading(false);
+			setPassEmptyOptions(false);
+			return;
+		}
+		const request = lastRequest.current = {};
+		setStateInputValue(inputValue);
+		setIsLoading(true);
+		setPassEmptyOptions(!loadedInputValue);
+		loadOptions(inputValue, (options) => {
+			if (!mounted.current || request !== lastRequest.current) return;
+			lastRequest.current = undefined;
+			setIsLoading(false);
+			setLoadedInputValue(inputValue);
+			setLoadedOptions(options || []);
+			setPassEmptyOptions(false);
+			setOptionsCache(options ? { ...optionsCache, [inputValue]: options } : optionsCache);
+		});
+	}, [cacheOptions, loadOptions, loadedInputValue, optionsCache, propsOnInputChange]);
 
-	const options = passEmptyOptions
-		? []
-		: stateInputValue && loadedInputValue
-			? loadedOptions
-			: ((defaultOptions || []) as OptionsOrGroups<Option, Group>);
+	const options =
+		passEmptyOptions
+			? []
+			: stateInputValue && loadedInputValue
+				? loadedOptions
+				: (defaultOptions || []) as OptionsOrGroups<Option, Group>;
 
 	return {
 		...restSelectProps,

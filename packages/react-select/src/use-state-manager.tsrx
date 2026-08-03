@@ -1,12 +1,6 @@
 import { useCallback, useState } from 'octane';
 
-import type {
-	ActionMeta,
-	GroupBase,
-	InputActionMeta,
-	OnChangeValue,
-	PropsValue,
-} from './types';
+import type { ActionMeta, GroupBase, InputActionMeta, OnChangeValue, PropsValue } from './types';
 import type { PublicBaseSelectProps } from './select.tsrx';
 
 export type StateManagedPropKeys =
@@ -28,9 +22,10 @@ export type StateManagerProps<
 	Option = unknown,
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
-> = Omit<PublicBaseSelectProps<Option, IsMulti, Group>, StateManagedPropKeys>
-	& Partial<PublicBaseSelectProps<Option, IsMulti, Group>>
-	& StateManagerAdditionalProps<Option>;
+> =
+	Omit<PublicBaseSelectProps<Option, IsMulti, Group>, StateManagedPropKeys> & Partial<
+		PublicBaseSelectProps<Option, IsMulti, Group>
+	> & StateManagerAdditionalProps<Option>;
 
 export function useStateManager<
 	Option,
@@ -62,20 +57,17 @@ export function useStateManager<
 		propsValue !== undefined ? propsValue : defaultValue,
 	);
 
-	const onChange = useCallback(
-		(value: OnChangeValue<Option, IsMulti>, actionMeta: ActionMeta<Option>) => {
-			propsOnChange?.(value, actionMeta);
-			setStateValue(value);
-		},
-		[propsOnChange],
-	);
-	const onInputChange = useCallback(
-		(value: string, actionMeta: InputActionMeta) => {
-			const newValue = propsOnInputChange?.(value, actionMeta);
-			setStateInputValue(newValue !== undefined ? newValue : value);
-		},
-		[propsOnInputChange],
-	);
+	const onChange = useCallback((
+		value: OnChangeValue<Option, IsMulti>,
+		actionMeta: ActionMeta<Option>,
+	) => {
+		propsOnChange?.(value, actionMeta);
+		setStateValue(value);
+	}, [propsOnChange]);
+	const onInputChange = useCallback((value: string, actionMeta: InputActionMeta) => {
+		const newValue = propsOnInputChange?.(value, actionMeta);
+		setStateInputValue(newValue !== undefined ? newValue : value);
+	}, [propsOnInputChange]);
 	const onMenuOpen = useCallback(() => {
 		propsOnMenuOpen?.();
 		setStateMenuIsOpen(true);

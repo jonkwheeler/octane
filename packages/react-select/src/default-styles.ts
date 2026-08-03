@@ -53,10 +53,7 @@ export function controlCSS(
 
 export const dropdownIndicatorCSS = indicatorCSS;
 
-function indicatorCSS(
-	props: Themed & Focused,
-	unstyled: boolean,
-): CSSObjectWithLabel {
+function indicatorCSS(props: Themed & Focused, unstyled: boolean): CSSObjectWithLabel {
 	const { baseUnit } = props.theme.spacing;
 	const { colors } = props.theme;
 	return {
@@ -226,8 +223,7 @@ export function menuCSS(
 			: {
 					backgroundColor: colors.neutral0,
 					borderRadius,
-					boxShadow:
-						'0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1)',
+					boxShadow: '0 0 0 1px hsla(0, 0%, 0%, 0.1), 0 4px 11px hsla(0, 0%, 0%, 0.1)',
 					marginBottom: spacing.menuGutter,
 					marginTop: spacing.menuGutter,
 				}),
@@ -379,10 +375,7 @@ export function placeholderCSS(props: Themed, unstyled: boolean): CSSObjectWithL
 	};
 }
 
-export function singleValueCSS(
-	props: Themed & Disabled,
-	unstyled: boolean,
-): CSSObjectWithLabel {
+export function singleValueCSS(props: Themed & Disabled, unstyled: boolean): CSSObjectWithLabel {
 	const { spacing, colors } = props.theme;
 	return {
 		label: 'singleValue',

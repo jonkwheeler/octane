@@ -1,4 +1,12 @@
-import { createContext, createPortal, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'octane';
+import {
+	createContext,
+	createPortal,
+	useCallback,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'octane';
 import type { OctaneNode } from 'octane';
 import type { Octane } from 'octane/jsx-runtime';
 import { autoUpdate } from '@floating-ui/dom';
@@ -21,7 +29,6 @@ export interface CommonComponentProps<
 	Group extends GroupBase<Option> = GroupBase<Option>,
 > {
 	[key: string]: unknown;
-	readonly __types?: readonly [Option, IsMulti, Group];
 	className?: string;
 	cx: CX;
 	getClassNames: (name: string, props: unknown) => string | undefined;
@@ -75,7 +82,9 @@ export function CrossIcon(props: CrossIconProps) @{
 		focusable="false"
 		className={resolved.className}
 	>
-		<path d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z" />
+		<path
+			d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"
+		/>
 	</svg>
 }
 
@@ -93,7 +102,9 @@ export function DownChevron(props: DownChevronProps) @{
 		focusable="false"
 		className={resolved.className}
 	>
-		<path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z" />
+		<path
+			d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+		/>
 	</svg>
 }
 
@@ -453,7 +464,7 @@ export function LoadingMessage(props: NoticeProps) @{
 	>{children}</div>
 }
 
-type ComponentType<Props> = (props: Props) => OctaneNode;
+type ComponentType<Props> = (props: Props) => Octane.JSX.Element;
 
 function cleanCommonProps<Props extends CommonComponentProps>(props: Props) {
 	const {
@@ -475,18 +486,16 @@ export type GroupHeadingProps<
 	Option = unknown,
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
-> = CommonComponentProps<Option, IsMulti, Group> & Omit<DivProps, 'className'> & {
-	children?: OctaneNode;
-	id: string;
-	data: unknown;
-};
+> =
+	CommonComponentProps<Option, IsMulti, Group> & Omit<DivProps, 'className'> & {
+		children?: OctaneNode;
+		id: string;
+		data: unknown;
+	};
 
 export function GroupHeading(props: GroupHeadingProps) @{
 	const { data: _data, ...innerProps } = cleanCommonProps(props);
-	<div
-		{...useStyleProps(props, 'groupHeading', { 'group-heading': true })}
-		{...innerProps}
-	/>
+	<div {...useStyleProps(props, 'groupHeading', { 'group-heading': true })} {...innerProps} />
 }
 
 export interface GroupProps<
@@ -526,7 +535,6 @@ export interface MultiValueGenericProps<
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
 > {
-	readonly __types?: readonly [Option, IsMulti, Group];
 	children?: OctaneNode;
 	data: unknown;
 	innerProps: DivProps;
@@ -545,7 +553,6 @@ export interface MultiValueRemoveProps<
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
 > {
-	readonly __types?: readonly [Option, IsMulti, Group];
 	children?: OctaneNode;
 	data: unknown;
 	innerProps: DivProps;
@@ -553,9 +560,7 @@ export interface MultiValueRemoveProps<
 }
 
 export function MultiValueRemove(props: MultiValueRemoveProps) @{
-	<div role="button" {...props.innerProps}>
-		{props.children || <CrossIcon size={14} />}
-	</div>
+	<div role="button" {...props.innerProps}>{props.children || <CrossIcon size={14} />}</div>
 }
 
 export interface MultiValueProps<
@@ -662,9 +667,12 @@ export function LoadingIndicator(props: LoadingIndicatorProps) @{
 
 type MenuPlacement = 'auto' | 'bottom' | 'top';
 type MenuPosition = 'absolute' | 'fixed';
-const PortalPlacementContext = createContext<{
-	setPortalPlacement: (placement: 'bottom' | 'top') => void;
-} | null>(null);
+const PortalPlacementContext = createContext<
+	| {
+			setPortalPlacement: (placement: 'bottom' | 'top') => void;
+	  }
+	| null
+>(null);
 
 function coercePlacement(placement: MenuPlacement): 'bottom' | 'top' {
 	return placement === 'auto' ? 'bottom' : placement;
@@ -702,20 +710,26 @@ export function MenuPortal(props: MenuPortalProps) @{
 		coercePlacement(props.menuPlacement),
 	);
 	const portalPlacementContext = useMemo(() => ({ setPortalPlacement }), []);
-	const [computedPosition, setComputedPosition] = useState<{
-		offset: number;
-		rect: { left: number; width: number };
-	} | null>(null);
+	useLayoutEffect(() => {
+		setPortalPlacement(coercePlacement(props.menuPlacement));
+	}, [props.menuPlacement]);
+	const [computedPosition, setComputedPosition] = useState<
+		| {
+				offset: number;
+				rect: { left: number; width: number };
+		  }
+		| null
+	>(null);
 
 	const updateComputedPosition = useCallback(() => {
 		if (!props.controlElement) return;
 		const rect = boundingClientObject(props.controlElement);
-		const scrollDistance = props.menuPosition === 'fixed' ? 0 : window.pageYOffset;
+		const scrollDistance =
+			props.menuPosition === 'fixed' ? 0 : window.pageYOffset;
 		const offset = rect[placement] + scrollDistance;
 		if (
-			offset !== computedPosition?.offset ||
-			rect.left !== computedPosition?.rect.left ||
-			rect.width !== computedPosition?.rect.width
+			offset !== computedPosition?.offset || rect.left !== computedPosition?.rect.left ||
+				rect.width !== computedPosition?.rect.width
 		) {
 			setComputedPosition({ offset, rect });
 		}
@@ -755,7 +769,7 @@ export function MenuPortal(props: MenuPortalProps) @{
 		runAutoUpdate();
 	}, [runAutoUpdate]);
 
-	if ((!props.appendTo && props.menuPosition !== 'fixed') || !computedPosition) return null;
+	if (!props.appendTo && props.menuPosition !== 'fixed' || !computedPosition) return null;
 
 	const menuWrapper = <div
 		ref={setMenuPortalElement}
@@ -782,39 +796,39 @@ export interface SelectComponents<
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
 > {
-	readonly __types?: readonly [Option, IsMulti, Group];
-	ClearIndicator: typeof ClearIndicator;
-	Control: typeof Control;
-	DropdownIndicator: typeof DropdownIndicator | null;
-	DownChevron: typeof DownChevron;
-	CrossIcon: typeof CrossIcon;
-	Group: typeof Group;
-	GroupHeading: typeof GroupHeading;
-	IndicatorsContainer: typeof IndicatorsContainer;
-	IndicatorSeparator: typeof IndicatorSeparator | null;
-	Input: typeof Input;
-	LoadingIndicator: typeof LoadingIndicator;
-	Menu: typeof Menu;
-	MenuList: typeof MenuList;
-	MenuPortal: typeof MenuPortal;
-	LoadingMessage: typeof LoadingMessage;
-	NoOptionsMessage: typeof NoOptionsMessage;
-	MultiValue: typeof MultiValue;
-	MultiValueContainer: typeof MultiValueContainer;
-	MultiValueLabel: typeof MultiValueLabel;
-	MultiValueRemove: typeof MultiValueRemove;
-	Option: typeof Option;
-	Placeholder: typeof Placeholder;
-	SelectContainer: typeof SelectContainer;
-	SingleValue: typeof SingleValue;
-	ValueContainer: typeof ValueContainer;
+	ClearIndicator: ComponentType<IndicatorProps<Option, IsMulti, Group>>;
+	Control: ComponentType<ControlProps<Option, IsMulti, Group>>;
+	DropdownIndicator: ComponentType<IndicatorProps<Option, IsMulti, Group>> | null;
+	DownChevron: ComponentType<DownChevronProps>;
+	CrossIcon: ComponentType<CrossIconProps>;
+	Group: ComponentType<GroupProps<Option, IsMulti, Group>>;
+	GroupHeading: ComponentType<GroupHeadingProps<Option, IsMulti, Group>>;
+	IndicatorsContainer: ComponentType<IndicatorsContainerProps<Option, IsMulti, Group>>;
+	IndicatorSeparator: ComponentType<IndicatorSeparatorProps<Option, IsMulti, Group>> | null;
+	Input: ComponentType<InputProps<Option, IsMulti, Group>>;
+	LoadingIndicator: ComponentType<LoadingIndicatorProps<Option, IsMulti, Group>>;
+	Menu: ComponentType<MenuProps<Option, IsMulti, Group>>;
+	MenuList: ComponentType<MenuListProps<Option, IsMulti, Group>>;
+	MenuPortal: (props: MenuPortalProps<Option, IsMulti, Group>) => Octane.JSX.Element | null;
+	LoadingMessage: ComponentType<NoticeProps<Option, IsMulti, Group>>;
+	NoOptionsMessage: ComponentType<NoticeProps<Option, IsMulti, Group>>;
+	MultiValue: ComponentType<MultiValueProps<Option, IsMulti, Group>>;
+	MultiValueContainer: ComponentType<MultiValueGenericProps<Option, IsMulti, Group>>;
+	MultiValueLabel: ComponentType<MultiValueGenericProps<Option, IsMulti, Group>>;
+	MultiValueRemove: ComponentType<MultiValueRemoveProps<Option, IsMulti, Group>>;
+	Option: ComponentType<OptionProps<Option, IsMulti, Group>>;
+	Placeholder: ComponentType<PlaceholderProps<Option, IsMulti, Group>>;
+	SelectContainer: ComponentType<ContainerProps<Option, IsMulti, Group>>;
+	SingleValue: ComponentType<SingleValueProps<Option, IsMulti, Group>>;
+	ValueContainer: ComponentType<ValueContainerProps<Option, IsMulti, Group>>;
 }
 
 export type SelectComponentsConfig<
 	Option = unknown,
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
-> = Partial<SelectComponents<Option, IsMulti, Group>>;
+> =
+	Partial<SelectComponents<Option, IsMulti, Group>>;
 
 export const components: SelectComponents = {
 	ClearIndicator,
@@ -846,8 +860,12 @@ export const components: SelectComponents = {
 
 export type SelectComponentsGeneric = typeof components;
 
-export function defaultComponents(props: {
-	components: SelectComponentsConfig;
-}): SelectComponentsGeneric {
-	return { ...components, ...props.components } as SelectComponentsGeneric;
+export function defaultComponents<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+>(props: {
+	components: SelectComponentsConfig<Option, IsMulti, Group>;
+}): SelectComponents<Option, IsMulti, Group> {
+	return { ...components, ...props.components } as SelectComponents<Option, IsMulti, Group>;
 }

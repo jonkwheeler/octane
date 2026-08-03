@@ -96,7 +96,10 @@ export function getMenuPlacement({
 			if (shouldScroll) animatedScrollTo(scrollParent, scrollDown, 160);
 			return defaultState;
 		}
-		if ((!isFixedPosition && scrollSpaceBelow >= minHeight) || (isFixedPosition && viewSpaceBelow >= minHeight)) {
+		if (
+			(!isFixedPosition && scrollSpaceBelow >= minHeight) ||
+			(isFixedPosition && viewSpaceBelow >= minHeight)
+		) {
 			if (shouldScroll) animatedScrollTo(scrollParent, scrollDown, 160);
 			return {
 				placement: 'bottom',
@@ -107,9 +110,10 @@ export function getMenuPlacement({
 			const spaceAbove = isFixedPosition ? viewSpaceAbove : scrollSpaceAbove;
 			return {
 				placement: 'top',
-				maxHeight: spaceAbove >= minHeight
-					? Math.min(spaceAbove - marginBottom - controlHeight, preferredMaxHeight)
-					: preferredMaxHeight,
+				maxHeight:
+					spaceAbove >= minHeight
+						? Math.min(spaceAbove - marginBottom - controlHeight, preferredMaxHeight)
+						: preferredMaxHeight,
 			};
 		}
 		if (shouldScroll) scrollTo(scrollParent, scrollDown);
@@ -122,7 +126,10 @@ export function getMenuPlacement({
 			if (shouldScroll) animatedScrollTo(scrollParent, scrollUp, 160);
 			return { placement: 'top', maxHeight: preferredMaxHeight };
 		}
-		if ((!isFixedPosition && scrollSpaceAbove >= minHeight) || (isFixedPosition && viewSpaceAbove >= minHeight)) {
+		if (
+			(!isFixedPosition && scrollSpaceAbove >= minHeight) ||
+			(isFixedPosition && viewSpaceAbove >= minHeight)
+		) {
 			if (shouldScroll) animatedScrollTo(scrollParent, scrollUp, 160);
 			return {
 				placement: 'top',

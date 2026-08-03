@@ -28,17 +28,13 @@ export type StylesConfig<
 	Option = unknown,
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
-> = Partial<Record<StyleKey, (base: CSSObjectWithLabel, props: unknown) => CSSObjectWithLabel>> & {
-	readonly __types?: readonly [Option, IsMulti, Group];
-};
+> = Partial<Record<StyleKey, (base: CSSObjectWithLabel, props: unknown) => CSSObjectWithLabel>>;
 
 export type ClassNamesConfig<
 	Option = unknown,
 	IsMulti extends boolean = boolean,
 	Group extends GroupBase<Option> = GroupBase<Option>,
-> = Partial<Record<StyleKey, (props: unknown) => string>> & {
-	readonly __types?: readonly [Option, IsMulti, Group];
-};
+> = Partial<Record<StyleKey, (props: unknown) => string>>;
 
 export function mergeStyles<Option, IsMulti extends boolean, Group extends GroupBase<Option>>(
 	source: StylesConfig<Option, IsMulti, Group>,

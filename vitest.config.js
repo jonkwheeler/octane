@@ -3117,6 +3117,39 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-select',
+					include: [
+						'packages/react-select/tests/**/*.test.ts',
+						'packages/react-select/tests/**/*.test.mjs',
+					],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-select$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-select/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-select\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-select/src/$1'),
+						},
+						{
+							find: /^@octanejs\/react-transition-group$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-transition-group/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
 				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],

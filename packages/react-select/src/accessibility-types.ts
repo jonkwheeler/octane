@@ -27,10 +27,7 @@ export interface AriaGuidanceProps {
 	isInitialFocus: boolean;
 }
 
-export type AriaOnChangeProps<Option, IsMulti extends boolean> = AriaSelection<
-	Option,
-	IsMulti
-> & {
+export type AriaOnChangeProps<Option, IsMulti extends boolean> = AriaSelection<Option, IsMulti> & {
 	label: string;
 	labels: string[];
 	isDisabled: boolean | null;
@@ -57,10 +54,9 @@ export type AriaOnChange<Option, IsMulti extends boolean> = (
 	props: AriaOnChangeProps<Option, IsMulti>,
 ) => string;
 export type AriaOnFilter = (props: AriaOnFilterProps) => string;
-export type AriaOnFocus<
-	Option,
-	Group extends GroupBase<Option> = GroupBase<Option>,
-> = (props: AriaOnFocusProps<Option, Group>) => string;
+export type AriaOnFocus<Option, Group extends GroupBase<Option> = GroupBase<Option>> = (
+	props: AriaOnFocusProps<Option, Group>,
+) => string;
 
 export interface AriaLiveMessages<
 	Option,

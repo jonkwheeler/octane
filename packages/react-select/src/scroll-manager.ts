@@ -10,6 +10,13 @@ interface ScrollManagerOptions {
 }
 
 let activeScrollLocks = 0;
+let originalBodyStyle: {
+	boxSizing: string;
+	height: string;
+	overflow: string;
+	paddingRight: string;
+	position: string;
+} | null = null;
 
 function cancelScroll(event: Event) {
 	if (event.cancelable) event.preventDefault();
@@ -77,15 +84,15 @@ export function useScrollManager(options: ScrollManagerOptions) {
 	useEffect(() => {
 		if (!options.enabled || !options.lockEnabled || typeof document === 'undefined') return;
 		const style = document.body.style;
-		const original = {
-			boxSizing: style.boxSizing,
-			height: style.height,
-			overflow: style.overflow,
-			paddingRight: style.paddingRight,
-			position: style.position,
-		};
 		if (activeScrollLocks === 0) {
-			const currentPadding = Number.parseInt(original.paddingRight, 10) || 0;
+			originalBodyStyle = {
+				boxSizing: style.boxSizing,
+				height: style.height,
+				overflow: style.overflow,
+				paddingRight: style.paddingRight,
+				position: style.position,
+			};
+			const currentPadding = Number.parseInt(originalBodyStyle.paddingRight, 10) || 0;
 			const scrollbar = window.innerWidth - document.body.clientWidth;
 			style.boxSizing = 'border-box';
 			style.height = '100%';
@@ -96,7 +103,10 @@ export function useScrollManager(options: ScrollManagerOptions) {
 		activeScrollLocks += 1;
 		return () => {
 			activeScrollLocks = Math.max(activeScrollLocks - 1, 0);
-			if (activeScrollLocks === 0) Object.assign(style, original);
+			if (activeScrollLocks === 0 && originalBodyStyle) {
+				Object.assign(style, originalBodyStyle);
+				originalBodyStyle = null;
+			}
 		};
 	}, [options.enabled, options.lockEnabled]);
 }

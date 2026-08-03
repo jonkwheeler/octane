@@ -1,0 +1,720 @@
+{
+  "schemaVersion": 1,
+  "project": "react-select",
+  "roots": ["packages/react-select/tests"],
+  "files": [
+    "packages/react-select/tests/animated.test.ts",
+    "packages/react-select/tests/async.test.ts",
+    "packages/react-select/tests/browser.test.ts",
+    "packages/react-select/tests/client.test.mjs",
+    "packages/react-select/tests/creatable.test.ts",
+    "packages/react-select/tests/default-styles.test.ts",
+    "packages/react-select/tests/leaf-components.test.ts",
+    "packages/react-select/tests/local-crosswalk.test.ts",
+    "packages/react-select/tests/nonce-provider.test.ts",
+    "packages/react-select/tests/octane-server.test.ts",
+    "packages/react-select/tests/production-foundation.test.ts",
+    "packages/react-select/tests/react-select-contract.test.mjs",
+    "packages/react-select/tests/select-ssr.test.ts",
+    "packages/react-select/tests/server.test.mjs",
+    "packages/react-select/tests/state-manager.test.ts",
+    "packages/react-select/tests/verifier-negative.test.mjs"
+  ],
+  "tests": [
+    {
+      "id": "runtime:08a20d1066ff716b",
+      "file": "packages/react-select/tests/animated.test.ts",
+      "fullName": "animated entry point parity matches the complete public export surface"
+    },
+    {
+      "id": "runtime:32e8e0e5bb165420",
+      "file": "packages/react-select/tests/animated.test.ts",
+      "fullName": "animated entry point parity matches upstream memoization and custom-component precedence"
+    },
+    {
+      "id": "runtime:86d5cb20c9f1f7a0",
+      "file": "packages/react-select/tests/animated.test.ts",
+      "fullName": "animated entry point parity renders entered fade and collapse server states without leaking transition props"
+    },
+    {
+      "id": "runtime:6edaff5175449f84",
+      "file": "packages/react-select/tests/animated.test.ts",
+      "fullName": "animated entry point parity strips transition-only props before forwarding Input props"
+    },
+    {
+      "id": "runtime:61642367a73a18c4",
+      "file": "packages/react-select/tests/async.test.ts",
+      "fullName": "useAsync SSR parity matches React initial server state for 0"
+    },
+    {
+      "id": "runtime:94870f003b690b71",
+      "file": "packages/react-select/tests/async.test.ts",
+      "fullName": "useAsync SSR parity matches React initial server state for 1"
+    },
+    {
+      "id": "runtime:4a5e529c122fd6fb",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "AsyncCreatable in Chromium matches React through loading, replacement, creation, and selection"
+    },
+    {
+      "id": "runtime:56aa6caa95288ea8",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "Emotion-to-Octane adapter in Chromium inserts, isolates, nonces, orders, deduplicates, and adopts styles"
+    },
+    {
+      "id": "runtime:2a5ecd9667aace40",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "MenuPortal in Chromium portals, positions, tracks layout changes, and cleans up"
+    },
+    {
+      "id": "runtime:9c8a1eaf168b0028",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "NonceProvider in Chromium applies nonce-bearing isolated client caches and reacts to cache-key changes"
+    },
+    {
+      "id": "runtime:7a0d460b77b9f35d",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "animated components in Chromium matches React through multi-value collapse and removal"
+    },
+    {
+      "id": "runtime:2c2a930c4317ad83",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "full Select in Chromium exposes and executes the public imperative SelectInstance surface"
+    },
+    {
+      "id": "runtime:7293f09c4a292a40",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "full Select in Chromium matches React autoFocus behavior on mount"
+    },
+    {
+      "id": "runtime:15189512acda9137",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "full Select in Chromium matches React focus, menu, option selection, filtering, and keyboard behavior"
+    },
+    {
+      "id": "runtime:c26dc07df0561206",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "full Select in Chromium matches React input-open and blur action sequencing"
+    },
+    {
+      "id": "runtime:4cec49d592b59908",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "full Select in Chromium matches React required-input focus redirection"
+    },
+    {
+      "id": "runtime:59cb697896f01210",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "menu placement in Chromium matches React auto-flip placement and constrained height near the viewport edge"
+    },
+    {
+      "id": "runtime:36b4b30cd3806e23",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "menu placement in Chromium preserves the first body snapshot across overlapping scroll locks"
+    },
+    {
+      "id": "runtime:e962eb7fcd225304",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "multi-value keyboard navigation in Chromium matches React clear-indicator behavior and focus restoration"
+    },
+    {
+      "id": "runtime:99d30be813bad1eb",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "multi-value keyboard navigation in Chromium matches React value focus and repeated Backspace removal"
+    },
+    {
+      "id": "runtime:2a0fc35f2c20c16b",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "touch Select in Chromium matches React control opening and option selection from touch gestures"
+    },
+    {
+      "id": "runtime:68515a748dfd5f19",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "useAsync in Chromium matches React loading, cache, stale-request, resolution, and clear behavior"
+    },
+    {
+      "id": "runtime:1b4549fce8c70a31",
+      "file": "packages/react-select/tests/browser.test.ts",
+      "fullName": "useStateManager in Chromium matches React for uncontrolled transitions, controlled precedence, and callbacks"
+    },
+    {
+      "id": "runtime:0df7bb10ffcfb550",
+      "file": "packages/react-select/tests/client.test.mjs",
+      "fullName": "inserts, isolates, nonces, deduplicates, and adopts client rules"
+    },
+    {
+      "id": "runtime:6950f242a92828df",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React create-option value and action metadata"
+    },
+    {
+      "id": "runtime:cc2f46171b3f14ef",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React delegated onCreateOption and ordinary changes"
+    },
+    {
+      "id": "runtime:91c1f2790dc1804a",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React new-option placement: first"
+    },
+    {
+      "id": "runtime:9d67ac2280853c67",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React new-option placement: last"
+    },
+    {
+      "id": "runtime:650d8da20de151b5",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React suppression for 0"
+    },
+    {
+      "id": "runtime:b9916b5cbdf814c5",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React suppression for 1"
+    },
+    {
+      "id": "runtime:1512a2c57a64288c",
+      "file": "packages/react-select/tests/creatable.test.ts",
+      "fullName": "useCreatable parity matches React suppression for 2"
+    },
+    {
+      "id": "runtime:b978f1910e42125f",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned built-ins matches labels, values, group labels, and disabled coercion"
+    },
+    {
+      "id": "runtime:ea2162d90b1dd9b8",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry has the exact 22-key upstream registry"
+    },
+    {
+      "id": "runtime:bef1de81303359e9",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches clearIndicator in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:14cdb0983ea36d78",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches container in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:16bf4ce774a9dd74",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches control in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:d5f5a39e05557700",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches dropdownIndicator in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:c6a2fe20fb9ab15d",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches group in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:4e4ad22103ba4883",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches groupHeading in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:be56494b8098a441",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches indicatorSeparator in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:96c3c3e109253a49",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches indicatorsContainer in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:286059fd4826a114",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches input in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:edeaec0278e77169",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches loadingIndicator in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:189e839e97a35b8e",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches loadingMessage in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:592b857daf4edbb9",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches menu in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:3b3cd901c393e377",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches menuList in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:b2798a45ec5a6852",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches menuPortal in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:467c0fea08d4689e",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches multiValue in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:8860d37db8b14900",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches multiValueLabel in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:4f201d5ccee3341e",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches multiValueRemove in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:7c9b95b6548601ab",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches noOptionsMessage in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:3beda57a4c461ea1",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches option in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:a96dde1920e54622",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches placeholder in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:5abe6d4cef4783d1",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches singleValue in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:ea03b46f9f917b91",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches state-sensitive branches"
+    },
+    {
+      "id": "runtime:d860ac6fc7424ae0",
+      "file": "packages/react-select/tests/default-styles.test.ts",
+      "fullName": "pinned default style registry matches valueContainer in styled and unstyled modes"
+    },
+    {
+      "id": "runtime:b99e6bb9b1cb2403",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'clearIndicator' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:809a251cd6f7aba0",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'control' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:0c46c583cc36e929",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'cross' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:62b4e53f46621f88",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'down' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:3d9b3a4bb6070792",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'dropdownIndicator' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:693cb18537b54ce6",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'group' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:1d346f02fc97eeb8",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'groupHeading' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:80e91362afbeea5e",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'indicatorSeparator' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:ef3c13eaf6241852",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'indicators' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:19eb0a9c008575ab",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'input' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:c194790f4b7dc07f",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'loadingIndicator' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:5eff5aae273508db",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'loadingMessage' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:7ead6ac20499f105",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'menu' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:c796a89b4b43417b",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'menuList' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:c362cd1760111690",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'multiValue' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:8b4a329b8ba05586",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'multiValueContainer' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:fb01beca15c7fe9b",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'multiValueRemove' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:dcdd6bdbe05dff1e",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'noOptionsMessage' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:bd341e6c0b05bef6",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'option' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:fb2ebfe2751c4792",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'placeholder' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:657d12f30cd3adc7",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'selectContainer' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:8f9b0f1d5b72a0f2",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'singleValue' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:ebdcbbffb53ca98a",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches 'valueContainer' styled SSR markup and CSS"
+    },
+    {
+      "id": "runtime:1f73c5f3305ad105",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches control unstyled and alternate state markup/CSS"
+    },
+    {
+      "id": "runtime:b116dbd8bd801596",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches option unstyled and alternate state markup/CSS"
+    },
+    {
+      "id": "runtime:0e416e5affc77810",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches singleValue unstyled and alternate state markup/CSS"
+    },
+    {
+      "id": "runtime:274abf49c548d061",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit matches valueContainer unstyled and alternate state markup/CSS"
+    },
+    {
+      "id": "runtime:a4443689133253eb",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit preserves explicit null overrides for nullable slots"
+    },
+    {
+      "id": "runtime:66f2fd96fc3d0acd",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit publishes the exact upstream component registry through the root entry point"
+    },
+    {
+      "id": "runtime:0057aa465bfd7cfb",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit renders no MenuPortal markup during SSR without a control element"
+    },
+    {
+      "id": "runtime:e505eb424af25eb0",
+      "file": "packages/react-select/tests/leaf-components.test.ts",
+      "fullName": "first default component unit uses registry identities by default and applies one consumer override"
+    },
+    {
+      "id": "runtime:b89727245ede1091",
+      "file": "packages/react-select/tests/local-crosswalk.test.ts",
+      "fullName": "local public export crosswalk exposes every . export marked ported-and-tested"
+    },
+    {
+      "id": "runtime:dd3279e98568bb6a",
+      "file": "packages/react-select/tests/local-crosswalk.test.ts",
+      "fullName": "local public export crosswalk exposes every ./animated export marked ported-and-tested"
+    },
+    {
+      "id": "runtime:01686cac613a9adf",
+      "file": "packages/react-select/tests/local-crosswalk.test.ts",
+      "fullName": "local public export crosswalk exposes every ./async export marked ported-and-tested"
+    },
+    {
+      "id": "runtime:0886d9cf808f1701",
+      "file": "packages/react-select/tests/local-crosswalk.test.ts",
+      "fullName": "local public export crosswalk exposes every ./async-creatable export marked ported-and-tested"
+    },
+    {
+      "id": "runtime:7723086629fc66f6",
+      "file": "packages/react-select/tests/local-crosswalk.test.ts",
+      "fullName": "local public export crosswalk exposes every ./base export marked ported-and-tested"
+    },
+    {
+      "id": "runtime:daa59b361d145f5f",
+      "file": "packages/react-select/tests/local-crosswalk.test.ts",
+      "fullName": "local public export crosswalk exposes every ./creatable export marked ported-and-tested"
+    },
+    {
+      "id": "runtime:48a8b3757ab82cba",
+      "file": "packages/react-select/tests/nonce-provider.test.ts",
+      "fullName": "NonceProvider parity applies cache key nonce-a and the CSP nonce to every SSR style"
+    },
+    {
+      "id": "runtime:2dcea60b92950309",
+      "file": "packages/react-select/tests/nonce-provider.test.ts",
+      "fullName": "NonceProvider parity applies cache key nonce-b and the CSP nonce to every SSR style"
+    },
+    {
+      "id": "runtime:ac1f027eb7e4d71a",
+      "file": "packages/react-select/tests/nonce-provider.test.ts",
+      "fullName": "NonceProvider parity is a public root export"
+    },
+    {
+      "id": "runtime:62cd4fcb8dc1efa1",
+      "file": "packages/react-select/tests/octane-server.test.ts",
+      "fullName": "React Select U1 Octane style channel collects exact Emotion rules and class identity in renderToString"
+    },
+    {
+      "id": "runtime:72f5d669a3e88c92",
+      "file": "packages/react-select/tests/octane-server.test.ts",
+      "fullName": "React Select U1 Octane style channel collects the same rule contract in static markup"
+    },
+    {
+      "id": "runtime:b4a49bc4929fa9d7",
+      "file": "packages/react-select/tests/octane-server.test.ts",
+      "fullName": "React Select U1 Octane style channel isolates dynamic rules across repeated server requests"
+    },
+    {
+      "id": "runtime:a654d4abdfd90032",
+      "file": "packages/react-select/tests/octane-server.test.ts",
+      "fullName": "React Select U1 Octane style channel streams nonce-bearing styles before the element that uses them"
+    },
+    {
+      "id": "runtime:6540242752f656c5",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation always includes the upstream creatable sentinel"
+    },
+    {
+      "id": "runtime:bcc25d1983fd88ab",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches createFilter: accent sensitive"
+    },
+    {
+      "id": "runtime:752fbd6d806d988c",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches createFilter: case sensitive"
+    },
+    {
+      "id": "runtime:5a1e5a4114e08755",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches createFilter: custom stringify"
+    },
+    {
+      "id": "runtime:755a7e0f8e7e6c1a",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches createFilter: defaults are case/accent insensitive and trim input"
+    },
+    {
+      "id": "runtime:5d8929f20b523034",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches createFilter: start matching"
+    },
+    {
+      "id": "runtime:e43a36683f27ae5d",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches createFilter: untrimmed"
+    },
+    {
+      "id": "runtime:d729fb889fc76211",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches overlapping merge order and callback props identity"
+    },
+    {
+      "id": "runtime:be0a415593bbb7c9",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches source-only and target-only merge behavior"
+    },
+    {
+      "id": "runtime:51bfc7f870d4b525",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches the pinned class prefix/state/list composition"
+    },
+    {
+      "id": "runtime:1d3072565a43ce96",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation matches the pinned default theme exactly"
+    },
+    {
+      "id": "runtime:b218ca3e9e9fa747",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation normalizes scalar, array, null, and falsey option values"
+    },
+    {
+      "id": "runtime:0cbbb0a337860247",
+      "file": "packages/react-select/tests/production-foundation.test.ts",
+      "fullName": "React Select production foundation preserves or replaces input values according to the callback result"
+    },
+    {
+      "id": "runtime:0e0055e2b9f2fbdc",
+      "file": "packages/react-select/tests/react-select-contract.test.mjs",
+      "fullName": "matches the pinned React Select control pipeline for defaults"
+    },
+    {
+      "id": "runtime:cfd2b826883a5af7",
+      "file": "packages/react-select/tests/react-select-contract.test.mjs",
+      "fullName": "matches the pinned React Select control pipeline for styles and classNames callbacks"
+    },
+    {
+      "id": "runtime:053dcd2aba53e760",
+      "file": "packages/react-select/tests/react-select-contract.test.mjs",
+      "fullName": "matches the pinned React Select control pipeline for unstyled with a consumer style"
+    },
+    {
+      "id": "runtime:f22b1c7e3016e274",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'empty closed' SSR"
+    },
+    {
+      "id": "runtime:f7ba88618b99a2ec",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'empty required field' SSR"
+    },
+    {
+      "id": "runtime:14f162a5ca9b9d94",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'non-searchable dummy input' SSR"
+    },
+    {
+      "id": "runtime:78e558e1a890e081",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'null loading notice' SSR"
+    },
+    {
+      "id": "runtime:f21a78ed16b76dc9",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'null no-options notice' SSR"
+    },
+    {
+      "id": "runtime:bfda3fe77ab1e7e4",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'open flat options' SSR"
+    },
+    {
+      "id": "runtime:29eecea421ed559c",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'open grouped options' SSR"
+    },
+    {
+      "id": "runtime:5b1cf7c8ba655116",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'open loading notice' SSR"
+    },
+    {
+      "id": "runtime:be2bb891417dba56",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'open no-options notice' SSR"
+    },
+    {
+      "id": "runtime:6cabd056cb223c25",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'selected multi values' SSR"
+    },
+    {
+      "id": "runtime:c0ca717fd31a662c",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "Select SSR parity matches pinned 'selected single value and hidden form…' SSR"
+    },
+    {
+      "id": "runtime:901e6b1d3250ccea",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "composed Select entry-point SSR parity matches the pinned 'async' default wrapper"
+    },
+    {
+      "id": "runtime:20da20cbb7316d34",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "composed Select entry-point SSR parity matches the pinned 'async-creatable' default wrapper"
+    },
+    {
+      "id": "runtime:92ce085c7758df5f",
+      "file": "packages/react-select/tests/select-ssr.test.ts",
+      "fullName": "composed Select entry-point SSR parity matches the pinned 'creatable' default wrapper"
+    },
+    {
+      "id": "runtime:cdb91830c24a626f",
+      "file": "packages/react-select/tests/server.test.mjs",
+      "fullName": "matches pinned Emotion server output for default and nested selectors"
+    },
+    {
+      "id": "runtime:28708c9af67fec9e",
+      "file": "packages/react-select/tests/server.test.mjs",
+      "fullName": "matches pinned Emotion server output for linked keyframes"
+    },
+    {
+      "id": "runtime:08ca3e0fa794de03",
+      "file": "packages/react-select/tests/server.test.mjs",
+      "fullName": "matches pinned Emotion server output for media query and label"
+    },
+    {
+      "id": "runtime:69832be2d27e6f30",
+      "file": "packages/react-select/tests/server.test.mjs",
+      "fullName": "matches registered-class composition"
+    },
+    {
+      "id": "runtime:1c1a08b81f30c270",
+      "file": "packages/react-select/tests/server.test.mjs",
+      "fullName": "retains the configured server nonce in the pinned oracle contract"
+    },
+    {
+      "id": "runtime:d5be7b3fa8146c8a",
+      "file": "packages/react-select/tests/state-manager.test.ts",
+      "fullName": "useStateManager SSR parity matches React controlled/default precedence for 0"
+    },
+    {
+      "id": "runtime:685eb9fdd24c2d6f",
+      "file": "packages/react-select/tests/state-manager.test.ts",
+      "fullName": "useStateManager SSR parity matches React controlled/default precedence for 1"
+    },
+    {
+      "id": "runtime:70033434f616cc6f",
+      "file": "packages/react-select/tests/verifier-negative.test.mjs",
+      "fullName": "rejects altered upstream bytes even when their checksum row is regenerated"
+    },
+    {
+      "id": "runtime:e1a71c8e5a164ff3",
+      "file": "packages/react-select/tests/verifier-negative.test.mjs",
+      "fullName": "rejects an unknown crosswalk type status"
+    }
+  ]
+}
