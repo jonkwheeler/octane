@@ -267,7 +267,18 @@ export default defineConfig({
 						'packages/react-syntax-highlighter/tests/**/*.test.ts',
 						'!packages/react-syntax-highlighter/tests/ssr/**/*.test.ts',
 						'!packages/react-syntax-highlighter/tests/browser/**/*.test.ts',
+						'!packages/react-syntax-highlighter/tests/differential/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-syntax-highlighter-differential',
+					include: ['packages/react-syntax-highlighter/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
