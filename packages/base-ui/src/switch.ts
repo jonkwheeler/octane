@@ -346,3 +346,4 @@ export const Switch = {
 	Root: SwitchRoot,
 	Thumb: SwitchThumb,
 };
+// OCTANE DIVERGENCE[native-event-semantics][differential:base-ui-switch-native-input]

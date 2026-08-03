@@ -1,0 +1,322 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/mui/base-ui.git",
+    "version": "1.6.0",
+    "commit": "b34551d644f2e58ebf8fc1050d949f6654ceca6c",
+    "sourceRoot": "packages/react/src",
+    "testRoot": "packages/react/src; packages/react/test",
+    "license": "MIT",
+    "integrity": "sha256:583e60023a77fed45caf8a2f980813e8a75e2f2a97f59c30380d2234cc3e0423",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/base-ui/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/base-ui/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 34,
+    "uniqueIdentities": 34,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "base-ui-differential-full-suite",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "base-ui-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs every collected same-fixture Base UI differential test and rejects inventory drift.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/base-ui/audit/differential-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/base-ui/audit/differential-runtime.json",
+          "role": "support",
+          "sha256": "b8a95241a5035f8bfadd36a5c7ad522d454ffbcf134a776d22f769d96639d6a3"
+        },
+        {
+          "path": "packages/base-ui/scripts/build-runtime-inventories.mjs",
+          "role": "support",
+          "sha256": "bf3265b3fe5b5a48b2451cb8458e5e6554c42183478e3c78f91f58f2bbf03cdf"
+        }
+      ]
+    },
+    {
+      "id": "base-ui-adapted-upstream-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "base-ui-upstream-adapted",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs every collected adapted Accordion and Collapsible test and rejects inventory drift.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/base-ui/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/base-ui/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "7e2a5d5505e518fb1bf32a720992635c41e6cb541bed446919d6af3014e36d42"
+        },
+        {
+          "path": "packages/base-ui/scripts/build-runtime-inventories.mjs",
+          "role": "support",
+          "sha256": "bf3265b3fe5b5a48b2451cb8458e5e6554c42183478e3c78f91f58f2bbf03cdf"
+        }
+      ]
+    },
+    {
+      "id": "base-ui-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "base-ui-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs selected same-fixture cases against @octanejs/base-ui and the pinned real @base-ui/react package.",
+      "files": [
+        {
+          "path": "packages/base-ui/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "2dd6eada49b0f9cd0289013496b2c3536ba3034776d5ac9a1a5ea4ed9637df5a",
+          "cases": [
+            {
+              "id": "differential:base-ui-render-element",
+              "testName": "Separator: render-prop element form (clones onto <hr>, className concatenates)",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Separator: render-prop element form (clones onto <hr>, className concatenates)"
+            },
+            {
+              "id": "differential:base-ui-switch-native-input",
+              "testName": "Switch: uncontrolled — click toggles aria-checked + data-checked (native input adaptation)",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Switch: uncontrolled — click toggles aria-checked + data-checked (native input adaptation)"
+            },
+            {
+              "id": "differential:base-ui-number-field",
+              "testName": "NumberField: Root/Group/Input/steppers render the formatted value byte-identically",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React NumberField: Root/Group/Input/steppers render the formatted value byte-identically"
+            },
+            {
+              "id": "differential:base-ui-dialog-open",
+              "testName": "Dialog: open modal (Portal/Backdrop/Popup/Title/Description/Close) renders byte-identically",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Dialog: open modal (Portal/Backdrop/Popup/Title/Description/Close) renders byte-identically"
+            },
+            {
+              "id": "differential:base-ui-slider-keyboard",
+              "testName": "Slider: ArrowUp on the thumb steps the value (aria-valuenow + indicator % + output re-render)",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Slider: ArrowUp on the thumb steps the value (aria-valuenow + indicator % + output re-render)"
+            },
+            {
+              "id": "differential:base-ui-tooltip-open",
+              "testName": "Tooltip: open (portal + anchored positioner + popup + arrow)",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Tooltip: open (portal + anchored positioner + popup + arrow)"
+            },
+            {
+              "id": "differential:base-ui-menu-checkbox",
+              "testName": "Menu: toggling a checkbox item matches Base UI, including the immediate indicator unmount",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Menu: toggling a checkbox item matches Base UI, including the immediate indicator unmount"
+            },
+            {
+              "id": "differential:base-ui-toast-limit",
+              "testName": "Toast: limit marks older toasts limited rather than removing them",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Toast: limit marks older toasts limited rather than removing them"
+            }
+          ]
+        },
+        {
+          "path": "packages/base-ui/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "887878cfaa58b5213e5bcc3d71caf0f97ab63bee7778e24d56c3cf71173f369e"
+        },
+        {
+          "path": "packages/base-ui/tests/_fixtures/base-ui-diff.tsrx",
+          "role": "support",
+          "sha256": "a82fcab35bfba210ba74dacfcdbf4e24f5fa6decc9ba510b2d4bc017ef7de407"
+        }
+      ]
+    },
+    {
+      "id": "base-ui-adapted-upstream",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "base-ui-upstream-adapted",
+      "notes": "Runs selected transcriptions from the pinned Base UI Accordion and Collapsible suites.",
+      "files": [
+        {
+          "path": "packages/base-ui/tests/upstream/accordion.test.ts",
+          "role": "test",
+          "sha256": "8bf10bf123463efc2131d3e8f91c95a4100e6ffafae294666badb6b0db68dddb",
+          "cases": [
+            {
+              "id": "adapted:base-ui-accordion-aria",
+              "testName": "renders correct ARIA attributes",
+              "fullName": "<Accordion.Root /> ARIA attributes renders correct ARIA attributes"
+            },
+            {
+              "id": "adapted:base-ui-accordion-default-value",
+              "testName": "prop: defaultValue — custom item value",
+              "fullName": "<Accordion.Root /> uncontrolled prop: defaultValue — custom item value"
+            }
+          ]
+        },
+        {
+          "path": "packages/base-ui/tests/upstream/collapsible.test.ts",
+          "role": "test",
+          "sha256": "070afb0f80cb117dfcb28596d42e474d78afa493c1091e70e3646f29194c901d",
+          "cases": [
+            {
+              "id": "adapted:base-ui-collapsible-aria",
+              "testName": "sets ARIA attributes",
+              "fullName": "<Collapsible.Root /> ARIA attributes sets ARIA attributes"
+            },
+            {
+              "id": "adapted:base-ui-collapsible-cancel",
+              "testName": "eventDetails.cancel() prevents opening while uncontrolled",
+              "fullName": "<Collapsible.Root /> BaseUIChangeEventDetails eventDetails.cancel() prevents opening while uncontrolled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "base-ui-audit-contracts",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "base-ui-parity-audit",
+      "notes": "Makes the recorded-unverified upstream inventory and explicit gaps executable.",
+      "files": [
+        {
+          "path": "packages/base-ui/tests/parity/contracts.test.ts",
+          "role": "test",
+          "sha256": "84510a2ca57b21d50ca26fa29640f2177316a2020ed38383c65fdfc219cc424d",
+          "cases": [
+            {
+              "id": "adapted:base-ui-upstream-crosswalk",
+              "testName": "accounts for all 43 public subpaths and 348 upstream test artifacts",
+              "fullName": "@octanejs/base-ui parity audit contracts accounts for all 43 public subpaths and 348 upstream test artifacts"
+            },
+            {
+              "id": "adapted:base-ui-number-field-gaps",
+              "testName": "keeps the unported NumberField interaction surface explicit",
+              "fullName": "@octanejs/base-ui parity audit contracts keeps the unported NumberField interaction surface explicit"
+            }
+          ]
+        },
+        {
+          "path": "packages/base-ui/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "1a379483ee1c267473ba6468d2fb4c786684b69d2893e0c262d564b7740b4ac3"
+        },
+        {
+          "path": "packages/base-ui/scripts/build-upstream-crosswalk.mjs",
+          "role": "support",
+          "sha256": "e13db14c6f91c6efff136874a724f991977ae0019759ca5fb80b75171ec46150"
+        },
+        {
+          "path": "packages/base-ui/scripts/check-upstream-crosswalk.mjs",
+          "role": "support",
+          "sha256": "6bf4a86d0b954815f050c44344d54221fcf32e79e486dc35e6f3a1fd05ed90c6"
+        },
+        {
+          "path": "packages/base-ui/scripts/upstream-crosswalk-lib.mjs",
+          "role": "support",
+          "sha256": "55a10e475e15f23dca577f3a81d04757a8fc1944440f1fe8a2b0d72680736bb4"
+        },
+        {
+          "path": "packages/base-ui/scripts/build-vendor-checksums.mjs",
+          "role": "support",
+          "sha256": "b2a3e6f9300bca7a5c369617663b206fb1088d7c623c0992f69c7d1d277b6d8d"
+        },
+        {
+          "path": "packages/base-ui/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "531555a5977c6da24b34f96572137aa4201c184b5a0300f5597b718aa637baf4"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "f0e8d76ce0d4fd2c7615eb87476477f607a4d9bc9eead77d19831d1b54d42ddf"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "native-event-semantics",
+      "caseIds": ["differential:base-ui-switch-native-input"],
+      "upstreamResult": "Base UI integrates with React synthetic handlers while preserving native input behavior.",
+      "octaneResult": "The Octane binding integrates directly with native input events.",
+      "rationale": "Octane intentionally uses the browser event model rather than React's synthetic event layer.",
+      "classification": "event-model",
+      "consumerImpact": "Handler timing and event object details can differ when consumers inspect React-specific fields.",
+      "migrationGuidance": "Use native input semantics and avoid depending on React SyntheticEvent-only fields.",
+      "owner": "@octanejs/base-ui",
+      "reviewCondition": "Review if Octane adds a React-compatible synthetic event layer."
+    },
+    {
+      "id": "ref-as-prop-class-composition",
+      "caseIds": ["differential:base-ui-render-element"],
+      "upstreamResult": "React composes render-element refs and class names through React element cloning semantics.",
+      "octaneResult": "Octane reproduces the rendered result through its native ref-as-prop and class composition model.",
+      "rationale": "The frameworks expose different internal element and ref composition primitives.",
+      "classification": "rendering",
+      "consumerImpact": "React-only element identity or ref implementation details are not portable even when DOM output matches.",
+      "migrationGuidance": "Depend on the resulting DOM, composed class names, and public refs rather than React element identity.",
+      "owner": "@octanejs/base-ui",
+      "reviewCondition": "Review if Octane changes render-element or ref composition semantics."
+    },
+    {
+      "id": "unported-internal-hover",
+      "caseIds": ["adapted:base-ui-upstream-crosswalk"],
+      "upstreamResult": "Base UI includes private hover infrastructure used by upstream components.",
+      "octaneResult": "The private hover helper is not exposed or independently ported; public supported components use Octane-native behavior.",
+      "rationale": "Private upstream internals are not a public compatibility surface.",
+      "classification": "scope",
+      "consumerImpact": "Consumers cannot import undocumented Base UI hover internals from the Octane package.",
+      "migrationGuidance": "Use public component APIs or Octane's native hover primitives.",
+      "owner": "@octanejs/base-ui",
+      "reviewCondition": "Review if a public supported component requires the missing internal helper."
+    },
+    {
+      "id": "number-field-interaction-gaps",
+      "caseIds": ["adapted:base-ui-number-field-gaps"],
+      "upstreamResult": "Base UI NumberField includes ScrubArea and additional pointer and keyboard interaction behavior.",
+      "octaneResult": "The current Octane NumberField supports formatting and step controls but not ScrubArea or the complete interaction matrix.",
+      "rationale": "Those interaction surfaces have not yet been ported and must remain explicit gaps.",
+      "classification": "missing-surface",
+      "consumerImpact": "Consumers needing scrub gestures or the full upstream interaction matrix cannot migrate without adaptation.",
+      "migrationGuidance": "Use the supported input and stepper surface, or keep Base UI React for ScrubArea-dependent flows.",
+      "owner": "@octanejs/base-ui",
+      "reviewCondition": "Review when ScrubArea or the remaining NumberField interactions are implemented."
+    }
+  ]
+}
