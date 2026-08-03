@@ -13,14 +13,9 @@
     "./package.json": "./package.json",
     ".": {
       "react-server": "./src/index/index.react-server.ts",
-      "import": {
-        "types": "./src/index/index.ts",
-        "default": "./src/index/index.ts"
-      },
-      "require": {
-        "types": "./src/index/index.ts",
-        "default": "./src/index/index.cts"
-      }
+      "types": "./src/index/index.d.ts",
+      "import": "./src/index/index.ts",
+      "require": "./src/index/index.cts"
     },
     "./infinite": {
       "react-server": "./src/infinite/index.react-server.ts",
@@ -80,6 +75,8 @@
     "u1:pack": "node ./tests/probes/packed-exports.test.mjs",
     "u2:test": "vitest run ./tests/unit ./tests/differential --config ./tests/probes/vitest.config.mjs",
     "u2:types": "tsc -p ./typetests/internal/tsconfig.json",
+    "u3:test": "vitest run ./tests/upstream/root ./tests/differential/root.test.ts --config ./tests/probes/vitest.config.mjs",
+    "u3:types": "tsrx-tsc --noEmit -p ./typetests/root/tsconfig.json",
     "upstream:verify": "node ./audit/verify-provenance.mjs"
   },
   "dependencies": {

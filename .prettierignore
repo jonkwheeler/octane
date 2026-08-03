@@ -98,5 +98,9 @@ packages/tanstack-ai/tests/_fixtures/*.tsrx
 packages/tanstack-devtools/src/*.tsrx
 packages/tanstack-devtools/src/*.tsrx.d.ts
 packages/tanstack-devtools/tests/_fixtures/*.tsrx
+
+# SWR's source-near root hook preserves deeply nested generic callbacks from the
+# pinned source. The TSRX Prettier parser is not idempotent for this module.
+packages/swr/src/index/use-swr.tsrx
 dist-redact
 .content-collections

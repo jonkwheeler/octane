@@ -1,1 +1,2 @@
-export { unstable_serialize, SWRConfig } from './index.js';
+export { SWRConfig } from './config.js';
+export { unstable_serialize } from './serialize.js';

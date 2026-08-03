@@ -1,26 +1,37 @@
-export default function useSWR(): never {
-	throw new Error('@octanejs/swr U1 architecture scaffold: implementation begins in U2');
+// useSWR
+import useSWR from './use-swr.js';
+export default useSWR;
+// Core APIs
+export { SWRConfig } from './use-swr.js';
+export { unstable_serialize } from './serialize.js';
+export { useSWRConfig } from '../_internal/index.js';
+export { mutate } from '../_internal/index.js';
+export { preload } from '../_internal/index.js';
+
+// Config
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface SWRGlobalConfig {
+	// suspense: true
 }
-export const SWRConfig = { __u1: true };
-export const unstable_serialize = (value: unknown) => JSON.stringify(value);
-export const useSWRConfig = () => ({});
-export const mutate = () => undefined;
-export const preload = () => undefined;
-export interface SWRGlobalConfig {}
-export type SWRConfiguration = unknown;
-export type Revalidator = unknown;
-export type RevalidatorOptions = unknown;
-export type Key = unknown;
-export type KeyLoader = unknown;
-export type KeyedMutator<Data = unknown> = (data?: Data) => Promise<Data | undefined>;
-export type SWRHook = typeof useSWR;
-export type SWRResponse = unknown;
-export type Cache = Map<unknown, unknown>;
-export type BareFetcher = (...args: unknown[]) => unknown;
-export type Fetcher = BareFetcher;
-export type MutatorCallback = (...args: unknown[]) => unknown;
-export type MutatorOptions = unknown;
-export type Middleware = (...args: unknown[]) => unknown;
-export type Arguments = unknown;
-export type State = unknown;
-export type ScopedMutator = typeof mutate;
+
+// Types
+export type {
+	SWRConfiguration,
+	Revalidator,
+	RevalidatorOptions,
+	Key,
+	KeyLoader,
+	KeyedMutator,
+	SWRHook,
+	SWRResponse,
+	Cache,
+	BareFetcher,
+	Fetcher,
+	MutatorCallback,
+	MutatorOptions,
+	Middleware,
+	Arguments,
+	State,
+	ScopedMutator,
+} from '../_internal/index.js';
