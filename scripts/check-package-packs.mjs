@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { build } from 'esbuild';
 import {
 	cpSync,
 	existsSync,
@@ -30,6 +31,7 @@ import {
 	PACKED_TSRX_CONSUMER_PACKAGES,
 	renderPackedExampleWorkspace,
 	renderPackedCommonjsConsumerSource,
+	renderPackedEsmConsumerSource,
 	renderPackedTsrxConsumerSource,
 	renderPackedTsrxConsumerTypeProbe,
 } from './package-pack-canaries.mjs';
@@ -844,7 +846,7 @@ function validatePackedTsrxConsumer(tempRoot, archives) {
 	);
 }
 
-function validatePackedCommonjsConsumer(tempRoot, archives) {
+async function validatePackedCommonjsConsumer(tempRoot, archives) {
 	const consumerDirectory = path.join(tempRoot, 'external-commonjs-consumer');
 	if (isWithinDirectory(REPO_ROOT, consumerDirectory)) {
 		throw new Error('packed CommonJS consumer must be created outside the workspace');
@@ -865,6 +867,7 @@ function validatePackedCommonjsConsumer(tempRoot, archives) {
 		renderPackedExampleWorkspace(archiveSpecs),
 	);
 	writeFileSync(path.join(consumerDirectory, 'require.cjs'), renderPackedCommonjsConsumerSource());
+	writeFileSync(path.join(consumerDirectory, 'import.mjs'), renderPackedEsmConsumerSource());
 
 	execFileSync(
 		'pnpm',
@@ -913,7 +916,7 @@ function validatePackedCommonjsConsumer(tempRoot, archives) {
 			if (error.code !== 'MODULE_NOT_FOUND') throw error;
 		}
 	}
-	const surface = JSON.parse(
+	const commonjsSurface = JSON.parse(
 		execFileSync(process.execPath, ['require.cjs'], {
 			cwd: consumerDirectory,
 			encoding: 'utf8',
@@ -921,14 +924,47 @@ function validatePackedCommonjsConsumer(tempRoot, archives) {
 			timeout: 30_000,
 		}),
 	);
-	assertRequiredPublicValueExports('.', surface.octane);
+	await build({
+		absWorkingDir: consumerDirectory,
+		entryPoints: ['import.mjs'],
+		outfile: 'import-bundle.mjs',
+		bundle: true,
+		format: 'esm',
+		platform: 'node',
+		target: 'node22',
+		logLevel: 'silent',
+	});
+	const esmSurface = JSON.parse(
+		execFileSync(process.execPath, ['import-bundle.mjs'], {
+			cwd: consumerDirectory,
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'pipe'],
+			timeout: 30_000,
+		}),
+	);
+	assertRequiredPublicValueExports('.', commonjsSurface.octane);
+	assertRequiredPublicValueExports('.', esmSurface.octane);
 	for (const packageName of ['base', 'floating', 'radix']) {
-		if (!Array.isArray(surface[packageName]) || surface[packageName].length === 0) {
+		if (!Array.isArray(commonjsSurface[packageName]) || commonjsSurface[packageName].length === 0) {
 			throw new Error(`packed CommonJS ${packageName} surface is empty`);
 		}
+		if (!Array.isArray(esmSurface[packageName]) || esmSurface[packageName].length === 0) {
+			throw new Error(`packed ESM ${packageName} surface is empty`);
+		}
+	}
+	for (const packageName of ['base', 'floating', 'octane', 'radix']) {
+		if (
+			JSON.stringify([...commonjsSurface[packageName]].sort()) !==
+			JSON.stringify([...esmSurface[packageName]].sort())
+		) {
+			throw new Error(`packed ESM and CommonJS ${packageName} surfaces differ`);
+		}
+	}
+	if (JSON.stringify(commonjsSurface.ssr) !== JSON.stringify(esmSurface.ssr)) {
+		throw new Error('packed ESM and CommonJS SSR output differs');
 	}
 	console.log(
-		'installed packed Octane, Floating UI, Base UI, and Radix CommonJS graphs without React; require conditions and SSR passed',
+		'installed packed Octane, Floating UI, Base UI, and Radix without React; CommonJS require and bundled ESM surfaces and SSR matched',
 	);
 }
 
