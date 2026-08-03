@@ -11,6 +11,7 @@ import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
+import { ReactDraggableDemo } from './demos/ReactDraggable.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
 import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
@@ -28,6 +29,7 @@ import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
+import reactDraggableSource from './demos/ReactDraggable.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
 import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
@@ -57,6 +59,12 @@ export const GROUPS: readonly DemoGroup[] = [
 		id: 'language',
 		label: 'Language',
 		demos: [
+			{
+				id: 'react-draggable',
+				title: 'React Draggable',
+				Component: ReactDraggableDemo,
+				source: reactDraggableSource,
+			},
 			{
 				id: 'counter',
 				title: 'Counter',
