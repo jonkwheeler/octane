@@ -23,6 +23,7 @@ export function ReactSyntaxHighlighterDemo() @{
 			showLineNumbers
 			wrapLines
 			customStyle={{ borderRadius: '10px', margin: 0, padding: '18px' }}
-		>{source}</Prism>
+			children={source}
+		/>
 	</section>
 }

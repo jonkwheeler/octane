@@ -1,7 +1,7 @@
 import type { ComponentBody, ElementDescriptor } from 'octane';
 import type { CSSProperties, HTMLProps, Key } from 'react';
 
-// OCTANE DIVERGENCE[custom-component-identity][types:adapted-public]
+// OCTANE DIVERGENCE[custom-component-identity][types:adapted-custom-components]
 
 export type LineNumberStyleFunction = (lineNumber: number) => CSSProperties;
 export type LineTagPropsFunction = (lineNumber: number) => HTMLProps<HTMLElement>;
@@ -23,6 +23,7 @@ export interface RendererProps {
 export interface SyntaxHighlighterProps {
 	language?: string;
 	style?: Record<string, CSSProperties>;
+	// OCTANE DIVERGENCE[compiled-children-value][types:adapted-compiled-children]
 	children: string | string[];
 	customStyle?: CSSProperties;
 	codeTagProps?: HTMLProps<HTMLElement>;
@@ -51,6 +52,9 @@ export interface CreateElementProps {
 
 export interface HighlighterComponent {
 	(props: SyntaxHighlighterProps): ElementDescriptor;
+}
+
+export interface SupportedLanguagesComponent extends HighlighterComponent {
 	supportedLanguages: string[];
 }
 
@@ -63,21 +67,25 @@ export interface PrismLightComponent extends LightComponent {
 	alias(aliases: Record<string, string | string[]>): void;
 }
 
-export interface AsyncComponent extends LightComponent {
+export interface AsyncComponent extends SupportedLanguagesComponent {
 	preload(): Promise<void>;
 	loadLanguage(language: string): Promise<void>;
 	isSupportedLanguage(language: string): boolean;
 	isRegistered(language: string): boolean;
 }
 
-declare const SyntaxHighlighter: HighlighterComponent;
+export interface AsyncLightComponent extends AsyncComponent {
+	registerLanguage(name: string, language: any): void;
+}
+
+declare const SyntaxHighlighter: SupportedLanguagesComponent;
 export default SyntaxHighlighter;
 
-export const LightAsync: AsyncComponent;
+export const LightAsync: AsyncLightComponent;
 export const Light: LightComponent;
-export const PrismAsyncLight: AsyncComponent;
+export const PrismAsyncLight: AsyncLightComponent;
 export const PrismAsync: AsyncComponent;
 export const PrismLight: PrismLightComponent;
-export const Prism: HighlighterComponent;
+export const Prism: SupportedLanguagesComponent;
 
 export function createElement(props: CreateElementProps): ElementDescriptor;

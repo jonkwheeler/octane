@@ -3,18 +3,22 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { transform } from 'esbuild';
 import { format, resolveConfig } from 'prettier';
+import { verifyGeneratedTree } from './parity-guards.mjs';
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamTests = join(packageRoot, 'upstream', '__tests__');
 const outputTests = join(packageRoot, 'tests', 'adapted');
 const outputSnapshots = join(outputTests, '__snapshots__');
+const generatedTests = join(packageRoot, '.generated-adapted-tests');
+const checkOnly = process.argv.includes('--check');
+const unexpectedArguments = process.argv.slice(2).filter((argument) => argument !== '--check');
+if (unexpectedArguments.length) {
+	throw new Error('usage: node scripts/generate-adapted-tests.mjs [--check]');
+}
 const prettierConfig = (await resolveConfig(packageRoot)) ?? {};
 
-await mkdir(outputSnapshots, { recursive: true });
-
-for (const name of await readdir(outputTests)) {
-	if (name.endsWith('.test.ts')) await rm(join(outputTests, name));
-}
+await rm(generatedTests, { recursive: true, force: true });
+await mkdir(generatedTests, { recursive: true });
 
 const testFiles = (await readdir(upstreamTests)).filter((name) => name.endsWith('.js')).sort();
 for (const name of testFiles) {
@@ -37,9 +41,40 @@ for (const name of testFiles) {
 		jsxFactory: 'React.createElement',
 	});
 	await writeFile(
-		join(outputTests, outputName),
+		join(generatedTests, outputName),
 		await format(compiled.code, { ...prettierConfig, filepath: outputName }),
 	);
 }
 
-console.log(`generated ${testFiles.length} one-for-one adapted upstream test files`);
+if (checkOnly) {
+	try {
+		const retainedTests = join(packageRoot, '.retained-adapted-tests');
+		await rm(retainedTests, { recursive: true, force: true });
+		await mkdir(retainedTests, { recursive: true });
+		for (const name of await readdir(outputTests)) {
+			if (name.endsWith('.test.ts')) {
+				await writeFile(join(retainedTests, name), await readFile(join(outputTests, name)));
+			}
+		}
+		try {
+			await verifyGeneratedTree(generatedTests, retainedTests, 'generated adapted tests');
+		} finally {
+			await rm(retainedTests, { recursive: true, force: true });
+		}
+	} finally {
+		await rm(generatedTests, { recursive: true, force: true });
+	}
+} else {
+	await mkdir(outputSnapshots, { recursive: true });
+	for (const name of await readdir(outputTests)) {
+		if (name.endsWith('.test.ts')) await rm(join(outputTests, name));
+	}
+	for (const name of await readdir(generatedTests)) {
+		await writeFile(join(outputTests, name), await readFile(join(generatedTests, name)));
+	}
+	await rm(generatedTests, { recursive: true, force: true });
+}
+
+console.log(
+	`${checkOnly ? 'verified' : 'generated'} ${testFiles.length} one-for-one adapted upstream test files`,
+);

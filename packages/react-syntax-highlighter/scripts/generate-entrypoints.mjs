@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { access, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyEntrypointSurfaces } from './parity-guards.mjs';
 
 const write = process.argv.includes('--write');
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -24,10 +25,7 @@ for (const paths of byFormat.values()) paths.sort();
 
 const esm = byFormat.get('esm');
 const cjs = byFormat.get('cjs');
-if (esm.length !== 658 || JSON.stringify(esm) !== JSON.stringify(cjs)) {
-	throw new Error(`Expected identical 658-file ESM/CJS surfaces, got ${esm.length}/${cjs.length}`);
-}
-if (new Set(esm).size !== esm.length) throw new Error('Published path collision detected');
+verifyEntrypointSurfaces(esm, cjs);
 
 for (const path of esm) await access(join(packageRoot, 'src', path));
 

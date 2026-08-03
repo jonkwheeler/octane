@@ -1,15 +1,16 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { format, resolveConfig } from 'prettier';
+import { toPortablePath } from '../../../scripts/react-parity/harness-lib.mjs';
+import { verifyRequiredLaneIds, verifyTypeCaseInventory } from './parity-guards.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repoRoot = resolve(packageRoot, '../..');
 const auditRoot = resolve(packageRoot, 'audit');
-const portable = (path) => path.replaceAll('\\', '/');
-const relativeRepo = (path) => portable(relative(repoRoot, path));
+const relativeRepo = (path) => toPortablePath(relative(repoRoot, path));
 const checkOnly = process.argv.includes('--check');
 const unexpectedArguments = process.argv.slice(2).filter((argument) => argument !== '--check');
 if (unexpectedArguments.length) {
@@ -43,6 +44,17 @@ async function sha256(path) {
 	return createHash('sha256')
 		.update(await readFile(resolve(repoRoot, path)))
 		.digest('hex');
+}
+
+async function walkFiles(path) {
+	const entries = await readdir(resolve(repoRoot, path), { withFileTypes: true });
+	const files = [];
+	for (const entry of entries) {
+		const child = `${path}/${entry.name}`;
+		if (entry.isDirectory()) files.push(...(await walkFiles(child)));
+		else files.push(child);
+	}
+	return files;
 }
 
 function testId(file, fullName) {
@@ -123,6 +135,36 @@ await writeJson(resolve(auditRoot, 'upstream-crosswalk.json'), {
 	entries: crosswalk,
 });
 
+const commonTypeCases = [
+	'props',
+	'render',
+	'light-register',
+	'prism-alias-name',
+	'prism-alias-map',
+	'default-supported',
+	'prism-supported',
+	'missing-children',
+	'non-string-children',
+];
+const adaptedOnlyTypeCases = [
+	'async-preload',
+	'async-load-language',
+	'async-supported',
+	'async-registered',
+	'light-no-supported',
+	'prism-async-no-register',
+	'prism-light-no-supported',
+];
+await writeJson(
+	resolve(auditRoot, 'type-crosswalk.json'),
+	verifyTypeCaseInventory(
+		await readFile(resolve(packageRoot, 'typetests/pristine/public-api.test-d.ts'), 'utf8'),
+		await readFile(resolve(packageRoot, 'typetests/adapted/public-api.test-d.ts'), 'utf8'),
+		commonTypeCases,
+		adaptedOnlyTypeCases,
+	),
+);
+
 const allProjectTests = {
 	'react-syntax-highlighter': listProject('react-syntax-highlighter'),
 	'react-syntax-highlighter-ssr': listProject('react-syntax-highlighter-ssr'),
@@ -163,11 +205,22 @@ const selectedCases = {
 			'conformance:async-rejection-fallback',
 			'keeps deterministic plain output when a language loader rejects',
 		],
+		['conformance:async-ast-retry', 'retries a rejected AST loader without an unhandled rejection'],
+		[
+			'conformance:async-language-retry',
+			'retries a rejected language after a same-language update',
+		],
 	],
 	'packages/react-syntax-highlighter/tests/hydration.test.ts': [
 		[
 			'conformance:hydration-adoption',
 			'adopts highlighted nodes and selected code before supporting a live update',
+		],
+	],
+	'packages/react-syntax-highlighter/tests/negative-controls.test.ts': [
+		[
+			'conformance:negative-controls',
+			'fails closed for missing, extra, renamed, collided, stale, and removed-lane evidence',
 		],
 	],
 	'packages/react-syntax-highlighter/tests/ssr/server.test.ts': [
@@ -230,6 +283,7 @@ const conformanceFiles = [
 	'packages/react-syntax-highlighter/tests/feasibility.test.ts',
 	'packages/react-syntax-highlighter/tests/async-races.test.ts',
 	'packages/react-syntax-highlighter/tests/hydration.test.ts',
+	'packages/react-syntax-highlighter/tests/negative-controls.test.ts',
 ];
 const ssrFiles = ['packages/react-syntax-highlighter/tests/ssr/server.test.ts'];
 const differentialFiles = ['packages/react-syntax-highlighter/tests/differential/parity.test.ts'];
@@ -239,6 +293,9 @@ const packageJson = JSON.parse(await readFile(resolve(repoRoot, 'package.json'),
 const lockfileSha256 = await sha256('pnpm-lock.yaml');
 const tarball =
 	'packages/react-syntax-highlighter/upstream/npm/react-syntax-highlighter-16.1.1.tgz';
+const adaptedEvidenceFiles = (await walkFiles('packages/react-syntax-highlighter/tests/adapted'))
+	.filter((path) => path.endsWith('.test.ts') || path.endsWith('.snap'))
+	.sort();
 const lanes = [
 	{
 		id: 'react-syntax-highlighter-pristine-runtime',
@@ -278,6 +335,7 @@ const lanes = [
 			manifestFile('packages/react-syntax-highlighter/audit/upstream-crosswalk.json'),
 			manifestFile('packages/react-syntax-highlighter/scripts/generate-adapted-tests.mjs'),
 			manifestFile('packages/react-syntax-highlighter/scripts/generate-parity-audit.mjs'),
+			...adaptedEvidenceFiles.map((path) => manifestFile(path)),
 		]),
 	},
 	await selectedLane({
@@ -340,6 +398,7 @@ const lanes = [
 				],
 			),
 			await manifestFile('packages/react-syntax-highlighter/typetests/pristine/tsconfig.json'),
+			await manifestFile('packages/react-syntax-highlighter/audit/type-crosswalk.json'),
 		],
 	},
 	{
@@ -362,13 +421,19 @@ const lanes = [
 				'test',
 				[
 					{
-						id: 'types:adapted-public',
-						testName: 'adapted public type contract',
-						fullName: 'adapted public type contract',
+						id: 'types:adapted-compiled-children',
+						testName: 'adapted compiled children type contract',
+						fullName: 'adapted compiled children type contract',
+					},
+					{
+						id: 'types:adapted-custom-components',
+						testName: 'adapted custom component type contract',
+						fullName: 'adapted custom component type contract',
 					},
 				],
 			),
 			await manifestFile('packages/react-syntax-highlighter/typetests/adapted/tsconfig.json'),
+			await manifestFile('packages/react-syntax-highlighter/audit/type-crosswalk.json'),
 		],
 	},
 ];
@@ -418,8 +483,25 @@ const manifest = {
 	lanes,
 	divergences: [
 		{
+			id: 'compiled-children-value',
+			caseIds: ['types:adapted-compiled-children'],
+			upstreamResult: 'Nested React children are inspectable source-string values.',
+			octaneResult:
+				'TSRX nested component children are opaque renderer blocks; source text is passed with children={source}.',
+			rationale:
+				'The Octane compiler owns nested component child blocks and intentionally does not expose their captured render scope to userland.',
+			classification: 'compiler ownership boundary',
+			consumerImpact:
+				'Rewrite nested SyntaxHighlighter source to the explicit children prop in .tsrx.',
+			migrationGuidance:
+				'Replace <SyntaxHighlighter>{source}</SyntaxHighlighter> with <SyntaxHighlighter children={source} />.',
+			owner: '@octanejs/react-syntax-highlighter',
+			reviewCondition:
+				'Remove only if Octane exposes a supported value-child lowering for text-inspecting component APIs.',
+		},
+		{
 			id: 'custom-component-identity',
-			caseIds: ['types:adapted-public'],
+			caseIds: ['types:adapted-custom-components'],
 			upstreamResult:
 				'PreTag and CodeTag accept native tags or React class/function ComponentType values.',
 			octaneResult:
@@ -437,6 +519,20 @@ const manifest = {
 		},
 	],
 };
+
+verifyRequiredLaneIds(
+	lanes.map((lane) => lane.id),
+	[
+		'react-syntax-highlighter-pristine-runtime',
+		'react-syntax-highlighter-adapted-runtime',
+		'react-syntax-highlighter-conformance',
+		'react-syntax-highlighter-ssr',
+		'react-syntax-highlighter-differential',
+		'react-syntax-highlighter-browser',
+		'react-syntax-highlighter-pristine-types',
+		'react-syntax-highlighter-adapted-types',
+	],
+);
 
 await writeJson(resolve(auditRoot, 'react-parity.json'), manifest);
 console.log(

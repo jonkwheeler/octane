@@ -93,20 +93,22 @@ function powerSetPermutations(arr) {
 		];
 	}
 }
-const classNameCombinations = {};
-function getClassNameCombinations(classNames) {
-	if (classNames.length === 0 || classNames.length === 1) return classNames;
-	const key = classNames.join(".");
-	if (!classNameCombinations[key]) {
-		classNameCombinations[key] = powerSetPermutations(classNames);
+const stylesheetSelectors = new WeakMap();
+function getStylesheetSelectors(stylesheet) {
+	let selectors = stylesheetSelectors.get(stylesheet);
+	if (!selectors) {
+		selectors = new Set(
+			Object.keys(stylesheet).flatMap((selector) => selector.split(".")),
+		);
+		stylesheetSelectors.set(stylesheet, selectors);
 	}
-	return classNameCombinations[key];
+	return selectors;
 }
 function createStyleObject(classNames, elementStyle = {}, stylesheet) {
 	const nonTokenClassNames = classNames.filter(
 		(className) => className !== "token",
 	);
-	const classNamesCombinations = getClassNameCombinations(nonTokenClassNames);
+	const classNamesCombinations = powerSetPermutations(nonTokenClassNames);
 	return classNamesCombinations.reduce((styleObject, className) => {
 		return { ...styleObject, ...stylesheet[className] };
 	}, elementStyle);
@@ -141,15 +143,7 @@ function createElement({ node, stylesheet, style = {}, useInlineStyles, key }) {
 				className: createClassNameString(properties.className),
 			};
 		} else {
-			const allStylesheetSelectors = Object.keys(stylesheet).reduce(
-				(classes, selector) => {
-					selector.split(".").forEach((className2) => {
-						if (!classes.includes(className2)) classes.push(className2);
-					});
-					return classes;
-				},
-				[],
-			);
+			const allStylesheetSelectors = getStylesheetSelectors(stylesheet);
 			const startingClassName =
 				properties.className && properties.className.includes("token")
 					? ["token"]
@@ -158,7 +152,7 @@ function createElement({ node, stylesheet, style = {}, useInlineStyles, key }) {
 				properties.className &&
 				startingClassName.concat(
 					properties.className.filter(
-						(className2) => !allStylesheetSelectors.includes(className2),
+						(className2) => !allStylesheetSelectors.has(className2),
 					),
 				);
 			props = {

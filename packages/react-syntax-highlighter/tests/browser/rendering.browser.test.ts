@@ -4,14 +4,18 @@ import { createServer, type ViteDevServer } from 'vite';
 import { octane } from 'octane/compiler/vite';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 
 const fixtureRoot = dirname(fileURLToPath(new URL('./fixture/index.html', import.meta.url)));
 let server: ViteDevServer;
 let url: string;
+let cacheDir: string;
 
 beforeAll(async () => {
+	cacheDir = await mkdtemp(resolve(tmpdir(), 'octane-react-syntax-highlighter-vite-'));
 	server = await createServer({
-		cacheDir: resolve(fixtureRoot, '../../../../../node_modules/.vite/react-syntax-highlighter'),
+		cacheDir,
 		configFile: false,
 		root: fixtureRoot,
 		logLevel: 'error',
@@ -26,6 +30,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await server?.close();
+	if (cacheDir) await rm(cacheDir, { recursive: true, force: true });
 });
 
 async function verifyBrowser(name: string, browserType: BrowserType) {
@@ -42,7 +47,8 @@ async function verifyBrowser(name: string, browserType: BrowserType) {
 		await page.goto(url);
 		await page.waitForFunction(() => Boolean(window.__syntaxHighlighterBrowser));
 		const initial = await page.evaluate(() => window.__syntaxHighlighterBrowser.snapshot());
-		expect(initial, `${name} initial rendering`).toEqual({
+		expect(initial.octane, `${name} React initial parity`).toEqual(initial.react);
+		expect(initial.octane, `${name} initial rendering`).toEqual({
 			hostTag: 'SECTION',
 			codeTag: 'SAMP',
 			text: '1const answer = 42;\n2answer += 1;',
@@ -53,13 +59,15 @@ async function verifyBrowser(name: string, browserType: BrowserType) {
 		});
 
 		const updated = await page.evaluate(() => window.__syntaxHighlighterBrowser.update());
-		expect(updated, `${name} live update`).toEqual({
+		expect(updated.octane, `${name} React update parity`).toEqual(updated.react);
+		expect(updated.octane, `${name} live update`).toEqual({
 			text: '1{"answer":43}',
 			attribute: '"answer"',
 		});
 
 		const asyncState = await page.evaluate(() => window.__syntaxHighlighterBrowser.asyncSnapshot());
-		expect(asyncState, `${name} async loading`).toEqual({
+		expect(asyncState.octane, `${name} React async parity`).toEqual(asyncState.react);
+		expect(asyncState.octane, `${name} async loading`).toEqual({
 			keyword: 'const',
 			text: 'const asyncValue = true;',
 		});

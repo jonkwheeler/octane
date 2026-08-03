@@ -33,7 +33,9 @@
   ],
   "scripts": {
     "generate": "node scripts/generate-surface.mjs",
+    "verify:surface": "node scripts/generate-surface.mjs --check",
     "generate:adapted-tests": "node scripts/generate-adapted-tests.mjs",
+    "verify:adapted-tests": "node scripts/generate-adapted-tests.mjs --check",
     "generate:parity-audit": "node scripts/generate-parity-audit.mjs",
     "verify:parity-audit": "node scripts/generate-parity-audit.mjs --check",
     "generate:entrypoints": "node scripts/generate-entrypoints.mjs --write",

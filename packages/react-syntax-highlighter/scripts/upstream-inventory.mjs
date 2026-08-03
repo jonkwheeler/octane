@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { toPortablePath } from '../../../scripts/react-parity/harness-lib.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamRoot = resolve(packageRoot, 'upstream');
@@ -35,7 +36,7 @@ async function buildInventory() {
 	for (const path of await walk(upstreamRoot)) {
 		const bytes = await readFile(path);
 		files.push({
-			path: relative(upstreamRoot, path).replaceAll('\\', '/'),
+			path: toPortablePath(relative(upstreamRoot, path)),
 			bytes: bytes.byteLength,
 			sha256: digest('sha256', bytes),
 		});

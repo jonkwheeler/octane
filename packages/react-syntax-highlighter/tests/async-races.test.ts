@@ -129,4 +129,76 @@ describe('async lifecycle parity', () => {
 		expect(result.find('code').querySelector('[class]')).toBeNull();
 		result.unmount();
 	});
+
+	// @parity-case conformance:async-ast-retry
+	it('retries a rejected AST loader without an unhandled rejection', async () => {
+		const ast = generator();
+		const firstLoad = deferred<typeof ast>();
+		const secondLoad = deferred<typeof ast>();
+		let attempts = 0;
+		const Highlighter = createAsyncHighlighter({
+			loader: () => (++attempts === 1 ? firstLoad.promise : secondLoad.promise),
+			isLanguageRegistered: (instance: typeof ast, language: string) =>
+				instance.languages.has(language),
+			registerLanguage: (instance: typeof ast, name: string) => instance.registerLanguage(name),
+			languageLoaders: {},
+		});
+		const unhandled: unknown[] = [];
+		const onUnhandled = (error: unknown) => unhandled.push(error);
+		process.on('unhandledRejection', onUnhandled);
+
+		try {
+			const result = mount(Highlighter, { language: 'text', children: 'plain text' });
+			flushEffects();
+			firstLoad.reject(new Error('expected AST failure'));
+			await settle();
+			await new Promise<void>((resolve) => setImmediate(resolve));
+
+			expect(result.find('code').textContent).toBe('plain text');
+			expect(unhandled).toEqual([]);
+			expect(Highlighter.astGeneratorPromise).toBeNull();
+
+			result.update(Highlighter, { language: 'text', children: 'retry' });
+			flushEffects();
+			secondLoad.resolve(ast);
+			await settle();
+			expect(attempts).toBe(2);
+			expect(Highlighter.astGenerator).toBe(ast);
+			result.unmount();
+		} finally {
+			process.off('unhandledRejection', onUnhandled);
+		}
+	});
+
+	// @parity-case conformance:async-language-retry
+	it('retries a rejected language after a same-language update', async () => {
+		const ast = generator();
+		let attempts = 0;
+		const Highlighter = createAsyncHighlighter({
+			loader: async () => ast,
+			isLanguageRegistered: (instance: typeof ast, language: string) =>
+				instance.languages.has(language),
+			registerLanguage: (instance: typeof ast, name: string) => instance.registerLanguage(name),
+			languageLoaders: {
+				retry: async (register: (name: string, language: unknown) => void) => {
+					attempts++;
+					if (attempts === 1) throw new Error('expected language failure');
+					register('retry', {});
+				},
+			},
+		});
+
+		const result = mount(Highlighter, { language: 'retry', children: 'first' });
+		flushEffects();
+		await settle();
+		expect(result.find('code').textContent).toBe('first');
+
+		result.update(Highlighter, { language: 'retry', children: 'second' });
+		flushEffects();
+		await settle();
+		expect(attempts).toBe(2);
+		expect(result.html()).toContain('language-retry');
+		expect(result.find('code').textContent).toBe('second');
+		result.unmount();
+	});
 });

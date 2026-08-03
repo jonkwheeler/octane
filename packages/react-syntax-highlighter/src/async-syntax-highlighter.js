@@ -29,10 +29,11 @@ export default function createAsyncLoadingHighlighter(options) {
 					if (active) forceUpdate((value) => value + 1);
 				};
 
-				if (!AsyncHighlighter.astGeneratorPromise)
+				const astGeneratorPromise =
+					AsyncHighlighter.astGeneratorPromise ||
 					AsyncHighlighter.loadAstGenerator();
 				if (!AsyncHighlighter.astGenerator)
-					AsyncHighlighter.astGeneratorPromise.then(refresh);
+					astGeneratorPromise.then(refresh, () => {});
 
 				if (
 					props.language !== "text" &&
@@ -48,7 +49,7 @@ export default function createAsyncLoadingHighlighter(options) {
 					active = false;
 				};
 			},
-			[props.language],
+			undefined,
 			EFFECT_SLOT,
 		);
 
@@ -108,14 +109,20 @@ export default function createAsyncLoadingHighlighter(options) {
 			AsyncHighlighter.languages.set(name, language);
 		},
 		loadAstGenerator() {
-			AsyncHighlighter.astGeneratorPromise = loader().then((astGenerator) => {
-				AsyncHighlighter.astGenerator = astGenerator;
-				if (registerLanguage) {
-					AsyncHighlighter.languages.forEach((language, name) =>
-						registerLanguage(astGenerator, name, language),
-					);
-				}
-			});
+			AsyncHighlighter.astGeneratorPromise = loader().then(
+				(astGenerator) => {
+					AsyncHighlighter.astGenerator = astGenerator;
+					if (registerLanguage) {
+						AsyncHighlighter.languages.forEach((language, name) =>
+							registerLanguage(astGenerator, name, language),
+						);
+					}
+				},
+				(error) => {
+					AsyncHighlighter.astGeneratorPromise = null;
+					throw error;
+				},
+			);
 			return AsyncHighlighter.astGeneratorPromise;
 		},
 	});

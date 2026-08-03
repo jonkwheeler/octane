@@ -1,12 +1,19 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { transform } from 'esbuild';
 import { format } from 'prettier';
+import { verifyGeneratedTree } from './parity-guards.mjs';
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamRoot = join(packageRoot, 'upstream', 'src');
-const outputRoot = join(packageRoot, 'src');
+const publishedOutputRoot = join(packageRoot, 'src');
+const outputRoot = join(packageRoot, '.generated-src');
+const checkOnly = process.argv.includes('--check');
+const unexpectedArguments = process.argv.slice(2).filter((argument) => argument !== '--check');
+if (unexpectedArguments.length) {
+	throw new Error('usage: node scripts/generate-surface.mjs [--check]');
+}
 const transformedModules = new Set(['create-element.js', 'highlight.js']);
 const copiedModules = [
 	'async-languages',
@@ -24,7 +31,6 @@ const copiedModules = [
 ];
 
 async function walk(path) {
-	const { readdir } = await import('node:fs/promises');
 	const entries = await readdir(path, { withFileTypes: true });
 	const files = [];
 	for (const entry of entries) {
@@ -45,6 +51,42 @@ function normalizeRelativeImports(source) {
 		/(['"])(lowlight\/lib\/[^'"]+|highlight\.js\/lib\/languages\/[^'"]+)(['"])/g,
 		'$1$2.js$3',
 	);
+}
+
+function optimizeCreateElement(source) {
+	const cacheStart = source.indexOf('const classNameCombinations = {};');
+	const cacheEnd = source.indexOf('function createStyleObject(', cacheStart);
+	if (cacheStart === -1 || cacheEnd === -1) {
+		throw new Error('generated create-element cache block changed upstream');
+	}
+	let optimized = `${source.slice(0, cacheStart)}const stylesheetSelectors = new WeakMap();
+function getStylesheetSelectors(stylesheet) {
+	let selectors = stylesheetSelectors.get(stylesheet);
+	if (!selectors) {
+		selectors = new Set(Object.keys(stylesheet).flatMap((selector) => selector.split('.')));
+		stylesheetSelectors.set(stylesheet, selectors);
+	}
+	return selectors;
+}
+${source.slice(cacheEnd)}`;
+	optimized = optimized.replace(
+		'const classNamesCombinations = getClassNameCombinations(nonTokenClassNames);',
+		'const classNamesCombinations = powerSetPermutations(nonTokenClassNames);',
+	);
+	const selectorStart = optimized.indexOf(
+		'const allStylesheetSelectors = Object.keys(stylesheet).reduce(',
+	);
+	const startingClassName = optimized.indexOf('const startingClassName =', selectorStart);
+	if (selectorStart === -1 || startingClassName === -1) {
+		throw new Error('generated create-element selector block changed upstream');
+	}
+	optimized =
+		`${optimized.slice(0, selectorStart)}const allStylesheetSelectors = getStylesheetSelectors(stylesheet);
+			${optimized.slice(startingClassName)}`.replace(
+			'allStylesheetSelectors.includes(className2)',
+			'allStylesheetSelectors.has(className2)',
+		);
+	return optimized;
 }
 
 async function emit(relativePath, source) {
@@ -74,7 +116,10 @@ for (const modulePath of transformedModules) {
 		jsxFactory: 'React.createElement',
 		legalComments: 'inline',
 	});
-	await emit(modulePath, result.code);
+	await emit(
+		modulePath,
+		modulePath === 'create-element.js' ? optimizeCreateElement(result.code) : result.code,
+	);
 }
 
 for (const item of copiedModules) {
@@ -146,4 +191,17 @@ for (const file of await walk(outputRoot)) {
 	}
 }
 
-console.log(`generated ${[...transformedModules].length + copiedModules.length} surface roots`);
+if (checkOnly) {
+	try {
+		await verifyGeneratedTree(outputRoot, publishedOutputRoot, 'generated surface');
+	} finally {
+		await rm(outputRoot, { recursive: true, force: true });
+	}
+} else {
+	await rm(publishedOutputRoot, { recursive: true, force: true });
+	await rename(outputRoot, publishedOutputRoot);
+}
+
+console.log(
+	`${checkOnly ? 'verified' : 'generated'} ${[...transformedModules].length + copiedModules.length} surface roots`,
+);

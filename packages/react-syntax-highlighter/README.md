@@ -9,9 +9,12 @@ import { Prism } from '@octanejs/react-syntax-highlighter';
 import vscDarkPlus from '@octanejs/react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus';
 
 export function CodeSample() @{
-	<Prism language="typescript" style={vscDarkPlus} showLineNumbers>
-		{'const answer: number = 42;'}
-	</Prism>
+	<Prism
+		language="typescript"
+		style={vscDarkPlus}
+		showLineNumbers
+		children={'const answer: number = 42;'}
+	/>
 }
 ```
 
@@ -26,8 +29,16 @@ Existing imports can be rewritten package-for-package:
 
 The complete generated export map includes extensionless and `.js` ESM/CJS
 paths for the pinned release. `PreTag` and `CodeTag` accept native tag names or
-Octane function components. React class components need a function adapter;
-that framework-identity boundary is the sole recorded divergence.
+Octane function components. React class components need a function adapter.
+
+In `.tsrx`, pass source through the explicit `children` prop. Nested component
+children compile to a renderer-owned block function, which an API that inspects
+source text cannot unwrap:
+
+```diff
+- <SyntaxHighlighter>{source}</SyntaxHighlighter>
++ <SyntaxHighlighter children={source} />
+```
 
 See [`UPSTREAM.md`](UPSTREAM.md) for immutable provenance. The fail-closed
 parity audit runs all 19 upstream suites and 51 test identities, 40 snapshots,
