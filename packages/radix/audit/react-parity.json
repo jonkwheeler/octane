@@ -173,7 +173,7 @@
         {
           "path": "scripts/react-parity/radix-controls.test.mjs",
           "role": "support",
-          "sha256": "60a44e8129797f9f325f2f275b0340b120a6e3706e6f4e0d41a0f603b4d85d53"
+          "sha256": "1d9ad6bf9ae797e65d3e40dec76d6a51dee179a8b6261ea16d10cdc931e56540"
         },
         {
           "path": "vitest.config.js",
