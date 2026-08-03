@@ -6,7 +6,7 @@
   "npmSha1": "928459855d375f5cfc8e646071e20d541cebcb52",
   "npmIntegrity": "sha512-PjVawBGy80C6YbC5DDZJeUjBmC7skaoEUdvfFQediQHgCL7aKyVHe57SaJGfQsloGDac+gCpTfRdtxzWWKmCXA==",
   "licenseSha256": "a74e9029bdf2e92141bc711a6b17fa77b90c10eeec51193c83279cc69848f5bf",
-  "fileCount": 695,
+  "fileCount": 696,
   "files": [
     {
       "path": "__tests__/__snapshots__/code-style-passed-to-line-numbers.js.snap",
@@ -192,6 +192,11 @@
       "path": "__tests__/wrap-lines.js",
       "bytes": 3221,
       "sha256": "677cd8683c5ff55bff83a2829258591912ed691f7fd5c11614abbfb94d0e13c6"
+    },
+    {
+      "path": "babel.config.js",
+      "bytes": 837,
+      "sha256": "e2ba2c5a8048e992b757b36c102a2f39a2e10eeee0d9c15de2eefa23e1251d9e"
     },
     {
       "path": "LICENSE",

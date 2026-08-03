@@ -262,11 +262,32 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-syntax-highlighter',
-					include: ['packages/react-syntax-highlighter/tests/**/*.test.ts'],
+					include: [
+						'packages/react-syntax-highlighter/tests/**/*.test.ts',
+						'!packages/react-syntax-highlighter/tests/ssr/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
 				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-syntax-highlighter-ssr',
+					include: ['packages/react-syntax-highlighter/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
 			},
 			{
 				test: {

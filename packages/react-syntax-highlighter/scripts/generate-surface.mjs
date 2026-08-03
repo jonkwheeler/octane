@@ -79,6 +79,13 @@ for (const item of copiedModules) {
 	}
 }
 
+for (const alias of ['cs', 'nimrod', 'tex']) {
+	await emit(
+		`languages/hljs/${alias}.js`,
+		`import ${alias} from "highlight.js/lib/languages/${alias}";\nexport default ${alias};\n`,
+	);
+}
+
 await emit(
 	'async-syntax-highlighter.js',
 	await readFile(join(packageRoot, 'scripts', 'templates', 'async-syntax-highlighter.js'), 'utf8'),
