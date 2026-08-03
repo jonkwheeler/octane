@@ -103,7 +103,7 @@
         {
           "path": "packages/floating-ui/tests/browser/harness/index.html",
           "role": "support",
-          "sha256": "94a50be6269584ed1044e0da85d6c5bccdc329bf5e946272b9890ae0bd89591b"
+          "sha256": "5c4bf02833285eecda4511cd40dfac3751384941367cf6b124089d4e377dfd0b"
         }
       ]
     },
