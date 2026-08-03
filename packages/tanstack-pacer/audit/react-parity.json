@@ -106,7 +106,7 @@
         {
           "path": "scripts/react-parity/tanstack-pacer-controls.test.mjs",
           "role": "support",
-          "sha256": "bda48b9c746c105e6953295907b52d9426e587ec1f8ffe30aa57c8ea2823ebf3"
+          "sha256": "5ad58776c2fbe697816dc5713e17fed4c2324cb3ef9604e4bfa87c6f9fbb077c"
         },
         {
           "path": "vitest.config.js",
