@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRoot, drainPassiveEffects, flushSync } from 'octane';
 import { cache, mutate } from '../../../src/_internal/index';
-import { captured, SWRReader, SWRSiblings, SWRSuspense } from './fixtures.tsrx';
+import { captured, SWRProviderProbe, SWRReader, SWRSiblings, SWRSuspense } from './fixtures.tsrx';
 
 let container: HTMLElement;
 let root: ReturnType<typeof createRoot> | undefined;
@@ -42,6 +42,13 @@ afterEach(() => {
 });
 
 describe('SWR U3 root lifecycle', () => {
+	it('mounts and tears down an isolated SWRConfig provider with a stable effect slot', () => {
+		const provider = vi.fn(() => new Map());
+		expect(() => mount(SWRProviderProbe, { provider })).not.toThrow();
+		expect(container.querySelector('[data-testid="provider"]')?.textContent).toBe('configured');
+		expect(provider).toHaveBeenCalledOnce();
+	});
+
 	it('publishes loading, data, and validation state around a request', async () => {
 		let resolve!: (value: string) => void;
 		const fetcher = vi.fn(() => new Promise<string>((done) => (resolve = done)));

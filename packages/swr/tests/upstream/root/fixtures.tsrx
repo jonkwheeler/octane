@@ -1,4 +1,4 @@
-import useSWR from '../../../src/index/index';
+import useSWR, { SWRConfig } from '../../../src/index/index';
 import { Suspense } from 'octane';
 
 export const captured: { mutate?: (...args: any[]) => any } = {};
@@ -37,4 +37,10 @@ export function SWRSuspense(props) @{
 	<Suspense fallback={<span data-testid="fallback">loading</span>}>
 		<SWRReader cacheKey={props.cacheKey} fetcher={props.fetcher} config={{ suspense: true }} />
 	</Suspense>
+}
+
+export function SWRProviderProbe(props) @{
+	<SWRConfig value={{ provider: props.provider }}>
+		<output data-testid="provider">configured</output>
+	</SWRConfig>
 }

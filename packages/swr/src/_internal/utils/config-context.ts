@@ -9,6 +9,7 @@ import { useIsomorphicLayoutEffect } from './env.js';
 import type { SWRConfiguration, FullConfiguration } from '../types.js';
 
 export const SWRConfigContext = createContext<Partial<FullConfiguration>>({});
+const SWR_CONFIG_CACHE_EFFECT_SLOT = Symbol.for('@octanejs/swr:config-cache-effect');
 
 export interface SWRConfigProps {
 	children?: unknown;
@@ -42,12 +43,16 @@ const SWRConfig = (props: SWRConfigProps) => {
 		(extendedConfig as FullConfiguration).mutate = cacheContext[1];
 	}
 
-	useIsomorphicLayoutEffect(() => {
-		if (cacheContext) {
-			cacheContext[2]?.();
-			return cacheContext[3];
-		}
-	}, []);
+	useIsomorphicLayoutEffect(
+		() => {
+			if (cacheContext) {
+				cacheContext[2]?.();
+				return cacheContext[3];
+			}
+		},
+		[],
+		SWR_CONFIG_CACHE_EFFECT_SLOT,
+	);
 
 	return createElement(
 		SWRConfigContext.Provider,
