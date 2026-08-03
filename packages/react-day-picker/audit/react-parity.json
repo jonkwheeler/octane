@@ -27,8 +27,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 13,
-    "uniqueIdentities": 13,
+    "inventoryEntries": 15,
+    "uniqueIdentities": 15,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
