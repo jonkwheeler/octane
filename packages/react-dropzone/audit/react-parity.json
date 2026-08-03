@@ -61,7 +61,7 @@
         {
           "path": "packages/react-dropzone/audit/runtime-inventories/pristine-harness.json",
           "role": "support",
-          "sha256": "3bb24cd5531ef486e2ea8c3a6cb10d53b4e5cef8b4bcfc45151278429812c8f6"
+          "sha256": "afa3206d774b2025f8835728e8e386a2902d6c882508d55bbcc8e5cc27b6e39f"
         },
         {
           "path": "scripts/react-parity/react-dropzone-runtime-inventory.mjs",
@@ -126,7 +126,7 @@
         {
           "path": "packages/react-dropzone/audit/runtime-inventories/adapted-server.json",
           "role": "support",
-          "sha256": "a3fc337e9ecbcad4b85d4aa37074eed1628f1a019c01ac03acca9b743533f903"
+          "sha256": "b45ee908c0ede3331d7bd5dbc96bdeb641ba323d2ca34a76d48c7a3c0f1af0e2"
         }
       ]
     },
