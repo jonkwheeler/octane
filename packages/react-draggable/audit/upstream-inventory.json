@@ -1,0 +1,3372 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "package": "react-draggable",
+    "version": "4.7.1",
+    "tag": "v4.7.1",
+    "npmIntegrity": "sha512-wa3tzfFnYt3yaZLuyU58fl1TNunfWfBekDgWhZA1+gb2jnp42wZ0ymuopR6M5kqDYmm4hKmzGlcKWjZf3Zb6RQ==",
+    "npmShasum": "e502c3cfe0cc97d691e12aaa377a975fce097d71",
+    "tagObject": "cec7498ff84e91215987636d3edbb6ca132ee9e5",
+    "commit": "bcbaa8eb285aea49865ca8870c0b7b441c2fe6a4",
+    "tree": "7b17a5d02449287945f87dee0cecdadcfb56cdc5",
+    "license": "MIT"
+  },
+  "publicSurface": {
+    "runtimeExports": [
+      "default",
+      "DraggableCore"
+    ],
+    "typeExports": [
+      "ControlPosition",
+      "DraggableBounds",
+      "DraggableCoreProps",
+      "DraggableData",
+      "DraggableEvent",
+      "DraggableEventHandler",
+      "DraggableProps",
+      "PositionOffsetControlPosition"
+    ],
+    "subpaths": [
+      ".",
+      "./package.json"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "npm/CHANGELOG.md",
+      "bytes": 25971,
+      "sha256": "c90af39d9336c617c3734bc8c49b6ff67f61212da089db6c6086bb371a334479"
+    },
+    {
+      "path": "npm/LICENSE",
+      "bytes": 1111,
+      "sha256": "6de5c13fa4cb2cef3d111d6f43ef4958aa1b9ea3f6f623200dfe1300a8e1d3d4"
+    },
+    {
+      "path": "npm/README.md",
+      "bytes": 9134,
+      "sha256": "c9b0a921e08373045de9de094af848be8fb604b246aa3a7e5b7231ea4baf752e"
+    },
+    {
+      "path": "npm/build/cjs/Draggable-BLPL18PC.d.mts",
+      "bytes": 3918,
+      "sha256": "c0fab739a2bc2f29f9c6c99312f4def091d540ed234e932f6478b0eef5f04753"
+    },
+    {
+      "path": "npm/build/cjs/Draggable-BLPL18PC.d.ts",
+      "bytes": 3918,
+      "sha256": "c0fab739a2bc2f29f9c6c99312f4def091d540ed234e932f6478b0eef5f04753"
+    },
+    {
+      "path": "npm/build/cjs/Draggable.d.mts",
+      "bytes": 142,
+      "sha256": "8c51e06582bd8aea01c62ecdfbf93a7401abcb432b0e95eb8015d3e0b1dc9dc6"
+    },
+    {
+      "path": "npm/build/cjs/Draggable.d.ts",
+      "bytes": 141,
+      "sha256": "42617f6beb59645f673230ffc60c33997ac5484bf722488602450221ca1b6970"
+    },
+    {
+      "path": "npm/build/cjs/Draggable.js",
+      "bytes": 38170,
+      "sha256": "496dd2c047f56f0e24add7925b7e7b7c23eb74525257ce032dc1f36fb2f58b7e"
+    },
+    {
+      "path": "npm/build/cjs/Draggable.js.map",
+      "bytes": 73510,
+      "sha256": "305a51fd2de720ba5bf5c6074016091183b078081cde9300ee96ca6e7433a960"
+    },
+    {
+      "path": "npm/build/cjs/Draggable.mjs",
+      "bytes": 159,
+      "sha256": "b88c8523c69af6a0e72fca1744ec5ce63b39c1a13f82d852d9778c18a960e332"
+    },
+    {
+      "path": "npm/build/cjs/Draggable.mjs.map",
+      "bytes": 71,
+      "sha256": "cba81f7ad4d5b1b629bf43823f1082e73a10d0c3114c937515e7f8c1047629b3"
+    },
+    {
+      "path": "npm/build/cjs/chunk-ACOTSM7X.mjs",
+      "bytes": 35732,
+      "sha256": "b76988c201f7f529c48a0ce52a25bf124f309b64c7931eb672c8111321d36098"
+    },
+    {
+      "path": "npm/build/cjs/chunk-ACOTSM7X.mjs.map",
+      "bytes": 73144,
+      "sha256": "e26545873ee6428cf5ffab612a29454de2789040706dbf11c4308017fa5fdedf"
+    },
+    {
+      "path": "npm/build/cjs/cjs.d.mts",
+      "bytes": 369,
+      "sha256": "901f2d49295af7a98a2335b6a3becd55b830ecf8313dee5def7c52b61bd986d4"
+    },
+    {
+      "path": "npm/build/cjs/cjs.d.ts",
+      "bytes": 367,
+      "sha256": "c8a693c15ab107ad261bcfafafb1e3139e3e42ac089978a3d986add7d6f8e089"
+    },
+    {
+      "path": "npm/build/cjs/cjs.js",
+      "bytes": 343,
+      "sha256": "195934344f022c82969479b25b69cb5b1d1cafd176968f2731cecf5626f349ef"
+    },
+    {
+      "path": "npm/build/cjs/cjs.js.map",
+      "bytes": 77059,
+      "sha256": "f4fff557541a343f3c44dd967f972126cb09f9c2afe65181201f8ce41112dd60"
+    },
+    {
+      "path": "npm/build/cjs/cjs.mjs",
+      "bytes": 199,
+      "sha256": "8f0cc1522d4304cd99052dffb6ae8884e46421da5afe071ba0f5596db98e051b"
+    },
+    {
+      "path": "npm/build/cjs/cjs.mjs.map",
+      "bytes": 3620,
+      "sha256": "c65c0c785883405a9b8488f38758d21d53af8266e822d95f526d3e434cf0a64f"
+    },
+    {
+      "path": "npm/build/web/react-draggable.min.js",
+      "bytes": 45300,
+      "sha256": "39c5074b71b503be7501653e6af843f5cab0e660cfa024fa04951a0424bda23c"
+    },
+    {
+      "path": "npm/build/web/react-draggable.min.js.map",
+      "bytes": 83024,
+      "sha256": "d702647581b67a509c41dcb7d5510a23637285e53b11ed003894d5d31a44b5e8"
+    },
+    {
+      "path": "npm/package.json",
+      "bytes": 2921,
+      "sha256": "0f8c7b7c8fcbb71feada5ada4e40582b3b6e480f5bb687f77a9178a7a8fe7510"
+    },
+    {
+      "path": "tag/LICENSE",
+      "bytes": 1111,
+      "sha256": "6de5c13fa4cb2cef3d111d6f43ef4958aa1b9ea3f6f623200dfe1300a8e1d3d4"
+    },
+    {
+      "path": "tag/lib/Draggable.tsx",
+      "bytes": 15314,
+      "sha256": "856927a709da4a6473d44f8d823c05a9f6deaea41053206dcb060e130603e034"
+    },
+    {
+      "path": "tag/lib/DraggableCore.tsx",
+      "bytes": 19144,
+      "sha256": "91332a5531669943e11261e7457f621da1d40d9c5c0a30893d033d8ef6cad4a6"
+    },
+    {
+      "path": "tag/lib/cjs.ts",
+      "bytes": 3441,
+      "sha256": "d5ecaaa65bd5a7eebf79049cbd56db7b7bf29fb985eac88a64507217d7f9cbd1"
+    },
+    {
+      "path": "tag/lib/umd.ts",
+      "bytes": 1240,
+      "sha256": "c8297d03ea1827f2b6620df9e174110c7990ab3f44722190709607a4ceb2ec8e"
+    },
+    {
+      "path": "tag/lib/utils/domFns.ts",
+      "bytes": 9914,
+      "sha256": "7dbff87e990a16758c7d0a9147e6fb2cec097109164c636c2171321ca757c27e"
+    },
+    {
+      "path": "tag/lib/utils/getPrefix.ts",
+      "bytes": 1532,
+      "sha256": "75c9985729f4668360a9966ce9aa1d2e05c391b4498713864e0e591be298c919"
+    },
+    {
+      "path": "tag/lib/utils/log.ts",
+      "bytes": 174,
+      "sha256": "519457949c08654ae5e91ac2d0c79eee8fa870ec250e87304eaa664ab2dd32d0"
+    },
+    {
+      "path": "tag/lib/utils/positionFns.ts",
+      "bytes": 5474,
+      "sha256": "84ae3158239d289d291fce89cb5472ba84d3f83404361fcbda88f6124f21053d"
+    },
+    {
+      "path": "tag/lib/utils/shims.ts",
+      "bytes": 987,
+      "sha256": "931fbecd5d81076005b37b9c064e0014a5a84c6ea8b2876d6190c146fcbed897"
+    },
+    {
+      "path": "tag/lib/utils/types.ts",
+      "bytes": 1418,
+      "sha256": "c26dc1d96a207276cbb15ed260971cfda781b66d92ac0e0c323ac65576063d3a"
+    },
+    {
+      "path": "tag/package.json",
+      "bytes": 2921,
+      "sha256": "0f8c7b7c8fcbb71feada5ada4e40582b3b6e480f5bb687f77a9178a7a8fe7510"
+    },
+    {
+      "path": "tag/test/Draggable.test.jsx",
+      "bytes": 13675,
+      "sha256": "0ad151efd30e66a4c583292c983f1d4e83968b4e637bbbb636463837463abd75"
+    },
+    {
+      "path": "tag/test/DraggableCore.test.jsx",
+      "bytes": 19378,
+      "sha256": "94e954c8591d2f88ca58fda976ed68fc91141549c3e4bd932909adfc09c69142"
+    },
+    {
+      "path": "tag/test/browser/browser.test.js",
+      "bytes": 39781,
+      "sha256": "ed5e5a378e851ce3e28b05571d6b709847119f84f4dbc9a2e439134a05875cff"
+    },
+    {
+      "path": "tag/test/browser/test.html",
+      "bytes": 1309,
+      "sha256": "fcfd64b94d344822eaad8a963669676c721fd19494073f1121ad4c8c9049f6e1"
+    },
+    {
+      "path": "tag/test/setup.js",
+      "bytes": 414,
+      "sha256": "31fbaa25c9b387e8a29e364f98a086ad26d238b87b0f4546acba051fcc5c0498"
+    },
+    {
+      "path": "tag/test/testUtils.js",
+      "bytes": 2786,
+      "sha256": "954f8259872063748dd3d8d4bde8d45fdad4ecf458f54a975f83168584f2567b"
+    },
+    {
+      "path": "tag/test/typeCompat.test.ts",
+      "bytes": 3929,
+      "sha256": "b69c97c940fd5463fbb612a903f1b043fa2fcf0d7acb505b9dfb0904ef88306f"
+    },
+    {
+      "path": "tag/test/typeCompat/fixture.tsx",
+      "bytes": 7980,
+      "sha256": "5d14243c7ed69b5e5c83071facab535a7722c886ae446cf9e6dda2ce6617cbc4"
+    },
+    {
+      "path": "tag/test/typeCompat/tsconfig.json",
+      "bytes": 392,
+      "sha256": "2aa94497f5effa083543e354d8da6d0f9bdb73eb172c081345dcf46f785ff5e4"
+    },
+    {
+      "path": "tag/test/utils/domFns.extra.test.js",
+      "bytes": 11444,
+      "sha256": "b51f8e33dabc0d60d006cede18c0b177110788fddecb4452fd44672b64aa2bcd"
+    },
+    {
+      "path": "tag/test/utils/domFns.test.js",
+      "bytes": 6651,
+      "sha256": "546d6ec895c9b29f36faf5d193a5934b43a7d44923e1f7b17154238942a932d7"
+    },
+    {
+      "path": "tag/test/utils/getPrefix.extra.test.js",
+      "bytes": 2492,
+      "sha256": "8efc2ab7da87de1f7d96b7e5957c42c1436f91b35147e90908770ed01454aa75"
+    },
+    {
+      "path": "tag/test/utils/getPrefix.test.js",
+      "bytes": 3479,
+      "sha256": "8222999581c1405ac81820a712af957d26a1a8c5594dbdae0b3ea97526d85c32"
+    },
+    {
+      "path": "tag/test/utils/positionFns.bounds.test.js",
+      "bytes": 8359,
+      "sha256": "e5d504608743cd6580d11e46af1f085fa8daf24a018c8aef4571e1cbbea5cebc"
+    },
+    {
+      "path": "tag/test/utils/positionFns.test.js",
+      "bytes": 5352,
+      "sha256": "b0f89989f5c093c729134e384cd8dd8a085a66d5fd915579e2ecb829d383575d"
+    },
+    {
+      "path": "tag/test/utils/shims.extra.test.js",
+      "bytes": 3076,
+      "sha256": "e991dc653701fc2d222f36e358339d65dab81d1cd60b85fb6e77d15818e92e29"
+    },
+    {
+      "path": "tag/test/utils/shims.test.js",
+      "bytes": 3694,
+      "sha256": "1c0ff57c1f0e1c4feca7d7a2925b1fde09fc70285ce7473404dd7f1b24e87fee"
+    },
+    {
+      "path": "tag/tsconfig.json",
+      "bytes": 524,
+      "sha256": "739529aa6f5414cfdeaaf2d81c81ca0f7c25fbfbfe5a6464767623419d7b821b"
+    },
+    {
+      "path": "tag/tsup.config.ts",
+      "bytes": 3077,
+      "sha256": "f4ebffa2a65aa4bb758bc7d357ff2332b45ce78d44f9b1393b7c8e7955850b36"
+    },
+    {
+      "path": "tag/typings/test.tsx",
+      "bytes": 1801,
+      "sha256": "7245c84c62b0ae2e5f3d3e2f698d46cabcf79446962fc601fe874b15d684cd77"
+    },
+    {
+      "path": "tag/typings/tsconfig.json",
+      "bytes": 272,
+      "sha256": "c62835e9f8abbfbac3d1b04cf18b9397b84c828a8aefc78692c8da996cd31945"
+    },
+    {
+      "path": "tag/typings/tsconfig.react18.json",
+      "bytes": 1202,
+      "sha256": "81cf9c84ca14da46223b606f45818d4c35dd403c9669fd2be18f98a2dce16ddb"
+    },
+    {
+      "path": "tag/vitest.browser.config.js",
+      "bytes": 188,
+      "sha256": "358a45ef723bdb6d82b1562105e7c20b7ad623eb6a766e28f7b047ecbb98f73e"
+    },
+    {
+      "path": "tag/vitest.config.js",
+      "bytes": 800,
+      "sha256": "9a1dc9177a5b0f4de7ce72b598a8f4af2ee478476ab81376e0e2d2ba35a3c8bb"
+    }
+  ],
+  "inventories": {
+    "sourceFiles": [
+      "tag/lib/Draggable.tsx",
+      "tag/lib/DraggableCore.tsx",
+      "tag/lib/cjs.ts",
+      "tag/lib/umd.ts",
+      "tag/lib/utils/domFns.ts",
+      "tag/lib/utils/getPrefix.ts",
+      "tag/lib/utils/log.ts",
+      "tag/lib/utils/positionFns.ts",
+      "tag/lib/utils/shims.ts",
+      "tag/lib/utils/types.ts"
+    ],
+    "unitFiles": [
+      "tag/test/Draggable.test.jsx",
+      "tag/test/DraggableCore.test.jsx",
+      "tag/test/typeCompat.test.ts",
+      "tag/test/utils/domFns.extra.test.js",
+      "tag/test/utils/domFns.test.js",
+      "tag/test/utils/getPrefix.extra.test.js",
+      "tag/test/utils/getPrefix.test.js",
+      "tag/test/utils/positionFns.bounds.test.js",
+      "tag/test/utils/positionFns.test.js",
+      "tag/test/utils/shims.extra.test.js",
+      "tag/test/utils/shims.test.js"
+    ],
+    "unitCases": [
+      {
+        "id": "tag/test/Draggable.test.jsx:34::should have sensible defaults",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 34,
+        "name": "should have sensible defaults"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:52::should render with default class",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 52,
+        "name": "should render with default class"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:62::should preserve child className",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 62,
+        "name": "should preserve child className"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:73::should preserve child styles",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 73,
+        "name": "should preserve child styles"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:83::should apply transform style",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 83,
+        "name": "should apply transform style"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:93::should use custom defaultClassName",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 93,
+        "name": "should use custom defaultClassName"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:106::should add dragging class during drag",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 106,
+        "name": "should add dragging class during drag"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:124::should add dragged class after drag",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 124,
+        "name": "should add dragged class after drag"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:138::should use custom class names",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 138,
+        "name": "should use custom class names"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:165::should respect defaultPosition",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 165,
+        "name": "should respect defaultPosition"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:175::should use controlled position",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 175,
+        "name": "should use controlled position"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:185::should respect positionOffset with numbers",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 185,
+        "name": "should respect positionOffset with numbers"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:195::should respect positionOffset with percentages",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 195,
+        "name": "should respect positionOffset with percentages"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:211::should not move when axis=\"none\"",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 211,
+        "name": "should not move when axis=\"none\""
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:228::should call onStart when drag starts",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 228,
+        "name": "should call onStart when drag starts"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:246::should cancel drag when onStart returns false",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 246,
+        "name": "should cancel drag when onStart returns false"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:266::should detect SVG elements",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 266,
+        "name": "should detect SVG elements"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:277::should not set isElementSVG for non-SVG elements",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 277,
+        "name": "should not set isElementSVG for non-SVG elements"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:288::should set initial transform attribute for SVG",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 288,
+        "name": "should set initial transform attribute for SVG"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:300::should respect position prop changes",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 300,
+        "name": "should respect position prop changes"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:324::should revert to controlled position after drag",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 324,
+        "name": "should revert to controlled position after drag"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:342::should not drag when disabled",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 342,
+        "name": "should not drag when disabled"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:358::should throw when no children provided",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 358,
+        "name": "should throw when no children provided"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:375::should throw when multiple children provided",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 375,
+        "name": "should throw when multiple children provided"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:400::should still render when className is set on Draggable",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 400,
+        "name": "should still render when className is set on Draggable"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:412::should still render when style is set on Draggable",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 412,
+        "name": "should still render when style is set on Draggable"
+      },
+      {
+        "id": "tag/test/Draggable.test.jsx:423::should still render when transform is set on Draggable",
+        "file": "tag/test/Draggable.test.jsx",
+        "line": 423,
+        "name": "should still render when transform is set on Draggable"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:23::should render its child",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 23,
+        "name": "should render its child"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:33::should accept a single child only",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 33,
+        "name": "should accept a single child only"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:58::should call onStart when mouse down",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 58,
+        "name": "should call onStart when mouse down"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:70::should call onDrag during mouse move",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 70,
+        "name": "should call onDrag during mouse move"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:87::should call onStop when mouse up",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 87,
+        "name": "should call onStop when mouse up"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:99::should provide correct data in callbacks",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 99,
+        "name": "should provide correct data in callbacks"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:122::should not start dragging when disabled",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 122,
+        "name": "should not start dragging when disabled"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:136::should cancel drag when onStart returns false",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 136,
+        "name": "should cancel drag when onStart returns false"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:152::should stop drag when onDrag returns false",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 152,
+        "name": "should stop drag when onDrag returns false"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:170::should only drag from handle",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 170,
+        "name": "should only drag from handle"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:190::should work with nested elements in handle",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 190,
+        "name": "should work with nested elements in handle"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:208::should not drag from cancel elements",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 208,
+        "name": "should not drag from cancel elements"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:230::should snap movement to grid",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 230,
+        "name": "should snap movement to grid"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:247::should not call onDrag if movement is less than grid",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 247,
+        "name": "should not call onDrag if movement is less than grid"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:264::should adjust position based on scale",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 264,
+        "name": "should adjust position based on scale"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:281::should work with scale < 1",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 281,
+        "name": "should work with scale < 1"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:300::should only respond to left click by default",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 300,
+        "name": "should only respond to left click by default"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:319::should respond to any click when allowAnyClick is true",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 319,
+        "name": "should respond to any click when allowAnyClick is true"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:340::should use nodeRef instead of findDOMNode",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 340,
+        "name": "should use nodeRef instead of findDOMNode"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:362::should work with forwardRef components",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 362,
+        "name": "should work with forwardRef components"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:390::should handle touch start",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 390,
+        "name": "should handle touch start"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:402::should call preventDefault on touchstart by default",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 402,
+        "name": "should call preventDefault on touchstart by default"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:417::should not call preventDefault when allowMobileScroll is true",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 417,
+        "name": "should not call preventDefault when allowMobileScroll is true"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:434::should call onMouseDown callback",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 434,
+        "name": "should call onMouseDown callback"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:446::should call onMouseDown even when disabled",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 446,
+        "name": "should call onMouseDown even when disabled"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:462::should add transparent selection class by default",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 462,
+        "name": "should add transparent selection class by default"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:477::should not add class when enableUserSelectHack is false",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 477,
+        "name": "should not add class when enableUserSelectHack is false"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:488::should not add user-select class when onStart returns false",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 488,
+        "name": "should not add user-select class when onStart returns false"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:515::applies the nonce to the injected style element on drag start",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 515,
+        "name": "applies the nonce to the injected style element on drag start"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:530::should track mounted state correctly",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 530,
+        "name": "should track mounted state correctly"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:549::should not continue drag if onStart returns false",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 549,
+        "name": "should not continue drag if onStart returns false"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:568::should call preventDefault on touchstart when using handle",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 568,
+        "name": "should call preventDefault on touchstart when using handle"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:586::should not call preventDefault on touchstart for cancel elements",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 586,
+        "name": "should not call preventDefault on touchstart for cancel elements"
+      },
+      {
+        "id": "tag/test/DraggableCore.test.jsx:608::should throw error when no children provided",
+        "file": "tag/test/DraggableCore.test.jsx",
+        "line": 608,
+        "name": "should throw error when no children provided"
+      },
+      {
+        "id": "tag/test/typeCompat.test.ts:65::public surface is API-compatible with the old hand-written surface",
+        "file": "tag/test/typeCompat.test.ts",
+        "line": 65,
+        "name": "public surface is API-compatible with the old hand-written surface"
+      },
+      {
+        "id": "tag/test/typeCompat.test.ts:71::the existing typings/test.tsx still compiles unchanged against the public surface",
+        "file": "tag/test/typeCompat.test.ts",
+        "line": 71,
+        "name": "the existing typings/test.tsx still compiles unchanged against the public surface"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:20::returns false for a node without any matches() implementation",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 20,
+        "name": "returns false for a node without any matches() implementation"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:28::uses attachEvent/detachEvent when present",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 28,
+        "name": "uses attachEvent/detachEvent when present"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:39::falls back to on<event> assignment when neither API exists",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 39,
+        "name": "falls back to on<event> assignment when neither API exists"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:50::treats the body offsetParent as origin {0,0}",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 50,
+        "name": "treats the body offsetParent as origin {0,0}"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:58::subtracts the parent rect and adds scroll for non-body parents",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 58,
+        "name": "subtracts the parent rect and adds scroll for non-body parents"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:70::divides by scale",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 70,
+        "name": "divides by scale"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:80::keys the transform under the browser-prefixed transform property",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 80,
+        "name": "keys the transform under the browser-prefixed transform property"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:86::prepends a positionOffset",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 86,
+        "name": "prepends a positionOffset"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:92::supports string (percentage) positionOffsets",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 92,
+        "name": "supports string (percentage) positionOffsets"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:100::produces a unit-less translate string",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 100,
+        "name": "produces a unit-less translate string"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:104::prepends a unit-less positionOffset",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 104,
+        "name": "prepends a unit-less positionOffset"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:112::finds the touch in targetTouches by identifier",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 112,
+        "name": "finds the touch in targetTouches by identifier"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:120::falls back to changedTouches",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 120,
+        "name": "falls back to changedTouches"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:128::returns undefined when no touch matches",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 128,
+        "name": "returns undefined when no touch matches"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:135::reads the first targetTouches identifier",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 135,
+        "name": "reads the first targetTouches identifier"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:140::falls back to changedTouches when targetTouches is empty",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 140,
+        "name": "falls back to changedTouches when targetTouches is empty"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:145::returns undefined when there are no touches",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 145,
+        "name": "returns undefined when there are no touches"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:160::is a no-op when doc is null/undefined",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 160,
+        "name": "is a no-op when doc is null/undefined"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:166::injects a style element and tags the body once",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 166,
+        "name": "injects a style element and tags the body once"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:177::does not inject a second style element on repeated calls",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 177,
+        "name": "does not inject a second style element on repeated calls"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:184::does not set a nonce attribute when none is provided",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 184,
+        "name": "does not set a nonce attribute when none is provided"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:190::applies an explicit nonce to the injected style element",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 190,
+        "name": "applies an explicit nonce to the injected style element"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:196::does not retroactively set a nonce on an already-injected element",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 196,
+        "name": "does not retroactively set a nonce on an already-injected element"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:203::falls back to __webpack_nonce__ when no explicit nonce is passed",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 203,
+        "name": "falls back to __webpack_nonce__ when no explicit nonce is passed"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:214::prefers an explicit nonce over __webpack_nonce__",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 214,
+        "name": "prefers an explicit nonce over __webpack_nonce__"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:225::removes the body class via requestAnimationFrame",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 225,
+        "name": "removes the body class via requestAnimationFrame"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:249::is a no-op when scheduling removal with a null doc",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 249,
+        "name": "is a no-op when scheduling removal with a null doc"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:257::does not clear a focused-input Caret selection",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 257,
+        "name": "does not clear a focused-input Caret selection"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:272::adds via string concatenation when classList is unavailable",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 272,
+        "name": "adds via string concatenation when classList is unavailable"
+      },
+      {
+        "id": "tag/test/utils/domFns.extra.test.js:281::removes via regex when classList is unavailable",
+        "file": "tag/test/utils/domFns.extra.test.js",
+        "line": 281,
+        "name": "removes via regex when classList is unavailable"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:29::should match simple class selectors",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 29,
+        "name": "should match simple class selectors"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:37::should match id selectors",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 37,
+        "name": "should match id selectors"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:44::should match tag selectors",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 44,
+        "name": "should match tag selectors"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:54::should match element itself",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 54,
+        "name": "should match element itself"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:61::should match parent elements",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 61,
+        "name": "should match parent elements"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:71::should stop at baseNode",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 71,
+        "name": "should stop at baseNode"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:86::should return false when no match",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 86,
+        "name": "should return false when no match"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:94::should add and remove event listeners",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 94,
+        "name": "should add and remove event listeners"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:107::should handle null elements gracefully",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 107,
+        "name": "should handle null elements gracefully"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:115::should calculate outer dimensions including borders",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 115,
+        "name": "should calculate outer dimensions including borders"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:131::should calculate inner dimensions excluding padding",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 131,
+        "name": "should calculate inner dimensions excluding padding"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:144::should add class names",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 144,
+        "name": "should add class names"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:150::should not duplicate class names",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 150,
+        "name": "should not duplicate class names"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:157::should remove class names",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 157,
+        "name": "should remove class names"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:166::should handle removing non-existent classes",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 166,
+        "name": "should handle removing non-existent classes"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:175::should create translate string with px suffix",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 175,
+        "name": "should create translate string with px suffix"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:180::should create translate string without suffix (for SVG)",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 180,
+        "name": "should create translate string without suffix (for SVG)"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:185::should include position offset when provided",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 185,
+        "name": "should include position offset when provided"
+      },
+      {
+        "id": "tag/test/utils/domFns.test.js:190::should handle percentage offsets",
+        "file": "tag/test/utils/domFns.test.js",
+        "line": 190,
+        "name": "should handle percentage offsets"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:6::handles a single-character property",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 6,
+        "name": "handles a single-character property"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:10::handles trailing hyphen gracefully",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 10,
+        "name": "handles trailing hyphen gracefully"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:15::emits a leading hyphen literally (no preceding char to capitalize)",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 15,
+        "name": "emits a leading hyphen literally (no preceding char to capitalize)"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:23::lowercases multi-letter prefixes",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 23,
+        "name": "lowercases multi-letter prefixes"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:27::returns the prop untouched for an empty prefix",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 27,
+        "name": "returns the prop untouched for an empty prefix"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:41::detects the ms prefix",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 41,
+        "name": "detects the ms prefix"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:48::detects the O prefix",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 48,
+        "name": "detects the O prefix"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:55::returns empty string when documentElement itself is missing",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 55,
+        "name": "returns empty string when documentElement itself is missing"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:60::returns empty string when document is missing entirely",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 60,
+        "name": "returns empty string when document is missing entirely"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.extra.test.js:65::detects prefixes for a kebab-cased property",
+        "file": "tag/test/utils/getPrefix.extra.test.js",
+        "line": 65,
+        "name": "detects prefixes for a kebab-cased property"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:6::should return prop unchanged when no prefix",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 6,
+        "name": "should return prop unchanged when no prefix"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:10::should prefix and capitalize for Webkit",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 10,
+        "name": "should prefix and capitalize for Webkit"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:14::should prefix and capitalize for Moz",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 14,
+        "name": "should prefix and capitalize for Moz"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:18::should handle kebab-case properties",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 18,
+        "name": "should handle kebab-case properties"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:22::should handle multi-hyphen properties",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 22,
+        "name": "should handle multi-hyphen properties"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:28::should return prop unchanged when no prefix",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 28,
+        "name": "should return prop unchanged when no prefix"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:32::should add CSS prefix for Webkit",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 32,
+        "name": "should add CSS prefix for Webkit"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:36::should add CSS prefix for Moz",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 36,
+        "name": "should add CSS prefix for Moz"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:40::should add CSS prefix for ms",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 40,
+        "name": "should add CSS prefix for ms"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:56::should return empty string when window is undefined",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 56,
+        "name": "should return empty string when window is undefined"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:61::should return empty string when documentElement.style is unavailable",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 61,
+        "name": "should return empty string when documentElement.style is unavailable"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:66::should return empty string when prop exists unprefixed",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 66,
+        "name": "should return empty string when prop exists unprefixed"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:77::should return Webkit prefix when WebkitTransform exists",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 77,
+        "name": "should return Webkit prefix when WebkitTransform exists"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:88::should return Moz prefix when MozTransform exists",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 88,
+        "name": "should return Moz prefix when MozTransform exists"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:99::should return empty string when no prefix matches",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 99,
+        "name": "should return empty string when no prefix matches"
+      },
+      {
+        "id": "tag/test/utils/getPrefix.test.js:110::should use transform as default prop",
+        "file": "tag/test/utils/getPrefix.test.js",
+        "line": 110,
+        "name": "should use transform as default prop"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:30::short-circuits and returns x/y unchanged when bounds is falsy",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 30,
+        "name": "short-circuits and returns x/y unchanged when bounds is falsy"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:36::clamps to object bounds (right/bottom upper limits)",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 36,
+        "name": "clamps to object bounds (right/bottom upper limits)"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:42::clamps to object bounds (left/top lower limits)",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 42,
+        "name": "clamps to object bounds (left/top lower limits)"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:48::ignores limits that are not numbers (partial bounds object)",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 48,
+        "name": "ignores limits that are not numbers (partial bounds object)"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:56::does not mutate the original bounds object (clone)",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 56,
+        "name": "does not mutate the original bounds object (clone)"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:64::throws when the node has been unmounted",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 64,
+        "name": "throws when the node has been unmounted"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:92::resolves bounds=\"parent\" against the parent node",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 92,
+        "name": "resolves bounds=\"parent\" against the parent node"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:107::resolves bounds via a CSS selector against the root node",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 107,
+        "name": "resolves bounds via a CSS selector against the root node"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:121::throws a descriptive error when the selector matches nothing",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 121,
+        "name": "throws a descriptive error when the selector matches nothing"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:142::returns mouse coords mapped through the document body offsetParent",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 142,
+        "name": "returns mouse coords mapped through the document body offsetParent"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:152::applies scale to the returned coordinates",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 152,
+        "name": "applies scale to the returned coordinates"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:161::honors a user-provided offsetParent and its scroll/rect",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 161,
+        "name": "honors a user-provided offsetParent and its scroll/rect"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:177::returns null when a touchIdentifier is given but the touch is absent",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 177,
+        "name": "returns null when a touchIdentifier is given but the touch is absent"
+      },
+      {
+        "id": "tag/test/utils/positionFns.bounds.test.js:186::reads the matching touch when a touchIdentifier is provided",
+        "file": "tag/test/utils/positionFns.bounds.test.js",
+        "line": 186,
+        "name": "reads the matching touch when a touchIdentifier is provided"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:6::should snap to grid values",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 6,
+        "name": "should snap to grid values"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:11::should handle different x and y grid values",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 11,
+        "name": "should handle different x and y grid values"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:16::should handle zero values",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 16,
+        "name": "should handle zero values"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:20::should handle negative values",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 20,
+        "name": "should handle negative values"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:27::should snap exactly at grid boundaries",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 27,
+        "name": "should snap exactly at grid boundaries"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:32::should round at midpoint (standard Math.round behavior)",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 32,
+        "name": "should round at midpoint (standard Math.round behavior)"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:41::should return true for axis \"both\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 41,
+        "name": "should return true for axis \"both\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:46::should return true for axis \"x\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 46,
+        "name": "should return true for axis \"x\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:51::should return false for axis \"y\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 51,
+        "name": "should return false for axis \"y\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:56::should return false for axis \"none\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 56,
+        "name": "should return false for axis \"none\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:63::should return true for axis \"both\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 63,
+        "name": "should return true for axis \"both\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:68::should return true for axis \"y\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 68,
+        "name": "should return true for axis \"y\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:73::should return false for axis \"x\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 73,
+        "name": "should return false for axis \"x\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:78::should return false for axis \"none\"",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 78,
+        "name": "should return false for axis \"none\""
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:87::should create initial data when lastX/lastY are NaN",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 87,
+        "name": "should create initial data when lastX/lastY are NaN"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:105::should calculate deltas when lastX/lastY are set",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 105,
+        "name": "should calculate deltas when lastX/lastY are set"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:123::should throw when node is unmounted",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 123,
+        "name": "should throw when node is unmounted"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:136::should create data with scale of 1",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 136,
+        "name": "should create data with scale of 1"
+      },
+      {
+        "id": "tag/test/utils/positionFns.test.js:162::should apply scale to delta values",
+        "file": "tag/test/utils/positionFns.test.js",
+        "line": 162,
+        "name": "should apply scale to delta values"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:6::returns undefined for an empty array",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 6,
+        "name": "returns undefined for an empty array"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:10::works over array-like (TouchList-style) objects with a length",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 10,
+        "name": "works over array-like (TouchList-style) objects with a length"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:20::returns the first match when multiple satisfy the callback",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 20,
+        "name": "returns the first match when multiple satisfy the callback"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:24::does not return falsy elements even if the callback is truthy at that index",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 24,
+        "name": "does not return falsy elements even if the callback is truthy at that index"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:32::recognizes class constructors as functions",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 32,
+        "name": "recognizes class constructors as functions"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:37::recognizes generator functions as functions",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 37,
+        "name": "recognizes generator functions as functions"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:42::returns false for boolean values",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 42,
+        "name": "returns false for boolean values"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:49::treats -Infinity as a number",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 49,
+        "name": "treats -Infinity as a number"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:53::returns false for boxed Number objects",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 53,
+        "name": "returns false for boxed Number objects"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:59::returns false for arrays",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 59,
+        "name": "returns false for arrays"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:65::returns NaN for non-numeric strings",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 65,
+        "name": "returns NaN for non-numeric strings"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:69::returns NaN for an empty string",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 69,
+        "name": "returns NaN for an empty string"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:73::parses leading sign and ignores trailing units",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 73,
+        "name": "parses leading sign and ignores trailing units"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:80::flags truthy non-string prop values",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 80,
+        "name": "flags truthy non-string prop values"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:87::returns undefined for an absent prop",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 87,
+        "name": "returns undefined for an absent prop"
+      },
+      {
+        "id": "tag/test/utils/shims.extra.test.js:91::returns undefined for falsy NaN values",
+        "file": "tag/test/utils/shims.extra.test.js",
+        "line": 91,
+        "name": "returns undefined for falsy NaN values"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:6::should find first element matching callback",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 6,
+        "name": "should find first element matching callback"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:12::should return undefined if no match found",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 12,
+        "name": "should return undefined if no match found"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:18::should work with objects",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 18,
+        "name": "should work with objects"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:24::should pass index and array to callback",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 24,
+        "name": "should pass index and array to callback"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:32::should return true for regular functions",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 32,
+        "name": "should return true for regular functions"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:36::should return true for arrow functions",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 36,
+        "name": "should return true for arrow functions"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:40::should return true for async functions",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 40,
+        "name": "should return true for async functions"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:44::should return false for non-functions",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 44,
+        "name": "should return false for non-functions"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:55::should return true for valid numbers",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 55,
+        "name": "should return true for valid numbers"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:63::should return false for NaN",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 63,
+        "name": "should return false for NaN"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:67::should return false for non-numbers",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 67,
+        "name": "should return false for non-numbers"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:76::should parse integer strings",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 76,
+        "name": "should parse integer strings"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:82::should parse pixel values",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 82,
+        "name": "should parse pixel values"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:87::should handle decimal strings by truncating",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 87,
+        "name": "should handle decimal strings by truncating"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:94::should return error when prop is set",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 94,
+        "name": "should return error when prop is set"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:102::should return undefined when prop is not set",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 102,
+        "name": "should return undefined when prop is not set"
+      },
+      {
+        "id": "tag/test/utils/shims.test.js:108::should return undefined for falsy values",
+        "file": "tag/test/utils/shims.test.js",
+        "line": 108,
+        "name": "should return undefined for falsy values"
+      }
+    ],
+    "browserCases": [
+      {
+        "id": "tag/test/browser/browser.test.js:42::should update transform on drag",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 42,
+        "name": "should update transform on drag"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:79::should honor x axis constraint",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 79,
+        "name": "should honor x axis constraint"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:109::should honor y axis constraint",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 109,
+        "name": "should honor y axis constraint"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:141::should call onStop when drag ends",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 141,
+        "name": "should call onStop when drag ends"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:179::should clip dragging to bounds object",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 179,
+        "name": "should clip dragging to bounds object"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:213::should clip dragging to parent bounds",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 213,
+        "name": "should clip dragging to parent bounds"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:256::should clip to negative bounds",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 256,
+        "name": "should clip to negative bounds"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:293::should snap movement to grid",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 293,
+        "name": "should snap movement to grid"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 332,
+        "name": "should not trigger onDrag when movement is less than grid"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:371::should snap to larger grid correctly",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 371,
+        "name": "should snap to larger grid correctly"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:413::should adjust position when scale is 2x",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 413,
+        "name": "should adjust position when scale is 2x"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:454::should only drag from handle",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 454,
+        "name": "should only drag from handle"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 507,
+        "name": "should drag from deeply nested handle elements"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 548,
+        "name": "should not drag from deeply nested cancel elements"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:591::should work correctly inside an iframe",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 591,
+        "name": "should work correctly inside an iframe"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:664::should respect bounds inside an iframe",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 664,
+        "name": "should respect bounds inside an iframe"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 728,
+        "name": "should handle dragging in scrollable containers"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 770,
+        "name": "should clip dragging to parent bounds in shadow DOM"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 833,
+        "name": "should clip dragging to selector bounds in shadow DOM"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 898,
+        "name": "should not throw when unmounted during onStop callback"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 953,
+        "name": "should not defocus inputs when draggable unmounts"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 1021,
+        "name": "should not steal focus from inputs when starting drag"
+      },
+      {
+        "id": "tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly",
+        "file": "tag/test/browser/browser.test.js",
+        "line": 1076,
+        "name": "should calculate drag with offset position correctly"
+      }
+    ],
+    "fixtures": [
+      "tag/test/browser/test.html",
+      "tag/test/setup.js",
+      "tag/test/testUtils.js",
+      "tag/test/typeCompat/fixture.tsx",
+      "tag/test/typeCompat/tsconfig.json"
+    ],
+    "typeAssertions": [
+      {
+        "id": "test/typeCompat/fixture.tsx:31",
+        "statement": "expectType<number>(cp.x);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:32",
+        "statement": "expectType<number>(cp.y);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:37",
+        "statement": "expectType<number | string>(pocp1.x);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:38",
+        "statement": "expectType<number | string>(pocp2.y);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:43",
+        "statement": "expectType<number | undefined>(db2.left);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:44",
+        "statement": "expectType<number | undefined>(db2.right);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:45",
+        "statement": "expectType<number | undefined>(db2.top);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:46",
+        "statement": "expectType<number | undefined>(db2.bottom);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:56",
+        "statement": "expectType<HTMLElement>(dd.node);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:57",
+        "statement": "expectType<number>(dd.x);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:58",
+        "statement": "expectType<number>(dd.y);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:59",
+        "statement": "expectType<number>(dd.deltaX);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:60",
+        "statement": "expectType<number>(dd.deltaY);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:61",
+        "statement": "expectType<number>(dd.lastX);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:62",
+        "statement": "expectType<number>(dd.lastY);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:76",
+        "statement": "expectType<number>(data.x);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:77",
+        "statement": "expectType<HTMLElement>(data.node);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:99",
+        "statement": "expectType<boolean>(coreProps.allowAnyClick);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:100",
+        "statement": "expectType<boolean>(coreProps.allowMobileScroll);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:101",
+        "statement": "expectType<string>(coreProps.cancel);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:102",
+        "statement": "expectType<boolean>(coreProps.disabled);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:103",
+        "statement": "expectType<boolean>(coreProps.enableUserSelectHack);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:104",
+        "statement": "expectType<HTMLElement>(coreProps.offsetParent);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:105",
+        "statement": "expectType<[number, number]>(coreProps.grid);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:106",
+        "statement": "expectType<string>(coreProps.handle);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:107",
+        "statement": "expectType<DraggableEventHandler>(coreProps.onStart);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:108",
+        "statement": "expectType<DraggableEventHandler>(coreProps.onDrag);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:109",
+        "statement": "expectType<DraggableEventHandler>(coreProps.onStop);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:110",
+        "statement": "expectType<(e: MouseEvent) => void>(coreProps.onMouseDown);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:111",
+        "statement": "expectType<number>(coreProps.scale);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:135",
+        "statement": "expectType<'both' | 'x' | 'y' | 'none'>(props.axis);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:136",
+        "statement": "expectType<DraggableBounds | string | false>(props.bounds);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:137",
+        "statement": "expectType<string>(props.defaultClassName);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:138",
+        "statement": "expectType<string>(props.defaultClassNameDragging);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:139",
+        "statement": "expectType<string>(props.defaultClassNameDragged);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:140",
+        "statement": "expectType<ControlPosition>(props.defaultPosition);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:141",
+        "statement": "expectType<PositionOffsetControlPosition>(props.positionOffset);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:142",
+        "statement": "expectType<ControlPosition>(props.position);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:158",
+        "statement": "expectType<typeof React.Component>(Draggable as unknown as typeof React.Component);"
+      },
+      {
+        "id": "test/typeCompat/fixture.tsx:159",
+        "statement": "expectType<typeof React.Component>(DraggableCore as unknown as typeof React.Component);"
+      }
+    ]
+  },
+  "crosswalk": {
+    "source": [
+      {
+        "upstream": "tag/lib/Draggable.tsx",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/DraggableCore.tsx",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/cjs.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/umd.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/utils/domFns.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/utils/getPrefix.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/utils/log.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/utils/positionFns.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/utils/shims.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/lib/utils/types.ts",
+        "kind": "source",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "runtimeExports": [
+      {
+        "upstream": "default",
+        "kind": "runtime-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableCore",
+        "kind": "runtime-export",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "typeExports": [
+      {
+        "upstream": "ControlPosition",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableBounds",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableCoreProps",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableData",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableEvent",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableEventHandler",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "DraggableProps",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "PositionOffsetControlPosition",
+        "kind": "type-export",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "unitCases": [
+      {
+        "upstream": "tag/test/Draggable.test.jsx:34::should have sensible defaults",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:52::should render with default class",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:62::should preserve child className",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:73::should preserve child styles",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:83::should apply transform style",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:93::should use custom defaultClassName",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:106::should add dragging class during drag",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:124::should add dragged class after drag",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:138::should use custom class names",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:165::should respect defaultPosition",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:175::should use controlled position",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:185::should respect positionOffset with numbers",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:195::should respect positionOffset with percentages",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:211::should not move when axis=\"none\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:228::should call onStart when drag starts",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:246::should cancel drag when onStart returns false",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:266::should detect SVG elements",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:277::should not set isElementSVG for non-SVG elements",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:288::should set initial transform attribute for SVG",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:300::should respect position prop changes",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:324::should revert to controlled position after drag",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:342::should not drag when disabled",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:358::should throw when no children provided",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:375::should throw when multiple children provided",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:400::should still render when className is set on Draggable",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:412::should still render when style is set on Draggable",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/Draggable.test.jsx:423::should still render when transform is set on Draggable",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:23::should render its child",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:33::should accept a single child only",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:58::should call onStart when mouse down",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:70::should call onDrag during mouse move",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:87::should call onStop when mouse up",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:99::should provide correct data in callbacks",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:122::should not start dragging when disabled",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:136::should cancel drag when onStart returns false",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:152::should stop drag when onDrag returns false",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:170::should only drag from handle",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:190::should work with nested elements in handle",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:208::should not drag from cancel elements",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:230::should snap movement to grid",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:247::should not call onDrag if movement is less than grid",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:264::should adjust position based on scale",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:281::should work with scale < 1",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:300::should only respond to left click by default",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:319::should respond to any click when allowAnyClick is true",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:340::should use nodeRef instead of findDOMNode",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:362::should work with forwardRef components",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:390::should handle touch start",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:402::should call preventDefault on touchstart by default",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:417::should not call preventDefault when allowMobileScroll is true",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:434::should call onMouseDown callback",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:446::should call onMouseDown even when disabled",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:462::should add transparent selection class by default",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:477::should not add class when enableUserSelectHack is false",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:488::should not add user-select class when onStart returns false",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:515::applies the nonce to the injected style element on drag start",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:530::should track mounted state correctly",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:549::should not continue drag if onStart returns false",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:568::should call preventDefault on touchstart when using handle",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:586::should not call preventDefault on touchstart for cancel elements",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/DraggableCore.test.jsx:608::should throw error when no children provided",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/typeCompat.test.ts:65::public surface is API-compatible with the old hand-written surface",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/typeCompat.test.ts:71::the existing typings/test.tsx still compiles unchanged against the public surface",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:20::returns false for a node without any matches() implementation",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:28::uses attachEvent/detachEvent when present",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:39::falls back to on<event> assignment when neither API exists",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:50::treats the body offsetParent as origin {0,0}",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:58::subtracts the parent rect and adds scroll for non-body parents",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:70::divides by scale",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:80::keys the transform under the browser-prefixed transform property",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:86::prepends a positionOffset",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:92::supports string (percentage) positionOffsets",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:100::produces a unit-less translate string",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:104::prepends a unit-less positionOffset",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:112::finds the touch in targetTouches by identifier",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:120::falls back to changedTouches",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:128::returns undefined when no touch matches",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:135::reads the first targetTouches identifier",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:140::falls back to changedTouches when targetTouches is empty",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:145::returns undefined when there are no touches",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:160::is a no-op when doc is null/undefined",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:166::injects a style element and tags the body once",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:177::does not inject a second style element on repeated calls",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:184::does not set a nonce attribute when none is provided",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:190::applies an explicit nonce to the injected style element",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:196::does not retroactively set a nonce on an already-injected element",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:203::falls back to __webpack_nonce__ when no explicit nonce is passed",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:214::prefers an explicit nonce over __webpack_nonce__",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:225::removes the body class via requestAnimationFrame",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:249::is a no-op when scheduling removal with a null doc",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:257::does not clear a focused-input Caret selection",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:272::adds via string concatenation when classList is unavailable",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.extra.test.js:281::removes via regex when classList is unavailable",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:29::should match simple class selectors",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:37::should match id selectors",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:44::should match tag selectors",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:54::should match element itself",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:61::should match parent elements",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:71::should stop at baseNode",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:86::should return false when no match",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:94::should add and remove event listeners",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:107::should handle null elements gracefully",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:115::should calculate outer dimensions including borders",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:131::should calculate inner dimensions excluding padding",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:144::should add class names",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:150::should not duplicate class names",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:157::should remove class names",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:166::should handle removing non-existent classes",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:175::should create translate string with px suffix",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:180::should create translate string without suffix (for SVG)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:185::should include position offset when provided",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/domFns.test.js:190::should handle percentage offsets",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:6::handles a single-character property",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:10::handles trailing hyphen gracefully",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:15::emits a leading hyphen literally (no preceding char to capitalize)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:23::lowercases multi-letter prefixes",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:27::returns the prop untouched for an empty prefix",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:41::detects the ms prefix",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:48::detects the O prefix",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:55::returns empty string when documentElement itself is missing",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:60::returns empty string when document is missing entirely",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.extra.test.js:65::detects prefixes for a kebab-cased property",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:6::should return prop unchanged when no prefix",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:10::should prefix and capitalize for Webkit",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:14::should prefix and capitalize for Moz",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:18::should handle kebab-case properties",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:22::should handle multi-hyphen properties",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:28::should return prop unchanged when no prefix",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:32::should add CSS prefix for Webkit",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:36::should add CSS prefix for Moz",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:40::should add CSS prefix for ms",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:56::should return empty string when window is undefined",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:61::should return empty string when documentElement.style is unavailable",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:66::should return empty string when prop exists unprefixed",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:77::should return Webkit prefix when WebkitTransform exists",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:88::should return Moz prefix when MozTransform exists",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:99::should return empty string when no prefix matches",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/getPrefix.test.js:110::should use transform as default prop",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:30::short-circuits and returns x/y unchanged when bounds is falsy",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:36::clamps to object bounds (right/bottom upper limits)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:42::clamps to object bounds (left/top lower limits)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:48::ignores limits that are not numbers (partial bounds object)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:56::does not mutate the original bounds object (clone)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:64::throws when the node has been unmounted",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:92::resolves bounds=\"parent\" against the parent node",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:107::resolves bounds via a CSS selector against the root node",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:121::throws a descriptive error when the selector matches nothing",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:142::returns mouse coords mapped through the document body offsetParent",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:152::applies scale to the returned coordinates",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:161::honors a user-provided offsetParent and its scroll/rect",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:177::returns null when a touchIdentifier is given but the touch is absent",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.bounds.test.js:186::reads the matching touch when a touchIdentifier is provided",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:6::should snap to grid values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:11::should handle different x and y grid values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:16::should handle zero values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:20::should handle negative values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:27::should snap exactly at grid boundaries",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:32::should round at midpoint (standard Math.round behavior)",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:41::should return true for axis \"both\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:46::should return true for axis \"x\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:51::should return false for axis \"y\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:56::should return false for axis \"none\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:63::should return true for axis \"both\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:68::should return true for axis \"y\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:73::should return false for axis \"x\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:78::should return false for axis \"none\"",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:87::should create initial data when lastX/lastY are NaN",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:105::should calculate deltas when lastX/lastY are set",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:123::should throw when node is unmounted",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:136::should create data with scale of 1",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/positionFns.test.js:162::should apply scale to delta values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:6::returns undefined for an empty array",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:10::works over array-like (TouchList-style) objects with a length",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:20::returns the first match when multiple satisfy the callback",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:24::does not return falsy elements even if the callback is truthy at that index",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:32::recognizes class constructors as functions",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:37::recognizes generator functions as functions",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:42::returns false for boolean values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:49::treats -Infinity as a number",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:53::returns false for boxed Number objects",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:59::returns false for arrays",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:65::returns NaN for non-numeric strings",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:69::returns NaN for an empty string",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:73::parses leading sign and ignores trailing units",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:80::flags truthy non-string prop values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:87::returns undefined for an absent prop",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.extra.test.js:91::returns undefined for falsy NaN values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:6::should find first element matching callback",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:12::should return undefined if no match found",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:18::should work with objects",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:24::should pass index and array to callback",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:32::should return true for regular functions",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:36::should return true for arrow functions",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:40::should return true for async functions",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:44::should return false for non-functions",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:55::should return true for valid numbers",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:63::should return false for NaN",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:67::should return false for non-numbers",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:76::should parse integer strings",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:82::should parse pixel values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:87::should handle decimal strings by truncating",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:94::should return error when prop is set",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:102::should return undefined when prop is not set",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/utils/shims.test.js:108::should return undefined for falsy values",
+        "kind": "unit-case",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "browserCases": [
+      {
+        "upstream": "tag/test/browser/browser.test.js:42::should update transform on drag",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:79::should honor x axis constraint",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:109::should honor y axis constraint",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:141::should call onStop when drag ends",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:179::should clip dragging to bounds object",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:213::should clip dragging to parent bounds",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:256::should clip to negative bounds",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:293::should snap movement to grid",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:371::should snap to larger grid correctly",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:413::should adjust position when scale is 2x",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:454::should only drag from handle",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:591::should work correctly inside an iframe",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:664::should respect bounds inside an iframe",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly",
+        "kind": "browser-case",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "fixtures": [
+      {
+        "upstream": "tag/test/browser/test.html",
+        "kind": "fixture",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/setup.js",
+        "kind": "fixture",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/testUtils.js",
+        "kind": "fixture",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/typeCompat/fixture.tsx",
+        "kind": "fixture",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "tag/test/typeCompat/tsconfig.json",
+        "kind": "fixture",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "typeAssertions": [
+      {
+        "upstream": "test/typeCompat/fixture.tsx:31",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:32",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:37",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:38",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:43",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:44",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:45",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:46",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:56",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:57",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:58",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:59",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:60",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:61",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:62",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:76",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:77",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:99",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:100",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:101",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:102",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:103",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:104",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:105",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:106",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:107",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:108",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:109",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:110",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:111",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:135",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:136",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:137",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:138",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:139",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:140",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:141",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:142",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:158",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      },
+      {
+        "upstream": "test/typeCompat/fixture.tsx:159",
+        "kind": "type-assertion",
+        "disposition": "pending-adaptation"
+      }
+    ],
+    "authoredTests": [
+      {
+        "path": "tests/audit/upstream-inventory.test.mjs",
+        "classification": "octane-only-framework-contract",
+        "reason": "Negative controls prove that the provenance and crosswalk machinery fails closed; upstream has no equivalent self-audit."
+      }
+    ]
+  },
+  "allowedTransforms": []
+}

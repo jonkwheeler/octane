@@ -1,0 +1,94 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {cp, mkdtemp, readFile, rename, rm, writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import test from 'node:test';
+import {validate} from '../../audit/upstream-inventory.mjs';
+
+const sourceRoot = new URL('../..', import.meta.url).pathname;
+const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
+
+async function sandbox() {
+  const directory = await mkdtemp(join(tmpdir(), 'react-draggable-audit-'));
+  await cp(sourceRoot, directory, {recursive: true});
+  return directory;
+}
+
+async function inventory(root, edit) {
+  const path = join(root, 'audit/upstream-inventory.json');
+  const value = JSON.parse(await readFile(path, 'utf8'));
+  edit(value);
+  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+async function mutateArtifact(root, path, edit) {
+  const file = join(root, 'upstream', path);
+  await writeFile(file, edit(await readFile(file, 'utf8')));
+  const bytes = await readFile(file);
+  await inventory(root, (value) => {
+    const artifact = value.artifacts.find((entry) => entry.path === path);
+    artifact.sha256 = digest(bytes);
+    artifact.bytes = bytes.length;
+  });
+}
+
+async function rejectsMutation(name, mutation, pattern) {
+  await test(name, async (context) => {
+    const root = await sandbox();
+    context.after(() => rm(root, {recursive: true, force: true}));
+    await mutation(root);
+    await assert.rejects(validate(root), pattern);
+  });
+}
+
+test('the pristine pinned inventory validates', async () => {
+  const result = await validate(sourceRoot);
+  assert.equal(result.inventories.unitCases.length, 204);
+  assert.equal(result.inventories.unitFiles.length, 11);
+  assert.equal(result.inventories.browserCases.length, 23);
+  assert.equal(result.publicSurface.typeExports.length, 8);
+});
+
+await rejectsMutation('a missing source file fails closed', async (root) => {
+  await rename(join(root, 'upstream/tag/lib/utils/log.ts'), join(root, 'upstream/tag/lib/utils/log-renamed.ts'));
+}, /artifact: missing identity tag\/lib\/utils\/log\.ts/);
+
+await rejectsMutation('a renamed unit case fails with its identity', async (root) => {
+  const path = 'tag/test/Draggable.test.jsx';
+  await mutateArtifact(root, path, (source) => source.replace('should render with default class', 'renamed default class case'));
+}, /unit case: missing identity .*should render with default class/);
+
+await rejectsMutation('a removed browser case fails with its identity', async (root) => {
+  const path = 'tag/test/browser/browser.test.js';
+  await mutateArtifact(root, path, (source) => source.replace("it('should update transform on drag'", "void ('should update transform on drag'"));
+}, /browser case: missing identity .*should update transform on drag/);
+
+await rejectsMutation('a removed type assertion fails with its identity', async (root) => {
+  const path = 'tag/test/typeCompat/fixture.tsx';
+  await mutateArtifact(root, path, (source) => source.replace('expectType<number>(cp.x);', 'void cp.x;'));
+}, /type assertion: missing identity .*fixture\.tsx:31/);
+
+await rejectsMutation('a duplicate disposition fails closed', async (root) => {
+  await inventory(root, (value) => value.crosswalk.unitCases.push(value.crosswalk.unitCases[0]));
+}, /unitCases disposition: duplicate identity/);
+
+await rejectsMutation('an unapproved runtime export fails closed', async (root) => {
+  await inventory(root, (value) => value.publicSurface.runtimeExports.push('PointerDraggable'));
+}, /runtime export: missing identity PointerDraggable/);
+
+await rejectsMutation('an unapproved package subpath fails closed', async (root) => {
+  const path = join(root, 'package.json');
+  const manifest = JSON.parse(await readFile(path, 'utf8'));
+  manifest.exports['./internal'] = './src/internal.ts';
+  await writeFile(path, `${JSON.stringify(manifest, null, 2)}\n`);
+}, /package subpath: unapproved identity \.\/internal/);
+
+await rejectsMutation('a skip disposition fails closed', async (root) => {
+  await inventory(root, (value) => { value.crosswalk.unitCases[0].disposition = 'ported.skip'; });
+}, /skip marker is not an approved disposition/);
+
+await rejectsMutation('a stale fixture hash fails closed', async (root) => {
+  const path = join(root, 'upstream/tag/test/browser/test.html');
+  await writeFile(path, `${await readFile(path, 'utf8')}\n`);
+}, /artifact: stale hash tag\/test\/browser\/test\.html/);
