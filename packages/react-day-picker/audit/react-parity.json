@@ -59,7 +59,7 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7891abb303b9b51d800be2815874712e984b5c520f5c0d67458e0fbe4a061e2f"
+          "sha256": "913a263c15e3c95d6dfa33afa2c9e3692c8708e9b0b26a403cf9bfb09f96ed39"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
