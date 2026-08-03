@@ -655,6 +655,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # react-parity:check executes every available required lane, including
+      # TipTap's real-browser editor lifecycle evidence.
+      - name: Install Playwright Chromium
+        run: pnpm --filter @octanejs/tiptap exec playwright install --with-deps chromium
+
       - name: Check formatting
         run: pnpm format:check
 
