@@ -98,7 +98,7 @@
         {
           "path": "packages/cmdk/scripts/check-upstream-ledger.mjs",
           "role": "support",
-          "sha256": "ea76574a7e23975e78a5bca0e30dd88306ca35250402b2252a506813596593ce"
+          "sha256": "7e4c48854cbc8b9a67e5859fc414a71c08e3fa4e429efe9e058f2f96115f1ab7"
         },
         {
           "path": "scripts/react-parity/cmdk-controls.test.mjs",
