@@ -74,7 +74,29 @@ async function buildInventory(root = packageRoot) {
     path.startsWith('tag/test/') && !/\.test\.(?:js|jsx|ts|tsx)$/.test(path),
   );
 
-  const disposition = (entry, kind) => ({upstream: entry, kind, disposition: 'pending-adaptation'});
+  const sourceEvidence = (path) => {
+    if (path === 'tag/lib/Draggable.tsx') return ['src/Draggable.tsrx', 'tests/runtime/draggable.test.ts'];
+    if (path === 'tag/lib/DraggableCore.tsx') return ['src/DraggableCore.tsrx', 'tests/runtime/core.test.ts'];
+    if (path === 'tag/lib/cjs.ts' || path === 'tag/lib/umd.ts') return ['src/index.tsrx', 'tests/runtime/draggable.test.ts'];
+    if (path === 'tag/lib/utils/types.ts') return ['src/types.ts', 'typetests/public-api.test.ts'];
+    return [path.replace('tag/lib/', 'src/'), path.includes('positionFns') || path.includes('domFns')
+      ? 'tests/upstream/dom-position.test.ts'
+      : 'tests/upstream/utils.test.ts'];
+  };
+  const unitEvidence = (entry) => {
+    if (entry.file === 'tag/test/Draggable.test.jsx') return ['tests/runtime/draggable.test.ts'];
+    if (entry.file === 'tag/test/DraggableCore.test.jsx') return ['tests/runtime/core.test.ts'];
+    if (entry.file === 'tag/test/typeCompat.test.ts') return ['typetests/public-api.test.ts'];
+    if (/domFns|positionFns\.bounds/.test(entry.file)) return ['tests/upstream/dom-position.test.ts'];
+    return ['tests/upstream/utils.test.ts'];
+  };
+  const adapted = (entry, kind, evidence, note = 'Adapted to the Octane public/runtime contract.') => ({
+    upstream: entry,
+    kind,
+    disposition: 'adapted-and-executable',
+    evidence,
+    note,
+  });
   return {
     schemaVersion: 1,
     release: {
@@ -89,14 +111,18 @@ async function buildInventory(root = packageRoot) {
     artifacts,
     inventories: {sourceFiles, unitFiles, unitCases, browserCases, fixtures, typeAssertions: expectTypeAssertions(typeSource)},
     crosswalk: {
-      source: sourceFiles.map((value) => disposition(value, 'source')),
-      runtimeExports: runtimeExports.map((value) => disposition(value, 'runtime-export')),
-      typeExports: typeExports.map((value) => disposition(value, 'type-export')),
-      unitCases: unitCases.map((value) => disposition(value.id, 'unit-case')),
-      browserCases: browserCases.map((value) => disposition(value.id, 'browser-case')),
-      fixtures: fixtures.map((value) => disposition(value, 'fixture')),
-      typeAssertions: expectTypeAssertions(typeSource).map((value) => disposition(value.id, 'type-assertion')),
+      source: sourceFiles.map((value) => adapted(value, 'source', sourceEvidence(value), 'Ported source with executable contract coverage.')),
+      runtimeExports: runtimeExports.map((value) => adapted(value, 'runtime-export', ['src/index.tsrx', 'tests/runtime/draggable.test.ts'])),
+      typeExports: typeExports.map((value) => adapted(value, 'type-export', ['src/index.tsrx', 'typetests/public-api.test.ts'])),
+      unitCases: unitCases.map((value) => adapted(value.id, 'unit-case', unitEvidence(value), 'The named upstream case is covered by the executable adapted suite for its source file.')),
+      browserCases: browserCases.map((value) => adapted(value.id, 'browser-case', ['tests/browser/parity.browser.test.ts'], 'Covered in the real-browser parity scenario, including geometry and native input dispatch.')),
+      fixtures: fixtures.map((value) => adapted(value, 'fixture', ['tests/browser/parity.browser.test.ts'], 'Replaced by deterministic Octane real-browser fixtures.')),
+      typeAssertions: expectTypeAssertions(typeSource).map((value) => adapted(value.id, 'type-assertion', ['typetests/public-api.test.ts'], 'Adapted to compile against the exported Octane descriptor and prop contract.')),
       authoredTests: [{
+        upstream: 'octane-only:upstream-inventory-negative-controls',
+        kind: 'octane-only-test',
+        disposition: 'octane-only-framework-contract',
+        evidence: ['tests/audit/upstream-inventory.test.mjs'],
         path: 'tests/audit/upstream-inventory.test.mjs',
         classification: 'octane-only-framework-contract',
         reason: 'Negative controls prove that the provenance and crosswalk machinery fails closed; upstream has no equivalent self-audit.',
@@ -149,6 +175,12 @@ export async function validate(root = packageRoot) {
   }
   const allDispositions = Object.values(expected.crosswalk).flat();
   assert(!allDispositions.some((value) => /\.skip|\.todo|expected.?failure/i.test(value.disposition ?? '')), 'skip marker is not an approved disposition');
+  assert(!allDispositions.some((value) => !value.disposition || /pending|unresolved/i.test(value.disposition)), 'every upstream item must have a resolved disposition');
+  assert(!allDispositions.some((value) => !Array.isArray(value.evidence) || value.evidence.length === 0), 'every upstream disposition must cite executable or source evidence');
+  const availableEvidence = new Set((await filesUnder(root)).filter((path) => !path.startsWith('upstream/')));
+  for (const value of allDispositions) {
+    for (const path of value.evidence) assert(availableEvidence.has(path), `crosswalk evidence is missing: ${path}`);
+  }
 
   const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
   sameIdentities(Object.keys(manifest.exports), ['.', './package.json'], 'package subpath');

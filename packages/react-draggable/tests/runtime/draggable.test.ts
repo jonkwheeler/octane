@@ -1,7 +1,7 @@
 import { createRoot, flushSync } from 'octane';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { flushEffects } from '../../../octane/tests/_helpers.ts';
-import Draggable, { DraggableCore } from '../../src/index.ts';
+import Draggable, { DraggableCore } from '../../src/index.tsrx';
 import { DraggableHarness, SvgDraggableHarness } from './_fixtures/DraggableHarness.tsrx';
 
 afterEach(() => {

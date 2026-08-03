@@ -825,17 +825,72 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/react-draggable/tests/upstream/**/*.test.ts',
+						'packages/react-draggable/tests/runtime/**/*.test.ts',
+					],
+				},
 				test: {
 					name: 'react-draggable',
 					include: [
 						'packages/react-draggable/tests/upstream/**/*.test.ts',
-						'packages/react-draggable/tests/differential/**/*.test.ts',
 						'packages/react-draggable/tests/runtime/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
 				},
 				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-draggable-differential',
+					include: ['packages/react-draggable/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-draggable-hydration',
+					include: ['packages/react-draggable/tests/hydration/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-draggable-ssr',
+					include: ['packages/react-draggable/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-draggable-browser',
+					include: ['packages/react-draggable/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
 			},
 			{
 				test: {

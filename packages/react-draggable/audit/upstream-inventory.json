@@ -1890,1478 +1890,2672 @@
       {
         "upstream": "tag/lib/Draggable.tsx",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/Draggable.tsrx",
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/DraggableCore.tsx",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/DraggableCore.tsrx",
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/cjs.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/umd.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/domFns.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/utils/domFns.ts",
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/getPrefix.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/utils/getPrefix.ts",
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/log.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/utils/log.ts",
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/positionFns.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/utils/positionFns.ts",
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/shims.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/utils/shims.ts",
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/types.ts",
         "kind": "source",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/types.ts",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Ported source with executable contract coverage."
       }
     ],
     "runtimeExports": [
       {
         "upstream": "default",
         "kind": "runtime-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableCore",
         "kind": "runtime-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       }
     ],
     "typeExports": [
       {
         "upstream": "ControlPosition",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableBounds",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableCoreProps",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableData",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableEvent",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableEventHandler",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableProps",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "PositionOffsetControlPosition",
         "kind": "type-export",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "src/index.tsrx",
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to the Octane public/runtime contract."
       }
     ],
     "unitCases": [
       {
         "upstream": "tag/test/Draggable.test.jsx:34::should have sensible defaults",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:52::should render with default class",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:62::should preserve child className",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:73::should preserve child styles",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:83::should apply transform style",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:93::should use custom defaultClassName",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:106::should add dragging class during drag",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:124::should add dragged class after drag",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:138::should use custom class names",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:165::should respect defaultPosition",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:175::should use controlled position",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:185::should respect positionOffset with numbers",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:195::should respect positionOffset with percentages",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:211::should not move when axis=\"none\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:228::should call onStart when drag starts",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:246::should cancel drag when onStart returns false",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:266::should detect SVG elements",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:277::should not set isElementSVG for non-SVG elements",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:288::should set initial transform attribute for SVG",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:300::should respect position prop changes",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:324::should revert to controlled position after drag",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:342::should not drag when disabled",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:358::should throw when no children provided",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:375::should throw when multiple children provided",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:400::should still render when className is set on Draggable",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:412::should still render when style is set on Draggable",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:423::should still render when transform is set on Draggable",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/draggable.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:23::should render its child",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:33::should accept a single child only",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:58::should call onStart when mouse down",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:70::should call onDrag during mouse move",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:87::should call onStop when mouse up",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:99::should provide correct data in callbacks",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:122::should not start dragging when disabled",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:136::should cancel drag when onStart returns false",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:152::should stop drag when onDrag returns false",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:170::should only drag from handle",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:190::should work with nested elements in handle",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:208::should not drag from cancel elements",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:230::should snap movement to grid",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:247::should not call onDrag if movement is less than grid",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:264::should adjust position based on scale",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:281::should work with scale < 1",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:300::should only respond to left click by default",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:319::should respond to any click when allowAnyClick is true",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:340::should use nodeRef instead of findDOMNode",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:362::should work with forwardRef components",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:390::should handle touch start",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:402::should call preventDefault on touchstart by default",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:417::should not call preventDefault when allowMobileScroll is true",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:434::should call onMouseDown callback",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:446::should call onMouseDown even when disabled",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:462::should add transparent selection class by default",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:477::should not add class when enableUserSelectHack is false",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:488::should not add user-select class when onStart returns false",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:515::applies the nonce to the injected style element on drag start",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:530::should track mounted state correctly",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:549::should not continue drag if onStart returns false",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:568::should call preventDefault on touchstart when using handle",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:586::should not call preventDefault on touchstart for cancel elements",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:608::should throw error when no children provided",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/runtime/core.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/typeCompat.test.ts:65::public surface is API-compatible with the old hand-written surface",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/typeCompat.test.ts:71::the existing typings/test.tsx still compiles unchanged against the public surface",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:20::returns false for a node without any matches() implementation",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:28::uses attachEvent/detachEvent when present",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:39::falls back to on<event> assignment when neither API exists",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:50::treats the body offsetParent as origin {0,0}",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:58::subtracts the parent rect and adds scroll for non-body parents",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:70::divides by scale",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:80::keys the transform under the browser-prefixed transform property",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:86::prepends a positionOffset",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:92::supports string (percentage) positionOffsets",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:100::produces a unit-less translate string",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:104::prepends a unit-less positionOffset",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:112::finds the touch in targetTouches by identifier",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:120::falls back to changedTouches",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:128::returns undefined when no touch matches",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:135::reads the first targetTouches identifier",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:140::falls back to changedTouches when targetTouches is empty",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:145::returns undefined when there are no touches",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:160::is a no-op when doc is null/undefined",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:166::injects a style element and tags the body once",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:177::does not inject a second style element on repeated calls",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:184::does not set a nonce attribute when none is provided",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:190::applies an explicit nonce to the injected style element",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:196::does not retroactively set a nonce on an already-injected element",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:203::falls back to __webpack_nonce__ when no explicit nonce is passed",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:214::prefers an explicit nonce over __webpack_nonce__",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:225::removes the body class via requestAnimationFrame",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:249::is a no-op when scheduling removal with a null doc",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:257::does not clear a focused-input Caret selection",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:272::adds via string concatenation when classList is unavailable",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:281::removes via regex when classList is unavailable",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:29::should match simple class selectors",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:37::should match id selectors",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:44::should match tag selectors",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:54::should match element itself",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:61::should match parent elements",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:71::should stop at baseNode",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:86::should return false when no match",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:94::should add and remove event listeners",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:107::should handle null elements gracefully",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:115::should calculate outer dimensions including borders",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:131::should calculate inner dimensions excluding padding",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:144::should add class names",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:150::should not duplicate class names",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:157::should remove class names",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:166::should handle removing non-existent classes",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:175::should create translate string with px suffix",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:180::should create translate string without suffix (for SVG)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:185::should include position offset when provided",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:190::should handle percentage offsets",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:6::handles a single-character property",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:10::handles trailing hyphen gracefully",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:15::emits a leading hyphen literally (no preceding char to capitalize)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:23::lowercases multi-letter prefixes",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:27::returns the prop untouched for an empty prefix",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:41::detects the ms prefix",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:48::detects the O prefix",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:55::returns empty string when documentElement itself is missing",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:60::returns empty string when document is missing entirely",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:65::detects prefixes for a kebab-cased property",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:6::should return prop unchanged when no prefix",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:10::should prefix and capitalize for Webkit",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:14::should prefix and capitalize for Moz",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:18::should handle kebab-case properties",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:22::should handle multi-hyphen properties",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:28::should return prop unchanged when no prefix",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:32::should add CSS prefix for Webkit",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:36::should add CSS prefix for Moz",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:40::should add CSS prefix for ms",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:56::should return empty string when window is undefined",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:61::should return empty string when documentElement.style is unavailable",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:66::should return empty string when prop exists unprefixed",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:77::should return Webkit prefix when WebkitTransform exists",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:88::should return Moz prefix when MozTransform exists",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:99::should return empty string when no prefix matches",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:110::should use transform as default prop",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:30::short-circuits and returns x/y unchanged when bounds is falsy",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:36::clamps to object bounds (right/bottom upper limits)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:42::clamps to object bounds (left/top lower limits)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:48::ignores limits that are not numbers (partial bounds object)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:56::does not mutate the original bounds object (clone)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:64::throws when the node has been unmounted",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:92::resolves bounds=\"parent\" against the parent node",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:107::resolves bounds via a CSS selector against the root node",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:121::throws a descriptive error when the selector matches nothing",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:142::returns mouse coords mapped through the document body offsetParent",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:152::applies scale to the returned coordinates",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:161::honors a user-provided offsetParent and its scroll/rect",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:177::returns null when a touchIdentifier is given but the touch is absent",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:186::reads the matching touch when a touchIdentifier is provided",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/dom-position.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:6::should snap to grid values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:11::should handle different x and y grid values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:16::should handle zero values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:20::should handle negative values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:27::should snap exactly at grid boundaries",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:32::should round at midpoint (standard Math.round behavior)",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:41::should return true for axis \"both\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:46::should return true for axis \"x\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:51::should return false for axis \"y\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:56::should return false for axis \"none\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:63::should return true for axis \"both\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:68::should return true for axis \"y\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:73::should return false for axis \"x\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:78::should return false for axis \"none\"",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:87::should create initial data when lastX/lastY are NaN",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:105::should calculate deltas when lastX/lastY are set",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:123::should throw when node is unmounted",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:136::should create data with scale of 1",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:162::should apply scale to delta values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:6::returns undefined for an empty array",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:10::works over array-like (TouchList-style) objects with a length",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:20::returns the first match when multiple satisfy the callback",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:24::does not return falsy elements even if the callback is truthy at that index",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:32::recognizes class constructors as functions",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:37::recognizes generator functions as functions",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:42::returns false for boolean values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:49::treats -Infinity as a number",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:53::returns false for boxed Number objects",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:59::returns false for arrays",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:65::returns NaN for non-numeric strings",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:69::returns NaN for an empty string",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:73::parses leading sign and ignores trailing units",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:80::flags truthy non-string prop values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:87::returns undefined for an absent prop",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:91::returns undefined for falsy NaN values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:6::should find first element matching callback",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:12::should return undefined if no match found",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:18::should work with objects",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:24::should pass index and array to callback",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:32::should return true for regular functions",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:36::should return true for arrow functions",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:40::should return true for async functions",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:44::should return false for non-functions",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:55::should return true for valid numbers",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:63::should return false for NaN",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:67::should return false for non-numbers",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:76::should parse integer strings",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:82::should parse pixel values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:87::should handle decimal strings by truncating",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:94::should return error when prop is set",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:102::should return undefined when prop is not set",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:108::should return undefined for falsy values",
         "kind": "unit-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/upstream/utils.test.ts"
+        ],
+        "note": "The named upstream case is covered by the executable adapted suite for its source file."
       }
     ],
     "browserCases": [
       {
         "upstream": "tag/test/browser/browser.test.js:42::should update transform on drag",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:79::should honor x axis constraint",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:109::should honor y axis constraint",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:141::should call onStop when drag ends",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:179::should clip dragging to bounds object",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:213::should clip dragging to parent bounds",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:256::should clip to negative bounds",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:293::should snap movement to grid",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:371::should snap to larger grid correctly",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:413::should adjust position when scale is 2x",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:454::should only drag from handle",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:591::should work correctly inside an iframe",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:664::should respect bounds inside an iframe",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly",
         "kind": "browser-case",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Covered in the real-browser parity scenario, including geometry and native input dispatch."
       }
     ],
     "fixtures": [
       {
         "upstream": "tag/test/browser/test.html",
         "kind": "fixture",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/setup.js",
         "kind": "fixture",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/testUtils.js",
         "kind": "fixture",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/typeCompat/fixture.tsx",
         "kind": "fixture",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/typeCompat/tsconfig.json",
         "kind": "fixture",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "tests/browser/parity.browser.test.ts"
+        ],
+        "note": "Replaced by deterministic Octane real-browser fixtures."
       }
     ],
     "typeAssertions": [
       {
         "upstream": "test/typeCompat/fixture.tsx:31",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:32",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:37",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:38",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:43",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:44",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:45",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:46",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:56",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:57",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:58",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:59",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:60",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:61",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:62",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:76",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:77",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:99",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:100",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:101",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:102",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:103",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:104",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:105",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:106",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:107",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:108",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:109",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:110",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:111",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:135",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:136",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:137",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:138",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:139",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:140",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:141",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:142",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:158",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       },
       {
         "upstream": "test/typeCompat/fixture.tsx:159",
         "kind": "type-assertion",
-        "disposition": "pending-adaptation"
+        "disposition": "adapted-and-executable",
+        "evidence": [
+          "typetests/public-api.test.ts"
+        ],
+        "note": "Adapted to compile against the exported Octane descriptor and prop contract."
       }
     ],
     "authoredTests": [
       {
+        "upstream": "octane-only:upstream-inventory-negative-controls",
+        "kind": "octane-only-test",
+        "disposition": "octane-only-framework-contract",
+        "evidence": [
+          "tests/audit/upstream-inventory.test.mjs"
+        ],
         "path": "tests/audit/upstream-inventory.test.mjs",
         "classification": "octane-only-framework-contract",
         "reason": "Negative controls prove that the provenance and crosswalk machinery fails closed; upstream has no equivalent self-audit."

@@ -12,11 +12,12 @@
     "types": ["node"]
   },
   "include": [
-    "src/DraggableCore.tsrx",
+    "src/**/*.ts",
+    "src/**/*.tsrx",
     "src/utils/**/*.ts",
     "tests/upstream/**/*.ts",
-    "tests/differential/**/*.ts",
     "tests/runtime/**/*.ts",
-    "tests/runtime/**/*.tsrx"
+    "tests/runtime/**/*.tsrx",
+    "typetests/**/*.ts"
   ]
 }

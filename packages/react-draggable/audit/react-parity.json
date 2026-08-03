@@ -1,0 +1,258 @@
+{
+  "$schema": "../../../scripts/react-parity/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/react-grid-layout/react-draggable.git",
+    "version": "4.7.1",
+    "commit": "bcbaa8eb285aea49865ca8870c0b7b441c2fe6a4",
+    "sourceRoot": "lib",
+    "testRoot": "test",
+    "license": "MIT",
+    "integrity": "sha256:f96cf6ee39150b9ac5477ee05e4b8a69fbc766c20697fcbdca23773c8fc5261d",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-draggable/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/react-draggable/tests/runtime",
+        "packages/react-draggable/tests/upstream",
+        "packages/react-draggable/tests/differential",
+        "packages/react-draggable/tests/hydration",
+        "packages/react-draggable/tests/ssr",
+        "packages/react-draggable/tests/browser",
+        "packages/react-draggable/typetests"
+      ],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "c247b46ed9263eed660b424314160ae55b56df40c4063fc08ad2b97e204c3331"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-draggable-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compares public-root child cloning, snapped movement, classes, and transforms against the pinned published React runtime.",
+      "files": [
+        {
+          "path": "packages/react-draggable/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "56599b674767b5021f87e6348a8ff195e08f1f5ac77d276dc88275af604f6f48",
+          "cases": [
+            {
+              "id": "differential:react-draggable-basic",
+              "testName": "matches child cloning, snapped movement, classes, and transforms",
+              "fullName": "differential: @octanejs/react-draggable vs react-draggable@4.7.1 matches child cloning, snapped movement, classes, and transforms"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-draggable-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-ssr",
+      "notes": "Renders deterministic public-root HTML, SVG, and DraggableCore output without browser globals.",
+      "files": [
+        {
+          "path": "packages/react-draggable/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "04dfd8f1869cea10763f67f2b9b274ff329fd500b68033089f72cf86b06dffd6",
+          "cases": [
+            {
+              "id": "adapted:react-draggable-ssr",
+              "testName": "renders deterministic HTML, SVG, and core children without browser globals",
+              "fullName": "@octanejs/react-draggable SSR renders deterministic HTML, SVG, and core children without browser globals"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-draggable/tests/ssr/_fixtures/server.tsrx",
+          "role": "support",
+          "sha256": "414e1485b3739ea7b1bd7c3fb4e0962f425a90ee35effd0b251cd91b84481bea"
+        }
+      ]
+    },
+    {
+      "id": "react-draggable-hydration",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-hydration",
+      "notes": "Adopts public-root HTML and SVG nodes, transitions SVG transform form, and becomes mouse-interactive without warnings or duplicates.",
+      "files": [
+        {
+          "path": "packages/react-draggable/tests/hydration/hydration.test.ts",
+          "role": "test",
+          "sha256": "030df42835ec2eaf38fb2965560b6a42110f6a7ec1b17e0ef7b6ec6761b266ea",
+          "cases": [
+            {
+              "id": "adapted:react-draggable-hydration",
+              "testName": "adopts all child nodes, selects SVG transform form, and becomes mouse interactive",
+              "fullName": "@octanejs/react-draggable hydration adopts all child nodes, selects SVG transform form, and becomes mouse interactive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-draggable-browser",
+      "type": "browser",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-browser",
+      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Browser-platform evidence only; no physical-device or mobile-WebKit claim. The local lane executes both engines directly; final consumption of shared runner PR #548 remains separately revision-gated at d615146ca19fdb6fe699f53fa3bf990fefb96883. CommonJS PR #550 at 4acb3b6052ef27463a791382edbd0f54e2a30470 is outside U5 and unclaimed here.",
+      "files": [
+        {
+          "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",
+          "role": "test",
+          "sha256": "5a56b6a556858cfa1a19e89eac565183cb8b14d8c1cfc813eb3c30053d36eb4c",
+          "cases": [
+            {
+              "id": "browser:react-draggable-chromium-native",
+              "testName": "proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown",
+              "fullName": "Chromium native parity proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown"
+            },
+            {
+              "id": "browser:react-draggable-chromium-ownership-cleanup",
+              "testName": "proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions",
+              "fullName": "Chromium native parity proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions"
+            },
+            {
+              "id": "browser:react-draggable-firefox-native",
+              "testName": "proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown",
+              "fullName": "Firefox native parity proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown"
+            },
+            {
+              "id": "browser:react-draggable-firefox-ownership-cleanup",
+              "testName": "proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions",
+              "fullName": "Firefox native parity proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-draggable/tests/browser/harness/main.tsrx",
+          "role": "support",
+          "sha256": "731e8680ca001d4eb8349f2fd8bf1dfb4b337c7a527489bf8f944aaf67b108cb"
+        },
+        {
+          "path": "packages/react-draggable/tests/browser/harness/index.html",
+          "role": "support",
+          "sha256": "50f14abb99271721eed2537c1c6ce0661e760e9b078ef96d6f5240bcb058ffc7"
+        },
+        {
+          "path": "packages/react-draggable/tests/browser/harness/frame.tsrx",
+          "role": "support",
+          "sha256": "b83bcde35b8586e20d0960ab26237aac96709e4cd4e17aa24651f6890e9eb3bb"
+        },
+        {
+          "path": "packages/react-draggable/tests/browser/harness/frame.html",
+          "role": "support",
+          "sha256": "2c1b4b14e293fbd013a773120ae1f12560d7e389a70c7d12e95340e8869c05af"
+        }
+      ]
+    },
+    {
+      "id": "react-draggable-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-pristine-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Compiles both byte-exact pinned upstream consumer programs against the pinned published declaration bundle.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-draggable/typetests/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-draggable/typetests/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "db8f6ce2a8b677d9fe6c86441da811fc350a857d8e7a34803e0854e884b827de"
+        },
+        {
+          "path": "packages/react-draggable/upstream/tag/typings/test.tsx",
+          "role": "test",
+          "sha256": "7245c84c62b0ae2e5f3d3e2f698d46cabcf79446962fc601fe874b15d684cd77",
+          "cases": [{
+            "id": "types:react-draggable-pristine-consumer",
+            "testName": "published consumer program",
+            "fullName": "published react-draggable declaration contract: consumer program"
+          }]
+        },
+        {
+          "path": "packages/react-draggable/upstream/tag/test/typeCompat/fixture.tsx",
+          "role": "test",
+          "sha256": "5d14243c7ed69b5e5c83071facab535a7722c886ae446cf9e6dda2ce6617cbc4",
+          "cases": [{
+            "id": "types:react-draggable-pristine-compatibility",
+            "testName": "complete compatibility fixture",
+            "fullName": "published react-draggable declaration contract: complete compatibility fixture"
+          }]
+        }
+      ]
+    },
+    {
+      "id": "react-draggable-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the complete exported Octane prop/type contract, including positive assignments and negative controls.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-draggable/typetests/tsconfig.adapted.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-draggable/typetests/tsconfig.adapted.json",
+          "role": "support",
+          "sha256": "0f84e831906209e866489b14726cce49e4d73395d160d54c1b4618234e35c2a7"
+        },
+        {
+          "path": "packages/react-draggable/typetests/public-api.test.ts",
+          "role": "test",
+          "sha256": "979196db1648973ea2c5c51df30e76c9b73e3a564adc451add83e4e46c8b16ca",
+          "cases": [{
+            "id": "types:react-draggable-adapted-public-api",
+            "testName": "complete Octane public contract",
+            "fullName": "Octane react-draggable declaration contract: complete public API"
+          }]
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

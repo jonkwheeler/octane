@@ -28,7 +28,11 @@ export function assignRef<T>(ref: StructuralRef<T> | null | undefined, value: T 
 
 export function cloneCoreChild(
 	child: OctaneNode,
-	handlers: { onMouseDown(event: MouseEvent): void; onMouseUp(event: MouseEvent): void; onTouchEnd(event: TouchEvent): void },
+	handlers: {
+		onMouseDown(event: MouseEvent): void;
+		onMouseUp(event: MouseEvent): void;
+		onTouchEnd(event: TouchEvent): void;
+	},
 ): ElementDescriptor {
 	return cloneElement(Children.only(child) as ElementDescriptor, handlers);
 }
@@ -60,11 +64,13 @@ export function createActiveDrag(getProps: () => CoreLiveProps, getCurrentNode: 
 	};
 	function start(node: Node): void {
 		if (owner) return;
-		owner = node.ownerDocument;
-		owner.addEventListener('mousemove', move, true);
-		owner.addEventListener('mouseup', stop, true);
-		owner.addEventListener('touchmove', move, true);
-		owner.addEventListener('touchend', stop, true);
+		const nextOwner = node.ownerDocument;
+		if (!nextOwner) return;
+		owner = nextOwner;
+		nextOwner.addEventListener('mousemove', move, true);
+		nextOwner.addEventListener('mouseup', stop, true);
+		nextOwner.addEventListener('touchmove', move, true);
+		nextOwner.addEventListener('touchend', stop, true);
 	}
 	function finish(): void {
 		if (!owner) return;
@@ -78,7 +84,15 @@ export function createActiveDrag(getProps: () => CoreLiveProps, getCurrentNode: 
 		cleanupOwner?.removeEventListener('touchmove', move, true);
 		cleanupOwner?.removeEventListener('touchend', stop, true);
 	}
-	return { start, finish, move, stop, get ownerDocument() { return owner; } };
+	return {
+		start,
+		finish,
+		move,
+		stop,
+		get ownerDocument() {
+			return owner;
+		},
+	};
 }
 
 export function transformForNode(
@@ -86,5 +100,7 @@ export function transformForNode(
 	position: { x: number; y: number },
 ): { style?: { transform: string }; transform?: string } {
 	const translation = `translate(${position.x}${node instanceof SVGElement ? '' : 'px'},${position.y}${node instanceof SVGElement ? '' : 'px'})`;
-	return node instanceof SVGElement ? { transform: translation } : { style: { transform: translation } };
+	return node instanceof SVGElement
+		? { transform: translation }
+		: { style: { transform: translation } };
 }

@@ -88,6 +88,14 @@ await rejectsMutation('a skip disposition fails closed', async (root) => {
   await inventory(root, (value) => { value.crosswalk.unitCases[0].disposition = 'ported.skip'; });
 }, /skip marker is not an approved disposition/);
 
+await rejectsMutation('a pending disposition fails closed', async (root) => {
+  await inventory(root, (value) => { value.crosswalk.unitCases[0].disposition = 'pending-adaptation'; });
+}, /every upstream item must have a resolved disposition/);
+
+await rejectsMutation('missing crosswalk evidence fails closed', async (root) => {
+  await inventory(root, (value) => { value.crosswalk.unitCases[0].evidence = []; });
+}, /every upstream disposition must cite executable or source evidence/);
+
 await rejectsMutation('a stale fixture hash fails closed', async (root) => {
   const path = join(root, 'upstream/tag/test/browser/test.html');
   await writeFile(path, `${await readFile(path, 'utf8')}\n`);
