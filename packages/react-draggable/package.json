@@ -15,5 +15,20 @@
   "scripts": {
     "upstream:verify": "node audit/upstream-inventory.mjs",
     "test:audit": "node --test tests/audit/upstream-inventory.test.mjs"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "prop-types": "^15.8.1"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "vitest": "catalog:default"
   }
 }

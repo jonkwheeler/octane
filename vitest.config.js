@@ -826,6 +826,30 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-draggable-feasibility',
+					include: [
+						'packages/react-draggable/tests/feasibility/**/*.test.ts',
+						'!packages/react-draggable/tests/feasibility/ssr.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
+					name: 'react-draggable-feasibility-ssr',
+					include: ['packages/react-draggable/tests/feasibility/ssr.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [{ find: /^octane$/, replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts') }],
+				},
+			},
+			{
+				test: {
 					name: 'tanstack-hotkeys',
 					include: ['packages/tanstack-hotkeys/tests/**/*.test.ts'],
 					environment: 'jsdom',
