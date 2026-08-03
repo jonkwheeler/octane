@@ -29,6 +29,9 @@ async function discoverGraph({ packageDir, entryPaths }) {
 			metafile: true,
 			logLevel: 'silent',
 		});
+		if (result.warnings.length > 0) {
+			throw new Error(result.warnings.map((warning) => warning.text).join('; '));
+		}
 		metadata = result.metafile;
 	} catch (error) {
 		const details = (error.errors ?? [{ text: String(error) }]).map((item) => item.text).join('; ');
@@ -64,15 +67,11 @@ async function discoverGraph({ packageDir, entryPaths }) {
 /**
  * Emit an authored JS/TS graph as per-module CommonJS without bundling package dependencies.
  */
-export async function buildPackageCommonjs({
-	packageDir,
-	entries,
-	outdir,
-	sourceRoot = dirname(entries[0]),
-}) {
+export async function buildPackageCommonjs({ packageDir, entries, outdir, sourceRoot }) {
 	if (!packageDir || !Array.isArray(entries) || entries.length === 0 || !outdir) {
 		throw new Error('buildPackageCommonjs requires packageDir, entries, and outdir');
 	}
+	sourceRoot ??= dirname(entries[0]);
 	const absolutePackageDir = resolve(packageDir);
 	const absoluteSourceRoot = resolve(absolutePackageDir, sourceRoot);
 	const absoluteOutdir = resolve(absolutePackageDir, outdir);
