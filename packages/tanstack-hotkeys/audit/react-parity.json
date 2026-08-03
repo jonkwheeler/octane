@@ -106,7 +106,7 @@
         {
           "path": "scripts/react-parity/tanstack-hotkeys-controls.test.mjs",
           "role": "support",
-          "sha256": "daa857c0bd6f11747426aea19ecb1a50681102d70dacc08edf39eaa4cb21aa7c"
+          "sha256": "72ff4a8b3f019c95d04c50de1acb4e1ae7ac9f56fd9a4e839840681c4a91637d"
         },
         {
           "path": "vitest.config.js",
