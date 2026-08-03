@@ -56,6 +56,12 @@ async function emit(relativePath, source) {
 	);
 }
 
+async function emitDeclaration(relativePath, source) {
+	const target = join(outputRoot, relativePath);
+	await mkdir(dirname(target), { recursive: true });
+	await writeFile(target, await format(source, { filepath: target, useTabs: true }));
+}
+
 await rm(outputRoot, { recursive: true, force: true });
 
 for (const modulePath of transformedModules) {
@@ -90,5 +96,54 @@ await emit(
 	'async-syntax-highlighter.js',
 	await readFile(join(packageRoot, 'scripts', 'templates', 'async-syntax-highlighter.js'), 'utf8'),
 );
+
+const declarationAliases = {
+	'default-highlight.d.ts': "export { default } from './index.js';\n",
+	'light-async.d.ts': "export { LightAsync as default } from './index.js';\n",
+	'light.d.ts': "export { Light as default } from './index.js';\n",
+	'prism-async-light.d.ts': "export { PrismAsyncLight as default } from './index.js';\n",
+	'prism-async.d.ts': "export { PrismAsync as default } from './index.js';\n",
+	'prism-light.d.ts': "export { PrismLight as default } from './index.js';\n",
+	'prism.d.ts': "export { Prism as default } from './index.js';\n",
+	'create-element.d.ts': "export { createElement as default } from './index.js';\n",
+};
+
+await emitDeclaration(
+	'index.d.ts',
+	await readFile(join(packageRoot, 'scripts', 'templates', 'index.d.ts'), 'utf8'),
+);
+for (const [path, source] of Object.entries(declarationAliases)) {
+	await emitDeclaration(path, source);
+}
+
+for (const file of await walk(outputRoot)) {
+	if (!file.endsWith('.js')) continue;
+	const path = relative(outputRoot, file);
+	const declarationPath = path.replace(/\.js$/, '.d.ts');
+	if (path.startsWith('styles/')) {
+		if (path.endsWith('/index.js')) {
+			await emitDeclaration(declarationPath, await readFile(file, 'utf8'));
+		} else {
+			await emitDeclaration(
+				declarationPath,
+				"import type { CSSProperties } from 'react';\ndeclare const style: Record<string, CSSProperties>;\nexport default style;\n",
+			);
+		}
+	} else if (path.startsWith('languages/')) {
+		if (path.endsWith('/index.js')) {
+			await emitDeclaration(declarationPath, await readFile(file, 'utf8'));
+		} else {
+			await emitDeclaration(
+				declarationPath,
+				'declare const language: (...args: any[]) => any;\nexport default language;\n',
+			);
+		}
+	} else if (path.startsWith('async-languages/')) {
+		await emitDeclaration(
+			declarationPath,
+			'declare const loaders: Record<string, (registerLanguage: (name: string, language: any) => void) => Promise<void>>;\nexport default loaders;\n',
+		);
+	}
+}
 
 console.log(`generated ${[...transformedModules].length + copiedModules.length} surface roots`);
