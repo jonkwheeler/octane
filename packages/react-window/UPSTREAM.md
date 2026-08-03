@@ -37,3 +37,80 @@ Type exports: `Align`, `CellComponentProps`, `DynamicRowHeight`,
 The v1 `FixedSizeList`, `VariableSizeList`, `FixedSizeGrid`, and
 `VariableSizeGrid` names are not part of this pin and are intentionally outside
 the binding contract.
+
+## Source boundary and module disposition
+
+The immutable boundary is every file under upstream `lib/`, plus `src/constants.ts`,
+`vitest.setup.js`, `package.json`, and the MIT license. Production modules are
+ported source-correspondently under `src/`; test modules are either executed
+byte-exact in the pristine lane or generated into `tests/upstream/` using the
+audited transformations in `audit/adapted-transformations.json`. Upstream test
+utilities remain byte-locked inputs and are mapped to the adapted utilities by
+the generator. No vendored file is published.
+
+| Upstream module class | Octane disposition | Evidence |
+| --- | --- | --- |
+| `lib/components/**`, `lib/core/**`, `lib/hooks/**`, `lib/utils/**` production files | Source-correspondent port in `src/**`; React imports and renderer syntax are the only framework adaptations | `audit/adapted-transformations.json`, `tests/audit/adapted.test.mjs` |
+| `lib/**/*.test.{ts,tsx}` | Unchanged pristine execution and generated adapted execution | `audit/pristine-runtime.json`, `audit/adapted-runtime.json` |
+| `lib/utils/test/**`, `vitest.setup.js` | Unchanged pristine support; source-correspondent adapted support | `upstream/SHA256SUMS`, `tests/generate-adapted-tests.mjs` |
+| Published declaration bundle | Unchanged pristine oracle; identical shared assertion program targets Octane source | `audit/type-contract.json`, `typetests/**` |
+| Repository metadata and license | Vendored provenance only | `tests/audit/upstream.test.mjs` |
+
+## Export crosswalk
+
+| Public export | Kind | Classification | Octane evidence |
+| --- | --- | --- | --- |
+| `Grid` | runtime | Exact component port | upstream Grid suites, runtime, differential, SSR, hydration |
+| `List` | runtime | Exact component port | upstream List suites, runtime, differential, SSR, hydration |
+| `getScrollbarSize` | runtime | Source-identical utility | upstream inventory and shared type contract |
+| `useDynamicRowHeight` | runtime | Exact hook port with compiler-slot plumbing | upstream hook suite, runtime dynamic-height suite |
+| `useGridCallbackRef` | runtime | Exact public React hook signature; Octane state slot internally | shared types and grid initializer runtime case |
+| `useGridRef` | runtime | Exact public React hook signature; Octane ref slot internally | shared types and grid initializer runtime case |
+| `useListCallbackRef` | runtime | Exact public React hook signature; Octane state slot internally | shared types and list initializer runtime case |
+| `useListRef` | runtime | Exact public React hook signature; Octane ref slot internally | shared types and list initializer runtime case |
+| `Align` | type | Exact published declaration | shared type contract group `utilities` |
+| `CellComponentProps` | type | Exact published declaration | shared type contract group `component-props` |
+| `DynamicRowHeight` | type | Exact published declaration | shared type contract group `dynamic-height` |
+| `GridImperativeAPI` | type | Exact published declaration | shared type contract groups `ref-hooks`, `imperative-api` |
+| `GridProps` | type | Exact published declaration | shared type contract groups `list-grid-props`, `forbidden-generated-props` |
+| `ListImperativeAPI` | type | Exact published declaration | shared type contract groups `ref-hooks`, `imperative-api` |
+| `ListProps` | type | Exact published declaration | shared type contract groups `list-grid-props`, `forbidden-generated-props` |
+| `RowComponentProps` | type | Exact published declaration | shared type contract group `component-props` |
+
+## Upstream test crosswalk
+
+Every row runs unchanged in `react-window-pristine` and as a generator-produced,
+audited adaptation in `react-window-adapted`; the inventories prove all 117
+registered cases are unique and executed.
+
+| Upstream test file | Pristine disposition | Adapted disposition |
+| --- | --- | --- |
+| `components/grid/Grid.test.tsx` | byte-exact | generated framework adaptation |
+| `components/list/List.test.tsx` | byte-exact | generated framework adaptation |
+| `components/list/useDynamicRowHeight.test.ts` | byte-exact | generated framework adaptation |
+| `core/createCachedBounds.test.ts` | byte-exact | generated import adaptation |
+| `core/getEstimatedSize.test.ts` | byte-exact | generated import adaptation |
+| `core/getOffsetForIndex.test.ts` | byte-exact | generated import adaptation |
+| `core/getStartStopIndices.test.ts` | byte-exact | generated import adaptation |
+| `core/useCachedBounds.test.ts` | byte-exact | generated hook adaptation |
+| `core/useVirtualizer.test.ts` | byte-exact | generated hook adaptation |
+| `hooks/useMemoizedObject.test.ts` | byte-exact | generated hook adaptation |
+| `hooks/useResizeObserver.test.ts` | byte-exact | generated hook adaptation |
+| `hooks/useStableCallback.test.tsx` | byte-exact | generated hook adaptation |
+| `utils/parseNumericStyleValue.test.ts` | byte-exact | generated import adaptation |
+| `utils/shallowCompare.test.ts` | byte-exact | generated import adaptation |
+
+## Port-authored evidence crosswalk
+
+| Authored evidence | Classification | React-to-Octane pairing / citation |
+| --- | --- | --- |
+| `tests/runtime/{grid,list,dynamic-height}.test.ts` | Adapted consumer behavior | Supplements the exact upstream suites with Octane-native DOM, imperative API, initializer, and measurement coverage |
+| `tests/differential/parity.test.ts` | Differential | One shared TSX fixture is compiled for React and Octane; the rig compares serialized DOM after native scrolling |
+| `tests/ssr/ssr.test.ts` | Adapted SSR | Exercises the same public `List`/`Grid` defaults pinned by the declaration and upstream component suites |
+| `tests/hydration.test.ts` | Adapted hydration | Adopts nodes emitted by the SSR fixture, then proves live ResizeObserver and scrolling behavior |
+| `typetests/parity.test-d.ts` | Paired type oracle | Identical assertion groups compile against the npm declaration and Octane source; `audit/type-contract.json` forbids source transforms |
+| `typetests/negative/missing-coordinate.test-d.ts` | Paired negative type control | Both compilers reject the same incomplete Grid coordinate |
+| `tests/audit/upstream.test.mjs` | Provenance audit | Pins the exact file/export/test inventory in both directions |
+| `tests/audit/adapted.test.mjs` | Adaptation audit | Regenerates and byte-compares every adapted upstream test/source mapping with mutation controls |
+| `tests/audit/types.test.mjs` | Type-evidence audit | Accounts for every assertion group and proves skipped/deleted/unauthorized mutations fail |
+| `tests/feasibility/renderer-boundary.test.ts` | Framework-boundary characterization | Documents the two reviewed renderer ABI/scheduling divergences recorded in the manifest |

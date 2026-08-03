@@ -1,4 +1,4 @@
-import { List, useListRef } from '../../src';
+import { List, useListCallbackRef, useListRef } from '../../src';
 
 export const listRuntimeEvents: {
 	ranges: Array<{
@@ -8,9 +8,30 @@ export const listRuntimeEvents: {
 	ref: ReturnType<typeof useListRef> | null;
 } = { ranges: [], ref: null };
 
+export const listHookInitializerEvents: {
+	callbackDirect: unknown;
+	callbackLazy: unknown;
+	ref: unknown;
+} = { callbackDirect: null, callbackLazy: null, ref: null };
+
 export function resetListRuntimeEvents() {
 	listRuntimeEvents.ranges.length = 0;
 	listRuntimeEvents.ref = null;
+	listHookInitializerEvents.callbackDirect = null;
+	listHookInitializerEvents.callbackLazy = null;
+	listHookInitializerEvents.ref = null;
+}
+
+export function ListHookInitializerFixture() @{
+	const initialApi = { kind: 'list-initial-api' } as any;
+	const initialLazyApi = { kind: 'list-lazy-api' } as any;
+	const ref = useListRef(initialApi);
+	const [callbackDirect] = useListCallbackRef(initialApi);
+	const [callbackLazy] = useListCallbackRef(() => initialLazyApi);
+	listHookInitializerEvents.ref = ref.current;
+	listHookInitializerEvents.callbackDirect = callbackDirect;
+	listHookInitializerEvents.callbackLazy = callbackLazy;
+	<div data-testid="list-hook-initializers" />
 }
 
 function Row({ ariaAttributes, index, label, style }: any) @{
@@ -18,7 +39,7 @@ function Row({ ariaAttributes, index, label, style }: any) @{
 }
 
 export function ListRuntimeFixture() @{
-	const listRef = useListRef();
+	const listRef = useListRef(null);
 	listRuntimeEvents.ref = listRef;
 
 	<List

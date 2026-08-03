@@ -1,5 +1,5 @@
 import { useState } from 'octane';
-import { getSlot, subSlot } from '../../internal';
+import { getPublicArgument, getSlot, subSlot } from '../../internal';
 import type { ListImperativeAPI } from './types';
 
 /**
@@ -7,7 +7,10 @@ import type { ListImperativeAPI } from './types';
  *
  * Use this hook when you need to share the ref with another component or hook.
  */
-export function useListCallbackRef(...rest: unknown[]) {
-	const slot = getSlot(rest);
-	return useState<ListImperativeAPI | null>(null, subSlot(slot, 'list-callback-ref'));
-}
+export const useListCallbackRef = ((...args: unknown[]) => {
+	const slot = getSlot(args);
+	const initialValue = getPublicArgument(args, 0) as
+		ListImperativeAPI | null | (() => ListImperativeAPI | null) | undefined;
+	const [value, setValue] = useState(initialValue, subSlot(slot, 'list-callback-ref'));
+	return [value, setValue];
+}) as unknown as typeof import('react').useState<ListImperativeAPI | null>;

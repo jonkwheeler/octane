@@ -8,6 +8,11 @@ export function getSlot(args: unknown[]): symbol | undefined {
 	return typeof slot === 'symbol' ? slot : undefined;
 }
 
+export function getPublicArgument(args: unknown[], index: number): unknown {
+	const publicLength = getSlot(args) === undefined ? args.length : args.length - 1;
+	return index < publicLength ? args[index] : undefined;
+}
+
 export function subSlot(slot: symbol | undefined, tag: string): symbol {
 	if (slot === undefined) return Symbol(tag);
 	let byTag = subSlotCache.get(slot);

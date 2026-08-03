@@ -548,9 +548,11 @@ export function bridgeReportFromSource(source, { packageName } = {}) {
 function planFor(report) {
 	const steps = [];
 	if (report.existingBinding) {
-		steps.push(
-			`An official Octane binding already exists: ${report.existingBinding}. Prefer installing it over bridging by hand.`,
-		);
+		return [
+			`Install the official Octane binding: ${report.existingBinding}.`,
+			`Replace imports from ${report.target} with imports from ${report.existingBinding}, preserving the imported API names.`,
+			'Run the application typecheck and the relevant unit, SSR, hydration, and browser tests; no manual React binding port is needed.',
+		];
 	}
 	if (report.vanillaCore) {
 		steps.push(

@@ -265,6 +265,10 @@ describe('bridgeReportFromSource', () => {
 });
 
 describe('KNOWN_BINDINGS', () => {
+	it('maps react-window to its exact official Octane binding', () => {
+		expect(KNOWN_BINDINGS['react-window']).toBe('@octanejs/react-window');
+	});
+
 	it('maps Streamdown and every official plugin package to the consolidated binding', () => {
 		const upstreamPackages = [
 			'streamdown',

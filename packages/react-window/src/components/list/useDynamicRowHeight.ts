@@ -5,6 +5,10 @@ import { assert } from '../../utils/assert';
 import { DATA_ATTRIBUTE_LIST_INDEX } from './List';
 import type { DynamicRowHeight } from './types';
 
+export function useDynamicRowHeight(options: {
+	defaultRowHeight: number;
+	key?: string | number;
+}): DynamicRowHeight;
 export function useDynamicRowHeight(
 	{
 		defaultRowHeight,
@@ -14,7 +18,7 @@ export function useDynamicRowHeight(
 		key?: string | number;
 	},
 	...rest: unknown[]
-) {
+): DynamicRowHeight {
 	const slot = getSlot(rest);
 	const [state, setState] = useState<{
 		key: string | number | undefined;

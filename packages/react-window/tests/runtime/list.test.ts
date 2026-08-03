@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { act, flushEffects, mount } from '../../../octane/tests/_helpers';
 import {
+	ListHookInitializerFixture,
 	ListRuntimeFixture,
+	listHookInitializerEvents,
 	listRuntimeEvents,
 	resetListRuntimeEvents,
 } from '../_fixtures/list-runtime.tsrx';
@@ -16,6 +18,15 @@ afterEach(() => {
 });
 
 describe('List runtime', () => {
+	it('preserves direct and lazy initial values for its ref helpers', () => {
+		const result = mount(ListHookInitializerFixture);
+		unmount = result.unmount;
+
+		expect(listHookInitializerEvents.ref).toMatchObject({ kind: 'list-initial-api' });
+		expect(listHookInitializerEvents.callbackDirect).toMatchObject({ kind: 'list-initial-api' });
+		expect(listHookInitializerEvents.callbackLazy).toMatchObject({ kind: 'list-lazy-api' });
+	});
+
 	it('renders only the visible plus overscan range and responds to native scroll', async () => {
 		const result = mount(ListRuntimeFixture);
 		unmount = result.unmount;

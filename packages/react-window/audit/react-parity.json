@@ -115,14 +115,64 @@
         {
           "path": "packages/react-window/typetests/parity.test-d.ts",
           "role": "test",
-          "sha256": "f505deac5b2fcbac3534d2d9dcfa431f3b4d9983251385fe50c661fb386cd8e6",
+          "sha256": "05b1d2752a494c5abb84977bec12e9534af6333c5370ab341fc301fe76c6246c",
           "cases": [
             {
-              "id": "types:react-window-pristine",
-              "testName": "published react-window declaration contract",
-              "fullName": "published react-window declaration contract"
+              "id": "types:react-window-pristine:component-props",
+              "testName": "component-props",
+              "fullName": "published react-window declaration contract: component-props"
+            },
+            {
+              "id": "types:react-window-pristine:list-grid-props",
+              "testName": "list-grid-props",
+              "fullName": "published react-window declaration contract: list-grid-props"
+            },
+            {
+              "id": "types:react-window-pristine:components",
+              "testName": "components",
+              "fullName": "published react-window declaration contract: components"
+            },
+            {
+              "id": "types:react-window-pristine:utilities",
+              "testName": "utilities",
+              "fullName": "published react-window declaration contract: utilities"
+            },
+            {
+              "id": "types:react-window-pristine:dynamic-height",
+              "testName": "dynamic-height",
+              "fullName": "published react-window declaration contract: dynamic-height"
+            },
+            {
+              "id": "types:react-window-pristine:ref-hooks",
+              "testName": "ref-hooks",
+              "fullName": "published react-window declaration contract: ref-hooks"
+            },
+            {
+              "id": "types:react-window-pristine:imperative-api",
+              "testName": "imperative-api",
+              "fullName": "published react-window declaration contract: imperative-api"
+            },
+            {
+              "id": "types:react-window-pristine:forbidden-generated-props",
+              "testName": "forbidden-generated-props",
+              "fullName": "published react-window declaration contract: forbidden-generated-props"
+            },
+            {
+              "id": "types:react-window-pristine:missing-grid-coordinate",
+              "testName": "missing-grid-coordinate",
+              "fullName": "published react-window declaration contract: missing-grid-coordinate"
+            },
+            {
+              "id": "types:react-window-pristine:absent-v1-api",
+              "testName": "absent-v1-api",
+              "fullName": "published react-window declaration contract: absent-v1-api"
             }
           ]
+        },
+        {
+          "path": "packages/react-window/audit/type-contract.json",
+          "role": "support",
+          "sha256": "15fdc0bd2fc50105b8c4e42399ee6a47be49a3aa8a1e76ea05341c385ff344b0"
         }
       ]
     },
@@ -143,14 +193,64 @@
         {
           "path": "packages/react-window/typetests/parity.test-d.ts",
           "role": "test",
-          "sha256": "f505deac5b2fcbac3534d2d9dcfa431f3b4d9983251385fe50c661fb386cd8e6",
+          "sha256": "05b1d2752a494c5abb84977bec12e9534af6333c5370ab341fc301fe76c6246c",
           "cases": [
             {
-              "id": "types:react-window-adapted",
-              "testName": "Octane react-window declaration contract",
-              "fullName": "Octane react-window declaration contract"
+              "id": "types:react-window-adapted:component-props",
+              "testName": "component-props",
+              "fullName": "Octane react-window declaration contract: component-props"
+            },
+            {
+              "id": "types:react-window-adapted:list-grid-props",
+              "testName": "list-grid-props",
+              "fullName": "Octane react-window declaration contract: list-grid-props"
+            },
+            {
+              "id": "types:react-window-adapted:components",
+              "testName": "components",
+              "fullName": "Octane react-window declaration contract: components"
+            },
+            {
+              "id": "types:react-window-adapted:utilities",
+              "testName": "utilities",
+              "fullName": "Octane react-window declaration contract: utilities"
+            },
+            {
+              "id": "types:react-window-adapted:dynamic-height",
+              "testName": "dynamic-height",
+              "fullName": "Octane react-window declaration contract: dynamic-height"
+            },
+            {
+              "id": "types:react-window-adapted:ref-hooks",
+              "testName": "ref-hooks",
+              "fullName": "Octane react-window declaration contract: ref-hooks"
+            },
+            {
+              "id": "types:react-window-adapted:imperative-api",
+              "testName": "imperative-api",
+              "fullName": "Octane react-window declaration contract: imperative-api"
+            },
+            {
+              "id": "types:react-window-adapted:forbidden-generated-props",
+              "testName": "forbidden-generated-props",
+              "fullName": "Octane react-window declaration contract: forbidden-generated-props"
+            },
+            {
+              "id": "types:react-window-adapted:missing-grid-coordinate",
+              "testName": "missing-grid-coordinate",
+              "fullName": "Octane react-window declaration contract: missing-grid-coordinate"
+            },
+            {
+              "id": "types:react-window-adapted:absent-v1-api",
+              "testName": "absent-v1-api",
+              "fullName": "Octane react-window declaration contract: absent-v1-api"
             }
           ]
+        },
+        {
+          "path": "packages/react-window/audit/type-contract.json",
+          "role": "support",
+          "sha256": "15fdc0bd2fc50105b8c4e42399ee6a47be49a3aa8a1e76ea05341c385ff344b0"
         }
       ]
     },
@@ -208,7 +308,7 @@
         {
           "path": "packages/react-window/tests/hydration.test.ts",
           "role": "test",
-          "sha256": "295ccb83e0825cb1a9231f9f5faafa7f911fd17624ae5823773a85332ae78e27",
+          "sha256": "7957b64fe9af95d683655e9cf4f657a0dac17cea70d5bebc2d77fa41520fee29",
           "cases": [
             {
               "id": "adapted:react-window-hydration",

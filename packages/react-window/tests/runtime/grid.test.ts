@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { act, flushEffects, mount } from '../../../octane/tests/_helpers';
 import {
+	GridHookInitializerFixture,
 	GridRuntimeFixture,
+	gridHookInitializerEvents,
 	gridRuntimeEvents,
 	resetGridRuntimeEvents,
 } from '../_fixtures/grid-runtime.tsrx';
@@ -16,6 +18,15 @@ afterEach(() => {
 });
 
 describe('Grid runtime', () => {
+	it('preserves direct and lazy initial values for its ref helpers', () => {
+		const result = mount(GridHookInitializerFixture);
+		unmount = result.unmount;
+
+		expect(gridHookInitializerEvents.ref).toMatchObject({ kind: 'grid-initial-api' });
+		expect(gridHookInitializerEvents.callbackDirect).toMatchObject({ kind: 'grid-initial-api' });
+		expect(gridHookInitializerEvents.callbackLazy).toMatchObject({ kind: 'grid-lazy-api' });
+	});
+
 	it('windows both axes and responds to native two-axis scrolling', async () => {
 		const result = mount(GridRuntimeFixture);
 		unmount = result.unmount;

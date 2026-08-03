@@ -1,4 +1,4 @@
-import { Grid, useGridRef } from '../../src';
+import { Grid, useGridCallbackRef, useGridRef } from '../../src';
 
 export const gridRuntimeEvents: {
 	ranges: Array<{
@@ -18,9 +18,30 @@ export const gridRuntimeEvents: {
 	ref: ReturnType<typeof useGridRef> | null;
 } = { ranges: [], ref: null };
 
+export const gridHookInitializerEvents: {
+	callbackDirect: unknown;
+	callbackLazy: unknown;
+	ref: unknown;
+} = { callbackDirect: null, callbackLazy: null, ref: null };
+
 export function resetGridRuntimeEvents() {
 	gridRuntimeEvents.ranges.length = 0;
 	gridRuntimeEvents.ref = null;
+	gridHookInitializerEvents.callbackDirect = null;
+	gridHookInitializerEvents.callbackLazy = null;
+	gridHookInitializerEvents.ref = null;
+}
+
+export function GridHookInitializerFixture() @{
+	const initialApi = { kind: 'grid-initial-api' } as any;
+	const initialLazyApi = { kind: 'grid-lazy-api' } as any;
+	const ref = useGridRef(initialApi);
+	const [callbackDirect] = useGridCallbackRef(initialApi);
+	const [callbackLazy] = useGridCallbackRef(() => initialLazyApi);
+	gridHookInitializerEvents.ref = ref.current;
+	gridHookInitializerEvents.callbackDirect = callbackDirect;
+	gridHookInitializerEvents.callbackLazy = callbackLazy;
+	<div data-testid="grid-hook-initializers" />
 }
 
 function Cell({ ariaAttributes, columnIndex, label, rowIndex, style }: any) @{
@@ -32,7 +53,7 @@ function Cell({ ariaAttributes, columnIndex, label, rowIndex, style }: any) @{
 }
 
 export function GridRuntimeFixture() @{
-	const gridRef = useGridRef();
+	const gridRef = useGridRef(null);
 	gridRuntimeEvents.ref = gridRef;
 
 	<Grid

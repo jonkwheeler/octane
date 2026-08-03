@@ -1,11 +1,12 @@
 import { useRef } from 'octane';
-import { getSlot, subSlot } from '../../internal';
+import { getPublicArgument, getSlot, subSlot } from '../../internal';
 import type { GridImperativeAPI } from './types';
 
 /**
  * Convenience hook to return a properly typed ref for the Grid component.
  */
-export function useGridRef(...rest: unknown[]) {
-	const slot = getSlot(rest);
-	return useRef<GridImperativeAPI | null>(null, subSlot(slot, 'grid-ref'));
-}
+export const useGridRef = ((...args: unknown[]) => {
+	const slot = getSlot(args);
+	const initialValue = getPublicArgument(args, 0) as GridImperativeAPI | null | undefined;
+	return useRef(initialValue, subSlot(slot, 'grid-ref'));
+}) as typeof import('react').useRef<GridImperativeAPI>;
