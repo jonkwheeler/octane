@@ -141,12 +141,12 @@
         {
           "path": "packages/tanstack-ai/tests/conformance/use-generation.test.ts",
           "role": "test",
-          "sha256": "7df1c3846652c599d55d161c2a588a73845499b063ffd981db95496f8cd18e5d",
+          "sha256": "70b72fda5bd39981f842331b9d8ef75fcaec51bd5c971b774c679fb0f34ff426",
           "cases": [
             {
               "id": "adapted:tanstack-ai-devtools-framework",
-              "testName": "should initialize with default state",
-              "fullName": "useGeneration initialization should initialize with default state"
+              "testName": "should identify the generation client framework as octane",
+              "fullName": "useGeneration initialization should identify the generation client framework as octane"
             }
           ]
         },
@@ -246,6 +246,11 @@
               "fullName": "native Octane input event contract"
             }
           ]
+        },
+        {
+          "path": "packages/tanstack-ai/typetests/native-events.test-d.ts",
+          "role": "support",
+          "sha256": "45875d784db4150f7fdd465f7ace31de8dcfb1bfcd6f3f7faf39cf5cec9f9f1b"
         },
         {
           "path": "packages/tanstack-ai/typetests/use-chat.test-d.tsx",

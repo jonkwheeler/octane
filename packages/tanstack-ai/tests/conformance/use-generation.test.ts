@@ -11,6 +11,21 @@ import { createMockConnectionAdapter } from './test-utils';
 import type { StreamChunk, TTSResult, TranscriptionResult } from '@tanstack/ai';
 import { EventType } from '@tanstack/ai';
 
+const { generationDevtoolsOptions } = vi.hoisted(() => ({
+	generationDevtoolsOptions: [] as Array<{ metadata?: { framework?: string } }>,
+}));
+
+vi.mock('@tanstack/ai-client/devtools', async (importOriginal) => {
+	const original = await importOriginal<typeof import('@tanstack/ai-client/devtools')>();
+	return {
+		...original,
+		createGenerationDevtoolsBridge: (options: { metadata?: { framework?: string } }) => {
+			generationDevtoolsOptions.push(options);
+			return original.createGenerationDevtoolsBridge(options as never);
+		},
+	};
+});
+
 // Helper to create generation stream chunks
 function createGenerationChunks(result: unknown): Array<StreamChunk> {
 	return [
@@ -100,10 +115,13 @@ describe('useGeneration', () => {
 	describe('initialization', () => {
 		// OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
 		// @parity-case adapted:tanstack-ai-devtools-framework
-		it('should initialize with default state', () => {
+		it('should identify the generation client framework as octane', () => {
+			generationDevtoolsOptions.length = 0;
 			const adapter = createMockConnectionAdapter();
 			const { result } = renderHook(() => useGeneration({ connection: adapter }));
 
+			expect(generationDevtoolsOptions).toHaveLength(1);
+			expect(generationDevtoolsOptions[0]?.metadata?.framework).toBe('octane');
 			expect(result.current.result).toBeNull();
 			expect(result.current.isLoading).toBe(false);
 			expect(result.current.error).toBeUndefined();
