@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import { HotkeyManager, SequenceManager } from '@tanstack/hotkeys';
+import { drainPassiveEffects } from 'octane';
 import { describe, expect, it } from 'vitest';
 import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
 
@@ -32,6 +33,7 @@ describe('differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys', 
 			await react.keydown('#hotkeys-parity', 'k', { code: 'KeyK', ctrlKey: true });
 		});
 		differential.unmount();
+		drainPassiveEffects();
 		expect(HotkeyManager.getInstance().registrations.state.size).toBe(0);
 		expect(SequenceManager.getInstance().registrations.state.size).toBe(0);
 	});
