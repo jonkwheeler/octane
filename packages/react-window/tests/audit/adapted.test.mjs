@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { extractTestCases } from '../../../../scripts/react-parity/inventory-lib.mjs';
-import { transform } from '../generate-adapted-tests.mjs';
+import { formatAdapted, transform } from '../generate-adapted-tests.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const upstreamLib = join(packageRoot, 'upstream/lib');
@@ -39,7 +39,7 @@ function inventory(root) {
 		);
 }
 
-function verify(root = packageRoot) {
+async function verify(root = packageRoot) {
 	const sourceRoot = join(root, 'upstream/lib');
 	const generatedRoot = join(root, 'tests/upstream');
 	const sourceFiles = walk(sourceRoot)
@@ -57,11 +57,14 @@ function verify(root = packageRoot) {
 		const destination = join(generatedRoot, relative(sourceRoot, sourceFile));
 		assert.equal(
 			readFileSync(destination, 'utf8'),
-			transform(readFileSync(sourceFile, 'utf8'), sourceFile, destination, {
-				packageRoot: root,
-				upstreamRoot: join(root, 'upstream'),
-				upstreamLib: sourceRoot,
-			}),
+			await formatAdapted(
+				transform(readFileSync(sourceFile, 'utf8'), sourceFile, destination, {
+					packageRoot: root,
+					upstreamRoot: join(root, 'upstream'),
+					upstreamLib: sourceRoot,
+				}),
+				destination,
+			),
 			`${relative(sourceRoot, sourceFile)} contains an unapproved or stale transformation`,
 		);
 	}
@@ -97,23 +100,23 @@ function fixture() {
 
 test('accepts the generated adapted suite and exact 117-case identity inventory', () => verify());
 
-test('rejects a missing or renamed adapted case', () => {
+test('rejects a missing or renamed adapted case', async () => {
 	const root = fixture();
 	try {
 		const path = join(root, 'tests/upstream/core/getEstimatedSize.test.ts');
 		writeFileSync(path, readFileSync(path, 'utf8').replace('should return 0', 'silently renamed'));
-		assert.throws(() => verify(root), /unapproved or stale transformation|identities differ/);
+		await assert.rejects(verify(root), /unapproved or stale transformation|identities differ/);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
-test('rejects an unapproved adapted transformation', () => {
+test('rejects an unapproved adapted transformation', async () => {
 	const root = fixture();
 	try {
 		const path = join(root, 'tests/upstream/core/getEstimatedSize.test.ts');
 		writeFileSync(path, `${readFileSync(path, 'utf8')}\n// unapproved`);
-		assert.throws(() => verify(root), /unapproved or stale transformation/);
+		await assert.rejects(verify(root), /unapproved or stale transformation/);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}

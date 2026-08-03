@@ -393,6 +393,7 @@ async function validatePackedConsumer(tempRoot, archives) {
 					'@apollo/client': '4.2.6',
 					'@octanejs/apollo-client': `file:${requireArchive(archives, '@octanejs/apollo-client')}`,
 					'@octanejs/hook-form': `file:${requireArchive(archives, '@octanejs/hook-form')}`,
+					'@octanejs/react-window': `file:${requireArchive(archives, '@octanejs/react-window')}`,
 					'@octanejs/three': `file:${requireArchive(archives, '@octanejs/three')}`,
 					'@types/three': '0.172.0',
 					graphql: '^16.11.0',
@@ -414,6 +415,7 @@ async function validatePackedConsumer(tempRoot, archives) {
 		`import { ApolloClient, InMemoryCache } from '@octanejs/apollo-client';
 import { ApolloProvider, useApolloClient } from '@octanejs/apollo-client/react';
 import { useForm } from '@octanejs/hook-form';
+import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/react-window';
 import { Canvas } from '@octanejs/three';
 import { ThreeScene } from './ThreeScene.three.tsrx';
 
@@ -422,6 +424,14 @@ const client = new ApolloClient({ cache: new InMemoryCache() });
 function ApolloProbe() @{
 	const activeClient = useApolloClient();
 	<span data-apollo={activeClient === client ? 'connected' : 'missing'}>Apollo</span>
+}
+
+function PackedRow({ ariaAttributes, index, style }: RowComponentProps) {
+	return <div {...ariaAttributes} data-packed-row={index} style={style}>{'Row ' + index}</div>;
+}
+
+function PackedCell({ ariaAttributes, columnIndex, rowIndex, style }: CellComponentProps) {
+	return <div {...ariaAttributes} data-packed-cell={rowIndex + ':' + columnIndex} style={style}>{rowIndex + ':' + columnIndex}</div>;
 }
 
 export function App() @{
@@ -433,6 +443,25 @@ export function App() @{
 		<ApolloProvider client={client}>
 			<ApolloProbe />
 		</ApolloProvider>
+		<List
+			data-testid="packed-list"
+			defaultHeight={40}
+			rowComponent={PackedRow}
+			rowCount={100}
+			rowHeight={20}
+			rowProps={{}}
+		/>
+		<Grid
+			cellComponent={PackedCell}
+			cellProps={{}}
+			columnCount={100}
+			columnWidth={20}
+			data-testid="packed-grid"
+			defaultHeight={40}
+			defaultWidth={40}
+			rowCount={100}
+			rowHeight={20}
+		/>
 		<Canvas frameloop="never" style={{ width: 64, height: 64 }}>
 			<ThreeScene />
 		</Canvas>
@@ -458,6 +487,24 @@ export function ThreeScene() @{
 		`import * as publicApi from '@octanejs/three';
 import * as coreApi from '@octanejs/three/core';
 import * as rendererApi from '@octanejs/three/renderer';
+import {
+	Grid,
+	List,
+	getScrollbarSize,
+	useDynamicRowHeight,
+	useGridCallbackRef,
+	useGridRef,
+	useListCallbackRef,
+	useListRef,
+	type Align,
+	type CellComponentProps,
+	type DynamicRowHeight,
+	type GridImperativeAPI,
+	type GridProps,
+	type ListImperativeAPI,
+	type ListProps,
+	type RowComponentProps,
+} from '@octanejs/react-window';
 import config, { threeRenderers } from '@octanejs/three/config';
 import testing, { create, fireEvent } from '@octanejs/three/testing';
 import { map_iterable } from 'octane/tsrx-iterable';
@@ -483,16 +530,41 @@ const intrinsicMesh: IntrinsicMesh = { position: [1, 2, 3] };
 const runtimeMesh: RuntimeMesh = intrinsicMesh;
 const rootMesh: RootMesh = runtimeMesh;
 const reconcilerRoot: ReconcilerRoot<HTMLCanvasElement> | undefined = undefined;
+const align: Align = 'smart';
+const listProps: ListProps = { rowComponent: () => null, rowCount: 0, rowHeight: 20, rowProps: {} };
+const gridProps: GridProps = { cellComponent: () => null, cellProps: {}, columnCount: 0, columnWidth: 20, rowCount: 0, rowHeight: 20 };
+const rowProps: RowComponentProps | undefined = undefined;
+const cellProps: CellComponentProps | undefined = undefined;
+const dynamicHeight: DynamicRowHeight | undefined = undefined;
+const listApi: ListImperativeAPI | undefined = undefined;
+const gridApi: GridImperativeAPI | undefined = undefined;
 
 export function packageSurfaceProbe() {
 	void octaneDevRuntimeDiv;
 	void rootMesh;
 	void reconcilerRoot;
+	void align;
+	void listProps;
+	void gridProps;
+	void rowProps;
+	void cellProps;
+	void dynamicHeight;
+	void listApi;
+	void gridApi;
 	return {
 		config: config === threeRenderers,
 		core: typeof coreApi.createRoot === 'function',
 		iterable: typeof map_iterable === 'function',
 		publicApi: typeof publicApi.Canvas === 'function',
+		reactWindow:
+			typeof Grid === 'function' &&
+			typeof List === 'function' &&
+			typeof getScrollbarSize === 'function' &&
+			typeof useDynamicRowHeight === 'function' &&
+			typeof useGridCallbackRef === 'function' &&
+			typeof useGridRef === 'function' &&
+			typeof useListCallbackRef === 'function' &&
+			typeof useListRef === 'function',
 		renderer: typeof rendererApi.createUniversalRoot === 'function',
 		spread:
 			typeof normalize_spread_props === 'function' &&
@@ -621,6 +693,13 @@ process.stdout.write(JSON.stringify(result));`,
 			`binding resolved a second Octane runtime:\n  app: ${directRuntime}\n  binding: ${peerRuntime}`,
 		);
 	}
+	const reactWindowEntry = consumerRequire.resolve('@octanejs/react-window');
+	const reactWindowPeerRuntime = realpathSync(createRequire(reactWindowEntry).resolve('octane'));
+	if (reactWindowPeerRuntime !== directRuntime) {
+		throw new Error(
+			`react-window binding resolved a second Octane runtime:\n  app: ${directRuntime}\n  binding: ${reactWindowPeerRuntime}`,
+		);
+	}
 	const threeEntry = consumerRequire.resolve('@octanejs/three');
 	const threeRequire = createRequire(threeEntry);
 	const threePeerRuntime = realpathSync(threeRequire.resolve('octane'));
@@ -730,6 +809,10 @@ process.stdout.write(output, () => process.exit(0));
 		!html.includes('data-probe="bindings-ran"') ||
 		!html.includes('name="name"') ||
 		!html.includes('data-apollo="connected"') ||
+		!html.includes('data-testid="packed-list"') ||
+		!html.includes('data-packed-row="0"') ||
+		!html.includes('data-testid="packed-grid"') ||
+		!html.includes('data-packed-cell="0:0"') ||
 		!html.includes('<canvas')
 	) {
 		throw new Error(`executed packed consumer probe returned unexpected HTML: ${html}`);
@@ -739,7 +822,7 @@ process.stdout.write(output, () => process.exit(0));
 	}
 
 	console.log(
-		'installed packed octane + Hook Form + Apollo Client + Three without React; typecheck, Vite client/server builds, subpaths, and executed binding SSR passed',
+		'installed packed octane + Hook Form + react-window + Apollo Client + Three without React; typecheck, Vite client/server builds, subpaths, and executed binding SSR passed',
 	);
 }
 

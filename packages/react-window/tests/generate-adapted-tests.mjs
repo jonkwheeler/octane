@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { format } from 'prettier';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamRoot = join(packageRoot, 'upstream');
@@ -17,6 +18,9 @@ function walk(directory) {
 function sourceTarget(importer, specifier, roots) {
 	const absolute = resolve(dirname(importer), specifier);
 	const relativeToLib = relative(roots.upstreamLib, absolute);
+	if (relativeToLib.startsWith('utils/test/')) {
+		return join(roots.packageRoot, 'tests/utils', relativeToLib.slice('utils/test/'.length));
+	}
 	if (!relativeToLib.startsWith('..')) return join(roots.packageRoot, 'src', relativeToLib);
 	const relativeToUpstream = relative(roots.upstreamRoot, absolute);
 	if (relativeToUpstream === 'src/constants') return join(roots.packageRoot, 'src/constants');
@@ -126,7 +130,18 @@ export function transform(
 	return output;
 }
 
-export function generate() {
+export function formatAdapted(source, filepath) {
+	return format(source, {
+		filepath,
+		useTabs: true,
+		tabWidth: 2,
+		singleQuote: true,
+		jsxSingleQuote: false,
+		printWidth: 100,
+	});
+}
+
+export async function generate() {
 	rmSync(destinationRoot, { recursive: true, force: true });
 	const testFiles = walk(upstreamLib)
 		.filter((path) => /\.test\.[tj]sx?$/.test(path))
@@ -136,12 +151,15 @@ export function generate() {
 		mkdirSync(dirname(destination), { recursive: true });
 		writeFileSync(
 			destination,
-			transform(readFileSync(upstreamFile, 'utf8'), upstreamFile, destination),
+			await formatAdapted(
+				transform(readFileSync(upstreamFile, 'utf8'), upstreamFile, destination),
+				destination,
+			),
 		);
 	}
 	return testFiles.length;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-	console.log(`generated ${generate()} react-window adapted test files`);
+	console.log(`generated ${await generate()} react-window adapted test files`);
 }

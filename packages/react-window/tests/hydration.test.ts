@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderHydrationFixture } from '../../octane/tests/_hydration-ssr';
 import { ReactWindowServerFixture } from './ssr/_fixtures/server';
-import { mockResizeObserver, setElementSizeFunction } from '../src/utils/test/mockResizeObserver';
+import { mockResizeObserver, setElementSizeFunction } from './utils/mockResizeObserver';
 
 let restoreResizeObserver: (() => void) | undefined;
 

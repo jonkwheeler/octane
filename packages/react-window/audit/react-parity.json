@@ -18,7 +18,7 @@
     "source": {
       "roots": ["packages/react-window/src"],
       "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-      "exclude": ["/utils/test/"]
+      "exclude": []
     },
     "tests": {
       "roots": ["packages/react-window/tests/upstream"],
@@ -39,7 +39,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f6151429ef89766a4f12daa16009048ff6046b9d7c11448632b38243fdb46c24"
+      "lockfileSha256": "f5f1dbd201f0cca429e99897c8464f3536ca02c4bdfcd143115c2f8dde25d947"
     }
   },
   "lanes": [
@@ -59,7 +59,7 @@
         {
           "path": "packages/react-window/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "3908762867b85c453117fcd8099cd2a98e6095a1271c449f86ef3f0f59028be6"
+          "sha256": "3a2fc37af94500e7975d5faa0ffb5c2983739ad4b486d691cfb282bd5e4c3ed6"
         },
         {
           "path": "packages/react-window/upstream/SHA256SUMS",
@@ -84,7 +84,7 @@
         {
           "path": "packages/react-window/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "009b8a4b734df021317d917682ed5197fcdb7a9173d3c58f47a7bddf3f7a7958"
+          "sha256": "fac9b17df1dd4ed40c11d2d37c1447ad9b4e0d6178f3fe8c46bf3a0aeb431a62"
         },
         {
           "path": "packages/react-window/audit/adapted-transformations.json",
@@ -94,7 +94,7 @@
         {
           "path": "packages/react-window/tests/generate-adapted-tests.mjs",
           "role": "support",
-          "sha256": "7ecf8f996138eb7cb0224bb58312a11b23b9de807f545b701010439265a311af"
+          "sha256": "584515f956967578e1f4414bbf1b5d1b510f65316919d6ce5470aa79e9c22747"
         }
       ]
     },
@@ -208,7 +208,7 @@
         {
           "path": "packages/react-window/tests/hydration.test.ts",
           "role": "test",
-          "sha256": "b6b3706dbfd50ac915b6f2e286e21b752ba7a461c29019f9886029ade93313ed",
+          "sha256": "295ccb83e0825cb1a9231f9f5faafa7f911fd17624ae5823773a85332ae78e27",
           "cases": [
             {
               "id": "adapted:react-window-hydration",

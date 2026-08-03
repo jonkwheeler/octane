@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-window-pristine",
-  "roots": [
-    "packages/react-window/upstream/lib"
-  ],
+  "roots": ["packages/react-window/upstream/lib"],
   "files": [
     "packages/react-window/upstream/lib/components/grid/Grid.test.tsx",
     "packages/react-window/upstream/lib/components/list/List.test.tsx",
