@@ -17,27 +17,19 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/swr/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/swr/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/swr/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/swr/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 35,
-    "uniqueIdentities": 35,
+    "inventoryEntries": 37,
+    "uniqueIdentities": 37,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -300,7 +292,7 @@
         {
           "path": "packages/swr/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7fbe440907fdbb0dc8912d960c2866b7c40909cad2743092f4782e261f6a38a4"
+          "sha256": "814837cc9883fd098cd8c0b18c4c10a8aaff9a7e37b3ecb25485121781a58bfc"
         },
         {
           "path": "scripts/react-parity/swr-runtime-inventory.mjs",

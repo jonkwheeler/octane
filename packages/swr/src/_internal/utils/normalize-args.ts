@@ -9,7 +9,13 @@ export const normalize = <KeyType = Key, Data = any>(
 		| [KeyType, SWRConfiguration | undefined]
 		| [KeyType, Fetcher<Data> | null, SWRConfiguration | undefined],
 ): [KeyType, Fetcher<Data> | null, Partial<SWRConfiguration<Data>>] => {
-	return isFunction(args[1])
-		? [args[0], args[1], args[2] || {}]
-		: [args[0], null, (args[1] === null ? args[2] : args[1]) || {}];
+	// The Octane compiler appends a call-site slot to hooks. It is runtime
+	// metadata, not SWR's optional configuration argument.
+	const userArgs = (
+		typeof args[args.length - 1] === 'symbol' ? args.slice(0, -1) : args
+	) as typeof args;
+
+	return isFunction(userArgs[1])
+		? [userArgs[0], userArgs[1], userArgs[2] || {}]
+		: [userArgs[0], null, (userArgs[1] === null ? userArgs[2] : userArgs[1]) || {}];
 };

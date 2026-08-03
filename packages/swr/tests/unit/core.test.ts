@@ -55,6 +55,18 @@ describe('SWR U2 framework-neutral core', () => {
 		});
 	});
 
+	it('strips compiler slots from every optional root argument shape', () => {
+		const slot = Symbol('compiler-slot');
+		const fetcher = () => 'data';
+		const config = { revalidateOnFocus: false };
+
+		expect(normalize(['key', slot] as never)).toEqual(['key', null, {}]);
+		expect(normalize(['key', null, slot] as never)).toEqual(['key', null, {}]);
+		expect(normalize(['key', fetcher, slot] as never)).toEqual(['key', fetcher, {}]);
+		expect(normalize(['key', config, slot] as never)).toEqual(['key', null, config]);
+		expect(normalize(['key', fetcher, config, slot] as never)).toEqual(['key', fetcher, config]);
+	});
+
 	it('isolates providers, publishes snapshots, and tears subscriptions down once', () => {
 		const first = new Map();
 		const second = new Map();
@@ -96,6 +108,23 @@ describe('SWR U2 framework-neutral core', () => {
 		const hook = vi.fn((_key, _fetcher, config) => config.use);
 		const wrapped = withMiddleware(hook as never, appended as never);
 		expect(wrapped('key', null, { use: [existing] } as never)).toEqual([existing, appended]);
+	});
+
+	it('does not expose compiler slots as middleware configuration', () => {
+		const appended = () => undefined;
+		const hook = vi.fn((_key, _fetcher, config) => config);
+		const wrapped = withMiddleware(hook as never, appended as never) as unknown as (
+			...args: unknown[]
+		) => unknown;
+		const slot = Symbol('compiler-slot');
+
+		expect(wrapped('key', slot)).toEqual({ use: [appended] });
+		expect(wrapped('key', null, slot)).toEqual({ use: [appended] });
+		expect(wrapped('key', null, { dedupingInterval: 10 }, slot)).toEqual({
+			dedupingInterval: 10,
+			use: [appended],
+		});
+		expect(hook.mock.calls.flat()).not.toContain(slot);
 	});
 
 	it('reuses a preload once and consumes it at the middleware boundary', async () => {

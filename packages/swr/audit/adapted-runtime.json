@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "swr",
-  "roots": [
-    "packages/swr/tests"
-  ],
+  "roots": ["packages/swr/tests"],
   "files": [
     "packages/swr/tests/adoption/adoption.test.ts",
     "packages/swr/tests/differential/cache.test.ts",
@@ -77,6 +75,11 @@
       "fullName": "SWR U2 framework-neutral core appends middleware at the same source-near boundary"
     },
     {
+      "id": "runtime:044932bed3b76c84",
+      "file": "packages/swr/tests/unit/core.test.ts",
+      "fullName": "SWR U2 framework-neutral core does not expose compiler slots as middleware configuration"
+    },
+    {
       "id": "runtime:56cdf43606f10552",
       "file": "packages/swr/tests/unit/core.test.ts",
       "fullName": "SWR U2 framework-neutral core isolates providers, publishes snapshots, and tears subscriptions down once"
@@ -100,6 +103,11 @@
       "id": "runtime:1a1206dcb6051d1c",
       "file": "packages/swr/tests/unit/core.test.ts",
       "fullName": "SWR U2 framework-neutral core reuses a preload once and consumes it at the middleware boundary"
+    },
+    {
+      "id": "runtime:99e5ceae0f5b7dc7",
+      "file": "packages/swr/tests/unit/core.test.ts",
+      "fullName": "SWR U2 framework-neutral core strips compiler slots from every optional root argument shape"
     },
     {
       "id": "runtime:483952ca70cf3e3e",
