@@ -1,0 +1,130 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/testing-library/react-testing-library.git",
+    "version": "@testing-library/react@16.3.2",
+    "commit": "f32bd1b033d5e3989ae1cb490d515ce389c54e53",
+    "sourceRoot": "src",
+    "testRoot": "src/__tests__ and types",
+    "license": "MIT",
+    "integrity": "sha256:a0ac35e67812c71b10b834a64704a2aace7e12e4ef0f2bbaea2dd3fe9fee6fe9",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": { "roots": ["packages/testing-library/src"], "include": ["\\.ts$"], "exclude": [] },
+    "tests": {
+      "roots": ["packages/testing-library/tests"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "b7f07a25e00579b4d4f749e76e199c1f7bc5b5e13f51def7c333200f95f46bf8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "testing-library-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "testing-library",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Uses a raw React root and native DOM observations to avoid trusting React Testing Library as the oracle adapter.",
+      "files": [
+        {
+          "path": "packages/testing-library/tests/differential.test.ts",
+          "role": "test",
+          "sha256": "182fbdd88ffbe51ee2ef343717d6318bb498e19feef34a0b3df04429827cc62d",
+          "cases": [
+            {
+              "id": "differential:testing-library-render-click",
+              "testName": "render and native click commit the same counter DOM sequence",
+              "fullName": "differential: @octanejs/testing-library vs a raw React root render and native click commit the same counter DOM sequence"
+            }
+          ]
+        },
+        {
+          "path": "packages/testing-library/tests/_fixtures/counter.tsrx",
+          "role": "support",
+          "sha256": "ace84a1bb889308d7c3b0797603b757c2f45dba68cee4ef466b057905ac05d19"
+        }
+      ]
+    },
+    {
+      "id": "testing-library-adapted-native-events",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "testing-library",
+      "notes": "Authenticates native event semantics that intentionally differ from React synthetic event remapping.",
+      "files": [
+        {
+          "path": "packages/testing-library/tests/events.test.ts",
+          "role": "test",
+          "sha256": "fc802d18ee94cfde407346015ce65dd9e4cc39db34eb1dc2afb74f0e94a76ab8",
+          "cases": [
+            {
+              "id": "adapted:testing-library-native-change",
+              "testName": "fireEvent.change fires the native change handler",
+              "fullName": "native event semantics (intentional divergence from React) fireEvent.change fires the native change handler"
+            },
+            {
+              "id": "adapted:testing-library-native-input",
+              "testName": "fireEvent.input does NOT trigger onChange (no synthetic remap)",
+              "fullName": "native event semantics (intentional divergence from React) fireEvent.input does NOT trigger onChange (no synthetic remap)"
+            },
+            {
+              "id": "adapted:testing-library-native-checkbox-change",
+              "testName": "fireEvent.change on a checkbox is an explicit change dispatch, not click activation",
+              "fullName": "native event semantics (intentional divergence from React) fireEvent.change on a checkbox is an explicit change dispatch, not click activation"
+            },
+            {
+              "id": "adapted:testing-library-native-mouse-enter",
+              "testName": "fireEvent.mouseEnter triggers onMouseEnter without a mouseover remap",
+              "fullName": "native event semantics (intentional divergence from React) fireEvent.mouseEnter triggers onMouseEnter without a mouseover remap"
+            }
+          ]
+        },
+        {
+          "path": "packages/testing-library/tests/_fixtures/counter.tsrx",
+          "role": "support",
+          "sha256": "ace84a1bb889308d7c3b0797603b757c2f45dba68cee4ef466b057905ac05d19"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "testing-library-native-events",
+      "caseIds": [
+        "adapted:testing-library-native-change",
+        "adapted:testing-library-native-input",
+        "adapted:testing-library-native-checkbox-change",
+        "adapted:testing-library-native-mouse-enter"
+      ],
+      "upstreamResult": "React Testing Library remaps several convenience events through React's synthetic event system.",
+      "octaneResult": "The Octane binding dispatches the requested native DOM event exactly once without React remapping.",
+      "rationale": "Octane exposes native DOM event semantics and has no React synthetic event plugin layer.",
+      "classification": "event-model",
+      "consumerImpact": "Tests ported from React may need to fire input, change, click, or mouseenter according to the actual native handler contract.",
+      "migrationGuidance": "Fire the native event represented by the Octane handler; use user-event for realistic interaction sequences.",
+      "owner": "@octanejs/testing-library",
+      "reviewCondition": "Review if Octane introduces a synthetic event compatibility layer."
+    }
+  ]
+}
