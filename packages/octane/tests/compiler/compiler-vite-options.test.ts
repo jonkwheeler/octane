@@ -232,7 +232,7 @@ describe('octane/compiler/vite public options', () => {
 		).rejects.toThrow(/Failed to load descriptor-children metadata.*\.\/Slot\.tsrx/);
 	});
 
-	it('fails loudly when descriptor metadata is stale', async () => {
+	it('fails loudly when descriptor metadata is malformed', async () => {
 		const plugin = octane({ hmr: false });
 		configure(plugin, 'build');
 		const source =
@@ -242,11 +242,9 @@ describe('octane/compiler/vite public options', () => {
 				{
 					resolve: async () => ({ id: `${ROOT}/src/Slot.tsrx` }),
 					load: async () => ({
-						code: 'compiled',
 						meta: {
 							'octane:descriptor-children-exports': {
 								exports: ['Slot'],
-								fingerprint: 'stale',
 							},
 						},
 					}),
