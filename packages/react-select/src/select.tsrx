@@ -701,6 +701,25 @@ export function Select<
 			name: props.name,
 		} as ActionMeta<Option>;
 		setAriaSelection({ ...actionMeta, value: nextValue } as AriaSelection<Option, IsMulti>);
+		setFocusedValue(null);
+		setInputIsHidden(false);
+		props.onChange(nextValue, actionMeta);
+	};
+	const popValue = () => {
+		const removedValue = selectValue[selectValue.length - 1];
+		if (!removedValue) return;
+		const newValue = selectValue.slice(0, -1);
+		const nextValue = valueTernary(
+			props.isMulti,
+			newValue,
+			newValue[0] ?? null as Option,
+		) as OnChangeValue<Option, IsMulti>;
+		const actionMeta = {
+			action: 'pop-value',
+			removedValue,
+			name: props.name,
+		} as ActionMeta<Option>;
+		setAriaSelection({ ...actionMeta, value: nextValue } as AriaSelection<Option, IsMulti>);
 		props.onChange(nextValue, actionMeta);
 	};
 	const commonProps = {
@@ -813,7 +832,7 @@ export function Select<
 				if (props.inputValue) return;
 				if (focusedValue) removeValue(focusedValue);
 				else if (props.backspaceRemovesValue && selectValue.length) {
-					if (props.isMulti) removeValue(selectValue[selectValue.length - 1]);
+					if (props.isMulti) popValue();
 					else if (props.isClearable) clearValue();
 				}
 				break;

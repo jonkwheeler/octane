@@ -18,6 +18,7 @@ import {
 } from './state-manager-fixture.tsrx';
 import { AsyncFixture, type AsyncOption, type AsyncResult } from './async-fixture.tsrx';
 import { BrowserSelectFixture, type BrowserSelectOption } from './select-fixture.tsrx';
+import { MultiSelectFixture } from './multi-select-fixture.tsrx';
 import { NonceFixture } from '../nonce-fixture.tsrx';
 
 delegateEvents([
@@ -227,6 +228,36 @@ window.__reactSelectFull = {
 	},
 };
 
+const octaneMultiElement = document.getElementById('octane-multi-root');
+const reactMultiElement = document.getElementById('react-multi-root');
+if (!octaneMultiElement || !reactMultiElement) throw new Error('missing multi roots');
+const multiLogs = { octane: [] as unknown[], react: [] as unknown[] };
+const multiDefaults = browserSelectOptions.slice(0, 2);
+const multiProps = (engine: 'octane' | 'react') => ({
+	defaultValue: multiDefaults,
+	instanceId: 'multi-browser',
+	isMulti: true as const,
+	name: 'multi-choice',
+	options: browserSelectOptions,
+	onChange(value: unknown, actionMeta: unknown) {
+		multiLogs[engine].push({ value, actionMeta });
+	},
+});
+const octaneMultiRoot = createRoot(octaneMultiElement);
+const reactMultiRoot = createReactRoot(reactMultiElement);
+flushSync(() => octaneMultiRoot.render(MultiSelectFixture, multiProps('octane') as never));
+flushReact(() => {
+	reactMultiRoot.render(
+		React.createElement(ReactSelect<BrowserSelectOption, true>, multiProps('react') as never),
+	);
+});
+
+window.__reactSelectMulti = {
+	logs() {
+		return { octane: [...multiLogs.octane], react: [...multiLogs.react] };
+	},
+};
+
 const octanePlacementElement = document.getElementById('octane-placement-root');
 const reactPlacementElement = document.getElementById('react-placement-root');
 if (!octanePlacementElement || !reactPlacementElement) throw new Error('missing placement roots');
@@ -301,6 +332,9 @@ declare global {
 				body: { height: string; overflow: string; position: string };
 				logs: { octane: string[]; react: string[] };
 			};
+		};
+		__reactSelectMulti: {
+			logs(): { octane: unknown[]; react: unknown[] };
 		};
 	}
 }

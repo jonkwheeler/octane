@@ -375,6 +375,50 @@ describe('touch Select in Chromium', () => {
 	}, 30_000);
 });
 
+describe('multi-value keyboard navigation in Chromium', () => {
+	it('matches React value focus and repeated Backspace removal', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectMulti));
+			const snapshot = (rootId: string) => page.evaluate((id) => {
+				const root = document.getElementById(id)!;
+				return {
+					text: root.textContent,
+					value: [...root.querySelectorAll<HTMLInputElement>('input[name="multi-choice"]')]
+						.map((input) => input.value),
+					classes: [...root.querySelectorAll('[class]')].map((element) =>
+						(element.getAttribute('class') ?? '').replace(/css-[A-Za-z0-9_-]+/g, 'css-HASH')),
+				};
+			}, rootId);
+
+			const octaneInput = page.locator('#octane-multi-root [role="combobox"]');
+			await octaneInput.focus();
+			await octaneInput.press('ArrowLeft');
+			const octaneFocused = await snapshot('octane-multi-root');
+			await octaneInput.press('Backspace');
+			await octaneInput.press('Backspace');
+			const octaneRemoved = await snapshot('octane-multi-root');
+
+			const reactInput = page.locator('#react-multi-root [role="combobox"]');
+			await reactInput.focus();
+			await reactInput.press('ArrowLeft');
+			const reactFocused = await snapshot('react-multi-root');
+			await reactInput.press('Backspace');
+			await reactInput.press('Backspace');
+			const reactRemoved = await snapshot('react-multi-root');
+
+			expect(octaneFocused).toEqual(reactFocused);
+			expect(octaneRemoved).toEqual(reactRemoved);
+			expect(octaneRemoved.value).toEqual(['']);
+			const logs = await page.evaluate(() => window.__reactSelectMulti.logs());
+			expect(logs.octane).toEqual(logs.react);
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+});
+
 describe('menu placement in Chromium', () => {
 	it('matches React auto-flip placement and constrained height near the viewport edge', async () => {
 		const page = await browser.newPage({ viewport: { width: 1000, height: 720 } });
