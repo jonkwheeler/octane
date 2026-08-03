@@ -104,6 +104,11 @@ describe('buildPackageCommonjs', () => {
 				{ 'src/index.ts': 'export const value = await Promise.resolve(1);' },
 				/top-level await|CommonJS/i,
 			],
+			[
+				'import.meta',
+				{ 'src/index.ts': 'export const url = import.meta.url;' },
+				/import\.meta|CommonJS/i,
+			],
 		];
 
 		for (const [name, files, expected] of cases) {
@@ -127,6 +132,10 @@ describe('buildPackageCommonjs', () => {
 			'src/index.js': 'export const value = 2;',
 		});
 
+		await assert.rejects(
+			buildPackageCommonjs({ packageDir, entries: [], outdir: 'dist/cjs' }),
+			/requires packageDir, entries, and outdir/,
+		);
 		await assert.rejects(
 			buildPackageCommonjs({ packageDir, entries: ['../outside.ts'], outdir: 'dist/cjs' }),
 			/package directory/,
