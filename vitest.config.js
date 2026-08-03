@@ -3171,6 +3171,46 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-dropzone',
+					include: [
+						'packages/react-dropzone/tests/pristine/upstream-runtime.test.ts',
+						'packages/react-dropzone/tests/probes/architecture.test.ts',
+						'packages/react-dropzone/tests/probes/browser/browser.test.ts',
+						'packages/react-dropzone/tests/probes/hydration.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+					fileParallelism: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-dropzone$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-dropzone/src/index.tsrx'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-dropzone-ssr',
+					include: ['packages/react-dropzone/tests/probes/server.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'website-mcp-unit',
 					include: ['website-mcp/tests/**/*.test.ts'],
 					exclude: ['website-mcp/tests/built-handler.e2e.test.ts'],
