@@ -12,6 +12,9 @@ export function BrowserSelectFixture(props: {
 	onInputChange: (value: string, actionMeta: InputActionMeta) => string;
 	onMenuClose: () => void;
 	onMenuOpen: () => void;
+	menuIsOpen?: boolean;
+	menuPlacement?: 'auto' | 'bottom' | 'top';
+	menuShouldScrollIntoView?: boolean;
 }) @{
 	<Select
 		{...props}

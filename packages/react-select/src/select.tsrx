@@ -1,4 +1,4 @@
-import { useImperativeHandle, useMemo, useRef, useState } from 'octane';
+import { useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'octane';
 import type { OctaneNode } from 'octane';
 
 import {
@@ -15,6 +15,7 @@ import {
 } from './components.tsrx';
 import { createFilter, type FilterOptionOption } from './filters';
 import { defaultStyles } from './default-styles';
+import { getMenuPlacement } from './menu-placement';
 import { useStyleResolver } from './style-context.tsrx';
 import type { ClassNamesConfig, StyleKey, StylesConfig } from './styles';
 import { defaultTheme, type ThemeConfig } from './theme';
@@ -234,6 +235,7 @@ type RequiredSelectProps<Option, IsMulti extends boolean, Group extends GroupBas
 		onMenuOpen: () => void;
 		openMenuOnClick: boolean;
 		options: OptionsOrGroups<Option, Group>;
+		pageSize: number;
 		placeholder: OctaneNode;
 		styles: StylesConfig<Option, IsMulti, Group>;
 		tabIndex: number;
@@ -337,7 +339,38 @@ export function Select<
 	const [focusedValue, setFocusedValue] = useState<Option | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const controlRef = useRef<HTMLDivElement | null>(null);
+	const menuRef = useRef<HTMLDivElement | null>(null);
+	const [menuPlacement, setMenuPlacement] = useState<'bottom' | 'top'>(
+		props.menuPlacement === 'top' ? 'top' : 'bottom',
+	);
+	const [menuMaxHeight, setMenuMaxHeight] = useState(props.maxMenuHeight);
 	const selectValue = cleanValue(props.value ?? null);
+	const theme: Theme = useMemo(() => {
+		if (!props.theme) return defaultTheme;
+		if (typeof props.theme === 'function') return props.theme(defaultTheme);
+		return { ...defaultTheme, ...props.theme };
+	}, [props.theme]);
+	useLayoutEffect(() => {
+		if (!props.menuIsOpen || !menuRef.current) return;
+		const next = getMenuPlacement({
+			maxHeight: props.maxMenuHeight,
+			menuEl: menuRef.current,
+			minHeight: props.minMenuHeight,
+			placement: props.menuPlacement,
+			shouldScroll: props.menuShouldScrollIntoView && props.menuPosition !== 'fixed',
+			isFixedPosition: props.menuPosition === 'fixed',
+			controlHeight: theme.spacing.controlHeight,
+		});
+		setMenuPlacement(next.placement);
+		setMenuMaxHeight(next.maxHeight);
+	}, [
+		props.maxMenuHeight,
+		props.menuIsOpen,
+		props.menuPlacement,
+		props.menuPosition,
+		props.menuShouldScrollIntoView,
+		props.minMenuHeight,
+	]);
 	useImperativeHandle(
 		props.ref,
 		() => ({
@@ -351,11 +384,6 @@ export function Select<
 	const focusableOptions = categorized.flatMap((item) =>
 		item.type === 'group' ? item.options.map((option) => option.data) : [item.data],
 	);
-	const theme: Theme = useMemo(() => {
-		if (!props.theme) return defaultTheme;
-		if (typeof props.theme === 'function') return props.theme(defaultTheme);
-		return { ...defaultTheme, ...props.theme };
-	}, [props.theme]);
 	const Components = defaultComponents({ components: props.components });
 	const elementId = (part: string) => `${instancePrefix}-${part}`;
 	const getStyles = (name: string, componentProps: unknown) => {
@@ -439,7 +467,9 @@ export function Select<
 		theme,
 	};
 
-	const focusOption = (direction: 'first' | 'last' | 'next' | 'previous') => {
+	const focusOption = (
+		direction: 'first' | 'last' | 'next' | 'previous' | 'pageup' | 'pagedown',
+	) => {
 		if (!focusableOptions.length) return;
 		const current = focusedOption ? focusableOptions.indexOf(focusedOption) : -1;
 		const index =
@@ -447,24 +477,63 @@ export function Select<
 				? 0
 				: direction === 'last'
 					? focusableOptions.length - 1
+					: direction === 'pageup'
+						? Math.max(current - props.pageSize, 0)
+						: direction === 'pagedown'
+							? Math.min(current + props.pageSize, focusableOptions.length - 1)
 					: direction === 'next'
-						? Math.min(current + 1, focusableOptions.length - 1)
-						: Math.max(current < 0 ? focusableOptions.length - 1 : current - 1, 0);
+						? (current + 1) % focusableOptions.length
+						: current > 0 ? current - 1 : focusableOptions.length - 1;
 		setFocusedValue(null);
 		setFocusedOption(focusableOptions[index]);
+	};
+
+	const focusValue = (direction: 'previous' | 'next') => {
+		if (!props.isMulti || !selectValue.length) return;
+		const current = focusedValue ? selectValue.indexOf(focusedValue) : -1;
+		const next = direction === 'previous'
+			? current === 0 ? 0 : current === -1 ? selectValue.length - 1 : current - 1
+			: current > -1 && current < selectValue.length - 1 ? current + 1 : -1;
+		setFocusedOption(null);
+		setFocusedValue(next === -1 ? null : selectValue[next]);
+		setInputIsHidden(next !== -1);
+	};
+
+	const openMenu = (direction: 'first' | 'last') => {
+		setFocusedValue(null);
+		setFocusedOption(
+			focusableOptions[direction === 'first' ? 0 : focusableOptions.length - 1] ?? null,
+		);
+		props.onMenuOpen();
 	};
 
 	const onKeyDown = (event: KeyboardEvent) => {
 		props.onKeyDown?.(event);
 		if (event.defaultPrevented || props.isDisabled) return;
 		switch (event.key) {
+			case 'ArrowLeft':
+				if (!props.isMulti || props.inputValue) return;
+				focusValue('previous');
+				break;
+			case 'ArrowRight':
+				if (!props.isMulti || props.inputValue) return;
+				focusValue('next');
+				break;
 			case 'ArrowDown':
 				if (props.menuIsOpen) focusOption('next');
-				else props.onMenuOpen();
+				else openMenu('first');
 				break;
 			case 'ArrowUp':
 				if (props.menuIsOpen) focusOption('previous');
-				else props.onMenuOpen();
+				else openMenu('last');
+				break;
+			case 'PageUp':
+				if (!props.menuIsOpen) return;
+				focusOption('pageup');
+				break;
+			case 'PageDown':
+				if (!props.menuIsOpen) return;
+				focusOption('pagedown');
 				break;
 			case 'Home':
 				if (props.menuIsOpen) focusOption('first');
@@ -489,11 +558,23 @@ export function Select<
 				if (focusedValue) removeValue(focusedValue);
 				else if (props.backspaceRemovesValue && selectValue.length) {
 					if (props.isMulti) removeValue(selectValue[selectValue.length - 1]);
-					else clearValue();
+					else if (props.isClearable) clearValue();
 				}
 				break;
 			case 'Tab':
-				if (props.tabSelectsValue && props.menuIsOpen && focusedOption) selectOption(focusedOption);
+				if (
+					!event.shiftKey &&
+					props.tabSelectsValue &&
+					props.menuIsOpen &&
+					focusedOption &&
+					!(props.openMenuOnFocus && selectValue.includes(focusedOption))
+				) selectOption(focusedOption);
+				else return;
+				break;
+			case ' ':
+				if (props.inputValue) return;
+				if (!props.menuIsOpen) openMenu('first');
+				else if (focusedOption) selectOption(focusedOption);
 				else return;
 				break;
 			default:
@@ -595,7 +676,7 @@ export function Select<
 		return <Components.Option
 			{...commonProps}
 			data={option.data}
-			innerRef={null}
+			innerRef={menuRef}
 			innerProps={{
 				id: elementId(`option-${id}`),
 				onClick: option.isDisabled ? undefined : () => selectOption(option.data),
@@ -645,9 +726,9 @@ export function Select<
 				onMouseMove: (event: MouseEvent) => event.stopPropagation(),
 			}}
 			isLoading={props.isLoading}
-			placement={props.menuPlacement === 'top' ? 'top' : 'bottom'}
+			placement={menuPlacement}
 			minMenuHeight={props.minMenuHeight}
-			maxMenuHeight={props.maxMenuHeight}
+			maxMenuHeight={menuMaxHeight}
 			menuPlacement={props.menuPlacement}
 			menuPosition={props.menuPosition}
 			menuShouldScrollIntoView={props.menuShouldScrollIntoView}
@@ -660,7 +741,7 @@ export function Select<
 					'aria-multiselectable': Boolean(props.isMulti),
 					id: elementId('listbox'),
 				}}
-				maxHeight={props.maxMenuHeight}
+				maxHeight={menuMaxHeight}
 				focusedOption={focusedOption}
 			>{children}</Components.MenuList>
 		</Components.Menu>;
@@ -670,7 +751,7 @@ export function Select<
 				appendTo={props.menuPortalTarget ?? undefined}
 				controlElement={controlRef.current}
 				innerProps={{}}
-				menuPlacement={props.menuPlacement}
+				menuPlacement={menuPlacement}
 				menuPosition={props.menuPosition}
 			>{menuElement}</Components.MenuPortal>
 			: menuElement;

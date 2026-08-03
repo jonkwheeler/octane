@@ -216,10 +216,51 @@ window.__reactSelectFull = {
 	},
 };
 
+const octanePlacementElement = document.getElementById('octane-placement-root');
+const reactPlacementElement = document.getElementById('react-placement-root');
+if (!octanePlacementElement || !reactPlacementElement) throw new Error('missing placement roots');
+const placementProps = {
+	...browserSelectProps('octane'),
+	menuIsOpen: true,
+	menuPlacement: 'auto' as const,
+	menuShouldScrollIntoView: false,
+};
+const octanePlacementRoot = createRoot(octanePlacementElement);
+const reactPlacementRoot = createReactRoot(reactPlacementElement);
+flushSync(() => {
+	octanePlacementRoot.render(BrowserSelectFixture, placementProps as never);
+});
+flushReact(() => {
+	reactPlacementRoot.render(
+		React.createElement(ReactSelect<BrowserSelectOption>, {
+			...placementProps,
+			...browserSelectProps('react'),
+		}),
+	);
+});
+
+window.__reactSelectPlacement = {
+	snapshot(rootId: string) {
+		const listbox = document.querySelector(`#${rootId} [role="listbox"]`);
+		const menu = listbox?.parentElement;
+		if (!listbox || !menu) return null;
+		const menuStyle = getComputedStyle(menu);
+		const listStyle = getComputedStyle(listbox);
+		return {
+			bottom: menuStyle.bottom,
+			maxHeight: listStyle.maxHeight,
+			top: menuStyle.top,
+		};
+	},
+};
+
 declare global {
 	interface Window {
 		__reactSelectFull: {
 			logs(): { octane: Array<Record<string, unknown>>; react: Array<Record<string, unknown>> };
+		};
+		__reactSelectPlacement: {
+			snapshot(rootId: string): { bottom: string; maxHeight: string; top: string } | null;
 		};
 	}
 }

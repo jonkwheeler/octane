@@ -259,10 +259,15 @@ describe('full Select in Chromium', () => {
 			await octaneInput.focus();
 			await octaneInput.press('ArrowDown');
 			const octaneOpened = await snapshot('octane-select-root');
+			await octaneInput.press('PageDown');
+			const octanePageDown = await snapshot('octane-select-root');
 			await reactInput.focus();
 			await reactInput.press('ArrowDown');
 			const reactOpened = await snapshot('react-select-root');
+			await reactInput.press('PageDown');
+			const reactPageDown = await snapshot('react-select-root');
 			expect(octaneOpened).toEqual(reactOpened);
+			expect(octanePageDown).toEqual(reactPageDown);
 			expect(await page.locator('#octane-select-root [role="option"]').allTextContents()).toEqual([
 				// The Octane menu closed when document focus moved to React; the captured
 				// structure above is the authoritative open-state comparison.
@@ -295,6 +300,27 @@ describe('full Select in Chromium', () => {
 					return item.type === 'change' || action === 'input-change';
 				});
 			expect(userActions(logs.octane)).toEqual(userActions(logs.react));
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+});
+
+describe('menu placement in Chromium', () => {
+	it('matches React auto-flip placement and constrained height near the viewport edge', async () => {
+		const page = await browser.newPage({ viewport: { width: 1000, height: 720 } });
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectPlacement));
+			await page.waitForFunction(() =>
+				Boolean(window.__reactSelectPlacement.snapshot('octane-placement-root')),
+			);
+			const result = await page.evaluate(() => ({
+				octane: window.__reactSelectPlacement.snapshot('octane-placement-root'),
+				react: window.__reactSelectPlacement.snapshot('react-placement-root'),
+			}));
+			expect(result.octane).toEqual(result.react);
+			expect(result.octane?.bottom).toBe('38px');
 		} finally {
 			await page.close();
 		}
