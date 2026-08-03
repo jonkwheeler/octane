@@ -1,0 +1,13 @@
+{
+  "upstream": {
+    "package": "react-syntax-highlighter",
+    "version": "16.1.1"
+  },
+  "surface": "Implementation in progress on an exact React-free port of the root variants and classified published language, style, and build deep imports.",
+  "divergences": [],
+  "ssr": "Planned and required before review.",
+  "verified": "2026-08-03",
+  "docs": [
+    "docs/plans/2026-08-03-002-feat-react-syntax-highlighter-binding-plan.md"
+  ]
+}

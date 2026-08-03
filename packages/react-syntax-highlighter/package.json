@@ -1,0 +1,53 @@
+{
+  "name": "@octanejs/react-syntax-highlighter",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "React Syntax Highlighter for Octane, backed by lowlight and refractor without React.",
+  "author": {
+    "name": "Conor Hastings"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/react-syntax-highlighter"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md",
+    "UPSTREAM.md"
+  ],
+  "scripts": {
+    "generate:upstream-inventory": "node scripts/upstream-inventory.mjs --write",
+    "verify:upstream": "node scripts/upstream-inventory.mjs --check"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "dependencies": {
+    "highlight.js": "^10.4.1",
+    "highlightjs-vue": "^1.0.0",
+    "lowlight": "^1.17.0",
+    "prismjs": "^1.30.0",
+    "refractor": "^5.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "16.3.2",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "@tsrx/react": "catalog:default",
+    "jest": "30.4.2",
+    "jest-environment-jsdom": "30.4.2",
+    "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "vitest": "catalog:default"
+  }
+}
