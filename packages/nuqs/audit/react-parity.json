@@ -61,7 +61,7 @@
         {
           "path": "packages/nuqs/tests/differential/fixture-compiler.mjs",
           "role": "support",
-          "sha256": "8885d9173c9b81ff0037927a4454e65427a1b6ec288ed1e7caf462cefc1821c4"
+          "sha256": "fa7e006bc8324b4d8d8a0cef8d319831a9d1aa273ea99db2c878cbcb4938ba9d"
         },
         {
           "path": "packages/nuqs/tests/differential/compile-runner.mjs",

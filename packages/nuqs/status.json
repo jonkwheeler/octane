@@ -2,22 +2,10 @@
   "upstream": { "package": "nuqs", "version": "2.9.1" },
   "surface": "Full vendored port: the framework-agnostic core (`parsers`/`parseAs*`/`createParser`, `createSerializer`, `createLoader`, `createStandardSchemaV1`, the throttle/debounce update queues, sync emitter and URL encoding) is vendored verbatim from nuqs 2.9.1; the React layer (`useQueryState`, `useQueryStates`, the `useSyncExternalStores` helper and the adapter context) is ported onto octane's hooks — same `useState`/`useEffect`/`useSyncExternalStore` implementation shape as upstream, so re-render and URL-reconciliation behaviour matches nuqs on React. Adapters ported: `@octanejs/nuqs/adapters/react` (`NuqsAdapter`, `enableHistorySync`), `/adapters/custom` (`unstable_createAdapterProvider`), `/adapters/testing` (`NuqsTestingAdapter`, `withNuqsTestingAdapter`). Server surface (`@octanejs/nuqs/server`) exposes `createLoader`/`createSerializer`/parsers/`createStandardSchemaV1`.",
   "divergences": [
-    {
-      "id": "router-adapters-unavailable",
-      "description": "Router-specific React adapters are not shipped; use the standalone or custom adapter."
-    },
-    {
-      "id": "rsc-cache-unavailable",
-      "description": "createSearchParamsCache is unavailable because Octane does not implement React.cache."
-    },
-    {
-      "id": "local-transition-start-type",
-      "description": "TransitionStartFunction is declared locally instead of importing React types."
-    },
-    {
-      "id": "testing-adapter-reset-once",
-      "description": "NuqsTestingAdapter resets the shared update queue once per mount instead of every render."
-    }
+    "Router-specific React adapters are not shipped; use the standalone or custom adapter.",
+    "createSearchParamsCache is unavailable because Octane does not implement React.cache.",
+    "TransitionStartFunction is declared locally instead of importing React types.",
+    "NuqsTestingAdapter resets the shared update queue once per mount instead of every render."
   ],
   "ssr": "The react-free server entry has a dedicated Node lane for parsing and serialising search params. Client hydration remains outside the supported evidence claim.",
   "verified": "2026-08-02"

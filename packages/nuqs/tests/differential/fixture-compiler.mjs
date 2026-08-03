@@ -22,7 +22,10 @@ export function compileFixture(sourcePath, cacheDirectory, dependencies) {
 		sourcefile: sourcePath,
 	});
 	const rewritten = transformed.code
-		.replace(/from\s+["']@octanejs\/nuqs\/adapters\/testing["']/g, 'from "nuqs/adapters/testing"')
+		.replace(
+			/from\s+["']@octanejs\/nuqs\/adapters\/([^"']+)["']/g,
+			(_match, adapter) => `from "nuqs/adapters/${adapter}"`,
+		)
 		.replace(/from\s+["']@octanejs\/nuqs["']/g, 'from "nuqs"')
 		.replace(/from\s+["']octane["']/g, 'from "react"');
 	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
