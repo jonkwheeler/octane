@@ -106,7 +106,7 @@
         {
           "path": "scripts/react-parity/tanstack-router-ssr-query-controls.test.mjs",
           "role": "support",
-          "sha256": "4715147536fdba39c2f9a569a8a7a82e783f31aec11950a9243263cc0a0fd921"
+          "sha256": "1ecafe43b22388449651495a179491c9fd7361babfef803f78dbe93bce2ba07c"
         },
         {
           "path": "vitest.config.js",
