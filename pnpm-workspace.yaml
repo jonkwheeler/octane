@@ -339,6 +339,7 @@ catalogs:
     mitt: ^2.1.0
     recharts: 3.9.2
     'react-hook-form': 7.81.0
+    'react-dropzone': 20.0.0
     zod: ^3.25.76
     'react-redux': 9.3.0
     redux: ^5.0.1

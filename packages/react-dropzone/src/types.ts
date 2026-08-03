@@ -1,8 +1,8 @@
 import type { FileWithPath } from 'file-selector';
-import type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index';
+import type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index.ts';
 
 export type { FileWithPath };
-export type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index';
+export type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index.ts';
 
 export type DropEvent = DragEvent | ClipboardEvent | Event;
 export interface FileRejection {

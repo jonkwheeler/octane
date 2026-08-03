@@ -1,12 +1,20 @@
-import attrAccept from 'attr-accept';
+import * as attrAcceptModule from 'attr-accept';
 
 // attr-accept ships as a CommonJS module (`module.exports = { __esModule: true, default: fn }`).
 // Bundler interop surfaces its default export inconsistently — as the function under Node/Vitest,
 // but as `{ default: fn }` in some browser bundles. Normalize to the function.
-const accepts =
-	typeof attrAccept === 'function'
-		? attrAccept
-		: (attrAccept as unknown as { default: typeof attrAccept }).default;
+type AttrAccept = (
+	file: { name?: string; type?: string },
+	acceptedFiles: string | string[],
+) => boolean;
+const attrAcceptCandidate: unknown = attrAcceptModule;
+const firstDefault = (attrAcceptCandidate as { default?: unknown }).default;
+const accepts: AttrAccept =
+	typeof attrAcceptCandidate === 'function'
+		? (attrAcceptCandidate as AttrAccept)
+		: typeof firstDefault === 'function'
+			? (firstDefault as AttrAccept)
+			: (firstDefault as { default: AttrAccept }).default;
 
 /**
  * A map of accepted MIME types to file extensions, as passed to the `accept` prop.

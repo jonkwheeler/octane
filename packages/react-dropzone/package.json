@@ -1,7 +1,19 @@
 {
   "name": "@octanejs/react-dropzone",
   "version": "0.1.20",
-  "description": "Octane binding for react-dropzone 20.0.0",
+  "description": "The exact react-dropzone 20.0.0 file-acquisition contract, ported to Octane with drag, click, paste, validation, async processing, and programmatic-open support.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/react-dropzone"
+  },
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -26,6 +38,8 @@
     "LICENSE"
   ],
   "scripts": {
+    "test": "pnpm upstream:verify && pnpm test:u2-parity && pnpm test:u3-parity && pnpm test:u4-parity && pnpm test:u5-parity && pnpm test:adoption && pnpm test:packed",
+    "test:adoption": "node --test tests/adoption/*.test.mjs",
     "upstream:verify": "node audit/verify-provenance.mjs",
     "test:packed": "node tests/probes/packed-exports.test.mjs",
     "test:u2-parity": "node audit/verify-u2.mjs",
@@ -51,7 +65,7 @@
     "playwright": "catalog:default",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-dropzone": "20.0.0",
+    "react-dropzone": "catalog:default",
     "vite": "catalog:default"
   }
 }

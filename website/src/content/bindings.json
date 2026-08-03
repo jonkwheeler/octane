@@ -56,9 +56,10 @@
   },
   {
     "title": "Forms and content",
-    "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
+    "description": "Forms, file acquisition, rich-text editing, streaming Markdown, MDX, and translations.",
     "packages": [
       "@octanejs/hook-form",
+      "@octanejs/react-dropzone",
       "@octanejs/tanstack-form",
       "@octanejs/lexical",
       "@octanejs/tiptap",

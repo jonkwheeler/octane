@@ -16,6 +16,7 @@ import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { RxJSDemo } from './demos/RxJS.tsrx';
 import { RainbowKitDemo } from './demos/RainbowKit.tsrx';
+import { ReactDropzoneDemo } from './demos/ReactDropzone.tsrx';
 import { ShadcnBasesDemo } from './demos/ShadcnBases.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
@@ -33,6 +34,7 @@ import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import rxjsSource from './demos/RxJS.tsrx?raw';
 import rainbowKitSource from './demos/RainbowKit.tsrx?raw';
+import reactDropzoneSource from './demos/ReactDropzone.tsrx?raw';
 import shadcnSource from './demos/ShadcnBases.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
@@ -134,6 +136,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'RainbowKit',
 				Component: RainbowKitDemo,
 				source: rainbowKitSource,
+			},
+			{
+				id: 'react-dropzone',
+				title: 'React Dropzone',
+				Component: ReactDropzoneDemo,
+				source: reactDropzoneSource,
 			},
 			{
 				id: 'usehooks-ts',

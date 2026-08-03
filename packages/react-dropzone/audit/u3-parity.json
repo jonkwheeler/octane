@@ -3,9 +3,9 @@
     "upstream": "upstream/canonical/src/index.tsx",
     "upstreamSha256": "4fc4ce4feb05906e4362ef35b927f13c750134b1d1605ec038c0cc7395fc3d41",
     "runtime": "src/index.tsrx",
-    "runtimeSha256": "9c7475553f04ee3400a08aa5808f847b3ad810f641287a94346953ee77754132",
+    "runtimeSha256": "48c643dd953637804b94e32852340350818c2bc3ea978217ed72652c75da08eb",
     "types": "src/types.ts",
-    "typesSha256": "8da5548dd314e84bfb8a7361b9781a6b7df3940a7a3fb8734e7d23863fde586e",
+    "typesSha256": "69703b2a9ea2b4fc208f92792bc793990df3f9cfd297a554efec9699fe6a7465",
     "transforms": [
       "React hooks to Octane hooks",
       "forwardRef to ref-as-prop function component",
@@ -14,6 +14,7 @@
       "root/input refs composed through Octane array refs",
       "hidden-input border declaration ordered last for deterministic SSR hydration",
       "in-flight acquisition aborted during component teardown",
+      "relative authored-source imports use explicit extensions for NodeNext consumers",
       "repository Prettier formatting"
     ]
   },

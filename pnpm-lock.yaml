@@ -651,6 +651,9 @@ catalogs:
     react-dom:
       specifier: ^19.2.7
       version: 19.2.7
+    react-dropzone:
+      specifier: 20.0.0
+      version: 20.0.0
     react-error-boundary:
       specifier: 6.1.2
       version: 6.1.2
@@ -4825,7 +4828,7 @@ importers:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
       react-dropzone:
-        specifier: 20.0.0
+        specifier: catalog:default
         version: 20.0.0(@types/react@19.2.11)(react@19.2.8)
       vite:
         specifier: catalog:default
@@ -6325,6 +6328,9 @@ importers:
       '@octanejs/rainbowkit':
         specifier: workspace:*
         version: link:../../packages/rainbowkit
+      '@octanejs/react-dropzone':
+        specifier: workspace:*
+        version: link:../../packages/react-dropzone
       '@octanejs/react-error-boundary':
         specifier: workspace:*
         version: link:../../packages/react-error-boundary

@@ -20,7 +20,7 @@ import {
 	onDocumentDragOver,
 	pickerOptionsFromAccept,
 	TOO_MANY_FILES_REJECTION,
-} from './utils';
+} from './utils/index.ts';
 import type {
 	DropEvent,
 	DropzoneInputProps,
@@ -32,9 +32,9 @@ import type {
 	FileError,
 	FileRejection,
 	ValidatorResult,
-} from './types';
+} from './types.ts';
 
-export type { Accept, AcceptGroup, DropEvent, DropzoneInputProps, DropzoneOptions, DropzoneProps, DropzoneRef, DropzoneRootProps, DropzoneState, FileError, FileRejection, FileWithPath, ValidatorResult } from './types';
+export type { Accept, AcceptGroup, DropEvent, DropzoneInputProps, DropzoneOptions, DropzoneProps, DropzoneRef, DropzoneRootProps, DropzoneState, FileError, FileRejection, FileWithPath, ValidatorResult } from './types.ts';
 export { ErrorCode };
 
 /**
