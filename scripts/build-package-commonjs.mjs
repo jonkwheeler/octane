@@ -1,43 +1,10 @@
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-
-const SOURCE_EXTENSIONS = ['.ts', '.js', '.mts', '.mjs'];
-const RELATIVE_SPECIFIER =
-	/(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)['"](\.{1,2}\/[^'"]+)['"]/g;
 
 function isWithin(directory, candidate) {
 	const path = relative(directory, candidate);
 	return path === '' || (!path.startsWith(`..${sep}`) && path !== '..' && !isAbsolute(path));
-}
-
-async function exists(path) {
-	try {
-		await readFile(path);
-		return true;
-	} catch (error) {
-		if (error?.code === 'EISDIR') return false;
-		if (error?.code === 'ENOENT') return false;
-		throw error;
-	}
-}
-
-async function resolveRelative(importer, specifier) {
-	const unresolved = resolve(dirname(importer), specifier);
-	const extension = extname(unresolved);
-	const candidates = extension
-		? extension === '.js'
-			? [unresolved, unresolved.slice(0, -3) + '.ts']
-			: [unresolved]
-		: [
-				...SOURCE_EXTENSIONS.map((suffix) => unresolved + suffix),
-				...SOURCE_EXTENSIONS.map((suffix) => join(unresolved, `index${suffix}`)),
-				unresolved + '.json',
-			];
-	for (const candidate of candidates) {
-		if (await exists(candidate)) return candidate;
-	}
-	throw new Error(`Could not resolve ${specifier} from ${importer}`);
 }
 
 function outputRelative(sourceRoot, sourcePath) {
@@ -46,11 +13,29 @@ function outputRelative(sourceRoot, sourcePath) {
 }
 
 async function discoverGraph({ packageDir, entryPaths }) {
+	let metadata;
+	try {
+		const result = await build({
+			absWorkingDir: packageDir,
+			entryPoints: entryPaths.map((path) => relative(packageDir, path)),
+			outdir: '.commonjs-graph-noop',
+			bundle: true,
+			write: false,
+			format: 'cjs',
+			platform: 'node',
+			target: 'node22',
+			packages: 'external',
+			metafile: true,
+			logLevel: 'silent',
+		});
+		metadata = result.metafile;
+	} catch (error) {
+		const details = (error.errors ?? [{ text: String(error) }]).map((item) => item.text).join('; ');
+		throw new Error(`CommonJS graph validation failed: ${details}`);
+	}
 	const modules = new Map();
-	const queue = [...entryPaths];
-	while (queue.length > 0) {
-		const path = queue.shift();
-		if (modules.has(path)) continue;
+	for (const [input, inputMetadata] of Object.entries(metadata.inputs)) {
+		const path = resolve(packageDir, input);
 		if (!isWithin(packageDir, path)) {
 			throw new Error(`CommonJS source escapes the package directory: ${path}`);
 		}
@@ -59,34 +44,18 @@ async function discoverGraph({ packageDir, entryPaths }) {
 				`CommonJS publication does not support .tsrx source: ${relative(packageDir, path)}`,
 			);
 		}
-		const source = await readFile(path, 'utf8').catch((error) => {
-			throw new Error(
-				`Missing CommonJS source entry ${relative(packageDir, path)}: ${error.message}`,
-			);
-		});
-		if (/\bawait\b/.test(source) && /(^|[;{}]\s*)await\b/m.test(source)) {
-			throw new Error(
-				`CommonJS publication does not support top-level await: ${relative(packageDir, path)}`,
-			);
-		}
 		const relativeImports = new Map();
-		for (const match of source.matchAll(RELATIVE_SPECIFIER)) {
-			const unresolved = resolve(dirname(path), match[1]);
-			if (!isWithin(packageDir, unresolved)) {
-				throw new Error(
-					`Relative import escapes the package directory: ${match[1]} from ${relative(packageDir, path)}`,
-				);
-			}
-			const dependency = await resolveRelative(path, match[1]);
+		for (const dependencyMetadata of inputMetadata.imports) {
+			if (dependencyMetadata.external || !dependencyMetadata.original?.startsWith('.')) continue;
+			const dependency = resolve(packageDir, dependencyMetadata.path);
 			if (!isWithin(packageDir, dependency)) {
 				throw new Error(
-					`Relative import escapes the package directory: ${match[1]} from ${relative(packageDir, path)}`,
+					`Relative import escapes the package directory: ${dependencyMetadata.original} from ${relative(packageDir, path)}`,
 				);
 			}
-			relativeImports.set(match[1], dependency);
-			queue.push(dependency);
+			relativeImports.set(dependencyMetadata.original, dependency);
 		}
-		modules.set(path, { source, relativeImports });
+		modules.set(path, { relativeImports });
 	}
 	return modules;
 }
@@ -151,9 +120,11 @@ export async function buildPackageCommonjs({
 
 	for (const [sourcePath, module] of modules) {
 		if (extname(sourcePath) === '.json') {
-			const destination = join(absoluteOutdir, relative(absoluteSourceRoot, sourcePath));
-			await mkdir(dirname(destination), { recursive: true });
-			await cp(sourcePath, destination);
+			if (isWithin(absoluteSourceRoot, sourcePath)) {
+				const destination = join(absoluteOutdir, relative(absoluteSourceRoot, sourcePath));
+				await mkdir(dirname(destination), { recursive: true });
+				await cp(sourcePath, destination);
+			}
 			continue;
 		}
 		const outputPath = join(absoluteOutdir, outputRelative(absoluteSourceRoot, sourcePath));
@@ -161,7 +132,9 @@ export async function buildPackageCommonjs({
 		for (const [specifier, dependency] of module.relativeImports) {
 			const target =
 				extname(dependency) === '.json'
-					? join(absoluteOutdir, relative(absoluteSourceRoot, dependency))
+					? isWithin(absoluteSourceRoot, dependency)
+						? join(absoluteOutdir, relative(absoluteSourceRoot, dependency))
+						: dependency
 					: join(absoluteOutdir, outputRelative(absoluteSourceRoot, dependency));
 			let rewritten = relative(dirname(outputPath), target).split(sep).join('/');
 			if (!rewritten.startsWith('.')) rewritten = `./${rewritten}`;

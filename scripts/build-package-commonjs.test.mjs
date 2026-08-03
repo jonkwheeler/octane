@@ -137,7 +137,7 @@ describe('buildPackageCommonjs', () => {
 				entries: ['src/index.ts', 'src/index.js'],
 				outdir: 'dist/cjs',
 			}),
-			/collide/i,
+			/collide|same path/i,
 		);
 	});
 });
