@@ -3173,6 +3173,8 @@ export default defineConfig({
 				test: {
 					name: 'react-dropzone',
 					include: [
+						'packages/react-dropzone/tests/adapted/**/*.spec.ts',
+						'packages/react-dropzone/tests/differential/**/*.test.ts',
 						'packages/react-dropzone/tests/pristine/upstream-runtime.test.ts',
 						'packages/react-dropzone/tests/probes/architecture.test.ts',
 						'packages/react-dropzone/tests/probes/browser/browser.test.ts',

@@ -1,6 +1,7 @@
 import { fromEvent } from 'file-selector';
 import type { FileWithPath } from 'file-selector';
 import { useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'octane';
+import { ErrorCode } from './utils/index';
 import type {
 	DropEvent,
 	DropzoneInputProps,
@@ -13,12 +14,7 @@ import type {
 
 export type { Accept, AcceptGroup, DropEvent, DropzoneInputProps, DropzoneOptions, DropzoneProps, DropzoneRef, DropzoneRootProps, DropzoneState, FileError, FileRejection, FileWithPath, ValidatorResult } from './types';
 
-export const ErrorCode = {
-	FileInvalidType: 'file-invalid-type',
-	FileTooLarge: 'file-too-large',
-	FileTooSmall: 'file-too-small',
-	TooManyFiles: 'too-many-files',
-} as const;
+export { ErrorCode };
 
 const initialState = {
 	isFocused: false,

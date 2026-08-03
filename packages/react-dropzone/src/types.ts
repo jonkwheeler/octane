@@ -1,16 +1,8 @@
 import type { FileWithPath } from 'file-selector';
+import type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index';
 
 export type { FileWithPath };
-export interface FileError {
-	code: string;
-	message: string;
-}
-export type ValidatorResult = FileError | readonly FileError[] | null;
-export type Accept = Record<string, readonly string[]>;
-export interface AcceptGroup {
-	description: string;
-	accept: Accept;
-}
+export type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index';
 export type DropEvent = DragEvent | ClipboardEvent | Event;
 export interface FileRejection {
 	file: FileWithPath;
@@ -31,6 +23,9 @@ export interface DropzoneOptions {
 	multiple?: boolean;
 	noClick?: boolean;
 	preventDropOnDocument?: boolean;
+	onDragEnter?: (event: DragEvent) => void;
+	onDragOver?: (event: DragEvent) => void;
+	onDragLeave?: (event: DragEvent) => void;
 	getFilesFromEvent?: (
 		event: DropEvent | FileSystemFileHandle[],
 	) => Promise<Array<File | DataTransferItem>>;

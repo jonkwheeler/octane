@@ -28,7 +28,8 @@
   "scripts": {
     "upstream:verify": "node audit/verify-provenance.mjs",
     "test:packed": "node tests/probes/packed-exports.test.mjs",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+    "test:u2-parity": "node audit/verify-u2.mjs",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
     "attr-accept": "^2.2.5",
