@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 
@@ -30,7 +31,7 @@ test('rejects an unclassified port-authored test', async (t) => {
 });
 
 test('verifies an arbitrary binding classification ledger', () => {
-	const root = new URL('../..', import.meta.url).pathname;
+	const root = fileURLToPath(new URL('../..', import.meta.url));
 	assert.deepEqual(verifyPortTestClassifications(root, 'floating-ui'), { tests: 5 });
 });
 

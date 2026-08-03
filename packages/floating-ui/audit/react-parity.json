@@ -99,6 +99,11 @@
           "path": "packages/floating-ui/tests/browser/harness/main.tsrx",
           "role": "support",
           "sha256": "ba8806b309b00a431f17eb43a8161f85eb30ce81bd0a921332f64305b179e5ec"
+        },
+        {
+          "path": "packages/floating-ui/tests/browser/harness/index.html",
+          "role": "support",
+          "sha256": "94a50be6269584ed1044e0da85d6c5bccdc329bf5e946272b9890ae0bd89591b"
         }
       ]
     },
