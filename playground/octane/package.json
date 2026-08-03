@@ -27,6 +27,7 @@
     "@octanejs/rxjs": "workspace:*",
     "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",
+    "@octanejs/swr": "workspace:*",
     "@octanejs/tanstack-query": "workspace:*",
     "@octanejs/wagmi": "workspace:*",
     "@wagmi/connectors": "catalog:default",

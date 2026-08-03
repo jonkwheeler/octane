@@ -16,6 +16,9 @@ const file = (path, role = 'support', cases) => ({
 	...(cases ? { cases } : {}),
 });
 const typeCase = (id, fullName) => [{ id, testName: fullName, fullName }];
+const adaptedRuntime = JSON.parse(
+	readFileSync(resolve(root, 'packages/swr/audit/adapted-runtime.json'), 'utf8'),
+);
 const typeLane = ({ id, type, project, compiler, caseId, fullName }) => ({
 	id,
 	type,
@@ -53,8 +56,9 @@ const manifest = {
 		tests: { roots: ['packages/swr/tests'], include: ['\\.test\\.ts$'], exclude: [] },
 	},
 	adaptedRuntimeSummary: {
-		inventoryEntries: 34,
-		uniqueIdentities: 34,
+		inventoryEntries: adaptedRuntime.tests.length,
+		uniqueIdentities: new Set(adaptedRuntime.tests.map((test) => `${test.file}\0${test.fullName}`))
+			.size,
 		duplicateEntriesWithinLanes: 0,
 		identitiesSharedAcrossLanes: 0,
 	},

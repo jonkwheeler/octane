@@ -150,4 +150,4 @@ const useSWRMutation = withMiddleware(useSWR, mutation) as unknown as SWRMutatio
 
 export default useSWRMutation;
 
-export { SWRMutationConfiguration, SWRMutationResponse, SWRMutationHook, MutationFetcher, TriggerWithArgs, TriggerWithoutArgs, TriggerWithOptionsArgs };
+export type { SWRMutationConfiguration, SWRMutationResponse, SWRMutationHook, MutationFetcher, TriggerWithArgs, TriggerWithoutArgs, TriggerWithOptionsArgs };

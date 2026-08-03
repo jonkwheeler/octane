@@ -316,4 +316,4 @@ const useSWRInfinite = withMiddleware(useSWR, infinite) as SWRInfiniteHook;
 
 export default useSWRInfinite;
 
-export { SWRInfiniteConfiguration, SWRInfiniteResponse, SWRInfiniteHook, SWRInfiniteKeyLoader, SWRInfiniteFetcher, SWRInfiniteCompareFn, SWRInfiniteKeyedMutator, SWRInfiniteMutatorOptions };
+export type { SWRInfiniteConfiguration, SWRInfiniteResponse, SWRInfiniteHook, SWRInfiniteKeyLoader, SWRInfiniteFetcher, SWRInfiniteCompareFn, SWRInfiniteKeyedMutator, SWRInfiniteMutatorOptions };

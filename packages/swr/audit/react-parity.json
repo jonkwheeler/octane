@@ -36,8 +36,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 34,
-    "uniqueIdentities": 34,
+    "inventoryEntries": 35,
+    "uniqueIdentities": 35,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "71b262de1c39ed7c9a467d3a36731953fe3022b3c226fe10ba17bd6dfa875e28"
+      "lockfileSha256": "f7dee4c5da2c7659b6e6b2b708d7a246fe88d41c61f9012c5bf086cce72ffb47"
     }
   },
   "lanes": [
@@ -300,7 +300,7 @@
         {
           "path": "packages/swr/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "cbb4533f081ef24e74ffefdc28d7227b53a60010b7342992401f9137d1770eac"
+          "sha256": "7fbe440907fdbb0dc8912d960c2866b7c40909cad2743092f4782e261f6a38a4"
         },
         {
           "path": "scripts/react-parity/swr-runtime-inventory.mjs",

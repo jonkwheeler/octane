@@ -1,8 +1,8 @@
 # Frozen SWR adoption corpus
 
-U1 freezes `consumer.tsrx` as the ordinary migration target. It is deliberately
-not executed against the architecture sentinels. The parity units must make this
-same source executable without changing its SWR concepts.
+U1 freezes `consumer.tsrx` as the ordinary migration target. U6 executes that
+same consumer after changing only package names and normal React-to-Octane
+component syntax.
 
 | Existing import | Octane binding import |
 | --- | --- |
@@ -12,8 +12,10 @@ same source executable without changing its SWR concepts.
 | `swr/subscription` | `@octanejs/swr/subscription` |
 | `swr/mutation` | `@octanejs/swr/mutation` |
 
-The expected migration is the package-name replacement above. Keys, fetchers,
-configuration, returned state, cache mutation, preload, pagination, mutation,
-and subscription call shapes remain parity requirements. Framework rendering
-syntax follows Octane's normal TSX transform; no SWR-specific adapter component
-or application rewrite is allowed.
+Keys, fetchers, configuration, returned state, cache mutation, preload,
+pagination, remote mutation, and subscription call shapes remain unchanged.
+No SWR-specific adapter component or application rewrite is required.
+
+React-only devtools identity is the integration exception. Use tooling aware of
+`window.__SWR_DEVTOOLS_OCTANE__`; the binding does not impersonate React through
+`window.__SWR_DEVTOOLS_REACT__`.

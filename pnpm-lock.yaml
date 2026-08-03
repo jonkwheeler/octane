@@ -6367,6 +6367,9 @@ importers:
       '@octanejs/sonner':
         specifier: workspace:*
         version: link:../../packages/sonner
+      '@octanejs/swr':
+        specifier: workspace:*
+        version: link:../../packages/swr
       '@octanejs/tanstack-query':
         specifier: workspace:*
         version: link:../../packages/tanstack-query

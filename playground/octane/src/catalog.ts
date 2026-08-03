@@ -18,6 +18,7 @@ import { RxJSDemo } from './demos/RxJS.tsrx';
 import { RainbowKitDemo } from './demos/RainbowKit.tsrx';
 import { ShadcnBasesDemo } from './demos/ShadcnBases.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
+import { SWRDemo } from './demos/SWR.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
 import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
 
@@ -35,6 +36,7 @@ import rxjsSource from './demos/RxJS.tsrx?raw';
 import rainbowKitSource from './demos/RainbowKit.tsrx?raw';
 import shadcnSource from './demos/ShadcnBases.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
+import swrSource from './demos/SWR.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
 import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
 
@@ -122,6 +124,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'RxJS',
 				Component: RxJSDemo,
 				source: rxjsSource,
+			},
+			{
+				id: 'swr',
+				title: 'SWR',
+				Component: SWRDemo,
+				source: swrSource,
 			},
 			{
 				id: 'wagmi',

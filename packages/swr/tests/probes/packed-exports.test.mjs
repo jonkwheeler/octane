@@ -80,7 +80,7 @@ try {
 	assert.ok(cjs.r.endsWith('/src/index/index.cts'));
 	assert.ok(cjs.i.endsWith('/src/infinite/index.cts'));
 	assert.equal(cjs.name, '@octanejs/swr');
-	assert.equal(cjs.version, '0.0.0');
+	assert.equal(cjs.version, '0.0.1');
 
 	const server = JSON.parse(
 		runNode([

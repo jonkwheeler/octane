@@ -5,6 +5,7 @@
     "packages/swr/tests"
   ],
   "files": [
+    "packages/swr/tests/adoption/adoption.test.ts",
     "packages/swr/tests/differential/cache.test.ts",
     "packages/swr/tests/differential/config.test.ts",
     "packages/swr/tests/differential/root.test.ts",
@@ -15,6 +16,11 @@
     "packages/swr/tests/upstream/specialized/specialized.test.ts"
   ],
   "tests": [
+    {
+      "id": "runtime:9f259c5d779865b0",
+      "file": "packages/swr/tests/adoption/adoption.test.ts",
+      "fullName": "SWR migration adoption maps every public import root without an SWR-specific API redesign"
+    },
     {
       "id": "runtime:beecd99aea9724fa",
       "file": "packages/swr/tests/differential/cache.test.ts",

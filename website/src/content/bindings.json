@@ -20,6 +20,7 @@
       "@octanejs/tanstack-ai",
       "@octanejs/apollo-client",
       "@octanejs/dexie",
+      "@octanejs/swr",
       "@octanejs/tanstack-query",
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",

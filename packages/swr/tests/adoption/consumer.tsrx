@@ -7,7 +7,7 @@ import useSWRSubscription from '@octanejs/swr/subscription';
 
 const fetchJSON = (url: string) => fetch(url).then((response) => response.json());
 
-export function AdoptionConsumer() {
+export function AdoptionConsumer() @{
 	const user = useSWR('/api/user', fetchJSON);
 	const immutable = useSWRImmutable('/api/version', fetchJSON);
 	const pages = useSWRInfinite((index) => `/api/items?page=${index}`, fetchJSON);
@@ -21,7 +21,7 @@ export function AdoptionConsumer() {
 	preload('/api/user', fetchJSON);
 	void mutate('/api/user');
 
-	return <SWRConfig value={config}>
+	<SWRConfig value={config}>
 		<output>{JSON.stringify({ user, immutable, pages, update, events })}</output>
-	</SWRConfig>;
+	</SWRConfig>
 }
