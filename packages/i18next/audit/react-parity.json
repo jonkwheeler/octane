@@ -18,12 +18,12 @@
   "adaptedRoots": {
     "source": {
       "roots": ["packages/i18next/src"],
-      "include": ["$a"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
       "roots": ["packages/i18next/tests/differential"],
-      "include": ["$a"],
+      "include": ["parity\\.test\\.ts$"],
       "exclude": []
     }
   },
