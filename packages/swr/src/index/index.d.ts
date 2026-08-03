@@ -3,7 +3,9 @@ import type { FullConfiguration, Key, SWRHook } from '../_internal/index.js';
 
 declare const useSWR: SWRHook;
 export default useSWR;
-export declare const SWRConfig: (props: SWRConfigProps) => unknown;
+export declare const SWRConfig: ((props: SWRConfigProps) => unknown) & {
+	defaultValue: FullConfiguration;
+};
 export declare const unstable_serialize: (key: Key) => string;
 export declare const useSWRConfig: () => FullConfiguration;
 export { mutate, preload } from '../_internal/index.js';

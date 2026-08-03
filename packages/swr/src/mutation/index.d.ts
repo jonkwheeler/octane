@@ -1,4 +1,7 @@
-export { default } from './runtime.js';
+import type { SWRMutationHook } from './types.js';
+
+declare const useSWRMutation: SWRMutationHook;
+export default useSWRMutation;
 export type {
 	SWRMutationConfiguration,
 	SWRMutationResponse,
