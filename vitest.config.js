@@ -2375,6 +2375,14 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/aria/tests/foundation.test.ts',
+						'packages/aria/tests/i18n-server.test.ts',
+						'packages/aria/tests/upstream-crosswalk.test.ts',
+					],
+				},
 				test: {
 					name: 'aria',
 					include: [
@@ -2432,6 +2440,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/aria/tests/ssr/ssr.test.ts'],
+				},
 				test: {
 					name: 'aria-ssr',
 					include: ['packages/aria/tests/ssr/**/*.test.ts'],
