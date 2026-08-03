@@ -49,9 +49,12 @@ export function createProcessor(options: Readonly<Options>) {
 
 export function createFile(options: Readonly<Options>): VFile {
 	const rawChildren = options.children;
-	const children = isChildrenBlock(rawChildren)
-		? (rawChildren as unknown as () => unknown)()
-		: rawChildren || '';
+	if (isChildrenBlock(rawChildren)) {
+		unreachable(
+			'Unexpected compiled children block for `children` prop; use value-position JSX (`return <Markdown>…</Markdown>`) or pass an explicit `children` prop',
+		);
+	}
+	const children = rawChildren || '';
 	const file = new VFile();
 
 	if (typeof children === 'string') file.value = children;

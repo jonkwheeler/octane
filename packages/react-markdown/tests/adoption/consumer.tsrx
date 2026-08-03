@@ -25,8 +25,8 @@ const options: Options = {
 	urlTransform: defaultUrlTransform,
 };
 
-export function SyncConsumer() @{
-	<Markdown {...options}>{'# Hello'}</Markdown>
+export function SyncConsumer() {
+	return <Markdown {...options}>{'# Hello'}</Markdown>;
 }
 
 export function AsyncConsumer() {

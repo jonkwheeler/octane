@@ -585,6 +585,11 @@
       "fullName": "passes exact element index and parent to allowElement"
     },
     {
+      "id": "runtime:65f10e568962516e",
+      "file": "packages/react-markdown/tests/differential/processor.test.ts",
+      "fullName": "rejects a compiled children block without invoking it"
+    },
+    {
       "id": "runtime:214542cbffcea7ff",
       "file": "packages/react-markdown/tests/differential/processor.test.ts",
       "fullName": "unwraps children in place without skipping following siblings"

@@ -36,3 +36,9 @@ react-markdown-specific consumer edit. The executable Octane consumer imports
 the public package entry point and exercises the synchronous, awaited, and hooks
 models with the same plugins, components, options, and exported types. The
 public-app fixture remains byte-exact as the attributable real-world baseline.
+
+Keep `Markdown` in React-style value position, such as
+`return <Markdown>{markdown}</Markdown>`, so static and expression children remain
+inspectable values. Octane template-position children compile to an opaque render
+block and cannot be used as Markdown source; pass `children={markdown}` explicitly
+when value-position JSX is not convenient.

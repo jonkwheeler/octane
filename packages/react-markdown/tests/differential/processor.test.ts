@@ -1,6 +1,20 @@
 import type { Element, Root } from 'hast';
+import { markChildrenBlock } from 'octane';
 import { expect, it } from 'vitest';
-import { processAsync, processSync, transformTree } from '../../src/processor';
+import { createFile, processAsync, processSync, transformTree } from '../../src/processor';
+
+it('rejects a compiled children block without invoking it', () => {
+	let calls = 0;
+	const children = markChildrenBlock(() => {
+		calls += 1;
+		return '# invoked';
+	});
+
+	expect(() => createFile({ children: children as unknown as string })).toThrowError(
+		/value-position JSX.*explicit `children` prop/,
+	);
+	expect(calls).toBe(0);
+});
 
 it('keeps plugin order and merges allowDangerousHtml last', async () => {
 	const calls: string[] = [];

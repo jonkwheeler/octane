@@ -25,8 +25,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 174,
-    "uniqueIdentities": 174,
+    "inventoryEntries": 175,
+    "uniqueIdentities": 175,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -105,12 +105,12 @@
         {
           "path": "packages/react-markdown/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "6abf9a2e1415655c3daf67283c08e9d907a1c4904289b4ef60696c93c0fbc2ac"
+          "sha256": "72d1e216d11b60191566e7ca2283fa7416a372da979dccd724a2d5c8cb5eda5d"
         },
         {
           "path": "packages/react-markdown/audit/adapted-case-crosswalk.json",
           "role": "support",
-          "sha256": "bbf2d359a6ccd722c1a427eb3dbcdbe4a12e8d8529e1a7870f0acb20347f2364"
+          "sha256": "fbc8ca71f482d140c37d2ce88832b64618700eb77324b1b0b32e14a63be76b6b"
         },
         {
           "path": "scripts/react-parity/react-markdown-runtime-inventory.mjs",

@@ -1212,14 +1212,14 @@
       },
       "identityEvidence": {
         "runtimeId": "runtime:df796150e8d55d22",
-        "ownershipSha256": "1e778881f3c9dba53fe61518ec4d4377c9f8d6659059f976c9a0f013cdb25d83"
+        "ownershipSha256": "b24d13b5c885df5a16d7624de46fe029cab27a08dc97e41abda1195f61f6f101"
       },
       "adapted": [
         {
           "id": "runtime:df796150e8d55d22",
           "file": "packages/react-markdown/tests/differential/processor.test.ts",
           "fullName": "matches pinned raw handling and filtering order",
-          "sourceSha256": "9b585c82cf5c1fc87155f053d1cb8ad29d08b97cad398ae3dee7c8dc2539e2b4"
+          "sourceSha256": "01f71562d46047a744b4e3840f295a435ef4fc24950559a84605ecafaf805621"
         }
       ]
     },
@@ -1259,14 +1259,14 @@
       },
       "identityEvidence": {
         "runtimeId": "runtime:3ca4712df44cbe4d",
-        "ownershipSha256": "cbcedc80fae2db87e2f03001979cbcd16e9e6b7812e9c9dbb2d4ef2be4b3d811"
+        "ownershipSha256": "31c0ee5720a87555283c49c337853a20a6d4b68d645f3822a63430195bc5de6e"
       },
       "adapted": [
         {
           "id": "runtime:3ca4712df44cbe4d",
           "file": "packages/react-markdown/tests/differential/processor.test.ts",
           "fullName": "passes exact element index and parent to allowElement",
-          "sourceSha256": "9b585c82cf5c1fc87155f053d1cb8ad29d08b97cad398ae3dee7c8dc2539e2b4"
+          "sourceSha256": "01f71562d46047a744b4e3840f295a435ef4fc24950559a84605ecafaf805621"
         }
       ]
     },
