@@ -1,6 +1,5 @@
 import { execFileSync } from 'node:child_process';
 import {
-	createPackedCommonjsConsumerManifest,
 	cpSync,
 	existsSync,
 	mkdtempSync,
@@ -21,6 +20,7 @@ import {
 	validateWorkspacePackages,
 } from './workspace-packages.mjs';
 import {
+	createPackedCommonjsConsumerManifest,
 	createPackedTsrxConsumerConfig,
 	createPackedTsrxConsumerManifest,
 	createPackedExampleManifest,
