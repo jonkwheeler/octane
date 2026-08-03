@@ -66,6 +66,53 @@ export const PACKED_TSRX_CONSUMER_PACKAGES = [
 	'octane',
 ];
 
+export const PACKED_COMMONJS_CONSUMER_PACKAGES = [
+	'@octanejs/base-ui',
+	'@octanejs/floating-ui',
+	'@octanejs/radix',
+	'octane',
+];
+
+export function createPackedCommonjsConsumerManifest(archiveSpecs) {
+	const dependencies = {};
+	for (const packageName of PACKED_COMMONJS_CONSUMER_PACKAGES) {
+		const archiveSpec = archiveSpecs[packageName];
+		if (typeof archiveSpec !== 'string' || !archiveSpec.startsWith('file:')) {
+			throw new Error(`no packed archive was provided for ${packageName}`);
+		}
+		dependencies[packageName] = archiveSpec;
+	}
+	return {
+		name: 'octane-packed-commonjs-consumer',
+		private: true,
+		engines: { node: '>=22' },
+		dependencies,
+	};
+}
+
+export function renderPackedCommonjsConsumerSource() {
+	return `const assert = require('node:assert/strict');
+const octane = require('octane');
+const server = require('octane/server');
+const floating = require('@octanejs/floating-ui');
+const base = require('@octanejs/base-ui');
+const radix = require('@octanejs/radix');
+
+assert.equal(typeof octane.createElement, 'function');
+assert.equal(typeof server.renderToString, 'function');
+assert.equal(typeof floating.useFloating, 'function');
+assert.equal(typeof base.Button, 'function');
+assert.equal(typeof radix.Accordion, 'object');
+assert.deepEqual(server.renderToString(() => 'CommonJS'), { html: 'CommonJS', css: '' });
+process.stdout.write(JSON.stringify({
+	base: Object.keys(base),
+	floating: Object.keys(floating),
+	octane: Object.keys(octane),
+	radix: Object.keys(radix),
+}));
+`;
+}
+
 export function createPackedTsrxConsumerManifest(archiveSpecs, toolingVersions) {
 	const dependencies = {};
 
