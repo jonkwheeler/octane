@@ -18,6 +18,7 @@ import {
 } from './state-manager-fixture.tsrx';
 import { AsyncFixture, type AsyncOption, type AsyncResult } from './async-fixture.tsrx';
 import { BrowserSelectFixture, type BrowserSelectOption } from './select-fixture.tsrx';
+import { NonceFixture } from '../nonce-fixture.tsrx';
 
 delegateEvents(['click', 'focusin', 'focusout', 'input', 'keydown', 'mousedown', 'mousemove', 'mouseover']);
 
@@ -117,6 +118,47 @@ declare global {
 			moveControl(): Promise<ReturnType<typeof snapshot>>;
 			renderFixed(): Promise<ReturnType<typeof snapshot>>;
 			unmount(): { portalChildren: number; rootChildren: number };
+		};
+	}
+}
+
+const nonceRootElement = document.getElementById('nonce-root');
+if (!nonceRootElement) throw new Error('missing nonce root');
+const nonceRoot = createRoot(nonceRootElement);
+
+function renderNonce(cacheKey: string) {
+	flushSync(() => nonceRoot.render(NonceFixture, { cacheKey, nonce: 'browser-csp' }));
+}
+
+function nonceSnapshot(cacheKey: string) {
+	const styles = [
+		...document.querySelectorAll(
+			`style[data-octane^="${cacheKey}-"], style[data-emotion^="${cacheKey}"]`,
+		),
+	];
+	return {
+		classes: [...nonceRootElement.querySelectorAll('[class]')].flatMap((element) =>
+			[...element.classList].filter((className) => className.startsWith(`${cacheKey}-`)),
+		),
+		nonces: styles.map((style) => style.getAttribute('nonce')),
+		styleCount: styles.length,
+	};
+}
+
+renderNonce('nonce-browser');
+window.__reactSelectNonce = {
+	snapshot: () => nonceSnapshot('nonce-browser'),
+	switchKey() {
+		renderNonce('nonce-next');
+		return nonceSnapshot('nonce-next');
+	},
+};
+
+declare global {
+	interface Window {
+		__reactSelectNonce: {
+			snapshot(): ReturnType<typeof nonceSnapshot>;
+			switchKey(): ReturnType<typeof nonceSnapshot>;
 		};
 	}
 }

@@ -17,10 +17,24 @@ export type {
 } from './types';
 export { createFilter } from './filters';
 export type { FilterOptionOption } from './filters';
+export * from './types';
+export type {
+	AriaGuidance,
+	AriaGuidanceProps,
+	AriaLiveMessages,
+	AriaOnChange,
+	AriaOnChangeProps,
+	AriaOnFilter,
+	AriaOnFilterProps,
+	AriaOnFocus,
+	AriaOnFocusProps,
+	GuidanceContext,
+	OptionContext,
+} from './accessibility-types';
 export { StateManagedSelect as default } from './state-managed-select.tsrx';
+export { NonceProvider } from './style-context.tsrx';
 export { components } from './components.tsrx';
 export { useStateManager } from './use-state-manager.tsrx';
-export type { StateManagerAdditionalProps, StateManagerProps } from './use-state-manager.tsrx';
 export type {
 	ContainerProps,
 	ControlProps,
@@ -47,6 +61,7 @@ export type {
 export type {
 	FormatOptionLabelContext,
 	FormatOptionLabelMeta,
+	SelectInstance,
 	SelectProps as PublicBaseSelectProps,
 } from './select.tsrx';
 export type { Props } from './state-managed-select.tsrx';

@@ -1,6 +1,13 @@
 import { useCallback, useState } from 'octane';
 
-import type { ActionMeta, InputActionMeta, OnChangeValue, PropsValue } from './types';
+import type {
+	ActionMeta,
+	GroupBase,
+	InputActionMeta,
+	OnChangeValue,
+	PropsValue,
+} from './types';
+import type { PublicBaseSelectProps } from './select.tsrx';
 
 export type StateManagedPropKeys =
 	| 'inputValue'
@@ -17,23 +24,20 @@ export interface StateManagerAdditionalProps<Option> {
 	defaultValue?: PropsValue<Option>;
 }
 
-export interface StateManagerProps<Option = unknown, IsMulti extends boolean = boolean>
-	extends StateManagerAdditionalProps<Option> {
-	inputValue?: string;
-	menuIsOpen?: boolean;
-	onChange?: (value: OnChangeValue<Option, IsMulti>, actionMeta: ActionMeta<Option>) => void;
-	onInputChange?: (value: string, actionMeta: InputActionMeta) => string | void;
-	onMenuClose?: () => void;
-	onMenuOpen?: () => void;
-	value?: PropsValue<Option>;
-	[key: string]: unknown;
-}
+export type StateManagerProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> = Omit<PublicBaseSelectProps<Option, IsMulti, Group>, StateManagedPropKeys>
+	& Partial<PublicBaseSelectProps<Option, IsMulti, Group>>
+	& StateManagerAdditionalProps<Option>;
 
 export function useStateManager<
 	Option,
 	IsMulti extends boolean,
-	AdditionalProps extends Record<string, unknown> = Record<string, unknown>,
->(props: StateManagerProps<Option, IsMulti> & AdditionalProps) {
+	Group extends GroupBase<Option> = GroupBase<Option>,
+	AdditionalProps extends object = object,
+>(props: StateManagerProps<Option, IsMulti, Group> & AdditionalProps) {
 	const {
 		defaultInputValue = '',
 		defaultMenuIsOpen = false,

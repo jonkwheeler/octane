@@ -16,6 +16,7 @@ import type {
 	PropsValue,
 } from './types';
 import { cleanValue, valueTernary } from './utils';
+import type { PublicBaseSelectProps } from './select.tsrx';
 
 export interface Accessors<Option> {
 	getOptionValue: GetOptionValue<Option>;
@@ -36,23 +37,11 @@ export interface CreatableAdditionalProps<Option, Group extends GroupBase<Option
 	onCreateOption?: (inputValue: string) => void;
 }
 
-export interface CreatableBaseProps<
+export type CreatableBaseProps<
 	Option,
 	IsMulti extends boolean,
 	Group extends GroupBase<Option>,
-> extends CreatableAdditionalProps<Option, Group> {
-	filterOption?: unknown;
-	getOptionLabel?: GetOptionLabel<Option>;
-	getOptionValue?: GetOptionValue<Option>;
-	inputValue: string;
-	isLoading?: boolean;
-	isMulti?: IsMulti;
-	name?: string;
-	onChange?: (value: OnChangeValue<Option, IsMulti>, actionMeta: ActionMeta<Option>) => void;
-	options?: OptionsOrGroups<Option, Group>;
-	value?: PropsValue<Option>;
-	[key: string]: unknown;
-}
+> = PublicBaseSelectProps<Option, IsMulti, Group> & CreatableAdditionalProps<Option, Group>;
 
 function compareOption<Option>(inputValue: string, option: Option, accessors: Accessors<Option>) {
 	const candidate = String(inputValue).toLowerCase();
@@ -103,7 +92,7 @@ export function useCreatable<
 	const {
 		getOptionValue = baseGetOptionValue,
 		getOptionLabel = baseGetOptionLabel,
-		inputValue,
+		inputValue = '',
 		isLoading,
 		isMulti,
 		value = null,

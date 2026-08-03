@@ -1,10 +1,10 @@
 import { useAsync, type AsyncProps } from '../../../src/async.tsrx';
 
 export type AsyncOption = { label: string; value: string };
-export type AsyncResult = ReturnType<typeof useAsync<AsyncOption, never>>;
+export type AsyncResult = ReturnType<typeof useAsync<AsyncOption, false, never>>;
 
 export function AsyncFixture(props: {
-	asyncProps: AsyncProps<AsyncOption, never>;
+	asyncProps: AsyncProps<AsyncOption, false, never>;
 	bind: (result: AsyncResult) => void;
 }) @{
 	const result = useAsync(props.asyncProps);

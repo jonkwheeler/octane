@@ -10,9 +10,9 @@ function AsyncSelect<
 	Option = unknown,
 	IsMulti extends boolean = false,
 	Group extends GroupBase<Option> = GroupBase<Option>,
->(props: AsyncProps<Option, Group> & SelectProps<Option, IsMulti, Group>) @{
-	const asyncProps = useAsync(props);
-	const selectProps = useStateManager<Option, IsMulti>(asyncProps);
+>(props: AsyncProps<Option, IsMulti, Group> & SelectProps<Option, IsMulti, Group>) @{
+	const asyncProps = useAsync<Option, IsMulti, Group>(props);
+	const selectProps = useStateManager<Option, IsMulti, Group>(asyncProps);
 	<Select {...(selectProps as SelectProps<Option, IsMulti, Group>)} />
 }
 

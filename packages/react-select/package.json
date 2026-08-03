@@ -31,7 +31,7 @@
     "test": "pnpm upstream:verify && pnpm crosswalk:verify && pnpm test:candidate && pnpm test:octane",
     "test:candidate": "node --test audit/candidate/*.test.mjs",
     "test:octane": "vitest run --config audit/candidate/vitest.config.ts",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.local.json && tsc --noEmit -p typetests/tsconfig.upstream.json",
     "upstream:verify": "node scripts/verify-upstream.mjs",
     "crosswalk:verify": "node scripts/verify-crosswalk.mjs"
   },

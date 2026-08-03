@@ -11979,7 +11979,7 @@ export function namespaceHeadElement(
 	return createElement(namespaceHead, config);
 }
 
-export function injectStyle(id: string, css: string): void {
+export function injectStyle(id: string, css: string, nonce?: string): void {
 	if (_injectedStyles.has(id)) return;
 	// SSR de-dup: the server already emitted this scoped stylesheet (the css of
 	// the RenderResult, a `<style data-octane="hash">` — or, for a React-hosted
@@ -11998,6 +11998,7 @@ export function injectStyle(id: string, css: string): void {
 	_injectedStyles.add(id);
 	const el = document.createElement('style');
 	el.setAttribute('data-octane', id);
+	if (nonce !== undefined) el.nonce = nonce;
 	el.textContent = css;
 	document.head.appendChild(el);
 }

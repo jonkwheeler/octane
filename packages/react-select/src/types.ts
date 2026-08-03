@@ -14,19 +14,65 @@ export type OnChangeValue<Option, IsMulti extends boolean> = IsMulti extends tru
 	? MultiValue<Option>
 	: SingleValue<Option>;
 export type SetValueAction = 'select-option' | 'deselect-option';
+export interface ActionMetaBase<Option> {
+	option?: Option;
+	removedValue?: Option;
+	removedValues?: Options<Option>;
+	name?: string;
+}
+export interface SelectOptionActionMeta<Option> extends ActionMetaBase<Option> {
+	action: 'select-option';
+	option: Option | undefined;
+}
+export interface DeselectOptionActionMeta<Option> extends ActionMetaBase<Option> {
+	action: 'deselect-option';
+	option: Option | undefined;
+}
+export interface RemoveValueActionMeta<Option> extends ActionMetaBase<Option> {
+	action: 'remove-value';
+	removedValue: Option;
+}
+export interface PopValueActionMeta<Option> extends ActionMetaBase<Option> {
+	action: 'pop-value';
+	removedValue: Option;
+}
+export interface ClearActionMeta<Option> extends ActionMetaBase<Option> {
+	action: 'clear';
+	removedValues: Options<Option>;
+}
+export interface CreateOptionActionMeta<Option> extends ActionMetaBase<Option> {
+	action: 'create-option';
+	option: Option;
+}
+export interface InitialInputFocusedActionMeta<Option, IsMulti extends boolean>
+	extends ActionMetaBase<Option> {
+	action: 'initial-input-focus';
+	value: OnChangeValue<Option, IsMulti>;
+	options?: Options<Option>;
+}
 export type ActionMeta<Option> =
-	| { action: 'clear'; removedValues: Options<Option>; name?: string }
-	| { action: 'create-option'; name?: string; option: Option }
-	| { action: 'deselect-option'; name?: string; option: Option }
-	| { action: 'pop-value'; name?: string; removedValue: Option }
-	| { action: 'remove-value'; name?: string; removedValue: Option }
-	| { action: 'select-option'; name?: string; option?: Option }
-	| { action: 'set-value'; name?: string };
+	| SelectOptionActionMeta<Option>
+	| DeselectOptionActionMeta<Option>
+	| RemoveValueActionMeta<Option>
+	| PopValueActionMeta<Option>
+	| ClearActionMeta<Option>
+	| CreateOptionActionMeta<Option>;
 export type InputAction = 'set-value' | 'input-change' | 'input-blur' | 'menu-close';
 export interface InputActionMeta {
 	action: InputAction;
 	prevInputValue: string;
 }
+
+export type MenuPlacement = 'auto' | 'bottom' | 'top';
+export type CoercedMenuPlacement = 'bottom' | 'top';
+export type MenuPosition = 'absolute' | 'fixed';
+export type FocusDirection = 'up' | 'down' | 'pageup' | 'pagedown' | 'first' | 'last';
+
+export type ClassNamesState = Record<string, boolean>;
+export type CX = (
+	state: ClassNamesState,
+	...classNames: (string | undefined)[]
+) => string;
 
 export interface Colors {
 	primary: string;

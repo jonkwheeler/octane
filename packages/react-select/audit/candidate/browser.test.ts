@@ -300,3 +300,24 @@ describe('full Select in Chromium', () => {
 		}
 	}, 30_000);
 });
+
+describe('NonceProvider in Chromium', () => {
+	it('applies nonce-bearing isolated client caches and reacts to cache-key changes', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectNonce));
+			const initial = await page.evaluate(() => window.__reactSelectNonce.snapshot());
+			expect(initial.styleCount).toBeGreaterThan(0);
+			expect(initial.classes.length).toBeGreaterThan(0);
+			expect(initial.nonces.every((nonce) => nonce === 'browser-csp')).toBe(true);
+
+			const switched = await page.evaluate(() => window.__reactSelectNonce.switchKey());
+			expect(switched.styleCount).toBe(initial.styleCount);
+			expect(switched.classes.length).toBeGreaterThan(0);
+			expect(switched.nonces.every((nonce) => nonce === 'browser-csp')).toBe(true);
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+});

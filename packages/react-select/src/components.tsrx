@@ -3,8 +3,9 @@ import type { OctaneNode } from 'octane';
 import type { Octane } from 'octane/jsx-runtime';
 import { autoUpdate } from '@floating-ui/dom';
 
-import type { CSSObjectWithLabel, Theme } from './types';
-import { createKeyframes, resolveComponentStyle } from './style-adapter';
+import type { CSSObjectWithLabel, GroupBase, Theme } from './types';
+import { createKeyframes } from './style-adapter';
+import { useStyleResolver } from './style-context.tsrx';
 
 export type Ref<T> = ((value: T | null) => void) | { current: T | null } | null;
 export type ClassNamesState = Record<string, boolean>;
@@ -14,8 +15,13 @@ type InputPropsBase = Omit<Octane.JSX.IntrinsicElements['input'], 'ref'>;
 type SpanProps = Octane.JSX.IntrinsicElements['span'];
 type SvgProps = Octane.JSX.IntrinsicElements['svg'];
 
-export interface CommonComponentProps {
+export interface CommonComponentProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> {
 	[key: string]: unknown;
+	readonly __types?: readonly [Option, IsMulti, Group];
 	className?: string;
 	cx: CX;
 	getClassNames: (name: string, props: unknown) => string | undefined;
@@ -27,11 +33,12 @@ export interface CommonComponentProps {
 	theme: Theme;
 }
 
-function styleProps(
+function useStyleProps(
 	props: CommonComponentProps,
 	name: string,
 	state: ClassNamesState = {},
 ): { className: string } {
+	const resolveStyle = useStyleResolver();
 	const prefixed = props.cx(state, props.getClassNames(name, props), props.className);
 	const css = props.getStyles(name, props);
 	const implicitLabels: Record<string, string> = {
@@ -42,7 +49,7 @@ function styleProps(
 		css.label === undefined && implicitLabels[name] !== undefined
 			? { ...css, label: implicitLabels[name] }
 			: css;
-	return { className: resolveComponentStyle(labeledCSS, prefixed).className };
+	return { className: resolveStyle(labeledCSS, prefixed).className };
 }
 
 const svgCSS: CSSObjectWithLabel = {
@@ -56,8 +63,9 @@ const svgCSS: CSSObjectWithLabel = {
 
 export type CrossIconProps = SvgProps & { size?: number };
 export function CrossIcon(props: CrossIconProps) @{
+	const resolveStyle = useStyleResolver();
 	const { size = 20, className, children: _children, ...rest } = props;
-	const resolved = resolveComponentStyle(svgCSS, className);
+	const resolved = resolveStyle(svgCSS, className);
 	<svg
 		{...rest}
 		height={size}
@@ -73,8 +81,9 @@ export function CrossIcon(props: CrossIconProps) @{
 
 export type DownChevronProps = SvgProps & { size?: number };
 export function DownChevron(props: DownChevronProps) @{
+	const resolveStyle = useStyleResolver();
 	const { size = 20, className, children: _children, ...rest } = props;
-	const resolved = resolveComponentStyle(svgCSS, className);
+	const resolved = resolveStyle(svgCSS, className);
 	<svg
 		{...rest}
 		height={size}
@@ -88,7 +97,11 @@ export function DownChevron(props: DownChevronProps) @{
 	</svg>
 }
 
-export interface ContainerProps extends CommonComponentProps {
+export interface ContainerProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerProps: DivProps;
 	isDisabled: boolean;
@@ -98,7 +111,7 @@ export interface ContainerProps extends CommonComponentProps {
 export function SelectContainer(props: ContainerProps) @{
 	const { children, innerProps, isDisabled, isRtl } = props;
 	<div
-		{...styleProps(props, 'container', {
+		{...useStyleProps(props, 'container', {
 			'--is-disabled': isDisabled,
 			'--is-rtl': isRtl,
 		})}
@@ -106,7 +119,11 @@ export function SelectContainer(props: ContainerProps) @{
 	>{children}</div>
 }
 
-export interface ControlProps extends CommonComponentProps {
+export interface ControlProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerRef: Ref<HTMLDivElement>;
 	innerProps: DivProps;
@@ -119,7 +136,7 @@ export function Control(props: ControlProps) @{
 	const { children, isDisabled, isFocused, innerRef, innerProps, menuIsOpen } = props;
 	<div
 		ref={innerRef}
-		{...styleProps(props, 'control', {
+		{...useStyleProps(props, 'control', {
 			control: true,
 			'control--is-disabled': isDisabled,
 			'control--is-focused': isFocused,
@@ -130,7 +147,11 @@ export function Control(props: ControlProps) @{
 	>{children}</div>
 }
 
-export interface ValueContainerProps extends CommonComponentProps {
+export interface ValueContainerProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerProps?: DivProps;
 	isDisabled: boolean;
@@ -139,7 +160,7 @@ export interface ValueContainerProps extends CommonComponentProps {
 export function ValueContainer(props: ValueContainerProps) @{
 	const { children, innerProps, isMulti, hasValue } = props;
 	<div
-		{...styleProps(props, 'valueContainer', {
+		{...useStyleProps(props, 'valueContainer', {
 			'value-container': true,
 			'value-container--is-multi': isMulti,
 			'value-container--has-value': hasValue,
@@ -148,7 +169,11 @@ export function ValueContainer(props: ValueContainerProps) @{
 	>{children}</div>
 }
 
-export interface IndicatorsContainerProps extends CommonComponentProps {
+export interface IndicatorsContainerProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerProps?: DivProps;
 	isDisabled: boolean;
@@ -156,12 +181,16 @@ export interface IndicatorsContainerProps extends CommonComponentProps {
 
 export function IndicatorsContainer(props: IndicatorsContainerProps) @{
 	<div
-		{...styleProps(props, 'indicatorsContainer', { indicators: true })}
+		{...useStyleProps(props, 'indicatorsContainer', { indicators: true })}
 		{...props.innerProps}
 	>{props.children}</div>
 }
 
-export interface PlaceholderProps extends CommonComponentProps {
+export interface PlaceholderProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerProps?: DivProps;
 	isDisabled: boolean;
@@ -170,12 +199,16 @@ export interface PlaceholderProps extends CommonComponentProps {
 
 export function Placeholder(props: PlaceholderProps) @{
 	<div
-		{...styleProps(props, 'placeholder', { placeholder: true })}
+		{...useStyleProps(props, 'placeholder', { placeholder: true })}
 		{...props.innerProps}
 	>{props.children}</div>
 }
 
-export interface SingleValueProps extends CommonComponentProps {
+export interface SingleValueProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	data: unknown;
 	innerProps?: DivProps;
@@ -184,7 +217,7 @@ export interface SingleValueProps extends CommonComponentProps {
 
 export function SingleValue(props: SingleValueProps) @{
 	<div
-		{...styleProps(props, 'singleValue', {
+		{...useStyleProps(props, 'singleValue', {
 			'single-value': true,
 			'single-value--is-disabled': props.isDisabled,
 		})}
@@ -192,7 +225,11 @@ export function SingleValue(props: SingleValueProps) @{
 	>{props.children}</div>
 }
 
-export interface OptionProps extends CommonComponentProps {
+export interface OptionProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	data: unknown;
 	innerRef: Ref<HTMLDivElement>;
@@ -206,7 +243,7 @@ export interface OptionProps extends CommonComponentProps {
 
 export function Option(props: OptionProps) @{
 	<div
-		{...styleProps(props, 'option', {
+		{...useStyleProps(props, 'option', {
 			option: true,
 			'option--is-disabled': props.isDisabled,
 			'option--is-focused': props.isFocused,
@@ -218,7 +255,11 @@ export function Option(props: OptionProps) @{
 	>{props.children}</div>
 }
 
-export interface InputProps extends CommonComponentProps, Omit<InputPropsBase, 'className'> {
+export interface InputProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group>, Omit<InputPropsBase, 'className'> {
 	innerRef?: Ref<HTMLInputElement>;
 	isHidden: boolean;
 	isDisabled?: boolean;
@@ -269,7 +310,7 @@ export function Input(props: InputProps) @{
 		value,
 		...innerProps
 	} = props;
-	<div {...styleProps(props, 'input', { 'input-container': true })} data-value={value || ''}>
+	<div {...useStyleProps(props, 'input', { 'input-container': true })} data-value={value || ''}>
 		<input
 			className={cx({ input: true }, inputClassName)}
 			ref={innerRef ?? null}
@@ -281,7 +322,11 @@ export function Input(props: InputProps) @{
 	</div>
 }
 
-export interface IndicatorProps extends CommonComponentProps {
+export interface IndicatorProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerProps: DivProps;
 	isFocused: boolean;
@@ -290,7 +335,7 @@ export interface IndicatorProps extends CommonComponentProps {
 
 export function DropdownIndicator(props: IndicatorProps) @{
 	<div
-		{...styleProps(props, 'dropdownIndicator', {
+		{...useStyleProps(props, 'dropdownIndicator', {
 			indicator: true,
 			'dropdown-indicator': true,
 		})}
@@ -302,7 +347,7 @@ export function DropdownIndicator(props: IndicatorProps) @{
 
 export function ClearIndicator(props: IndicatorProps) @{
 	<div
-		{...styleProps(props, 'clearIndicator', {
+		{...useStyleProps(props, 'clearIndicator', {
 			indicator: true,
 			'clear-indicator': true,
 		})}
@@ -312,7 +357,11 @@ export function ClearIndicator(props: IndicatorProps) @{
 	</div>
 }
 
-export interface IndicatorSeparatorProps extends CommonComponentProps {
+export interface IndicatorSeparatorProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	isDisabled: boolean;
 	isFocused: boolean;
 	innerProps?: SpanProps;
@@ -321,11 +370,15 @@ export interface IndicatorSeparatorProps extends CommonComponentProps {
 export function IndicatorSeparator(props: IndicatorSeparatorProps) @{
 	<span
 		{...props.innerProps}
-		{...styleProps(props, 'indicatorSeparator', { 'indicator-separator': true })}
+		{...useStyleProps(props, 'indicatorSeparator', { 'indicator-separator': true })}
 	/>
 }
 
-export interface MenuProps extends CommonComponentProps {
+export interface MenuProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerRef: Ref<HTMLDivElement>;
 	innerProps: DivProps;
@@ -340,13 +393,17 @@ export interface MenuProps extends CommonComponentProps {
 
 export function Menu(props: MenuProps) @{
 	<div
-		{...styleProps(props, 'menu', { menu: true })}
+		{...useStyleProps(props, 'menu', { menu: true })}
 		ref={props.innerRef}
 		{...props.innerProps}
 	>{props.children}</div>
 }
 
-export interface MenuListProps extends CommonComponentProps {
+export interface MenuListProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerRef: Ref<HTMLDivElement>;
 	innerProps: DivProps;
@@ -356,7 +413,7 @@ export interface MenuListProps extends CommonComponentProps {
 
 export function MenuList(props: MenuListProps) @{
 	<div
-		{...styleProps(props, 'menuList', {
+		{...useStyleProps(props, 'menuList', {
 			'menu-list': true,
 			'menu-list--is-multi': props.isMulti,
 		})}
@@ -365,7 +422,11 @@ export function MenuList(props: MenuListProps) @{
 	>{props.children}</div>
 }
 
-export interface NoticeProps extends CommonComponentProps {
+export interface NoticeProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	innerProps?: DivProps;
 }
@@ -373,7 +434,7 @@ export interface NoticeProps extends CommonComponentProps {
 export function NoOptionsMessage(props: NoticeProps) @{
 	const children = props.children ?? 'No options';
 	<div
-		{...styleProps(props, 'noOptionsMessage', {
+		{...useStyleProps(props, 'noOptionsMessage', {
 			'menu-notice': true,
 			'menu-notice--no-options': true,
 		})}
@@ -384,7 +445,7 @@ export function NoOptionsMessage(props: NoticeProps) @{
 export function LoadingMessage(props: NoticeProps) @{
 	const children = props.children ?? 'Loading...';
 	<div
-		{...styleProps(props, 'loadingMessage', {
+		{...useStyleProps(props, 'loadingMessage', {
 			'menu-notice': true,
 			'menu-notice--loading': true,
 		})}
@@ -410,7 +471,11 @@ function cleanCommonProps<Props extends CommonComponentProps>(props: Props) {
 	return innerProps;
 }
 
-export type GroupHeadingProps = CommonComponentProps & Omit<DivProps, 'className'> & {
+export type GroupHeadingProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> = CommonComponentProps<Option, IsMulti, Group> & Omit<DivProps, 'className'> & {
 	children?: OctaneNode;
 	id: string;
 	data: unknown;
@@ -419,12 +484,16 @@ export type GroupHeadingProps = CommonComponentProps & Omit<DivProps, 'className
 export function GroupHeading(props: GroupHeadingProps) @{
 	const { data: _data, ...innerProps } = cleanCommonProps(props);
 	<div
-		{...styleProps(props, 'groupHeading', { 'group-heading': true })}
+		{...useStyleProps(props, 'groupHeading', { 'group-heading': true })}
 		{...innerProps}
 	/>
 }
 
-export interface GroupProps extends CommonComponentProps {
+export interface GroupProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	GroupType extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, GroupType> {
 	children?: OctaneNode;
 	Heading: ComponentType<GroupHeadingProps>;
 	headingProps: { id: string; data: unknown };
@@ -436,7 +505,7 @@ export interface GroupProps extends CommonComponentProps {
 
 export function Group(props: GroupProps) @{
 	const Heading = props.Heading;
-	<div {...styleProps(props, 'group', { group: true })} {...props.innerProps}>
+	<div {...useStyleProps(props, 'group', { group: true })} {...props.innerProps}>
 		<Heading
 			{...props.headingProps}
 			selectProps={props.selectProps}
@@ -452,7 +521,12 @@ export function Group(props: GroupProps) @{
 	</div>
 }
 
-export interface MultiValueGenericProps {
+export interface MultiValueGenericProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> {
+	readonly __types?: readonly [Option, IsMulti, Group];
 	children?: OctaneNode;
 	data: unknown;
 	innerProps: DivProps;
@@ -466,7 +540,12 @@ export function MultiValueGeneric(props: MultiValueGenericProps) @{
 export const MultiValueContainer = MultiValueGeneric;
 export const MultiValueLabel = MultiValueGeneric;
 
-export interface MultiValueRemoveProps {
+export interface MultiValueRemoveProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> {
+	readonly __types?: readonly [Option, IsMulti, Group];
 	children?: OctaneNode;
 	data: unknown;
 	innerProps: DivProps;
@@ -479,7 +558,11 @@ export function MultiValueRemove(props: MultiValueRemoveProps) @{
 	</div>
 }
 
-export interface MultiValueProps extends CommonComponentProps {
+export interface MultiValueProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	children?: OctaneNode;
 	components: {
 		Container: ComponentType<MultiValueGenericProps>;
@@ -502,7 +585,7 @@ export function MultiValue(props: MultiValueProps) @{
 	<Container
 		data={props.data}
 		innerProps={{
-			...styleProps(props, 'multiValue', {
+			...useStyleProps(props, 'multiValue', {
 				'multi-value': true,
 				'multi-value--is-disabled': props.isDisabled,
 			}),
@@ -513,14 +596,14 @@ export function MultiValue(props: MultiValueProps) @{
 		<Label
 			data={props.data}
 			innerProps={{
-				...styleProps(props, 'multiValueLabel', { 'multi-value__label': true }),
+				...useStyleProps(props, 'multiValueLabel', { 'multi-value__label': true }),
 			}}
 			selectProps={props.selectProps}
 		>{props.children}</Label>
 		<Remove
 			data={props.data}
 			innerProps={{
-				...styleProps(props, 'multiValueRemove', { 'multi-value__remove': true }),
+				...useStyleProps(props, 'multiValueRemove', { 'multi-value__remove': true }),
 				'aria-label': `Remove ${props.children || 'option'}`,
 				...props.removeProps,
 			}}
@@ -535,7 +618,8 @@ const loadingDotAnimations = createKeyframes({
 });
 
 function LoadingDot(props: { delay: number; offset: boolean }) @{
-	const resolved = resolveComponentStyle({
+	const resolveStyle = useStyleResolver();
+	const resolved = resolveStyle({
 		animation: `${loadingDotAnimations} 1s ease-in-out ${props.delay}ms infinite;`,
 		backgroundColor: 'currentColor',
 		borderRadius: '1em',
@@ -549,7 +633,11 @@ function LoadingDot(props: { delay: number; offset: boolean }) @{
 	<span className={resolved.className} />
 }
 
-export interface LoadingIndicatorProps extends CommonComponentProps {
+export interface LoadingIndicatorProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	innerProps: DivProps;
 	isFocused: boolean;
 	isDisabled: boolean;
@@ -560,7 +648,7 @@ export function LoadingIndicator(props: LoadingIndicatorProps) @{
 	const size = props.size ?? 4;
 	const styleInput = { ...props, size };
 	<div
-		{...styleProps(styleInput, 'loadingIndicator', {
+		{...useStyleProps(styleInput, 'loadingIndicator', {
 			indicator: true,
 			'loading-indicator': true,
 		})}
@@ -594,7 +682,11 @@ function boundingClientObject(element: HTMLElement) {
 	};
 }
 
-export interface MenuPortalProps extends CommonComponentProps {
+export interface MenuPortalProps<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> extends CommonComponentProps<Option, IsMulti, Group> {
 	appendTo: HTMLElement | undefined;
 	children?: OctaneNode;
 	controlElement: HTMLDivElement | null;
@@ -667,7 +759,7 @@ export function MenuPortal(props: MenuPortalProps) @{
 
 	const menuWrapper = <div
 		ref={setMenuPortalElement}
-		{...styleProps(
+		{...useStyleProps(
 			{
 				...props,
 				offset: computedPosition.offset,
@@ -685,7 +777,12 @@ export function MenuPortal(props: MenuPortalProps) @{
 	</PortalPlacementContext.Provider>
 }
 
-export interface SelectComponents {
+export interface SelectComponents<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> {
+	readonly __types?: readonly [Option, IsMulti, Group];
 	ClearIndicator: typeof ClearIndicator;
 	Control: typeof Control;
 	DropdownIndicator: typeof DropdownIndicator | null;
@@ -713,7 +810,11 @@ export interface SelectComponents {
 	ValueContainer: typeof ValueContainer;
 }
 
-export type SelectComponentsConfig = Partial<SelectComponents>;
+export type SelectComponentsConfig<
+	Option = unknown,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> = Partial<SelectComponents<Option, IsMulti, Group>>;
 
 export const components: SelectComponents = {
 	ClearIndicator,

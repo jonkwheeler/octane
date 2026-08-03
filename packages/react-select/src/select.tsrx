@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'octane';
+import { useImperativeHandle, useMemo, useRef, useState } from 'octane';
 import type { OctaneNode } from 'octane';
 
 import {
@@ -11,10 +11,11 @@ import {
 	components as builtinComponents,
 	defaultComponents,
 	type SelectComponentsConfig,
+	type Ref,
 } from './components.tsrx';
 import { createFilter, type FilterOptionOption } from './filters';
 import { defaultStyles } from './default-styles';
-import { resolveComponentStyle } from './style-adapter';
+import { useStyleResolver } from './style-context.tsrx';
 import type { ClassNamesConfig, StyleKey, StylesConfig } from './styles';
 import { defaultTheme, type ThemeConfig } from './theme';
 import type {
@@ -44,6 +45,7 @@ export interface SelectProps<
 	IsMulti extends boolean = false,
 	Group extends GroupBase<Option> = GroupBase<Option>,
 > {
+	ref?: Ref<SelectInstance<Option>>;
 	'aria-errormessage'?: string;
 	'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling';
 	'aria-label'?: string;
@@ -114,6 +116,17 @@ export interface SelectProps<
 	theme?: ThemeConfig;
 	unstyled?: boolean;
 	value?: PropsValue<Option>;
+}
+
+export interface SelectInstance<
+	Option = unknown,
+	IsMulti extends boolean = false,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+> {
+	blur(): void;
+	focus(): void;
+	getValue(): Options<Option>;
+	readonly __types?: readonly [IsMulti, Group];
 }
 
 export const defaultProps = {
@@ -283,7 +296,8 @@ const a11yTextStyle = {
 } as const;
 
 function LiveRegion(props: { id: string; live: 'off' | 'polite' | 'assertive' }) @{
-	const resolved = resolveComponentStyle(a11yTextStyle);
+	const resolveStyle = useStyleResolver();
+	const resolved = resolveStyle(a11yTextStyle);
 	<>
 		<span id={props.id} className={resolved.className} />
 		<span
@@ -324,6 +338,15 @@ export function Select<
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const controlRef = useRef<HTMLDivElement | null>(null);
 	const selectValue = cleanValue(props.value ?? null);
+	useImperativeHandle(
+		props.ref,
+		() => ({
+			blur: () => inputRef.current?.blur(),
+			focus: () => inputRef.current?.focus(),
+			getValue: () => selectValue,
+		}),
+		[selectValue],
+	);
 	const categorized = buildCategorizedOptions(props, selectValue);
 	const focusableOptions = categorized.flatMap((item) =>
 		item.type === 'group' ? item.options.map((option) => option.data) : [item.data],

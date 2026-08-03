@@ -6,14 +6,18 @@ import { injectStyle } from 'octane';
 const createEmotionCache = createEmotionCacheModule.default ?? createEmotionCacheModule;
 let clientCache;
 
+export function createStyleCache(options = {}) {
+	return createEmotionCache(options);
+}
+
 function cacheForRender() {
 	if (typeof document === 'undefined') return createEmotionCache({ key: 'css' });
 	clientCache ??= createEmotionCache({ key: 'css' });
 	return clientCache;
 }
 
-export function resolveComponentStyle(cssValue, className) {
-	const cache = cacheForRender();
+export function resolveComponentStyle(cssValue, className, providedCache, nonce) {
+	const cache = providedCache ?? cacheForRender();
 	const registeredStyles = [cssValue];
 	let composedClassName = '';
 	if (typeof className === 'string') {
@@ -30,7 +34,7 @@ export function resolveComponentStyle(cssValue, className) {
 		if (existing) cache.inserted[serialized.name] = true;
 	}
 	const rules = insertStyles(cache, serialized, true);
-	if (rules !== undefined && rules !== '') injectStyle(id, rules);
+	if (rules !== undefined && rules !== '') injectStyle(id, rules, nonce);
 
 	return { className: composedClassName, id };
 }

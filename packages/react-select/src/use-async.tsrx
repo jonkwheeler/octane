@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'octane';
 
 import type { GroupBase, InputActionMeta, OptionsOrGroups } from './types';
+import type { StateManagerProps } from './use-state-manager.tsrx';
 import { handleInputChange } from './utils';
 
 export interface AsyncAdditionalProps<Option, Group extends GroupBase<Option>> {
@@ -13,18 +14,19 @@ export interface AsyncAdditionalProps<Option, Group extends GroupBase<Option>> {
 	isLoading?: boolean;
 }
 
-export interface AsyncProps<Option, Group extends GroupBase<Option>>
-	extends AsyncAdditionalProps<Option, Group> {
-	filterOption?: unknown;
-	inputValue?: string;
-	onInputChange?: (newValue: string, actionMeta: InputActionMeta) => string | void;
-	options?: OptionsOrGroups<Option, Group>;
-	[key: string]: unknown;
-}
+export type AsyncProps<
+	Option,
+	IsMulti extends boolean,
+	Group extends GroupBase<Option>,
+> = StateManagerProps<Option, IsMulti, Group> & AsyncAdditionalProps<Option, Group>;
 
-export function useAsync<Option, Group extends GroupBase<Option>>(
-	props: AsyncProps<Option, Group>,
-): AsyncProps<Option, Group> & {
+export function useAsync<
+	Option,
+	IsMulti extends boolean = boolean,
+	Group extends GroupBase<Option> = GroupBase<Option>,
+>(
+	props: AsyncProps<Option, IsMulti, Group>,
+): AsyncProps<Option, IsMulti, Group> & {
 	filterOption: unknown;
 	isLoading: boolean;
 	onInputChange: (newValue: string, actionMeta: InputActionMeta) => void;
