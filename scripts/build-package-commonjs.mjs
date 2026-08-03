@@ -82,6 +82,12 @@ export async function buildPackageCommonjs({
 	) {
 		throw new Error('CommonJS sourceRoot and outdir must stay inside the package directory');
 	}
+	if (
+		isWithin(absoluteOutdir, absoluteSourceRoot) ||
+		isWithin(absoluteSourceRoot, absoluteOutdir)
+	) {
+		throw new Error('CommonJS sourceRoot and outdir must not overlap');
+	}
 	const entryPaths = entries.map((entry) => resolve(absolutePackageDir, entry));
 	for (const entryPath of entryPaths) {
 		if (!isWithin(absolutePackageDir, entryPath)) {
