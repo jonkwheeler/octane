@@ -2595,7 +2595,12 @@ export default defineConfig({
 			{
 				test: {
 					name: 'cmdk',
-					include: ['packages/cmdk/tests/**/*.test.ts', '!packages/cmdk/tests/ssr/**/*.test.ts'],
+					include: [
+						'packages/cmdk/tests/**/*.test.ts',
+						'!packages/cmdk/tests/ssr/**/*.test.ts',
+						'!packages/cmdk/tests/differential/**/*.test.ts',
+						'!packages/cmdk/tests/parity/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					// The differential oracle mounts real cmdk beside the Octane build.
 					// In isolation the whole project finishes in ~5.6s, but inside a full
@@ -2607,9 +2612,6 @@ export default defineConfig({
 					// Fails any test that logs a console.error (octane reports effect
 					// exceptions there without failing the run).
 					setupFiles: ['packages/cmdk/tests/_setup.ts'],
-					// Differential precompile for cmdk fixtures: rewrites
-					// `@octanejs/cmdk` → the real published `cmdk@1.1.1`.
-					globalSetup: ['packages/cmdk/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
@@ -2621,6 +2623,37 @@ export default defineConfig({
 						},
 					],
 				},
+			},
+			{
+				test: {
+					name: 'cmdk-differential',
+					include: ['packages/cmdk/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					setupFiles: ['packages/cmdk/tests/_setup.ts'],
+					globalSetup: ['packages/cmdk/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/cmdk$/,
+							replacement: resolve(import.meta.dirname, 'packages/cmdk/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'cmdk-parity-audit',
+					include: ['packages/cmdk/tests/parity/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {

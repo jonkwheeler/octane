@@ -74,7 +74,7 @@
         "The vendored scorer gained explicit parameter type annotations for strict typecheck and repo-style formatting; the algorithm and score constants are unchanged from cmdk@1.1.1."
       ],
       "ssr": "Supported and tested: the menu server-renders all items in source order without browser globals (the DOM-authoritative filter/selection is post-hydration work), and no empty state — items cannot register on the server, so `Command.Empty` renders nothing there rather than claiming \"no results\" over a full list. `hydrateRoot` adopts the server nodes without a mismatch, then activates — values infer from textContent, the first item selects, and typing filters live.",
-      "verified": "2026-07-22"
+      "verified": "2026-08-03"
     },
     {
       "name": "@octanejs/devtools",

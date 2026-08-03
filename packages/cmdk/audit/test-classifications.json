@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/cmdk/tests/command-score.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the reused scorer inside the Octane package and is not counted as pristine upstream evidence."
+    },
+    {
+      "path": "packages/cmdk/tests/command.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane component integration and explicit divergences without a same-case React oracle."
+    },
+    {
+      "path": "packages/cmdk/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs identical authored fixtures and event sequences against @octanejs/cmdk and pinned cmdk."
+    },
+    {
+      "path": "packages/cmdk/tests/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane hydration and is not counted as React parity."
+    },
+    {
+      "path": "packages/cmdk/tests/parity/contracts.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates vendored evidence and the bounded claim; it is not behavioral React parity."
+    },
+    {
+      "path": "packages/cmdk/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane server rendering and is not counted as React parity."
+    }
+  ]
+}

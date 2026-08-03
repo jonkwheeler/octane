@@ -64,7 +64,8 @@ const activeDescendant = (mount: { find(selector: string): Element }): string | 
  * exactly — this is the full rig normalisation, minus that one attribute.
  */
 /**
- * OCTANE DIVERGENCE: upstream ranks matches by physically relocating item nodes;
+ * OCTANE DIVERGENCE[runtime-adaptation-divergences][differential:cmdk-filter-selection-empty]
+ * Upstream ranks matches by physically relocating item nodes;
  * the port assigns CSS `order` inside a flex container instead, because moving a
  * node carries it out of the comment-fenced ranges octane tracks and orphans it
  * (see `sort()` in command.tsrx). The rendered result is the same list in the
@@ -92,10 +93,12 @@ function expectEqualIgnoringActiveDescendant(
 }
 
 describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
+	// @parity-case differential:cmdk-filter-selection-empty
 	it('matches filtering, keyboard selection and the empty state', async () => {
 		const differential = await mountDifferential(FIXTURE, 'CmdkDiff', undefined, CACHE);
 
-		// OCTANE DIVERGENCE (initial auto-select only): cmdk computes
+		// OCTANE DIVERGENCE[runtime-adaptation-divergences][differential:cmdk-filter-selection-empty]
+		// Initial auto-select only: cmdk computes
 		// `selectedItemId` from a callback queued INSIDE its own layout-effect
 		// flush. Upstream's batcher clears the queue *after* running it, so that
 		// nested entry is dropped and `aria-activedescendant` never lands on the
@@ -165,6 +168,7 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
 		differential.unmount();
 	});
 
+	// @parity-case differential:cmdk-groups
 	it('matches grouped rendering, and documents the group-ordering divergence', async () => {
 		const differential = await mountDifferential(FIXTURE, 'CmdkDiffGroups', undefined, CACHE);
 
@@ -182,7 +186,8 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
 			expect(groupValues(react)).toEqual(['Fruits', 'Vegetables']);
 		});
 
-		// OCTANE DIVERGENCE: upstream resolves the group element by
+		// OCTANE DIVERGENCE[corrected-group-ordering][differential:cmdk-groups]
+		// Upstream resolves the group element by
 		// `[data-value="<groupId>"]`, but `data-value` holds the heading text — so
 		// its group reorder can never match and is dead code. The port matches on
 		// the registered value, so groups reorder by best item score. Both must

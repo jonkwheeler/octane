@@ -27,9 +27,15 @@
     "The vendored scorer gained explicit parameter type annotations for strict typecheck and repo-style formatting; the algorithm and score constants are unchanged from cmdk@1.1.1."
   ],
   "ssr": "Supported and tested: the menu server-renders all items in source order without browser globals (the DOM-authoritative filter/selection is post-hydration work), and no empty state \u2014 items cannot register on the server, so `Command.Empty` renders nothing there rather than claiming \"no results\" over a full list. `hydrateRoot` adopts the server nodes without a mismatch, then activates \u2014 values infer from textContent, the first item selects, and typing filters live.",
-  "verified": "2026-07-22",
+  "provenance": {
+    "source": "https://github.com/pacocoursey/cmdk/tree/fb4ea04e9ec211777fbb39c6104e3c5f2ee107d2",
+    "license": "MIT",
+    "commit": "fb4ea04e9ec211777fbb39c6104e3c5f2ee107d2",
+    "verification": "recorded-unverified"
+  },
+  "verified": "2026-08-03",
   "notes": [
-    "Covered by unit, behavioral (jsdom), hydration, SSR and differential tests. The differential suite runs the same `.tsrx` fixture through both this port and the published `cmdk@1.1.1` on React, asserting byte-equal HTML across filtering, keyboard selection and the empty state, and documenting the group-ordering divergence.",
+    "Bounded unit, behavioral (jsdom), hydration, SSR, and differential evidence is available. The canonical upstream Playwright suite is vendored and inventoried but has not been adapted case by case, so the binding remains recorded-unverified.",
     "`--cmdk-list-height` is written only where ResizeObserver exists (browsers); it is skipped during SSR and in jsdom, where the property is simply never set."
   ],
   "docs": ["docs/cmdk-port-plan.md"]
