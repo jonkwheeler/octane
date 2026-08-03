@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from 'octane';
 import type { HTMLAttributes } from 'react';
-import { splitSlot, subSlot } from '../internal';
+import { getSlot, subSlot } from '../internal';
 import { isRtl } from '../utils/isRtl';
 
 export function useIsRtl(
@@ -8,7 +8,7 @@ export function useIsRtl(
 	dir: HTMLAttributes<HTMLElement>['dir'],
 	...rest: unknown[]
 ) {
-	const [, slot] = splitSlot(rest);
+	const slot = getSlot(rest);
 	const [value, setValue] = useState(dir === 'rtl', subSlot(slot, 'value'));
 
 	useLayoutEffect(

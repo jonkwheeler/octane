@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'octane';
 import type { CSSProperties } from 'react';
-import { splitSlot, subSlot } from '../internal';
+import { getSlot, subSlot } from '../internal';
 import { parseNumericStyleValue } from '../utils/parseNumericStyleValue';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
@@ -24,7 +24,7 @@ export function useResizeObserver(
 	},
 	...rest: unknown[]
 ) {
-	const [, slot] = splitSlot(rest);
+	const slot = getSlot(rest);
 	const { styleHeight, styleWidth } = useMemo(
 		() => ({
 			styleHeight: parseNumericStyleValue(style?.height),

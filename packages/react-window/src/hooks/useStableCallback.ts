@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'octane';
-import { splitSlot, subSlot } from '../internal';
+import { getSlot, subSlot } from '../internal';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 // Forked from useEventCallback (usehooks-ts)
@@ -15,7 +15,7 @@ export function useStableCallback<Args extends unknown[], Return>(
 	fn: ((...args: Args) => Return) | undefined,
 	...rest: unknown[]
 ): ((...args: Args) => Return) | undefined {
-	const [, slot] = splitSlot(rest);
+	const slot = getSlot(rest);
 	const ref = useRef<typeof fn>(
 		() => {
 			throw new Error('Cannot call an event handler while rendering.');

@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react';
 import { useIsomorphicLayoutEffect } from '../hooks/useIsomorphicLayoutEffect';
 import { useResizeObserver } from '../hooks/useResizeObserver';
 import { useStableCallback } from '../hooks/useStableCallback';
-import { splitSlot, subSlot } from '../internal';
+import { getSlot, subSlot } from '../internal';
 import type { Align } from '../types';
 import { adjustScrollOffsetForRtl } from '../utils/adjustScrollOffsetForRtl';
 import { shallowCompare } from '../utils/shallowCompare';
@@ -45,7 +45,7 @@ export function useVirtualizer<Props extends object>(
 	},
 	...rest: unknown[]
 ) {
-	const [, slot] = splitSlot(rest);
+	const slot = getSlot(rest);
 	const { height = defaultContainerSize, width = defaultContainerSize } = useResizeObserver(
 		{
 			defaultHeight: direction === 'vertical' ? defaultContainerSize : undefined,

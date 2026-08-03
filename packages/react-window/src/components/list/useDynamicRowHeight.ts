@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'octane';
 import { useStableCallback } from '../../hooks/useStableCallback';
-import { splitSlot, subSlot } from '../../internal';
+import { getSlot, subSlot } from '../../internal';
 import { assert } from '../../utils/assert';
 import { DATA_ATTRIBUTE_LIST_INDEX } from './List';
 import type { DynamicRowHeight } from './types';
@@ -15,7 +15,7 @@ export function useDynamicRowHeight(
 	},
 	...rest: unknown[]
 ) {
-	const [, slot] = splitSlot(rest);
+	const slot = getSlot(rest);
 	const [state, setState] = useState<{
 		key: string | number | undefined;
 		map: Map<number, number>;

@@ -1,5 +1,5 @@
 import { useMemo } from 'octane';
-import { splitSlot, subSlot } from '../internal';
+import { getSlot, subSlot } from '../internal';
 import { createCachedBounds } from './createCachedBounds';
 import type { CachedBounds, SizeFunction } from './types';
 
@@ -15,7 +15,7 @@ export function useCachedBounds<Props extends object>(
 	},
 	...rest: unknown[]
 ): CachedBounds {
-	const [, slot] = splitSlot(rest);
+	const slot = getSlot(rest);
 	return useMemo(
 		() =>
 			createCachedBounds({
