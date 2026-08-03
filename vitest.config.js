@@ -1285,6 +1285,57 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-window-feasibility',
+					include: ['packages/react-window/tests/feasibility/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-window',
+					include: ['packages/react-window/tests/runtime/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-window-ssr',
+					include: ['packages/react-window/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'wagmi',
 					include: ['packages/wagmi/tests/**/*.test.ts'],
 					environment: 'jsdom',

@@ -1,18 +1,40 @@
 {
   "name": "@octanejs/react-window",
   "version": "0.0.1",
-  "private": true,
   "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "description": "Exact Octane binding for react-window 2.3.0.",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "UPSTREAM.md",
+    "LICENSE.md"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "upstream:verify": "node tests/audit/verify-upstream.mjs",
-    "test:audit": "node --test tests/audit/upstream.test.mjs"
+    "test:audit": "node --test tests/audit/upstream.test.mjs",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@types/react": "catalog:default"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
   },
   "devDependencies": {
+    "@tsrx/react": "catalog:default",
+    "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
     "react-window": "2.3.0"
   }
 }
