@@ -3,6 +3,7 @@ import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 
 async function fixture() {
@@ -57,6 +58,6 @@ test('rejects a stale divergence classification', async (t) => {
 });
 
 test('verifies an arbitrary binding classification ledger', () => {
-	const root = new URL('../..', import.meta.url).pathname;
+	const root = fileURLToPath(new URL('../..', import.meta.url));
 	assert.deepEqual(verifyPortTestClassifications(root, 'valtio'), { tests: 4 });
 });

@@ -49,7 +49,7 @@
         {
           "path": "packages/valtio/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "c2fe5ff4670e356cfbaa0036b5a1226d7d94a605ab75434b48b5f9de80dc2fcd",
+          "sha256": "05f8704272b5f20c521763ebad60e98b021503e8483e0de2448726d739f0934e",
           "cases": [
             {
               "id": "differential:valtio-snapshot",
@@ -76,7 +76,7 @@
         {
           "path": "packages/valtio/tests/_fixtures/store.tsrx",
           "role": "support",
-          "sha256": "4d9bb28527bc5437d4e3fa2aac2237a9a07a9454b8dc164e5de7d7c0af74d833"
+          "sha256": "a4ce7f3e535cd5c28698b688fbdf6c967e1649b19f39ef9b10b96fcf196335d2"
         }
       ]
     },
@@ -113,7 +113,7 @@
         {
           "path": "packages/valtio/tests/_fixtures/store.tsrx",
           "role": "support",
-          "sha256": "4d9bb28527bc5437d4e3fa2aac2237a9a07a9454b8dc164e5de7d7c0af74d833"
+          "sha256": "a4ce7f3e535cd5c28698b688fbdf6c967e1649b19f39ef9b10b96fcf196335d2"
         }
       ]
     },
