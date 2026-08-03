@@ -6145,6 +6145,10 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 		hmr: hmrEnabled, // gates Symbol.for vs Symbol() hook slots (allocHookSymbol)
 		isVoidComponentImport:
 			typeof options?.isVoidComponentImport === 'function' ? options.isVoidComponentImport : null,
+		descriptorChildrenBindings: collectDescriptorChildrenBindings(
+			ast,
+			options?.isDescriptorChildrenImport,
+		),
 		runtimeNeeded: new Set(), // helpers referenced by GENERATED code — imported as `name as _$name`
 		profileRuntimeNeeded: new Set(), // compiler ABI helpers imported from `octane/profiling`
 		userRuntimeNames: new Set(), // specifiers USER code references — imported verbatim
@@ -7177,6 +7181,10 @@ function compileServer(source, filename, options, analyzedAst = null) {
 		nextFragId: 0,
 		nextHelperId: 0,
 		componentInfo: new Map(),
+		descriptorChildrenBindings: collectDescriptorChildrenBindings(
+			ast,
+			options?.isDescriptorChildrenImport,
+		),
 		mapSource: source,
 		mapSourceName: (filename || 'module.tsrx').split(/[\\/]/).pop(),
 		// Scaffolding without a more precise authored construct maps here.
@@ -8961,6 +8969,8 @@ function ssrEmitComponent(node, ctx, name, inlinedSubs, parentNs, cssHash, compo
 		const children = rewriteOpaqueTitles(sourceChildren, ctx, 'opaque');
 		const opaqueChildren = !isActivityLongForm(node) && !isFragmentLongForm(node);
 		const descriptorChildren =
+			(tagBindingName(node) !== null &&
+				ctx.descriptorChildrenBindings?.has(tagBindingName(node))) ||
 			ctx._tsxValuePos ||
 			(returnedFragmentTemplate && !requiresTemplateNormalization(node, parentNs));
 		if (descriptorChildren) {
@@ -9037,6 +9047,48 @@ function ssrEmitComponent(node, ctx, name, inlinedSubs, parentNs, cssHash, compo
 		args.push(b.literal(true, 'true'));
 	}
 	return ssrCall(helper, args, node);
+}
+
+function collectDescriptorChildrenBindings(ast, isDescriptorChildrenImport) {
+	const markerNames = new Set();
+	const bindings = new Set();
+	for (const statement of ast.body || []) {
+		if (statement.type !== 'ImportDeclaration' || statement.importKind === 'type') continue;
+		for (const specifier of statement.specifiers || []) {
+			if (specifier.importKind === 'type' || !specifier.local?.name) continue;
+			const imported =
+				specifier.type === 'ImportDefaultSpecifier'
+					? 'default'
+					: (specifier.imported?.name ?? specifier.imported?.value);
+			if (statement.source.value === 'octane' && imported === 'descriptorChildren') {
+				markerNames.add(specifier.local.name);
+			}
+			if (
+				typeof imported === 'string' &&
+				typeof isDescriptorChildrenImport === 'function' &&
+				isDescriptorChildrenImport(statement.source.value, imported) === true
+			) {
+				bindings.add(specifier.local.name);
+			}
+		}
+	}
+	for (const statement of ast.body || []) {
+		const declaration =
+			statement.type === 'ExportNamedDeclaration' ? statement.declaration : statement;
+		if (declaration?.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
+		for (const item of declaration.declarations || []) {
+			if (
+				item.id?.type === 'Identifier' &&
+				item.init?.type === 'CallExpression' &&
+				item.init.callee?.type === 'Identifier' &&
+				markerNames.has(item.init.callee.name) &&
+				item.init.arguments?.length === 1
+			) {
+				bindings.add(item.id.name);
+			}
+		}
+	}
+	return bindings;
 }
 
 // ---------------------------------------------------------------------------
@@ -20835,35 +20887,51 @@ function makeCompCall(
 		const children = rewriteOpaqueTitles(sourceChildren, ctx, 'opaque');
 		const childrenParentNs =
 			!isActivityLongForm(node) && !isFragmentLongForm(node) ? 'opaque' : parentNs;
-		// Compile children as a render function: (scope) => { renders JSX into scope }.
-		// The function is inlined inside the parent component body so its closures
-		// capture the parent's locals (props, state, etc.).
-		// Phase 2 NOTE: children render-fns stay INLINE (envNames=null) — they are
-		// invoked through props (childrenAsBody / render-prop checks), not through
-		// a construct block, so there is no block.extra channel for captures.
-		const childrenHelperName = hoistBodyHelper(
-			ctx,
-			inlinedSubs,
-			'__children',
-			children,
-			[],
-			childrenParentNs,
-			cssHash,
-			null,
-		);
-		// Tag the children-block render fn so a consumer can tell it from a render-prop
-		// function child (`<C>{(x) => …}</C>`, passed RAW above) — both are `typeof === 'function'`,
-		// so React-ecosystem `typeof children === 'function'` checks need `isChildrenBlock` to
-		// exclude compiled element/text children. See runtime `markChildrenBlock`/`isChildrenBlock`.
-		ctx.runtimeNeeded.add('markChildrenBlock');
-		hasChildrenProp = true;
-		propNodes.push(
-			b.prop(
-				'init',
-				b.literal('children'),
-				b.call('_$markChildrenBlock', b.id(childrenHelperName)),
-			),
-		);
+		if (compName !== null && ctx.descriptorChildrenBindings?.has(compName)) {
+			const kids = children
+				.map((child) => lowerJsxChild(child, ctx))
+				.filter((child) => child != null);
+			if (kids.length > 0) {
+				hasChildrenProp = true;
+				propNodes.push(
+					b.prop(
+						'init',
+						b.literal('children'),
+						kids.length === 1 ? kids[0] : inheritOriginLoc(b.array(kids), node),
+					),
+				);
+			}
+		} else {
+			// Compile children as a render function: (scope) => { renders JSX into scope }.
+			// The function is inlined inside the parent component body so its closures
+			// capture the parent's locals (props, state, etc.).
+			// Phase 2 NOTE: children render-fns stay INLINE (envNames=null) — they are
+			// invoked through props (childrenAsBody / render-prop checks), not through
+			// a construct block, so there is no block.extra channel for captures.
+			const childrenHelperName = hoistBodyHelper(
+				ctx,
+				inlinedSubs,
+				'__children',
+				children,
+				[],
+				childrenParentNs,
+				cssHash,
+				null,
+			);
+			// Tag the children-block render fn so a consumer can tell it from a render-prop
+			// function child (`<C>{(x) => …}</C>`, passed RAW above) — both are `typeof === 'function'`,
+			// so React-ecosystem `typeof children === 'function'` checks need `isChildrenBlock` to
+			// exclude compiled element/text children. See runtime `markChildrenBlock`/`isChildrenBlock`.
+			ctx.runtimeNeeded.add('markChildrenBlock');
+			hasChildrenProp = true;
+			propNodes.push(
+				b.prop(
+					'init',
+					b.literal('children'),
+					b.call('_$markChildrenBlock', b.id(childrenHelperName)),
+				),
+			);
+		}
 	}
 
 	// The props object as a node; the call-site emit embeds it directly.
