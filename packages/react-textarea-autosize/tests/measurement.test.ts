@@ -95,5 +95,11 @@ describe('react-textarea-autosize measurement', () => {
 		expect(document.querySelectorAll('textarea[aria-hidden="true"]')).toHaveLength(1);
 		expect(document.querySelector('textarea[aria-hidden="true"]')).toBe(first);
 		expect(first?.getAttribute('tabindex')).toBe('-1');
+		expect((first as HTMLTextAreaElement).style.getPropertyValue('min-height')).toBe('0px');
+		expect((first as HTMLTextAreaElement).style.getPropertyPriority('min-height')).toBe(
+			'important',
+		);
+		expect((first as HTMLTextAreaElement).style.getPropertyValue('max-height')).toBe('none');
+		expect((first as HTMLTextAreaElement).style.getPropertyValue('z-index')).toBe('-1000');
 	});
 });
