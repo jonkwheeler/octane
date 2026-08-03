@@ -265,6 +265,10 @@ describe('bridgeReportFromSource', () => {
 });
 
 describe('KNOWN_BINDINGS', () => {
+	it('maps react-textarea-autosize to the exact Octane binding', () => {
+		expect(KNOWN_BINDINGS['react-textarea-autosize']).toBe('@octanejs/react-textarea-autosize');
+	});
+
 	it('maps Streamdown and every official plugin package to the consolidated binding', () => {
 		const upstreamPackages = [
 			'streamdown',

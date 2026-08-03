@@ -61,6 +61,7 @@ export const PACKED_TSRX_CONSUMER_PACKAGES = [
 	'@octanejs/cmdk',
 	'@octanejs/floating-ui',
 	'@octanejs/radix',
+	'@octanejs/react-textarea-autosize',
 	'@octanejs/sonner',
 	'@octanejs/tiptap',
 	'octane',
@@ -117,6 +118,7 @@ export function createPackedTsrxConsumerConfig() {
 
 export function renderPackedTsrxConsumerSource() {
 	return `import { Command } from '@octanejs/cmdk';
+import TextareaAutosize from '@octanejs/react-textarea-autosize';
 import { toast, Toaster } from '@octanejs/sonner';
 import {
 	Editor,
@@ -160,6 +162,10 @@ export function PublishedSourceConsumer() @{
 			position="bottom-right"
 			style={{ '--consumer-offset': '8px', maxWidth: 360 }}
 		/>
+		<label>
+			Message
+			<TextareaAutosize minRows={2} maxRows={6} defaultValue="Packed source" />
+		</label>
 		<EditorProvider
 			extensions={[]}
 			immediatelyRender={false}
@@ -178,6 +184,7 @@ export function PublishedSourceConsumer() @{
 
 export function renderPackedTsrxConsumerTypeProbe() {
 	return `import { Command, type CommandProps } from '@octanejs/cmdk';
+import TextareaAutosize, { type TextareaAutosizeProps } from '@octanejs/react-textarea-autosize';
 import { Toaster, useSonner, type ToasterProps } from '@octanejs/sonner';
 import {
 	EditorContent,
@@ -196,6 +203,8 @@ const commandPropsArePrecise: AssertNotAny<CommandProps> = true;
 const commandComponentPropsArePrecise: AssertNotAny<Parameters<typeof Command>[0]> = true;
 const toasterPropsArePrecise: AssertNotAny<ToasterProps> = true;
 const toasterComponentPropsArePrecise: AssertNotAny<Parameters<typeof Toaster>[0]> = true;
+const textareaPropsArePrecise: AssertNotAny<TextareaAutosizeProps> = true;
+const textareaComponentPropsArePrecise: AssertNotAny<Parameters<typeof TextareaAutosize>[0]> = true;
 const toastStateIsPrecise: AssertNotAny<ReturnType<typeof useSonner>> = true;
 const editorPropsArePrecise: AssertNotAny<EditorContentProps> = true;
 const editorComponentPropsArePrecise: AssertNotAny<Parameters<typeof EditorContent>[0]> = true;
@@ -216,6 +225,8 @@ const invalidToaster: ToasterProps = { position: 'middle-center' };
 const invalidToastStyle: ToasterProps = { style: { maxWidth: true } };
 // @ts-expect-error CSS custom properties accept strings and numbers, not booleans.
 const invalidToastCustomProperty: ToasterProps = { style: { '--consumer-offset': true } };
+// @ts-expect-error TextareaAutosize owns vertical sizing through row bounds.
+const invalidTextareaStyle: TextareaAutosizeProps = { style: { minHeight: 20 } };
 // @ts-expect-error EditorContent must own an explicit editor, including null.
 const invalidEditorContent: EditorContentProps = {};
 // @ts-expect-error Tiptap.Content reads its editor from context.
@@ -236,6 +247,7 @@ export const verifiedPublishedTypes = {
 	invalidTiptapContent,
 	invalidToastCustomProperty,
 	invalidToastStyle,
+	invalidTextareaStyle,
 	invalidToaster,
 	providerComponentPropsArePrecise,
 	providerPropsArePrecise,
@@ -243,6 +255,8 @@ export const verifiedPublishedTypes = {
 	toastStateIsPrecise,
 	toasterComponentPropsArePrecise,
 	toasterPropsArePrecise,
+	textareaComponentPropsArePrecise,
+	textareaPropsArePrecise,
 };
 `;
 }

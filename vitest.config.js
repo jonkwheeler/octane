@@ -2,6 +2,7 @@ import { realpathSync } from 'node:fs';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configDefaults, defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
 import { octane } from './packages/octane/src/compiler/vite.js';
 import { octaneMdx } from './packages/mdx/src/vite.js';
 import { stylex } from './packages/stylex/src/vite.js';
@@ -3167,6 +3168,108 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/mobx/src/index.ts'),
 						},
 					],
+				},
+			},
+			{
+				test: {
+					name: 'react-textarea-autosize',
+					include: ['packages/react-textarea-autosize/tests/**/*.test.ts'],
+					exclude: [
+						'packages/react-textarea-autosize/tests/browser/**/*.test.ts',
+						'packages/react-textarea-autosize/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+					server: {
+						deps: {
+							inline: ['use-composed-ref', 'use-isomorphic-layout-effect', 'use-latest'],
+						},
+					},
+				},
+				plugins: [octane({ requireDirective: true }), react()],
+				resolve: {
+					dedupe: ['react', 'react-dom'],
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^use-composed-ref$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-composed-ref/dist/use-composed-ref.esm.js',
+							),
+						},
+						{
+							find: /^use-isomorphic-layout-effect$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-isomorphic-layout-effect/dist/use-isomorphic-layout-effect.esm.js',
+							),
+						},
+						{
+							find: /^use-latest$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-latest/dist/use-latest.esm.js',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-textarea-autosize-ssr',
+					include: ['packages/react-textarea-autosize/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					server: {
+						deps: {
+							inline: ['use-composed-ref', 'use-isomorphic-layout-effect', 'use-latest'],
+						},
+					},
+				},
+				plugins: [octane({ requireDirective: true, ssr: true }), react()],
+				resolve: {
+					dedupe: ['react', 'react-dom'],
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^use-composed-ref$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-composed-ref/dist/use-composed-ref.esm.js',
+							),
+						},
+						{
+							find: /^use-isomorphic-layout-effect$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-isomorphic-layout-effect/dist/use-isomorphic-layout-effect.esm.js',
+							),
+						},
+						{
+							find: /^use-latest$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-latest/dist/use-latest.esm.js',
+							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-textarea-autosize-browser',
+					include: ['packages/react-textarea-autosize/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 				},
 			},
 			{

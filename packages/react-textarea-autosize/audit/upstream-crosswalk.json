@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "upstream": "react-textarea-autosize@8.5.9",
+  "cases": [
+    {
+      "upstream": "<TextareaAutosize /> renders ok",
+      "adapted": "<TextareaAutosize /> adapted upstream inventory renders ok",
+      "status": "ported"
+    },
+    {
+      "upstream": "<TextareaAutosize /> renders with initial height passed in style prop",
+      "adapted": "<TextareaAutosize /> adapted upstream inventory renders with initial height passed in style prop",
+      "status": "ported"
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+import { act, createElement } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { flushEffects, mount } from '../../octane/tests/_helpers';
+import OctaneTextareaAutosize from '../src/index.tsrx';
+import ReactTextareaAutosize from '../upstream/src/index.tsx';
+
+const style = {
+	boxSizing: 'border-box' as const,
+	borderTopWidth: '1px',
+	borderBottomWidth: '1px',
+	paddingTop: '4px',
+	paddingBottom: '4px',
+	fontSize: '16px',
+	lineHeight: '20px',
+	width: '120px',
+};
+
+let reactRoot: Root | undefined;
+let reactHost: HTMLDivElement | undefined;
+
+beforeAll(() => {
+	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+	Object.defineProperty(document, 'fonts', {
+		configurable: true,
+		value: { addEventListener() {}, removeEventListener() {} },
+	});
+	Object.defineProperty(HTMLTextAreaElement.prototype, 'scrollHeight', {
+		configurable: true,
+		get() {
+			const textarea = this as HTMLTextAreaElement;
+			const value = textarea.value || textarea.placeholder || 'x';
+			const rows = value
+				.split('\n')
+				.reduce(
+					(total: number, line: string) => total + Math.max(1, Math.ceil(line.length / 10)),
+					0,
+				);
+			return rows * 20 + 8;
+		},
+	});
+});
+
+beforeEach(() => {
+	vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+		callback(0);
+		return 1;
+	});
+});
+
+afterEach(async () => {
+	if (reactRoot) await act(() => reactRoot?.unmount());
+	reactRoot = undefined;
+	reactHost = undefined;
+	vi.unstubAllGlobals();
+	document.body.replaceChildren();
+});
+
+async function renderReact(props: Record<string, unknown>): Promise<HTMLTextAreaElement> {
+	reactHost = document.createElement('div');
+	document.body.appendChild(reactHost);
+	reactRoot = createRoot(reactHost);
+	await act(() => reactRoot?.render(createElement(ReactTextareaAutosize, props)));
+	return reactHost.querySelector('textarea')!;
+}
+
+function renderOctane(props: Record<string, unknown>) {
+	const app = mount(OctaneTextareaAutosize, props);
+	flushEffects();
+	return { app, textarea: app.find('textarea') as HTMLTextAreaElement };
+}
+
+async function dispatchInput(node: HTMLTextAreaElement, value: string): Promise<void> {
+	const nativeSetter = Object.getOwnPropertyDescriptor(
+		HTMLTextAreaElement.prototype,
+		'value',
+	)!.set!;
+	nativeSetter.call(node, value);
+	await act(() => node.dispatchEvent(new InputEvent('input', { bubbles: true, data: value })));
+}
+
+describe('react-textarea-autosize pristine differential', () => {
+	// @parity-case runtime:differential:initial
+	it('matches initial measurement, row metadata, attributes, and important height', async () => {
+		const reactHeights: Array<[number, number]> = [];
+		const octaneHeights: Array<[number, number]> = [];
+		const react = await renderReact({
+			'aria-label': 'message',
+			minRows: 2,
+			placeholder: 'hello',
+			style,
+			onHeightChange: (height: number, meta: { rowHeight: number }) =>
+				reactHeights.push([height, meta.rowHeight]),
+		});
+		const octane = renderOctane({
+			'aria-label': 'message',
+			minRows: 2,
+			placeholder: 'hello',
+			style,
+			onHeightChange: (height: number, meta: { rowHeight: number }) =>
+				octaneHeights.push([height, meta.rowHeight]),
+		});
+
+		expect(octane.textarea.getAttribute('aria-label')).toBe(react.getAttribute('aria-label'));
+		expect(octane.textarea.placeholder).toBe(react.placeholder);
+		expect(octane.textarea.style.height).toBe(react.style.height);
+		expect(octane.textarea.style.getPropertyPriority('height')).toBe(
+			react.style.getPropertyPriority('height'),
+		);
+		expect(octaneHeights).toEqual(reactHeights);
+
+		octane.app.unmount();
+	});
+
+	// @parity-case runtime:differential:input
+	it('matches uncontrolled input sizing and callback ordering', async () => {
+		const reactCalls: string[] = [];
+		const octaneCalls: string[] = [];
+		const react = await renderReact({
+			defaultValue: 'one',
+			style,
+			onHeightChange: (height: number) => reactCalls.push(`height:${height}`),
+			onInput: () => reactCalls.push('input'),
+			onChange: () => reactCalls.push('change'),
+		});
+		const octane = renderOctane({
+			defaultValue: 'one',
+			style,
+			onHeightChange: (height: number) => octaneCalls.push(`height:${height}`),
+			onInput: () => octaneCalls.push('input'),
+			onChange: () => octaneCalls.push('change'),
+		});
+		reactCalls.length = 0;
+		octaneCalls.length = 0;
+
+		await dispatchInput(react, 'one\ntwo\nthree');
+		await dispatchInput(octane.textarea, 'one\ntwo\nthree');
+
+		expect(octane.textarea.style.height).toBe(react.style.height);
+		expect(octaneCalls).toEqual(reactCalls);
+
+		octane.app.unmount();
+	});
+
+	// @parity-case runtime:differential:stop-propagation-input
+	// @parity-case runtime:differential:stop-propagation-capture
+	it.each(['onInput', 'onChangeCapture'] as const)(
+		'matches same-target callbacks when %s stops propagation',
+		async (stoppingCallback) => {
+			const reactCalls: string[] = [];
+			const octaneCalls: string[] = [];
+			const props = (calls: string[]) => ({
+				defaultValue: 'one',
+				style,
+				onHeightChange: (height: number) => calls.push(`height:${height}`),
+				onChange: () => calls.push('change'),
+				[stoppingCallback]: (event: Event) => {
+					calls.push(stoppingCallback);
+					event.stopPropagation();
+				},
+			});
+			const react = await renderReact(props(reactCalls));
+			const octane = renderOctane(props(octaneCalls));
+			reactCalls.length = 0;
+			octaneCalls.length = 0;
+
+			await dispatchInput(react, 'one\ntwo');
+			await dispatchInput(octane.textarea, 'one\ntwo');
+
+			expect(octane.textarea.style.height).toBe(react.style.height);
+			expect(octaneCalls).toEqual(reactCalls);
+			octane.app.unmount();
+		},
+	);
+});
