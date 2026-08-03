@@ -10,6 +10,7 @@ import {
 	isWithinDirectory,
 	renderPackedExampleWorkspace,
 	renderPackedCommonjsConsumerSource,
+	renderPackedEsmConsumerSource,
 	renderPackedTsrxConsumerSource,
 	renderPackedTsrxConsumerTypeProbe,
 } from './package-pack-canaries.mjs';
@@ -37,6 +38,16 @@ describe('packed CommonJS consumer', () => {
 		assert.match(source, /require\('@octanejs\/floating-ui'\)/);
 		assert.match(source, /require\('@octanejs\/base-ui'\)/);
 		assert.match(source, /require\('@octanejs\/radix'\)/);
+		assert.match(source, /renderToString/);
+	});
+
+	test('imports the same four-package graph for the ESM parity probe', () => {
+		const source = renderPackedEsmConsumerSource();
+		assert.match(source, /from 'octane'/);
+		assert.match(source, /from 'octane\/server'/);
+		assert.match(source, /from '@octanejs\/floating-ui'/);
+		assert.match(source, /from '@octanejs\/base-ui'/);
+		assert.match(source, /from '@octanejs\/radix'/);
 		assert.match(source, /renderToString/);
 	});
 });

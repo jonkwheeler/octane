@@ -103,12 +103,39 @@ assert.equal(typeof server.renderToString, 'function');
 assert.equal(typeof floating.useFloating, 'function');
 assert.equal(typeof base.Button, 'function');
 assert.equal(typeof radix.Accordion, 'object');
-assert.deepEqual(server.renderToString(() => 'CommonJS'), { html: 'CommonJS', css: '' });
+const ssr = server.renderToString(() => 'conditions');
+assert.deepEqual(ssr, { html: 'conditions', css: '' });
 process.stdout.write(JSON.stringify({
 	base: Object.keys(base),
 	floating: Object.keys(floating),
 	octane: Object.keys(octane),
 	radix: Object.keys(radix),
+	ssr,
+}));
+`;
+}
+
+export function renderPackedEsmConsumerSource() {
+	return `import assert from 'node:assert/strict';
+import * as octane from 'octane';
+import * as server from 'octane/server';
+import * as floating from '@octanejs/floating-ui';
+import * as base from '@octanejs/base-ui';
+import * as radix from '@octanejs/radix';
+
+assert.equal(typeof octane.createElement, 'function');
+assert.equal(typeof server.renderToString, 'function');
+assert.equal(typeof floating.useFloating, 'function');
+assert.equal(typeof base.Button, 'function');
+assert.equal(typeof radix.Accordion, 'object');
+const ssr = server.renderToString(() => 'conditions');
+assert.deepEqual(ssr, { html: 'conditions', css: '' });
+process.stdout.write(JSON.stringify({
+	base: Object.keys(base),
+	floating: Object.keys(floating),
+	octane: Object.keys(octane),
+	radix: Object.keys(radix),
+	ssr,
 }));
 `;
 }
