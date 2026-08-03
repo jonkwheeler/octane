@@ -56,6 +56,7 @@ export function DoomDemo() @{
 	const permissionErrorRef = useRef<string | null>(null);
 	const pointerLockedRef = useRef(false);
 	const audioRef = useRef<ReturnType<typeof createProceduralAudio> | null>(null);
+	const simulationTimeRef = useRef(0);
 	const [phase, setPhase] = useState<Phase>('landing');
 	const [game, setGame] = useState<GameState>(stateRef.current);
 	const [paused, setPaused] = useState(false);
@@ -70,6 +71,7 @@ export function DoomDemo() @{
 	const reset = useCallback(() => {
 		stateRef.current = createGameState();
 		inputRef.current = emptyInput();
+		simulationTimeRef.current = 0;
 		setGame(stateRef.current);
 		setPaused(false);
 	}, []);
@@ -105,6 +107,7 @@ export function DoomDemo() @{
 
 	const exit = useCallback(() => {
 		document.exitPointerLock?.();
+		audioRef.current?.stop();
 		setPhase('landing');
 		reset();
 		if (history.state?.octaneDoom === true) history.back();
@@ -118,7 +121,9 @@ export function DoomDemo() @{
 		const onPopState = () => {
 			if (phaseRef.current !== 'landing') {
 				document.exitPointerLock?.();
+				audioRef.current?.stop();
 				stateRef.current = createGameState();
+				simulationTimeRef.current = 0;
 				setGame(stateRef.current);
 				setPhase('landing');
 			}
@@ -167,15 +172,18 @@ export function DoomDemo() @{
 		let frame = 0;
 		let prior = performance.now();
 		let accumulator = 0;
-		let simulationTime = 0;
 		const tick = (time: number) => {
 			const elapsed = Math.min(time - prior, 100);
 			prior = time;
 			if (phaseRef.current === 'playing' && !pausedRef.current) {
 				accumulator += elapsed;
 				while (accumulator >= FIXED_STEP_MS) {
-					simulationTime += FIXED_STEP_MS;
-					stateRef.current = stepGame(stateRef.current, inputRef.current, simulationTime);
+					simulationTimeRef.current += FIXED_STEP_MS;
+					stateRef.current = stepGame(
+						stateRef.current,
+						inputRef.current,
+						simulationTimeRef.current,
+					);
 					for (const cue of stateRef.current.audioEvents) audioRef.current?.play(cue);
 					accumulator -= FIXED_STEP_MS;
 				}
