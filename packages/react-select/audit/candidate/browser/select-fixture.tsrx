@@ -4,6 +4,7 @@ import type { ActionMeta, InputActionMeta, OnChangeValue } from '../../../src/ty
 export type BrowserSelectOption = { label: string; value: string; disabled?: boolean };
 
 export function BrowserSelectFixture(props: {
+	autoFocus?: boolean;
 	options: readonly BrowserSelectOption[];
 	onChange: (
 		value: OnChangeValue<BrowserSelectOption, false>,

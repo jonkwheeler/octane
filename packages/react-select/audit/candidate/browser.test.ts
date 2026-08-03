@@ -215,6 +215,25 @@ describe('useAsync in Chromium', () => {
 });
 
 describe('full Select in Chromium', () => {
+	it('matches React autoFocus behavior on mount', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+			await page.evaluate(() => window.__reactSelectFull.renderAutoFocus('octane'));
+			await page.waitForFunction(() => document.activeElement?.closest('#octane-select-root'));
+			const octaneRole = await page.evaluate(() => document.activeElement?.getAttribute('role'));
+			await page.evaluate(() => window.__reactSelectFull.renderAutoFocus('react'));
+			await page.waitForFunction(() => document.activeElement?.closest('#react-select-root'));
+			const reactRole = await page.evaluate(() => document.activeElement?.getAttribute('role'));
+
+			expect(octaneRole).toBe(reactRole);
+			expect(octaneRole).toBe('combobox');
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
 	it('matches React required-input focus redirection', async () => {
 		const page = await browser.newPage();
 		try {

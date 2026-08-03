@@ -579,6 +579,9 @@ export function Select<
 		}),
 		[selectValue],
 	);
+	useEffect(() => {
+		if (props.autoFocus) inputRef.current?.focus();
+	}, []);
 	const categorized = buildCategorizedOptions(props, selectValue);
 	const focusableOptions = categorized.flatMap((item) =>
 		item.type === 'group' ? item.options.map((option) => option.data) : [item.data],

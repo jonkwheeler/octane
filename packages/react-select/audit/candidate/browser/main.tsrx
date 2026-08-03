@@ -240,6 +240,25 @@ window.__reactSelectFull = {
 			}));
 		});
 	},
+	renderAutoFocus(engine: 'octane' | 'react') {
+		if (engine === 'octane') {
+			flushSync(() => octaneSelectRoot.render(() => null, {}));
+			flushSync(() => {
+				octaneSelectRoot.render(BrowserSelectFixture, {
+					...browserSelectProps('octane'),
+					autoFocus: true,
+				} as never);
+			});
+			return;
+		}
+		flushReact(() => reactSelectRoot.render(null));
+		flushReact(() => {
+			reactSelectRoot.render(React.createElement(ReactSelect<BrowserSelectOption>, {
+				...browserSelectProps('react'),
+				autoFocus: true,
+			}));
+		});
+	},
 };
 
 const octaneMultiElement = document.getElementById('octane-multi-root');
@@ -340,6 +359,7 @@ declare global {
 		__reactSelectFull: {
 			logs(): { octane: Array<Record<string, unknown>>; react: Array<Record<string, unknown>> };
 			renderRequired(): void;
+			renderAutoFocus(engine: 'octane' | 'react'): void;
 		};
 		__reactSelectPlacement: {
 			snapshot(rootId: string): { bottom: string; maxHeight: string; top: string } | null;
