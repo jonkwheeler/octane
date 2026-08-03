@@ -1,0 +1,183 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/pmndrs/zustand.git",
+    "version": "zustand@5.0.14",
+    "commit": "bfb2a9e7ce52608d54d8a077fb87ac9d12e73c58",
+    "sourceRoot": "src",
+    "testRoot": "tests",
+    "license": "MIT",
+    "integrity": "sha256:c1fad9e123a79d12f56b4ef8aece6abd6036df164b01d7ffb52d40b08956e96b",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/zustand/src"],
+      "include": ["\\.ts$"],
+      "exclude": ["\\.d\\.ts$"]
+    },
+    "tests": { "roots": ["packages/zustand/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "zustand-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zustand",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs exact selection, derived-state, action, reset, and multiple-store scenarios against zustand@5.0.14.",
+      "files": [
+        {
+          "path": "packages/zustand/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "dbdd1d378565d17f8b5f2ef939ac7f631fbca5b6bb911ce7e93dbbef264732bd",
+          "cases": [
+            {
+              "id": "differential:zustand-counter",
+              "testName": "Counter: independent slices + derived selector + action, byte-identical",
+              "fullName": "differential: @octanejs/zustand vs real zustand on React Counter: independent slices + derived selector + action, byte-identical"
+            },
+            {
+              "id": "differential:zustand-multistore",
+              "testName": "Zoo: two independent stores in one component, byte-identical",
+              "fullName": "differential: @octanejs/zustand vs real zustand on React Zoo: two independent stores in one component, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/zustand/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "2d96f5402fe1dcb23c2f9076f28f4f9540b2c0cc436c6006a09526094e501cdf"
+        },
+        {
+          "path": "packages/zustand/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "23506f473c0622e0ff55d54511516a208f32651422afd25e6151bb80aa34bf12"
+        },
+        {
+          "path": "packages/zustand/tests/_fixtures/counter-diff.tsrx",
+          "role": "support",
+          "sha256": "d5d24fd73bcf6479cfccd4c80b0afa4ea164f1b4961adf626965ca5b58b6751e"
+        },
+        {
+          "path": "packages/zustand/tests/_fixtures/multistore-diff.tsrx",
+          "role": "support",
+          "sha256": "d280e294dc8475c70b7c99ddf0ba520a80ee5b14e38257942a197561e27b58ca"
+        }
+      ]
+    },
+    {
+      "id": "zustand-adapted-divergence",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zustand",
+      "notes": "Authenticates bounded stabilization for unstable fresh-reference selectors.",
+      "files": [
+        {
+          "path": "packages/zustand/tests/conformance/extras.test.ts",
+          "role": "test",
+          "sha256": "ddec18b64d8da1c23d57d963bc75058904dfa5a6a101cc066fda1dd9d6ad2150",
+          "cases": [
+            {
+              "id": "adapted:zustand-unstable-selectors",
+              "testName": "a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)",
+              "fullName": "unstable selector — divergence from React a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)"
+            }
+          ]
+        },
+        {
+          "path": "packages/zustand/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "2d96f5402fe1dcb23c2f9076f28f4f9540b2c0cc436c6006a09526094e501cdf"
+        },
+        {
+          "path": "packages/zustand/tests/differential/fixture-compiler.ts",
+          "role": "support",
+          "sha256": "23506f473c0622e0ff55d54511516a208f32651422afd25e6151bb80aa34bf12"
+        },
+        {
+          "path": "packages/zustand/tests/_fixtures/counter-diff.tsrx",
+          "role": "support",
+          "sha256": "d5d24fd73bcf6479cfccd4c80b0afa4ea164f1b4961adf626965ca5b58b6751e"
+        },
+        {
+          "path": "packages/zustand/tests/_fixtures/multistore-diff.tsrx",
+          "role": "support",
+          "sha256": "d280e294dc8475c70b7c99ddf0ba520a80ee5b14e38257942a197561e27b58ca"
+        }
+      ]
+    },
+    {
+      "id": "zustand-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zustand-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles create, UseBoundStore, selector, and traditional equality inference.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/zustand/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/zustand/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "f388e5e070a28d257663d1cd92acd8eca27f3f7113c4b7933ab4e1b28b757e35",
+          "cases": [
+            {
+              "id": "types:zustand-public-api",
+              "testName": "create and selector public inference",
+              "fullName": "create and selector public inference"
+            }
+          ]
+        },
+        {
+          "path": "packages/zustand/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "3733b825c55dde044bdda98c1bfe3cfbf52e21577caa0fb26f1544c58442acb6"
+        },
+        {
+          "path": "packages/zustand/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "d9433c155d7cbd58d462e12960140ce259f8bf0ef84d45bf748c78703ed0c791"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "zustand-unstable-selectors",
+      "caseIds": ["adapted:zustand-unstable-selectors"],
+      "upstreamResult": "A selector returning a fresh reference on every read enters React useSyncExternalStore's warning/update loop.",
+      "octaneResult": "Octane settles the unstable selection after a bounded number of renders.",
+      "rationale": "Octane's external-store scheduling prevents an unbounded render loop while preserving the latest value.",
+      "classification": "framework-integration",
+      "consumerImpact": "Misconfigured selectors do not loop indefinitely, but may still cause avoidable rerenders.",
+      "migrationGuidance": "Return stable selector values or wrap object/array selectors with useShallow.",
+      "owner": "@octanejs/zustand",
+      "reviewCondition": "Review if React or Zustand changes unstable snapshot handling."
+    }
+  ]
+}

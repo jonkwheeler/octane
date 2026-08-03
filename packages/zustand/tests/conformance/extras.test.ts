@@ -44,6 +44,8 @@ describe('useShallow (object-slice selection)', () => {
 });
 
 describe('unstable selector — divergence from React', () => {
+	// OCTANE DIVERGENCE[zustand-unstable-selectors][adapted:zustand-unstable-selectors]
+	// @parity-case adapted:zustand-unstable-selectors
 	it('a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)', async () => {
 		let renders = 0;
 		const r = mount(RawObject, { onRender: () => renders++ });
