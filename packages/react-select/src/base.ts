@@ -3,5 +3,5 @@ export type {
 	FormatOptionLabelContext,
 	FormatOptionLabelMeta,
 	PublicBaseSelectProps,
-	SelectProps as Props,
+	RawSelectProps as Props,
 } from './select.tsrx';

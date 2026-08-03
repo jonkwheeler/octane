@@ -131,7 +131,7 @@
       "environment": "workspace-node",
       "project": "react-select-compat-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Requires bidirectional structural equality for pure public types shared by React and Octane.",
+      "notes": "Requires exact equality for every framework-neutral declaration and fail-closed key/value inventories for every member across all Props entry points, permitting only the recorded renderer adaptations.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -146,7 +146,7 @@
             {
               "id": "types:cross-environment-compatibility",
               "testName": "cross-environment structural compatibility",
-              "fullName": "cross-environment structural compatibility for pure public types"
+              "fullName": "cross-environment structural compatibility for framework-neutral declarations and complete entry-point Props inventories"
             },
             {
               "id": "types:octane-node-adaptation",
@@ -173,7 +173,7 @@
         {
           "path": "packages/react-select/typetests/compat.ts",
           "role": "support",
-          "sha256": "e8dbab101e7affbdb6fd0ab616651283dca538dfaf8f936c73f2ad1e3ef077b5"
+          "sha256": "2b98cc9d21371e6d5d504d6a6b8b3f00d8379078dd4b7c8c714db0ba0444dc05"
         }
       ]
     },
@@ -193,7 +193,7 @@
         {
           "path": "packages/react-select/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "00f95adb5f8be95a82b4dea2b85f1152ab3954556b525f4a588e4fe829b78cb7"
+          "sha256": "c4e9cf8b9bcff26bfeb9c9fd9f5a7cceea47697547325141afc9ea90ec50b9b1"
         },
         {
           "path": "scripts/react-parity/react-select-runtime-inventory.mjs",

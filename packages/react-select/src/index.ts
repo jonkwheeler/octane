@@ -62,6 +62,5 @@ export type {
 	FormatOptionLabelContext,
 	FormatOptionLabelMeta,
 	SelectInstance,
-	SelectProps as PublicBaseSelectProps,
 } from './select.tsrx';
 export type { Props } from './state-managed-select.tsrx';

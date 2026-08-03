@@ -134,6 +134,60 @@ export interface SelectProps<
 	value?: PropsValue<Option>;
 }
 
+// `react-select/base` exposes the class-level Props contract, before React's
+// `JSX.LibraryManagedAttributes` makes defaulted members optional. Keep the
+// renderer-facing SelectProps permissive while publishing the same raw shape.
+export type RawSelectRequiredPropKeys =
+	| 'backspaceRemovesValue'
+	| 'blurInputOnSelect'
+	| 'captureMenuScroll'
+	| 'classNames'
+	| 'closeMenuOnSelect'
+	| 'closeMenuOnScroll'
+	| 'components'
+	| 'controlShouldRenderValue'
+	| 'escapeClearsValue'
+	| 'filterOption'
+	| 'formatGroupLabel'
+	| 'getOptionLabel'
+	| 'getOptionValue'
+	| 'inputValue'
+	| 'isDisabled'
+	| 'isLoading'
+	| 'isOptionDisabled'
+	| 'isMulti'
+	| 'isRtl'
+	| 'isSearchable'
+	| 'loadingMessage'
+	| 'maxMenuHeight'
+	| 'menuIsOpen'
+	| 'menuPlacement'
+	| 'menuPosition'
+	| 'menuShouldBlockScroll'
+	| 'menuShouldScrollIntoView'
+	| 'minMenuHeight'
+	| 'noOptionsMessage'
+	| 'onChange'
+	| 'onInputChange'
+	| 'onMenuClose'
+	| 'onMenuOpen'
+	| 'openMenuOnClick'
+	| 'openMenuOnFocus'
+	| 'options'
+	| 'pageSize'
+	| 'placeholder'
+	| 'screenReaderStatus'
+	| 'styles'
+	| 'tabIndex'
+	| 'tabSelectsValue'
+	| 'unstyled'
+	| 'value';
+
+export type RawSelectProps<Option, IsMulti extends boolean, Group extends GroupBase<Option>> =
+	Omit<SelectProps<Option, IsMulti, Group>, RawSelectRequiredPropKeys> & Required<
+		Pick<SelectProps<Option, IsMulti, Group>, RawSelectRequiredPropKeys>
+	>;
+
 export interface SelectInstance<
 	Option = unknown,
 	IsMulti extends boolean = false,

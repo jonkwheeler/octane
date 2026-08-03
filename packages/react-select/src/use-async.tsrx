@@ -6,7 +6,9 @@ import { handleInputChange } from './utils';
 
 export interface AsyncAdditionalProps<Option, Group extends GroupBase<Option>> {
 	defaultOptions?: OptionsOrGroups<Option, Group> | boolean;
-	cacheOptions?: unknown;
+	// Matches upstream's deliberately opaque cache invalidation token.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	cacheOptions?: any;
 	loadOptions?: (inputValue: string, callback: (options: OptionsOrGroups<
 		Option,
 		Group

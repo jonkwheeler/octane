@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "react-select",
-  "roots": ["packages/react-select/tests"],
+  "roots": [
+    "packages/react-select/tests"
+  ],
   "files": [
     "packages/react-select/tests/animated.test.ts",
     "packages/react-select/tests/async.test.ts",

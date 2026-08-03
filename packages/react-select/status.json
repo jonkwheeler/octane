@@ -4,7 +4,7 @@
     "version": "5.10.2",
     "commit": "052e864b4990a67c4ee416851c34d1eb7b58267b"
   },
-  "surface": "All six JavaScript entry points and all 20 runtime exports. Public TypeScript contracts are consumer-compiled across every entry point, with exact structural assertions for shared pure contracts and the documented Octane renderer adaptations below.",
+  "surface": "All six JavaScript entry points and all 20 runtime exports. Public TypeScript contracts are consumer-compiled across every entry point. Framework-neutral declarations and every entry-point Props member are checked fail-closed; renderer-owned component, instance, event, node, and style contracts are explicitly tracked as the adaptations below.",
   "divergences": [
     "Renderable callback and component contracts use OctaneNode instead of ReactNode.",
     "Event-bearing contracts use native DOM events instead of React synthetic events.",

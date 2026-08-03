@@ -44,7 +44,8 @@ assert.deepEqual(crosswalk.typeEvidence.platformTypeAdaptations, [
 ]);
 assert.deepEqual(crosswalk.typeEvidence.coverage, {
 	pairedConsumerCompilation: 'all-six-entry-points',
-	exactStructuralAssertions: 'shared-pure-contracts-and-selected-non-renderer-members',
+	exactStructuralAssertions:
+		'all-framework-neutral-declarations-and-complete-entry-point-props-member-inventories',
 	rendererOwnedContracts: 'ported-with-documented-platform-adaptations',
 });
 
