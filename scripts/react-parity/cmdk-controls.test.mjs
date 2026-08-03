@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { verifyLaneCollectedTests } from './harness-lib.mjs';
 
-const root = new URL('../..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('../..', import.meta.url));
 const manifest = JSON.parse(
 	readFileSync(new URL('../../packages/cmdk/audit/react-parity.json', import.meta.url), 'utf8'),
 );
@@ -39,7 +40,7 @@ test('cmdk differential lane rejects a renamed declared case', () => {
 		.filter((file) => file.role === 'test')
 		.flatMap((file) =>
 			file.cases.map((entry) => ({
-				file: new URL(`../../${file.path}`, import.meta.url).pathname,
+				file: fileURLToPath(new URL(`../../${file.path}`, import.meta.url)),
 				name: entry.fullName,
 			})),
 		);
