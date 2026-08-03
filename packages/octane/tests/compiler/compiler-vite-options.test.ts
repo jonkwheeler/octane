@@ -213,6 +213,49 @@ describe('octane/compiler/vite public options', () => {
 		expect(load).not.toHaveBeenCalled();
 	});
 
+	it('reads descriptor metadata from the live graph after loading a dependency', async () => {
+		const plugin = octane({ hmr: false });
+		configure(plugin, 'build', { ssr: true });
+		const source =
+			"import Slot from './Slot.tsrx'; export function App() @{ <Slot><b>x</b></Slot> }";
+		const metadata = {
+			'octane:descriptor-children-exports': {
+				exports: ['default'],
+				fingerprint: 'current-graph-transform',
+			},
+		};
+		const result = (await (plugin.transform as any).call(
+			{
+				resolve: async () => ({ id: `${ROOT}/src/Slot.tsrx` }),
+				load: async () => ({ meta: {} }),
+				getModuleInfo: () => ({ meta: metadata }),
+			},
+			source,
+			`${ROOT}/src/App.tsrx`,
+			{ ssr: true },
+		)) as { code: string };
+		expect(isChildrenBlock(result.code, componentChildren(result.code, 'Slot'))).toBe(false);
+	});
+
+	it('classifies a direct filesystem marker when load returns a pre-transform snapshot', async () => {
+		const plugin = octane({ hmr: false });
+		configure(plugin, 'build', { ssr: true });
+		const source =
+			"import Slot from './Slot.tsrx'; export function App() @{ <Slot><b>x</b></Slot> }";
+		const slotId = `${process.cwd()}/packages/octane/tests/compiler/_fixtures/descriptor-children-direct.tsrx`;
+		const result = (await (plugin.transform as any).call(
+			{
+				resolve: async () => ({ id: slotId }),
+				load: async () => ({ meta: {} }),
+				getModuleInfo: () => null,
+			},
+			source,
+			`${ROOT}/src/App.tsrx`,
+			{ ssr: true },
+		)) as { code: string };
+		expect(isChildrenBlock(result.code, componentChildren(result.code, 'Slot'))).toBe(false);
+	});
+
 	it('fails loudly when descriptor metadata cannot be loaded', async () => {
 		const plugin = octane({ hmr: false });
 		configure(plugin, 'build');
