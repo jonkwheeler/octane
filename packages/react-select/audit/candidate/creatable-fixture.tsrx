@@ -1,4 +1,4 @@
-import { useCreatable } from '../../src/creatable';
+import { useCreatable } from '../../src/creatable.tsrx';
 import type { CreatableBaseProps } from '../../src/use-creatable.tsrx';
 
 export type CreatableOption = { label: string; value: string; __isNew__?: boolean };

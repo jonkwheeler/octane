@@ -1,12 +1,16 @@
 import crosswalk from '../export-crosswalk.json';
 import { describe, expect, it } from 'vitest';
 import * as localRoot from '../../src/index';
-import * as localAsync from '../../src/async';
-import * as localCreatable from '../../src/creatable';
+import * as localAsync from '../../src/async.tsrx';
+import * as localCreatable from '../../src/creatable.tsrx';
+import * as localBase from '../../src/base';
+import * as localAsyncCreatable from '../../src/async-creatable.tsrx';
 
 const localEntryPoints: Record<string, Record<string, unknown>> = {
 	'.': localRoot,
+	'./base': localBase,
 	'./async': localAsync,
+	'./async-creatable': localAsyncCreatable,
 	'./creatable': localCreatable,
 };
 

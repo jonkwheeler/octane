@@ -213,3 +213,90 @@ describe('useAsync in Chromium', () => {
 		}
 	}, 30_000);
 });
+
+describe('full Select in Chromium', () => {
+	it('matches React focus, menu, option selection, filtering, and keyboard behavior', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+
+			const snapshot = async (rootId: string) =>
+				page.evaluate((id) => {
+					const root = document.getElementById(id)!;
+					const visit = (node: Node): unknown => {
+						if (node.nodeType === Node.TEXT_NODE) return node.textContent;
+						if (!(node instanceof Element)) return null;
+						if (
+							node.tagName === 'STYLE' ||
+							node.getAttribute('role') === 'log' ||
+							node.id.endsWith('-live-region')
+						) return null;
+						const attributes = [...node.attributes]
+							.map((attribute) => [
+								attribute.name,
+								attribute.value
+									.replace(/css-[A-Za-z0-9_-]+/g, 'css-HASH')
+									.replace(/react-select-(?:\d+|browser)/g, 'react-select-ID'),
+							] as const)
+							.sort(([a], [b]) => a.localeCompare(b));
+						return {
+							tag: node.tagName.toLowerCase(),
+							attributes,
+							children: [...node.childNodes].map(visit).filter((value) => value !== null),
+						};
+					};
+					return [...root.childNodes].map(visit).filter((value) => value !== null);
+				}, rootId);
+
+			const expectParity = async () => {
+				expect(await snapshot('octane-select-root')).toEqual(await snapshot('react-select-root'));
+			};
+
+			await expectParity();
+			const octaneInput = page.locator('#octane-select-root [role="combobox"]');
+			const reactInput = page.locator('#react-select-root [role="combobox"]');
+			await octaneInput.focus();
+			await octaneInput.press('ArrowDown');
+			const octaneOpened = await snapshot('octane-select-root');
+			await reactInput.focus();
+			await reactInput.press('ArrowDown');
+			const reactOpened = await snapshot('react-select-root');
+			expect(octaneOpened).toEqual(reactOpened);
+			expect(await page.locator('#octane-select-root [role="option"]').allTextContents()).toEqual([
+				// The Octane menu closed when document focus moved to React; the captured
+				// structure above is the authoritative open-state comparison.
+			]);
+
+			await octaneInput.focus();
+			await octaneInput.press('ArrowDown');
+			await page.locator('#octane-select-root [role="option"]').nth(1).click();
+			const octaneSelected = await snapshot('octane-select-root');
+			await reactInput.focus();
+			await reactInput.press('ArrowDown');
+			await page.locator('#react-select-root [role="option"]').nth(1).click();
+			const reactSelected = await snapshot('react-select-root');
+			expect(octaneSelected).toEqual(reactSelected);
+			expect(await page.locator('#octane-select-root input[name="choice"]').inputValue()).toBe('2');
+
+			await octaneInput.fill('On');
+			await octaneInput.press('ArrowDown');
+			const octaneFiltered = await snapshot('octane-select-root');
+			expect(await page.locator('#octane-select-root [role="option"]').allTextContents()).toEqual(['One']);
+			await reactInput.fill('On');
+			await reactInput.press('ArrowDown');
+			const reactFiltered = await snapshot('react-select-root');
+			expect(octaneFiltered).toEqual(reactFiltered);
+
+			const logs = await page.evaluate(() => window.__reactSelectFull.logs());
+			const userActions = (items: Array<Record<string, unknown>>) =>
+				items.filter((item) => {
+					const action = (item.actionMeta as { action?: string } | undefined)?.action;
+					return item.type === 'change' || action === 'input-change';
+				});
+			expect(userActions(logs.octane)).toEqual(userActions(logs.react));
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+});

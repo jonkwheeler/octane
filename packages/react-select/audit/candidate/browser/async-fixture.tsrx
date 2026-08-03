@@ -1,4 +1,4 @@
-import { useAsync, type AsyncProps } from '../../../src/async';
+import { useAsync, type AsyncProps } from '../../../src/async.tsrx';
 
 export type AsyncOption = { label: string; value: string };
 export type AsyncResult = ReturnType<typeof useAsync<AsyncOption, never>>;

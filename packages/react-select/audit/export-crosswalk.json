@@ -9,7 +9,7 @@
     {
       "path": ".",
       "runtimeExports": {
-        "default": "not-started",
+        "default": "ported-and-tested",
         "NonceProvider": "not-started",
         "components": "ported-and-tested",
         "createFilter": "ported-and-tested",
@@ -21,12 +21,12 @@
     },
     {
       "path": "./base",
-      "runtimeExports": { "default": "not-started", "defaultProps": "not-started" },
+      "runtimeExports": { "default": "ported-and-tested", "defaultProps": "ported-and-tested" },
       "types": "not-started"
     },
     {
       "path": "./async",
-      "runtimeExports": { "default": "not-started", "useAsync": "ported-and-tested" },
+      "runtimeExports": { "default": "ported-and-tested", "useAsync": "ported-and-tested" },
       "types": "not-started"
     },
     {
@@ -43,20 +43,20 @@
     },
     {
       "path": "./creatable",
-      "runtimeExports": { "default": "not-started", "useCreatable": "ported-and-tested" },
+      "runtimeExports": { "default": "ported-and-tested", "useCreatable": "ported-and-tested" },
       "types": "not-started"
     },
     {
       "path": "./async-creatable",
-      "runtimeExports": { "default": "not-started" },
+      "runtimeExports": { "default": "ported-and-tested" },
       "types": "not-started"
     }
   ],
   "summary": {
     "entryPoints": 6,
     "runtimeExports": 20,
-    "portedAndTested": 7,
+    "portedAndTested": 13,
     "waitingOnPrerequisite": 6,
-    "notStarted": 7
+    "notStarted": 1
   }
 }

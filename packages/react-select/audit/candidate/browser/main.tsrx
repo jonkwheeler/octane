@@ -1,11 +1,12 @@
 import './main.mjs';
 
 import React from 'react';
+import ReactSelect from 'react-select';
 import { createRoot as createReactRoot } from 'react-dom/client';
 import { flushSync as flushReact } from 'react-dom';
 import { useStateManager as useReactStateManager } from 'react-select';
 import { useAsync as useReactAsync } from 'react-select/async';
-import { createRoot, flushSync } from 'octane';
+import { createRoot, delegateEvents, flushSync } from 'octane';
 
 import { MenuPortal, type MenuPortalProps } from '../../../src/components.tsrx';
 import { defaultStyles } from '../../../src/default-styles';
@@ -16,6 +17,9 @@ import {
 	type StateManagerResult,
 } from './state-manager-fixture.tsrx';
 import { AsyncFixture, type AsyncOption, type AsyncResult } from './async-fixture.tsrx';
+import { BrowserSelectFixture, type BrowserSelectOption } from './select-fixture.tsrx';
+
+delegateEvents(['click', 'focusin', 'focusout', 'input', 'keydown', 'mousedown', 'mousemove', 'mouseover']);
 
 const rootElement = document.getElementById('root');
 const portalTarget = document.getElementById('portal-target');
@@ -113,6 +117,67 @@ declare global {
 			moveControl(): Promise<ReturnType<typeof snapshot>>;
 			renderFixed(): Promise<ReturnType<typeof snapshot>>;
 			unmount(): { portalChildren: number; rootChildren: number };
+		};
+	}
+}
+
+const octaneSelectElement = document.getElementById('octane-select-root');
+const reactSelectElement = document.getElementById('react-select-root');
+if (!octaneSelectElement || !reactSelectElement) throw new Error('missing select roots');
+
+const browserSelectOptions: readonly BrowserSelectOption[] = [
+	{ label: 'One', value: '1' },
+	{ label: 'Two', value: '2' },
+	{ label: 'Disabled', value: 'disabled', disabled: true },
+];
+const selectLogs = {
+	octane: [] as Array<Record<string, unknown>>,
+	react: [] as Array<Record<string, unknown>>,
+};
+
+function browserSelectProps(engine: 'octane' | 'react') {
+	return {
+		instanceId: 'browser',
+		isOptionDisabled: (option: BrowserSelectOption) => Boolean(option.disabled),
+		name: 'choice',
+		options: browserSelectOptions,
+		onChange(value: unknown, actionMeta: Record<string, unknown>) {
+			selectLogs[engine].push({ type: 'change', value, actionMeta });
+		},
+		onInputChange(value: string, actionMeta: Record<string, unknown>) {
+			selectLogs[engine].push({ type: 'input', value, actionMeta });
+			return value;
+		},
+		onMenuOpen() {
+			selectLogs[engine].push({ type: 'open' });
+		},
+		onMenuClose() {
+			selectLogs[engine].push({ type: 'close' });
+		},
+	};
+}
+
+const octaneSelectRoot = createRoot(octaneSelectElement);
+const reactSelectRoot = createReactRoot(reactSelectElement);
+flushSync(() => {
+	octaneSelectRoot.render(BrowserSelectFixture, browserSelectProps('octane') as never);
+});
+flushReact(() => {
+	reactSelectRoot.render(
+		React.createElement(ReactSelect<BrowserSelectOption>, browserSelectProps('react') as never),
+	);
+});
+
+window.__reactSelectFull = {
+	logs() {
+		return { octane: [...selectLogs.octane], react: [...selectLogs.react] };
+	},
+};
+
+declare global {
+	interface Window {
+		__reactSelectFull: {
+			logs(): { octane: Array<Record<string, unknown>>; react: Array<Record<string, unknown>> };
 		};
 	}
 }

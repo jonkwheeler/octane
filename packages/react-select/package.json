@@ -1,8 +1,32 @@
 {
-  "name": "@octanejs/react-select-u1",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@octanejs/react-select",
+  "version": "0.1.0",
+  "license": "MIT",
   "type": "module",
+  "description": "React Select bindings for the Octane renderer.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/react-select"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "UPSTREAM.md"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./base": "./src/base.ts",
+    "./async": "./src/async.tsrx",
+    "./creatable": "./src/creatable.tsrx",
+    "./async-creatable": "./src/async-creatable.tsrx"
+  },
   "scripts": {
     "test": "pnpm upstream:verify && pnpm crosswalk:verify && pnpm test:candidate && pnpm test:octane",
     "test:candidate": "node --test audit/candidate/*.test.mjs",
@@ -17,6 +41,9 @@
     "@emotion/utils": "1.2.0",
     "@floating-ui/dom": "1.8.0",
     "memoize-one": "6.0.0"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
   },
   "devDependencies": {
     "@emotion/react": "11.9.3",

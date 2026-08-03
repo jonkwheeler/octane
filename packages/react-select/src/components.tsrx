@@ -15,6 +15,7 @@ type SpanProps = Octane.JSX.IntrinsicElements['span'];
 type SvgProps = Octane.JSX.IntrinsicElements['svg'];
 
 export interface CommonComponentProps {
+	[key: string]: unknown;
 	className?: string;
 	cx: CX;
 	getClassNames: (name: string, props: unknown) => string | undefined;
@@ -162,7 +163,7 @@ export function IndicatorsContainer(props: IndicatorsContainerProps) @{
 
 export interface PlaceholderProps extends CommonComponentProps {
 	children?: OctaneNode;
-	innerProps: DivProps;
+	innerProps?: DivProps;
 	isDisabled: boolean;
 	isFocused: boolean;
 }
@@ -177,7 +178,7 @@ export function Placeholder(props: PlaceholderProps) @{
 export interface SingleValueProps extends CommonComponentProps {
 	children?: OctaneNode;
 	data: unknown;
-	innerProps: DivProps;
+	innerProps?: DivProps;
 	isDisabled: boolean;
 }
 
@@ -248,13 +249,18 @@ function inputStyle(isHidden: boolean) {
 export function Input(props: InputProps) @{
 	const {
 		className: _className,
+		clearValue: _clearValue,
 		cx,
 		getStyles: _getStyles,
 		getClassNames: _getClassNames,
+		getValue: _getValue,
 		hasValue: _hasValue,
 		isMulti: _isMulti,
 		isRtl: _isRtl,
+		options: _options,
+		selectOption: _selectOption,
 		selectProps: _selectProps,
+		setValue: _setValue,
 		theme: _theme,
 		innerRef,
 		isDisabled,
@@ -361,7 +367,7 @@ export function MenuList(props: MenuListProps) @{
 
 export interface NoticeProps extends CommonComponentProps {
 	children?: OctaneNode;
-	innerProps: DivProps;
+	innerProps?: DivProps;
 }
 
 export function NoOptionsMessage(props: NoticeProps) @{
@@ -422,7 +428,7 @@ export interface GroupProps extends CommonComponentProps {
 	children?: OctaneNode;
 	Heading: ComponentType<GroupHeadingProps>;
 	headingProps: { id: string; data: unknown };
-	innerProps: DivProps;
+	innerProps?: DivProps;
 	label?: OctaneNode;
 	data: unknown;
 	options: readonly unknown[];
@@ -482,7 +488,7 @@ export interface MultiValueProps extends CommonComponentProps {
 	};
 	cropWithEllipsis?: boolean;
 	data: unknown;
-	innerProps: DivProps;
+	innerProps?: DivProps;
 	isFocused: boolean;
 	isDisabled: boolean;
 	removeProps: DivProps;
