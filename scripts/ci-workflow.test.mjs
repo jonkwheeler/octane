@@ -267,6 +267,16 @@ describe('CI workflow aggregation', () => {
 		assert.deepEqual(projects[1].test.exclude, ['beta/generated/**', 'beta/parity/**/*.test.ts']);
 		assert.equal(projects[1].testExecution, undefined);
 	});
+
+	test('runs Dexie browser parity only in Chromium-capable jobs', () => {
+		assert.match(
+			jobSource('test_shard'),
+			/--exclude "packages\/dexie\/tests\/browser\/\*\*\/\*\.test\.ts"/,
+		);
+		assert.match(jobSource('heavy_integration'), /packages\/dexie\/tests\/browser/);
+		assert.match(jobSource('heavy_integration'), /playwright install --with-deps chromium/);
+		assert.match(jobSource('lint_checks'), /playwright install --with-deps chromium/);
+	});
 });
 
 describe('Publish workflow validation', () => {

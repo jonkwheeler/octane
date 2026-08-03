@@ -655,6 +655,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # react-parity:check executes every available required lane, including
+      # Dexie's real-browser upstream evidence.
+      - name: Install Playwright Chromium
+        run: pnpm --filter @octanejs/dexie exec playwright install --with-deps chromium
+
       - name: Check formatting
         run: pnpm format:check
 
