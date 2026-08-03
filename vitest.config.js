@@ -263,7 +263,7 @@ export default defineConfig({
 					name: 'playwright-browser-selector',
 					include: [
 						'test-utils/playwright-browser.test.ts',
-						'packages/three/tests/browser/_playwright.test.ts',
+						'test-utils/three-playwright-launch.test.ts',
 					],
 					environment: 'node',
 					globals: false,

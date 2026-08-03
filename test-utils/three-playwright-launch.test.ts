@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { webglLaunchOptions } from './_playwright.js';
+import { webglLaunchOptions } from '../packages/three/tests/browser/_playwright.js';
 
 describe('Three WebGL browser launch normalization', () => {
 	it('supplies the Chromium-only WebGL process flags to Chromium', () => {
