@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/visx/tests/conformance/behavior.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceIds": ["visx-native-events", "visx-functional-refs"],
+      "reason": "Authenticates native events and functional ref/lifecycle adapters."
+    },
+    {
+      "path": "packages/visx/tests/conformance/exports.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the audited multi-package Octane runtime export boundary."
+    },
+    {
+      "path": "packages/visx/tests/conformance/layouts.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "visx-animation-adapter",
+      "reason": "Authenticates deterministic animation adapter output alongside representative layout families."
+    },
+    {
+      "path": "packages/visx/tests/conformance/type-exports.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "visx-octane-renderables",
+      "reason": "Authenticates the exhaustive public type surface including Octane renderables."
+    },
+    {
+      "path": "packages/visx/tests/conformance/utilities.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks framework-neutral utilities reused by the Octane package."
+    },
+    {
+      "path": "packages/visx/tests/conformance/wordcloud.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "visx-deterministic-measurement",
+      "reason": "Authenticates deterministic collision-aware wordcloud measurement."
+    },
+    {
+      "path": "packages/visx/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs identical SVG, layout, and interaction scenarios against @visx/visx@4.0.0 and Octane."
+    },
+    {
+      "path": "packages/visx/tests/differential/setup.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation."
+    },
+    {
+      "path": "packages/visx/tests/hydration/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane hydration node adoption and post-hydration interaction."
+    },
+    {
+      "path": "packages/visx/tests/ssr/ssr.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks deterministic DOM-free Octane server rendering."
+    }
+  ]
+}

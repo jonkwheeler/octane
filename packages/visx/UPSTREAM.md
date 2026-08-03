@@ -7,6 +7,12 @@ This port was audited against two immutable Airbnb Visx revisions:
 - current 4.x `master` at `485c0359664ee8e612992defb16e1f035ed40b23`, used to
   pin the public additions awaiting the next registry release.
 
+The `@visx/visx@4.0.0` npm artifact has SHA-256
+`429a337f2a3c437d40707e59c5c7acf2b10db2e6b0e142f415b01a79ec7dae44`.
+The release and current-master source are MIT licensed. The published aggregate
+contains compiled output and declarations; source and tests are audited from the
+canonical repository revisions above.
+
 ## Public package inventory
 
 The Octane package exposes 49 entry points: its aggregate root, 40 feature
@@ -50,3 +56,13 @@ Those are the only exclusions. They expose no supported web React library API.
 Behavioral divergences required for deterministic SSR, native Octane events,
 refs-as-props, and animation/measurement adapters are recorded in
 [`status.json`](./status.json) and the package [`README.md`](./README.md).
+
+## Test-suite disposition
+
+The Visx monorepo contains package-local runtime and type suites across the
+feature packages. The Octane package does not claim those many React-owned suites
+as executed unchanged. Its bounded differential lane instead runs three exact
+representative public scenarios against the released React packages, while
+adapted divergence, SSR, hydration, and exhaustive export/type lanes authenticate
+the broader Octane-specific surface. Upstream runtime and type suites are both
+therefore recorded as present and the retrofit remains `recorded-unverified`.

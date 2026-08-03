@@ -7,6 +7,7 @@ const fixture = resolve(__dirname, '../_fixtures/differential.tsrx');
 const cache = resolve(__dirname, '.react-cache');
 
 describe('@octanejs/visx React differential', () => {
+	// @parity-case differential:visx-primitives
 	it('matches scale, grid, gradient, axis, glyph, bar, and line SVG', async () => {
 		const differential = await mountDifferential(
 			fixture,
@@ -18,12 +19,14 @@ describe('@octanejs/visx React differential', () => {
 		differential.unmount();
 	});
 
+	// @parity-case differential:visx-layout
 	it('matches render-prop pie layout and path generation', async () => {
 		const differential = await mountDifferential(fixture, 'LayoutDifferential', undefined, cache);
 		await differential.step('mount', () => {});
 		differential.unmount();
 	});
 
+	// @parity-case differential:visx-interaction
 	it('matches state updates while Octane delivers a native click event', async () => {
 		const differential = await mountDifferential(
 			fixture,

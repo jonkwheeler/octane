@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "files": ["packages/visx/tests/types/parity.test-d.ts"],
+  "assertionGroups": [
+    "released namespace parity",
+    "current-master entry parity",
+    "Octane renderable and native-event divergences"
+  ]
+}

@@ -17,6 +17,8 @@ function overlaps(
 }
 
 describe('@octanejs/visx deterministic wordcloud layout', () => {
+	// OCTANE DIVERGENCE[visx-deterministic-measurement][adapted:visx-deterministic-measurement]
+	// @parity-case adapted:visx-deterministic-measurement
 	it('places estimated rotated glyph rectangles within bounds without overlap', () => {
 		const layout = layoutWordcloud({
 			width: 640,

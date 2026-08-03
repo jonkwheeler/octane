@@ -34,6 +34,8 @@ afterEach(() => {
 });
 
 describe('@octanejs/visx stateful behavior', () => {
+	// OCTANE DIVERGENCE[visx-native-events][adapted:visx-native-events]
+	// @parity-case adapted:visx-native-events
 	it('drives Drag with native pointer events and applies restrictions', () => {
 		const view = render(DragFixture);
 		const target = view.find('#drag-target');
@@ -141,6 +143,8 @@ describe('@octanejs/visx stateful behavior', () => {
 		expect(view.find('#parent-size-enhancer').textContent).toBe('180x90');
 	});
 
+	// OCTANE DIVERGENCE[visx-functional-refs][adapted:visx-functional-refs]
+	// @parity-case adapted:visx-functional-refs
 	it('rebinds measurement observers and listeners when its ref target remounts', () => {
 		vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
 			callback(0);
