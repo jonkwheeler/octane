@@ -3,12 +3,13 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { verifyLaneCollectedTests } from './harness-lib.mjs';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 
-const root = new URL('../..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('../..', import.meta.url));
 const manifest = JSON.parse(
 	readFileSync(new URL('../../packages/base-ui/audit/react-parity.json', import.meta.url), 'utf8'),
 );
@@ -23,7 +24,7 @@ test('Base UI differential lane rejects a renamed declared case', () => {
 		.filter((file) => file.role === 'test')
 		.flatMap((file) =>
 			file.cases.map((entry) => ({
-				file: new URL(`../../${file.path}`, import.meta.url).pathname,
+				file: fileURLToPath(new URL(`../../${file.path}`, import.meta.url)),
 				name: entry.fullName,
 			})),
 		);
