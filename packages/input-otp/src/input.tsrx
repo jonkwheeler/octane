@@ -63,6 +63,7 @@ export function OTPInput(props: OTPInputProps) {
 
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const composedInputRef = useMemo(() => [inputRef, ref ?? null], [ref]);
 	const initialLoadRef = useRef({
 		value,
 		onChange,
@@ -326,7 +327,7 @@ export function OTPInput(props: OTPInputProps) {
 					maxLength={maxLength}
 					suppressHydrationWarning
 					value={value}
-					ref={[inputRef, ref ?? null]}
+					ref={composedInputRef}
 					onInput={(event) => {
 						consumerOnInput?.(event);
 						const newValue = event.currentTarget.value.slice(0, maxLength);

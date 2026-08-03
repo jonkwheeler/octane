@@ -19,8 +19,15 @@ function Slots(props: RenderProps) {
 	);
 }
 function Base() {
+	const [value, setValue] = useState('');
 	return (
-		<OTPInput maxLength={6} pattern={REGEXP_ONLY_DIGITS} render={(state) => <Slots {...state} />} />
+		<OTPInput
+			value={value}
+			onChange={setValue}
+			maxLength={6}
+			pattern={REGEXP_ONLY_DIGITS}
+			render={(state) => <Slots {...state} />}
+		/>
 	);
 }
 function Props() {

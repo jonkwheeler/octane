@@ -101,11 +101,15 @@ describe('@octanejs/input-otp component state and projection', () => {
 		const app = mount(RefInput, { inputRef: [inputRef, callbackRef] });
 		expect(inputRef.current).toBe(app.find('input'));
 		expect(callbackRef).toHaveBeenLastCalledWith(inputRef.current);
+		expect(callbackRef).toHaveBeenCalledTimes(1);
+		edit(inputRef.current as HTMLInputElement, '12');
+		expect(callbackRef).toHaveBeenCalledTimes(1);
 		inputRef.current?.focus();
 		expect(document.activeElement).toBe(inputRef.current);
 		app.unmount();
 		expect(inputRef.current).toBeNull();
 		expect(callbackRef).toHaveBeenLastCalledWith(null);
+		expect(callbackRef).toHaveBeenCalledTimes(2);
 	});
 
 	it('projects placeholder, focus, active slot, fake caret, and hover state', () => {

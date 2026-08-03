@@ -93,8 +93,14 @@ it('should change the input value', async () => {
 	expect(await input().inputValue()).toBe('123');
 });
 it('should prevent typing greater than max length', async () => {
-	await input().pressSequentially('1234567');
-	expect(await input().inputValue()).toBe('123456');
+	await input().pressSequentially('123456');
+	await expect
+		.poll(() =>
+			input().evaluate((node: HTMLInputElement) => [node.selectionStart, node.selectionEnd]),
+		)
+		.toEqual([5, 6]);
+	await input().press('7');
+	expect(await input().inputValue()).toBe('123457');
 });
 it('should autofocus', async () => {
 	await goto('/with-autofocus');
