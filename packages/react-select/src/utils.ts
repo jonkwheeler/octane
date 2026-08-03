@@ -44,3 +44,13 @@ export function handleInputChange(
 	}
 	return inputValue;
 }
+
+export function valueTernary<Option, IsMulti extends boolean>(
+	isMulti: IsMulti | undefined,
+	multiValue: readonly Option[],
+	singleValue: Option,
+): IsMulti extends true ? readonly Option[] : Option {
+	return (isMulti ? multiValue : singleValue) as IsMulti extends true
+		? readonly Option[]
+		: Option;
+}

@@ -4,6 +4,9 @@ export interface GroupBase<Option> {
 }
 
 export type Options<Option> = readonly Option[];
+export type OptionsOrGroups<Option, Group extends GroupBase<Option>> = readonly (Option | Group)[];
+export type GetOptionLabel<Option> = (option: Option) => string;
+export type GetOptionValue<Option> = (option: Option) => string;
 export type SingleValue<Option> = Option | null;
 export type MultiValue<Option> = readonly Option[];
 export type PropsValue<Option> = MultiValue<Option> | SingleValue<Option>;

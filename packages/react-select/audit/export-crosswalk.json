@@ -26,7 +26,7 @@
     },
     {
       "path": "./async",
-      "runtimeExports": { "default": "not-started", "useAsync": "not-started" },
+      "runtimeExports": { "default": "not-started", "useAsync": "ported-and-tested" },
       "types": "not-started"
     },
     {
@@ -43,7 +43,7 @@
     },
     {
       "path": "./creatable",
-      "runtimeExports": { "default": "not-started", "useCreatable": "not-started" },
+      "runtimeExports": { "default": "not-started", "useCreatable": "ported-and-tested" },
       "types": "not-started"
     },
     {
@@ -55,8 +55,8 @@
   "summary": {
     "entryPoints": 6,
     "runtimeExports": 20,
-    "portedAndTested": 5,
+    "portedAndTested": 7,
     "waitingOnPrerequisite": 6,
-    "notStarted": 9
+    "notStarted": 7
   }
 }

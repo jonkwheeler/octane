@@ -4,6 +4,7 @@ import React from 'react';
 import { createRoot as createReactRoot } from 'react-dom/client';
 import { flushSync as flushReact } from 'react-dom';
 import { useStateManager as useReactStateManager } from 'react-select';
+import { useAsync as useReactAsync } from 'react-select/async';
 import { createRoot, flushSync } from 'octane';
 
 import { MenuPortal, type MenuPortalProps } from '../../../src/components.tsrx';
@@ -14,6 +15,7 @@ import {
 	StateManagerFixture,
 	type StateManagerResult,
 } from './state-manager-fixture.tsrx';
+import { AsyncFixture, type AsyncOption, type AsyncResult } from './async-fixture.tsrx';
 
 const rootElement = document.getElementById('root');
 const portalTarget = document.getElementById('portal-target');
@@ -111,6 +113,105 @@ declare global {
 			moveControl(): Promise<ReturnType<typeof snapshot>>;
 			renderFixed(): Promise<ReturnType<typeof snapshot>>;
 			unmount(): { portalChildren: number; rootChildren: number };
+		};
+	}
+}
+
+const octaneAsyncElement = document.getElementById('octane-async-root');
+const reactAsyncElement = document.getElementById('react-async-root');
+if (!octaneAsyncElement || !reactAsyncElement) throw new Error('missing async roots');
+
+type PendingRequest = {
+	inputValue: string;
+	resolve: (options: readonly AsyncOption[]) => void;
+};
+const requests = { octane: [] as PendingRequest[], react: [] as PendingRequest[] };
+let octaneAsync!: AsyncResult;
+let reactAsync!: AsyncResult;
+
+function asyncProps(engine: 'octane' | 'react') {
+	return {
+		cacheOptions: true,
+		defaultOptions: [{ label: 'Default', value: 'default' }],
+		loadOptions(inputValue: string) {
+			return new Promise<readonly AsyncOption[]>((resolve) => {
+				requests[engine].push({ inputValue, resolve });
+			});
+		},
+	};
+}
+
+const octaneAsyncProps = asyncProps('octane');
+const reactAsyncProps = asyncProps('react');
+
+function ReactAsyncFixture() {
+	reactAsync = useReactAsync<AsyncOption, false, never, Record<string, unknown>>(
+		reactAsyncProps as never,
+	) as AsyncResult;
+	return null;
+}
+
+const octaneAsyncRoot = createRoot(octaneAsyncElement);
+const reactAsyncRoot = createReactRoot(reactAsyncElement);
+flushSync(() => {
+	octaneAsyncRoot.render(AsyncFixture, {
+		asyncProps: octaneAsyncProps,
+		bind: (result) => {
+			octaneAsync = result;
+		},
+	});
+});
+flushReact(() => reactAsyncRoot.render(React.createElement(ReactAsyncFixture)));
+
+function asyncSnapshot(result: AsyncResult) {
+	return { isLoading: result.isLoading, options: result.options };
+}
+
+function snapshotAsync() {
+	return {
+		octane: asyncSnapshot(octaneAsync),
+		react: asyncSnapshot(reactAsync),
+		requests: {
+			octane: requests.octane.map((request) => request.inputValue),
+			react: requests.react.map((request) => request.inputValue),
+		},
+	};
+}
+
+async function settleAsync() {
+	await Promise.resolve();
+	await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+window.__reactSelectAsync = {
+	snapshot: snapshotAsync,
+	async input(value: string) {
+		const meta = { action: 'input-change' as const, prevInputValue: '' };
+		flushSync(() => octaneAsync.onInputChange(value, meta));
+		flushReact(() => reactAsync.onInputChange(value, meta));
+		await settleAsync();
+		return snapshotAsync();
+	},
+	async resolve(inputValue: string, options: readonly AsyncOption[]) {
+		const octaneRequest = requests.octane.findLast((request) => request.inputValue === inputValue);
+		const reactRequest = requests.react.findLast((request) => request.inputValue === inputValue);
+		if (!octaneRequest || !reactRequest) throw new Error(`missing request for ${inputValue}`);
+		octaneRequest.resolve(options);
+		reactRequest.resolve(options);
+		await settleAsync();
+		return snapshotAsync();
+	},
+};
+
+declare global {
+	interface Window {
+		__reactSelectAsync: {
+			snapshot: typeof snapshotAsync;
+			input(value: string): Promise<ReturnType<typeof snapshotAsync>>;
+			resolve(
+				inputValue: string,
+				options: readonly AsyncOption[],
+			): Promise<ReturnType<typeof snapshotAsync>>;
 		};
 	}
 }

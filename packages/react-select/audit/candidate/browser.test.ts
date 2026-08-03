@@ -154,3 +154,62 @@ describe('useStateManager in Chromium', () => {
 		}
 	}, 30_000);
 });
+
+describe('useAsync in Chromium', () => {
+	it('matches React loading, cache, stale-request, resolution, and clear behavior', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectAsync));
+			const initial = await page.evaluate(() => window.__reactSelectAsync.snapshot());
+			expect(initial.octane).toEqual(initial.react);
+			expect(initial.octane).toEqual({
+				isLoading: false,
+				options: [{ label: 'Default', value: 'default' }],
+			});
+
+			const loading = await page.evaluate(() => window.__reactSelectAsync.input('alpha'));
+			expect(loading.octane).toEqual(loading.react);
+			expect(loading.octane).toEqual({ isLoading: true, options: [] });
+			expect(loading.requests.octane).toEqual(loading.requests.react);
+
+			const resolved = await page.evaluate(() =>
+				window.__reactSelectAsync.resolve('alpha', [{ label: 'Alpha', value: 'alpha' }]),
+			);
+			expect(resolved.octane).toEqual(resolved.react);
+			expect(resolved.octane).toEqual({
+				isLoading: false,
+				options: [{ label: 'Alpha', value: 'alpha' }],
+			});
+
+			const cached = await page.evaluate(() => window.__reactSelectAsync.input('alpha'));
+			expect(cached.octane).toEqual(cached.react);
+			expect(cached.requests.octane).toEqual(['alpha']);
+
+			await page.evaluate(() => window.__reactSelectAsync.input('beta'));
+			await page.evaluate(() => window.__reactSelectAsync.input('gamma'));
+			const stale = await page.evaluate(() =>
+				window.__reactSelectAsync.resolve('beta', [{ label: 'Beta', value: 'beta' }]),
+			);
+			expect(stale.octane).toEqual(stale.react);
+			expect(stale.octane).toEqual({
+				isLoading: true,
+				options: [{ label: 'Alpha', value: 'alpha' }],
+			});
+			const latest = await page.evaluate(() =>
+				window.__reactSelectAsync.resolve('gamma', [{ label: 'Gamma', value: 'gamma' }]),
+			);
+			expect(latest.octane).toEqual(latest.react);
+			expect(latest.octane.options).toEqual([{ label: 'Gamma', value: 'gamma' }]);
+
+			const cleared = await page.evaluate(() => window.__reactSelectAsync.input(''));
+			expect(cleared.octane).toEqual(cleared.react);
+			expect(cleared.octane).toEqual({
+				isLoading: false,
+				options: [{ label: 'Default', value: 'default' }],
+			});
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+});
