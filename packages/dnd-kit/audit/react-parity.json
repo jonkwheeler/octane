@@ -1,0 +1,145 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/clauderic/dnd-kit.git",
+    "version": "0.5.0",
+    "commit": "cc98bdd52c06e55221e8cf77aaa0c2ec0f55b86f",
+    "sourceRoot": "packages/react/src",
+    "testRoot": "packages/react",
+    "license": "MIT",
+    "integrity": "sha256:33ce0c6b148117ab4568669492cd8187e8d04f3d1125cd26c598d9110a14e75e",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "absent", "types": "absent" },
+  "adaptedRoots": {
+    "source": { "roots": ["packages/dnd-kit/src"], "include": ["$a"], "exclude": [] },
+    "tests": {
+      "roots": ["packages/dnd-kit/tests/parity"],
+      "include": ["contracts\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "dnd-kit-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "dnd-kit-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs one identical authored keyboard drag lifecycle against @dnd-kit/react 0.5.0 and @octanejs/dnd-kit; this is bounded jsdom evidence, not browser-complete parity.",
+      "files": [
+        {
+          "path": "packages/dnd-kit/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "14a5407a6fdb20783b3b926b11acf838b3f53c180cdb93a351ce7c590c699bb3",
+          "cases": [
+            {
+              "id": "differential:dnd-kit-keyboard-lifecycle",
+              "testName": "matches mount, pickup, movement, overlay, and drop output",
+              "fullName": "differential: @octanejs/dnd-kit vs @dnd-kit/react matches mount, pickup, movement, overlay, and drop output"
+            }
+          ]
+        },
+        {
+          "path": "packages/dnd-kit/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "4f4ccd1be1503de6c1600da7c90760827e4bfc3ffb265138a690693eafb648c0"
+        },
+        {
+          "path": "packages/dnd-kit/tests/_fixtures/differential.tsrx",
+          "role": "support",
+          "sha256": "babbe9107fc8dc7350fb107f7304aec8647947f80c0167bdd5830b26d43e7cc4"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/dnd-kit/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "cea0d1ab363c6fd22ec54aa731e1b7845c6ce093d9119aecfb4281e49511b30e"
+        },
+        {
+          "path": "packages/dnd-kit/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "efd62691dfa80c2d80d6555da641e947927ce2669f423ba6ac6c1abd9aee210d"
+        },
+        {
+          "path": "packages/dnd-kit/scripts/check-upstream-ledger.mjs",
+          "role": "support",
+          "sha256": "f4cf7ed91b45c33b096491562ec610131569b54341ba02e5e98b4ca0edab31aa"
+        },
+        {
+          "path": "scripts/react-parity/dnd-kit-controls.test.mjs",
+          "role": "support",
+          "sha256": "f96cae516381e16e56aef4371c7f8e0147c215a487b9e2c86e2f24ed109a5808"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "338397be169909d6d172cef9126367e51cba34b8ce280ba0496f9dcdef917350"
+        }
+      ]
+    },
+    {
+      "id": "dnd-kit-parity-audit-contracts",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "dnd-kit-parity-audit",
+      "notes": "Authenticates the upstream boundary and structured renderer adaptations without counting them as behavioral React parity.",
+      "files": [
+        {
+          "path": "packages/dnd-kit/tests/parity/contracts.test.ts",
+          "role": "test",
+          "sha256": "408e1a28cb20355c92dc9d60dd0cc34bd42e27c8858ff71dce67b8ba4e1a5f2d",
+          "cases": [
+            {
+              "id": "adapted:dnd-kit-upstream-ledger",
+              "testName": "authenticates the pinned upstream source and absent upstream suites",
+              "fullName": "@octanejs/dnd-kit parity audit contracts authenticates the pinned upstream source and absent upstream suites"
+            },
+            {
+              "id": "adapted:dnd-kit-renderer-adaptations",
+              "testName": "keeps renderer-owned drag adaptations explicit",
+              "fullName": "@octanejs/dnd-kit parity audit contracts keeps renderer-owned drag adaptations explicit"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "renderer-owned-drag-adaptations",
+      "caseIds": ["adapted:dnd-kit-renderer-adaptations"],
+      "upstreamResult": "React accepts ordinary element children in DragOverlay and enables optimistic DOM sorting by default.",
+      "octaneResult": "The binding distinguishes compiled child blocks from render props and omits the default optimistic sorting plugin.",
+      "rationale": "Moving a host before application state commits can split an Octane renderer-owned keyed range.",
+      "classification": "rendering",
+      "consumerImpact": "Optimistic pre-commit sortable movement must be opted into explicitly, and overlay child plumbing follows Octane compilation semantics.",
+      "migrationGuidance": "Commit sortable order in application state and pass explicit plugins only when their DOM ownership is safe.",
+      "owner": "@octanejs/dnd-kit",
+      "reviewCondition": "Review if Octane supports safe external movement of renderer-owned keyed ranges."
+    }
+  ]
+}

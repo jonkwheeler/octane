@@ -32,6 +32,7 @@ function byId(mount: DiffMount, id: string): Element {
 }
 
 describe('differential: @octanejs/dnd-kit vs @dnd-kit/react', () => {
+	// @parity-case differential:dnd-kit-keyboard-lifecycle
 	it('matches mount, pickup, movement, overlay, and drop output', async () => {
 		const comparison = await mountDifferential(fixture, 'KeyboardDragFixture', undefined, cache);
 		await comparison.step('mount and measure', (octane, react) => {

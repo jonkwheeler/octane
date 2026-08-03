@@ -2083,11 +2083,9 @@ export default defineConfig({
 					name: 'dnd-kit',
 					include: [
 						'packages/dnd-kit/tests/conformance/**/*.test.ts',
-						'packages/dnd-kit/tests/differential/**/*.test.ts',
 						'packages/dnd-kit/tests/hydration/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					globalSetup: ['packages/dnd-kit/tests/differential/_setup.ts'],
 					setupFiles: ['packages/dnd-kit/tests/_setup.ts'],
 					globals: false,
 				},
@@ -2112,6 +2110,35 @@ export default defineConfig({
 						},
 					],
 				},
+			},
+			{
+				test: {
+					name: 'dnd-kit-differential',
+					include: ['packages/dnd-kit/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/dnd-kit/tests/differential/_setup.ts'],
+					setupFiles: ['packages/dnd-kit/tests/_setup.ts'],
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/dnd-kit$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'dnd-kit-parity-audit',
+					include: ['packages/dnd-kit/tests/parity/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/dnd-kit/tests/conformance/core.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane adapter integration and is not counted as React parity."
+    },
+    {
+      "path": "packages/dnd-kit/tests/conformance/exports.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks local runtime exports but is not an upstream suite."
+    },
+    {
+      "path": "packages/dnd-kit/tests/conformance/hooks.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane hook slots and is not counted as React parity."
+    },
+    {
+      "path": "packages/dnd-kit/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs one identical authored keyboard-drag fixture against both adapters."
+    },
+    {
+      "path": "packages/dnd-kit/tests/hydration/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane hydration and is not counted as React parity."
+    },
+    {
+      "path": "packages/dnd-kit/tests/parity/contracts.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates evidence and structured divergences without claiming React behavior parity."
+    },
+    {
+      "path": "packages/dnd-kit/tests/ssr/ssr.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane server rendering and is not counted as React parity."
+    }
+  ]
+}
