@@ -848,7 +848,11 @@ export default defineConfig({
 			{
 				test: {
 					name: 'tanstack-pacer',
-					include: ['packages/tanstack-pacer/tests/**/*.test.ts'],
+					include: [
+						'packages/tanstack-pacer/tests/**/*.test.ts',
+						'!packages/tanstack-pacer/tests/differential/**/*.test.ts',
+						'!packages/tanstack-pacer/tests/parity/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -870,6 +874,43 @@ export default defineConfig({
 						},
 					],
 				},
+			},
+			{
+				test: {
+					name: 'tanstack-pacer-differential',
+					include: ['packages/tanstack-pacer/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/tanstack-pacer/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-pacer$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-pacer/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-pacer\/(.*)$/,
+							replacement:
+								resolve(import.meta.dirname, 'packages/tanstack-pacer/src') + '/$1/index.ts',
+						},
+						{
+							find: /^@octanejs\/tanstack-store$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-store/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'tanstack-pacer-parity-audit',
+					include: ['packages/tanstack-pacer/tests/parity/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "publicEntrypoints": [
+    { "path": ".", "octanePath": ".", "disposition": "surface-present-unverified" },
+    {
+      "path": "./async-batcher",
+      "octanePath": "./async-batcher",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./async-debouncer",
+      "octanePath": "./async-debouncer",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./async-queuer",
+      "octanePath": "./async-queuer",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./async-rate-limiter",
+      "octanePath": "./async-rate-limiter",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./async-retryer",
+      "octanePath": "./async-retryer",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./async-throttler",
+      "octanePath": "./async-throttler",
+      "disposition": "surface-present-unverified"
+    },
+    { "path": "./batcher", "octanePath": "./batcher", "disposition": "surface-present-unverified" },
+    {
+      "path": "./debouncer",
+      "octanePath": "./debouncer",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./provider",
+      "octanePath": "./provider",
+      "disposition": "surface-present-unverified"
+    },
+    { "path": "./queuer", "octanePath": "./queuer", "disposition": "surface-present-unverified" },
+    {
+      "path": "./rate-limiter",
+      "octanePath": "./rate-limiter",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./throttler",
+      "octanePath": "./throttler",
+      "disposition": "surface-present-unverified"
+    },
+    { "path": "./types", "octanePath": "./types", "disposition": "surface-present-unverified" },
+    { "path": "./utils", "octanePath": "./utils", "disposition": "surface-present-unverified" },
+    { "path": "./package.json", "disposition": "metadata-only" }
+  ],
+  "coreReexport": {
+    "package": "@tanstack/pacer",
+    "version": "0.21.1",
+    "disposition": "reused-byte-identically"
+  },
+  "upstreamTests": [],
+  "typeSuite": {
+    "disposition": "insufficient",
+    "reason": "The upstream test:types script compiles package source but has no dedicated type-assertion artifacts."
+  }
+}

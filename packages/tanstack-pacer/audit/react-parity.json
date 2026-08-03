@@ -1,0 +1,160 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/pacer.git",
+    "version": "0.22.1",
+    "commit": "a894009100aeb373965d4121eb92a1af634af012",
+    "sourceRoot": "packages/react-pacer/src",
+    "testRoot": "packages/react-pacer (no runtime test artifacts)",
+    "license": "MIT",
+    "integrity": "sha256:d4055dcec785b5eac078a2c2acde90b80e84e70c0262a174a5065ed92a9be2f0",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "insufficient"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-pacer/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/tanstack-pacer/tests/differential",
+        "packages/tanstack-pacer/tests/parity"
+      ],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "2138b783efa6024930c0a99e134680d5ad696ce29caedbb54b944143f06bed3a"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-pacer-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-pacer-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs one representative same-fixture real-timer scheduler lifecycle against @octanejs/tanstack-pacer and the pinned React adapter; upstream provides no adapter runtime suite.",
+      "files": [
+        {
+          "path": "packages/tanstack-pacer/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "0df6266b5ed621ad744ea7096d036ea71f62f4dfe1a0f47a7476de8fe386517f",
+          "cases": [
+            {
+              "id": "differential:tanstack-pacer-scheduler-lifecycle",
+              "testName": "matches debounce, throttle, batch, and teardown behavior",
+              "fullName": "differential: @octanejs/tanstack-pacer vs @tanstack/react-pacer matches debounce, throttle, batch, and teardown behavior"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-pacer/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "7d663eb784341cd9db4e8373c1f41b332cb03d4ea5223450c7f8b818a4236eff"
+        },
+        {
+          "path": "packages/tanstack-pacer/tests/_fixtures/pacer-diff.tsrx",
+          "role": "support",
+          "sha256": "042521ff874b6b4e7b98cab9cfff09c99f75be40bed2d1a474bcea0c7685f706"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/tanstack-pacer/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "5b1cbeb30ea05ef50105ab689cb34e6f15f3c6eb305756ad5e1caac36916c13b"
+        },
+        {
+          "path": "packages/tanstack-pacer/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "a345d8c89b4b592164ed5f0a3688f33af857237826a902193fbba7738dad1d9b"
+        },
+        {
+          "path": "packages/tanstack-pacer/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "4182bb57a75150946225657a5c833c0e18b936206d2b011ce53d7fb75ec12582"
+        },
+        {
+          "path": "packages/tanstack-pacer/scripts/check-upstream-ledger.mjs",
+          "role": "support",
+          "sha256": "9e56133a67765ebe4b22a7619d46560d4fa2daa2edcc1c6081ddad76a91b6a08"
+        },
+        {
+          "path": "scripts/react-parity/tanstack-pacer-controls.test.mjs",
+          "role": "support",
+          "sha256": "bda48b9c746c105e6953295907b52d9426e587ec1f8ffe30aa57c8ea2823ebf3"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "ab102da86c24f865d371dea010343f9304c09a30ddcb6d1f95181a139e237e8c"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-pacer-parity-audit",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-pacer-parity-audit",
+      "notes": "Authenticates the complete adapter source and entrypoint boundary, absent runtime suite, and structured setter-type adaptation.",
+      "files": [
+        {
+          "path": "packages/tanstack-pacer/tests/parity/contracts.test.ts",
+          "role": "test",
+          "sha256": "e96c2408c9ade9d8368afa48f3de9d33706c59d4be435c81d81789d28fbe71e5",
+          "cases": [
+            {
+              "id": "adapted:tanstack-pacer-upstream-ledger",
+              "testName": "authenticates all 16 entrypoints and the absent runtime suite",
+              "fullName": "@octanejs/tanstack-pacer parity audit contracts authenticates all 16 entrypoints and the absent runtime suite"
+            },
+            {
+              "id": "adapted:tanstack-pacer-state-setters",
+              "testName": "keeps the structural state-setter type adaptation explicit",
+              "fullName": "@octanejs/tanstack-pacer parity audit contracts keeps the structural state-setter type adaptation explicit"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "structural-state-setter-types",
+      "caseIds": ["adapted:tanstack-pacer-state-setters"],
+      "upstreamResult": "React adapter state helpers expose React.Dispatch<React.SetStateAction<T>> types.",
+      "octaneResult": "Octane exposes structurally identical local state-setter aliases without a React type dependency.",
+      "rationale": "The callback/value union shape is framework-neutral while the React namespace is not.",
+      "classification": "types",
+      "consumerImpact": "Type names do not require importing React, but setter call shapes are unchanged.",
+      "migrationGuidance": "Use the exported local setter types or rely on structural inference.",
+      "owner": "@octanejs/tanstack-pacer",
+      "reviewCondition": "Review if Octane adopts a canonical namespaced setter type."
+    }
+  ]
+}
