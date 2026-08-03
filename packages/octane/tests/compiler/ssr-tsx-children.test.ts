@@ -219,4 +219,14 @@ describe('descriptorChildren component marker', () => {
 			).toBe(false);
 		}
 	});
+
+	it('tags marked static sibling children as positional in client and server output', () => {
+		const source = `
+			import { descriptorChildren } from 'octane';
+			const Slot = descriptorChildren(function Slot(props) { return props.children; });
+			export function App() @{ <Slot><i>a</i><b>b</b></Slot> }`;
+		for (const code of [clientCode(source), serverCode(source)]) {
+			expect(runtimeImports(code, ['positionalChildren']).size).toBe(1);
+		}
+	});
 });
