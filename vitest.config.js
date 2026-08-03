@@ -262,6 +262,7 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-syntax-highlighter',
+					fileParallelism: false,
 					include: [
 						'packages/react-syntax-highlighter/tests/**/*.test.ts',
 						'!packages/react-syntax-highlighter/tests/ssr/**/*.test.ts',

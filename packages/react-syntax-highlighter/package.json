@@ -33,6 +33,7 @@
   ],
   "scripts": {
     "generate": "node scripts/generate-surface.mjs",
+    "generate:adapted-tests": "node scripts/generate-adapted-tests.mjs",
     "generate:entrypoints": "node scripts/generate-entrypoints.mjs --write",
     "verify:entrypoints": "node scripts/generate-entrypoints.mjs",
     "test:pristine": "jest --config jest.pristine.config.cjs --runInBand --ci --no-watchman",
