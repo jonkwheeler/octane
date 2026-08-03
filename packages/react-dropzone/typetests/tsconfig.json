@@ -4,6 +4,7 @@
     "accept.tsx",
     "basic.tsx",
     "events.tsx",
+    "file-dialog.tsx",
     "hook.tsx",
     "plugin.tsx",
     "refs.tsx",

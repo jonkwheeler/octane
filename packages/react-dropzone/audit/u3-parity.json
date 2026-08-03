@@ -3,7 +3,7 @@
     "upstream": "upstream/canonical/src/index.tsx",
     "upstreamSha256": "4fc4ce4feb05906e4362ef35b927f13c750134b1d1605ec038c0cc7395fc3d41",
     "runtime": "src/index.tsrx",
-    "runtimeSha256": "7d736cae249a08cd7d41a34dc3d89b8415e462125dd584991f1f82683c54d33a",
+    "runtimeSha256": "9c7475553f04ee3400a08aa5808f847b3ad810f641287a94346953ee77754132",
     "types": "src/types.ts",
     "typesSha256": "8da5548dd314e84bfb8a7361b9781a6b7df3940a7a3fb8734e7d23863fde586e",
     "transforms": [
@@ -13,6 +13,7 @@
       "public declarations split into authored types.ts to preserve generic prop getters",
       "root/input refs composed through Octane array refs",
       "hidden-input border declaration ordered last for deterministic SSR hydration",
+      "in-flight acquisition aborted during component teardown",
       "repository Prettier formatting"
     ]
   },

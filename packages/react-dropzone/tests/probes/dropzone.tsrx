@@ -43,6 +43,27 @@ export function StateProbe(props: {
 	</div>
 }
 
+export function AcquisitionProbe(props: { options: any; includeInput?: boolean }) @{
+	const state = useDropzone(props.options);
+	<div {...state.getRootProps({ 'data-probe': 'root' })}>
+		{props.includeInput !== false && <input {...state.getInputProps({ 'data-probe': 'input' })} />}
+		<output>{JSON.stringify({
+			accepted: state.acceptedFiles.map((file) => file.name),
+			rejected: state.fileRejections.map(
+				({ file, errors }) => ({
+					name: file.name,
+					codes: errors.map((error) => error.code),
+					messages: errors.map((error) => error.message),
+				}),
+			),
+			processing: state.isProcessing,
+			drag: [state.isDragActive, state.isDragAccept, state.isDragReject, state.isDragUnknown],
+			global: state.isDragGlobal,
+			dialog: state.isFileDialogActive,
+		})}</output>
+	</div>
+}
+
 export function RefKeyProbe(props: { userRef: any; capture: (value: any) => void }) @{
 	const state = useDropzone();
 	const rootProps = state.getRootProps({ refKey: 'innerRef', innerRef: props.userRef });

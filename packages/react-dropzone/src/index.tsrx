@@ -192,6 +192,7 @@ export function useDropzone(props: DropzoneOptions = {}): DropzoneState {
 	// validator. A newer drop/selection aborts the previous run so slow async work can't resolve late
 	// and clobber the state with stale results.
 	const processingAbortRef = useRef<AbortController | null>(null);
+	useEffect(() => () => processingAbortRef.current?.abort(), []);
 
 	// Begin a processing run: supersede any run still in flight and flip {isProcessing} on. Returns
 	// the run's AbortSignal, which downstream async steps check to bail if a newer run took over.
