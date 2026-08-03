@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs the same authored keyboard fixture and event sequence against @octanejs/tanstack-hotkeys and pinned @tanstack/react-hotkeys."
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/hotkeys.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane hooks and document integration and is not counted as React parity."
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/parity/contracts.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Authenticates upstream evidence and the structured target-ref adaptation without claiming React behavior parity.",
+      "divergenceIds": ["plain-ref-target"]
+    }
+  ]
+}

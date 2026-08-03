@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "publicEntrypoints": [
+    {
+      "path": ".",
+      "disposition": "surface-present-unverified",
+      "evidence": "The Octane root mirrors all 22 React adapter exports and re-exports the exact @tanstack/hotkeys@0.8.0 core; one representative lifecycle is differential-tested."
+    },
+    {
+      "path": "./package.json",
+      "disposition": "metadata-only",
+      "evidence": "Published metadata entrypoint; not a runtime adapter contract."
+    }
+  ],
+  "adapterExports": [
+    "HotkeysProvider",
+    "HotkeysProviderOptions",
+    "HotkeysProviderProps",
+    "HotkeyRegistrationsResult",
+    "ReactHotkeyRecorder",
+    "ReactHotkeySequenceRecorder",
+    "UseHotkeyDefinition",
+    "UseHotkeyOptions",
+    "UseHotkeySequenceDefinition",
+    "UseHotkeySequenceOptions",
+    "useDefaultHotkeysOptions",
+    "useHeldKeyCodes",
+    "useHeldKeys",
+    "useHotkey",
+    "useHotkeyRecorder",
+    "useHotkeyRegistrations",
+    "useHotkeySequence",
+    "useHotkeySequenceRecorder",
+    "useHotkeySequences",
+    "useHotkeys",
+    "useHotkeysContext",
+    "useKeyHold"
+  ],
+  "coreReexport": {
+    "package": "@tanstack/hotkeys",
+    "version": "0.8.0",
+    "disposition": "reused-byte-identically"
+  },
+  "upstreamTests": [
+    {
+      "path": "packages/react-hotkeys/tests/useHotkey.test.tsx",
+      "cases": 9,
+      "disposition": "vendored-not-adapted"
+    },
+    {
+      "path": "packages/react-hotkeys/tests/useHotkeyRegistrations.test.tsx",
+      "cases": 10,
+      "disposition": "vendored-not-adapted"
+    },
+    {
+      "path": "packages/react-hotkeys/tests/useHotkeySequences.test.tsx",
+      "cases": 11,
+      "disposition": "vendored-not-adapted"
+    },
+    {
+      "path": "packages/react-hotkeys/tests/useHotkeys.test.tsx",
+      "cases": 11,
+      "disposition": "vendored-not-adapted"
+    }
+  ],
+  "typeSuite": {
+    "disposition": "insufficient",
+    "reason": "The upstream test:types script compiles package source but has no dedicated type-assertion artifacts."
+  }
+}

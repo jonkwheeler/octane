@@ -1,0 +1,160 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/hotkeys.git",
+    "version": "0.10.0",
+    "commit": "c73a3a167c979d500e1008341ecad096a6c4e635",
+    "sourceRoot": "packages/react-hotkeys/src",
+    "testRoot": "packages/react-hotkeys/tests",
+    "license": "MIT",
+    "integrity": "sha256:1ac05739e0b649ffbc5fb7954fcd7106456de9c337660ca5db3242ae14b9758d",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "insufficient"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-hotkeys/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/tanstack-hotkeys/tests/differential",
+        "packages/tanstack-hotkeys/tests/parity"
+      ],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "d391eb624d73a191d8e5e5013d7fb772c6570827cfb3c6451fdd86673b779fbe"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-hotkeys-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs one representative same-fixture keyboard lifecycle against @octanejs/tanstack-hotkeys and the pinned React adapter; the 41-case canonical suite remains unadapted.",
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "a2c0f9337c3d0f7c297774ddde19dca35eef5b4b0a463ca346a9dc2137cc5258",
+          "cases": [
+            {
+              "id": "differential:tanstack-hotkeys-keyboard-lifecycle",
+              "testName": "matches registration, shortcuts, sequences, enabled updates, and cleanup",
+              "fullName": "differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys matches registration, shortcuts, sequences, enabled updates, and cleanup"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "b733e56b93029b54d9e5ae7cece02abd98a67f14cefa24a459a997def4cfddff"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys-diff.tsrx",
+          "role": "support",
+          "sha256": "29fa4fd8b6ae6df50bc5306462f0d18a059777969100396ff8cfb756e9836d77"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "15d18ca1d85011855185b8f37d13958a01a4fe04e0cd586585554e5aa1741b7a"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "ffef12b4146c95014a28c17dfcdcf85695c06cb3230272c379deb8057e1c6e4c"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "e1d675999b2b4f8337230550845747636d1bf72f2cdc142b1b86c345e4d288d4"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/scripts/check-upstream-ledger.mjs",
+          "role": "support",
+          "sha256": "d83f68b1b05af046b3fe673ac393cd14740a03b54a3c79c3b226161671ad4840"
+        },
+        {
+          "path": "scripts/react-parity/tanstack-hotkeys-controls.test.mjs",
+          "role": "support",
+          "sha256": "daa857c0bd6f11747426aea19ecb1a50681102d70dacc08edf39eaa4cb21aa7c"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "1fef3208f92a2c8f0dd4d319e3a697c6d4952c669ec18945919094b7e3fd416e"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-hotkeys-parity-audit",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys-parity-audit",
+      "notes": "Authenticates the complete adapter source, export, and runtime-test boundary plus the structured target-ref adaptation.",
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/tests/parity/contracts.test.ts",
+          "role": "test",
+          "sha256": "7fb4a10fc8dbe744bcf48ae53a473dd8a2ff8d1356dd825374823f38b64b8357",
+          "cases": [
+            {
+              "id": "adapted:tanstack-hotkeys-upstream-ledger",
+              "testName": "authenticates every adapter export and upstream runtime test",
+              "fullName": "@octanejs/tanstack-hotkeys parity audit contracts authenticates every adapter export and upstream runtime test"
+            },
+            {
+              "id": "adapted:tanstack-hotkeys-plain-ref",
+              "testName": "keeps the plain target-ref adaptation explicit",
+              "fullName": "@octanejs/tanstack-hotkeys parity audit contracts keeps the plain target-ref adaptation explicit"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "plain-ref-target",
+      "caseIds": ["adapted:tanstack-hotkeys-plain-ref"],
+      "upstreamResult": "Target options use React.RefObject<EventTarget | null>.",
+      "octaneResult": "Target options use a plain { current: EventTarget | null } object.",
+      "rationale": "Octane has no React.RefObject type, while the runtime ref shape is framework-neutral.",
+      "classification": "types",
+      "consumerImpact": "Consumers type target refs as plain current-bearing objects.",
+      "migrationGuidance": "Pass the same current-bearing ref object without importing React ref types.",
+      "owner": "@octanejs/tanstack-hotkeys",
+      "reviewCondition": "Review if Octane introduces a canonical RefObject type."
+    }
+  ]
+}
