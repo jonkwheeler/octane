@@ -1,0 +1,116 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/motiondivision/motion.git",
+    "version": "motion@12.42.2",
+    "commit": "40e8756c63b258c9dd07de9501cb788410eefb02",
+    "sourceRoot": "packages/framer-motion/src",
+    "testRoot": "packages/framer-motion/src and packages/framer-motion/cypress",
+    "license": "MIT",
+    "integrity": "sha256:d99821507dace914ef6924e95c25beb2d618438fc925517569dd6b083a4df793",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": { "roots": ["packages/motion/src"], "include": ["\\.ts$"], "exclude": [] },
+    "tests": { "roots": ["packages/motion/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "64aadce77ec47f28d30215b6f4759834f1eb1841ef6c83616af1219edc905097"
+    }
+  },
+  "lanes": [
+    {
+      "id": "motion-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs exact host rendering, Motion-only prop filtering, and child update behavior against motion/react@12.42.2.",
+      "files": [
+        {
+          "path": "packages/motion/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "7a1644965ba088c497b244310ecbf2c90da33a45b73380238f4b5ad0ff8b45ba",
+          "cases": [
+            {
+              "id": "differential:motion-render",
+              "testName": "motion host rendering, filtered props, and child updates are byte-identical",
+              "fullName": "differential: @octanejs/motion vs motion/react motion host rendering, filtered props, and child updates are byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/tests/differential/fixture-compiler.mjs",
+          "role": "support",
+          "sha256": "3a20526c952c99632d38cebcf0c362af27efc034b0439a73645ebf128444088e"
+        },
+        {
+          "path": "packages/motion/tests/differential/compile-runner.mjs",
+          "role": "support",
+          "sha256": "8ad98bceb3a298463c9c3ceda0dca3ef995eb991fc4cc3af147a8e6d6c28d39d"
+        },
+        {
+          "path": "packages/motion/tests/_fixtures/render-diff.tsrx",
+          "role": "support",
+          "sha256": "8ba1063957f73ac5383fc83ed4032a144d3f64fb6f70fb3afd58711eac0794fb"
+        }
+      ]
+    },
+    {
+      "id": "motion-adapted-divergence",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion",
+      "notes": "Authenticates the documented initial-only style divergence.",
+      "files": [
+        {
+          "path": "packages/motion/tests/conformance/render.test.ts",
+          "role": "test",
+          "sha256": "3b46662304af805c6178e19a1dcbf02c40fffdcda033978966bfacf7569dad98",
+          "cases": [
+            {
+              "id": "adapted:motion-initial-only-style",
+              "testName": "does not materialize an initial-only target without an animate target",
+              "fullName": "motion.<tag> rendering does not materialize an initial-only target without an animate target"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/tests/_fixtures/boxes.tsrx",
+          "role": "support",
+          "sha256": "d98399fd693054aa1d5b78ed32682faa03dbb4de6b4247a52526b98525bedf56"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "motion-initial-only-style",
+      "caseIds": ["adapted:motion-initial-only-style"],
+      "upstreamResult": "motion/react materializes inline styles from an initial target even when no animate target is supplied.",
+      "octaneResult": "The Octane binding renders no inline style for an initial-only target.",
+      "rationale": "The bounded Octane animation path applies initial values as part of an animation transition rather than as a standalone mount style.",
+      "classification": "framework-integration",
+      "consumerImpact": "An element relying only on initial for its starting visual state renders at its normal CSS state in Octane.",
+      "migrationGuidance": "Set the starting style explicitly or provide an animate target.",
+      "owner": "@octanejs/motion",
+      "reviewCondition": "Review when standalone initial-target handling is implemented."
+    }
+  ]
+}

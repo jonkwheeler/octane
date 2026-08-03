@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/motion/tests/conformance/config.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane MotionConfig context behavior."
+    },
+    {
+      "path": "packages/motion/tests/conformance/drag.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks pointer drag behavior in the Octane host integration."
+    },
+    {
+      "path": "packages/motion/tests/conformance/effects.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks animation and gesture effect lifecycle with controlled engine observations."
+    },
+    {
+      "path": "packages/motion/tests/conformance/exit.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks cleanup-before-detach exit behavior."
+    },
+    {
+      "path": "packages/motion/tests/conformance/inView.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks IntersectionObserver integration."
+    },
+    {
+      "path": "packages/motion/tests/conformance/layout.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks bounded single-element FLIP behavior."
+    },
+    {
+      "path": "packages/motion/tests/conformance/layoutId.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks bounded shared-element crossfade behavior."
+    },
+    {
+      "path": "packages/motion/tests/conformance/motionValue.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks direct MotionValue-to-style binding."
+    },
+    {
+      "path": "packages/motion/tests/conformance/render.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "motion-initial-only-style",
+      "reason": "Checks the initial-only style divergence plus the broader Octane host rendering contract."
+    },
+    {
+      "path": "packages/motion/tests/conformance/rerender.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane child reconciliation."
+    },
+    {
+      "path": "packages/motion/tests/conformance/scroll.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks scroll-linked MotionValues."
+    },
+    {
+      "path": "packages/motion/tests/conformance/stagger.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane variant orchestration timing."
+    },
+    {
+      "path": "packages/motion/tests/conformance/transparent-children.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane descriptor-child transparency."
+    },
+    {
+      "path": "packages/motion/tests/conformance/useAnimate.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks scoped animation cleanup."
+    },
+    {
+      "path": "packages/motion/tests/conformance/useMotionValueEvent.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks subscription timing and cleanup."
+    },
+    {
+      "path": "packages/motion/tests/conformance/useSpring.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks spring frame progression and source following."
+    },
+    {
+      "path": "packages/motion/tests/conformance/useTransform.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks supported transform forms and cleanup."
+    },
+    {
+      "path": "packages/motion/tests/conformance/variantTransition.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks inline variant transition separation."
+    },
+    {
+      "path": "packages/motion/tests/conformance/variants.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane variant resolution and propagation."
+    },
+    {
+      "path": "packages/motion/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs the same host-rendering and child-update fixture against motion/react@12.42.2 and @octanejs/motion."
+    },
+    {
+      "path": "packages/motion/tests/differential/setup.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation."
+    }
+  ]
+}
