@@ -22,6 +22,7 @@ import {
 	createClientReferenceManifest,
 	createOctaneCompiler,
 	discoverOctaneSourceDependencies,
+	findDescriptorChildrenExports,
 	findDescriptorChildrenImports,
 	findVoidComponentImports,
 } from './bundler.js';
@@ -105,12 +106,12 @@ async function loadImportMetadata(
 			) {
 				return;
 			}
-			let moduleInfo;
+			let loadedModuleInfo;
 			try {
-				// Loading through the module graph runs the resolved module's real load
-				// and transform hooks. `resolveDependencies: false` avoids recursively
-				// walking its imports just to read Octane's compile metadata.
-				moduleInfo = await context.load({ id: resolved.id, resolveDependencies: false });
+				// Avoid recursively walking the dependency graph merely to classify one
+				// imported JSX binding. A pre-transform snapshot is handled below by the
+				// live-graph and exact-filesystem fallbacks.
+				loadedModuleInfo = await context.load({ id: resolved.id, resolveDependencies: false });
 			} catch (error) {
 				if (failLoud)
 					throw new Error(
@@ -121,7 +122,29 @@ async function loadImportMetadata(
 					);
 				return;
 			}
-			const metadata = moduleInfo?.meta?.[metadataKey];
+			// Rollup/Vite may return the pre-transform ModuleInfo snapshot from
+			// `this.load()` while publishing transform metadata to the live graph
+			// record. Read that record after the awaited load without touching the
+			// unsupported `ModuleInfo.code` accessor.
+			const moduleInfo = context.getModuleInfo?.(resolved.id) ?? loadedModuleInfo;
+			let metadata = moduleInfo?.meta?.[metadataKey];
+			if (metadata == null && metadataKey === DESCRIPTOR_CHILDREN_EXPORTS_META) {
+				// `this.load()` is allowed to expose a pre-transform snapshot. For a
+				// real filesystem module, classify direct markers from the exact source
+				// rather than silently making lowering depend on traversal order.
+				try {
+					const source = nodeFs.readFileSync(cleanModuleId(resolved.id), 'utf8');
+					const exports = findDescriptorChildrenExports(source, resolved.id);
+					if (exports.length > 0) {
+						metadata = {
+							exports,
+							fingerprint: compiledCodeFingerprint(source),
+						};
+					}
+				} catch {
+					// Virtual and non-filesystem modules still rely on graph metadata.
+				}
+			}
 			if (metadata == null) return;
 			const valid =
 				metadata !== null &&
