@@ -266,9 +266,23 @@ export default defineConfig({
 					include: [
 						'packages/react-syntax-highlighter/tests/**/*.test.ts',
 						'!packages/react-syntax-highlighter/tests/ssr/**/*.test.ts',
+						'!packages/react-syntax-highlighter/tests/browser/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-syntax-highlighter-browser',
+					include: ['packages/react-syntax-highlighter/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+					testTimeout: 120_000,
+					hookTimeout: 120_000,
 				},
 				plugins: [octane()],
 			},

@@ -66,11 +66,13 @@
     "babel-plugin-transform-dynamic-import": "2.1.0",
     "jest": "26.6.3",
     "octane": "workspace:*",
+    "playwright": "catalog:default",
     "react": "catalog:default",
     "react-dom": "catalog:default",
     "react-dom-upstream": "npm:react-dom@15.7.0",
     "react-test-renderer-upstream": "npm:react-test-renderer@15.7.0",
     "react-upstream": "npm:react@15.7.0",
+    "vite": "catalog:default",
     "vitest": "catalog:default"
   },
   "main": "./src/index.js",
