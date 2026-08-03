@@ -31,12 +31,20 @@
   "types": "src/index.ts",
   "files": [
     "src",
+    "dist/cjs",
     "README.md"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./src/index.ts"
+    }
   },
   "scripts": {
+    "build:cjs": "node ../../scripts/build-package-commonjs.mjs",
+    "prepack": "pnpm build:cjs",
     "test": "vitest run"
   },
   "dependencies": {

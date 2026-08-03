@@ -1,6 +1,7 @@
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 function isWithin(directory, candidate) {
 	const path = relative(directory, candidate);
@@ -151,4 +152,23 @@ export async function buildPackageCommonjs({
 		]),
 	);
 	return { entries: resultEntries, modules: sourceModules.length };
+}
+
+export async function buildPackageCommonjsSourceTree({
+	packageDir = process.cwd(),
+	sourceRoot = 'src',
+	outdir = 'dist/cjs',
+} = {}) {
+	const sourceDirectory = resolve(packageDir, sourceRoot);
+	const entries = (await readdir(sourceDirectory, { recursive: true }))
+		.filter(
+			(path) => ['.ts', '.js', '.mts', '.mjs'].includes(extname(path)) && !path.endsWith('.d.ts'),
+		)
+		.map((path) => join(sourceRoot, path));
+	return buildPackageCommonjs({ packageDir, entries, outdir, sourceRoot });
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+	const result = await buildPackageCommonjsSourceTree();
+	console.log(`CommonJS package graph built (${result.modules} modules)`);
 }
