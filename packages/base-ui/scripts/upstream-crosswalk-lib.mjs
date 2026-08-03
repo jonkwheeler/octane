@@ -65,11 +65,13 @@ export function buildUpstreamCrosswalk(upstreamRoot, repoRoot) {
 	]
 		.map((file) => {
 			const path = relative(upstreamRoot, file).split('\\').join('/');
-			const kind = /\.spec\.(?:ts|tsx)$/.test(path)
-				? 'type-test'
-				: /\.test\.(?:ts|tsx)$/.test(path)
-					? 'runtime-test'
-					: 'support';
+			const kind = path.startsWith('packages/react/test/')
+				? 'support'
+				: /\.spec\.(?:ts|tsx)$/.test(path)
+					? 'type-test'
+					: /\.test\.(?:ts|tsx)$/.test(path)
+						? 'runtime-test'
+						: 'support';
 			const adaptedPath = ADAPTED_ARTIFACTS.get(path);
 			if (adaptedPath) return [path, kind, 'partially-adapted', adaptedPath];
 			return [path, kind, kind === 'support' ? 'vendored-support' : 'not-adapted'];

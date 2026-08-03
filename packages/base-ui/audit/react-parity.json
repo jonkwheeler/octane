@@ -234,7 +234,7 @@
         {
           "path": "packages/base-ui/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "1a379483ee1c267473ba6468d2fb4c786684b69d2893e0c262d564b7740b4ac3"
+          "sha256": "ec06213ce5512795110b88a882376e6591d4498194faa25622ffcac7172f5c34"
         },
         {
           "path": "packages/base-ui/scripts/build-upstream-crosswalk.mjs",
@@ -249,7 +249,7 @@
         {
           "path": "packages/base-ui/scripts/upstream-crosswalk-lib.mjs",
           "role": "support",
-          "sha256": "55a10e475e15f23dca577f3a81d04757a8fc1944440f1fe8a2b0d72680736bb4"
+          "sha256": "4cdd3711f53a7415f963972c42fc60936b62992c89ab3de33137369686e749ba"
         },
         {
           "path": "packages/base-ui/scripts/build-vendor-checksums.mjs",

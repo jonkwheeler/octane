@@ -37,7 +37,7 @@ runtime, type, and support artifacts. It classifies 34 subpaths as
 Navigation Menu, OTP Field, Scroll Area, Select, Tabs, and Toolbar. Surface presence is not a
 behavioral parity claim.
 
-The canonical package has 274 runtime test files, 35 type-test files, and 39 support
+The canonical package has 273 runtime test files, 35 type-test files, and 40 support
 artifacts. Six upstream Accordion/Collapsible files have selected cases adapted locally; the
 remaining suite is vendored but not adapted in full, so the binding remains
 `recorded-unverified`. The published npm package contains no canonical test files; that

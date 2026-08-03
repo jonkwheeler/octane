@@ -987,7 +987,7 @@
     ["packages/react/test/index.ts", "support", "vendored-support"],
     ["packages/react/test/popupConformanceTests.tsx", "support", "vendored-support"],
     ["packages/react/test/types.d.ts", "support", "vendored-support"],
-    ["packages/react/test/useTestInteractions.test.tsx", "runtime-test", "not-adapted"],
+    ["packages/react/test/useTestInteractions.test.tsx", "support", "vendored-support"],
     ["packages/react/test/useTestInteractions.ts", "support", "vendored-support"],
     ["packages/react/test/wait.ts", "support", "vendored-support"]
   ],
@@ -996,9 +996,9 @@
     "surfacePresentUnverified": 34,
     "gapSubpaths": 9,
     "upstreamArtifacts": 348,
-    "runtimeTests": 274,
+    "runtimeTests": 273,
     "typeTests": 35,
-    "supportArtifacts": 39,
+    "supportArtifacts": 40,
     "partiallyAdaptedArtifacts": 6
   }
 }
