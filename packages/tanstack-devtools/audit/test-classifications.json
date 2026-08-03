@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/tanstack-devtools/tests/conformance/devtools.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane adapter behavior and is not counted as React parity."
+    },
+    {
+      "path": "packages/tanstack-devtools/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs the same TSRX fixture against the Octane adapter and pinned React adapter source."
+    },
+    {
+      "path": "packages/tanstack-devtools/tests/parity/contracts.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Authenticates upstream evidence and the public surface/dependency divergences.",
+      "divergenceIds": ["core-version", "octane-type-names", "extra-core-reexports"]
+    },
+    {
+      "path": "packages/tanstack-devtools/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises Octane server rendering and is not counted as React parity."
+    }
+  ]
+}

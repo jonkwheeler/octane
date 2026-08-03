@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "publicEntrypoints": [
+    { "path": ".", "octanePath": ".", "disposition": "surface-present-unverified" },
+    { "path": "./package.json", "disposition": "metadata-only" }
+  ],
+  "coreDependency": {
+    "upstreamVersion": "0.12.4",
+    "octaneVersion": "0.12.5",
+    "disposition": "version-divergence"
+  },
+  "upstreamTests": [],
+  "typeSuite": {
+    "disposition": "insufficient",
+    "reason": "The upstream type script compiles package source without dedicated type assertions."
+  }
+}
