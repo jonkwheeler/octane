@@ -13,7 +13,11 @@
   },
   "upstreamSuites": { "runtime": "absent", "types": "absent" },
   "adaptedRoots": {
-    "source": { "roots": ["packages/dnd-kit/src"], "include": ["$a"], "exclude": [] },
+    "source": {
+      "roots": ["packages/dnd-kit/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
     "tests": {
       "roots": ["packages/dnd-kit/tests/parity"],
       "include": ["contracts\\.test\\.ts$"],
