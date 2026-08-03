@@ -8984,7 +8984,14 @@ function ssrEmitComponent(node, ctx, name, inlinedSubs, parentNs, cssHash, compo
 			const kids = children.map((c) => lowerJsxChild(c, ctx)).filter((e) => e != null);
 			if (kids.length > 0) {
 				// The children array shell maps to the authored component element.
-				const childrenExpr = kids.length === 1 ? kids[0] : inheritOriginLoc(b.array(kids), node);
+				let childrenExpr = kids[0];
+				if (kids.length > 1) {
+					ctx.runtimeNeeded.add('positionalChildren');
+					childrenExpr = inheritOriginLoc(
+						b.call(rtAlias('positionalChildren'), inheritOriginLoc(b.array(kids), node)),
+						node,
+					);
+				}
 				propNodes.push(
 					inheritOriginLoc(
 						b.prop(
@@ -20893,13 +20900,15 @@ function makeCompCall(
 				.filter((child) => child != null);
 			if (kids.length > 0) {
 				hasChildrenProp = true;
-				propNodes.push(
-					b.prop(
-						'init',
-						b.literal('children'),
-						kids.length === 1 ? kids[0] : inheritOriginLoc(b.array(kids), node),
-					),
-				);
+				let childrenValue = kids[0];
+				if (kids.length > 1) {
+					ctx.runtimeNeeded.add('positionalChildren');
+					childrenValue = inheritOriginLoc(
+						b.call(rtAlias('positionalChildren'), inheritOriginLoc(b.array(kids), node)),
+						node,
+					);
+				}
+				propNodes.push(b.prop('init', b.literal('children'), childrenValue));
 			}
 		} else {
 			// Compile children as a render function: (scope) => { renders JSX into scope }.
