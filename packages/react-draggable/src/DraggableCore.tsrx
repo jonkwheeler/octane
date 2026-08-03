@@ -85,7 +85,7 @@ interface CoreState extends CoreModel {
 	handleDragStop(e: MouseTouchEvent): void;
 }
 
-function DraggableCore(inputProps: DraggableCoreProps): ElementDescriptor {
+function DraggableCoreImpl(inputProps: Partial<DraggableCoreProps>): ElementDescriptor {
 	const props = { ...defaults, ...inputProps } as ResolvedProps;
 	const propsRef = useRef(props);
 	propsRef.current = props;
@@ -238,4 +238,13 @@ function DraggableCore(inputProps: DraggableCoreProps): ElementDescriptor {
 	});
 }
 
+const DraggableCore = DraggableCoreImpl as
+	typeof DraggableCoreImpl & {
+		displayName?: string;
+		defaultProps?: DraggableCoreProps;
+	};
+DraggableCore.displayName = 'DraggableCore';
+DraggableCore.defaultProps = defaults;
+
+export { DraggableCore };
 export default descriptorChildren(DraggableCore);

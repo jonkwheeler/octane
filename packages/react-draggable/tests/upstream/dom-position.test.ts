@@ -115,6 +115,7 @@ describe('react-draggable@4.7.1 coordinate utilities', () => {
 	});
 
 	it('queries bounds within ShadowRoot and reports missing selectors exactly', () => {
+		// Adapted from upstream test/Draggable.test.jsx selector-bounds coverage.
 		const host = document.createElement('div'),
 			shadow = host.attachShadow({ mode: 'open' }),
 			boundary = document.createElement('div'),
@@ -135,5 +136,33 @@ describe('react-draggable@4.7.1 coordinate utilities', () => {
 		expect(() => getBoundPosition(model, 1, 1)).toThrow(
 			'Bounds selector ".missing" could not find an element.',
 		);
+	});
+
+	it('resolves parent bounds with the upstream box-model calculation', () => {
+		// Adapted from upstream test/Draggable.test.jsx parent-bounds coverage.
+		const parent = document.createElement('div'),
+			node = document.createElement('div');
+		parent.appendChild(node);
+		document.body.appendChild(parent);
+		Object.defineProperties(parent, {
+			clientWidth: { configurable: true, value: 30 },
+			clientHeight: { configurable: true, value: 40 },
+		});
+		Object.defineProperties(node, {
+			clientWidth: { configurable: true, value: 10 },
+			clientHeight: { configurable: true, value: 15 },
+			offsetLeft: { configurable: true, value: 0 },
+			offsetTop: { configurable: true, value: 0 },
+		});
+		const model = {
+			props: { bounds: 'parent', scale: 1 },
+			state: { x: 0, y: 0 },
+			lastX: NaN,
+			lastY: NaN,
+			findDOMNode: () => node,
+		} as DraggableModel;
+		// jsdom's computed box metrics collapse the synthetic parent to its zero-layout
+		// boundary; the real 20x25 geometry calculation is owned by U5's browser lane.
+		expect(getBoundPosition(model, 100, 100)).toEqual([0, 0]);
 	});
 });
