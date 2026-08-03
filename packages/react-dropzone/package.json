@@ -31,6 +31,7 @@
     "test:u2-parity": "node audit/verify-u2.mjs",
     "test:u3-parity": "node audit/verify-u3.mjs",
     "test:u4-parity": "node audit/verify-u4.mjs",
+    "test:u5-parity": "node ../../scripts/react-parity/harness.mjs validate --manifest packages/react-dropzone/audit/react-parity.json && node --test ../../scripts/react-parity/react-dropzone-evidence.test.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
     "@testing-library/react": "16.3.2",
+    "@testing-library/jest-dom": "6.9.1",
     "@types/react": "19.2.11",
     "@types/react-dom": "19.2.3",
     "octane": "workspace:*",

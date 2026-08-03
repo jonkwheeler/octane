@@ -28,6 +28,7 @@ afterAll(async () => {
 });
 
 describe('react-dropzone trusted Chromium gate', () => {
+	// @parity-case browser:chooser-drop
 	it('delivers chooser input and browser-created DataTransfer files', async () => {
 		const page = await browser.newPage();
 		const errors: string[] = [];
@@ -57,6 +58,7 @@ describe('react-dropzone trusted Chromium gate', () => {
 		await page.close();
 	});
 
+	// @parity-case browser:paste-picker
 	it('delivers browser-created ClipboardData and File System Access selections', async () => {
 		const page = await browser.newPage();
 		const errors: string[] = [];

@@ -29,6 +29,7 @@ afterEach(() => {
 });
 
 describe('react-dropzone U3 React/Octane differential', () => {
+	// @parity-case differential:root-getters
 	it('matches default and overridden getter attributes', () => {
 		const options = { multiple: false };
 		const rootProps = { role: 'button', tabIndex: 3, title: 'pick files' };
@@ -53,6 +54,7 @@ describe('react-dropzone U3 React/Octane differential', () => {
 		}
 	});
 
+	// @parity-case differential:root-interaction
 	it('matches click, keyboard, focus, and blur callbacks', async () => {
 		const onFileDialogOpenOctane = vi.fn();
 		const onFileDialogOpenReact = vi.fn();
@@ -82,6 +84,7 @@ describe('react-dropzone U3 React/Octane differential', () => {
 		expect(onFileDialogOpenOctane.mock.calls.length).toBe(onFileDialogOpenReact.mock.calls.length);
 	});
 
+	// @parity-case differential:root-selection
 	it('matches native input selection state and callback payloads', async () => {
 		const octaneCalls: string[] = [];
 		const reactCalls: string[] = [];

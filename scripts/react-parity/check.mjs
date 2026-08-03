@@ -13,6 +13,7 @@ import {
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyReactDropzoneEvidence } from './react-dropzone-evidence-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -46,6 +47,11 @@ try {
 	verifyPortTestClassifications(REPO);
 } catch (error) {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyReactDropzoneEvidence(REPO);
+} catch (error) {
+	errors.push(`react-dropzone evidence is invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components

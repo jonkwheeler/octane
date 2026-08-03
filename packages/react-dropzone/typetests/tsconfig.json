@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "include": [
     "accept.tsx",
+    "all.tsx",
     "basic.tsx",
     "events.tsx",
     "file-dialog.tsx",

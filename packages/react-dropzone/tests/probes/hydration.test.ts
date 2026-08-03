@@ -12,11 +12,16 @@ describe('react-dropzone U1 hydration gate', () => {
 		container.innerHTML = html;
 		const rootNode = container.querySelector('[data-probe=root]');
 		const inputNode = container.querySelector('input')!;
+		inputNode.value = '';
+		inputNode.focus();
+		const activeBefore = document.activeElement;
 		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
 		const root = hydrateRoot(container, HookProbe, props);
 		flushSync(() => {});
 		expect(container.querySelector('[data-probe=root]')).toBe(rootNode);
 		expect(container.querySelector('input')).toBe(inputNode);
+		expect(document.activeElement).toBe(activeBefore);
+		expect(inputNode.value).toBe('');
 		const file = new File(['hydrated'], 'hydrated.txt');
 		Object.defineProperty(inputNode, 'files', { configurable: true, value: [file] });
 		inputNode.dispatchEvent(new Event('change', { bubbles: true }));

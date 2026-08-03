@@ -14,7 +14,7 @@
   },
   "differential": {
     "file": "tests/differential/acquisition-u4.test.ts",
-    "sha256": "17b631c319428df3089251e268abc70754beafc9753ff8d5ce92207cca4528f3",
+    "sha256": "a1136ccd74410a2ec2a670625462b13f4494132167be158f4be986efdadd52d0",
     "cases": 2,
     "oracle": "react-dropzone@20.0.0 with React 19.2.8"
   },
@@ -25,7 +25,7 @@
     },
     {
       "file": "tests/probes/browser/browser.test.ts",
-      "sha256": "ce8f715580d1f411b42d0443171f0dd30f0b7f0f76c7c2011977e99d030e4159",
+      "sha256": "5991534d15dea9087d2c4e3aaf07f5aefcb8dbdac99f5749ea62df45a53836fc",
       "cases": 2
     }
   ],

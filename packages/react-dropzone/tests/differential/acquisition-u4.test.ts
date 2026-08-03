@@ -55,6 +55,7 @@ afterEach(() => {
 });
 
 describe('react-dropzone U4 React/Octane differential', () => {
+	// @parity-case differential:acquisition-selection
 	it('matches accepted/rejected callback payloads for input selection', async () => {
 		const options = { accept: { 'image/png': ['.png'] }, multiple: true };
 		const octane = renderOctane(AcquisitionProbe, { props: { options } });
@@ -70,6 +71,7 @@ describe('react-dropzone U4 React/Octane differential', () => {
 		expect(acquisition(octane.container)).toEqual(acquisition(react.container));
 	});
 
+	// @parity-case differential:acquisition-max-files
 	it('matches drag/drop max-files validation', async () => {
 		const options = { maxFiles: 1, multiple: true };
 		const octane = renderOctane(AcquisitionProbe, { props: { options } });

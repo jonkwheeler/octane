@@ -12,6 +12,7 @@ function observe<T>(fn: () => T) {
 }
 
 describe('react-dropzone U2 pure utility differential', () => {
+	// @parity-case differential:utils-validation
 	it('matches accept flattening, picker filters, and input serialization tables', () => {
 		const tables = [
 			undefined,
@@ -46,6 +47,7 @@ describe('react-dropzone U2 pure utility differential', () => {
 		}
 	});
 
+	// @parity-case differential:utils-errors
 	it('matches type, size, quantity, and drag verdict tables', () => {
 		const files = [
 			new File(['ok'], 'ok.txt', { type: 'text/plain' }),
@@ -78,6 +80,7 @@ describe('react-dropzone U2 pure utility differential', () => {
 		);
 	});
 
+	// @parity-case differential:utils-events
 	it('matches event, exception, propagation, and thenable classification', () => {
 		const eventTables = [
 			{},

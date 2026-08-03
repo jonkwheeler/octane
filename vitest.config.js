@@ -3171,6 +3171,17 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-dropzone-pristine',
+					include: ['packages/react-dropzone/upstream/canonical/src/**/*.spec.{ts,tsx}'],
+					environment: 'jsdom',
+					globals: true,
+					clearMocks: true,
+					setupFiles: ['packages/react-dropzone/upstream/canonical/test-setup.js'],
+					fileParallelism: false,
+				},
+			},
+			{
+				test: {
 					name: 'react-dropzone',
 					include: [
 						'packages/react-dropzone/tests/adapted/**/*.spec.ts',

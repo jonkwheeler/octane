@@ -24,7 +24,7 @@
   },
   "differential": {
     "file": "tests/differential/root-u3.test.ts",
-    "sha256": "30978da93c99dc577ed2ee0baace670fae06292c3706a5e9bef6240395be32eb",
+    "sha256": "066a3375a3165b952e0c36ae0d20d69a8ddc97fa94849d082d15cbb73ab4bad5",
     "cases": 3,
     "oracle": "react-dropzone@20.0.0 with React 19.2.8"
   },

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "project": "react-dropzone-ssr",
+  "roots": [
+    "packages/react-dropzone/tests/adapted",
+    "packages/react-dropzone/tests/differential",
+    "packages/react-dropzone/tests/probes"
+  ],
+  "files": [
+    "packages/react-dropzone/tests/probes/server.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:3f9da05c53a422e2:1",
+      "file": "packages/react-dropzone/tests/probes/server.test.ts",
+      "fullName": "react-dropzone U1 server gate renders deterministic default, disabled, and custom-option fixtures"
+    },
+    {
+      "id": "runtime:052a53b50d673961:1",
+      "file": "packages/react-dropzone/tests/probes/server.test.ts",
+      "fullName": "react-dropzone U1 server gate renders without browser globals and streams deterministic root/input shape"
+    },
+    {
+      "id": "runtime:8feb85819ce7a1fb:1",
+      "file": "packages/react-dropzone/tests/probes/server.test.ts",
+      "fullName": "react-dropzone U1 server gate streams the same settled markup as string rendering"
+    }
+  ]
+}

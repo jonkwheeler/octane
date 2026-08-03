@@ -830,7 +830,9 @@ function vitestRunIdentities(lane, result, root) {
 		}
 		return suite.assertionResults.map((test) => ({
 			file: toPortablePath(relative(root, suite.name)),
-			fullName: test.fullName,
+			// Vitest list uses spaces between suite segments while JSON execution
+			// results use ` > `. Normalize both immutable titles and separators.
+			fullName: test.fullName.replaceAll(' > ', ' '),
 			status: test.status,
 		}));
 	});
