@@ -72,6 +72,8 @@ describe('server entry', () => {
 		expect(typeof server.parseAsInteger).toBe('object');
 	});
 
+	// OCTANE DIVERGENCE[rsc-cache-unavailable][adapted:nuqs-rsc-cache]
+	// @parity-case adapted:nuqs-rsc-cache
 	it('does NOT ship createSearchParamsCache (RSC-only, see status.json)', () => {
 		expect((server as Record<string, unknown>).createSearchParamsCache).toBeUndefined();
 	});

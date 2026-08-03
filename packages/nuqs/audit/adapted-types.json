@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "files": ["packages/nuqs/typetests/public-api.test-d.ts"],
+  "assertionGroups": [
+    "parser inference and defaults",
+    "single and multi-key hook declarations",
+    "loader and serializer declarations"
+  ]
+}

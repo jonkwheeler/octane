@@ -1,0 +1,235 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/47ng/nuqs.git",
+    "version": "v2.9.1",
+    "commit": "b72c526f9dd94bf5a105b320fcb5955cbc68a8b3",
+    "sourceRoot": "packages/nuqs/src",
+    "testRoot": "packages/nuqs/src",
+    "license": "MIT",
+    "integrity": "sha256:23b331aa1371c760b349b81a26ca87c505e5991c14e23b6fd0ab8759dc3784c5",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": { "roots": ["packages/nuqs/src"], "include": ["\\.ts$"], "exclude": [] },
+    "tests": {
+      "roots": ["packages/nuqs/tests"],
+      "include": ["\\.test\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "nuqs-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "nuqs",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs initial parsing, functional updates, and URL reconciliation against both adapters.",
+      "files": [
+        {
+          "path": "packages/nuqs/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "5a0a72b49818fe7f29af391539e24a712156f6038b6cb78b56948570dbb6eab7",
+          "cases": [
+            {
+              "id": "differential:nuqs-query-state",
+              "testName": "initial parsing, functional updates, and URL reconciliation are byte-identical",
+              "fullName": "differential: @octanejs/nuqs vs nuqs initial parsing, functional updates, and URL reconciliation are byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/nuqs/tests/differential/fixture-compiler.mjs",
+          "role": "support",
+          "sha256": "8885d9173c9b81ff0037927a4454e65427a1b6ec288ed1e7caf462cefc1821c4"
+        },
+        {
+          "path": "packages/nuqs/tests/differential/compile-runner.mjs",
+          "role": "support",
+          "sha256": "8ad98bceb3a298463c9c3ceda0dca3ef995eb991fc4cc3af147a8e6d6c28d39d"
+        },
+        {
+          "path": "packages/nuqs/tests/_fixtures/query.tsrx",
+          "role": "support",
+          "sha256": "f9de71db674b1bc33cff9cc52aefa6261627b5d455509c8a140322b0e36219e0"
+        }
+      ]
+    },
+    {
+      "id": "nuqs-adapted-divergences",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "nuqs",
+      "notes": "Authenticates the four documented framework-integration divergences.",
+      "files": [
+        {
+          "path": "packages/nuqs/tests/conformance/core.test.ts",
+          "role": "test",
+          "sha256": "e45317036461928e2f37125bde37b05338a54c32e5d5150962833e0ccec19a9e",
+          "cases": [
+            {
+              "id": "adapted:nuqs-rsc-cache",
+              "testName": "does NOT ship createSearchParamsCache (RSC-only, see status.json)",
+              "fullName": "server entry does NOT ship createSearchParamsCache (RSC-only, see status.json)"
+            }
+          ]
+        },
+        {
+          "path": "packages/nuqs/tests/conformance/reset-queue.test.ts",
+          "role": "test",
+          "sha256": "e6af6b85c4b8e0c44fd55b78683fa9dc13fcdaf9c5d079114a4ed5af18f0c7aa",
+          "cases": [
+            {
+              "id": "adapted:nuqs-testing-reset",
+              "testName": "does not drop a pending debounced write when a re-render happens before it flushes",
+              "fullName": "NuqsTestingAdapter shared-queue reset does not drop a pending debounced write when a re-render happens before it flushes"
+            }
+          ]
+        },
+        {
+          "path": "packages/nuqs/tests/parity/divergences.test.ts",
+          "role": "test",
+          "sha256": "fb4b97162ce6adb9799d07545a59f23398fd6fd4098f3386b41b767f7bcfff6f",
+          "cases": [
+            {
+              "id": "adapted:nuqs-router-adapters",
+              "testName": "exports only the standalone, custom, and testing adapters",
+              "fullName": "@octanejs/nuqs documented integration divergences exports only the standalone, custom, and testing adapters"
+            },
+            {
+              "id": "adapted:nuqs-transition-type",
+              "testName": "declares TransitionStartFunction without a React type dependency",
+              "fullName": "@octanejs/nuqs documented integration divergences declares TransitionStartFunction without a React type dependency"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nuqs-server-runtime",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "nuqs-ssr",
+      "notes": "Runs the React-free server entry in Node.",
+      "files": [
+        {
+          "path": "packages/nuqs/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "c2b710f2c69cb04ea8aac47f9daf5fa6410f89de26f1c50ab05db320381af840",
+          "cases": [
+            {
+              "id": "ssr:nuqs-server-entry",
+              "testName": "parses and serializes search params without a DOM or renderer",
+              "fullName": "@octanejs/nuqs server entry parses and serializes search params without a DOM or renderer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nuqs-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "nuqs-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles parser inference, hooks, loader, and serializer declarations.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/nuqs/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/nuqs/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "07c29c1fa263ceb5b13319f31a64ee18102679f19118d73aeef082a247abc73d",
+          "cases": [
+            {
+              "id": "types:nuqs-public-api",
+              "testName": "Nuqs public declarations",
+              "fullName": "Nuqs public declarations"
+            }
+          ]
+        },
+        {
+          "path": "packages/nuqs/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "24af067a8b1ae35e8ae141cfd0242f55c5ddc86ccc1a6a842f8fc75fc0ea9cde"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "router-adapters-unavailable",
+      "caseIds": ["adapted:nuqs-router-adapters"],
+      "upstreamResult": "Nuqs ships Next, Remix, React Router, and TanStack Router adapters.",
+      "octaneResult": "The Octane binding ships standalone React-style, custom, and testing adapters only.",
+      "rationale": "Router-specific adapters require renderer-specific ports and integration contracts.",
+      "classification": "framework-integration",
+      "consumerImpact": "Applications using a router-specific Nuqs adapter must provide an Octane custom adapter.",
+      "migrationGuidance": "Use @octanejs/nuqs/adapters/react or unstable_createAdapterProvider from the custom adapter.",
+      "owner": "@octanejs/nuqs",
+      "reviewCondition": "Review when the corresponding Octane router integrations are available."
+    },
+    {
+      "id": "rsc-cache-unavailable",
+      "caseIds": ["adapted:nuqs-rsc-cache"],
+      "upstreamResult": "nuqs/server exports createSearchParamsCache backed by React.cache.",
+      "octaneResult": "The server entry omits createSearchParamsCache.",
+      "rationale": "Octane does not implement the React Server Components cache primitive.",
+      "classification": "framework-integration",
+      "consumerImpact": "Request-scoped cached search-param access is not available through this helper.",
+      "migrationGuidance": "Use createLoader per request.",
+      "owner": "@octanejs/nuqs",
+      "reviewCondition": "Review if Octane gains an equivalent request-scoped cache primitive."
+    },
+    {
+      "id": "local-transition-start-type",
+      "caseIds": ["adapted:nuqs-transition-type"],
+      "upstreamResult": "Nuqs imports TransitionStartFunction from React's type declarations.",
+      "octaneResult": "The binding declares the compatible function shape locally.",
+      "rationale": "The Octane package intentionally carries no React type dependency.",
+      "classification": "framework-integration",
+      "consumerImpact": "The structural callback shape is preserved without React type identity.",
+      "migrationGuidance": "Use the exported structurally compatible callback type.",
+      "owner": "@octanejs/nuqs",
+      "reviewCondition": "Review if a shared renderer-neutral transition type is introduced."
+    },
+    {
+      "id": "testing-adapter-reset-once",
+      "caseIds": ["adapted:nuqs-testing-reset"],
+      "upstreamResult": "NuqsTestingAdapter resets the shared update queue during every render.",
+      "octaneResult": "The Octane adapter resets the queue once per mount before child hooks consume it.",
+      "rationale": "Repeated render-time resets abort pending debounced writes under Octane's update scheduling.",
+      "classification": "framework-integration",
+      "consumerImpact": "Pending debounced writes survive adapter re-renders.",
+      "migrationGuidance": "No consumer change is required; do not rely on re-renders aborting queued writes.",
+      "owner": "@octanejs/nuqs",
+      "reviewCondition": "Review if queue ownership or adapter scheduling changes."
+    }
+  ]
+}

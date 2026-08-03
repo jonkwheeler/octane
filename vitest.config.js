@@ -705,6 +705,7 @@ export default defineConfig({
 				test: {
 					name: 'nuqs',
 					include: ['packages/nuqs/tests/**/*.test.ts'],
+					exclude: ['packages/nuqs/tests/ssr/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -728,6 +729,22 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/nuqs\/(.*)$/,
 							replacement: resolve(import.meta.dirname, 'packages/nuqs/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'nuqs-ssr',
+					include: ['packages/nuqs/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/nuqs\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/nuqs/src/index.server.ts'),
 						},
 					],
 				},
