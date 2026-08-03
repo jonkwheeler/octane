@@ -3,12 +3,14 @@
     "upstream": "upstream/canonical/src/index.tsx",
     "upstreamSha256": "4fc4ce4feb05906e4362ef35b927f13c750134b1d1605ec038c0cc7395fc3d41",
     "runtime": "src/index.tsrx",
-    "runtimeSha256": "48c643dd953637804b94e32852340350818c2bc3ea978217ed72652c75da08eb",
+    "runtimeSha256": "164322eb48340c89b11a515d61e440827df64de88166d9f361a33500d144b0a2",
     "types": "src/types.ts",
-    "typesSha256": "69703b2a9ea2b4fc208f92792bc793990df3f9cfd297a554efec9699fe6a7465",
+    "typesSha256": "47be4da150fd4d1e537c3a5cdec4b51af4c5fba1cdf52565304831a5408d0b29",
     "transforms": [
       "React hooks to Octane hooks",
       "forwardRef to ref-as-prop function component",
+      "compiler-tagged children blocks distinguished from public render props",
+      "compiler-owned trailing hook slots stripped before optional-props defaulting",
       "React synthetic event types to native DOM event types",
       "public declarations split into authored types.ts to preserve generic prop getters",
       "root/input refs composed through Octane array refs",
@@ -20,8 +22,8 @@
   },
   "adapted": {
     "file": "tests/adapted/index-u3.spec.ts",
-    "sha256": "91dff80e14eccf7d46c6194a64f22e061aa5f1e61aef6b70f49db1f42977fd03",
-    "cases": 10
+    "sha256": "0ce5d54ddeb531b2be07763f71e22e020fd7d44da215dc49e94ce25a0ae77a11",
+    "cases": 12
   },
   "differential": {
     "file": "tests/differential/root-u3.test.ts",

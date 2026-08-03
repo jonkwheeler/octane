@@ -6,9 +6,7 @@
     "packages/react-dropzone/tests/differential",
     "packages/react-dropzone/tests/probes"
   ],
-  "files": [
-    "packages/react-dropzone/tests/probes/server.test.ts"
-  ],
+  "files": ["packages/react-dropzone/tests/probes/server.test.ts"],
   "tests": [
     {
       "id": "runtime:3f9da05c53a422e2:1",

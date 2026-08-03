@@ -1,6 +1,14 @@
 import { fromEvent } from 'file-selector';
 import type { FileWithPath } from 'file-selector';
-import { useCallback, useEffect, useImperativeHandle, useMemo, useReducer, useRef } from 'octane';
+import {
+	isChildrenBlock,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useReducer,
+	useRef,
+} from 'octane';
 import {
 	acceptPropAsAcceptAttr,
 	canUseFileSystemAccessAPI,
@@ -55,9 +63,13 @@ export default function Dropzone({ children, ref, ...params }: DropzoneProps) @{
 	const { open, ...props } = useDropzone(params);
 
 	useImperativeHandle(ref, () => ({ open }), [open]);
+	const content =
+		typeof children === 'function' && !isChildrenBlock(children)
+			? children({ ...props, open })
+			: children;
 
 	<>
-		{children?.({ ...props, open })}
+		{content}
 	</>
 }
 
@@ -119,7 +131,14 @@ const initialState: DropzoneInternalState = {
  * }
  * ```
  */
-export function useDropzone(props: DropzoneOptions = {}): DropzoneState {
+export function useDropzone(...args: [props?: DropzoneOptions, slot?: symbol]): DropzoneState {
+	// Octane appends a compiler-owned slot symbol to hook calls. Because the
+	// public React API makes `props` optional, `useDropzone()` would otherwise
+	// mistake that slot for the options object and destructure a symbol.
+	const tail = args.at(-1);
+	const userArgs =
+		typeof tail === 'symbol' ? args.slice(0, -1) : args;
+	const props = userArgs[0] as DropzoneOptions | undefined ?? {};
 	const {
 		accept,
 		disabled = false,

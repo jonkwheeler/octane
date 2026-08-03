@@ -39,6 +39,11 @@
       "fullName": "react-dropzone U3 adapted root contract disables click and keyboard independently"
     },
     {
+      "id": "runtime:49695fea75001b41:1",
+      "file": "packages/react-dropzone/tests/adapted/index-u3.spec.ts",
+      "fullName": "react-dropzone U3 adapted root contract distinguishes idiomatic block children from upstream render props"
+    },
+    {
       "id": "runtime:2245694e543347c3:1",
       "file": "packages/react-dropzone/tests/adapted/index-u3.spec.ts",
       "fullName": "react-dropzone U3 adapted root contract exposes imperative open and resets the input value before every chooser"
@@ -62,6 +67,11 @@
       "id": "runtime:f7a220eaa0615209:1",
       "file": "packages/react-dropzone/tests/adapted/index-u3.spec.ts",
       "fullName": "react-dropzone U3 adapted root contract renders default root/input props and preserves arbitrary overrides"
+    },
+    {
+      "id": "runtime:7d3e87c85d167b1a:1",
+      "file": "packages/react-dropzone/tests/adapted/index-u3.spec.ts",
+      "fullName": "react-dropzone U3 adapted root contract strips compiler slots from zero-argument and explicit-options hook calls"
     },
     {
       "id": "runtime:8249b213983c64ae:1",

@@ -1,11 +1,11 @@
 {
   "runtime": {
     "file": "src/index.tsrx",
-    "sha256": "48c643dd953637804b94e32852340350818c2bc3ea978217ed72652c75da08eb"
+    "sha256": "164322eb48340c89b11a515d61e440827df64de88166d9f361a33500d144b0a2"
   },
   "probe": {
     "file": "tests/probes/dropzone.tsrx",
-    "sha256": "7f7a35e5513485fab2c8260595edc9067c96c0234ad2bf6aa1c7b7054d5c12c7"
+    "sha256": "5032f07e88602485089f7a8ef4276bf4c0e9ab2888517cf0ce98178522edccdd"
   },
   "adapted": {
     "file": "tests/adapted/index-u4.spec.ts",

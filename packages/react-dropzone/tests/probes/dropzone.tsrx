@@ -20,6 +20,24 @@ export function ComponentProbe(props: { options: any; dropzoneRef: any }) @{
 	</Dropzone>
 }
 
+export function BlockChildrenProbe() @{
+	<Dropzone>
+		<section data-probe="block-child">{'idiomatic block child'}</section>
+	</Dropzone>
+}
+
+export function ZeroArgProbe(props: { capture: (state: any) => void }) @{
+	const state = useDropzone();
+	useEffect(() => props.capture(state), [state, props.capture]);
+	<div {...state.getRootProps({ 'data-probe': 'zero-arg' })} />
+}
+
+export function OptionsCallProbe(props: { capture: (state: any) => void }) @{
+	const state = useDropzone({ noClick: true });
+	useEffect(() => props.capture(state), [state, props.capture]);
+	<div {...state.getRootProps({ 'data-probe': 'options-call' })} />
+}
+
 export function StateProbe(props: {
 	options: any;
 	rootRef?: any;

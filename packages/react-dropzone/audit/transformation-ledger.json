@@ -5,7 +5,7 @@
       "upstream": "packages/react-dropzone/upstream/canonical/src/index.tsx",
       "upstreamSha256": "4fc4ce4feb05906e4362ef35b927f13c750134b1d1605ec038c0cc7395fc3d41",
       "adapted": "packages/react-dropzone/src/index.tsrx",
-      "adaptedSha256": "48c643dd953637804b94e32852340350818c2bc3ea978217ed72652c75da08eb"
+      "adaptedSha256": "164322eb48340c89b11a515d61e440827df64de88166d9f361a33500d144b0a2"
     },
     {
       "upstream": "packages/react-dropzone/upstream/canonical/src/utils/index.ts",
@@ -21,8 +21,6 @@
     "forwardRef mapped to ref-as-prop authoring",
     "React refs mapped to Octane refs and array-ref composition",
     "async acquisition aborted on unmount",
-    "repository formatting",
-    "explicit relative authored-source extensions for NodeNext consumers",
-    "legacy attr-accept CommonJS default normalized through a NodeNext-safe namespace import"
+    "repository formatting"
   ]
 }

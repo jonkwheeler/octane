@@ -59,7 +59,7 @@ export type DropzoneOptions = SharedProps & {
 };
 
 export interface DropzoneProps extends DropzoneOptions {
-	children?: (state: DropzoneState) => any;
+	children?: ((state: DropzoneState) => any) | object | string | number | bigint | boolean | null;
 	ref?: ((instance: DropzoneRef | null) => void) | { current: DropzoneRef | null } | null;
 }
 

@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-dropzone-pristine",
-  "roots": [
-    "packages/react-dropzone/upstream/canonical/src"
-  ],
+  "roots": ["packages/react-dropzone/upstream/canonical/src"],
   "files": [
     "packages/react-dropzone/upstream/canonical/src/index.spec.tsx",
     "packages/react-dropzone/upstream/canonical/src/utils/index.spec.ts"
