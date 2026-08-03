@@ -132,6 +132,14 @@ describe('buildPackageCommonjs', () => {
 			/package directory/,
 		);
 		await assert.rejects(
+			buildPackageCommonjs({ packageDir, entries: ['src/index.ts'], outdir: '.' }),
+			/must not overlap/,
+		);
+		await assert.rejects(
+			buildPackageCommonjs({ packageDir, entries: ['src/index.ts'], outdir: 'src/generated' }),
+			/must not overlap/,
+		);
+		await assert.rejects(
 			buildPackageCommonjs({
 				packageDir,
 				entries: ['src/index.ts', 'src/index.js'],
