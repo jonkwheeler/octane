@@ -59,7 +59,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "f35a81bf2bd9e4d52f66b95e32bade2537909dd80aa3cdce03fa0fa5921602eb"
+          "sha256": "19d16e9dc9526fac3580b08d7241d54f5cd881e2c6a128123bab6b746357e2d4"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
@@ -84,7 +84,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "44b9fa4bd15685f07427b449c75351d3e584a695524b3ecd4480539be421df33"
+          "sha256": "3c173acf2c849da13a13f1c100355b055dbc20a4f46596771672bf612fefc2c2"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
