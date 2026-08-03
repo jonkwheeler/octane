@@ -215,6 +215,69 @@ describe('useAsync in Chromium', () => {
 });
 
 describe('full Select in Chromium', () => {
+	it('matches React required-input focus redirection', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+			await page.evaluate(() => window.__reactSelectFull.renderRequired());
+
+			await page.locator('#octane-select-root input[required]').focus();
+			const octaneActiveRole = await page.evaluate(() => document.activeElement?.getAttribute('role'));
+			await page.locator('#react-select-root input[required]').focus();
+			const reactActiveRole = await page.evaluate(() => document.activeElement?.getAttribute('role'));
+
+			expect(octaneActiveRole).toBe(reactActiveRole);
+			expect(octaneActiveRole).toBe('combobox');
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
+	it('matches React input-open and blur action sequencing', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+			const octaneInput = page.locator('#octane-select-root [role="combobox"]');
+			await octaneInput.focus();
+			await octaneInput.fill('On');
+			await page.locator('#octane-select-root [role="option"]').waitFor();
+			await octaneInput.evaluate((input) => input.blur());
+			const octaneLogs = await page.evaluate(() => window.__reactSelectFull.logs().octane);
+
+			const reactInput = page.locator('#react-select-root [role="combobox"]');
+			await reactInput.focus();
+			await reactInput.fill('On');
+			await page.locator('#react-select-root [role="option"]').waitFor();
+			await reactInput.evaluate((input) => input.blur());
+			const reactLogs = await page.evaluate(() => window.__reactSelectFull.logs().react);
+
+			expect(octaneLogs).toEqual(reactLogs);
+			expect(octaneLogs).toEqual([
+				{
+					type: 'input',
+					value: 'On',
+					actionMeta: { action: 'input-change', prevInputValue: '' },
+				},
+				{ type: 'open' },
+				{
+					type: 'input',
+					value: '',
+					actionMeta: { action: 'input-blur', prevInputValue: 'On' },
+				},
+				{
+					type: 'input',
+					value: '',
+					actionMeta: { action: 'menu-close', prevInputValue: 'On' },
+				},
+				{ type: 'close' },
+			]);
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
 	it('matches React focus, menu, option selection, filtering, and keyboard behavior', async () => {
 		const page = await browser.newPage();
 		try {

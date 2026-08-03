@@ -226,6 +226,20 @@ window.__reactSelectFull = {
 	logs() {
 		return { octane: [...selectLogs.octane], react: [...selectLogs.react] };
 	},
+	renderRequired() {
+		flushSync(() => {
+			octaneSelectRoot.render(BrowserSelectFixture, {
+				...browserSelectProps('octane'),
+				required: true,
+			} as never);
+		});
+		flushReact(() => {
+			reactSelectRoot.render(React.createElement(ReactSelect<BrowserSelectOption>, {
+				...browserSelectProps('react'),
+				required: true,
+			}));
+		});
+	},
 };
 
 const octaneMultiElement = document.getElementById('octane-multi-root');
@@ -325,6 +339,7 @@ declare global {
 	interface Window {
 		__reactSelectFull: {
 			logs(): { octane: Array<Record<string, unknown>>; react: Array<Record<string, unknown>> };
+			renderRequired(): void;
 		};
 		__reactSelectPlacement: {
 			snapshot(rootId: string): { bottom: string; maxHeight: string; top: string } | null;

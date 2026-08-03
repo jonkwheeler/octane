@@ -917,17 +917,27 @@ export function Select<
 		props.onFocus?.(event);
 		if (props.openMenuOnFocus) openMenu('first');
 	};
+	const handleInputBlur = (event: FocusEvent) => {
+		if (menuListRef.current?.contains(document.activeElement)) {
+			inputRef.current?.focus();
+			return;
+		}
+		props.onBlur?.(event);
+		props.onInputChange('', {
+			action: 'input-blur',
+			prevInputValue: props.inputValue ?? '',
+		});
+		closeMenu();
+		setFocusedValue(null);
+		setIsFocused(false);
+	};
 	const ariaDescribedBy = selectValue.length
 		? ariaSelection?.action === 'initial-input-focus' ? elementId('live-region') : undefined
 		: elementId('placeholder');
 	const commonInputAttributes = {
 		id: inputId,
 		disabled: props.isDisabled,
-		onBlur: (event: FocusEvent) => {
-			setIsFocused(false);
-			props.onBlur?.(event);
-			closeMenu();
-		},
+		onBlur: handleInputBlur,
 		onFocus: handleInputFocus,
 		tabIndex: props.tabIndex,
 		form: props.form,
@@ -971,6 +981,7 @@ export function Select<
 				action: 'input-change',
 				prevInputValue: props.inputValue ?? '',
 			});
+			if (!props.menuIsOpen) props.onMenuOpen();
 		}}
 		onFocus={handleInputFocus}
 		spellCheck="false"
@@ -1112,7 +1123,11 @@ export function Select<
 			name={props.name}
 			tabIndex={-1}
 			aria-hidden="true"
-			onFocus={handleInputFocus}
+			onFocus={(event: FocusEvent) => {
+				event.preventDefault();
+				event.stopPropagation();
+				inputRef.current?.focus();
+			}}
 			className={resolveStyle(requiredInputStyle).className}
 			value=""
 			onInput={() => {}}
