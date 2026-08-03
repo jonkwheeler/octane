@@ -1,0 +1,147 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/router.git",
+    "version": "1.167.1",
+    "commit": "8b3659143f634542c455a9d7915a8c7e8fabb65d",
+    "sourceRoot": "packages/react-router-ssr-query/src",
+    "testRoot": "packages/react-router-ssr-query (no runtime test artifacts)",
+    "license": "MIT",
+    "integrity": "sha256:14b0cc524faad53c9e0d68fb2277bdd66147f0589048762fde82dda6aa7fa743",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "insufficient"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-router-ssr-query/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/tanstack-router-ssr-query/tests/differential",
+        "packages/tanstack-router-ssr-query/tests/parity"
+      ],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "41b3738ac015ecaf4aa76ee22a9da47b82e19db538fd89ecf3fac4e3ab5c98e5"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-router-ssr-query-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-router-ssr-query-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs equivalent provider-backed SSR and setup controls against the Octane adapter and pinned React adapter; upstream provides no adapter runtime suite.",
+      "files": [
+        {
+          "path": "packages/tanstack-router-ssr-query/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "d778e8913949df9d034b7d88ba626b8c58e6bd143db963806328a6826033aa65",
+          "cases": [
+            {
+              "id": "differential:tanstack-router-ssr-query-provider-ssr",
+              "testName": "matches provider-backed SSR and preserves the existing wrapper",
+              "fullName": "differential: @octanejs/tanstack-router-ssr-query vs @tanstack/react-router-ssr-query matches provider-backed SSR and preserves the existing wrapper"
+            },
+            {
+              "id": "differential:tanstack-router-ssr-query-wrap-control",
+              "testName": "matches the disabled query-client wrapper control",
+              "fullName": "differential: @octanejs/tanstack-router-ssr-query vs @tanstack/react-router-ssr-query matches the disabled query-client wrapper control"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "24ec7b28d813f027029997cc42f80c454edf43d29cbee222738b5b2a7f0ee53f"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/tests/_fixtures/ssr-query-diff.tsrx",
+          "role": "support",
+          "sha256": "728a276a725b9c4e16dc715d2d1b488c4a325849e8ba4d70b84987d4e5de6ca2"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "f4d0fa0b4c6db73fe47fdbd2013b0579844d83bcad44fd12ba8196fa46fbffd2"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "05f0702b53a9d03427777507cfb6d442a45cce7782a3347c1c1834feab862340"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "ca3c0b1f6c283fdf0087107fc93d5f0f198c9515e8d86832c7e869491707c278"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/scripts/check-upstream-ledger.mjs",
+          "role": "support",
+          "sha256": "a300a2cd3a1279675da09067dee92616dc74f7c358eeebd8905fce3563b1f951"
+        },
+        {
+          "path": "scripts/react-parity/tanstack-router-ssr-query-controls.test.mjs",
+          "role": "support",
+          "sha256": "4715147536fdba39c2f9a569a8a7a82e783f31aec11950a9243263cc0a0fd921"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "948413dca0974f8323d813a1798652790380f9cc4173102e4b8592035d12d05d"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-router-ssr-query-parity-audit",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-router-ssr-query-parity-audit",
+      "notes": "Authenticates the complete adapter source, entrypoint boundary, absent runtime suite, and published core dependency.",
+      "files": [
+        {
+          "path": "packages/tanstack-router-ssr-query/tests/parity/contracts.test.ts",
+          "role": "test",
+          "sha256": "63dace4095fe4c67865e32f13e738d3e13149258dd8e9b07688a09b8444b5852",
+          "cases": [
+            {
+              "id": "adapted:tanstack-router-ssr-query-upstream-ledger",
+              "testName": "authenticates the complete adapter and absent runtime suite",
+              "fullName": "@octanejs/tanstack-router-ssr-query parity audit contracts authenticates the complete adapter and absent runtime suite"
+            },
+            {
+              "id": "adapted:tanstack-router-ssr-query-core-version",
+              "testName": "records the core version published by the pinned adapter",
+              "fullName": "@octanejs/tanstack-router-ssr-query parity audit contracts records the core version published by the pinned adapter"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

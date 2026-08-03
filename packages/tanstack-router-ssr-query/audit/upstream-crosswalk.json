@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "publicEntrypoints": [
+    { "path": ".", "octanePath": ".", "disposition": "surface-present-unverified" },
+    { "path": "./package.json", "disposition": "metadata-only" }
+  ],
+  "coreDependency": {
+    "package": "@tanstack/router-ssr-query-core",
+    "version": "1.169.1",
+    "disposition": "published-adapter-version-reused"
+  },
+  "upstreamTests": [],
+  "typeSuite": {
+    "disposition": "insufficient",
+    "reason": "Upstream compiles package source across TypeScript versions but has no dedicated type-assertion artifacts."
+  }
+}
