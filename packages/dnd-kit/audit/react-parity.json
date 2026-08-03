@@ -86,7 +86,7 @@
         {
           "path": "packages/dnd-kit/scripts/check-upstream-ledger.mjs",
           "role": "support",
-          "sha256": "f4cf7ed91b45c33b096491562ec610131569b54341ba02e5e98b4ca0edab31aa"
+          "sha256": "d60b3af0adbf5484dc068cd49ce65b31131ad7a0c53de25b5e2a37568cba549b"
         },
         {
           "path": "scripts/react-parity/dnd-kit-controls.test.mjs",

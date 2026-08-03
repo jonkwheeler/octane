@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -25,7 +25,7 @@ const checksums = new Map(
 			return [match[2], match[1]];
 		}),
 );
-const files = walk(upstreamRoot).map((path) => path.slice(upstreamRoot.length + 1));
+const files = walk(upstreamRoot).map((path) => relative(upstreamRoot, path).split(sep).join('/'));
 if (
 	files.length !== 31 ||
 	checksums.size !== files.length ||
