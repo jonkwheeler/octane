@@ -39,6 +39,7 @@ describe('differential: @octanejs/aria Phase-2 listbox vs real react-aria', () =
 		d.unmount();
 	});
 
+	// @parity-case differential:aria-listbox-selection
 	it('clicking an option selects it, byte-identical', async () => {
 		const d = await mountDifferential(LISTBOX_FIXTURE, 'ListBoxSpec', undefined, CACHE);
 		await d.step('mount', () => {});

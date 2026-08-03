@@ -7,6 +7,8 @@ const localeSymbol = Symbol.for('react-aria.i18n.locale');
 const stringsSymbol = Symbol.for('react-aria.i18n.strings');
 
 describe('@octanejs/aria — i18n server serializer', () => {
+	// OCTANE DIVERGENCE[valid-hoisted-identifiers][adapted:aria-i18n-identifiers]
+	// @parity-case adapted:aria-i18n-identifiers
 	it('emits an executable bootstrap script when more than 26 strings are hoisted', () => {
 		// A string is hoisted into a variable when it appears in more than one
 		// package; 30 shared strings push past the 26 single-letter names.

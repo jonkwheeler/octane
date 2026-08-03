@@ -83,6 +83,8 @@ describe('differential: @octanejs/aria Phase-1 leaf hooks vs real react-aria', (
 		d.unmount();
 	});
 
+	// OCTANE DIVERGENCE[native-input-event-wiring][differential:aria-leaf-textfield]
+	// @parity-case differential:aria-leaf-textfield
 	it('useTextField: typing updates value through the native input event + field ids, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'TextFieldSpec', undefined, CACHE);
 		await d.step('mount', () => {});

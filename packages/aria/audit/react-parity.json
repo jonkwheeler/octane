@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "provenance": {
+    "repo": "https://github.com/adobe/react-spectrum.git",
+    "version": "react-aria@3.50.0; react-aria-components@1.19.0; react-stately@3.48.0",
+    "commit": "1c84a49a1faf50b571c84e00bcf9c60b22ddd03e",
+    "sourceRoot": "packages/react-aria/src; packages/react-aria-components/src; packages/react-stately/src",
+    "testRoot": "packages/react-aria/test; packages/react-aria-components/test; packages/react-stately/test",
+    "license": "Apache-2.0",
+    "integrity": "sha256:dcad3293f0f7438705f72cdd7df03351476aeaba7d0d2743c7ad6d8130aff56f",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/aria/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/aria/tests"],
+      "include": ["\\.test\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "aria-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "aria-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs representative interaction, field, collection, Select, ComboBox, RAC, and Tree/Table scenarios against the pinned React Aria packages.",
+      "files": [
+        {
+          "path": "packages/aria/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "35e0e829d6462550d65fa393ccaa47967b5789a3301c19d920515f46674b1f95",
+          "cases": [
+            {
+              "id": "differential:aria-interactions-press",
+              "testName": "usePress: pointer press start → pressed state → press sequence, byte-identical",
+              "fullName": "differential: @octanejs/aria vs real react-aria on React usePress: pointer press start → pressed state → press sequence, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-leaf.test.ts",
+          "role": "test",
+          "sha256": "49ddc1c494a82362b5cfab4042debc4da6a4aee89f75ec33468b97282a8de19f",
+          "cases": [
+            {
+              "id": "differential:aria-leaf-textfield",
+              "testName": "useTextField: typing updates value through the native input event + field ids, byte-identical",
+              "fullName": "differential: @octanejs/aria Phase-1 leaf hooks vs real react-aria useTextField: typing updates value through the native input event + field ids, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-collections.test.ts",
+          "role": "test",
+          "sha256": "81dd133e4a8c595f33aa902e29724322148d4d7726ac71074367b68450b5d1b5",
+          "cases": [
+            {
+              "id": "differential:aria-listbox-selection",
+              "testName": "clicking an option selects it, byte-identical",
+              "fullName": "differential: @octanejs/aria Phase-2 listbox vs real react-aria clicking an option selects it, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-select.test.ts",
+          "role": "test",
+          "sha256": "24cd82ef6b9c53ce24e2dbe87805a5477890f1745d636d8fe8c20fe7899c1661",
+          "cases": [
+            {
+              "id": "differential:aria-select-open",
+              "testName": "pressing the trigger opens the listbox, byte-identical",
+              "fullName": "differential: @octanejs/aria Phase-3 select vs real react-aria pressing the trigger opens the listbox, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-combobox.test.ts",
+          "role": "test",
+          "sha256": "1442f2867bf59f729d34400a752bbcd67d78e5d0f235db7c1aa489cda316264c",
+          "cases": [
+            {
+              "id": "differential:aria-combobox-filter",
+              "testName": "typing filters + opens the listbox, byte-identical",
+              "fullName": "differential: @octanejs/aria Phase-3 combobox vs real react-aria typing filters + opens the listbox, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-rac.test.ts",
+          "role": "test",
+          "sha256": "8d4a8f49a9c3d35fe588cce457a5d5b78fdf14bb024be98885e6e7be6517b710",
+          "cases": [
+            {
+              "id": "differential:aria-rac-button",
+              "testName": "Button: hover + mid-press data attributes + press count, byte-identical",
+              "fullName": "differential: @octanejs/aria/components Phase-4 vs real react-aria-components Button: hover + mid-press data attributes + press count, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-rac-collections.test.ts",
+          "role": "test",
+          "sha256": "65a7e4bffd56a440a9eaa50dadab6b52c20e25b17a88902c5a37f9290575230a",
+          "cases": [
+            {
+              "id": "differential:aria-rac-listbox",
+              "testName": "ListBox: dynamic items, click selection, keyed reverse, byte-identical",
+              "fullName": "differential: @octanejs/aria/components Phase-5 collections vs real react-aria-components ListBox: dynamic items, click selection, keyed reverse, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/parity-tree-table.test.ts",
+          "role": "test",
+          "sha256": "fe68d23194d2c5f7043ef8c6e847bc2ddf7709de76bd3436d9b58f2ea09dd53f",
+          "cases": [
+            {
+              "id": "differential:aria-rac-table",
+              "testName": "Table: grid structure, sort cycling, row selection, byte-identical",
+              "fullName": "differential: @octanejs/aria/components Tree + Table vs real react-aria-components Table: grid structure, sort cycling, row selection, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "1316104ea9caf5dd23a96545a29119a648ed92d2d86d11883d397bc9bf2bc3d4"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff.tsrx",
+          "role": "support",
+          "sha256": "6399e154bb37e27b1d6792fd4e6fe72619521613fbf61a1425654f08a17d08a0"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-leaf.tsrx",
+          "role": "support",
+          "sha256": "404505776d14495db155b85aed5b39aaff70ecf864e63c26e053110b37111064"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-tabs.tsrx",
+          "role": "support",
+          "sha256": "916650dcdc3ecbe6e96c0d5ba63ac615c14adb6b0f384d5c7cdc30a21bde4375"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-listbox.tsrx",
+          "role": "support",
+          "sha256": "2ca83d65dee60cd9afade57eb4939a2cfd3719d4824b7b3006de66bc88d3fc73"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-select.tsrx",
+          "role": "support",
+          "sha256": "2dff71cba4187e77cc3acb42f56807278e980f72410d32d0f58e95bba73d5614"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-combobox.tsrx",
+          "role": "support",
+          "sha256": "13952001ee78ec2936510b80f9863d74d93b33f86b3d665278298ca7630a109d"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-rac.tsrx",
+          "role": "support",
+          "sha256": "b9702f95ac3d3f72a13828c6a718f85d2ac51c16ca1c837467836bb0a6e9598e"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-rac-collections.tsrx",
+          "role": "support",
+          "sha256": "91228f1282ae8e409299504653751e7f8c403d18620d9ed803a0a994090f9b08"
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/aria-diff-tree-table.tsrx",
+          "role": "support",
+          "sha256": "aac296ea6fe592c3c69822aad592d209085b577d64f5df485da5b6b1dd5e7344"
+        }
+      ]
+    },
+    {
+      "id": "aria-adapted-contracts",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "aria",
+      "notes": "Pins documented framework divergences and executes the immutable upstream export/test crosswalk.",
+      "files": [
+        {
+          "path": "packages/aria/tests/foundation.test.ts",
+          "role": "test",
+          "sha256": "77c3d922fe048d6e4cdee2456faef0216b03653acc179f2c7fb110ed7f944897",
+          "cases": [
+            {
+              "id": "adapted:aria-ref-as-prop",
+              "testName": "forwards the attached node to the original callback ref",
+              "fullName": "@octanejs/aria — useObjectRef forwards the attached node to the original callback ref"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/i18n-server.test.ts",
+          "role": "test",
+          "sha256": "fd9390b877e013ba116cc232c2de3f87ae733e481fb06f2f44b154516cbbbce3",
+          "cases": [
+            {
+              "id": "adapted:aria-i18n-identifiers",
+              "testName": "emits an executable bootstrap script when more than 26 strings are hoisted",
+              "fullName": "@octanejs/aria — i18n server serializer emits an executable bootstrap script when more than 26 strings are hoisted"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/upstream-crosswalk.test.ts",
+          "role": "test",
+          "sha256": "080a717ba166b3c30a8dd09879c46732f94997cc5beab2c83280950dbc3a02d7",
+          "cases": [
+            {
+              "id": "adapted:aria-upstream-crosswalk",
+              "testName": "classifies all 1,294 exports and 185 upstream test artifacts",
+              "fullName": "@octanejs/aria pinned upstream crosswalk classifies all 1,294 exports and 185 upstream test artifacts"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/_fixtures/foundation.tsx",
+          "role": "support",
+          "sha256": "bf1731fd7a7f56339073dca5175a55eacccdc6e0af6f0b85f1feefe0a38c59f8"
+        },
+        {
+          "path": "packages/aria/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "b79171de942142bb30804747aabd53d1065330ae9d8047c5f520643a868778c1"
+        },
+        {
+          "path": "packages/aria/scripts/build-upstream-crosswalk.mjs",
+          "role": "support",
+          "sha256": "b2746d32fca3ea3e6588977ee428aeb7c62494fc84e0759a7dbb875803fd2d70"
+        },
+        {
+          "path": "packages/aria/scripts/check-upstream-crosswalk.mjs",
+          "role": "support",
+          "sha256": "140852ca061dd9025776d5cb3d4c3cb062d5d21ef099a3dc670396780d542b08"
+        },
+        {
+          "path": "packages/aria/scripts/crosswalk-lib.mjs",
+          "role": "support",
+          "sha256": "c8c3f6aee9bdf48d8c5177a4bed6ff9e7488f893c9e298ddcfcdf7946dbf6402"
+        }
+      ]
+    },
+    {
+      "id": "aria-server-contract",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "aria-ssr",
+      "notes": "Runs the injected RTL locale contract in the real Octane server renderer.",
+      "files": [
+        {
+          "path": "packages/aria/tests/ssr/ssr.test.ts",
+          "role": "test",
+          "sha256": "3fd6e58b8098bed119370335b24fb2dff32e610fc54ed7498303cf289ef36699",
+          "cases": [
+            {
+              "id": "adapted:aria-server-rtl",
+              "testName": "derives the server-rendered text direction from an injected RTL locale",
+              "fullName": "@octanejs/aria server rendering derives the server-rendered text direction from an injected RTL locale"
+            }
+          ]
+        },
+        {
+          "path": "packages/aria/tests/ssr/_fixtures/server.tsx",
+          "role": "support",
+          "sha256": "93089d1cf8648ee4e2922dc93d15db483a6b961547f029bfd8f756992ce8d044"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "native-input-event-wiring",
+      "caseIds": ["differential:aria-leaf-textfield"],
+      "upstreamResult": "React maps text editing through its synthetic onChange event layer.",
+      "octaneResult": "Octane uses the native input event for per-keystroke DOM wiring while preserving public value callbacks.",
+      "rationale": "Octane does not emulate React's synthetic event layer.",
+      "classification": "framework-integration",
+      "consumerImpact": "Native text host handlers use onInput; library value callbacks keep their documented names.",
+      "migrationGuidance": "Use onInput for raw text host edits and keep React Aria value callbacks unchanged.",
+      "owner": "@octanejs/aria",
+      "reviewCondition": "Review if Octane introduces a synthetic change-event compatibility layer."
+    },
+    {
+      "id": "ref-as-prop",
+      "caseIds": ["adapted:aria-ref-as-prop"],
+      "upstreamResult": "React component refs are exposed through forwardRef wrappers.",
+      "octaneResult": "Refs arrive as ordinary component props and are forwarded to the authored host node.",
+      "rationale": "Octane follows a compiler-visible ref-as-prop contract.",
+      "classification": "framework-integration",
+      "consumerImpact": "Consumers pass ref normally, but React forwardRef component identity is not reproduced.",
+      "migrationGuidance": "Declare and forward the ref prop directly in Octane components.",
+      "owner": "@octanejs/aria",
+      "reviewCondition": "Review if Octane adopts React forwardRef compatibility."
+    },
+    {
+      "id": "valid-hoisted-identifiers",
+      "caseIds": ["adapted:aria-i18n-identifiers"],
+      "upstreamResult": "The pinned serializer derives identifiers from character codes and emits invalid JavaScript after 26 common strings.",
+      "octaneResult": "The serializer uses a-z followed by valid underscore-number identifiers.",
+      "rationale": "Server bootstrap output must remain executable for every dictionary size.",
+      "classification": "intentional-correction",
+      "consumerImpact": "Large localized dictionaries produce valid inline bootstrap scripts.",
+      "migrationGuidance": "No migration is required; do not rely on invalid upstream output.",
+      "owner": "@octanejs/aria",
+      "reviewCondition": "Review when upstream changes its hoisted-string identifier algorithm."
+    },
+    {
+      "id": "server-rtl-direction",
+      "caseIds": ["adapted:aria-server-rtl"],
+      "upstreamResult": "The pinned SSR branch returns ltr even when the injected locale is RTL.",
+      "octaneResult": "SSR direction is derived from the injected locale through isRTL.",
+      "rationale": "The returned direction must agree with the locale used by the same server snapshot.",
+      "classification": "intentional-correction",
+      "consumerImpact": "RTL server markup receives the correct direction before hydration.",
+      "migrationGuidance": "No migration is required; consume the locale direction returned by the provider.",
+      "owner": "@octanejs/aria",
+      "reviewCondition": "Review when upstream fixes its SSR locale direction."
+    }
+  ]
+}

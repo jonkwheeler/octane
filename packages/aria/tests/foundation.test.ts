@@ -54,6 +54,8 @@ describe('@octanejs/aria — mergeProps', () => {
 });
 
 describe('@octanejs/aria — useObjectRef', () => {
+	// OCTANE DIVERGENCE[ref-as-prop][adapted:aria-ref-as-prop]
+	// @parity-case adapted:aria-ref-as-prop
 	it('forwards the attached node to the original callback ref', async () => {
 		const r = mount(ObjectRefProbe);
 		await nextPaint();

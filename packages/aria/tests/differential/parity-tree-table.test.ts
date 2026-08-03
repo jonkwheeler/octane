@@ -54,6 +54,7 @@ describe('differential: @octanejs/aria/components Tree + Table vs real react-ari
 		d.unmount();
 	});
 
+	// @parity-case differential:aria-rac-table
 	it('Table: grid structure, sort cycling, row selection, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'TableSpec', undefined, CACHE);
 		await d.step('mount', () => {});

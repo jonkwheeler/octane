@@ -34,6 +34,7 @@ function pointerInit(pointerId: number, overrides: PointerEventInit = {}): Point
 }
 
 describe('differential: @octanejs/aria vs real react-aria on React', () => {
+	// @parity-case differential:aria-interactions-press
 	it('usePress: pointer press start → pressed state → press sequence, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'PressLog', undefined, CACHE);
 		await d.step('mount', () => {});

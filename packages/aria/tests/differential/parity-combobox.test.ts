@@ -19,6 +19,7 @@ describe('differential: @octanejs/aria Phase-3 combobox vs real react-aria', () 
 		d.unmount();
 	});
 
+	// @parity-case differential:aria-combobox-filter
 	it('typing filters + opens the listbox, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ComboBoxSpec', undefined, CACHE);
 		await d.step('mount', () => {});

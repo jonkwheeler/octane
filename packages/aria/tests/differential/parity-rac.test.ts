@@ -47,6 +47,7 @@ function pointerInit(pointerId: number, overrides: PointerEventInit = {}): Point
 }
 
 describe('differential: @octanejs/aria/components Phase-4 vs real react-aria-components', () => {
+	// @parity-case differential:aria-rac-button
 	it('Button: hover + mid-press data attributes + press count, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ButtonSpec', undefined, CACHE);
 		await d.step('mount', () => {});

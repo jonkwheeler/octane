@@ -29,6 +29,7 @@ if (typeof (Element.prototype as any).getAnimations !== 'function') {
 }
 
 describe('differential: @octanejs/aria/components Phase-5 collections vs real react-aria-components', () => {
+	// @parity-case differential:aria-rac-listbox
 	it('ListBox: dynamic items, click selection, keyed reverse, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ListBoxSpec', undefined, CACHE);
 		await d.step('mount', () => {});

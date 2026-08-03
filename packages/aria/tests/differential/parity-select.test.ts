@@ -28,6 +28,7 @@ describe('differential: @octanejs/aria Phase-3 select vs real react-aria', () =>
 		d.unmount();
 	});
 
+	// @parity-case differential:aria-select-open
 	it('pressing the trigger opens the listbox, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'SelectSpec', undefined, CACHE);
 		await d.step('mount', () => {});
