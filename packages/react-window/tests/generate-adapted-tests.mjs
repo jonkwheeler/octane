@@ -70,7 +70,7 @@ export function transform(
 	if (upstreamPath === 'components/grid/Grid.test.tsx') {
 		output = output.replace(
 			'expect(renderLog).toMatchInlineSnapshot(`\n        [\n          "row: 0, column: 0, id: 4",',
-			'expect(renderLog.toSorted()).toMatchInlineSnapshot(`\n        [\n          "row: 0, column: 0, id: 4",',
+			'// OCTANE DIVERGENCE[react-window-keyed-effect-order][runtime:react-window-adapted-004]\n      expect(renderLog.toSorted()).toMatchInlineSnapshot(`\n        [\n          "row: 0, column: 0, id: 4",',
 		);
 	}
 	if (upstreamPath === 'components/list/List.test.tsx') {
@@ -82,7 +82,8 @@ export function transform(
           }),
           undefined
         );`,
-				`expect(RowComponent.mock.lastCall?.[0]).toEqual(
+				`// OCTANE DIVERGENCE[react-window-component-call-abi][runtime:react-window-adapted-048]
+        expect(RowComponent.mock.lastCall?.[0]).toEqual(
           expect.objectContaining({
             index: 2
           })
@@ -95,7 +96,8 @@ export function transform(
         }),
         undefined
       );`,
-				`expect(RowComponent.mock.lastCall?.[0]).toEqual(
+				`// OCTANE DIVERGENCE[react-window-component-call-abi][runtime:react-window-adapted-049]
+      expect(RowComponent.mock.lastCall?.[0]).toEqual(
         expect.objectContaining({
           foo: 1
         })
@@ -116,7 +118,7 @@ export function transform(
 			)
 			.replace(
 				'expect(renderLog).toMatchInlineSnapshot(`\n        [\n          "index: 0, id: 4",\n          "index: 1, id: 3",\n          "index: 2, id: 2",',
-				'expect(renderLog.toSorted()).toMatchInlineSnapshot(`\n        [\n          "index: 0, id: 4",\n          "index: 1, id: 3",',
+				'// OCTANE DIVERGENCE[react-window-keyed-effect-order][runtime:react-window-adapted-054]\n      expect(renderLog.toSorted()).toMatchInlineSnapshot(`\n        [\n          "index: 0, id: 4",\n          "index: 1, id: 3",',
 			);
 	}
 

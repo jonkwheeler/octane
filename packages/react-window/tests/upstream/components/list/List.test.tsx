@@ -695,6 +695,7 @@ describe("List", () => {
         // Only the row that has been nudged down should be re-rendered;
         // the other two should be memoized
         expect(RowComponent).toHaveBeenCalledTimes(1);
+        // OCTANE DIVERGENCE[react-window-component-call-abi][runtime:react-window-adapted-048]
         expect(RowComponent.mock.lastCall?.[0]).toEqual(
           expect.objectContaining({
             index: 2
@@ -752,6 +753,7 @@ describe("List", () => {
         }
       );
 
+      // OCTANE DIVERGENCE[react-window-component-call-abi][runtime:react-window-adapted-049]
       expect(RowComponent.mock.lastCall?.[0]).toEqual(
         expect.objectContaining({
           foo: 1
@@ -963,6 +965,7 @@ describe("List", () => {
       });
 
       expect(rowKey).toHaveBeenCalled();
+      // OCTANE DIVERGENCE[react-window-keyed-effect-order][runtime:react-window-adapted-054]
       expect(renderLog.toSorted()).toMatchInlineSnapshot(`
         [
           "index: 0, id: 4",

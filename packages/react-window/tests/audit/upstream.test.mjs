@@ -30,7 +30,7 @@ function rewriteChecksum(root, relativePath) {
 
 test('accepts the pristine pinned tree', () => {
 	assert.deepEqual(verifyUpstream(packageRoot), {
-		files: 57,
+		files: 58,
 		testFiles: 14,
 		testCases: 117,
 		runtimeExports: 8,

@@ -206,6 +206,7 @@ describe("Grid", () => {
 
       expect(columnKey).toHaveBeenCalled();
       expect(rowKey).toHaveBeenCalled();
+      // OCTANE DIVERGENCE[react-window-keyed-effect-order][runtime:react-window-adapted-004]
       expect(renderLog.toSorted()).toMatchInlineSnapshot(`
         [
           "row: 0, column: 0, id: 4",

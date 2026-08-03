@@ -15,13 +15,15 @@
 | Canonical tag archive SHA-256 | `d0b66c0138c6355051a75086ce0681aa5880249c0d14f1e9759185daee16e452` |
 | License | MIT, copyright Brian Vaughn |
 
-The byte-exact tagged `lib/` tree, repository package metadata, and license are
-vendored under `upstream/` for provenance and parity evidence. They are audit
-inputs only and must remain excluded from the published package.
+The byte-exact tagged `lib/` tree, published npm declaration bundle, repository
+package metadata, and license are vendored under `upstream/` for provenance and
+parity evidence. They are audit inputs only and must remain excluded from the
+published package.
 
-Run `pnpm --dir packages/react-window upstream:verify` to verify all 57 vendored
-artifacts, the exact file set, the 14 upstream test artifacts and their 117 test
-registrations, package metadata, and the complete root export inventory.
+Run `pnpm --dir packages/react-window upstream:verify` to verify all 58 vendored
+artifacts, the exact file set, the published declaration bundle, the 14 upstream
+test artifacts and their 117 test registrations, package metadata, and the
+complete root export inventory.
 
 ## Public v2.3.0 surface
 

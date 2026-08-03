@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ReactWindowServerFixture } from './_fixtures/server';
 
 describe('@octanejs/react-window server rendering', () => {
+	// @parity-case adapted:react-window-ssr
 	it('uses default dimensions without accessing browser layout APIs', () => {
 		expect(typeof document).toBe('undefined');
 		expect(typeof ResizeObserver).toBe('undefined');

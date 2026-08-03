@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/bvaughn/react-window.git",
+    "version": "2.3.0",
+    "commit": "4d9eebbb510262b3b7e95463cf49a10de53ea77d",
+    "sourceRoot": "lib",
+    "testRoot": "lib",
+    "license": "MIT",
+    "integrity": "sha256:d0b66c0138c6355051a75086ce0681aa5880249c0d14f1e9759185daee16e452",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-window/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": ["/utils/test/"]
+    },
+    "tests": {
+      "roots": ["packages/react-window/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 117,
+    "uniqueIdentities": 117,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "f6151429ef89766a4f12daa16009048ff6046b9d7c11448632b38243fdb46c24"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-window-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs all 14 byte-exact upstream React test files and all 117 inventoried cases unchanged.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-window/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-window/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "3908762867b85c453117fcd8099cd2a98e6095a1271c449f86ef3f0f59028be6"
+        },
+        {
+          "path": "packages/react-window/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "69d0a2e15466c0f44a6cd477835631f14f181eac149dbdbaa1ed0e01996c56ba"
+        }
+      ]
+    },
+    {
+      "id": "react-window-adapted-upstream",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window-adapted",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs all 117 adapted upstream cases against the source-correspondent Octane production modules, with every transformation generated and audited.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-window/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-window/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "009b8a4b734df021317d917682ed5197fcdb7a9173d3c58f47a7bddf3f7a7958"
+        },
+        {
+          "path": "packages/react-window/audit/adapted-transformations.json",
+          "role": "support",
+          "sha256": "045249c61dc37184b40debe36317deb19c49e43fd92e32f90fdeac50c9910160"
+        },
+        {
+          "path": "packages/react-window/tests/generate-adapted-tests.mjs",
+          "role": "support",
+          "sha256": "7ecf8f996138eb7cb0224bb58312a11b23b9de807f545b701010439265a311af"
+        }
+      ]
+    },
+    {
+      "id": "react-window-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the shared parity program against the byte-exact published npm declaration bundle.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-window/typetests/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-window/typetests/parity.test-d.ts",
+          "role": "test",
+          "sha256": "f505deac5b2fcbac3534d2d9dcfa431f3b4d9983251385fe50c661fb386cd8e6",
+          "cases": [
+            {
+              "id": "types:react-window-pristine",
+              "testName": "published react-window declaration contract",
+              "fullName": "published react-window declaration contract"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-window-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the identical parity program against the Octane package source with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-window/typetests/tsconfig.adapted.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-window/typetests/parity.test-d.ts",
+          "role": "test",
+          "sha256": "f505deac5b2fcbac3534d2d9dcfa431f3b4d9983251385fe50c661fb386cd8e6",
+          "cases": [
+            {
+              "id": "types:react-window-adapted",
+              "testName": "Octane react-window declaration contract",
+              "fullName": "Octane react-window declaration contract"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-window-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the same TSX fixture for Octane and React, then byte-compares List and Grid DOM after native scrolling.",
+      "files": [
+        {
+          "path": "packages/react-window/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "57634fa9ed0c0633d90d648fba9f247005262ee0ed2c099725a27e5bccc9d66e",
+          "cases": [
+            {
+              "id": "differential:react-window-list",
+              "testName": "List renders and scrolls through the same bounded rows",
+              "fullName": "differential: @octanejs/react-window vs react-window List renders and scrolls through the same bounded rows"
+            },
+            {
+              "id": "differential:react-window-grid",
+              "testName": "Grid renders and scrolls through the same bounded cells",
+              "fullName": "differential: @octanejs/react-window vs react-window Grid renders and scrolls through the same bounded cells"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-window/tests/_fixtures/virtualizers.tsrx",
+          "role": "support",
+          "sha256": "4e9170dc2c43dde1832daf39d5297f924b06a192102978711829a21071cdfa86"
+        },
+        {
+          "path": "packages/react-window/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "6b6079402ebdd644af705f1b88a6302421f509c09355259d856e40bb7f4422e8"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        }
+      ]
+    },
+    {
+      "id": "react-window-hydration",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window",
+      "notes": "Adopts real Octane server markup for List and Grid, preserves node identity, and verifies both virtualizers remain live after hydration.",
+      "files": [
+        {
+          "path": "packages/react-window/tests/hydration.test.ts",
+          "role": "test",
+          "sha256": "b6b3706dbfd50ac915b6f2e286e21b752ba7a461c29019f9886029ade93313ed",
+          "cases": [
+            {
+              "id": "adapted:react-window-hydration",
+              "testName": "adopts server List and Grid nodes and keeps virtualization live",
+              "fullName": "@octanejs/react-window hydration adopts server List and Grid nodes and keeps virtualization live"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-window-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-window-ssr",
+      "notes": "Renders bounded List and Grid markup from default dimensions without DOM or ResizeObserver globals.",
+      "files": [
+        {
+          "path": "packages/react-window/tests/ssr/ssr.test.ts",
+          "role": "test",
+          "sha256": "41d04041d251fedf255b4087058c98e1e0a8295f0a8e58c65a1690266992b523",
+          "cases": [
+            {
+              "id": "adapted:react-window-ssr",
+              "testName": "uses default dimensions without accessing browser layout APIs",
+              "fullName": "@octanejs/react-window server rendering uses default dimensions without accessing browser layout APIs"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-window/tests/ssr/_fixtures/server.tsx",
+          "role": "support",
+          "sha256": "5bc5959fdc206930bed43e8ae35bfe4d929848375116a2d9f9c36db728e9ef30"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "react-window-component-call-abi",
+      "caseIds": ["runtime:react-window-adapted-048", "runtime:react-window-adapted-049"],
+      "upstreamResult": "React invokes function components with public props and an undefined legacy second argument.",
+      "octaneResult": "Octane invokes compiled components with the same public props and reserves the second argument for its internal block ABI.",
+      "rationale": "The second argument is renderer plumbing, not part of the component's public consumer contract.",
+      "classification": "framework-abi",
+      "consumerImpact": "Mocks that assert the complete raw component invocation tuple observe an Octane internal object as the second argument.",
+      "migrationGuidance": "Assert component props or rendered behavior instead of React's undocumented second invocation argument.",
+      "owner": "@octanejs/react-window",
+      "reviewCondition": "Review if Octane removes the internal component block argument or React changes its component invocation ABI."
+    },
+    {
+      "id": "react-window-keyed-effect-order",
+      "caseIds": ["runtime:react-window-adapted-004", "runtime:react-window-adapted-054"],
+      "upstreamResult": "React reruns keyed child effects in new visual order, including an unchanged center List row.",
+      "octaneResult": "Octane preserves the same keyed state and DOM identity but may run moved effects in prior block order and memoize an unchanged center row.",
+      "rationale": "Effect scheduling order and equal-prop memoization are renderer-specific while keyed state identity is the public behavior under test.",
+      "classification": "scheduling",
+      "consumerImpact": "Effect-log order and render-count assertions may differ after reversing keyed rows while visible content and state identity remain equal.",
+      "migrationGuidance": "Do not depend on sibling effect ordering or rerenders of equal-prop keyed children; assert identity and final rendered state.",
+      "owner": "@octanejs/react-window",
+      "reviewCondition": "Review if Octane changes keyed reconciliation or effect scheduling semantics."
+    }
+  ]
+}

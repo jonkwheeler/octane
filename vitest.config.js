@@ -1339,7 +1339,10 @@ export default defineConfig({
 			{
 				test: {
 					name: 'react-window',
-					include: ['packages/react-window/tests/runtime/**/*.test.ts'],
+					include: [
+						'packages/react-window/tests/runtime/**/*.test.ts',
+						'packages/react-window/tests/hydration.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1349,6 +1352,34 @@ export default defineConfig({
 						{
 							find: /^octane$/,
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-window-differential',
+					include: ['packages/react-window/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/react-window/tests/differential/_setup.ts'],
+					setupFiles: ['packages/react-window/tests/upstream-setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-window$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-window/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
 						},
 					],
 				},
