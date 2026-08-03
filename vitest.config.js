@@ -826,6 +826,19 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-draggable',
+					include: [
+						'packages/react-draggable/tests/upstream/**/*.test.ts',
+						'packages/react-draggable/tests/differential/**/*.test.ts',
+						'packages/react-draggable/tests/runtime/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
 					name: 'react-draggable-feasibility',
 					include: [
 						'packages/react-draggable/tests/feasibility/**/*.test.ts',
@@ -845,7 +858,12 @@ export default defineConfig({
 				},
 				plugins: [octane({ ssr: true })],
 				resolve: {
-					alias: [{ find: /^octane$/, replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts') }],
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
 				},
 			},
 			{

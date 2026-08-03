@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "octane",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/DraggableCore.tsrx",
+    "src/utils/**/*.ts",
+    "tests/upstream/**/*.ts",
+    "tests/differential/**/*.ts",
+    "tests/runtime/**/*.ts",
+    "tests/runtime/**/*.tsrx"
+  ]
+}
