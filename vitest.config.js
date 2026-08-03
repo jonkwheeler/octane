@@ -2299,11 +2299,13 @@ export default defineConfig({
 			{
 				test: {
 					name: 'radix',
-					include: ['packages/radix/tests/**/*.test.ts', 'packages/radix/tests/**/*.test.tsx'],
+					include: [
+						'packages/radix/tests/**/*.test.ts',
+						'packages/radix/tests/**/*.test.tsx',
+						'!packages/radix/tests/differential/**/*.test.ts',
+						'!packages/radix/tests/parity/**/*.test.ts',
+					],
 					environment: 'jsdom',
-					// Differential precompile for radix fixtures: rewrites `@octanejs/radix` →
-					// `radix-ui` so the React side runs the real Radix primitives.
-					globalSetup: ['packages/radix/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				// radix's `.ts` foundation forwards the caller's slot via subSlot (as does
@@ -2328,6 +2330,44 @@ export default defineConfig({
 						},
 					],
 				},
+			},
+			{
+				test: {
+					name: 'radix-differential',
+					include: ['packages/radix/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					// Rewrites `@octanejs/radix` to `radix-ui` so the second side runs
+					// the exact workspace-pinned React oracle.
+					globalSetup: ['packages/radix/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/radix$/,
+							replacement: resolve(import.meta.dirname, 'packages/radix/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/radix\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/radix/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'radix-parity-audit',
+					include: ['packages/radix/tests/parity/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {

@@ -1,0 +1,244 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/radix-ui/primitives.git",
+    "version": "1.6.4",
+    "commit": "eb8b851619a655e278c819b959be0d3924b0ada8",
+    "sourceRoot": "packages/react/radix-ui/src and 60 transitive workspace package src roots",
+    "testRoot": "38 transitive workspace package test files",
+    "license": "MIT",
+    "integrity": "sha256:034b075b204bcd82bc7d52c82954e5204e7aa5493d34f3b534bc0440c785e571",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/radix/src"],
+      "include": ["\\.ts$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/radix/tests/differential", "packages/radix/tests/parity"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "radix-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "radix-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs all 16 collected authored same-fixture jsdom scenarios against @octanejs/radix and the pinned radix-ui React oracle; this is bounded evidence, not the complete canonical suite.",
+      "files": [
+        {
+          "path": "packages/radix/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "ad898ce8ded9bdb36a51758bd8009e5e178ab2ea8faea702c2da2915f72cec5c",
+          "cases": [
+            {
+              "id": "differential:radix-separator",
+              "testName": "Separator: horizontal / vertical / decorative, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Separator: horizontal / vertical / decorative, byte-identical"
+            },
+            {
+              "id": "differential:radix-label",
+              "testName": "Label: renders a native label byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Label: renders a native label byte-identical"
+            },
+            {
+              "id": "differential:radix-collapsible",
+              "testName": "Collapsible: closed → open → closed, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Collapsible: closed → open → closed, byte-identical"
+            },
+            {
+              "id": "differential:radix-accordion-single",
+              "testName": "Accordion (single, collapsible): switch items + collapse, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Accordion (single, collapsible): switch items + collapse, byte-identical"
+            },
+            {
+              "id": "differential:radix-dialog-non-modal",
+              "testName": "Dialog (non-modal): trigger ARIA across open/close, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Dialog (non-modal): trigger ARIA across open/close, byte-identical"
+            },
+            {
+              "id": "differential:radix-toggle",
+              "testName": "Toggle: pressed on/off, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Toggle: pressed on/off, byte-identical"
+            },
+            {
+              "id": "differential:radix-toggle-group-single",
+              "testName": "ToggleGroup (single): switch + roving tabindex, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React ToggleGroup (single): switch + roving tabindex, byte-identical"
+            },
+            {
+              "id": "differential:radix-toggle-group-multiple",
+              "testName": "ToggleGroup (multiple): independent presses, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React ToggleGroup (multiple): independent presses, byte-identical"
+            },
+            {
+              "id": "differential:radix-tabs",
+              "testName": "Tabs: switch panels via trigger mousedown, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Tabs: switch panels via trigger mousedown, byte-identical"
+            },
+            {
+              "id": "differential:radix-quick-wins",
+              "testName": "QuickWins: AspectRatio + VisuallyHidden + Avatar + Progress, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React QuickWins: AspectRatio + VisuallyHidden + Avatar + Progress, byte-identical"
+            },
+            {
+              "id": "differential:radix-toolbar",
+              "testName": "Toolbar: buttons/link/separator/toggle-group, byte-identical incl. toggling",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Toolbar: buttons/link/separator/toggle-group, byte-identical incl. toggling"
+            },
+            {
+              "id": "differential:radix-form-controls",
+              "testName": "FormControls: checkbox/switch/radio-group + bubble inputs across clicks, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React FormControls: checkbox/switch/radio-group + bubble inputs across clicks, byte-identical"
+            },
+            {
+              "id": "differential:radix-slider",
+              "testName": "Slider: aria/range/thumb bytes across keyboard steps, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Slider: aria/range/thumb bytes across keyboard steps, byte-identical"
+            },
+            {
+              "id": "differential:radix-menubar-closed",
+              "testName": "Menubar (closed): triggers + roving tabindex, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Menubar (closed): triggers + roving tabindex, byte-identical"
+            },
+            {
+              "id": "differential:radix-navigation-menu-closed",
+              "testName": "NavigationMenu (closed): nav/list/trigger aria wiring, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React NavigationMenu (closed): nav/list/trigger aria wiring, byte-identical"
+            },
+            {
+              "id": "differential:radix-accordion-multiple",
+              "testName": "Accordion (multiple): items open independently, byte-identical",
+              "fullName": "differential: @octanejs/radix vs real Radix on React Accordion (multiple): items open independently, byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/radix/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "f9c44fc8f63039d2a81214b1077f9c2702909b0943cb2b7cd703bba706b05456"
+        },
+        {
+          "path": "packages/radix/tests/_fixtures/radix-diff.tsrx",
+          "role": "support",
+          "sha256": "0bab8d77b6897d720fcdfd227a2fc215226aef193870f92597feebf684d2bad7"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/radix/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "c49ef85ab70fa8b48cc79056e5581fa8d5f5c84533c8d492e6e24176cc7ad75c"
+        },
+        {
+          "path": "packages/radix/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "9a1b8ff5132abcbb4f30b3e7adbe15fee32f6431a7fe7ca13095403ac6c35cf6"
+        },
+        {
+          "path": "packages/radix/scripts/check-upstream-ledger.mjs",
+          "role": "support",
+          "sha256": "af1e1f458e9fa41f1e7a9244d2b919065b141ce8ac81e37eda6982109550d16c"
+        },
+        {
+          "path": "scripts/react-parity/radix-controls.test.mjs",
+          "role": "support",
+          "sha256": "60a44e8129797f9f325f2f275b0340b120a6e3706e6f4e0d41a0f603b4d85d53"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "eec2ab46ccf404a27e10679852cddccb3bfbab89951fd35c28c05efd05754097"
+        }
+      ]
+    },
+    {
+      "id": "radix-parity-audit-contracts",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "radix-parity-audit",
+      "notes": "Authenticates the complete transitive upstream boundary and structured renderer adaptations without counting them as React behavioral parity.",
+      "files": [
+        {
+          "path": "packages/radix/tests/parity/contracts.test.ts",
+          "role": "test",
+          "sha256": "eb87e183d6b6d1339c9451b7c0fa594772eb42b7ea7af9eb7b4135876752e2d2",
+          "cases": [
+            {
+              "id": "adapted:radix-upstream-ledger",
+              "testName": "authenticates the complete pinned transitive source and test boundary",
+              "fullName": "@octanejs/radix parity audit contracts authenticates the complete pinned transitive source and test boundary"
+            },
+            {
+              "id": "adapted:radix-slot-descriptors",
+              "testName": "keeps the Slot descriptor adaptation explicit",
+              "fullName": "@octanejs/radix parity audit contracts keeps the Slot descriptor adaptation explicit"
+            },
+            {
+              "id": "adapted:radix-ref-as-prop",
+              "testName": "keeps the ref-as-prop adaptation explicit",
+              "fullName": "@octanejs/radix parity audit contracts keeps the ref-as-prop adaptation explicit"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "slot-descriptor-adaptation",
+      "caseIds": ["adapted:radix-slot-descriptors"],
+      "upstreamResult": "Radix Slot and asChild accept a React element supplied as children-position JSX.",
+      "octaneResult": "Octane Slot and asChild consume an element descriptor supplied at a value or prop position.",
+      "rationale": "Children-position JSX compiles to an Octane render function rather than a cloneable element descriptor.",
+      "classification": "rendering",
+      "consumerImpact": "asChild consumers must pass a descriptor using prop-position JSX, createElement, or a mapped descriptor.",
+      "migrationGuidance": "Move the child element to the component API's descriptor position instead of children-position JSX.",
+      "owner": "@octanejs/radix",
+      "reviewCondition": "Review if Octane children-position JSX becomes a cloneable descriptor."
+    },
+    {
+      "id": "ref-as-prop",
+      "caseIds": ["adapted:radix-ref-as-prop"],
+      "upstreamResult": "React primitive components use forwardRef wrappers.",
+      "octaneResult": "Octane primitive components receive ref as an ordinary prop.",
+      "rationale": "Octane does not require React forwardRef wrapper semantics.",
+      "classification": "api",
+      "consumerImpact": "Refs are passed directly through component props.",
+      "migrationGuidance": "Pass ref directly; do not wrap Octane components with React forwardRef.",
+      "owner": "@octanejs/radix",
+      "reviewCondition": "Review if Octane adopts wrapper-based ref forwarding."
+    }
+  ]
+}

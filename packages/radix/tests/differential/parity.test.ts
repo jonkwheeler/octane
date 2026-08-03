@@ -44,18 +44,21 @@ afterAll(() => {
 });
 
 describe('differential: @octanejs/radix vs real Radix on React', () => {
+	// @parity-case differential:radix-separator
 	it('Separator: horizontal / vertical / decorative, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'Separators', undefined, CACHE);
 		await d.step('mount', () => {});
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-label
 	it('Label: renders a native label byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'LabelBasic', undefined, CACHE);
 		await d.step('mount', () => {});
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-collapsible
 	it('Collapsible: closed → open → closed, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'CollapsibleApp', undefined, CACHE);
 		await d.step('mount (closed)', () => {});
@@ -72,6 +75,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-accordion-single
 	it('Accordion (single, collapsible): switch items + collapse, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'AccordionSingle', undefined, CACHE);
 		await d.step('mount (a open)', () => {});
@@ -88,6 +92,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-dialog-non-modal
 	it('Dialog (non-modal): trigger ARIA across open/close, byte-identical', async () => {
 		// Content portals to document.body (both runtimes), so the rig's container compare
 		// covers the trigger's ARIA/data-state wiring; portal'd content behavior is covered
@@ -110,6 +115,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-toggle
 	it('Toggle: pressed on/off, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ToggleApp', undefined, CACHE);
 		await d.step('mount (off)', () => {});
@@ -124,6 +130,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-toggle-group-single
 	it('ToggleGroup (single): switch + roving tabindex, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ToggleGroupSingle', undefined, CACHE);
 		await d.step('mount (a on)', () => {});
@@ -134,6 +141,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-toggle-group-multiple
 	it('ToggleGroup (multiple): independent presses, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ToggleGroupMultiple', undefined, CACHE);
 		await d.step('mount (a on)', () => {});
@@ -148,6 +156,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-tabs
 	it('Tabs: switch panels via trigger mousedown, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'TabsApp', undefined, CACHE);
 		await d.step('mount (one active)', () => {});
@@ -177,6 +186,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-quick-wins
 	it('QuickWins: AspectRatio + VisuallyHidden + Avatar + Progress, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'QuickWins', undefined, CACHE);
 		// jsdom never loads images, so both sides settle on the fallback.
@@ -186,6 +196,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-toolbar
 	it('Toolbar: buttons/link/separator/toggle-group, byte-identical incl. toggling', async () => {
 		const d = await mountDifferential(FIXTURE, 'ToolbarApp', undefined, CACHE);
 		await d.step('mount', () => {});
@@ -200,6 +211,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-form-controls
 	it('FormControls: checkbox/switch/radio-group + bubble inputs across clicks, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'FormControls', undefined, CACHE);
 		await d.step('mount', async () => {
@@ -228,6 +240,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-slider
 	it('Slider: aria/range/thumb bytes across keyboard steps, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'SliderDiff', undefined, CACHE);
 		await d.step('mount', async () => {
@@ -254,6 +267,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-menubar-closed
 	it('Menubar (closed): triggers + roving tabindex, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'MenubarClosed', undefined, CACHE);
 		await d.step('mount', async () => {
@@ -262,6 +276,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-navigation-menu-closed
 	it('NavigationMenu (closed): nav/list/trigger aria wiring, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'NavMenuClosed', undefined, CACHE);
 		await d.step('mount', async () => {
@@ -270,6 +285,7 @@ describe('differential: @octanejs/radix vs real Radix on React', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:radix-accordion-multiple
 	it('Accordion (multiple): items open independently, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'AccordionMultiple', undefined, CACHE);
 		await d.step('mount (a open)', () => {});

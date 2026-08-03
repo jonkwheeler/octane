@@ -303,7 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "eec2ab46ccf404a27e10679852cddccb3bfbab89951fd35c28c05efd05754097"
         }
       ]
     }
