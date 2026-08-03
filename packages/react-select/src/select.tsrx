@@ -517,6 +517,8 @@ export function Select<
 	const [ariaSelection, setAriaSelection] = useState<AriaSelection<Option, IsMulti> | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const controlRef = useRef<HTMLDivElement | null>(null);
+	const initialTouch = useRef({ x: 0, y: 0 });
+	const userIsDragging = useRef(false);
 	const menuRef = useRef<HTMLDivElement | null>(null);
 	const menuListRef = useRef<HTMLDivElement | null>(null);
 	const [menuPlacement, setMenuPlacement] = useState<'bottom' | 'top'>(
@@ -609,6 +611,40 @@ export function Select<
 		document.addEventListener('scroll', onScroll, true);
 		return () => document.removeEventListener('scroll', onScroll, true);
 	}, [props.closeMenuOnScroll, props.onMenuClose]);
+	useEffect(() => {
+		if (typeof document === 'undefined') return;
+		const onTouchStart = (event: TouchEvent) => {
+			const touch = event.touches.item(0);
+			if (!touch) return;
+			initialTouch.current = { x: touch.clientX, y: touch.clientY };
+			userIsDragging.current = false;
+		};
+		const onTouchMove = (event: TouchEvent) => {
+			const touch = event.touches.item(0);
+			if (!touch) return;
+			userIsDragging.current =
+				Math.abs(touch.clientX - initialTouch.current.x) > 5 ||
+				Math.abs(touch.clientY - initialTouch.current.y) > 5;
+		};
+		const onTouchEnd = (event: TouchEvent) => {
+			if (!userIsDragging.current) {
+				const target = event.target as Node;
+				if (
+					controlRef.current && !controlRef.current.contains(target) &&
+					menuListRef.current && !menuListRef.current.contains(target)
+				) inputRef.current?.blur();
+			}
+			initialTouch.current = { x: 0, y: 0 };
+		};
+		document.addEventListener('touchstart', onTouchStart);
+		document.addEventListener('touchmove', onTouchMove);
+		document.addEventListener('touchend', onTouchEnd);
+		return () => {
+			document.removeEventListener('touchstart', onTouchStart);
+			document.removeEventListener('touchmove', onTouchMove);
+			document.removeEventListener('touchend', onTouchEnd);
+		};
+	}, []);
 	const setValue = (
 		newValue: OnChangeValue<Option, IsMulti>,
 		action: SetValueAction,
@@ -834,7 +870,13 @@ export function Select<
 				index={index}
 				isDisabled={props.isDisabled}
 				isFocused={focusedValue === option}
-				removeProps={{ onClick: () => removeValue(option) }}
+				removeProps={{
+					onClick: () => removeValue(option),
+					onMouseDown: (event: MouseEvent) => event.preventDefault(),
+					onTouchEnd: () => {
+						if (!userIsDragging.current) removeValue(option);
+					},
+				}}
 			>{formatOption(option, 'value')}</Components.MultiValue>)
 			: props.inputValue
 				? null
@@ -944,6 +986,9 @@ export function Select<
 				onClick: option.isDisabled ? undefined : () => selectOption(option.data),
 				onMouseMove: option.isDisabled ? undefined : () => setFocusedOption(option.data),
 				onMouseOver: option.isDisabled ? undefined : () => setFocusedOption(option.data),
+				onTouchEnd: option.isDisabled ? undefined : () => {
+					if (!userIsDragging.current) selectOption(option.data);
+				},
 				tabIndex: -1,
 				role: 'option',
 				'aria-selected': appleDevice ? undefined : option.isSelected,
@@ -983,6 +1028,15 @@ export function Select<
 			innerProps={{
 				onMouseDown: (event: MouseEvent) => {
 					event.stopPropagation();
+					event.preventDefault();
+				},
+				onTouchEnd: (event: TouchEvent) => {
+					if (userIsDragging.current || props.isDisabled) return;
+					if (!isFocused) inputRef.current?.focus();
+					if (props.openMenuOnClick) {
+						if (props.menuIsOpen) closeMenu();
+						else openMenu('first');
+					}
 					event.preventDefault();
 				},
 				onMouseMove: (event: MouseEvent) => event.stopPropagation(),
@@ -1100,7 +1154,13 @@ export function Select<
 				{(props.isClearable ?? Boolean(props.isMulti)) && selectValue.length && !props.isDisabled && !props.isLoading
 					? <Components.ClearIndicator
 						{...commonProps}
-						innerProps={{ 'aria-hidden': 'true', onMouseDown: clearValue }}
+						innerProps={{
+							'aria-hidden': 'true',
+							onMouseDown: clearValue,
+							onTouchEnd: () => {
+								if (!userIsDragging.current) clearValue();
+							},
+						}}
 						isDisabled={props.isDisabled}
 						isFocused={isFocused}
 					/>

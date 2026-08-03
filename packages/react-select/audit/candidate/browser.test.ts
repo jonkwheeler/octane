@@ -335,6 +335,46 @@ describe('full Select in Chromium', () => {
 	}, 60_000);
 });
 
+describe('touch Select in Chromium', () => {
+	it('matches React control opening and option selection from touch gestures', async () => {
+		const context = await browser.newContext({
+			hasTouch: true,
+			viewport: { width: 1000, height: 720 },
+		});
+		const page = await context.newPage();
+		const tap = async (locator: import('playwright').Locator) => {
+			const box = await locator.boundingBox();
+			if (!box) throw new Error('touch target has no layout box');
+			await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+		};
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+
+			const octaneInput = page.locator('#octane-select-root [role="combobox"]');
+			await tap(octaneInput.locator('xpath=../../..'));
+			await page.locator('#octane-select-root [role="option"]').nth(1).waitFor();
+			await tap(page.locator('#octane-select-root [role="option"]').nth(1));
+			const octaneValue = await page.locator('#octane-select-root input[name="choice"]').inputValue();
+
+			const reactInput = page.locator('#react-select-root [role="combobox"]');
+			await tap(reactInput.locator('xpath=../../..'));
+			await page.locator('#react-select-root [role="option"]').nth(1).waitFor();
+			await tap(page.locator('#react-select-root [role="option"]').nth(1));
+			const reactValue = await page.locator('#react-select-root input[name="choice"]').inputValue();
+
+			expect(octaneValue).toBe(reactValue);
+			expect(octaneValue).toBe('2');
+			const logs = await page.evaluate(() => window.__reactSelectFull.logs());
+			const changes = (items: Array<Record<string, unknown>>) =>
+				items.filter((item) => item.type === 'change');
+			expect(changes(logs.octane)).toEqual(changes(logs.react));
+		} finally {
+			await context.close();
+		}
+	}, 30_000);
+});
+
 describe('menu placement in Chromium', () => {
 	it('matches React auto-flip placement and constrained height near the viewport edge', async () => {
 		const page = await browser.newPage({ viewport: { width: 1000, height: 720 } });
