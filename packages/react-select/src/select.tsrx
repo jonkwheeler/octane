@@ -133,11 +133,20 @@ export interface SelectInstance<
 	readonly __types?: readonly [IsMulti, Group];
 }
 
+function isTouchCapable() {
+	try {
+		document.createEvent('TouchEvent');
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 export const defaultProps = {
 	'aria-live': 'polite' as const,
 	backspaceRemovesValue: true,
-	blurInputOnSelect: false,
-	captureMenuScroll: true,
+	blurInputOnSelect: isTouchCapable(),
+	captureMenuScroll: !isTouchCapable(),
 	classNames: {},
 	closeMenuOnSelect: true,
 	closeMenuOnScroll: false,
@@ -661,7 +670,15 @@ export function Select<
 		props.onChange(newValue, actionMeta);
 	};
 	const selectOption = (option: Option) => {
-		if (props.isOptionDisabled(option, selectValue)) return;
+		if (props.isOptionDisabled(option, selectValue)) {
+			setAriaSelection({
+				action: 'select-option',
+				option,
+				name: props.name,
+				value: option,
+			} as AriaSelection<Option, IsMulti>);
+			return;
+		}
 		const optionIsSelected = isSelected(props, option, selectValue);
 		if (props.isMulti) {
 			if (optionIsSelected) {
@@ -676,6 +693,7 @@ export function Select<
 		} else if (!optionIsSelected) {
 			setValue(option as OnChangeValue<Option, IsMulti>, 'select-option');
 		}
+		if (props.blurInputOnSelect) inputRef.current?.blur();
 	};
 	const clearValue = () => {
 		const newValue = valueTernary(props.isMulti, [], null as Option) as OnChangeValue<Option, IsMulti>;
@@ -867,6 +885,38 @@ export function Select<
 					selectValue,
 				})
 			: props.getOptionLabel(option);
+	const handleControlPointerEnd = (event: MouseEvent | TouchEvent) => {
+		if (event.defaultPrevented || props.isDisabled) return;
+		const target = event.target as HTMLElement;
+		if (!isFocused) {
+			inputRef.current?.focus();
+			if (props.openMenuOnClick) openMenu('first');
+		} else if (!props.menuIsOpen) {
+			if (props.openMenuOnClick) openMenu('first');
+		} else if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+			closeMenu();
+		}
+		if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') event.preventDefault();
+	};
+	const handleDropdownPointerEnd = (event: MouseEvent | TouchEvent) => {
+		if (event.type === 'mousedown' && (event as MouseEvent).button !== 0) return;
+		if (props.isDisabled) return;
+		inputRef.current?.focus();
+		if (props.menuIsOpen) {
+			setInputIsHidden(!props.isMulti);
+			closeMenu();
+		} else {
+			openMenu('first');
+		}
+		event.preventDefault();
+	};
+	const handleClearPointerEnd = (event: MouseEvent | TouchEvent) => {
+		if (event.type === 'mousedown' && (event as MouseEvent).button !== 0) return;
+		clearValue();
+		event.preventDefault();
+		if (event.type === 'touchend') inputRef.current?.focus();
+		else setTimeout(() => inputRef.current?.focus());
+	};
 
 	const valueUI = !selectValue.length || !props.controlShouldRenderValue
 		? props.inputValue
@@ -1060,15 +1110,6 @@ export function Select<
 					event.stopPropagation();
 					event.preventDefault();
 				},
-				onTouchEnd: (event: TouchEvent) => {
-					if (userIsDragging.current || props.isDisabled) return;
-					if (!isFocused) inputRef.current?.focus();
-					if (props.openMenuOnClick) {
-						if (props.menuIsOpen) closeMenu();
-						else openMenu('first');
-					}
-					event.preventDefault();
-				},
 				onMouseMove: (event: MouseEvent) => event.stopPropagation(),
 			}}
 			isLoading={props.isLoading}
@@ -1166,14 +1207,9 @@ export function Select<
 			{...commonProps}
 			innerRef={controlRef}
 			innerProps={{
-				onMouseDown: (event: MouseEvent) => {
-					if (props.isDisabled) return;
-					if (!isFocused) inputRef.current?.focus();
-					if (props.openMenuOnClick) {
-						if (props.menuIsOpen) closeMenu();
-						else props.onMenuOpen();
-					}
-					event.preventDefault();
+				onMouseDown: handleControlPointerEnd,
+				onTouchEnd: (event: TouchEvent) => {
+					if (!userIsDragging.current) handleControlPointerEnd(event);
 				},
 			}}
 			isDisabled={props.isDisabled}
@@ -1190,9 +1226,9 @@ export function Select<
 						{...commonProps}
 						innerProps={{
 							'aria-hidden': 'true',
-							onMouseDown: clearValue,
-							onTouchEnd: () => {
-								if (!userIsDragging.current) clearValue();
+							onMouseDown: handleClearPointerEnd,
+							onTouchEnd: (event: TouchEvent) => {
+								if (!userIsDragging.current) handleClearPointerEnd(event);
 							},
 						}}
 						isDisabled={props.isDisabled}
@@ -1214,7 +1250,13 @@ export function Select<
 					: null}
 				{Components.DropdownIndicator ? <Components.DropdownIndicator
 					{...commonProps}
-					innerProps={{ 'aria-hidden': 'true' }}
+					innerProps={{
+						'aria-hidden': 'true',
+						onMouseDown: handleDropdownPointerEnd,
+						onTouchEnd: (event: TouchEvent) => {
+							if (!userIsDragging.current) handleDropdownPointerEnd(event);
+						},
+					}}
 					isDisabled={props.isDisabled}
 					isFocused={isFocused}
 				/> : null}

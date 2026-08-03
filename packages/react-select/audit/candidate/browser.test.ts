@@ -439,6 +439,40 @@ describe('touch Select in Chromium', () => {
 });
 
 describe('multi-value keyboard navigation in Chromium', () => {
+	it('matches React clear-indicator behavior and focus restoration', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectMulti));
+			const clear = async (rootId: string) => {
+				const icons = page.locator(`#${rootId} svg`);
+				const indicator = icons.nth((await icons.count()) - 2).locator('..');
+				await indicator.dispatchEvent('mousedown', { button: 0 });
+				await page.waitForTimeout(0);
+				return page.evaluate((id) => {
+					const root = document.getElementById(id)!;
+					return {
+						activeRole: document.activeElement?.getAttribute('role'),
+						values: [...root.querySelectorAll<HTMLInputElement>('input[name="multi-choice"]')]
+							.map((input) => input.value),
+					};
+				}, rootId);
+			};
+
+			const octane = await clear('octane-multi-root');
+			const react = await clear('react-multi-root');
+			expect(octane).toEqual(react);
+			expect(octane).toEqual({ activeRole: 'combobox', values: [''] });
+			const logs = await page.evaluate(() => window.__reactSelectMulti.logs());
+			expect(logs.octane).toEqual(logs.react);
+			expect(logs.octane[0]).toMatchObject({
+				actionMeta: { action: 'clear', name: 'multi-choice' },
+			});
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
 	it('matches React value focus and repeated Backspace removal', async () => {
 		const page = await browser.newPage();
 		try {
