@@ -76,6 +76,38 @@ describe('SSR Phase 4 — render() awaits use(promise)', () => {
 		}
 	});
 
+	it('does not re-observe the settled thenable when replay keeps its identity', async () => {
+		const redundantObservation = new Error('stable-thenable-was-observed-again');
+		const unhandled: unknown[] = [];
+		const onUnhandledRejection = (error: unknown) => unhandled.push(error);
+		process.on('unhandledRejection', onUnhandledRejection);
+		let componentCalls = 0;
+		const value = RT.createElement('span', { className: 'stable-thenable' }, 'stable');
+		// React's trackUsedThenable only observes the replay value when its identity
+		// differs from the settled value. Make a same-identity subscription during
+		// replay externally visible as an otherwise-unhandled child rejection.
+		const stableThenable: any = Promise.resolve(value);
+		const nativeThen = stableThenable.then.bind(stableThenable);
+		stableThenable.then = (onFulfilled?: (value: unknown) => unknown, onRejected?: unknown) => {
+			if (componentCalls > 1) return Promise.reject(redundantObservation);
+			return nativeThen(onFulfilled, onRejected);
+		};
+		try {
+			const out = await prerender(m.AsyncComponentBoundary, {
+				component: () => {
+					componentCalls++;
+					return stableThenable;
+				},
+			});
+
+			expect(out.html).toContain('<span class="stable-thenable">stable</span>');
+			await new Promise<void>((resolve) => setTimeout(resolve, 0));
+			expect(unhandled).toEqual([]);
+		} finally {
+			process.off('unhandledRejection', onUnhandledRejection);
+		}
+	});
+
 	it('keeps repeated and concurrent plain async component renders isolated', async () => {
 		const component = (value: string) => async () =>
 			RT.createElement('span', { className: 'async-component-value' }, value);
