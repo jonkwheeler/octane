@@ -147,6 +147,20 @@ export function SameKeyGroupFixture() @{
 	</main>
 }
 
+function GroupFlagProbe(props: { enter?: boolean }) @{
+	<span id="group-flag" data-enter={String(props.enter)}>{'flag'}</span>
+}
+
+export function StableChildrenGroupFlagsFixture() @{
+	const [enter, setEnter] = useState(true);
+	const child = useRef<ElementDescriptor | null>(null);
+	if (child.current === null) child.current = <GroupFlagProbe key="stable-flag" />;
+	<main>
+		<button id="group-flag-toggle" onClick={() => setEnter(false)}>{'toggle flag'}</button>
+		<TransitionGroup enter={enter} children={[child.current]} />
+	</main>
+}
+
 export function SwitchFixture(props: { mode: 'out-in' | 'in-out' }) @{
 	const [second, setSecond] = useState(false);
 	const id = second ? 'second' : 'first';

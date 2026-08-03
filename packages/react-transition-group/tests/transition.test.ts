@@ -11,6 +11,7 @@ import {
 	LatestCompletionFixture,
 	ReplaceFixture,
 	SameKeyGroupFixture,
+	StableChildrenGroupFlagsFixture,
 	SameKeySwitchFixture,
 	SwitchFixture,
 	TransitionFixture,
@@ -141,6 +142,17 @@ describe('react-transition-group v4.4.5 adapted transition behavior', () => {
 			(view.container.querySelector('#same-key-update') as HTMLButtonElement).click(),
 		);
 		expect(view.container.querySelector('#same-key-label')?.textContent).toBe('second');
+		view.unmount();
+	});
+
+	// @parity-case runtime:group-stable-children-flag-update
+	it('reclones stable TransitionGroup children when group flags change', async () => {
+		const view = mount(StableChildrenGroupFlagsFixture);
+		expect(view.container.querySelector('#group-flag')?.getAttribute('data-enter')).toBe('true');
+		await act(() =>
+			(view.container.querySelector('#group-flag-toggle') as HTMLButtonElement).click(),
+		);
+		expect(view.container.querySelector('#group-flag')?.getAttribute('data-enter')).toBe('false');
 		view.unmount();
 	});
 

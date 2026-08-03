@@ -31,7 +31,7 @@ export function TransitionGroup(props: TransitionGroupProps) @{
 		previousChildren.current = getChildMapping(props.children);
 		children.current = props.children;
 		first.current = false;
-	} else if (children.current !== props.children) {
+	} else {
 		mapping.current = getNextChildMapping(props, mapping.current, handleExited);
 		previousChildren.current = getChildMapping(props.children);
 		children.current = props.children;
