@@ -1,10 +1,18 @@
 import { act, createElement, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { cleanup, render } from '@octanejs/testing-library';
 import { Counter } from './_fixtures/counter.tsrx';
 
+const previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT;
+
+beforeAll(() => {
+	globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+});
 afterEach(cleanup);
+afterAll(() => {
+	globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
+});
 
 function ReactCounter() {
 	const [count, setCount] = useState(0);
