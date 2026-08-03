@@ -75,7 +75,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "e026274290ecddd60684ce379077f946f40f096d9ed4932cebde01bb2b9ae704"
+          "sha256": "e36cc6c93175ccaa255c0a4dc77245b64bb372547a7f78a49f44fc4f8ea5225d"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -127,12 +127,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "e026274290ecddd60684ce379077f946f40f096d9ed4932cebde01bb2b9ae704"
-        },
-        {
-          "path": "packages/octane/tests/_helpers.ts",
-          "role": "support",
-          "sha256": "a4a9ee179a2dcaf20a96cb5807f5584f484deddc2bf25fb94cc90ade9e920572"
+          "sha256": "e36cc6c93175ccaa255c0a4dc77245b64bb372547a7f78a49f44fc4f8ea5225d"
         },
         {
           "path": "vitest.config.js",
@@ -169,7 +164,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "e026274290ecddd60684ce379077f946f40f096d9ed4932cebde01bb2b9ae704"
+          "sha256": "e36cc6c93175ccaa255c0a4dc77245b64bb372547a7f78a49f44fc4f8ea5225d"
         },
         {
           "path": "vitest.config.js",

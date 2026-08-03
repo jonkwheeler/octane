@@ -9,8 +9,12 @@
     {
       "path": "packages/tanstack-form/tests/conformance/divergences.test.ts",
       "disposition": "octane-only-divergence",
-      "divergenceIds": ["tanstack-form-id-lifecycle", "tanstack-form-function-components"],
-      "reason": "Authenticates stable Octane identifiers and callable function-component factories."
+      "divergenceIds": [
+        "tanstack-form-id-lifecycle",
+        "tanstack-form-function-components",
+        "tanstack-form-native-events"
+      ],
+      "reason": "Authenticates stable Octane identifiers, callable function-component factories, and native input events."
     },
     {
       "path": "packages/tanstack-form/tests/conformance/exports.test.ts",
