@@ -1598,6 +1598,17 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
+					name: 'swr',
+					include: ['packages/swr/tests/**/*.test.ts'],
+					exclude: [...configDefaults.exclude, 'packages/swr/upstream/**'],
+					environment: 'happy-dom',
+					fileParallelism: false,
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
 					name: 'hook-form-pristine',
 					include: ['packages/hook-form/tests/upstream-original.test.ts'],
 					environment: 'node',
