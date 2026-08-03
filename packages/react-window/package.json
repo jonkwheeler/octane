@@ -20,8 +20,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "adapted:generate": "node tests/generate-adapted-tests.mjs",
     "upstream:verify": "node tests/audit/verify-upstream.mjs",
-    "test:audit": "node --test tests/audit/upstream.test.mjs",
+    "test:audit": "node --test tests/audit/*.test.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
@@ -31,6 +32,9 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@octanejs/testing-library": "workspace:*",
+    "@testing-library/jest-dom": "catalog:default",
+    "@testing-library/react": "16.3.2",
     "@tsrx/react": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",

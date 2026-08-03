@@ -4818,6 +4818,12 @@ importers:
         specifier: catalog:default
         version: 19.2.17
     devDependencies:
+      '@testing-library/jest-dom':
+        specifier: catalog:default
+        version: 6.9.1
+      '@testing-library/react':
+        specifier: 16.3.2
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tsrx/react':
         specifier: catalog:default
         version: 0.2.56(react@19.2.7)

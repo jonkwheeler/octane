@@ -1301,6 +1301,42 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-window-pristine',
+					include: ['packages/react-window/upstream/lib/**/*.test.{ts,tsx}'],
+					environment: 'jsdom',
+					setupFiles: ['packages/react-window/upstream/vitest.setup.js'],
+					globals: false,
+				},
+			},
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-window/tests/upstream/**/*.test.{ts,tsx}'],
+				},
+				test: {
+					name: 'react-window-adapted',
+					include: ['packages/react-window/tests/upstream/**/*.test.{ts,tsx}'],
+					environment: 'jsdom',
+					setupFiles: ['packages/react-window/tests/upstream-setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
 				test: {
 					name: 'react-window',
 					include: ['packages/react-window/tests/runtime/**/*.test.ts'],
