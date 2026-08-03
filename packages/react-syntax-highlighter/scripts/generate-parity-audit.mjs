@@ -1,0 +1,446 @@
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { basename, dirname, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { format, resolveConfig } from 'prettier';
+
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const repoRoot = resolve(packageRoot, '../..');
+const auditRoot = resolve(packageRoot, 'audit');
+const portable = (path) => path.replaceAll('\\', '/');
+const relativeRepo = (path) => portable(relative(repoRoot, path));
+const checkOnly = process.argv.includes('--check');
+const unexpectedArguments = process.argv.slice(2).filter((argument) => argument !== '--check');
+if (unexpectedArguments.length) {
+	throw new Error('usage: node scripts/generate-parity-audit.mjs [--check]');
+}
+
+async function writeJson(path, value) {
+	await mkdir(dirname(path), { recursive: true });
+	const serialized = await format(`${JSON.stringify(value, null, 2)}\n`, {
+		...((await resolveConfig(path)) ?? {}),
+		filepath: path,
+	});
+	if (checkOnly) {
+		let retained;
+		try {
+			retained = await readFile(path, 'utf8');
+		} catch (error) {
+			if (error?.code === 'ENOENT')
+				throw new Error(`missing generated audit artifact: ${relativeRepo(path)}`);
+			throw error;
+		}
+		if (retained !== serialized) {
+			throw new Error(`stale generated audit artifact: ${relativeRepo(path)}`);
+		}
+		return;
+	}
+	await writeFile(path, serialized);
+}
+
+async function sha256(path) {
+	return createHash('sha256')
+		.update(await readFile(resolve(repoRoot, path)))
+		.digest('hex');
+}
+
+function testId(file, fullName) {
+	return `runtime:${createHash('sha256').update(`${file}\0${fullName}`).digest('hex').slice(0, 16)}`;
+}
+
+function listProject(project) {
+	const output = execFileSync(
+		process.execPath,
+		['node_modules/vitest/vitest.mjs', 'list', '--project', project, '--json'],
+		{ cwd: repoRoot, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+	);
+	return JSON.parse(output).map((test) => ({
+		file: relativeRepo(test.file),
+		fullName: test.name.replaceAll(' > ', ' '),
+	}));
+}
+
+const adaptedPrefix = 'packages/react-syntax-highlighter/tests/adapted/';
+const adaptedTests = listProject('react-syntax-highlighter')
+	.filter((test) => test.file.startsWith(adaptedPrefix))
+	.map((test) => ({ id: testId(test.file, test.fullName), ...test }))
+	.sort((left, right) =>
+		`${left.file}\0${left.fullName}`.localeCompare(`${right.file}\0${right.fullName}`),
+	);
+const adaptedInventory = {
+	schemaVersion: 1,
+	project: 'react-syntax-highlighter',
+	roots: ['packages/react-syntax-highlighter/tests/adapted'],
+	files: [...new Set(adaptedTests.map((test) => test.file))],
+	tests: adaptedTests,
+};
+await writeJson(resolve(auditRoot, 'adapted-runtime.json'), adaptedInventory);
+
+const pristineOutput = execFileSync(
+	process.execPath,
+	[
+		'scripts/react-parity/jest-full-runner.mjs',
+		'--config',
+		'packages/react-syntax-highlighter/jest.pristine.config.cjs',
+		'--root',
+		'packages/react-syntax-highlighter/upstream',
+	],
+	{ cwd: repoRoot, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+);
+const pristineInventory = JSON.parse(pristineOutput);
+pristineInventory.root = 'packages/react-syntax-highlighter/upstream';
+await writeJson(resolve(auditRoot, 'pristine-runtime.json'), pristineInventory);
+
+const normalizedFile = (path) =>
+	basename(path)
+		.replace(/\.test\.ts$/, '')
+		.replace(/\.js$/, '');
+const pristineByIdentity = new Map(
+	pristineInventory.tests.map((test) => [`${normalizedFile(test.file)}\0${test.fullName}`, test]),
+);
+const crosswalk = adaptedTests.map((adapted) => {
+	const identity = `${normalizedFile(adapted.file)}\0${adapted.fullName}`;
+	const pristine = pristineByIdentity.get(identity);
+	if (!pristine) throw new Error(`missing pristine identity for ${identity}`);
+	pristineByIdentity.delete(identity);
+	return {
+		id: adapted.id,
+		title: adapted.fullName,
+		pristine: pristine.file,
+		adapted: adapted.file,
+	};
+});
+if (pristineByIdentity.size !== 0) {
+	throw new Error(`unadapted pristine identities: ${[...pristineByIdentity.keys()].join(', ')}`);
+}
+await writeJson(resolve(auditRoot, 'upstream-crosswalk.json'), {
+	schemaVersion: 1,
+	upstreamFiles: 19,
+	adaptedFiles: 19,
+	tests: 51,
+	snapshots: 40,
+	entries: crosswalk,
+});
+
+const allProjectTests = {
+	'react-syntax-highlighter': listProject('react-syntax-highlighter'),
+	'react-syntax-highlighter-ssr': listProject('react-syntax-highlighter-ssr'),
+	'react-syntax-highlighter-differential': listProject('react-syntax-highlighter-differential'),
+	'react-syntax-highlighter-browser': listProject('react-syntax-highlighter-browser'),
+};
+
+async function manifestFile(path, role = 'support', cases) {
+	const value = { path, role, sha256: await sha256(path) };
+	if (cases?.length) value.cases = cases;
+	return value;
+}
+
+const selectedCases = {
+	'packages/react-syntax-highlighter/tests/feasibility.test.ts': [
+		['conformance:entrypoint-families', 'resolves representative pinned ESM and CJS path families'],
+		['conformance:root-static-contract', 'preserves the root export and static-member contract'],
+		['conformance:dynamic-native-tags', 'renders highlighted HAST through dynamic native tags'],
+		[
+			'conformance:custom-components-renderer',
+			'supports component-valued tags and a custom renderer',
+		],
+		[
+			'conformance:async-unmount',
+			'does not update an unmounted async highlighter when loading settles',
+		],
+	],
+	'packages/react-syntax-highlighter/tests/async-races.test.ts': [
+		[
+			'conformance:async-registration-queue',
+			'queues registration before the AST generator settles',
+		],
+		[
+			'conformance:async-stale-language',
+			'ignores an older language completion after switching languages',
+		],
+		[
+			'conformance:async-rejection-fallback',
+			'keeps deterministic plain output when a language loader rejects',
+		],
+	],
+	'packages/react-syntax-highlighter/tests/hydration.test.ts': [
+		[
+			'conformance:hydration-adoption',
+			'adopts highlighted nodes and selected code before supporting a live update',
+		],
+	],
+	'packages/react-syntax-highlighter/tests/ssr/server.test.ts': [
+		[
+			'ssr:sync-variants',
+			'renders synchronous Highlight.js and Prism variants without DOM globals',
+		],
+		['ssr:async-fallback', 'renders the deterministic plain fallback for async variants'],
+	],
+	'packages/react-syntax-highlighter/tests/differential/parity.test.ts': [
+		[
+			'differential:render-and-update',
+			'matches React DOM across line rendering, custom tags, and a language update',
+		],
+	],
+	'packages/react-syntax-highlighter/tests/browser/rendering.browser.test.ts': [
+		[
+			'browser:chromium-render-update-async',
+			'matches rendering, selection, updates, and async loading in Chromium',
+		],
+		[
+			'browser:firefox-whitespace-selection',
+			'preserves whitespace, wrapping, and selection in Firefox',
+		],
+	],
+};
+
+function casesFor(project, files) {
+	const collected = allProjectTests[project].filter((test) => files.includes(test.file));
+	return files.flatMap((file) =>
+		(selectedCases[file] ?? []).map(([id, testName]) => {
+			const matches = collected.filter(
+				(test) => test.fullName === testName || test.fullName.endsWith(` ${testName}`),
+			);
+			if (matches.length !== 1) {
+				throw new Error(
+					`${file}: expected one collected test ending in ${JSON.stringify(testName)}, found ${matches.length}`,
+				);
+			}
+			return { id, testName, fullName: matches[0].fullName };
+		}),
+	);
+}
+
+async function selectedLane({ id, type, project, files, notes }) {
+	return {
+		id,
+		type,
+		oracle: 'required',
+		environment: 'workspace-node',
+		project,
+		notes,
+		files: await Promise.all(
+			files.map((path) => manifestFile(path, 'test', casesFor(project, [path]))),
+		),
+	};
+}
+
+const conformanceFiles = [
+	'packages/react-syntax-highlighter/tests/feasibility.test.ts',
+	'packages/react-syntax-highlighter/tests/async-races.test.ts',
+	'packages/react-syntax-highlighter/tests/hydration.test.ts',
+];
+const ssrFiles = ['packages/react-syntax-highlighter/tests/ssr/server.test.ts'];
+const differentialFiles = ['packages/react-syntax-highlighter/tests/differential/parity.test.ts'];
+const browserFiles = ['packages/react-syntax-highlighter/tests/browser/rendering.browser.test.ts'];
+
+const packageJson = JSON.parse(await readFile(resolve(repoRoot, 'package.json'), 'utf8'));
+const lockfileSha256 = await sha256('pnpm-lock.yaml');
+const tarball =
+	'packages/react-syntax-highlighter/upstream/npm/react-syntax-highlighter-16.1.1.tgz';
+const lanes = [
+	{
+		id: 'react-syntax-highlighter-pristine-runtime',
+		type: 'pristine-upstream',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'react-syntax-highlighter-pristine',
+		evidenceOrigin: 'upstream-suite',
+		notes: 'Runs all 19 pinned upstream Jest suites, 51 identities, and 40 snapshots unchanged.',
+		execution: {
+			kind: 'jest-full',
+			config: 'packages/react-syntax-highlighter/jest.pristine.config.cjs',
+			root: 'packages/react-syntax-highlighter/upstream',
+			inventory: 'packages/react-syntax-highlighter/audit/pristine-runtime.json',
+		},
+		files: await Promise.all([
+			manifestFile('packages/react-syntax-highlighter/audit/pristine-runtime.json'),
+			manifestFile('packages/react-syntax-highlighter/jest.pristine.config.cjs'),
+			manifestFile('packages/react-syntax-highlighter/audit/upstream-files.json'),
+		]),
+	},
+	{
+		id: 'react-syntax-highlighter-adapted-runtime',
+		type: 'adapted-octane',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'react-syntax-highlighter',
+		evidenceOrigin: 'upstream-suite',
+		notes:
+			'Runs every generated one-for-one Octane adaptation with the same 51 titles and 40 structural snapshots.',
+		execution: {
+			kind: 'vitest-full',
+			inventory: 'packages/react-syntax-highlighter/audit/adapted-runtime.json',
+		},
+		files: await Promise.all([
+			manifestFile('packages/react-syntax-highlighter/audit/adapted-runtime.json'),
+			manifestFile('packages/react-syntax-highlighter/audit/upstream-crosswalk.json'),
+			manifestFile('packages/react-syntax-highlighter/scripts/generate-adapted-tests.mjs'),
+			manifestFile('packages/react-syntax-highlighter/scripts/generate-parity-audit.mjs'),
+		]),
+	},
+	await selectedLane({
+		id: 'react-syntax-highlighter-conformance',
+		type: 'adapted-octane',
+		project: 'react-syntax-highlighter',
+		files: conformanceFiles,
+		notes:
+			'Covers public/static APIs, async queues and races, failure fallback, hydration identity, selection, and live updates.',
+	}),
+	await selectedLane({
+		id: 'react-syntax-highlighter-ssr',
+		type: 'adapted-octane',
+		project: 'react-syntax-highlighter-ssr',
+		files: ssrFiles,
+		notes: 'Covers synchronous variants and deterministic async fallback without DOM globals.',
+	}),
+	{
+		...(await selectedLane({
+			id: 'react-syntax-highlighter-differential',
+			type: 'differential',
+			project: 'react-syntax-highlighter-differential',
+			files: differentialFiles,
+			notes:
+				'Runs React and Octane side by side and compares normalized DOM before and after a language update.',
+		})),
+		evidenceOrigin: 'repo-authored',
+	},
+	await selectedLane({
+		id: 'react-syntax-highlighter-browser',
+		type: 'browser',
+		project: 'react-syntax-highlighter-browser',
+		files: browserFiles,
+		notes:
+			'Runs real Chromium and Firefox rendering, computed whitespace/wrapping, selection, updates, and async loading.',
+	}),
+	{
+		id: 'react-syntax-highlighter-pristine-types',
+		type: 'pristine-types',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'react-syntax-highlighter-pristine-types',
+		evidenceOrigin: 'repo-authored',
+		notes: 'Compiles the public contract against pinned @types/react-syntax-highlighter 15.5.13.',
+		execution: {
+			kind: 'typescript',
+			compiler: 'tsc',
+			project: 'packages/react-syntax-highlighter/typetests/pristine/tsconfig.json',
+		},
+		files: [
+			await manifestFile(
+				'packages/react-syntax-highlighter/typetests/pristine/public-api.test-d.ts',
+				'test',
+				[
+					{
+						id: 'types:pristine-public',
+						testName: 'pristine public type contract',
+						fullName: 'pristine public type contract',
+					},
+				],
+			),
+			await manifestFile('packages/react-syntax-highlighter/typetests/pristine/tsconfig.json'),
+		],
+	},
+	{
+		id: 'react-syntax-highlighter-adapted-types',
+		type: 'adapted-types',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'react-syntax-highlighter-adapted-types',
+		evidenceOrigin: 'repo-authored',
+		notes:
+			'Compiles the same public contract against the generated Octane declarations and representative deep imports.',
+		execution: {
+			kind: 'typescript',
+			compiler: 'tsrx-tsc',
+			project: 'packages/react-syntax-highlighter/typetests/adapted/tsconfig.json',
+		},
+		files: [
+			await manifestFile(
+				'packages/react-syntax-highlighter/typetests/adapted/public-api.test-d.ts',
+				'test',
+				[
+					{
+						id: 'types:adapted-public',
+						testName: 'adapted public type contract',
+						fullName: 'adapted public type contract',
+					},
+				],
+			),
+			await manifestFile('packages/react-syntax-highlighter/typetests/adapted/tsconfig.json'),
+		],
+	},
+];
+
+const manifest = {
+	$schema: '../../../packages/hook-form/audit/react-parity.schema.json',
+	schemaVersion: 1,
+	provenance: {
+		repo: 'https://github.com/react-syntax-highlighter/react-syntax-highlighter.git',
+		version: '16.1.1',
+		commit: 'ecac533ba1fce8cf4f98a79c5c913f1a7ffab34c',
+		sourceRoot: 'src',
+		testRoot: '__tests__',
+		license: 'MIT',
+		integrity: `sha256:${await sha256(tarball)}`,
+		verification: 'verified',
+	},
+	upstreamSuites: { runtime: 'present', types: 'insufficient' },
+	adaptedRoots: {
+		source: {
+			roots: ['packages/react-syntax-highlighter/src'],
+			include: ['\\.(?:js|d\\.ts)$'],
+			exclude: [],
+		},
+		tests: {
+			roots: ['packages/react-syntax-highlighter/tests/adapted'],
+			include: ['\\.test\\.ts$'],
+			exclude: [],
+		},
+	},
+	adaptedRuntimeSummary: {
+		inventoryEntries: 51,
+		uniqueIdentities: 51,
+		duplicateEntriesWithinLanes: 0,
+		identitiesSharedAcrossLanes: 0,
+	},
+	environments: {
+		'workspace-node': {
+			node: '>=22',
+			platform: 'any',
+			arch: 'any',
+			packageManager: `pnpm@${packageJson.packageManager.split('@').at(-1)}`,
+			lockfile: 'pnpm-lock.yaml',
+			lockfileSha256,
+		},
+	},
+	lanes,
+	divergences: [
+		{
+			id: 'custom-component-identity',
+			caseIds: ['types:adapted-public'],
+			upstreamResult:
+				'PreTag and CodeTag accept native tags or React class/function ComponentType values.',
+			octaneResult:
+				'PreTag and CodeTag accept native tags or Octane function ComponentBody values.',
+			rationale:
+				'React class instances and React element identity are renderer-owned objects that Octane cannot execute.',
+			classification: 'framework identity boundary',
+			consumerImpact:
+				'Native tags and ordinary function components migrate directly; React class components require a function adapter.',
+			migrationGuidance:
+				'Replace a React class-valued custom tag with an Octane function component returning the same native host.',
+			owner: '@octanejs/react-syntax-highlighter',
+			reviewCondition:
+				'Remove only if Octane gains a supported React class-component execution bridge.',
+		},
+	],
+};
+
+await writeJson(resolve(auditRoot, 'react-parity.json'), manifest);
+console.log(
+	checkOnly
+		? 'verified React Syntax Highlighter parity inventories, crosswalk, and manifest'
+		: 'generated React Syntax Highlighter parity inventories, crosswalk, and manifest',
+);

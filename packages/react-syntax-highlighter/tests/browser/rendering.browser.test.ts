@@ -71,10 +71,12 @@ async function verifyBrowser(name: string, browserType: BrowserType) {
 }
 
 describe.sequential('react-syntax-highlighter real-browser behavior', () => {
+	// @parity-case browser:chromium-render-update-async
 	it('matches rendering, selection, updates, and async loading in Chromium', async () => {
 		await verifyBrowser('Chromium', chromium);
 	});
 
+	// @parity-case browser:firefox-whitespace-selection
 	it('preserves whitespace, wrapping, and selection in Firefox', async () => {
 		await verifyBrowser('Firefox', firefox);
 	});

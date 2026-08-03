@@ -3,6 +3,7 @@ import { renderToString } from 'octane/server';
 import SyntaxHighlighter, { LightAsync, Prism } from '../../src/index.js';
 
 describe('react-syntax-highlighter server rendering', () => {
+	// @parity-case ssr:sync-variants
 	it('renders synchronous Highlight.js and Prism variants without DOM globals', () => {
 		const highlighted = renderToString(SyntaxHighlighter, {
 			language: 'javascript',
@@ -21,6 +22,7 @@ describe('react-syntax-highlighter server rendering', () => {
 		expect(prism.replace(/<[^>]+>/g, '')).toBe('const answer = 42;');
 	});
 
+	// @parity-case ssr:async-fallback
 	it('renders the deterministic plain fallback for async variants', () => {
 		const { html } = renderToString(LightAsync, {
 			language: 'javascript',

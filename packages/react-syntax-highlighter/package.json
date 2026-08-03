@@ -34,6 +34,8 @@
   "scripts": {
     "generate": "node scripts/generate-surface.mjs",
     "generate:adapted-tests": "node scripts/generate-adapted-tests.mjs",
+    "generate:parity-audit": "node scripts/generate-parity-audit.mjs",
+    "verify:parity-audit": "node scripts/generate-parity-audit.mjs --check",
     "generate:entrypoints": "node scripts/generate-entrypoints.mjs --write",
     "verify:entrypoints": "node scripts/generate-entrypoints.mjs",
     "test:pristine": "jest --config jest.pristine.config.cjs --runInBand --ci --no-watchman",
@@ -53,6 +55,7 @@
     "refractor": "^5.0.0"
   },
   "devDependencies": {
+    "@babel/runtime": "7.29.7",
     "@testing-library/react": "16.3.2",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",

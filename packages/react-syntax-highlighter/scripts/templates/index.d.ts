@@ -1,6 +1,8 @@
 import type { ComponentBody, ElementDescriptor } from 'octane';
 import type { CSSProperties, HTMLProps, Key } from 'react';
 
+// OCTANE DIVERGENCE[custom-component-identity][types:adapted-public]
+
 export type LineNumberStyleFunction = (lineNumber: number) => CSSProperties;
 export type LineTagPropsFunction = (lineNumber: number) => HTMLProps<HTMLElement>;
 

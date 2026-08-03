@@ -40,6 +40,7 @@ function generator() {
 }
 
 describe('async lifecycle parity', () => {
+	// @parity-case conformance:async-registration-queue
 	it('queues registration before the AST generator settles', async () => {
 		const ast = generator();
 		const astLoader = deferred<typeof ast>();
@@ -62,6 +63,7 @@ describe('async lifecycle parity', () => {
 		expect(Highlighter.isRegistered('queued')).toBe(true);
 	});
 
+	// @parity-case conformance:async-stale-language
 	it('ignores an older language completion after switching languages', async () => {
 		const ast = generator();
 		const astLoader = deferred<typeof ast>();
@@ -104,6 +106,7 @@ describe('async lifecycle parity', () => {
 		result.unmount();
 	});
 
+	// @parity-case conformance:async-rejection-fallback
 	it('keeps deterministic plain output when a language loader rejects', async () => {
 		const ast = generator();
 		const Highlighter = createAsyncHighlighter({

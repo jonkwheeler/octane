@@ -1,0 +1,348 @@
+{
+  "$schema": "../../../packages/hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/react-syntax-highlighter/react-syntax-highlighter.git",
+    "version": "16.1.1",
+    "commit": "ecac533ba1fce8cf4f98a79c5c913f1a7ffab34c",
+    "sourceRoot": "src",
+    "testRoot": "__tests__",
+    "license": "MIT",
+    "integrity": "sha256:8a324f3d4d79e6b40b2f2279ee97285a0a85d552ecdf6f1910f178907cda31aa",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "insufficient"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-syntax-highlighter/src"],
+      "include": ["\\.(?:js|d\\.ts)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/react-syntax-highlighter/tests/adapted"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 51,
+    "uniqueIdentities": 51,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "d4c08b51577d07f88e142274e485efae026aae73a079106918a960e8d0dc15e8"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-syntax-highlighter-pristine-runtime",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs all 19 pinned upstream Jest suites, 51 identities, and 40 snapshots unchanged.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/react-syntax-highlighter/jest.pristine.config.cjs",
+        "root": "packages/react-syntax-highlighter/upstream",
+        "inventory": "packages/react-syntax-highlighter/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "0b55a25e6353e64226707bb9e07e5f093d2c9ad903bb5318ca1592281c542620"
+        },
+        {
+          "path": "packages/react-syntax-highlighter/jest.pristine.config.cjs",
+          "role": "support",
+          "sha256": "43c9ac4957fb7ca57315965bf087ea3beb6ffa924c39c273a31e654e1c606d9e"
+        },
+        {
+          "path": "packages/react-syntax-highlighter/audit/upstream-files.json",
+          "role": "support",
+          "sha256": "18f737cf2b465b01db238757e27460e0f34950dcff0368edf8a7994d6356c4b4"
+        }
+      ]
+    },
+    {
+      "id": "react-syntax-highlighter-adapted-runtime",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs every generated one-for-one Octane adaptation with the same 51 titles and 40 structural snapshots.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-syntax-highlighter/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "213956fd6022b0d16e93f73dc5f0d96a87c0a1971749e9ca294d9bc7ae2e4cf6"
+        },
+        {
+          "path": "packages/react-syntax-highlighter/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "1cc862924fc4ebd746c19c9960b02e3276341396f04b9aa31196884c57d39a52"
+        },
+        {
+          "path": "packages/react-syntax-highlighter/scripts/generate-adapted-tests.mjs",
+          "role": "support",
+          "sha256": "702c24d661395361304123a8830ed8bc1f43004bb9c44af638e461717bf6e04c"
+        },
+        {
+          "path": "packages/react-syntax-highlighter/scripts/generate-parity-audit.mjs",
+          "role": "support",
+          "sha256": "3dd5a115b8bbc8149c1002b632dfbfd8a87be25de1594fea3fc7154edad5c9ba"
+        }
+      ]
+    },
+    {
+      "id": "react-syntax-highlighter-conformance",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter",
+      "notes": "Covers public/static APIs, async queues and races, failure fallback, hydration identity, selection, and live updates.",
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/tests/feasibility.test.ts",
+          "role": "test",
+          "sha256": "d237fc2af23ceb74c4a0e0103ebb98dcb63517ab2ec4c9f8de42a794d6cc15a9",
+          "cases": [
+            {
+              "id": "conformance:entrypoint-families",
+              "testName": "resolves representative pinned ESM and CJS path families",
+              "fullName": "react-syntax-highlighter feasibility gate resolves representative pinned ESM and CJS path families"
+            },
+            {
+              "id": "conformance:root-static-contract",
+              "testName": "preserves the root export and static-member contract",
+              "fullName": "react-syntax-highlighter feasibility gate preserves the root export and static-member contract"
+            },
+            {
+              "id": "conformance:dynamic-native-tags",
+              "testName": "renders highlighted HAST through dynamic native tags",
+              "fullName": "react-syntax-highlighter feasibility gate renders highlighted HAST through dynamic native tags"
+            },
+            {
+              "id": "conformance:custom-components-renderer",
+              "testName": "supports component-valued tags and a custom renderer",
+              "fullName": "react-syntax-highlighter feasibility gate supports component-valued tags and a custom renderer"
+            },
+            {
+              "id": "conformance:async-unmount",
+              "testName": "does not update an unmounted async highlighter when loading settles",
+              "fullName": "react-syntax-highlighter feasibility gate does not update an unmounted async highlighter when loading settles"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-syntax-highlighter/tests/async-races.test.ts",
+          "role": "test",
+          "sha256": "4e99bf958291170b1ad93ab75ead4fc34712b2d74a8d21aa4e334cbd9606c48a",
+          "cases": [
+            {
+              "id": "conformance:async-registration-queue",
+              "testName": "queues registration before the AST generator settles",
+              "fullName": "async lifecycle parity queues registration before the AST generator settles"
+            },
+            {
+              "id": "conformance:async-stale-language",
+              "testName": "ignores an older language completion after switching languages",
+              "fullName": "async lifecycle parity ignores an older language completion after switching languages"
+            },
+            {
+              "id": "conformance:async-rejection-fallback",
+              "testName": "keeps deterministic plain output when a language loader rejects",
+              "fullName": "async lifecycle parity keeps deterministic plain output when a language loader rejects"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-syntax-highlighter/tests/hydration.test.ts",
+          "role": "test",
+          "sha256": "a9ce7a58f85c3fb18ff789db058742382c9f50d00b3a27ca288557caacc5e2a4",
+          "cases": [
+            {
+              "id": "conformance:hydration-adoption",
+              "testName": "adopts highlighted nodes and selected code before supporting a live update",
+              "fullName": "react-syntax-highlighter hydration adopts highlighted nodes and selected code before supporting a live update"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-syntax-highlighter-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter-ssr",
+      "notes": "Covers synchronous variants and deterministic async fallback without DOM globals.",
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "fd806b270f457e09518926a8d563ae4956c69f39de19ae553ebfc26d34e8ae44",
+          "cases": [
+            {
+              "id": "ssr:sync-variants",
+              "testName": "renders synchronous Highlight.js and Prism variants without DOM globals",
+              "fullName": "react-syntax-highlighter server rendering renders synchronous Highlight.js and Prism variants without DOM globals"
+            },
+            {
+              "id": "ssr:async-fallback",
+              "testName": "renders the deterministic plain fallback for async variants",
+              "fullName": "react-syntax-highlighter server rendering renders the deterministic plain fallback for async variants"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-syntax-highlighter-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter-differential",
+      "notes": "Runs React and Octane side by side and compares normalized DOM before and after a language update.",
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "b2bb25ba5f69ba13677a04f9778c781e2ddc801d3ed4380a5cf4b0909998c700",
+          "cases": [
+            {
+              "id": "differential:render-and-update",
+              "testName": "matches React DOM across line rendering, custom tags, and a language update",
+              "fullName": "differential: react-syntax-highlighter matches React DOM across line rendering, custom tags, and a language update"
+            }
+          ]
+        }
+      ],
+      "evidenceOrigin": "repo-authored"
+    },
+    {
+      "id": "react-syntax-highlighter-browser",
+      "type": "browser",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter-browser",
+      "notes": "Runs real Chromium and Firefox rendering, computed whitespace/wrapping, selection, updates, and async loading.",
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/tests/browser/rendering.browser.test.ts",
+          "role": "test",
+          "sha256": "0a99436feae62c01e64808c058dc41a6984c6aa744cd338f94b5d9fca4c9462a",
+          "cases": [
+            {
+              "id": "browser:chromium-render-update-async",
+              "testName": "matches rendering, selection, updates, and async loading in Chromium",
+              "fullName": "react-syntax-highlighter real-browser behavior matches rendering, selection, updates, and async loading in Chromium"
+            },
+            {
+              "id": "browser:firefox-whitespace-selection",
+              "testName": "preserves whitespace, wrapping, and selection in Firefox",
+              "fullName": "react-syntax-highlighter real-browser behavior preserves whitespace, wrapping, and selection in Firefox"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-syntax-highlighter-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the public contract against pinned @types/react-syntax-highlighter 15.5.13.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-syntax-highlighter/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/typetests/pristine/public-api.test-d.ts",
+          "role": "test",
+          "sha256": "795cac8acdcf97564139a9202bbd984517951b27a4f414feb87efcdafc0a0988",
+          "cases": [
+            {
+              "id": "types:pristine-public",
+              "testName": "pristine public type contract",
+              "fullName": "pristine public type contract"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-syntax-highlighter/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "f831307486bdd2b6715fa5f4913d7c5fb0d5a7e985b2e88493a576e198a3c8a7"
+        }
+      ]
+    },
+    {
+      "id": "react-syntax-highlighter-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-syntax-highlighter-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the same public contract against the generated Octane declarations and representative deep imports.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-syntax-highlighter/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-syntax-highlighter/typetests/adapted/public-api.test-d.ts",
+          "role": "test",
+          "sha256": "6feeeadd43ab5875fdd71ddb81789adc7757dbcd83da9fcbd20408bcbbe90a90",
+          "cases": [
+            {
+              "id": "types:adapted-public",
+              "testName": "adapted public type contract",
+              "fullName": "adapted public type contract"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-syntax-highlighter/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "1b11c6c0b616ca3b0e66cb100b561b124ab5608836a422195ab116c93c25c0cb"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "custom-component-identity",
+      "caseIds": ["types:adapted-public"],
+      "upstreamResult": "PreTag and CodeTag accept native tags or React class/function ComponentType values.",
+      "octaneResult": "PreTag and CodeTag accept native tags or Octane function ComponentBody values.",
+      "rationale": "React class instances and React element identity are renderer-owned objects that Octane cannot execute.",
+      "classification": "framework identity boundary",
+      "consumerImpact": "Native tags and ordinary function components migrate directly; React class components require a function adapter.",
+      "migrationGuidance": "Replace a React class-valued custom tag with an Octane function component returning the same native host.",
+      "owner": "@octanejs/react-syntax-highlighter",
+      "reviewCondition": "Remove only if Octane gains a supported React class-component execution bridge."
+    }
+  ]
+}

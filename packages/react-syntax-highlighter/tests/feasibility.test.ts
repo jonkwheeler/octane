@@ -14,6 +14,7 @@ afterEach(() => {
 });
 
 describe('react-syntax-highlighter feasibility gate', () => {
+	// @parity-case conformance:entrypoint-families
 	it('resolves representative pinned ESM and CJS path families', async () => {
 		const [esmLanguage, cjsStyle] = await Promise.all([
 			import('@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript'),
@@ -23,6 +24,7 @@ describe('react-syntax-highlighter feasibility gate', () => {
 		expect(cjsStyle.default['pre[class*="language-"]']).toBeTruthy();
 	});
 
+	// @parity-case conformance:root-static-contract
 	it('preserves the root export and static-member contract', () => {
 		expect(typeof SyntaxHighlighter).toBe('function');
 		expect(SyntaxHighlighter.supportedLanguages).toContain('javascript');
@@ -33,6 +35,7 @@ describe('react-syntax-highlighter feasibility gate', () => {
 		expect(typeof createSyntaxElement).toBe('function');
 	});
 
+	// @parity-case conformance:dynamic-native-tags
 	it('renders highlighted HAST through dynamic native tags', () => {
 		const result = mount(SyntaxHighlighter, {
 			language: 'javascript',
@@ -48,6 +51,7 @@ describe('react-syntax-highlighter feasibility gate', () => {
 		expect(pre.querySelector('.hljs-keyword')?.textContent).toBe('const');
 	});
 
+	// @parity-case conformance:custom-components-renderer
 	it('supports component-valued tags and a custom renderer', () => {
 		function Pre(props: Record<string, unknown>) {
 			return createElement('section', { ...props, 'data-pre': 'custom' });
@@ -78,6 +82,7 @@ describe('react-syntax-highlighter feasibility gate', () => {
 		expect(result.container.textContent).toBe('let x = 1;');
 	});
 
+	// @parity-case conformance:async-unmount
 	it('does not update an unmounted async highlighter when loading settles', async () => {
 		const result = mount(LightAsync, { language: 'javascript', children: 'const x = 1;' });
 		mounted.push(result);

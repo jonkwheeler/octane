@@ -49,6 +49,7 @@ function rendered(container: HTMLElement) {
 }
 
 describe('differential: react-syntax-highlighter', () => {
+	// @parity-case differential:render-and-update
 	it('matches React DOM across line rendering, custom tags, and a language update', () => {
 		const reactContainer = container();
 		const octaneContainer = container();

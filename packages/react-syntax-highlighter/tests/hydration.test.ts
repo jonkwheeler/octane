@@ -4,6 +4,7 @@ import { renderToString } from 'octane/server';
 import SyntaxHighlighter from '../src/index.js';
 
 describe('react-syntax-highlighter hydration', () => {
+	// @parity-case conformance:hydration-adoption
 	it('adopts highlighted nodes and selected code before supporting a live update', () => {
 		const initialProps = {
 			language: 'javascript',
