@@ -910,6 +910,7 @@
     "react-redux": "@octanejs/redux",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
+    "react-select": "@octanejs/react-select",
     "react-stately": "@octanejs/aria",
     "react-transition-group": "@octanejs/react-transition-group",
     "recharts": "@octanejs/recharts",
