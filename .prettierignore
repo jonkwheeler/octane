@@ -11,6 +11,8 @@ packages/shadcn/registry/
 # provenance; do not reformat)
 packages/*/upstream/
 packages/shadcn/tests/differential/upstream/
+# Pinned public adoption fixture retained byte-exact as migration evidence.
+packages/react-markdown/tests/adoption/public-app/
 # Vendored pinned upstream shadcn style sheet (byte-exact below its header)
 playground/octane/src/styles/style-nova.css
 **/dist/

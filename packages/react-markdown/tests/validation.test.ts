@@ -15,6 +15,12 @@ it('rejects non-string children with the pinned message', () => {
 	);
 });
 
+it('rejects boolean true children with the exact pinned diagnostic', () => {
+	expect(() => processSync({ children: true as never })).toThrow(
+		'Unexpected value `true` for `children` prop, expected `string`',
+	);
+});
+
 it('rejects combined element lists with the pinned message', () => {
 	expect(() => processSync({ children: 'x', allowedElements: [], disallowedElements: [] })).toThrow(
 		'Unexpected combined `allowedElements` and `disallowedElements`, expected one or the other',

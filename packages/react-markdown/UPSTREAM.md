@@ -46,9 +46,11 @@ a parity claim: later units must attach executable evidence before release.
 ## Test boundary
 
 The canonical `test.jsx` contains 87 nested `t.test` registrations. They are
-frozen individually in `audit/test-inventory.json`; every row starts as
-`pending-adaptation`. U2-U5 must replace that disposition with executable
-pristine/adapted evidence and global validation must reject any pending row.
+frozen individually in `audit/test-inventory.json`. The pristine lane executes
+that vendored file byte-for-byte with its vendored JSX loader, Node test,
+React/ReactDOM 19.0.0, and the upstream-declared test dependencies. The 87-entry
+`audit/adapted-case-crosswalk.json` binds every pinned source-line identity to a
+concrete adapted test identity and integrity-locks its assertion source.
 
 ## Early architecture and adoption evidence
 

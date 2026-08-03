@@ -3181,14 +3181,6 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-markdown-pristine',
-					include: ['packages/react-markdown/tests/pristine/**/*.test.ts'],
-					environment: 'jsdom',
-					globals: false,
-				},
-			},
-			{
-				test: {
 					name: 'website-mcp-unit',
 					include: ['website-mcp/tests/**/*.test.ts'],
 					exclude: ['website-mcp/tests/built-handler.e2e.test.ts'],

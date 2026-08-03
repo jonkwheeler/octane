@@ -12,6 +12,9 @@ const sha256 = (path) =>
 		.digest('hex');
 const support = (path) => ({ path, role: 'support', sha256: sha256(path) });
 const test = (path, cases) => ({ path, role: 'test', sha256: sha256(path), cases });
+const adaptedRuntimeCount = JSON.parse(
+	readFileSync(resolve(root, 'packages/react-markdown/audit/adapted-runtime.json'), 'utf8'),
+).tests.length;
 
 const manifest = {
 	$schema: '../../hook-form/audit/react-parity.schema.json',
@@ -40,8 +43,8 @@ const manifest = {
 		},
 	},
 	adaptedRuntimeSummary: {
-		inventoryEntries: 124,
-		uniqueIdentities: 124,
+		inventoryEntries: adaptedRuntimeCount,
+		uniqueIdentities: adaptedRuntimeCount,
 		duplicateEntriesWithinLanes: 0,
 		identitiesSharedAcrossLanes: 0,
 	},
@@ -61,19 +64,24 @@ const manifest = {
 			type: 'pristine-upstream',
 			oracle: 'required',
 			environment: 'workspace-node',
-			project: 'react-markdown-pristine',
+			project: 'node:test',
 			evidenceOrigin: 'upstream-suite',
 			notes:
-				'Executes all 87 pinned upstream registrations against the pristine react-markdown 10.1.0 package while the exact source suite remains vendored and hashed.',
+				'Executes the vendored test.jsx byte-for-byte with Node test, the pinned JSX loader, React 19.0.0, and every declared upstream test dependency; all 87 leaf assertions and interactions must pass.',
 			execution: {
-				kind: 'vitest-full',
+				kind: 'node-full',
+				root: 'packages/react-markdown/upstream/source',
+				file: 'packages/react-markdown/upstream/source/test.jsx',
+				loader: 'packages/react-markdown/upstream/source/script/load-jsx.js',
 				inventory: 'packages/react-markdown/audit/pristine-runtime.json',
 			},
 			files: [
-				support('packages/react-markdown/tests/pristine/runtime.test.ts'),
 				support('packages/react-markdown/audit/test-inventory.json'),
 				support('packages/react-markdown/audit/pristine-runtime.json'),
 				support('packages/react-markdown/upstream/source/test.jsx'),
+				support('packages/react-markdown/upstream/source/script/load-jsx.js'),
+				support('packages/react-markdown/upstream/source/package.json'),
+				support('scripts/react-parity/node-full-runner.mjs'),
 			],
 		},
 		{
@@ -91,7 +99,9 @@ const manifest = {
 			},
 			files: [
 				support('packages/react-markdown/audit/adapted-runtime.json'),
+				support('packages/react-markdown/audit/adapted-case-crosswalk.json'),
 				support('scripts/react-parity/react-markdown-runtime-inventory.mjs'),
+				support('scripts/react-parity/react-markdown-crosswalk.mjs'),
 				support('vitest.config.js'),
 			],
 		},

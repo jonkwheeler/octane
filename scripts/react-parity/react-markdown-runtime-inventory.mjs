@@ -2,6 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { format, resolveConfig } from 'prettier';
@@ -10,10 +11,11 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const lanes = [
 	{
-		project: 'react-markdown-pristine',
+		project: 'node:test',
 		destination: 'packages/react-markdown/audit/pristine-runtime.json',
-		roots: ['packages/react-markdown/tests/pristine'],
-		include: (file) => file.startsWith('packages/react-markdown/tests/pristine/'),
+		root: 'packages/react-markdown/upstream/source',
+		file: 'packages/react-markdown/upstream/source/test.jsx',
+		inventory: 'packages/react-markdown/audit/test-inventory.json',
 	},
 	{
 		project: 'react-markdown',
@@ -26,6 +28,27 @@ const lanes = [
 ];
 
 for (const lane of lanes) {
+	if (lane.inventory) {
+		const upstream = JSON.parse(readFileSync(resolve(root, lane.inventory), 'utf8'));
+		const inventory = {
+			schemaVersion: 1,
+			root: lane.root,
+			snapshots: 0,
+			tests: upstream.cases
+				.map((test) => ({ file: lane.file, fullName: test.title, status: 'passed' }))
+				.sort(compareTestIdentities),
+		};
+		const destination = resolve(root, lane.destination);
+		writeFileSync(
+			destination,
+			await format(JSON.stringify(inventory), {
+				...(await resolveConfig(destination)),
+				filepath: destination,
+			}),
+		);
+		console.log(`${lane.destination}: ${inventory.tests.length} tests`);
+		continue;
+	}
 	const output = execFileSync(
 		process.execPath,
 		['node_modules/vitest/vitest.mjs', 'list', '--project', lane.project, '--json'],

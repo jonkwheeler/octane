@@ -25,8 +25,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 124,
-    "uniqueIdentities": 124,
+    "inventoryEntries": 174,
+    "uniqueIdentities": 174,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -37,7 +37,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "2a447bd084140a8817354ed3967cb50f8342a6b88fbc7e61f2540069ce7adf3c"
+      "lockfileSha256": "277ba818ca572dd958950809c04c4880e4dcfc5e2b8770a04da60d298044ff26"
     }
   },
   "lanes": [
@@ -46,19 +46,17 @@
       "type": "pristine-upstream",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-markdown-pristine",
+      "project": "node:test",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Executes all 87 pinned upstream registrations against the pristine react-markdown 10.1.0 package while the exact source suite remains vendored and hashed.",
+      "notes": "Executes the vendored test.jsx byte-for-byte with Node test, the pinned JSX loader, React 19.0.0, and every declared upstream test dependency; all 87 leaf assertions and interactions must pass.",
       "execution": {
-        "kind": "vitest-full",
+        "kind": "node-full",
+        "root": "packages/react-markdown/upstream/source",
+        "file": "packages/react-markdown/upstream/source/test.jsx",
+        "loader": "packages/react-markdown/upstream/source/script/load-jsx.js",
         "inventory": "packages/react-markdown/audit/pristine-runtime.json"
       },
       "files": [
-        {
-          "path": "packages/react-markdown/tests/pristine/runtime.test.ts",
-          "role": "support",
-          "sha256": "91709aae7777a653f3f10f85dddf819a5acf0cc02b2cc353e41dcf4e4914f456"
-        },
         {
           "path": "packages/react-markdown/audit/test-inventory.json",
           "role": "support",
@@ -67,12 +65,27 @@
         {
           "path": "packages/react-markdown/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "6db1b0a92468eb254232d716e183bb8a32103dc8b8d963cea8647a6ae295ebf8"
+          "sha256": "7384b7332e0eccd85c093a3f632b6623d7daa41b496e05e3a7c854fb30872ff9"
         },
         {
           "path": "packages/react-markdown/upstream/source/test.jsx",
           "role": "support",
           "sha256": "05533bc0d41c5ec8f922affccf88d8ca72b3acfaead2462f291e41477c6fb2be"
+        },
+        {
+          "path": "packages/react-markdown/upstream/source/script/load-jsx.js",
+          "role": "support",
+          "sha256": "0a5ad1f96095e21e399e25c7452e23359084cef9784c1844c462760b04015d08"
+        },
+        {
+          "path": "packages/react-markdown/upstream/source/package.json",
+          "role": "support",
+          "sha256": "c6b7d280b5e5a6b620ad252abfd318560f2223562e67414fcc3dcd1f784e89c5"
+        },
+        {
+          "path": "scripts/react-parity/node-full-runner.mjs",
+          "role": "support",
+          "sha256": "48d55df3473153e93b275a19c828cf0c3f7647eda72e01ebed8a0e6b00ab54d3"
         }
       ]
     },
@@ -92,17 +105,27 @@
         {
           "path": "packages/react-markdown/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "6c9dcb7f2bdd5ab344813c0688edea57579ef10250cabd4bc2e5f4f3c0d64969"
+          "sha256": "6abf9a2e1415655c3daf67283c08e9d907a1c4904289b4ef60696c93c0fbc2ac"
+        },
+        {
+          "path": "packages/react-markdown/audit/adapted-case-crosswalk.json",
+          "role": "support",
+          "sha256": "bbf2d359a6ccd722c1a427eb3dbcdbe4a12e8d8529e1a7870f0acb20347f2364"
         },
         {
           "path": "scripts/react-parity/react-markdown-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "0b63f7b39bfb6cd909955c4fbf6ec9dc7f1a771235cf27172622b0e9f02cf664"
+          "sha256": "007b5c6d5c1e667afd1c24ac6d75c516f6dc3609a56fb097bf6b40149f0a7bdf"
+        },
+        {
+          "path": "scripts/react-parity/react-markdown-crosswalk.mjs",
+          "role": "support",
+          "sha256": "d359795aa0d2bc7c758a622e3dc31cf91b7b37f655a805566e9ec83223fcb4df"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "8d34fa95bace836b708fbfe078baa2c077fa1be860605439d1a747a7db8c7e47"
+          "sha256": "fb19d54f0935be7a84c4ecaca01d6c6c1d90d3328d586a42a235d29e760f461f"
         }
       ]
     },

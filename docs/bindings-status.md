@@ -501,7 +501,7 @@ SSR / hydration: Synchronous and awaited asynchronous Markdown are deterministic
 
 Scope/evidence last checked: 2026-08-02.
 
-- All 87 pinned upstream subtests are inventoried and covered by executable pristine React and adapted Octane parity lanes.
+- The vendored upstream test.jsx executes unchanged: all 87 leaf tests retain their original fixtures, assertions, and interactions. Every source-line identity has an integrity-locked adapted-test crosswalk entry.
 - Upstream source provenance and the MIT license are retained in UPSTREAM.md and LICENSE.
 
 ## @octanejs/recharts

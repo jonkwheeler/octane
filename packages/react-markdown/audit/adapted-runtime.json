@@ -6,6 +6,7 @@
     "packages/react-markdown/tests/adoption/consumer.server.test.ts",
     "packages/react-markdown/tests/adoption/consumer.test.ts",
     "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+    "packages/react-markdown/tests/audit/crosswalk.test.ts",
     "packages/react-markdown/tests/conformance/public-types.test.ts",
     "packages/react-markdown/tests/conformance/sync.server.test.ts",
     "packages/react-markdown/tests/differential/processor.test.ts",
@@ -54,14 +55,29 @@
       "fullName": "MarkdownAsync awaits promise-returning mapped components and their nested children"
     },
     {
+      "id": "runtime:090a6b90380b5935",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync documents the synchronous-render framework divergence with the upstream fixture"
+    },
+    {
       "id": "runtime:49d7135a97858d16",
       "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync keeps synchronous throws distinct from asynchronous rejection"
     },
     {
+      "id": "runtime:052ced3137ef63b1",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync matches exact starry-night highlighted HTML for the upstream fixture"
+    },
+    {
       "id": "runtime:ed2368ee37c5359d",
       "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync matches pristine async plugin ordering and resolved output"
+    },
+    {
+      "id": "runtime:db91988cfb235ff3",
+      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+      "fullName": "MarkdownAsync matches the upstream pipeable-stream output fixture"
     },
     {
       "id": "runtime:1cf969a69d0ab162",
@@ -74,9 +90,94 @@
       "fullName": "MarkdownAsync rejects async plugin failures with the pristine error"
     },
     {
+      "id": "runtime:e513a8d9faa403e0",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk binds every audited parameter identity, including break and both vbscript rows, fail closed"
+    },
+    {
+      "id": "runtime:d94bb47254c89974",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk maps every pinned source-path/line identity to executable adapted evidence"
+    },
+    {
+      "id": "runtime:40de626f89564024",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects a same-file remap for every crosswalk entry that has an alternate runtime identity"
+    },
+    {
+      "id": "runtime:dbef47636d950b05",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects a swapped component row when the actual crosswalk generator regenerates evidence"
+    },
+    {
+      "id": "runtime:685f60bac1313865",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects a synthetic component fixture with its title preserved during regeneration"
+    },
+    {
+      "id": "runtime:2045e82c12e409bb",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects an unpinned synthetic parameter row during regeneration"
+    },
+    {
+      "id": "runtime:13dca4ceab0e4db2",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects component fixture substitution and row swaps after all broad hashes are recomputed"
+    },
+    {
+      "id": "runtime:c3f8341e3f9eadd3",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects duplicate upstream ids and duplicate adapted identities"
+    },
+    {
+      "id": "runtime:c2e4d7a328d04814",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects fixture-only mutation and two-row swap in an as-const matrix"
+    },
+    {
+      "id": "runtime:aa874b0e79948418",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects missing and invented adapted evidence"
+    },
+    {
+      "id": "runtime:291a63bcb0276419",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects one adapted runtime identity owning multiple upstream identities after rehashing"
+    },
+    {
+      "id": "runtime:5ab7b07aca643243",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects parameter-row mutation independently of file and runtime ownership hashes"
+    },
+    {
+      "id": "runtime:2dfe1190f27b3c94",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects remapping boolean, allowed, and unwrap ownership to same-file tests"
+    },
+    {
+      "id": "runtime:094e24bfbc4eacf6",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects remapping scenario ownership to another runtime identity in the same file"
+    },
+    {
+      "id": "runtime:9ea1c4ce3fd410e1",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects scenario evidence missing its required fixture, plugin, or assertion"
+    },
+    {
+      "id": "runtime:36ecb2c6954be321",
+      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
+      "fullName": "react-markdown adapted case crosswalk rejects weakened assertion source without relying on a renamed test"
+    },
+    {
       "id": "runtime:648b865f39a56fb4",
       "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
       "fullName": "keeps the binding public surface free of React imports and types"
+    },
+    {
+      "id": "runtime:8cf35d7144a5a047",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection ignores the exact upstream root comment while preserving the paragraph"
     },
     {
       "id": "runtime:e09ff01a1e9ea7cc",
@@ -112,6 +213,11 @@
       "id": "runtime:28a815ad8f068e93",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine rehype-raw behavior"
+    },
+    {
+      "id": "runtime:d5050f366996856b",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches pristine remark-toc output for the upstream fixture"
     },
     {
       "id": "runtime:f6a14f6585be95a5",
@@ -294,6 +400,86 @@
       "fullName": "synchronous public projection matches pristine sync identity: vbscript URL"
     },
     {
+      "id": "runtime:ffc3e1ebaa17d492",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream GFM aligned table cell with merged plugin style"
+    },
+    {
+      "id": "runtime:69d006d9955d2bbb",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream SVG projection fixture"
+    },
+    {
+      "id": "runtime:bf6e7624cf30b61e",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream allowedElements drop fixture"
+    },
+    {
+      "id": "runtime:98b6ab01a91c3ed5",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream disallowedElements fixture without unwrap"
+    },
+    {
+      "id": "runtime:20e62e65276d5c67",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream href urlTransform public-render fixture"
+    },
+    {
+      "id": "runtime:62666e5fecdaf613",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream image src urlTransform returning null fixture"
+    },
+    {
+      "id": "runtime:52c80c5c94041b1d",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream plugin-created ARIA property fixture"
+    },
+    {
+      "id": "runtime:42901f712e4ea60b",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream plugin-created broken style property fixture"
+    },
+    {
+      "id": "runtime:6cb86ea421795b13",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream plugin-created comma-separated property fixture"
+    },
+    {
+      "id": "runtime:c5cd49f14eb93169",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream plugin-created data property fixture"
+    },
+    {
+      "id": "runtime:4191409c2580cd05",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream plugin-created style property fixture"
+    },
+    {
+      "id": "runtime:c982891ec636936d",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream plugin-created vendor-prefixed style property fixture"
+    },
+    {
+      "id": "runtime:14d6a5c135c6f8a7",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream remark-gfm single-tilde fixture"
+    },
+    {
+      "id": "runtime:2544c277b5fdb5d1",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream remarkRehypeOptions clobberPrefix footnote output"
+    },
+    {
+      "id": "runtime:7f054a986e2f123f",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream root-replaced-by-comment empty output"
+    },
+    {
+      "id": "runtime:21e126ff95b2f6cb",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the exact upstream unwrapDisallowed with allowedElements fixture"
+    },
+    {
       "id": "runtime:a81fdcf413f8faca",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the pristine default renderer for \"![alt](javascript:alert(1) \\\"title\\\")\""
@@ -314,14 +500,59 @@
       "fullName": "synchronous public projection matches the pristine default renderer for \"> quote\\n\\n- one\\n- two\\n\\n`code`\""
     },
     {
+      "id": "runtime:3abe373c6f7e85ae",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (code) fixture, output, node tags, and call count"
+    },
+    {
+      "id": "runtime:69f5d039da625392",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (headings) fixture, output, node tags, and call count"
+    },
+    {
+      "id": "runtime:aa8f61570d348570",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (li) fixture, output, node tags, and call count"
+    },
+    {
+      "id": "runtime:c0faaf3fc5992b1e",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (ol) fixture, output, node tags, and call count"
+    },
+    {
+      "id": "runtime:adb89e6e53378f7f",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (td and th) fixture, output, node tags, and call count"
+    },
+    {
+      "id": "runtime:ee36ebea71e78f5c",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (tr) fixture, output, node tags, and call count"
+    },
+    {
+      "id": "runtime:fa589a869e389fac",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection matches the upstream components (ul) fixture, output, node tags, and call count"
+    },
+    {
       "id": "runtime:f790ec86e665b380",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection passes complete intrinsic props and node while keeping key special"
     },
     {
+      "id": "runtime:d853764df692474d",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection passes the complete upstream HAST node including child and source positions"
+    },
+    {
       "id": "runtime:9c4989f9a58cb4ef",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection preserves sibling projection and rejects invalid mappings"
+    },
+    {
+      "id": "runtime:0c31045076dccbbb",
+      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+      "fullName": "synchronous public projection publicly renders exact unwrapDisallowed with disallowedElements fixture"
     },
     {
       "id": "runtime:a112bb863ac4ec74",
@@ -449,9 +680,19 @@
       "fullName": "MarkdownHooks lifecycle cancels stale work and only commits the latest input"
     },
     {
+      "id": "runtime:220745d3a5b56e21",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle matches exact async MarkdownHooks starry-night JavaScript highlighted HTML"
+    },
+    {
       "id": "runtime:01cbc40342ec4745",
       "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle matches pristine fallback and async resolution"
+    },
+    {
+      "id": "runtime:022869b7d63b27dc",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle matches the pinned no-fallback initial empty DOM and resolved paragraph"
     },
     {
       "id": "runtime:b1094c6ef37e4ae0",
@@ -467,6 +708,11 @@
       "id": "runtime:479176e07b5ad096",
       "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle renders fallback then commits resolved async output"
+    },
+    {
+      "id": "runtime:aa46d56015467bbd",
+      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+      "fullName": "MarkdownHooks lifecycle rerenders a to b, resolves both async runs, and commits only b"
     },
     {
       "id": "runtime:ede90b7def14f725",
@@ -542,6 +788,11 @@
       "id": "runtime:6ec71928dd0170b6",
       "file": "packages/react-markdown/tests/validation.test.ts",
       "fullName": "accepts pinned empty child undefined"
+    },
+    {
+      "id": "runtime:3f5f8ba2fead421b",
+      "file": "packages/react-markdown/tests/validation.test.ts",
+      "fullName": "rejects boolean true children with the exact pinned diagnostic"
     },
     {
       "id": "runtime:990481e14d5bcc08",
