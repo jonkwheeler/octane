@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import {
+	createPackedCommonjsConsumerManifest,
 	cpSync,
 	existsSync,
 	mkdtempSync,
@@ -25,8 +26,10 @@ import {
 	createPackedExampleManifest,
 	isWithinDirectory,
 	NATIVE_GRAPH_FORBIDDEN_MODULE,
+	PACKED_COMMONJS_CONSUMER_PACKAGES,
 	PACKED_TSRX_CONSUMER_PACKAGES,
 	renderPackedExampleWorkspace,
+	renderPackedCommonjsConsumerSource,
 	renderPackedTsrxConsumerSource,
 	renderPackedTsrxConsumerTypeProbe,
 } from './package-pack-canaries.mjs';
@@ -841,6 +844,94 @@ function validatePackedTsrxConsumer(tempRoot, archives) {
 	);
 }
 
+function validatePackedCommonjsConsumer(tempRoot, archives) {
+	const consumerDirectory = path.join(tempRoot, 'external-commonjs-consumer');
+	if (isWithinDirectory(REPO_ROOT, consumerDirectory)) {
+		throw new Error('packed CommonJS consumer must be created outside the workspace');
+	}
+	mkdirSync(consumerDirectory, { recursive: true });
+	const archiveSpecs = Object.fromEntries(
+		PACKED_COMMONJS_CONSUMER_PACKAGES.map((packageName) => [
+			packageName,
+			fileArchiveSpec(archives, packageName),
+		]),
+	);
+	writeFileSync(
+		path.join(consumerDirectory, 'package.json'),
+		`${JSON.stringify(createPackedCommonjsConsumerManifest(archiveSpecs), null, 2)}\n`,
+	);
+	writeFileSync(
+		path.join(consumerDirectory, 'pnpm-workspace.yaml'),
+		renderPackedExampleWorkspace(archiveSpecs),
+	);
+	writeFileSync(path.join(consumerDirectory, 'require.cjs'), renderPackedCommonjsConsumerSource());
+
+	execFileSync(
+		'pnpm',
+		[
+			'install',
+			'--prefer-offline',
+			'--ignore-scripts',
+			'--no-frozen-lockfile',
+			'--config.auto-install-peers=false',
+		],
+		{
+			cwd: consumerDirectory,
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'pipe'],
+		},
+	);
+
+	const consumerRequire = createRequire(path.join(consumerDirectory, 'package.json'));
+	const directRuntime = realpathSync(consumerRequire.resolve('octane'));
+	for (const packageName of PACKED_COMMONJS_CONSUMER_PACKAGES) {
+		const entry = realpathSync(consumerRequire.resolve(packageName));
+		if (!entry.endsWith('.cjs')) {
+			throw new Error(`${packageName} require condition did not select CommonJS: ${entry}`);
+		}
+		if (isWithinDirectory(REPO_ROOT, entry)) {
+			throw new Error(`${packageName} resolved back into the workspace: ${entry}`);
+		}
+		if (packageName !== 'octane') {
+			const peerRuntime = realpathSync(createRequire(entry).resolve('octane'));
+			if (peerRuntime !== directRuntime) {
+				throw new Error(
+					`${packageName} resolved a second Octane runtime:\n  app: ${directRuntime}\n  package: ${peerRuntime}`,
+				);
+			}
+		}
+	}
+	const serverEntry = realpathSync(consumerRequire.resolve('octane/server'));
+	if (!serverEntry.endsWith('.cjs')) {
+		throw new Error(`octane/server require condition did not select CommonJS: ${serverEntry}`);
+	}
+	for (const reactRuntime of ['react', 'react-dom']) {
+		try {
+			consumerRequire.resolve(reactRuntime);
+			throw new Error(`packed CommonJS consumer unexpectedly resolved ${reactRuntime}`);
+		} catch (error) {
+			if (error.code !== 'MODULE_NOT_FOUND') throw error;
+		}
+	}
+	const surface = JSON.parse(
+		execFileSync(process.execPath, ['require.cjs'], {
+			cwd: consumerDirectory,
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'pipe'],
+			timeout: 30_000,
+		}),
+	);
+	assertRequiredPublicValueExports('.', surface.octane);
+	for (const packageName of ['base', 'floating', 'radix']) {
+		if (!Array.isArray(surface[packageName]) || surface[packageName].length === 0) {
+			throw new Error(`packed CommonJS ${packageName} surface is empty`);
+		}
+	}
+	console.log(
+		'installed packed Octane, Floating UI, Base UI, and Radix CommonJS graphs without React; require conditions and SSR passed',
+	);
+}
+
 /**
  * Exercise the private Lynx packages on the Milestone 9 minimum lane exactly
  * as an external application consumes them. This builds and decodes the native
@@ -1185,6 +1276,10 @@ try {
 	}
 	if (!failures.length) {
 		const consumerValidations = [
+			{
+				label: 'external packed CommonJS consumer',
+				run: () => validatePackedCommonjsConsumer(tempRoot, packedArchives),
+			},
 			{
 				label: 'external strict packed TSRX source consumer',
 				run: () => validatePackedTsrxConsumer(tempRoot, packedArchives),
