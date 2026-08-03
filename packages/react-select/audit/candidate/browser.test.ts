@@ -77,7 +77,7 @@ describe('Emotion-to-Octane adapter in Chromium', () => {
 		} finally {
 			await page.close();
 		}
-	}, 30_000);
+	}, 60_000);
 });
 
 describe('MenuPortal in Chromium', () => {
@@ -252,6 +252,14 @@ describe('full Select in Chromium', () => {
 			const expectParity = async () => {
 				expect(await snapshot('octane-select-root')).toEqual(await snapshot('react-select-root'));
 			};
+			const announcements = (rootId: string) =>
+				page.evaluate((id) => {
+					const root = document.getElementById(id)!;
+					return {
+						initial: root.querySelector('[id$="-live-region"]')?.textContent ?? '',
+						live: root.querySelector('[role="log"]')?.textContent ?? '',
+					};
+				}, rootId);
 
 			await expectParity();
 			const octaneInput = page.locator('#octane-select-root [role="combobox"]');
@@ -259,14 +267,29 @@ describe('full Select in Chromium', () => {
 			await octaneInput.focus();
 			await octaneInput.press('ArrowDown');
 			const octaneOpened = await snapshot('octane-select-root');
+			const octaneOpenedAnnouncements = await announcements('octane-select-root');
+			await octaneInput.dispatchEvent('compositionstart');
+			await octaneInput.press('Enter');
+			await octaneInput.dispatchEvent('compositionend');
+			const octaneCompositionLogs = await page.evaluate(() => window.__reactSelectFull.logs().octane);
 			await octaneInput.press('PageDown');
 			const octanePageDown = await snapshot('octane-select-root');
 			await reactInput.focus();
 			await reactInput.press('ArrowDown');
 			const reactOpened = await snapshot('react-select-root');
+			const reactOpenedAnnouncements = await announcements('react-select-root');
+			await reactInput.dispatchEvent('compositionstart');
+			await reactInput.press('Enter');
+			await reactInput.dispatchEvent('compositionend');
+			const reactCompositionLogs = await page.evaluate(() => window.__reactSelectFull.logs().react);
 			await reactInput.press('PageDown');
 			const reactPageDown = await snapshot('react-select-root');
 			expect(octaneOpened).toEqual(reactOpened);
+			expect(octaneOpenedAnnouncements).toEqual(reactOpenedAnnouncements);
+			expect(octaneCompositionLogs.filter((item) => item.type === 'change')).toEqual(
+				reactCompositionLogs.filter((item) => item.type === 'change'),
+			);
+			expect(octaneCompositionLogs.filter((item) => item.type === 'change')).toEqual([]);
 			expect(octanePageDown).toEqual(reactPageDown);
 			expect(await page.locator('#octane-select-root [role="option"]').allTextContents()).toEqual([
 				// The Octane menu closed when document focus moved to React; the captured
@@ -277,21 +300,27 @@ describe('full Select in Chromium', () => {
 			await octaneInput.press('ArrowDown');
 			await page.locator('#octane-select-root [role="option"]').nth(1).click();
 			const octaneSelected = await snapshot('octane-select-root');
+			const octaneSelectedAnnouncements = await announcements('octane-select-root');
 			await reactInput.focus();
 			await reactInput.press('ArrowDown');
 			await page.locator('#react-select-root [role="option"]').nth(1).click();
 			const reactSelected = await snapshot('react-select-root');
+			const reactSelectedAnnouncements = await announcements('react-select-root');
 			expect(octaneSelected).toEqual(reactSelected);
+			expect(octaneSelectedAnnouncements).toEqual(reactSelectedAnnouncements);
 			expect(await page.locator('#octane-select-root input[name="choice"]').inputValue()).toBe('2');
 
 			await octaneInput.fill('On');
 			await octaneInput.press('ArrowDown');
 			const octaneFiltered = await snapshot('octane-select-root');
+			const octaneFilteredAnnouncements = await announcements('octane-select-root');
 			expect(await page.locator('#octane-select-root [role="option"]').allTextContents()).toEqual(['One']);
 			await reactInput.fill('On');
 			await reactInput.press('ArrowDown');
 			const reactFiltered = await snapshot('react-select-root');
+			const reactFilteredAnnouncements = await announcements('react-select-root');
 			expect(octaneFiltered).toEqual(reactFiltered);
+			expect(octaneFilteredAnnouncements).toEqual(reactFilteredAnnouncements);
 
 			const logs = await page.evaluate(() => window.__reactSelectFull.logs());
 			const userActions = (items: Array<Record<string, unknown>>) =>
@@ -303,7 +332,7 @@ describe('full Select in Chromium', () => {
 		} finally {
 			await page.close();
 		}
-	}, 30_000);
+	}, 60_000);
 });
 
 describe('menu placement in Chromium', () => {
@@ -321,6 +350,19 @@ describe('menu placement in Chromium', () => {
 			}));
 			expect(result.octane).toEqual(result.react);
 			expect(result.octane?.bottom).toBe('38px');
+			const afterOctaneWheel = await page.evaluate(() =>
+				window.__reactSelectPlacement.wheel('octane-placement-root'),
+			);
+			const afterReactWheel = await page.evaluate(() =>
+				window.__reactSelectPlacement.wheel('react-placement-root'),
+			);
+			expect(afterOctaneWheel.body).toEqual({
+				height: '100%',
+				overflow: 'hidden',
+				position: 'relative',
+			});
+			expect(afterReactWheel.logs.react).toEqual(afterReactWheel.logs.octane);
+			expect(afterReactWheel.logs.react).toEqual(['bottom']);
 		} finally {
 			await page.close();
 		}

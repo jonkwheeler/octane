@@ -15,6 +15,10 @@ export function BrowserSelectFixture(props: {
 	menuIsOpen?: boolean;
 	menuPlacement?: 'auto' | 'bottom' | 'top';
 	menuShouldScrollIntoView?: boolean;
+	menuShouldBlockScroll?: boolean;
+	captureMenuScroll?: boolean;
+	onMenuScrollToBottom?: (event: WheelEvent | TouchEvent) => void;
+	onMenuScrollToTop?: (event: WheelEvent | TouchEvent) => void;
 }) @{
 	<Select
 		{...props}

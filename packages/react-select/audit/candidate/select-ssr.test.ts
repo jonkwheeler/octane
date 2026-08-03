@@ -120,6 +120,14 @@ describe('Select SSR parity', () => {
 			name: 'open no-options notice',
 			props: { defaultMenuIsOpen: true, options: [] },
 		},
+		{
+			name: 'non-searchable dummy input',
+			props: { isSearchable: false, options: [{ label: 'One', value: '1' }] },
+		},
+		{
+			name: 'empty required field',
+			props: { name: 'choice', required: true, options: [{ label: 'One', value: '1' }] },
+		},
 	] as Array<{ name: string; props: Record<string, unknown> }>)('matches pinned $name SSR', ({ props }) => {
 		const react = renderToStaticMarkup(
 			React.createElement(ReactSelect<SelectOption>, props as never),

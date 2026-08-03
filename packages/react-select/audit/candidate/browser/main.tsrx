@@ -20,7 +20,18 @@ import { AsyncFixture, type AsyncOption, type AsyncResult } from './async-fixtur
 import { BrowserSelectFixture, type BrowserSelectOption } from './select-fixture.tsrx';
 import { NonceFixture } from '../nonce-fixture.tsrx';
 
-delegateEvents(['click', 'focusin', 'focusout', 'input', 'keydown', 'mousedown', 'mousemove', 'mouseover']);
+delegateEvents([
+	'click',
+	'compositionend',
+	'compositionstart',
+	'focusin',
+	'focusout',
+	'input',
+	'keydown',
+	'mousedown',
+	'mousemove',
+	'mouseover',
+]);
 
 const rootElement = document.getElementById('root');
 const portalTarget = document.getElementById('portal-target');
@@ -219,22 +230,32 @@ window.__reactSelectFull = {
 const octanePlacementElement = document.getElementById('octane-placement-root');
 const reactPlacementElement = document.getElementById('react-placement-root');
 if (!octanePlacementElement || !reactPlacementElement) throw new Error('missing placement roots');
-const placementProps = {
-	...browserSelectProps('octane'),
-	menuIsOpen: true,
-	menuPlacement: 'auto' as const,
-	menuShouldScrollIntoView: false,
-};
+const placementScrollLogs = { octane: [] as string[], react: [] as string[] };
+function makePlacementProps(engine: 'octane' | 'react') {
+	return {
+		...browserSelectProps(engine),
+		captureMenuScroll: true,
+		menuIsOpen: true,
+		menuPlacement: 'auto' as const,
+		menuShouldBlockScroll: true,
+		menuShouldScrollIntoView: false,
+		onMenuScrollToBottom() {
+			placementScrollLogs[engine].push('bottom');
+		},
+		onMenuScrollToTop() {
+			placementScrollLogs[engine].push('top');
+		},
+	};
+}
 const octanePlacementRoot = createRoot(octanePlacementElement);
 const reactPlacementRoot = createReactRoot(reactPlacementElement);
 flushSync(() => {
-	octanePlacementRoot.render(BrowserSelectFixture, placementProps as never);
+	octanePlacementRoot.render(BrowserSelectFixture, makePlacementProps('octane') as never);
 });
 flushReact(() => {
 	reactPlacementRoot.render(
 		React.createElement(ReactSelect<BrowserSelectOption>, {
-			...placementProps,
-			...browserSelectProps('react'),
+			...makePlacementProps('react'),
 		}),
 	);
 });
@@ -252,6 +273,21 @@ window.__reactSelectPlacement = {
 			top: menuStyle.top,
 		};
 	},
+	wheel(rootId: string) {
+		const listbox = document.querySelector(`#${rootId} [role="listbox"]`)!;
+		listbox.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY: 100 }));
+		return {
+			body: {
+				height: document.body.style.height,
+				overflow: document.body.style.overflow,
+				position: document.body.style.position,
+			},
+			logs: {
+				octane: [...placementScrollLogs.octane],
+				react: [...placementScrollLogs.react],
+			},
+		};
+	},
 };
 
 declare global {
@@ -261,6 +297,10 @@ declare global {
 		};
 		__reactSelectPlacement: {
 			snapshot(rootId: string): { bottom: string; maxHeight: string; top: string } | null;
+			wheel(rootId: string): {
+				body: { height: string; overflow: string; position: string };
+				logs: { octane: string[]; react: string[] };
+			};
 		};
 	}
 }
