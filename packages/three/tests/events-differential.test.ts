@@ -548,7 +548,6 @@ describe('R3F 9.6.1 event oracle', () => {
 		);
 	});
 
-	// OCTANE DIVERGENCE[reconstructed-intersection-rewrite][adapted:three-captured-reconstruction]
 	// @parity-case adapted:three-captured-reconstruction
 	it('matches captured event state across reconstruction, release, and exit', async () => {
 		const [octane, react] = await Promise.all([

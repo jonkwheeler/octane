@@ -114,7 +114,6 @@ async function resolveResources(
 }
 
 describe('R3F 9.6.1 Suspense scene oracle', () => {
-	// OCTANE DIVERGENCE[hidden-activity-raycast][adapted:three-hidden-activity]
 	// @parity-case adapted:three-hidden-activity
 	it('matches fallback, retained hidden content, resolution, and Three identity', async () => {
 		const ReactScene = await loadReactScene();

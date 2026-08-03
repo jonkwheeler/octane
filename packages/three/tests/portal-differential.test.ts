@@ -111,7 +111,6 @@ const initialItems: readonly PortalItem[] = [
 ];
 
 describe('R3F 9.6.1 portal scene oracle', () => {
-	// OCTANE DIVERGENCE[root-scoped-portal-targets][differential:three-portal]
 	// @parity-case differential:three-portal
 	it('matches external target placement across mount, update, and unmount', async () => {
 		const ReactScene = await loadReactScene();

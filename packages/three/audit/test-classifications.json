@@ -55,8 +55,9 @@
     },
     {
       "path": "packages/three/tests/events.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks Octane Three pointer-event delivery and ownership."
+      "disposition": "octane-only-divergence",
+      "reason": "Checks Octane Three pointer-event delivery plus hidden-Activity and reconstructed-intersection corrections.",
+      "divergenceIds": ["hidden-activity-raycast", "reconstructed-intersection-rewrite"]
     },
     {
       "path": "packages/three/tests/hmr.test.ts",
@@ -129,8 +130,8 @@
     },
     {
       "path": "packages/three/tests/upstream-crosswalk.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
-      "oracle": "Executes the pinned 90-export and 157-test upstream classification crosswalk."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Runs the local checker over the pinned 90-export and 157-test upstream classification crosswalk."
     }
   ]
 }

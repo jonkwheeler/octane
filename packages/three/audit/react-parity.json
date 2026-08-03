@@ -57,7 +57,7 @@
         {
           "path": "packages/three/tests/events-differential.test.ts",
           "role": "test",
-          "sha256": "088fd0891cb3041d9fa3f7116d3fda92627c1dd7a5f0374fdb097b06f2df3e83",
+          "sha256": "176b0364da73572be6b877ae75b978b9bbcd17f7f0d7813127b15a169169d9e9",
           "cases": [
             {
               "id": "differential:three-events",
@@ -74,7 +74,7 @@
         {
           "path": "packages/three/tests/portal-differential.test.ts",
           "role": "test",
-          "sha256": "565f17b1de109859a9082b538411f5e7660c5c2dca7d75b4615d1dea5678f400",
+          "sha256": "95386d20909cfc60707c50ea03f164e5d4ea7d0061be90b383bd651662c91473",
           "cases": [
             {
               "id": "differential:three-portal",
@@ -86,7 +86,7 @@
         {
           "path": "packages/three/tests/suspense-differential.test.ts",
           "role": "test",
-          "sha256": "d9273ca9c3946870454a603441913ccbf24dff78206f1b9040205d184af7e8f9",
+          "sha256": "b350efde97a44fc54383e1dac511c3fdda76ddc35636a7478c448429f7c5af8a",
           "cases": [
             {
               "id": "adapted:three-hidden-activity",
@@ -160,6 +160,40 @@
               "id": "adapted:three-pierced-reset",
               "testName": "applies Three math, color, pierced, and ordinary properties without leaking renderer props",
               "fullName": "@octanejs/three host observations applies Three math, color, pierced, and ordinary properties without leaking renderer props"
+            }
+          ]
+        },
+        {
+          "path": "packages/three/tests/events.test.ts",
+          "role": "test",
+          "sha256": "24efcfc5c7bd03ab172dd0c93287edbc7dc640f4cf7976bf973d70f80856455a",
+          "cases": [
+            {
+              "id": "adapted:three-hidden-activity-raycast",
+              "testName": "disconnects retained Activity hits while hidden and restores them when visible",
+              "fullName": "Three ray and pointer events disconnects retained Activity hits while hidden and restores them when visible"
+            },
+            {
+              "id": "adapted:three-reconstructed-capture-intersections",
+              "testName": "rewrites captured raw-hit intersections when a descendant reconstructs",
+              "fullName": "Three ray and pointer events rewrites captured raw-hit intersections when a descendant reconstructs"
+            },
+            {
+              "id": "adapted:three-reconstructed-hover-intersections",
+              "testName": "targets reconstructed objects when a stored hover event changes pointer capture",
+              "fullName": "Three ray and pointer events targets reconstructed objects when a stored hover event changes pointer capture"
+            }
+          ]
+        },
+        {
+          "path": "packages/three/tests/portal.test.ts",
+          "role": "test",
+          "sha256": "6a1ef3f3a7bc15bb40cda43a805cbfbe291d70b9ef849dac5e5c02580edb6c66",
+          "cases": [
+            {
+              "id": "adapted:three-root-scoped-portal-targets",
+              "testName": "rejects invalid and cross-root targets without mutating either scene",
+              "fullName": "Three portals rejects invalid and cross-root targets without mutating either scene"
             }
           ]
         },
@@ -333,7 +367,10 @@
     },
     {
       "id": "reconstructed-intersection-rewrite",
-      "caseIds": ["adapted:three-captured-reconstruction"],
+      "caseIds": [
+        "adapted:three-reconstructed-capture-intersections",
+        "adapted:three-reconstructed-hover-intersections"
+      ],
       "upstreamResult": "R3F updates only outer capture and hover identities during reconstruction.",
       "octaneResult": "Octane also rewrites nested stored intersections to the replacement.",
       "rationale": "Captured delivery must not reference retired objects.",
@@ -345,7 +382,7 @@
     },
     {
       "id": "hidden-activity-raycast",
-      "caseIds": ["adapted:three-hidden-activity"],
+      "caseIds": ["adapted:three-hidden-activity-raycast"],
       "upstreamResult": "R3F can raycast hidden retained descendants through visible ancestors.",
       "octaneResult": "Hidden Activity subtrees are excluded from recursive raycasts.",
       "rationale": "Three r172 raycasting does not honor Object3D.visible recursively.",
@@ -357,7 +394,7 @@
     },
     {
       "id": "root-scoped-portal-targets",
-      "caseIds": ["differential:three-portal"],
+      "caseIds": ["adapted:three-root-scoped-portal-targets"],
       "upstreamResult": "R3F portal target lifetime is tied to reconciler ownership.",
       "octaneResult": "Target handles are root-scoped and cross-root placement is rejected before mutation.",
       "rationale": "Universal target ownership must be explicit.",
