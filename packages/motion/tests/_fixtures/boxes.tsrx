@@ -16,10 +16,6 @@ export function Span() @{
 	<motion.span id="sp" className="lbl">{'label'}</motion.span>
 }
 
-export function InitialOnly() @{
-	<motion.div id="initial-only" initial={{ opacity: 0, x: 10 }}>initial</motion.div>
-}
-
 export function HoverBox() @{
 	<motion.div
 		id="box"

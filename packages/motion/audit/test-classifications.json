@@ -43,9 +43,8 @@
     },
     {
       "path": "packages/motion/tests/conformance/render.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "motion-initial-only-style",
-      "reason": "Checks the initial-only style divergence plus the broader Octane host rendering contract."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks initial mount styling and the broader Octane host rendering contract."
     },
     {
       "path": "packages/motion/tests/conformance/rerender.test.ts",

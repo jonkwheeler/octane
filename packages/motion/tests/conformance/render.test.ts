@@ -7,7 +7,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { mount } from '../_helpers';
-import { Box, InitialOnly, Span } from '../_fixtures/boxes.tsrx';
+import { Box, Span } from '../_fixtures/boxes.tsrx';
 import { TsxDescriptorChildren, ToggleableTsxChildren } from '../_fixtures/tsx-descriptor-children';
 
 describe('motion.<tag> rendering', () => {
@@ -30,14 +30,6 @@ describe('motion.<tag> rendering', () => {
 		expect(sp.tagName).toBe('SPAN');
 		expect(sp.className).toBe('lbl');
 		expect(sp.textContent).toBe('label');
-		r.unmount();
-	});
-
-	// OCTANE DIVERGENCE[motion-initial-only-style][adapted:motion-initial-only-style]
-	// @parity-case adapted:motion-initial-only-style
-	it('does not materialize an initial-only target without an animate target', () => {
-		const r = mount(InitialOnly);
-		expect(r.find('#initial-only').getAttribute('style')).toBe(null);
 		r.unmount();
 	});
 

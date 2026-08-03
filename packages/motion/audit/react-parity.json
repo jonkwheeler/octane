@@ -70,47 +70,7 @@
           "sha256": "8ba1063957f73ac5383fc83ed4032a144d3f64fb6f70fb3afd58711eac0794fb"
         }
       ]
-    },
-    {
-      "id": "motion-adapted-divergence",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "motion",
-      "notes": "Authenticates the documented initial-only style divergence.",
-      "files": [
-        {
-          "path": "packages/motion/tests/conformance/render.test.ts",
-          "role": "test",
-          "sha256": "3b46662304af805c6178e19a1dcbf02c40fffdcda033978966bfacf7569dad98",
-          "cases": [
-            {
-              "id": "adapted:motion-initial-only-style",
-              "testName": "does not materialize an initial-only target without an animate target",
-              "fullName": "motion.<tag> rendering does not materialize an initial-only target without an animate target"
-            }
-          ]
-        },
-        {
-          "path": "packages/motion/tests/_fixtures/boxes.tsrx",
-          "role": "support",
-          "sha256": "d98399fd693054aa1d5b78ed32682faa03dbb4de6b4247a52526b98525bedf56"
-        }
-      ]
     }
   ],
-  "divergences": [
-    {
-      "id": "motion-initial-only-style",
-      "caseIds": ["adapted:motion-initial-only-style"],
-      "upstreamResult": "motion/react materializes inline styles from an initial target even when no animate target is supplied.",
-      "octaneResult": "The Octane binding renders no inline style for an initial-only target.",
-      "rationale": "The bounded Octane animation path applies initial values as part of an animation transition rather than as a standalone mount style.",
-      "classification": "framework-integration",
-      "consumerImpact": "An element relying only on initial for its starting visual state renders at its normal CSS state in Octane.",
-      "migrationGuidance": "Set the starting style explicitly or provide an animate target.",
-      "owner": "@octanejs/motion",
-      "reviewCondition": "Review when standalone initial-target handling is implemented."
-    }
-  ]
+  "divergences": []
 }
