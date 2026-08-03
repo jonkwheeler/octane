@@ -44,6 +44,8 @@ async function flushUniversalUpdates(): Promise<void> {
 }
 
 describe('Three hooks and graph helpers', () => {
+	// OCTANE DIVERGENCE[build-graph-named-only][adapted:three-build-graph]
+	// @parity-case adapted:three-build-graph
 	it('collects the public named object graph', () => {
 		const root = new THREE.Group();
 		const firstMaterial = new THREE.MeshBasicMaterial();
@@ -78,6 +80,8 @@ describe('Three hooks and graph helpers', () => {
 		);
 	});
 
+	// OCTANE DIVERGENCE[order-based-callable-selector][adapted:three-store-selector]
+	// @parity-case adapted:three-store-selector
 	it('selects root state, exposes managed handles, and keeps frame callbacks current', async () => {
 		const graphRoot = new THREE.Group();
 		const material = new THREE.MeshBasicMaterial();
