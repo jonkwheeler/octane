@@ -259,6 +259,16 @@ export default defineConfig({
 		silent: true,
 		projects: [
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-syntax-highlighter',
+					include: ['packages/react-syntax-highlighter/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
 				test: {
 					name: 'octane',
 					// The individual cases here run in milliseconds; the 5s default was

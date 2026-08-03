@@ -42,14 +42,15 @@ async function buildInventory() {
 	}
 	const packageJson = JSON.parse(await readFile(resolve(upstreamRoot, 'package.json'), 'utf8'));
 	if (packageJson.name !== expected.package || packageJson.version !== expected.version) {
-		throw new Error(`unexpected upstream package identity: ${packageJson.name}@${packageJson.version}`);
+		throw new Error(
+			`unexpected upstream package identity: ${packageJson.name}@${packageJson.version}`,
+		);
 	}
 	const license = await readFile(resolve(upstreamRoot, 'LICENSE'));
 	const localLicense = await readFile(resolve(packageRoot, 'LICENSE'));
-	if (!license.equals(localLicense)) throw new Error('package LICENSE does not match pinned upstream');
-	const tarball = await readFile(
-		resolve(upstreamRoot, 'npm/react-syntax-highlighter-16.1.1.tgz'),
-	);
+	if (!license.equals(localLicense))
+		throw new Error('package LICENSE does not match pinned upstream');
+	const tarball = await readFile(resolve(upstreamRoot, 'npm/react-syntax-highlighter-16.1.1.tgz'));
 	if (digest('sha1', tarball) !== expected.npmSha1) throw new Error('npm tarball SHA-1 mismatch');
 	const integrity = `sha512-${createHash('sha512').update(tarball).digest('base64')}`;
 	if (integrity !== expected.npmIntegrity) throw new Error('npm tarball integrity mismatch');
@@ -70,8 +71,11 @@ if (mode === '--write') {
 	console.log(`wrote ${actual.fileCount} pinned upstream artifacts`);
 } else if (mode === '--check') {
 	const retained = await readFile(inventoryPath, 'utf8');
-	if (retained !== serialized) throw new Error('upstream inventory is stale; run generate:upstream-inventory');
-	console.log(`verified ${expected.package}@${expected.version}: ${actual.fileCount} pinned artifacts`);
+	if (retained !== serialized)
+		throw new Error('upstream inventory is stale; run generate:upstream-inventory');
+	console.log(
+		`verified ${expected.package}@${expected.version}: ${actual.fileCount} pinned artifacts`,
+	);
 } else {
 	throw new Error('usage: node scripts/upstream-inventory.mjs --write|--check');
 }
