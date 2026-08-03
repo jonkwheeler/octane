@@ -267,6 +267,55 @@ describe('CI workflow aggregation', () => {
 		assert.deepEqual(projects[1].test.exclude, ['beta/generated/**', 'beta/parity/**/*.test.ts']);
 		assert.equal(projects[1].testExecution, undefined);
 	});
+
+	test('runs the same serialized browser selection in Chromium and Firefox only', () => {
+		const heavyIntegration = jobSource('heavy_integration');
+		const browserSpecs = [
+			'packages/octane/tests/browser',
+			'packages/dexie/tests/browser',
+			'packages/tiptap/tests/browser',
+			'packages/three/tests/browser',
+		];
+
+		for (const engine of ['chromium', 'firefox']) {
+			assert.match(
+				heavyIntegration,
+				new RegExp(`- lane: browser\\n\\s+playwright_browser: ${engine}`),
+			);
+			assert.match(
+				jobSource('release_change'),
+				new RegExp(`"heavy integration \\(browser - ${engine}\\)"`),
+			);
+		}
+		assert.equal((heavyIntegration.match(/- lane: browser$/gm) ?? []).length, 2);
+		assert.equal((heavyIntegration.match(/- lane: package-builds$/gm) ?? []).length, 1);
+		assert.equal((heavyIntegration.match(/- lane: astro$/gm) ?? []).length, 1);
+		assert.match(
+			heavyIntegration,
+			/run: pnpm exec playwright install --with-deps \$\{\{ matrix\.playwright_browser \}\}/,
+		);
+		assert.match(heavyIntegration, /PLAYWRIGHT_BROWSER: \$\{\{ matrix\.playwright_browser \}\}/);
+		for (const spec of browserSpecs) {
+			assert.equal((heavyIntegration.match(new RegExp(spec, 'g')) ?? []).length, 2);
+		}
+		assert.match(heavyIntegration, /run: pnpm vitest run \$\{\{ matrix\.specs \}\} --maxWorkers=1/);
+
+		const baseProjects = new Map(
+			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
+		);
+		for (const [projectName, excluded] of [
+			['octane', 'packages/octane/tests/browser/**/*.test.ts'],
+			['octane-prod', 'packages/octane/tests/browser/**/*.test.ts'],
+			['dexie', 'packages/dexie/tests/browser/**/*.test.ts'],
+			['three', 'packages/three/tests/browser/**/*.test.ts'],
+		]) {
+			assert.equal(baseProjects.get(projectName).test.exclude.includes(excluded), true);
+		}
+		assert.deepEqual(baseProjects.get('playwright-browser-selector').test.include, [
+			'test-utils/playwright-browser.test.ts',
+			'packages/three/tests/browser/_playwright.test.ts',
+		]);
+	});
 });
 
 describe('Publish workflow validation', () => {
