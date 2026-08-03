@@ -29,6 +29,7 @@
     "upstream:verify": "node audit/verify-provenance.mjs",
     "test:packed": "node tests/probes/packed-exports.test.mjs",
     "test:u2-parity": "node audit/verify-u2.mjs",
+    "test:u3-parity": "node audit/verify-u3.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
@@ -40,8 +41,14 @@
   },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.2.11",
+    "@types/react-dom": "19.2.3",
     "octane": "workspace:*",
     "playwright": "catalog:default",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-dropzone": "20.0.0",
     "vite": "catalog:default"
   }
 }

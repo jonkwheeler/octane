@@ -1,4 +1,5 @@
 import Dropzone, { useDropzone } from '../../src/index.tsrx';
+import { useEffect } from 'octane';
 
 export function HookProbe(props: { options: any; rootRef: any; inputRef: any }) @{
 	const state = useDropzone(props.options);
@@ -17,4 +18,34 @@ export function ComponentProbe(props: { options: any; dropzoneRef: any }) @{
 			<span>{String(state.acceptedFiles.length)}</span>
 		</div>}
 	</Dropzone>
+}
+
+export function StateProbe(props: {
+	options: any;
+	rootRef?: any;
+	inputRef?: any;
+	rootProps?: any;
+	inputProps?: any;
+}) @{
+	const state = useDropzone(props.options);
+	<div {...state.getRootProps({ 'data-probe': 'root', ref: props.rootRef, ...props.rootProps })}>
+		<input
+			{...state.getInputProps({ 'data-probe': 'input', ref: props.inputRef, ...props.inputProps })}
+		/>
+		<output>{[
+			state.isFocused,
+			state.isFileDialogActive,
+			state.isDragActive,
+			state.isDragAccept,
+			state.isDragReject,
+			state.isDragUnknown,
+		].join('|')}</output>
+	</div>
+}
+
+export function RefKeyProbe(props: { userRef: any; capture: (value: any) => void }) @{
+	const state = useDropzone();
+	const rootProps = state.getRootProps({ refKey: 'innerRef', innerRef: props.userRef });
+	useEffect(() => props.capture(rootProps.innerRef), [rootProps.innerRef, props.capture]);
+	<div data-probe="ref-key" ref={rootProps.innerRef}>{'ref key'}</div>
 }

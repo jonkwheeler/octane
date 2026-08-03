@@ -3,6 +3,7 @@ import type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/in
 
 export type { FileWithPath };
 export type { Accept, AcceptGroup, FileError, ValidatorResult } from './utils/index';
+
 export type DropEvent = DragEvent | ClipboardEvent | Event;
 export interface FileRejection {
 	file: FileWithPath;
@@ -13,30 +14,56 @@ export interface DropzoneRef {
 }
 export interface DropzoneRootProps extends Record<string, any> {
 	refKey?: string;
+	[key: string]: any;
 }
 export interface DropzoneInputProps extends Record<string, any> {
 	refKey?: string;
 }
-export interface DropzoneOptions {
-	accept?: Accept | AcceptGroup[];
-	disabled?: boolean;
+
+interface SharedProps {
 	multiple?: boolean;
-	noClick?: boolean;
-	preventDropOnDocument?: boolean;
 	onDragEnter?: (event: DragEvent) => void;
 	onDragOver?: (event: DragEvent) => void;
 	onDragLeave?: (event: DragEvent) => void;
+}
+
+export type DropzoneOptions = SharedProps & {
+	accept?: Accept | AcceptGroup[];
+	minSize?: number;
+	maxSize?: number;
+	maxFiles?: number;
+	preventDropOnDocument?: boolean;
+	noClick?: boolean;
+	noKeyboard?: boolean;
+	noDrag?: boolean;
+	noDragEventsBubbling?: boolean;
+	noPaste?: boolean;
+	disabled?: boolean;
+	onDrop?: <T extends File>(
+		acceptedFiles: T[],
+		fileRejections: FileRejection[],
+		event: DropEvent,
+	) => void;
+	onDropAccepted?: <T extends File>(files: T[], event: DropEvent) => void;
+	onDropRejected?: (fileRejections: FileRejection[], event: DropEvent) => void;
 	getFilesFromEvent?: (
 		event: DropEvent | FileSystemFileHandle[],
 	) => Promise<Array<File | DataTransferItem>>;
-	validator?: (file: File) => ValidatorResult | Promise<ValidatorResult>;
-	onDrop?: (accepted: FileWithPath[], rejected: FileRejection[], event: DropEvent) => void;
-	onDropAccepted?: (accepted: FileWithPath[], event: DropEvent) => void;
-	onDropRejected?: (rejected: FileRejection[], event: DropEvent) => void;
+	onFileDialogCancel?: () => void;
+	onFileDialogOpen?: () => void;
 	onError?: (error: Error) => void;
-	[key: string]: any;
+	validator?: <T extends File>(file: T) => ValidatorResult | Promise<ValidatorResult>;
+	getErrorMessage?: (error: FileError, file: File) => string;
+	useFsAccessApi?: boolean;
+	autoFocus?: boolean;
+};
+
+export interface DropzoneProps extends DropzoneOptions {
+	children?: (state: DropzoneState) => any;
+	ref?: ((instance: DropzoneRef | null) => void) | { current: DropzoneRef | null } | null;
 }
-export interface DropzoneState extends DropzoneRef {
+
+export type DropzoneState = DropzoneRef & {
 	isFocused: boolean;
 	isDragActive: boolean;
 	isDragAccept: boolean;
@@ -49,10 +76,6 @@ export interface DropzoneState extends DropzoneRef {
 	fileRejections: readonly FileRejection[];
 	rootRef: { current: HTMLElement | null };
 	inputRef: { current: HTMLInputElement | null };
-	getRootProps: <T extends DropzoneRootProps>(props?: T) => T & DropzoneRootProps;
-	getInputProps: <T extends DropzoneInputProps>(props?: T) => T & DropzoneInputProps;
-}
-export interface DropzoneProps extends DropzoneOptions {
-	children?: (state: DropzoneState) => any;
-	ref?: any;
-}
+	getRootProps: <T extends DropzoneRootProps>(props?: T) => T;
+	getInputProps: <T extends DropzoneInputProps>(props?: T) => T;
+};
