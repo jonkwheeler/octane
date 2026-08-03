@@ -399,7 +399,7 @@ export function CommandRoot(props: CommandProps) @{
 	/**
  * Order items by score, and groups by their best item score, using CSS `order`.
  *
- * OCTANE DIVERGENCE: cmdk's sort is DOM-authoritative — it puts matches in
+ * OCTANE DIVERGENCE[runtime-adaptation-divergences][differential:cmdk-filter-selection-empty]: cmdk's sort is DOM-authoritative — it puts matches in
  * score order by physically relocating item nodes into the list sizer. Octane
  * fences every component's DOM with a pair of comment markers and tracks the
  * range between them, and a template construct like `@for` or `@if` wraps each
@@ -488,7 +488,7 @@ export function CommandRoot(props: CommandProps) @{
 			setStyle(node, 'order', String(group ? rank + 1 : topLevel += 1));
 		});
 
-		// OCTANE DIVERGENCE: upstream looks each group element up by
+		// OCTANE DIVERGENCE[corrected-group-ordering][differential:cmdk-groups]: upstream looks each group element up by
 		// `[cmdk-group=""][data-value="<groupId>"]`, but `data-value` holds the
 		// group's VALUE (its heading text), never its id — so upstream's selector
 		// can never match and its group reordering is effectively dead code.
