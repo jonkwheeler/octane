@@ -106,6 +106,7 @@ describe('packed TSRX source consumers', () => {
 		'@octanejs/cmdk': 'file:/tmp/cmdk.tgz',
 		'@octanejs/floating-ui': 'file:/tmp/floating-ui.tgz',
 		'@octanejs/radix': 'file:/tmp/radix.tgz',
+		'@octanejs/react-syntax-highlighter': 'file:/tmp/react-syntax-highlighter.tgz',
 		'@octanejs/sonner': 'file:/tmp/sonner.tgz',
 		'@octanejs/tiptap': 'file:/tmp/tiptap.tgz',
 		octane: 'file:/tmp/octane.tgz',
@@ -150,14 +151,16 @@ describe('packed TSRX source consumers', () => {
 		assert.equal(config.compilerOptions.paths, undefined);
 	});
 
-	test('exercises all three published bindings from a real local TSRX component', () => {
+	test('exercises every published binding from a real local TSRX component', () => {
 		const source = renderPackedTsrxConsumerSource();
 
 		assert.match(source, /from '@octanejs\/cmdk'/);
 		assert.match(source, /from '@octanejs\/sonner'/);
 		assert.match(source, /from '@octanejs\/tiptap'/);
+		assert.match(source, /from '@octanejs\/react-syntax-highlighter'/);
 		assert.match(source, /<Command\b/);
 		assert.match(source, /<Toaster\b/);
+		assert.match(source, /<Light\b/);
 		assert.match(source, /<EditorProvider\b/);
 		assert.match(source, /<Tiptap\b/);
 	});
@@ -170,6 +173,8 @@ describe('packed TSRX source consumers', () => {
 		assert.match(source, /AssertNotAny<Parameters<typeof Command>\[0\]>/);
 		assert.match(source, /AssertNotAny<ToasterProps>/);
 		assert.match(source, /AssertNotAny<Parameters<typeof Toaster>\[0\]>/);
+		assert.match(source, /AssertNotAny<SyntaxHighlighterProps>/);
+		assert.match(source, /AssertNotAny<Parameters<typeof SyntaxHighlighter>\[0\]>/);
 		assert.match(source, /AssertNotAny<EditorContentProps>/);
 		assert.match(source, /AssertNotAny<Parameters<typeof EditorContent>\[0\]>/);
 		assert.match(source, /--consumer-offset/);

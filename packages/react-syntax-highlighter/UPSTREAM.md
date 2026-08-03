@@ -21,9 +21,13 @@ The published Octane package excludes `upstream/`, `audit/`, `scripts/`, tests,
 and type tests. Runtime compatibility is owned by generated Octane entrypoints
 and executable parity lanes, not by shipping the retained React sources.
 
-The published npm surface contains 1,316 generated files under `dist/` across
-ESM and CJS trees. The initial audit counted, per module format, 197 Highlight.js
-language modules, 300 Prism language modules, 99 Highlight.js style modules,
-and 47 Prism style modules. The generator/crosswalk added by later plan units
-must derive and verify the final supported path inventory from the retained npm
-tarball rather than from these prose counts.
+The published npm surface contains 1,316 files under `dist/` across ESM and CJS
+trees: 197 Highlight.js language modules, 300 Prism language modules, 99
+Highlight.js style modules, and 47 Prism style modules per module format.
+`audit/public-entrypoints.json` and the generated package export map verify all
+2,634 public specifiers, including extensionless aliases.
+
+`audit/react-parity.json` is the executable parity contract. Its generator
+fails closed when the pristine or adapted suite gains, loses, or renames a test,
+when a selected evidence case loses its marker, or when retained evidence
+changes without regeneration.

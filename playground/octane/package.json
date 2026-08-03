@@ -24,6 +24,7 @@
     "@octanejs/radix": "workspace:*",
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
+    "@octanejs/react-syntax-highlighter": "workspace:*",
     "@octanejs/rxjs": "workspace:*",
     "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",

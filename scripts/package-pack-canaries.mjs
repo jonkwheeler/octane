@@ -61,6 +61,7 @@ export const PACKED_TSRX_CONSUMER_PACKAGES = [
 	'@octanejs/cmdk',
 	'@octanejs/floating-ui',
 	'@octanejs/radix',
+	'@octanejs/react-syntax-highlighter',
 	'@octanejs/sonner',
 	'@octanejs/tiptap',
 	'octane',
@@ -117,6 +118,9 @@ export function createPackedTsrxConsumerConfig() {
 
 export function renderPackedTsrxConsumerSource() {
 	return `import { Command } from '@octanejs/cmdk';
+import { Light } from '@octanejs/react-syntax-highlighter';
+import javascript from '@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript';
+import docco from '@octanejs/react-syntax-highlighter/dist/esm/styles/hljs/docco';
 import { toast, Toaster } from '@octanejs/sonner';
 import {
 	Editor,
@@ -128,6 +132,7 @@ import {
 import { useRef } from 'octane';
 
 const editor = new Editor({ extensions: [] });
+Light.registerLanguage('javascript', javascript);
 
 function EditorStateProbe() @{
 	const currentEditor = useTiptap();
@@ -160,6 +165,9 @@ export function PublishedSourceConsumer() @{
 			position="bottom-right"
 			style={{ '--consumer-offset': '8px', maxWidth: 360 }}
 		/>
+		<Light language="javascript" style={docco} showLineNumbers>
+			{'const packed = true;'}
+		</Light>
 		<EditorProvider
 			extensions={[]}
 			immediatelyRender={false}
@@ -178,6 +186,7 @@ export function PublishedSourceConsumer() @{
 
 export function renderPackedTsrxConsumerTypeProbe() {
 	return `import { Command, type CommandProps } from '@octanejs/cmdk';
+import SyntaxHighlighter, { type SyntaxHighlighterProps } from '@octanejs/react-syntax-highlighter';
 import { Toaster, useSonner, type ToasterProps } from '@octanejs/sonner';
 import {
 	EditorContent,
@@ -194,6 +203,8 @@ type AssertNotAny<T> = IsAny<T> extends false ? true : never;
 
 const commandPropsArePrecise: AssertNotAny<CommandProps> = true;
 const commandComponentPropsArePrecise: AssertNotAny<Parameters<typeof Command>[0]> = true;
+const syntaxPropsArePrecise: AssertNotAny<SyntaxHighlighterProps> = true;
+const syntaxComponentPropsArePrecise: AssertNotAny<Parameters<typeof SyntaxHighlighter>[0]> = true;
 const toasterPropsArePrecise: AssertNotAny<ToasterProps> = true;
 const toasterComponentPropsArePrecise: AssertNotAny<Parameters<typeof Toaster>[0]> = true;
 const toastStateIsPrecise: AssertNotAny<ReturnType<typeof useSonner>> = true;
@@ -216,6 +227,8 @@ const invalidToaster: ToasterProps = { position: 'middle-center' };
 const invalidToastStyle: ToasterProps = { style: { maxWidth: true } };
 // @ts-expect-error CSS custom properties accept strings and numbers, not booleans.
 const invalidToastCustomProperty: ToasterProps = { style: { '--consumer-offset': true } };
+// @ts-expect-error Highlighted children are source text, not arbitrary nodes.
+const invalidSyntaxChildren: SyntaxHighlighterProps = { children: 42 };
 // @ts-expect-error EditorContent must own an explicit editor, including null.
 const invalidEditorContent: EditorContentProps = {};
 // @ts-expect-error Tiptap.Content reads its editor from context.
@@ -236,6 +249,7 @@ export const verifiedPublishedTypes = {
 	invalidTiptapContent,
 	invalidToastCustomProperty,
 	invalidToastStyle,
+	invalidSyntaxChildren,
 	invalidToaster,
 	providerComponentPropsArePrecise,
 	providerPropsArePrecise,
@@ -243,6 +257,8 @@ export const verifiedPublishedTypes = {
 	toastStateIsPrecise,
 	toasterComponentPropsArePrecise,
 	toasterPropsArePrecise,
+	syntaxComponentPropsArePrecise,
+	syntaxPropsArePrecise,
 };
 `;
 }
