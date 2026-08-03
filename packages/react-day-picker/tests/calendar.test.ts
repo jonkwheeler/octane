@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { act, mount } from '../../octane/tests/_helpers.ts';
 import {
 	CalendarFixture,
+	ControlledNavigationFixture,
 	ConstraintsFixture,
 	MultipleFixture,
 	NavigationFixture,
 	RangeFixture,
 	TimeZoneNavigationFixture,
+	UncontrolledBoundsFixture,
 } from './_fixtures/calendar.tsrx';
 
 const dayButton = (container: HTMLElement, label: string) =>
@@ -39,6 +41,30 @@ describe('react-day-picker v10.0.1 adapted calendar behavior', () => {
 		const next = view.container.querySelector('button[aria-label*="next"]') as HTMLButtonElement;
 		await act(() => next.click());
 		expect(view.container.textContent).toContain('September 2026');
+		view.unmount();
+	});
+
+	// @parity-case runtime:uncontrolled-month-identity
+	it('preserves an uncontrolled visible month and public props when bounds change', async () => {
+		const view = mount(UncontrolledBoundsFixture);
+		const next = view.container.querySelector('button[aria-label*="next"]') as HTMLButtonElement;
+		await act(() => next.click());
+		expect(view.container.textContent).toContain('September 2026');
+		await act(() => dayButton(view.container, 'Change bounds').click());
+		expect(view.container.textContent).toContain('September 2026');
+		const footer = view.container.querySelector('[data-has-month]');
+		expect(footer?.getAttribute('data-has-month')).toBe('false');
+		expect(footer?.getAttribute('data-has-on-month-change')).toBe('false');
+		view.unmount();
+	});
+
+	// @parity-case runtime:controlled-month-navigation
+	it('keeps a controlled month pinned while reporting navigation', async () => {
+		const view = mount(ControlledNavigationFixture);
+		const next = view.container.querySelector('button[aria-label*="next"]') as HTMLButtonElement;
+		await act(() => next.click());
+		expect(view.container.textContent).toContain('August 2026');
+		expect(view.container.querySelector('#requested-month')?.textContent).toBe('2026-09');
 		view.unmount();
 	});
 

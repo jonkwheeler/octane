@@ -154,9 +154,10 @@ export function DayPicker(initialProps: DayPickerProps) @{
 	// a compiler-owned call-site slot and therefore schedules the DayPicker block
 	// directly when navigation changes the visible month.
 	const monthIsControlled = initialProps.month !== undefined;
-	const [uncontrolledMonth, setUncontrolledMonth] = useState(
-		() => props.month ?? props.defaultMonth ?? props.today,
-	);
+	const [uncontrolledMonth, setUncontrolledMonth] = useState(() => {
+		const [navStart, navEnd] = getNavMonths(props, dateLib);
+		return getInitialMonth(props, navStart, navEnd, dateLib);
+	});
 	const previousTimeZone = useRef(props.timeZone);
 	useEffect(() => {
 		if (previousTimeZone.current === props.timeZone) return;
@@ -167,17 +168,6 @@ export function DayPicker(initialProps: DayPickerProps) @{
 			getInitialMonth({ ...props, month: undefined }, navStart, navEnd, dateLib),
 		);
 	}, [props.timeZone]);
-	if (!monthIsControlled) {
-		const onMonthChange = props.onMonthChange;
-		props = {
-			...props,
-			month: uncontrolledMonth,
-			onMonthChange: (month) => {
-				setUncontrolledMonth(month);
-				onMonthChange?.(month);
-			},
-		};
-	}
 
 	const {
 		captionLayout,
@@ -206,7 +196,12 @@ export function DayPicker(initialProps: DayPickerProps) @{
 		formatYearDropdown,
 	} = formatters;
 
-	const calendar = useCalendar(props, dateLib);
+	const calendar = useCalendar(props, dateLib, monthIsControlled ? undefined : uncontrolledMonth, (
+		month,
+	) => {
+		setUncontrolledMonth(month);
+		props.onMonthChange?.(month);
+	});
 
 	const { days, months, navStart, navEnd, previousMonth, nextMonth, goToMonth } = calendar;
 

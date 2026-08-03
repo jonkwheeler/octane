@@ -1,6 +1,12 @@
 // @ts-nocheck -- fixtures intentionally exercise React-compatible DOM prop boundaries.
 import { useState } from 'octane';
-import { DayPicker, type DateRange, type DayButtonProps } from '../../src/index.ts';
+import {
+	DayPicker,
+	type DateRange,
+	type DayButtonProps,
+	type FooterProps,
+	useDayPicker,
+} from '../../src/index.ts';
 
 export function CalendarFixture() @{
 	const [selected, setSelected] = useState<Date | undefined>();
@@ -21,6 +27,40 @@ export function ServerCalendarFixture() @{
 
 export function NavigationFixture() @{
 	<DayPicker defaultMonth={new Date(2026, 7, 1)} />
+}
+
+export function ControlledNavigationFixture() @{
+	const [requestedMonth, setRequestedMonth] = useState('none');
+	<main>
+		<output id="requested-month">{requestedMonth}</output>
+		<DayPicker
+			month={new Date(2026, 7, 1)}
+			onMonthChange={(month) => setRequestedMonth(month.toISOString().slice(0, 7))}
+		/>
+	</main>
+}
+
+function PropsFooter(props: FooterProps) @{
+	const { dayPickerProps } = useDayPicker();
+	<div
+		{...props}
+		data-has-month={String(dayPickerProps.month !== undefined)}
+		data-has-on-month-change={String(dayPickerProps.onMonthChange !== undefined)}
+	/>
+}
+
+export function UncontrolledBoundsFixture() @{
+	const [bounded, setBounded] = useState(false);
+	<main>
+		<button onClick={() => setBounded(true)}>Change bounds</button>
+		<DayPicker
+			defaultMonth={new Date(2026, 7, 1)}
+			startMonth={bounded ? new Date(2026, 9, 1) : undefined}
+			endMonth={bounded ? new Date(2026, 11, 1) : undefined}
+			footer="props"
+			components={{ Footer: PropsFooter }}
+		/>
+	</main>
 }
 
 export function TimeZoneNavigationFixture() @{

@@ -90,6 +90,8 @@ export function useCalendar(
 		| 'broadcastCalendar'
 	>,
 	dateLib: DateLib,
+	uncontrolledMonth?: Date,
+	onUncontrolledMonthChange?: (month: Date) => void,
 ): Calendar {
 	const [navStart, navEnd] = getNavMonths(props, dateLib);
 
@@ -97,8 +99,9 @@ export function useCalendar(
 	const initialMonth = getInitialMonth(props, navStart, navEnd, dateLib);
 	const [firstMonth, setFirstMonth] = useControlledValue(
 		initialMonth,
-		// initialMonth is always computed from props.month if provided
-		props.month ? initialMonth : undefined,
+		// A lifted uncontrolled month must retain its identity when unrelated
+		// navigation bounds change. Controlled props still use the clamped month.
+		props.month ? initialMonth : uncontrolledMonth,
 		calendarStateSlot,
 	);
 
@@ -196,7 +199,11 @@ export function useCalendar(
 			newMonth = startOfMonth(navEnd);
 		}
 		setFirstMonth(newMonth);
-		onMonthChange?.(newMonth);
+		if (uncontrolledMonth !== undefined) {
+			onUncontrolledMonthChange?.(newMonth);
+		} else {
+			onMonthChange?.(newMonth);
+		}
 	};
 
 	const goToDay = (day: CalendarDay) => {

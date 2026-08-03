@@ -19,9 +19,19 @@
       "fullName": "react-day-picker v10.0.1 adapted calendar behavior builds a range from two day clicks"
     },
     {
+      "id": "runtime:5617a3f17c2a6785",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior keeps a controlled month pinned while reporting navigation"
+    },
+    {
       "id": "runtime:4cff0e3af8f342ca",
       "file": "packages/react-day-picker/tests/calendar.test.ts",
       "fullName": "react-day-picker v10.0.1 adapted calendar behavior navigates to the next month through the public nav button"
+    },
+    {
+      "id": "runtime:9d5f95fab0c58d57",
+      "file": "packages/react-day-picker/tests/calendar.test.ts",
+      "fullName": "react-day-picker v10.0.1 adapted calendar behavior preserves an uncontrolled visible month and public props when bounds change"
     },
     {
       "id": "runtime:a254d3e870ce747e",
