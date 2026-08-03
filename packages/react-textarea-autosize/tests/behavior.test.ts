@@ -189,6 +189,29 @@ describe('@octanejs/react-textarea-autosize behavior', () => {
 		expect(second.at(-1)).toBeNull();
 	});
 
+	it('keeps a stable callback ref attached across ordinary rerenders', () => {
+		const values: Array<HTMLTextAreaElement | null> = [];
+		const ref = (node: HTMLTextAreaElement | null) => values.push(node);
+		const app = mount(TextareaAutosize, {
+			ref,
+			placeholder: 'before',
+			style: baseStyle,
+		});
+		settle();
+		const textarea = app.find('textarea');
+
+		app.update(TextareaAutosize, {
+			ref,
+			placeholder: 'after',
+			style: baseStyle,
+		});
+		settle();
+
+		expect(values).toEqual([textarea]);
+		app.unmount();
+		expect(values).toEqual([textarea, null]);
+	});
+
 	it('reuses sizing data only when cacheMeasurements is enabled', () => {
 		const computedStyle = vi.spyOn(window, 'getComputedStyle');
 		const cached = mount(TextareaAutosize, {

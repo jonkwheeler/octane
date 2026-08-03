@@ -1,10 +1,13 @@
 /** @jsxImportSource octane */
-import { useEffectEvent, useLayoutEffect } from 'octane';
+import { useEffectEvent, useLayoutEffect, useMemo } from 'octane';
 
 type Ref<T> = ((value: T | null) => void) | { current: T | null } | null | undefined;
 
 export function useComposedRef<T>(internal: { current: T | null }, external: Ref<T>) {
-	return external == null ? internal : ([internal, external] as const);
+	return useMemo(
+		() => (external == null ? internal : ([internal, external] as const)),
+		[internal, external],
+	);
 }
 
 function useListener<K extends keyof WindowEventMap>(
