@@ -30,6 +30,13 @@ test('rejects an unclassified port-authored test', async (t) => {
 	assert.throws(() => verifyPortTestClassifications(root), /exactly one classification/);
 });
 
+test('rejects a missing test-classification ledger', async (t) => {
+	const root = await fixture();
+	t.after(() => rm(root, { recursive: true, force: true }));
+	await rm(join(root, 'packages/hook-form/audit/test-classifications.json'));
+	assert.throws(() => verifyPortTestClassifications(root), /missing port-test classifications/);
+});
+
 test('rejects a parity classification without an oracle', async (t) => {
 	const root = await fixture();
 	t.after(() => rm(root, { recursive: true, force: true }));
