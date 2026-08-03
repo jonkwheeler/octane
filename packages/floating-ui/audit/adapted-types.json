@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "files": ["packages/floating-ui/typetests/public-api.test-d.ts"],
+  "assertionGroups": [
+    "positioning result and context declarations",
+    "interaction prop getter declarations",
+    "layout auto-update declaration"
+  ]
+}

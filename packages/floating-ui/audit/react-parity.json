@@ -1,0 +1,153 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/floating-ui/floating-ui.git",
+    "version": "@floating-ui/react@0.27.19",
+    "commit": "d8020ee98c702caa31fa9b4d929ca782c6b58c59",
+    "sourceRoot": "packages/react/src; packages/react-dom/src",
+    "testRoot": "packages/react/test; packages/react-dom/test",
+    "license": "MIT",
+    "integrity": "sha256:55480b7a99c1bffdc662c4b67492503bd7d7705b82c43e1fcb522e71a07e695b",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": { "roots": ["packages/floating-ui/src"], "include": ["\\.ts$"], "exclude": [] },
+    "tests": {
+      "roots": ["packages/floating-ui/tests"],
+      "include": ["\\.test\\.(?:ts|tsx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "63e1615c5e7f2d68c8248c0d485a35966ae05f53d224c2ecc62b65fd715b610a"
+    }
+  },
+  "lanes": [
+    {
+      "id": "floating-ui-runtime-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the existing TwoTooltips fixture for both adapters and compares independent hook placement output.",
+      "files": [
+        {
+          "path": "packages/floating-ui/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "c8a25b6f10e3c4d916a9136fe7c5d039775a427cd8480daec96ef3a3cfa9257c",
+          "cases": [
+            {
+              "id": "differential:floating-ui-hook-isolation",
+              "testName": "keeps independent useFloating placements byte-identical",
+              "fullName": "differential: @octanejs/floating-ui vs @floating-ui/react keeps independent useFloating placements byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/floating-ui/tests/differential/fixture-compiler.mjs",
+          "role": "support",
+          "sha256": "339177ecdc1f07df6b7383e4f715479d0b56b56b3eea135d77add0d2bbea4da2"
+        },
+        {
+          "path": "packages/floating-ui/tests/differential/compile-runner.mjs",
+          "role": "support",
+          "sha256": "8ad98bceb3a298463c9c3ceda0dca3ef995eb991fc4cc3af147a8e6d6c28d39d"
+        },
+        {
+          "path": "packages/floating-ui/tests/_fixtures/tooltip.tsx",
+          "role": "support",
+          "sha256": "e0887a39334bcaf261524575ab4ff4127a85165bc459da0c2d95ba1a30c812d4"
+        }
+      ]
+    },
+    {
+      "id": "floating-ui-browser-layout",
+      "type": "browser",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui-browser",
+      "notes": "Uses Chromium layout geometry and autoUpdate observers; these claims cannot be established in jsdom.",
+      "files": [
+        {
+          "path": "packages/floating-ui/tests/browser/positioning.browser.test.ts",
+          "role": "test",
+          "sha256": "8e11223b90d66cee4bb3ae15604d0eabf782bd00aa8664c4f683de7ef2ec3e90",
+          "cases": [
+            {
+              "id": "browser:floating-ui-layout",
+              "testName": "uses real layout geometry and auto-updates after the reference moves",
+              "fullName": "@octanejs/floating-ui real-browser positioning uses real layout geometry and auto-updates after the reference moves"
+            }
+          ]
+        },
+        {
+          "path": "packages/floating-ui/tests/browser/harness/main.tsrx",
+          "role": "support",
+          "sha256": "ba8806b309b00a431f17eb43a8161f85eb30ce81bd0a921332f64305b179e5ec"
+        }
+      ]
+    },
+    {
+      "id": "floating-ui-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles positioning, context, interaction, and observer declarations.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/floating-ui/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/floating-ui/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "ee287d46a3761b85065559f3daa45a85eda5e5363f7e855a4ea3bb39875fb7d2",
+          "cases": [
+            {
+              "id": "types:floating-ui-public-api",
+              "testName": "Floating UI public declarations",
+              "fullName": "Floating UI public declarations"
+            }
+          ]
+        },
+        {
+          "path": "packages/floating-ui/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "7f663e9c4691a77683b927333baffabec6166d50d9840e15c102caf438fd2519"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "ref-as-prop",
+      "caseIds": ["differential:floating-ui-hook-isolation"],
+      "upstreamResult": "React component refs use React's ref channel and forwardRef where components forward a ref.",
+      "octaneResult": "Octane component APIs receive and forward ref as an ordinary prop.",
+      "rationale": "Octane implements ref-as-prop natively and does not require React's forwardRef wrapper.",
+      "classification": "framework-integration",
+      "consumerImpact": "Callers pass the same ref attribute, but custom component implementations receive it as a prop.",
+      "migrationGuidance": "Accept ref in component props instead of wrapping the component in forwardRef.",
+      "owner": "@octanejs/floating-ui",
+      "reviewCondition": "Review if Octane adopts a distinct ref forwarding primitive."
+    }
+  ]
+}

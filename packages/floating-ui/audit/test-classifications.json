@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/floating-ui/tests/browser/positioning.browser.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks layout positioning and autoUpdate observation in real Chromium; it is environment evidence rather than a React differential."
+    },
+    {
+      "path": "packages/floating-ui/tests/components.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks component, portal, focus, composite, and transition behavior under Octane."
+    },
+    {
+      "path": "packages/floating-ui/tests/differential/parity.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Runs the existing TwoTooltips fixture against @floating-ui/react@0.27.19 and Octane."
+    },
+    {
+      "path": "packages/floating-ui/tests/differential/setup.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation."
+    },
+    {
+      "path": "packages/floating-ui/tests/positioning.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks broader positioning and interaction behavior under Octane scheduling."
+    }
+  ]
+}

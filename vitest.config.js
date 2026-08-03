@@ -2275,6 +2275,7 @@ export default defineConfig({
 						'packages/floating-ui/tests/**/*.test.ts',
 						'packages/floating-ui/tests/**/*.test.tsx',
 					],
+					exclude: ['packages/floating-ui/tests/browser/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -2294,6 +2295,16 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src') + '/$1.ts',
 						},
 					],
+				},
+			},
+			{
+				test: {
+					name: 'floating-ui-browser',
+					include: ['packages/floating-ui/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
 				},
 			},
 			{
