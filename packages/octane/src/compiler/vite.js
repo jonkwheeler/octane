@@ -127,8 +127,8 @@ async function loadImportMetadata(
 				metadata !== null &&
 				typeof metadata === 'object' &&
 				Array.isArray(metadata.exports) &&
-				typeof moduleInfo.code === 'string' &&
-				metadata.fingerprint === compiledCodeFingerprint(moduleInfo.code);
+				typeof metadata.fingerprint === 'string' &&
+				metadata.fingerprint.length > 0;
 			if (!valid) {
 				if (failLoud)
 					throw new Error(`Invalid descriptor-children metadata for ${request} from ${importer}`);
