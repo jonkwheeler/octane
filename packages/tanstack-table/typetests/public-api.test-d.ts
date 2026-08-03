@@ -1,4 +1,5 @@
 import { expectTypeOf, test } from 'vitest';
+import type { TableState } from '@tanstack/table-core';
 import {
 	createColumnHelper,
 	createTableHookContexts,
@@ -21,7 +22,7 @@ test('table options, rows, cells, selectors, and scoped contexts preserve infere
 
 	expectTypeOf(table.getRowModel().rows[0].original).toExtend<Person>();
 	expectTypeOf(helper.accessor).toBeFunction();
-	expectTypeOf(selected.state).toEqualTypeOf(selected.state);
+	expectTypeOf(selected.state).toEqualTypeOf<Readonly<TableState<typeof features>>>();
 	expectTypeOf(flexRender).toBeFunction();
 
 	const contexts = createTableHookContexts<typeof features>();

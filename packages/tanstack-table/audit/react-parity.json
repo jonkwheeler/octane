@@ -202,7 +202,7 @@
         {
           "path": "packages/tanstack-table/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "eb7f432ef8e6247a3444263357a7c64658d3e27a5af45ad0732ace00a5537878"
+          "sha256": "64a7c9b0d4aca8bcb3166588a1603a471e92323f5ce34219c06350e4ca0b6f41"
         },
         {
           "path": "packages/tanstack-table/typetests/tsconfig.json",
