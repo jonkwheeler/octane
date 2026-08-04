@@ -47,6 +47,7 @@ test('the pristine pinned inventory validates', async () => {
   assert.equal(result.inventories.unitCases.length, 204);
   assert.equal(result.inventories.unitFiles.length, 11);
   assert.equal(result.inventories.browserCases.length, 23);
+  assert.ok(result.inventories.adaptedCases.length >= 170);
   assert.equal(result.publicSurface.typeExports.length, 8);
 });
 
@@ -57,7 +58,17 @@ await rejectsMutation('a missing source file fails closed', async (root) => {
 await rejectsMutation('a renamed unit case fails with its identity', async (root) => {
   const path = 'tag/test/Draggable.test.jsx';
   await mutateArtifact(root, path, (source) => source.replace('should render with default class', 'renamed default class case'));
-}, /unit case: missing identity .*should render with default class/);
+}, /missing explicit adapted case mapping/);
+
+await rejectsMutation('a renamed exact adapted case fails closed', async (root) => {
+  const path = join(root, 'tests/upstream/exact/positionFns.test.ts');
+  await writeFile(path, (await readFile(path, 'utf8')).replace('should snap to grid values', 'renamed adapted grid case'));
+}, /adapted case order\/name changed/);
+
+await rejectsMutation('a removed adapted runtime marker fails closed', async (root) => {
+  const path = join(root, 'tests/runtime/draggable.test.ts');
+  await writeFile(path, (await readFile(path, 'utf8')).replace('@parity-case adapted:draggable-grid', 'removed parity marker'));
+}, /adapted case: missing identity adapted:draggable-grid/);
 
 await rejectsMutation('a removed browser case fails with its identity', async (root) => {
   const path = 'tag/test/browser/browser.test.js';

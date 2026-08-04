@@ -1,7 +1,5 @@
 // Hook-backed Octane port of react-draggable@4.7.1 lib/DraggableCore.tsx.
 import {
-	Children,
-	cloneElement,
 	descriptorChildren,
 	type ElementDescriptor,
 	type OctaneNode,
@@ -22,6 +20,7 @@ import {
 	snapToGrid,
 	type CoreModel,
 } from './utils/positionFns.ts';
+import { cloneCoreChild } from './internal.ts';
 import type { DraggableEventHandler, MouseTouchEvent } from './utils/types.ts';
 
 export type { ControlPosition, DraggableData, DraggableEvent, DraggableEventHandler, PositionOffsetControlPosition } from './utils/types.ts';
@@ -231,7 +230,7 @@ function DraggableCoreImpl(inputProps: Partial<DraggableCoreProps>): ElementDesc
 			if (state.props.enableUserSelectHack) scheduleRemoveUserSelectStyles(doc);
 		};
 	}, []);
-	return cloneElement(Children.only(props.children) as ElementDescriptor, {
+	return cloneCoreChild(props.children, {
 		onMouseDown,
 		onMouseUp,
 		onTouchEnd,

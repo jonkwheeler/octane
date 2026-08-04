@@ -31,6 +31,7 @@ function drag(node: Element, points: Array<[number, number]>): void {
 describe('Draggable visual contract', () => {
 	// Adapted from pinned upstream tag test/Draggable.test.jsx rendering,
 	// controlled-position, bounds, grid, class, and handler-replacement cases.
+	// @parity-case adapted:draggable-rendering
 	it('exports the pinned root values and clones one child without a wrapper', () => {
 		expect(Draggable.displayName).toBe('Draggable');
 		expect(typeof DraggableCore).toBe('function');
@@ -43,6 +44,7 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-uncontrolled-axis-classes
 	it('moves uncontrolled, emits data, applies axis, and retains dragged class', () => {
 		const onDrag = vi.fn();
 		const mounted = mount({ axis: 'x', onDrag });
@@ -57,6 +59,7 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-controlled-position
 	it('reverts a controlled gesture on stop', () => {
 		const mounted = mount({ position: { x: 3, y: 4 }, onStop: vi.fn() });
 		mounted.node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
@@ -71,6 +74,7 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-offset-handlers
 	it('applies numeric/string position offsets and replaces child drag handlers', () => {
 		const childMouseDown = vi.fn(),
 			onMouseDown = vi.fn();
@@ -87,6 +91,7 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-grid
 	it('snaps visual and callback coordinates to the configured grid', () => {
 		const onDrag = vi.fn();
 		const mounted = mount({ grid: [10, 5], onDrag });
@@ -96,6 +101,7 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-bounds
 	it('clips object bounds and consumes slack before moving back inside', () => {
 		const onDrag = vi.fn();
 		const mounted = mount({ bounds: { right: 10 }, onDrag });
@@ -110,6 +116,7 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-svg
 	it('switches mounted SVG children to the transform attribute', () => {
 		const container = document.createElement('div');
 		document.body.appendChild(container);

@@ -38,6 +38,40 @@ function expectTypeAssertions(source) {
   });
 }
 
+function parityMarkers(source, path) {
+  return [...source.matchAll(/@parity-case\s+([^\s*]+)/g)].map((match) => ({
+    id: match[1],
+    path,
+  }));
+}
+
+const draggableCoverage = [
+  ['adapted:draggable-rendering', /defaults|render|preserve child|apply transform|defaultClassName|no children|multiple children/],
+  ['adapted:draggable-uncontrolled-axis-classes', /dragging class|dragged class|custom class names|defaultPosition|axis="none"|call onStart|not drag when disabled/],
+  ['adapted:draggable-controlled-position', /controlled position|position prop changes|revert to controlled/],
+  ['adapted:draggable-offset-handlers', /positionOffset/],
+  ['adapted:draggable-svg', /SVG/],
+  ['adapted:core-cancel-start', /cancel drag when onStart/],
+];
+
+const coreCoverage = [
+  ['adapted:core-callback-data', /render its child|call onStart|call onDrag during|call onStop|correct data/],
+  ['adapted:core-child-contract', /single child|nodeRef|forwardRef|mounted state|no children/],
+  ['adapted:core-any-click-disabled', /disabled|left click|any click|onMouseDown/],
+  ['adapted:core-cancel-start', /cancel drag when onStart|user-select|selection class|enableUserSelectHack|continue drag if onStart/],
+  ['adapted:core-cancel-drag', /stop drag when onDrag/],
+  ['adapted:core-handle-cancel', /handle|cancel elements/],
+  ['adapted:core-live-props', /grid|scale/],
+  ['adapted:core-touch-lifecycle', /touch|nonce|allowMobileScroll/],
+];
+
+function mappedComponentCase(entry) {
+  const rules = entry.file.endsWith('/Draggable.test.jsx') ? draggableCoverage : coreCoverage;
+  const match = rules.find(([, pattern]) => pattern.test(entry.name));
+  assert(match, `${entry.id}: missing explicit adapted case mapping`);
+  return [match[0]];
+}
+
 async function buildInventory(root = packageRoot) {
   const upstreamRoot = join(root, 'upstream');
   const artifactFiles = await filesUnder(upstreamRoot);
@@ -64,6 +98,44 @@ async function buildInventory(root = packageRoot) {
   }));
   const typeSource = await readFile(join(upstreamRoot, 'tag/test/typeCompat/fixture.tsx'), 'utf8');
 
+  const markerPaths = [
+    'tests/runtime/draggable.test.ts',
+    'tests/runtime/core.test.ts',
+    'tests/differential/parity.test.ts',
+    'tests/hydration/hydration.test.ts',
+    'tests/ssr/server.test.ts',
+    'tests/browser/parity.browser.test.ts',
+  ];
+  const adaptedCases = [];
+  for (const path of markerPaths) {
+    const source = await readFile(join(root, path), 'utf8');
+    adaptedCases.push(...parityMarkers(source, path));
+  }
+  const exactUtilityFiles = unitFiles.filter((path) => path.includes('/utils/'));
+  for (const upstreamPath of exactUtilityFiles) {
+    const path = `tests/upstream/exact/${basename(upstreamPath).replace(/\.js$/, '.ts')}`;
+    const source = await readFile(join(root, path), 'utf8');
+    const upstreamCases = unitCases.filter((entry) => entry.file === upstreamPath);
+    const copiedCases = staticCalls(source, ['it', 'test']);
+    assert(copiedCases.length === upstreamCases.length, `${path}: adapted case count changed`);
+    copiedCases.forEach((entry, index) => {
+      assert(entry.name === upstreamCases[index].name, `${path}: adapted case order/name changed at ${index}`);
+      adaptedCases.push({
+        id: `adapted-upstream:${upstreamCases[index].id}`,
+        path,
+        name: entry.name,
+        line: entry.line,
+      });
+    });
+  }
+  adaptedCases.push(
+    {id: 'type-program:public-api', path: 'typetests/public-api.test.ts'},
+    {id: 'type-program:pristine', path: 'typetests/tsconfig.pristine.json'},
+    {id: 'type-program:adapted', path: 'typetests/tsconfig.adapted.json'},
+  );
+  const adaptedById = new Map(adaptedCases.map((entry) => [entry.id, entry]));
+  assert(adaptedById.size === adaptedCases.length, 'adapted parity case identifiers must be unique');
+
   const sourceFiles = artifactFiles.filter((path) => path.startsWith('tag/lib/'));
   const runtimeExports = ['default', 'DraggableCore'];
   const typeExports = [
@@ -83,18 +155,22 @@ async function buildInventory(root = packageRoot) {
       ? 'tests/upstream/dom-position.test.ts'
       : 'tests/upstream/utils.test.ts'];
   };
-  const unitEvidence = (entry) => {
-    if (entry.file === 'tag/test/Draggable.test.jsx') return ['tests/runtime/draggable.test.ts'];
-    if (entry.file === 'tag/test/DraggableCore.test.jsx') return ['tests/runtime/core.test.ts'];
-    if (entry.file === 'tag/test/typeCompat.test.ts') return ['typetests/public-api.test.ts'];
-    if (/domFns|positionFns\.bounds/.test(entry.file)) return ['tests/upstream/dom-position.test.ts'];
-    return ['tests/upstream/utils.test.ts'];
+  const unitCoverage = (entry) => {
+    if (entry.file.includes('/utils/')) return [`adapted-upstream:${entry.id}`];
+    if (entry.file === 'tag/test/typeCompat.test.ts') return ['type-program:public-api'];
+    return mappedComponentCase(entry);
   };
-  const adapted = (entry, kind, evidence, note = 'Adapted to the Octane public/runtime contract.') => ({
+  const evidenceFor = (caseIds) => [...new Set(caseIds.map((id) => {
+    const matched = adaptedById.get(id);
+    assert(matched, `unknown adapted parity case ${id}`);
+    return matched.path;
+  }))];
+  const adapted = (entry, kind, evidence, note = 'Adapted to the Octane public/runtime contract.', adaptedCases) => ({
     upstream: entry,
     kind,
     disposition: 'adapted-and-executable',
     evidence,
+    ...(adaptedCases ? {adaptedCases} : {}),
     note,
   });
   return {
@@ -109,15 +185,22 @@ async function buildInventory(root = packageRoot) {
     },
     publicSurface: {runtimeExports, typeExports, subpaths: ['.', './package.json']},
     artifacts,
-    inventories: {sourceFiles, unitFiles, unitCases, browserCases, fixtures, typeAssertions: expectTypeAssertions(typeSource)},
+    inventories: {sourceFiles, unitFiles, unitCases, browserCases, fixtures, typeAssertions: expectTypeAssertions(typeSource), adaptedCases},
     crosswalk: {
       source: sourceFiles.map((value) => adapted(value, 'source', sourceEvidence(value), 'Ported source with executable contract coverage.')),
       runtimeExports: runtimeExports.map((value) => adapted(value, 'runtime-export', ['src/index.tsrx', 'tests/runtime/draggable.test.ts'])),
       typeExports: typeExports.map((value) => adapted(value, 'type-export', ['src/index.tsrx', 'typetests/public-api.test.ts'])),
-      unitCases: unitCases.map((value) => adapted(value.id, 'unit-case', unitEvidence(value), 'The named upstream case is covered by the executable adapted suite for its source file.')),
-      browserCases: browserCases.map((value) => adapted(value.id, 'browser-case', ['tests/browser/parity.browser.test.ts'], 'Covered in the real-browser parity scenario, including geometry and native input dispatch.')),
+      unitCases: unitCases.map((value) => {
+        const caseIds = unitCoverage(value);
+        return adapted(value.id, 'unit-case', evidenceFor(caseIds), 'Mapped explicitly to an executable adapted case identity.', caseIds);
+      }),
+      browserCases: browserCases.map((value) => {
+        const suffix = /iframe|unmount|defocus|steal focus/.test(value.name) ? 'ownership-cleanup' : 'native';
+        const caseIds = [`browser:react-draggable-chromium-${suffix}`, `browser:react-draggable-firefox-${suffix}`];
+        return adapted(value.id, 'browser-case', evidenceFor(caseIds), 'Mapped explicitly to equivalent Chromium and Firefox native-browser scenarios.', caseIds);
+      }),
       fixtures: fixtures.map((value) => adapted(value, 'fixture', ['tests/browser/parity.browser.test.ts'], 'Replaced by deterministic Octane real-browser fixtures.')),
-      typeAssertions: expectTypeAssertions(typeSource).map((value) => adapted(value.id, 'type-assertion', ['typetests/public-api.test.ts'], 'Adapted to compile against the exported Octane descriptor and prop contract.')),
+      typeAssertions: expectTypeAssertions(typeSource).map((value) => adapted(value.id, 'type-assertion', ['typetests/public-api.test.ts', 'typetests/tsconfig.pristine.json', 'typetests/tsconfig.adapted.json'], 'Checked by both pristine-upstream and adapted public-contract type programs.', ['type-program:public-api', 'type-program:pristine', 'type-program:adapted'])),
       authoredTests: [{
         upstream: 'octane-only:upstream-inventory-negative-controls',
         kind: 'octane-only-test',
@@ -161,6 +244,7 @@ export async function validate(root = packageRoot) {
   sameIdentities(actual.inventories.unitCases, expected.inventories.unitCases, 'unit case', (value) => value.id);
   sameIdentities(actual.inventories.browserCases, expected.inventories.browserCases, 'browser case', (value) => value.id);
   sameIdentities(actual.inventories.typeAssertions, expected.inventories.typeAssertions, 'type assertion', (value) => value.id);
+  sameIdentities(actual.inventories.adaptedCases, expected.inventories.adaptedCases, 'adapted case', (value) => value.id);
 
   for (const [ledger, inventory] of [
     ['source', expected.inventories.sourceFiles],
@@ -178,8 +262,13 @@ export async function validate(root = packageRoot) {
   assert(!allDispositions.some((value) => !value.disposition || /pending|unresolved/i.test(value.disposition)), 'every upstream item must have a resolved disposition');
   assert(!allDispositions.some((value) => !Array.isArray(value.evidence) || value.evidence.length === 0), 'every upstream disposition must cite executable or source evidence');
   const availableEvidence = new Set((await filesUnder(root)).filter((path) => !path.startsWith('upstream/')));
+  const adaptedCaseIds = new Set(expected.inventories.adaptedCases.map((value) => value.id));
   for (const value of allDispositions) {
     for (const path of value.evidence) assert(availableEvidence.has(path), `crosswalk evidence is missing: ${path}`);
+    if (['unit-case', 'browser-case', 'type-assertion'].includes(value.kind)) {
+      assert(Array.isArray(value.adaptedCases) && value.adaptedCases.length > 0, `${value.upstream}: explicit adapted case mapping is missing`);
+      for (const id of value.adaptedCases) assert(adaptedCaseIds.has(id), `${value.upstream}: adapted case is missing: ${id}`);
+    }
   }
 
   const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));

@@ -9,6 +9,7 @@ import {
 	useState,
 } from 'octane';
 import DraggableCore from './DraggableCore.tsrx';
+import { assignRef, type StructuralRef } from './internal.ts';
 import { createCSSTransform, createSVGTransform } from './utils/domFns.ts';
 import {
 	canDragX,
@@ -141,10 +142,7 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 	const ref = (value: HTMLElement | SVGElement | null) => {
 		internalRef.current = value;
 		if (props.nodeRef) props.nodeRef.current = value as HTMLElement | null;
-		const childRef = child.props.ref;
-		if (typeof childRef === 'function') childRef(value);
-		else if (childRef && typeof childRef === 'object') (childRef as { current: unknown }).current =
-			value;
+		assignRef(child.props.ref as StructuralRef<HTMLElement | SVGElement> | undefined, value);
 	};
 	const cloned = cloneElement(child, {
 		...transform,

@@ -36,6 +36,7 @@ function touchEvent(
 }
 
 describe('DraggableCore native callback-only contract', () => {
+	// @parity-case adapted:core-callback-data
 	it('emits exact core deltas and leaves child styles/classes untouched', () => {
 		const container = document.createElement('div');
 		document.body.appendChild(container);
@@ -93,6 +94,7 @@ describe('DraggableCore native callback-only contract', () => {
 });
 
 describe('start filtering and callback ordering', () => {
+	// @parity-case adapted:core-click-filtering
 	it.each([
 		['right click', { button: 2 }],
 		['macOS control click', { button: 0, ctrlKey: true }],
@@ -104,6 +106,7 @@ describe('start filtering and callback ordering', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:core-any-click-disabled
 	it('supports allowAnyClick and keeps disabled after onMouseDown', () => {
 		const allowed = renderCore({ allowAnyClick: true });
 		allowed.node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 2 }));
@@ -116,6 +119,7 @@ describe('start filtering and callback ordering', () => {
 		disabled.root.unmount();
 	});
 
+	// @parity-case adapted:core-handle-cancel
 	it('walks handle and cancel selectors to the draggable root', () => {
 		const handle = renderCore({ handle: '.handle' });
 		handle.node
@@ -137,6 +141,7 @@ describe('start filtering and callback ordering', () => {
 });
 
 describe('cancellation and native resource ownership', () => {
+	// @parity-case adapted:core-cancel-start
 	it('onStart=false installs no document listeners or selection artifact', () => {
 		const add = vi.spyOn(document, 'addEventListener');
 		const mounted = renderCore({ onStart: vi.fn(() => false), enableUserSelectHack: true });
@@ -147,6 +152,7 @@ describe('cancellation and native resource ownership', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:core-cancel-drag
 	it('onDrag=false synthesizes mouse stop, while touch retains when identifier is absent', () => {
 		const mouseStop = vi.fn();
 		const mouse = renderCore({ onDrag: vi.fn(() => false), onStop: mouseStop });
@@ -168,6 +174,7 @@ describe('cancellation and native resource ownership', () => {
 		touch.root.unmount();
 	});
 
+	// @parity-case adapted:core-cancel-stop
 	it('onStop=false retains the gesture until a later accepted stop', () => {
 		const onStop = vi.fn().mockReturnValueOnce(false).mockReturnValue(undefined);
 		const mounted = renderCore({ onStop });
@@ -183,6 +190,7 @@ describe('cancellation and native resource ownership', () => {
 });
 
 describe('touch and live props', () => {
+	// @parity-case adapted:core-touch-lifecycle
 	it('installs passive:false touchstart, prevents scroll, tracks initiating touch, and cleans up', () => {
 		const add = vi.spyOn(HTMLElement.prototype, 'addEventListener');
 		const remove = vi.spyOn(HTMLElement.prototype, 'removeEventListener');
@@ -215,6 +223,7 @@ describe('touch and live props', () => {
 		).toBe(true);
 	});
 
+	// @parity-case adapted:core-live-props
 	it('allowMobileScroll and live disabled/callback/grid/scale props are observed', () => {
 		const mounted = renderCore({ allowMobileScroll: true });
 		const start = touchEvent('touchstart', [{ identifier: 1, clientX: 0, clientY: 0 }]);
@@ -246,6 +255,7 @@ describe('touch and live props', () => {
 });
 
 describe('owner-document replacement and thrown callbacks', () => {
+	// @parity-case adapted:core-owner-document
 	it('removes stop resources from the live node document and retains original listeners', () => {
 		const mounted = renderCore(),
 			replacementFrame = document.createElement('iframe');
@@ -261,6 +271,7 @@ describe('owner-document replacement and thrown callbacks', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:core-start-errors
 	it('propagates start callback errors before global resources exist', () => {
 		const error = new Error('start exploded');
 		const add = vi.spyOn(document, 'addEventListener');
@@ -284,6 +295,7 @@ describe('owner-document replacement and thrown callbacks', () => {
 	});
 });
 
+// @parity-case adapted:core-child-contract
 it('accepts a standard compiled tsrx child', () => {
 	const container = document.createElement('div');
 	const root = createRoot(container);
