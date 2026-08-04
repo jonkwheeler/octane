@@ -3,7 +3,6 @@ import type { Octane } from 'octane/jsx-runtime';
 import { useColorManipulation } from '../../hooks/useColorManipulation.tsrx';
 import { useStyleSheet } from '../../hooks/useStyleSheet.tsrx';
 import type { AnyColor, ColorModel, ColorPickerBaseProps } from '../../types';
-import { formatClassName } from '../../utils/format';
 import { Alpha } from './Alpha.tsrx';
 import { Hue } from './Hue.tsrx';
 import { Saturation } from './Saturation.tsrx';
@@ -15,7 +14,8 @@ interface Props<T extends AnyColor> extends Partial<ColorPickerBaseProps<T>> {
 interface RootProps {
 	hostProps: Octane.JSX.IntrinsicElements['div'];
 	nodeRef: { current: HTMLDivElement | null };
-	className: string;
+	className: Octane.JSX.IntrinsicElements['div']['className'];
+	classValue: Octane.JSX.IntrinsicElements['div']['class'];
 	hsva: import('../../types').HsvaColor;
 	onChange: (color: Partial<import('../../types').HsvaColor>) => void;
 	onChangeEnd: () => void;
@@ -25,11 +25,12 @@ function AlphaColorPickerRoot({
 	hostProps,
 	nodeRef,
 	className,
+	classValue,
 	hsva,
 	onChange,
 	onChangeEnd,
 }: RootProps) {
-	return <div {...hostProps} ref={nodeRef} class={className}>
+	return <div {...hostProps} ref={nodeRef} class={['react-colorful', className, classValue]}>
 		<Saturation hsva={hsva} onChange={onChange} onChangeEnd={onChangeEnd} />
 		<Hue hue={hsva.h} onChange={onChange} onChangeEnd={onChangeEnd} />
 		<Alpha
@@ -42,6 +43,7 @@ function AlphaColorPickerRoot({
 }
 
 export const AlphaColorPicker = <T extends AnyColor,>({
+	class: classValue,
 	className,
 	colorModel,
 	color = colorModel.defaultColor,
@@ -57,11 +59,11 @@ export const AlphaColorPicker = <T extends AnyColor,>({
 		onChange,
 		onChangeEnd,
 	);
-	const nodeClassName = formatClassName(['react-colorful', className]);
 	return <AlphaColorPickerRoot
 		hostProps={rest}
 		nodeRef={nodeRef}
-		className={nodeClassName}
+		className={className}
+		classValue={classValue}
 		hsva={hsva}
 		onChange={updateHsva}
 		onChangeEnd={commitChange}

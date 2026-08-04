@@ -93,16 +93,25 @@ describe('@octanejs/react-colorful — public components', () => {
 	it('forwards div attributes, className, and native events', () => {
 		const onClick = vi.fn();
 		const root = mountTracked(HexHarness, {
+			class: ['native', { active: true, inactive: false }],
 			className: 'custom',
 			id: 'picker',
 			'data-extra': 'yes',
 			onClick,
 		});
 		const picker = root.find('#picker') as HTMLElement;
-		expect(picker.className).toBe('react-colorful custom');
+		expect(picker.className).toBe('react-colorful custom native active');
 		expect(picker.dataset.extra).toBe('yes');
 		picker.click();
 		expect(onClick).toHaveBeenCalledTimes(1);
+
+		const alphaRoot = mountTracked(AlphaHarness, {
+			class: ['alpha-native', { enabled: true }],
+			className: 'alpha-custom',
+		});
+		expect(alphaRoot.find('.react-colorful').className).toBe(
+			'react-colorful alpha-custom alpha-native enabled',
+		);
 	});
 
 	it('does not emit on mount, equivalent grayscale hue changes, or controlled rerender', () => {
