@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { afterEach, describe, test } from 'node:test';
 import { tmpdir } from 'node:os';
 import { mkdtemp, rm } from 'node:fs/promises';
-import { buildPackageCommonjs } from './build-package-commonjs.mjs';
+import { buildPackageCommonjs, buildPackageCommonjsSourceTree } from './build-package-commonjs.mjs';
 
 const fixtures = [];
 
@@ -97,7 +97,29 @@ describe('buildPackageCommonjs', () => {
 
 		assert.equal(result.modules, 2);
 		assert.match(await readFile(join(packageDir, 'dist/cjs/index.cjs'), 'utf8'), /\.\/view\.cjs/);
-		assert.match(await readFile(join(packageDir, 'dist/cjs/view.cjs'), 'utf8'), /require\("octane"\)/);
+		assert.match(
+			await readFile(join(packageDir, 'dist/cjs/view.cjs'), 'utf8'),
+			/require\("octane"\)/,
+		);
+	});
+
+	test('preserves a callable legacy root while exposing default and named exports', async () => {
+		const packageDir = await fixture({
+			'package.json': JSON.stringify({
+				name: 'fixture',
+				type: 'module',
+				octane: { commonjsCallableDefault: true },
+			}),
+			'src/index.ts': 'export default function Draggable() {} export function DraggableCore() {}',
+		});
+
+		const result = await buildPackageCommonjsSourceTree({ packageDir });
+		const root = createRequire(import.meta.url)(join(packageDir, 'dist/cjs/root.cjs'));
+
+		assert.equal(result.entries.callableDefault, 'dist/cjs/root.cjs');
+		assert.equal(typeof root, 'function');
+		assert.equal(root.default, root);
+		assert.equal(typeof root.DraggableCore, 'function');
 	});
 
 	test('fails closed for unsupported and invalid authored graphs', async (t) => {

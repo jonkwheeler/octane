@@ -95,7 +95,13 @@ function dependencyTarget({ dependency, sourceRoot, outdir }) {
 /**
  * Emit an authored JS/TS graph as per-module CommonJS without bundling package dependencies.
  */
-export async function buildPackageCommonjs({ packageDir, entries, outdir, sourceRoot }) {
+export async function buildPackageCommonjs({
+	packageDir,
+	entries,
+	outdir,
+	sourceRoot,
+	callableDefault = false,
+}) {
 	if (!packageDir || !Array.isArray(entries) || entries.length === 0 || !outdir) {
 		throw new Error('buildPackageCommonjs requires packageDir, entries, and outdir');
 	}
@@ -154,30 +160,32 @@ export async function buildPackageCommonjs({ packageDir, entries, outdir, source
 		plugins: [tsrxPlugin],
 	});
 
-	await Promise.all([...modules].map(async ([sourcePath, module]) => {
-		if (extname(sourcePath) === '.json') {
-			if (isWithin(absoluteSourceRoot, sourcePath)) {
-				const destination = join(absoluteOutdir, relative(absoluteSourceRoot, sourcePath));
-				await mkdir(dirname(destination), { recursive: true });
-				await cp(sourcePath, destination);
+	await Promise.all(
+		[...modules].map(async ([sourcePath, module]) => {
+			if (extname(sourcePath) === '.json') {
+				if (isWithin(absoluteSourceRoot, sourcePath)) {
+					const destination = join(absoluteOutdir, relative(absoluteSourceRoot, sourcePath));
+					await mkdir(dirname(destination), { recursive: true });
+					await cp(sourcePath, destination);
+				}
+				return;
 			}
-			return;
-		}
-		const outputPath = join(absoluteOutdir, outputRelative(absoluteSourceRoot, sourcePath));
-		let output = await readFile(outputPath, 'utf8');
-		for (const [specifier, dependency] of module.relativeImports) {
-			const target = dependencyTarget({
-				dependency,
-				sourceRoot: absoluteSourceRoot,
-				outdir: absoluteOutdir,
-			});
-			let rewritten = relative(dirname(outputPath), target).split(sep).join('/');
-			if (!rewritten.startsWith('.')) rewritten = `./${rewritten}`;
-			output = output.replaceAll(`require("${specifier}")`, `require("${rewritten}")`);
-			output = output.replaceAll(`require('${specifier}')`, `require('${rewritten}')`);
-		}
-		await writeFile(outputPath, output);
-	}));
+			const outputPath = join(absoluteOutdir, outputRelative(absoluteSourceRoot, sourcePath));
+			let output = await readFile(outputPath, 'utf8');
+			for (const [specifier, dependency] of module.relativeImports) {
+				const target = dependencyTarget({
+					dependency,
+					sourceRoot: absoluteSourceRoot,
+					outdir: absoluteOutdir,
+				});
+				let rewritten = relative(dirname(outputPath), target).split(sep).join('/');
+				if (!rewritten.startsWith('.')) rewritten = `./${rewritten}`;
+				output = output.replaceAll(`require("${specifier}")`, `require("${rewritten}")`);
+				output = output.replaceAll(`require('${specifier}')`, `require('${rewritten}')`);
+			}
+			await writeFile(outputPath, output);
+		}),
+	);
 
 	const resultEntries = Object.fromEntries(
 		entryPaths.map((entryPath, index) => [
@@ -185,6 +193,18 @@ export async function buildPackageCommonjs({ packageDir, entries, outdir, source
 			join(outdir, outputRelative(absoluteSourceRoot, entryPath)).split(sep).join('/'),
 		]),
 	);
+	if (callableDefault) {
+		const rootEntry = resultEntries['src/index.ts'] ?? resultEntries['src/index.js'];
+		if (!rootEntry) {
+			throw new Error('callable CommonJS default requires a src/index.ts or src/index.js entry');
+		}
+		const rootTarget = `./${relative(outdir, rootEntry).split(sep).join('/')}`;
+		await writeFile(
+			join(absoluteOutdir, 'root.cjs'),
+			`const exported = require(${JSON.stringify(rootTarget)});\nconst root = exported.default;\nif (typeof root !== 'function') throw new TypeError('callable CommonJS default export must be a function');\nmodule.exports = Object.assign(root, exported, { default: root });\n`,
+		);
+		resultEntries.callableDefault = join(outdir, 'root.cjs').split(sep).join('/');
+	}
 	return { entries: resultEntries, modules: sourceModules.length };
 }
 
@@ -193,13 +213,21 @@ export async function buildPackageCommonjsSourceTree({
 	sourceRoot = 'src',
 	outdir = 'dist/cjs',
 } = {}) {
+	const manifest = JSON.parse(await readFile(resolve(packageDir, 'package.json'), 'utf8'));
 	const sourceDirectory = resolve(packageDir, sourceRoot);
 	const entries = (await readdir(sourceDirectory, { recursive: true }))
 		.filter(
-			(path) => ['.ts', '.js', '.mts', '.mjs', '.tsrx'].includes(extname(path)) && !path.endsWith('.d.ts'),
+			(path) =>
+				['.ts', '.js', '.mts', '.mjs', '.tsrx'].includes(extname(path)) && !path.endsWith('.d.ts'),
 		)
 		.map((path) => join(sourceRoot, path));
-	return buildPackageCommonjs({ packageDir, entries, outdir, sourceRoot });
+	return buildPackageCommonjs({
+		packageDir,
+		entries,
+		outdir,
+		sourceRoot,
+		callableDefault: manifest.octane?.commonjsCallableDefault === true,
+	});
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
