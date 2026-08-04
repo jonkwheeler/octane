@@ -73,6 +73,18 @@ describe('Draggable visual contract', () => {
 		mounted.root.unmount();
 	});
 
+	// @parity-case adapted:draggable-scale-once
+	it('applies scale exactly once across Draggable and DraggableCore', () => {
+		const onDrag = vi.fn();
+		const mounted = mount({ scale: 2, onDrag });
+		mounted.node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+		document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 20 }));
+		flushSync(() => {});
+		expect(onDrag.mock.calls[0][1]).toMatchObject({ x: 10, deltaX: 10 });
+		expect(mounted.node.style.transform).toBe('translate(10px,0px)');
+		mounted.root.unmount();
+	});
+
 	// @parity-case adapted:draggable-controlled-position
 	it('reverts a controlled gesture on stop', () => {
 		const mounted = mount({ position: { x: 3, y: 4 }, onStop: vi.fn() });
@@ -182,6 +194,7 @@ describe('Draggable visual contract', () => {
 		flushSync(() => {});
 		expect(nodeRef.current?.getAttribute('transform')).toBe('translate(6,7)');
 		expect(nodeRef.current?.style.transform).toBe('');
+		expect(nodeRef.current?.style.fill).toBe('red');
 		root.unmount();
 		container.remove();
 	});

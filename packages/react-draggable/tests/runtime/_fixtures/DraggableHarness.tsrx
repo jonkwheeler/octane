@@ -21,7 +21,7 @@ export function SvgDraggableHarness(props: DraggableProps & {
 	nodeRef: { current: SVGSVGElement | null };
 }) @{
 	<Draggable {...props} nodeRef={props.nodeRef as unknown as { current: HTMLElement | null }}>
-		<svg ref={props.nodeRef} data-svg="yes">
+		<svg ref={props.nodeRef} data-svg="yes" style={{ fill: 'red' }}>
 			<circle cx="2" cy="2" r="2" />
 		</svg>
 	</Draggable>

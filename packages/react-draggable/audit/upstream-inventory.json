@@ -1894,6 +1894,10 @@
         "path": "tests/runtime/draggable.test.ts"
       },
       {
+        "id": "adapted:draggable-scale-once",
+        "path": "tests/runtime/draggable.test.ts"
+      },
+      {
         "id": "adapted:draggable-controlled-position",
         "path": "tests/runtime/draggable.test.ts"
       },
@@ -2101,259 +2105,259 @@
         "id": "adapted-public:tag/test/Draggable.test.jsx::should set initial transform attribute for SVG",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should set initial transform attribute for SVG",
-        "line": 176
+        "line": 179
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should respect position prop changes",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should respect position prop changes",
-        "line": 186
+        "line": 189
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should revert to controlled position after drag",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should revert to controlled position after drag",
-        "line": 197
+        "line": 200
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should not drag when disabled",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not drag when disabled",
-        "line": 203
+        "line": 209
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should throw when no children provided",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should throw when no children provided",
-        "line": 209
+        "line": 215
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should throw when multiple children provided",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should throw when multiple children provided",
-        "line": 216
+        "line": 222
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should still render when className is set on Draggable",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should still render when className is set on Draggable",
-        "line": 225
+        "line": 231
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should still render when style is set on Draggable",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should still render when style is set on Draggable",
-        "line": 228
+        "line": 237
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should still render when transform is set on Draggable",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should still render when transform is set on Draggable",
-        "line": 231
+        "line": 243
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should render its child",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should render its child",
-        "line": 237
+        "line": 252
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should accept a single child only",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should accept a single child only",
-        "line": 240
+        "line": 255
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onStart when mouse down",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call onStart when mouse down",
-        "line": 244
+        "line": 259
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onDrag during mouse move",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call onDrag during mouse move",
-        "line": 249
+        "line": 264
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onStop when mouse up",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call onStop when mouse up",
-        "line": 255
+        "line": 270
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should provide correct data in callbacks",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should provide correct data in callbacks",
-        "line": 261
+        "line": 276
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not start dragging when disabled",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not start dragging when disabled",
-        "line": 267
+        "line": 282
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should cancel drag when onStart returns false",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should cancel drag when onStart returns false",
-        "line": 272
+        "line": 287
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should stop drag when onDrag returns false",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should stop drag when onDrag returns false",
-        "line": 279
+        "line": 297
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should only drag from handle",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should only drag from handle",
-        "line": 286
+        "line": 304
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should work with nested elements in handle",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should work with nested elements in handle",
-        "line": 291
+        "line": 309
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not drag from cancel elements",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not drag from cancel elements",
-        "line": 296
+        "line": 314
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should snap movement to grid",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should snap movement to grid",
-        "line": 301
+        "line": 319
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not call onDrag if movement is less than grid",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not call onDrag if movement is less than grid",
-        "line": 307
+        "line": 325
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should adjust position based on scale",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should adjust position based on scale",
-        "line": 313
+        "line": 334
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should work with scale < 1",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should work with scale < 1",
-        "line": 319
+        "line": 340
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should only respond to left click by default",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should only respond to left click by default",
-        "line": 325
+        "line": 346
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should respond to any click when allowAnyClick is true",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should respond to any click when allowAnyClick is true",
-        "line": 330
+        "line": 354
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should use nodeRef instead of findDOMNode",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should use nodeRef instead of findDOMNode",
-        "line": 335
+        "line": 362
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should work with forwardRef components",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should work with forwardRef components",
-        "line": 340
+        "line": 367
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should handle touch start",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should handle touch start",
-        "line": 344
+        "line": 371
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call preventDefault on touchstart by default",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call preventDefault on touchstart by default",
-        "line": 349
+        "line": 378
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not call preventDefault when allowMobileScroll is true",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not call preventDefault when allowMobileScroll is true",
-        "line": 355
+        "line": 387
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onMouseDown callback",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call onMouseDown callback",
-        "line": 361
+        "line": 396
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onMouseDown even when disabled",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call onMouseDown even when disabled",
-        "line": 366
+        "line": 401
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should add transparent selection class by default",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should add transparent selection class by default",
-        "line": 371
+        "line": 406
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not add class when enableUserSelectHack is false",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not add class when enableUserSelectHack is false",
-        "line": 376
+        "line": 414
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not add user-select class when onStart returns false",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not add user-select class when onStart returns false",
-        "line": 381
+        "line": 422
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::applies the nonce to the injected style element on drag start",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "applies the nonce to the injected style element on drag start",
-        "line": 386
+        "line": 430
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should track mounted state correctly",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should track mounted state correctly",
-        "line": 394
+        "line": 441
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not continue drag if onStart returns false",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not continue drag if onStart returns false",
-        "line": 399
+        "line": 446
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call preventDefault on touchstart when using handle",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should call preventDefault on touchstart when using handle",
-        "line": 405
+        "line": 455
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not call preventDefault on touchstart for cancel elements",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should not call preventDefault on touchstart for cancel elements",
-        "line": 411
+        "line": 464
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should throw error when no children provided",
         "path": "tests/runtime/upstream-public.test.ts",
         "name": "should throw error when no children provided",
-        "line": 417
+        "line": 473
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js:42::should update transform on drag",

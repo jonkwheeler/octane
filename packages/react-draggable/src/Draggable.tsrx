@@ -135,9 +135,16 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 		x: canDragX(model) && movable ? state.x : valid.x,
 		y: canDragY(model) && movable ? state.y : valid.y,
 	};
-	const transform = state.isElementSVG
-		? { transform: createSVGTransform(position, props.positionOffset!) }
-		: { style: { ...child.props.style, ...createCSSTransform(position, props.positionOffset!) } };
+	const transform =
+		state.isElementSVG
+			? {
+					style: { ...child.props.style },
+					transform: createSVGTransform(position, props.positionOffset!),
+				}
+			: {
+					style: { ...child.props.style, ...createCSSTransform(position, props.positionOffset!) },
+					transform: null,
+				};
 	const ref = (value: HTMLElement | SVGElement | null) => {
 		if (props.nodeRef) props.nodeRef.current = value as HTMLElement | null;
 		assignRef(child.props.ref as StructuralRef<HTMLElement | SVGElement> | undefined, value);
@@ -150,9 +157,22 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 			[props.defaultClassNameDragged]: state.dragged,
 		}),
 	});
-	return (DraggableCore as unknown as (props: Partial<DraggableCoreProps>) => ElementDescriptor)({
-		...props,
+	const coreDefaults = DraggableCore.defaultProps!;
+	const draggableCoreProps: Partial<DraggableCoreProps> = {
+		allowAnyClick: props.allowAnyClick ?? coreDefaults.allowAnyClick,
+		allowMobileScroll: props.allowMobileScroll ?? coreDefaults.allowMobileScroll,
+		cancel: props.cancel,
+		disabled: props.disabled ?? coreDefaults.disabled,
+		enableUserSelectHack: props.enableUserSelectHack ?? coreDefaults.enableUserSelectHack,
+		grid: props.grid,
+		handle: props.handle,
 		nodeRef,
+		nonce: props.nonce,
+		offsetParent: props.offsetParent,
+		onMouseDown: props.onMouseDown ?? coreDefaults.onMouseDown,
+	};
+	return (DraggableCore as unknown as (props: Partial<DraggableCoreProps>) => ElementDescriptor)({
+		...draggableCoreProps,
 		onStart,
 		onDrag,
 		onStop,
