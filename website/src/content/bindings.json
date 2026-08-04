@@ -41,6 +41,7 @@
       "@octanejs/aria",
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
+      "@octanejs/react-popper",
       "@octanejs/motion",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",

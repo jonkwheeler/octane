@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "types": ["react", "react-dom"]
+  },
+  "include": ["pristine.test.tsx", "../upstream/npm/typings/**/*.d.ts"]
+}

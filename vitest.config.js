@@ -3070,6 +3070,94 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-popper',
+					include: ['packages/react-popper/tests/runtime/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-popper-hydration',
+					include: ['packages/react-popper/tests/hydration/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-popper-differential',
+					include: ['packages/react-popper/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/react-popper/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-popper-ssr',
+					include: ['packages/react-popper/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-popper-browser',
+					include: ['packages/react-popper/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+			},
+			{
 				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],

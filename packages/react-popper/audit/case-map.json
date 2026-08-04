@@ -1,0 +1,22 @@
+{
+  "tag/src/Manager.test.js::renders the expected markup": "tests/runtime/public.test.ts::Manager connects Reference and Popper, preserves placement, and wires arrow/fallback actions",
+  "tag/src/Manager.test.js::connects Popper and Reference": "tests/runtime/public.test.ts::Manager connects Reference and Popper, preserves placement, and wires arrow/fallback actions",
+  "tag/src/Reference.test.js::renders the expected markup": "tests/runtime/public.test.ts::Reference warns outside Manager, assigns its ref, and clears innerRef",
+  "tag/src/Reference.test.js::consumes the ManagerReferenceNodeSetterContext from Manager": "tests/runtime/public.test.ts::Manager connects Reference and Popper, preserves placement, and wires arrow/fallback actions",
+  "tag/src/Reference.test.js::warns when setReferenceNode is present": "tests/runtime/public.test.ts::Manager connects Reference and Popper, preserves placement, and wires arrow/fallback actions",
+  "tag/src/Reference.test.js::does not warn when setReferenceNode is not present": "tests/runtime/public.test.ts::Reference warns outside Manager, assigns its ref, and clears innerRef",
+  "tag/src/Popper.test.js::renders the expected markup": "tests/runtime/public.test.ts::Manager connects Reference and Popper, preserves placement, and wires arrow/fallback actions",
+  "tag/src/Popper.test.js::handles changing refs gracefully": "tests/runtime/public.test.ts::supports callback and object innerRef values",
+  "tag/src/Popper.test.js::accepts a ref function": "tests/runtime/public.test.ts::supports callback and object innerRef values",
+  "tag/src/Popper.test.js::accepts a ref object": "tests/runtime/public.test.ts::supports callback and object innerRef values",
+  "tag/src/Popper.test.js::accepts a `referenceElement` property": "tests/runtime/public.test.ts::explicit virtual reference takes precedence and placement updates without replacing markup",
+  "tag/src/Popper.test.js::should update placement when property is changed": "tests/runtime/public.test.ts::explicit virtual reference takes precedence and placement updates without replacing markup",
+  "tag/src/usePopper.test.js::initializes the Popper instance": "tests/runtime/public.test.ts::initializes usePopper with upstream defaults and publishes state/styles/actions",
+  "tag/src/usePopper.test.js::doesn't update Popper instance on props update if not needed by Popper": "tests/runtime/public.test.ts::keeps an instance for equivalent options, uses setOptions for option changes, and recreates for element changes",
+  "tag/src/usePopper.test.js::updates Popper on explicitly listed props change": "tests/runtime/public.test.ts::keeps an instance for equivalent options, uses setOptions for option changes, and recreates for element changes",
+  "tag/src/usePopper.test.js::does not update Popper on generic props change": "tests/runtime/public.test.ts::keeps an instance for equivalent options, uses setOptions for option changes, and recreates for element changes",
+  "tag/src/usePopper.test.js::destroys Popper on instance on unmount": "tests/runtime/public.test.ts::destroys usePopper instances on unmount and initializes arrow styles",
+  "tag/src/usePopper.test.js::Initializes the arrow positioning": "tests/runtime/public.test.ts::destroys usePopper instances on unmount and initializes arrow styles",
+  "tag/typings/tests/main-test.tsx::type program": "typescript::typetests/tsconfig.pristine.json",
+  "tag/typings/tests/svg-test.tsx::type program": "typescript::typetests/tsconfig.pristine.json"
+}

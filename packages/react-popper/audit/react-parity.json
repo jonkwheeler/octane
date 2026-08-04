@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/floating-ui/react-popper.git",
+    "version": "2.3.0",
+    "commit": "b636fa3ceee14245d670a0c438fe4343c31258e5",
+    "sourceRoot": "src",
+    "testRoot": "src",
+    "license": "MIT",
+    "integrity": "sha256:dc36f3a47a18a0a87e83f6488f8c6119ba286b0f9482ce184e8372d245221f04",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-popper/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/react-popper/tests", "packages/react-popper/typetests"],
+      "include": ["\\.test\\.(?:ts|tsx)$"],
+      "exclude": ["/audit/"]
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "35862fe20187dc2d6e15156e8e05739f3eb5c0f080e567af9fa7875ec0cd34bd"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-popper-runtime",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper",
+      "files": [
+        {
+          "path": "packages/react-popper/tests/runtime/public.test.ts",
+          "role": "test",
+          "sha256": "00252a9e2e2453b7855367e4510dfb8f75ebb4aa925d2085d6552733082ee46f",
+          "cases": [
+            {
+              "id": "adapted:react-popper-runtime",
+              "testName": "exports the exact upstream runtime surface",
+              "fullName": "@octanejs/react-popper public contract exports the exact upstream runtime surface"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-popper-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-differential",
+      "evidenceOrigin": "repo-authored",
+      "files": [
+        {
+          "path": "packages/react-popper/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "2f0e22113f641cd1e3c7c17ec9c9c0ad3c85b4fb442bd5b41b876f6fedaeddc7",
+          "cases": [
+            {
+              "id": "differential:react-popper-components",
+              "testName": "matches Manager/Reference/Popper markup, placement updates, and lifecycle",
+              "fullName": "differential: @octanejs/react-popper vs react-popper@2.3.0 matches Manager/Reference/Popper markup, placement updates, and lifecycle"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-popper-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-ssr",
+      "files": [
+        {
+          "path": "packages/react-popper/tests/ssr/server.test.ts",
+          "role": "test",
+          "sha256": "d53c848fb4f2777379caba17d2cea2a41b4d03cab2c3c2ec9e3cf669e0bae174",
+          "cases": [
+            {
+              "id": "adapted:react-popper-ssr",
+              "testName": "renders deterministic initial placement and styles without browser globals",
+              "fullName": "@octanejs/react-popper server rendering renders deterministic initial placement and styles without browser globals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-popper-hydration",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-hydration",
+      "files": [
+        {
+          "path": "packages/react-popper/tests/hydration/hydration.test.ts",
+          "role": "test",
+          "sha256": "0d4792064ee62d94ce10944d447097e893ca761c7025bfac847fc74c0d51e4aa",
+          "cases": [
+            {
+              "id": "adapted:react-popper-hydration",
+              "testName": "adopts server nodes and activates Popper/ref wiring after hydration",
+              "fullName": "@octanejs/react-popper hydration adopts server nodes and activates Popper/ref wiring after hydration"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-popper-browser",
+      "type": "browser",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-browser",
+      "files": [
+        {
+          "path": "packages/react-popper/tests/browser/parity.browser.test.ts",
+          "role": "test",
+          "sha256": "0805dcee7693bf18457dd2424cb892489d7036627af3203ffbd506ed302756d7",
+          "cases": [
+            {
+              "id": "browser:react-popper-chromium",
+              "testName": "chromium: positions, updates, wires arrows/virtual refs, and cleans up",
+              "fullName": "@octanejs/react-popper real-browser parity chromium: positions, updates, wires arrows/virtual refs, and cleans up"
+            },
+            {
+              "id": "browser:react-popper-firefox",
+              "testName": "firefox: positions, updates, wires arrows/virtual refs, and cleans up",
+              "fullName": "@octanejs/react-popper real-browser parity firefox: positions, updates, wires arrows/virtual refs, and cleans up"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-popper-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-pristine-types",
+      "evidenceOrigin": "upstream-suite",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-popper/typetests/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-popper/typetests/pristine.test.tsx",
+          "role": "test",
+          "sha256": "2f13c01666ab0c97276f6c342a78c7f5b7104f244842409d99d37e67215cae98",
+          "cases": [
+            {
+              "id": "types:react-popper-pristine",
+              "testName": "published declaration consumer",
+              "fullName": "react-popper 2.3.0 published declaration consumer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-popper-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-popper/typetests/tsconfig.adapted.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-popper/typetests/public-api.test.ts",
+          "role": "test",
+          "sha256": "d637cc6762e73d9460b0d1e5c0d7a390cb74cbaed0cb037c55ef85b981fb63e4",
+          "cases": [
+            {
+              "id": "types:react-popper-adapted",
+              "testName": "complete Octane public type contract",
+              "fullName": "@octanejs/react-popper complete Octane public type contract"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}
