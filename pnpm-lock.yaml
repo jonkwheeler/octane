@@ -4814,6 +4814,9 @@ importers:
 
   packages/react-pdf:
     dependencies:
+      make-event-props:
+        specifier: 2.0.0
+        version: 2.0.0
       pdfjs-dist:
         specifier: 5.4.296
         version: 5.4.296
@@ -6319,6 +6322,9 @@ importers:
       '@octanejs/react-error-boundary':
         specifier: workspace:*
         version: link:../../packages/react-error-boundary
+      '@octanejs/react-pdf':
+        specifier: workspace:*
+        version: link:../../packages/react-pdf
       '@octanejs/rxjs':
         specifier: workspace:*
         version: link:../../packages/rxjs
@@ -6349,6 +6355,9 @@ importers:
       octane:
         specifier: workspace:*
         version: link:../../packages/octane
+      pdfjs-dist:
+        specifier: 5.4.296
+        version: 5.4.296
       rxjs:
         specifier: catalog:default
         version: 7.8.2

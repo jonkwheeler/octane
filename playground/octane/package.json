@@ -24,6 +24,7 @@
     "@octanejs/radix": "workspace:*",
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
+    "@octanejs/react-pdf": "workspace:*",
     "@octanejs/rxjs": "workspace:*",
     "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",
@@ -34,6 +35,7 @@
     "class-variance-authority": "catalog:default",
     "clsx": "catalog:default",
     "octane": "workspace:*",
+    "pdfjs-dist": "5.4.296",
     "rxjs": "catalog:default",
     "tailwind-merge": "catalog:default"
   },

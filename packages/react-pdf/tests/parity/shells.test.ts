@@ -67,6 +67,7 @@ async function loadReactAuthority() {
 }
 
 describe('@octanejs/react-pdf pristine React shell parity', () => {
+	// @parity-case differential:react-pdf-document-shells
 	it('matches Document no-data and loading server markup', async () => {
 		const react = await loadReactAuthority();
 		const cases = [

@@ -7,6 +7,10 @@
     "node": ">=22"
   },
   "description": "React PDF bindings for the Octane renderer.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -22,6 +26,7 @@
     "src",
     "dist",
     "README.md",
+    "UPSTREAM.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "upstream-public-surface.json"
@@ -36,12 +41,16 @@
     "./dist/Page/TextLayer.css": "./dist/Page/TextLayer.css"
   },
   "scripts": {
+    "test": "pnpm upstream:verify && vitest run --root ../.. --project react-pdf --project react-pdf-ssr --project react-pdf-parity --project react-pdf-packed",
     "test:browser": "vitest run --root ../.. --project react-pdf-browser",
     "test:feasibility": "vitest run --root ../.. --project react-pdf-feasibility --project react-pdf-feasibility-ssr --project react-pdf-feasibility-hydration",
     "test:parity": "vitest run --root ../.. --project react-pdf-parity",
-    "test:ssr": "vitest run --root ../.. --project react-pdf-ssr"
+    "test:ssr": "vitest run --root ../.. --project react-pdf-ssr",
+    "test:types": "tsc --noEmit -p typetests/tsconfig.pristine.json && tsrx-tsc --noEmit -p typetests/tsconfig.adapted.json",
+    "upstream:verify": "node --test tests/audit/upstream-inventory.test.mjs && node audit/upstream-inventory.mjs"
   },
   "dependencies": {
+    "make-event-props": "2.0.0",
     "pdfjs-dist": "5.4.296"
   },
   "peerDependencies": {

@@ -78,6 +78,11 @@ async function runBindingCase(engine: 'chromium' | 'firefox') {
 			await expect
 				.poll(() => page.locator('#binding-probe').getAttribute('data-status'), { timeout: 15_000 })
 				.toBe('ready');
+			await expect
+				.poll(() => page.locator('#react-parity-probe').getAttribute('data-status'), {
+					timeout: 15_000,
+				})
+				.toBe('ready');
 		} catch (error) {
 			const snapshot = await page.evaluate(() => ({
 				attributes: Object.fromEntries(
@@ -95,7 +100,7 @@ async function runBindingCase(engine: 'chromium' | 'firefox') {
 		expect(
 			await page.locator('.react-pdf__Page .react-pdf__Page__canvas').getAttribute('width'),
 		).toBe('300');
-		expect(await page.locator('.react-pdf__Page .textLayer').textContent()).toContain(
+		expect(await page.locator('.react-pdf__Page .textLayer').first().textContent()).toContain(
 			'Octane PDF probe',
 		);
 		expect(await page.locator('.react-pdf__Page .annotationLayer a').getAttribute('href')).toBe(
@@ -103,6 +108,49 @@ async function runBindingCase(engine: 'chromium' | 'firefox') {
 		);
 		expect(await page.locator('.react-pdf__Outline').textContent()).toContain('Probe page');
 		expect(await page.locator('.react-pdf__Thumbnail__page canvas').count()).toBe(1);
+		expect(
+			await page.locator('#binding-probe .react-pdf__Page__canvas').first().getAttribute('width'),
+		).toBe(
+			await page.locator('#react-parity-probe .react-pdf__Page__canvas').getAttribute('width'),
+		);
+		expect(await page.locator('#binding-probe .textLayer').first().textContent()).toBe(
+			await page.locator('#react-parity-probe .textLayer').textContent(),
+		);
+		expect(await page.locator('#binding-probe .annotationLayer a').getAttribute('href')).toBe(
+			await page.locator('#react-parity-probe .annotationLayer a').getAttribute('href'),
+		);
+		for (const attribute of [
+			'data-document-ready',
+			'data-canvas-ready',
+			'data-text-ready',
+			'data-annotations-ready',
+		]) {
+			expect(await page.locator('#binding-probe').getAttribute(attribute)).toBe(
+				await page.locator('#react-parity-probe').getAttribute(attribute),
+			);
+		}
+		await expect
+			.poll(() => page.locator('#hydration-root').getAttribute('data-ready'))
+			.toBe('true');
+		expect(await page.locator('#hydration-root').getAttribute('data-node-preserved')).toBe('true');
+		expect(await page.locator('#hydration-root canvas').getAttribute('width')).toBe('120');
+		await expect
+			.poll(() => page.locator('#binding-probe').getAttribute('data-load-error'))
+			.toBe('InvalidPDFException');
+		expect(await page.locator('#binding-probe .react-pdf__message--error').textContent()).toBe(
+			'Invalid PDF',
+		);
+		await page.locator('.react-pdf__Page').first().dispatchEvent('mousemove');
+		await expect
+			.poll(() => page.locator('#binding-probe').getAttribute('data-page-event-value'))
+			.toBe('1');
+		await page.locator('.react-pdf__Outline').dispatchEvent('mousemove');
+		await expect
+			.poll(() => page.locator('#binding-probe').getAttribute('data-document-event-value'))
+			.toBe('1');
+		await expect
+			.poll(() => page.locator('#binding-probe').getAttribute('data-outline-event-value'))
+			.toBe('1');
 
 		await page.click('.react-pdf__Outline a');
 		await expect
@@ -112,6 +160,28 @@ async function runBindingCase(engine: 'chromium' | 'firefox') {
 		await expect
 			.poll(() => page.locator('#binding-probe').getAttribute('data-thumbnail-click'))
 			.toBe('0:1');
+
+		const customLayer = page.locator('.react-pdf__Page .textLayer').nth(1);
+		expect(await customLayer.locator('strong').getAttribute('data-safe')).toBe('yes');
+		expect(await customLayer.locator('strong').getAttribute('onclick')).toBeNull();
+		expect(await customLayer.locator('script').count()).toBe(0);
+		expect(await customLayer.locator('a').getAttribute('href')).toBeNull();
+		expect(
+			await page.evaluate(() => (window as never as { __unsafe?: number }).__unsafe),
+		).toBeUndefined();
+
+		await page.click('#resize-binding');
+		await expect
+			.poll(() => page.locator('.react-pdf__Page__canvas').first().getAttribute('width'))
+			.toBe('200');
+
+		await page.click('#unmount-binding');
+		await expect.poll(() => page.locator('.react-pdf__Document').count()).toBe(0);
+		await expect
+			.poll(async () =>
+				Number(await page.locator('#binding-probe').getAttribute('data-worker-terminations')),
+			)
+			.toBeGreaterThan(0);
 		expect(errors).toEqual([]);
 	} finally {
 		await context.close();
@@ -120,6 +190,8 @@ async function runBindingCase(engine: 'chromium' | 'firefox') {
 }
 
 describe('@octanejs/react-pdf browser contract', () => {
+	// @parity-case browser:react-pdf-chromium
 	it('renders the binding in Chromium', () => runBindingCase('chromium'), 90_000);
+	// @parity-case browser:react-pdf-firefox
 	it('renders the binding in Firefox', () => runBindingCase('firefox'), 90_000);
 });

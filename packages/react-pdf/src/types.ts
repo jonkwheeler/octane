@@ -9,7 +9,7 @@ import type {
 	TextMarkedContent,
 	TypedArray,
 } from 'pdfjs-dist/types/src/display/api.js';
-import type { ClassValue } from 'octane/jsx-runtime';
+import type { ClassValue, JSX } from 'octane/jsx-runtime';
 
 import type LinkService from './LinkService.js';
 
@@ -85,17 +85,28 @@ export interface OutlineContextValue {
 export type DocumentRenderProps = Omit<DocumentContextValue, 'pdf'> & { pdf: PDFDocumentProxy };
 export type PageRenderProps = Omit<PageContextValue, 'page'> & { page: PDFPageProxy };
 
-export interface HostProps {
+type DivProps = JSX.IntrinsicElements['div'];
+type EventKey = NonNullable<
+	{
+		[Key in keyof DivProps]: Key extends `on${string}` ? Key : never;
+	}[keyof DivProps]
+>;
+type EventProps<Value> = {
+	[Key in EventKey]?: NonNullable<DivProps[Key]> extends (
+		event: infer Event,
+		...args: never[]
+	) => unknown
+		? (event: Event, value: Value) => void
+		: never;
+};
+export type HostProps<Value> = EventProps<Value> & {
 	children?: OctaneNode;
 	class?: ClassName;
 	className?: ClassName;
-	id?: string;
-	onClick?: (event: MouseEvent) => void;
 	ref?: OctaneRef<unknown>;
-	style?: Record<string, unknown> | string;
-}
+};
 
-export interface DocumentProps extends HostProps {
+export type DocumentProps = HostProps<PDFDocumentProxy | false | undefined> & {
 	children?: OctaneNode | ((props: DocumentRenderProps) => OctaneNode);
 	error?: NodeOrRenderer;
 	externalLinkRel?: ExternalLinkRel;
@@ -116,9 +127,9 @@ export interface DocumentProps extends HostProps {
 	renderMode?: RenderMode;
 	rotate?: number | null;
 	scale?: number;
-}
+};
 
-export interface PageProps extends HostProps {
+export type PageProps = HostProps<PageCallback | false | undefined> & {
 	_className?: string;
 	_enableRegisterUnregisterPage?: boolean;
 	canvasBackground?: string;
@@ -161,7 +172,7 @@ export interface PageProps extends HostProps {
 	scale?: number;
 	unregisterPage?: (pageIndex: number) => void;
 	width?: number;
-}
+};
 
 export type ThumbnailProps = Omit<
 	PageProps,
@@ -183,10 +194,12 @@ export type ThumbnailProps = Omit<
 	onItemClick?: (args: OnItemClickArgs) => void;
 };
 
-export interface OutlineProps extends HostProps {
+export type OutlineProps = HostProps<
+	Awaited<ReturnType<PDFDocumentProxy['getOutline']>> | false | undefined
+> & {
 	inputRef?: OctaneRef<HTMLDivElement>;
 	onItemClick?: (args: OnItemClickArgs) => void;
 	onLoadError?: (error: Error) => void;
 	onLoadSuccess?: (outline: Awaited<ReturnType<PDFDocumentProxy['getOutline']>>) => void;
 	pdf?: PDFDocumentProxy | false;
-}
+};

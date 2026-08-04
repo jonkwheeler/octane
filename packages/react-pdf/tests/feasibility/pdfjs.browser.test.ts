@@ -81,11 +81,13 @@ async function runBrowserCase(engine: 'chromium' | 'firefox') {
 }
 
 describe('react-pdf U1 — real PDF.js browser feasibility', () => {
+	// @parity-case browser:react-pdf-feasibility-chromium
 	it(
 		'Chromium loads a worker and renders canvas, text, annotations, outline, and cleanup',
 		() => runBrowserCase('chromium'),
 		90_000,
 	);
+	// @parity-case browser:react-pdf-feasibility-firefox
 	it(
 		'Firefox loads a worker and renders canvas, text, annotations, outline, and cleanup',
 		() => runBrowserCase('firefox'),

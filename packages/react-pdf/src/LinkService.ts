@@ -79,8 +79,18 @@ export default class LinkService {
 		if (!Array.isArray(explicitDest))
 			throw new Error(`"${explicitDest}" is not a valid destination array.`);
 		const destRef = explicitDest[0];
-		const pageIndex =
-			typeof destRef === 'number' ? destRef : await this.pdfDocument.getPageIndex(destRef);
+		let pageIndex: number;
+		if (typeof destRef === 'number') {
+			pageIndex = destRef;
+		} else if (destRef && typeof destRef === 'object') {
+			try {
+				pageIndex = await this.pdfDocument.getPageIndex(destRef);
+			} catch {
+				throw new Error(`"${destRef}" is not a valid page reference.`);
+			}
+		} else {
+			throw new Error(`"${destRef}" is not a valid destination reference.`);
+		}
 		this.scrollTo(pageIndex + 1, explicitDest as ResolvedDest);
 	}
 

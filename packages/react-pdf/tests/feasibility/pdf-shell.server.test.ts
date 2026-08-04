@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { PdfShell } from './pdf-shell.tsrx';
 
 describe('react-pdf U1 — SSR-safe shell', () => {
+	// @parity-case adapted:react-pdf-feasibility-ssr
 	it('renders deterministic loading, error, and page shells without browser globals', () => {
 		expect('window' in globalThis).toBe(false);
 		expect('document' in globalThis).toBe(false);

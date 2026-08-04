@@ -317,6 +317,27 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-pdf',
+					include: ['packages/react-pdf/tests/runtime/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
+					name: 'react-pdf-packed',
+					include: ['packages/react-pdf/tests/packed/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
 					name: 'react-pdf-parity',
 					include: ['packages/react-pdf/tests/parity/**/*.test.ts'],
 					environment: 'node',

@@ -1,4 +1,5 @@
 import { createElement, isChildrenBlock, useEffect, useMemo, useRef, useState } from 'octane';
+import makeEventProps from 'make-event-props';
 import type {
 	PDFDocumentLoadingTask,
 	PDFDocumentProxy,
@@ -9,7 +10,9 @@ import type {
 import { DocumentContext, OutlineContext, PageContext, useDocumentContext } from './contexts.js';
 import LinkService from './LinkService.js';
 import PasswordResponses from './PasswordResponses.js';
+import Ref from './Ref.js';
 import { setRef } from './refs.js';
+import { dataURItoBytes, isDataURI } from './utils.js';
 import type {
 	Annotations,
 	DocumentContextValue,
@@ -21,28 +24,67 @@ import type {
 	PageProps,
 	PageRenderProps,
 	Source,
+	StructTreeNode,
 	TextItem,
 	ThumbnailProps,
 } from './types.js';
+
+const BLOCKED_CUSTOM_TEXT_TAGS = new Set([
+	'base',
+	'embed',
+	'iframe',
+	'link',
+	'meta',
+	'object',
+	'script',
+	'style',
+	'template',
+]);
+const URL_ATTRIBUTES = new Set(['action', 'formaction', 'href', 'poster', 'src', 'xlink:href']);
+
+function isDangerousUrl(value: string): boolean {
+	return value.replace(/[\u0000-\u0020\u007f]/g, '').toLowerCase().match(
+		/^(?:javascript|vbscript):/,
+	) !==
+		null;
+}
+
+function sanitizeCustomTextNode(node: ChildNode): Node {
+	if (!(node instanceof HTMLElement)) return document.createTextNode(node.textContent ?? '');
+	if (BLOCKED_CUSTOM_TEXT_TAGS.has(node.tagName.toLowerCase())) {
+		return document.createTextNode(node.textContent ?? '');
+	}
+	const sanitized = document.createElement(node.tagName.toLowerCase());
+	for (const attribute of node.attributes) {
+		const name = attribute.name.toLowerCase();
+		if (name.startsWith('on') || name === 'srcdoc') continue;
+		if (URL_ATTRIBUTES.has(name) && isDangerousUrl(attribute.value)) continue;
+		sanitized.setAttribute(attribute.name, attribute.value);
+	}
+	for (const child of node.childNodes) sanitized.append(sanitizeCustomTextNode(child));
+	return sanitized;
+}
+
+function renderSafeCustomText(target: Element, content: string): void {
+	const template = document.createElement('template');
+	template.innerHTML = content;
+	const fragment = document.createDocumentFragment();
+	for (const child of template.content.childNodes) fragment.append(sanitizeCustomTextNode(child));
+	target.replaceChildren(fragment);
+}
 
 function renderMessage(value: NodeOrRenderer): unknown {
 	return typeof value === 'function' ? value() : value;
 }
 
-function dataUriToBytes(uri: string): Uint8Array {
-	const comma = uri.indexOf(',');
-	if (comma < 0) throw new Error('Invalid data URI.');
-	const metadata = uri.slice(0, comma);
-	const payload = uri.slice(comma + 1);
-	const decoded =
-		metadata.endsWith(';base64') ? atob(payload) : decodeURIComponent(payload);
-	return Uint8Array.from(decoded, (character) => character.charCodeAt(0));
+function withEventData(props: Record<string, unknown>, value: unknown): Record<string, unknown> {
+	return makeEventProps(props as never, () => value) as Record<string, unknown>;
 }
 
 async function resolveSource(file: DocumentProps['file']): Promise<Source | null> {
 	if (!file) return null;
 	if (typeof file === 'string') {
-		return file.startsWith('data:application/pdf') ? { data: dataUriToBytes(file) } : { url: file };
+		return isDataURI(file) ? { data: dataURItoBytes(file) } : { url: file };
 	}
 	if (file instanceof ArrayBuffer) return { data: file };
 	if (typeof Blob !== 'undefined' && file instanceof Blob) {
@@ -232,7 +274,7 @@ export function Document(props: DocumentProps = {}) {
 	}
 
 	return <div
-		{...hostProps}
+		{...withEventData(hostProps, pdf)}
 		ref={documentElement}
 		class={['react-pdf__Document', classProp, className]}
 	>
@@ -250,9 +292,66 @@ function makePageCallback(page: PDFPageProxy, viewport: PageViewport): PageCallb
 	});
 }
 
+const PDF_ROLE_TO_HTML_ROLE: Record<string, string | undefined> = {
+	Part: 'group',
+	Sect: 'group',
+	Div: 'group',
+	Aside: 'note',
+	NonStruct: 'none',
+	H: 'heading',
+	FENote: 'note',
+	Sub: 'group',
+	Link: 'link',
+	Annot: 'note',
+	Form: 'form',
+	L: 'list',
+	LI: 'listitem',
+	Table: 'table',
+	TR: 'row',
+	TH: 'columnheader',
+	TD: 'cell',
+	THead: 'columnheader',
+	Figure: 'figure',
+};
+
+function StructTreeItem({ node, className }: { node: unknown; className?: string }) {
+	if (!node || typeof node !== 'object') return null;
+	const value = node as {
+		alt?: string;
+		children?: unknown[];
+		id?: string;
+		lang?: string;
+		role?: string;
+	};
+	const attributes: Record<string, unknown> = {};
+	if (value.alt !== undefined) attributes['aria-label'] = value.alt;
+	if (value.lang !== undefined) attributes.lang = value.lang;
+	if (value.id !== undefined) attributes['aria-owns'] = value.id;
+	if (value.role) {
+		const heading = /^H(\d+)$/.exec(value.role);
+		if (heading) {
+			attributes.role = 'heading';
+			attributes['aria-level'] = Number(heading[1]);
+		} else if (PDF_ROLE_TO_HTML_ROLE[value.role]) {
+			attributes.role = PDF_ROLE_TO_HTML_ROLE[value.role];
+		}
+	}
+	const onlyContentChild =
+		value.children?.length === 1 && value.children[0] != null &&
+			typeof value.children[0] === 'object' &&
+			'id' in value.children[0];
+	if (onlyContentChild) {
+		const child = value.children?.[0] as { id?: string };
+		if (child.id !== undefined) attributes['aria-owns'] = child.id;
+	}
+	return <span class={className} {...attributes}>
+		{onlyContentChild ? null : value.children?.map((child) => <StructTreeItem node={child} />)}
+	</span>;
+}
+
 export function Page(props: PageProps = {}) {
 	const documentContext = useDocumentContext();
-	const merged = { ...documentContext, ...props } as PageProps;
+	const merged = { ...documentContext, ...props } as PageProps & Partial<DocumentContextValue>;
 	const {
 		_className = 'react-pdf__Page',
 		_enableRegisterUnregisterPage = true,
@@ -267,8 +366,10 @@ export function Page(props: PageProps = {}) {
 		error = 'Failed to load the page.',
 		filterAnnotations,
 		height,
+		imageResourcesPath,
 		inputRef,
 		loading = 'Loading page…',
+		linkService: _linkService,
 		noData = 'No page specified.',
 		onGetAnnotationsError,
 		onGetAnnotationsSuccess,
@@ -278,6 +379,7 @@ export function Page(props: PageProps = {}) {
 		onGetTextSuccess,
 		onLoadError,
 		onLoadSuccess,
+		onItemClick: _onItemClick,
 		onRenderAnnotationLayerError,
 		onRenderAnnotationLayerSuccess,
 		onRenderError,
@@ -295,7 +397,6 @@ export function Page(props: PageProps = {}) {
 		renderTextLayer = true,
 		rotate: rotateProp,
 		scale: scaleProp = 1,
-		style,
 		unregisterPage,
 		width,
 		...hostProps
@@ -306,6 +407,7 @@ export function Page(props: PageProps = {}) {
 	const annotationElement = useRef<HTMLDivElement | null>(null);
 	const [page, setPage] = useState<PDFPageProxy | false | undefined>(undefined);
 	const [pageError, setPageError] = useState<Error | null>(null);
+	const [structTree, setStructTree] = useState<StructTreeNode | null | undefined>(undefined);
 	const pageIndex =
 		pageNumberProp != null ? pageNumberProp - 1 : pageIndexProp;
 	const pageNumber = pageNumberProp ?? (pageIndexProp != null ? pageIndexProp + 1 : undefined);
@@ -371,114 +473,185 @@ export function Page(props: PageProps = {}) {
 	}, [canvasRef, page, renderMode]);
 
 	useEffect(() => {
-		if (!page || !viewport || pageIndex == null || pageNumber == null || !pdf) return;
+		if (!page || !viewport || renderMode !== 'canvas' || !canvasElement.current) return;
 		let active = true;
 		let renderTask: { cancel: () => void; promise: Promise<unknown> } | undefined;
-		let textLayer: { cancel: () => void; render: () => Promise<void> } | undefined;
-		void (async () => {
-			try {
-				const pdfjs = await import('pdfjs-dist');
-				if (renderMode === 'canvas' && canvasElement.current) {
-					const ratio = devicePixelRatio ?? window.devicePixelRatio ?? 1;
-					const canvas = canvasElement.current;
-					canvas.width = Math.floor(viewport.width * ratio);
-					canvas.height = Math.floor(viewport.height * ratio);
-					canvas.style.width = `${Math.floor(viewport.width)}px`;
-					canvas.style.height = `${Math.floor(viewport.height)}px`;
-					renderTask = page.render({
-						canvas,
-						canvasContext: canvas.getContext('2d', { alpha: canvasBackground === 'transparent' })!,
-						background: canvasBackground,
-						transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
-						viewport,
-					});
-					await renderTask.promise;
-					if (active) onRenderSuccess?.(makePageCallback(page, viewport));
-				}
-
-				if (renderTextLayer && textElement.current) {
-					const content = await page.getTextContent();
-					onGetTextSuccess?.(content);
-					textLayer = new pdfjs.TextLayer({
-						container: textElement.current,
-						textContentSource: content,
-						viewport,
-					}) as { cancel: () => void; render: () => Promise<void> };
-					await textLayer.render();
-					if (customTextRenderer) {
-						const spans = textElement.current.querySelectorAll('span');
-						const items = content.items.filter((item): item is TextItem => 'str' in item);
-						spans.forEach((span, index) => {
-							const item = items[index];
-							if (item) span.innerHTML = customTextRenderer({
-								...item,
-								itemIndex: index,
-								pageIndex,
-								pageNumber,
-							});
-						});
-					}
-					if (active) onRenderTextLayerSuccess?.();
-				}
-
-				if (renderAnnotationLayer && annotationElement.current) {
-					let annotations = await page.getAnnotations() as Annotations;
-					onGetAnnotationsSuccess?.(annotations);
-					if (filterAnnotations) annotations = filterAnnotations({ annotations });
-					const annotationViewport = viewport.clone({ dontFlip: true });
-					const parameters = {
-						accessibilityManager: null,
-						annotationCanvasMap: null,
-						annotationEditorUIManager: null,
-						annotationStorage: pdf.annotationStorage,
-						commentManager: null,
-						div: annotationElement.current,
-						linkService: documentContext?.linkService,
-						page,
-						structTreeLayer: null,
-						viewport: annotationViewport,
-					};
-					await new pdfjs.AnnotationLayer(parameters as never).render(
-						{
-							annotations,
-							annotationStorage: pdf.annotationStorage,
-							div: annotationElement.current,
-							linkService: documentContext?.linkService,
-							page,
-							renderForms,
-							viewport: annotationViewport,
-						} as never,
-					);
-					if (active) onRenderAnnotationLayerSuccess?.();
-				}
-
-				try {
-					const tree = await page.getStructTree();
-					if (tree && active) onGetStructTreeSuccess?.(tree);
-				} catch (caught) {
-					if (active) onGetStructTreeError?.(
-						caught instanceof Error ? caught : new Error(String(caught)),
-					);
-				}
-			} catch (caught) {
-				if (!active) return;
-				const nextError =
-					caught instanceof Error ? caught : new Error(String(caught));
-				if (renderTask) onRenderError?.(nextError);
-				else if (renderTextLayer) onRenderTextLayerError?.(nextError);
-				else if (renderAnnotationLayer) onRenderAnnotationLayerError?.(nextError);
-				onGetTextError?.(nextError);
-				onGetAnnotationsError?.(nextError);
-			}
-		})();
+		const canvas = canvasElement.current;
+		const ratio = devicePixelRatio ?? window.devicePixelRatio ?? 1;
+		const renderViewport = page.getViewport({
+			rotation: viewport.rotation,
+			scale: viewport.scale * ratio,
+		});
+		page.cleanup();
+		canvas.width = Math.floor(renderViewport.width);
+		canvas.height = Math.floor(renderViewport.height);
+		canvas.style.width = `${Math.floor(viewport.width)}px`;
+		canvas.style.height = `${Math.floor(viewport.height)}px`;
+		canvas.style.visibility = 'hidden';
+		void import('pdfjs-dist').then((pdfjs) => {
+			if (!active) return;
+			renderTask = page.render({
+				annotationMode: renderForms
+					? pdfjs.AnnotationMode.ENABLE_FORMS
+					: pdfjs.AnnotationMode.ENABLE,
+				canvas,
+				canvasContext: canvas.getContext('2d', { alpha: false })!,
+				background: canvasBackground,
+				pageColors,
+				viewport: renderViewport,
+			});
+			return renderTask.promise;
+		}).then(() => {
+			if (!active || !renderTask) return;
+			canvas.style.visibility = '';
+			onRenderSuccess?.(makePageCallback(page, viewport));
+		}).catch((caught: unknown) => {
+			if (!active || caught instanceof Error && caught.name === 'AbortException') return;
+			onRenderError?.(caught instanceof Error ? caught : new Error(String(caught)));
+		});
 		return () => {
 			active = false;
 			renderTask?.cancel();
-			textLayer?.cancel();
-			if (textElement.current) textElement.current.replaceChildren();
-			if (annotationElement.current) annotationElement.current.replaceChildren();
+			canvas.width = 0;
+			canvas.height = 0;
 		};
-	}, [page, viewport, renderMode, renderTextLayer, renderAnnotationLayer, renderForms]);
+	}, [canvasBackground, devicePixelRatio, page, pageColors, renderForms, renderMode, viewport]);
+
+	useEffect(() => {
+		if (!page || !viewport || pageIndex == null || pageNumber == null || !renderTextLayer) return;
+		let active = true;
+		let textLayer: { cancel: () => void; render: () => Promise<void> } | undefined;
+		let contentLoaded = false;
+		const element = textElement.current;
+		if (!element) return;
+		element.replaceChildren();
+		void page.getTextContent().then(async (content) => {
+			if (!active) return;
+			contentLoaded = true;
+			onGetTextSuccess?.(content);
+			const pdfjs = await import('pdfjs-dist');
+			if (!active) return;
+			textLayer = new pdfjs.TextLayer({
+				container: element,
+				textContentSource: page.streamTextContent({ includeMarkedContent: true }),
+				viewport,
+			}) as { cancel: () => void; render: () => Promise<void> };
+			await textLayer.render();
+			if (!active) return;
+			const end = document.createElement('div');
+			end.className = 'endOfContent';
+			element.append(end);
+			if (customTextRenderer) {
+				const children = element.querySelectorAll('[role="presentation"]');
+				let childIndex = 0;
+				content.items.forEach((item, itemIndex) => {
+					if (!('str' in item)) return;
+					const child = children[childIndex];
+					if (child) {
+						renderSafeCustomText(
+							child,
+							customTextRenderer({
+								...item,
+								itemIndex,
+								pageIndex,
+								pageNumber,
+							}),
+						);
+					}
+					childIndex += item.str && item.hasEOL ? 2 : 1;
+				});
+			}
+			onRenderTextLayerSuccess?.();
+		}).catch((caught: unknown) => {
+			if (!active || caught instanceof Error && caught.name === 'AbortException') return;
+			const error =
+				caught instanceof Error ? caught : new Error(String(caught));
+			if (contentLoaded) onRenderTextLayerError?.(error);
+			else onGetTextError?.(error);
+		});
+		return () => {
+			active = false;
+			textLayer?.cancel();
+			element.replaceChildren();
+		};
+	}, [customTextRenderer, page, pageIndex, pageNumber, renderTextLayer, viewport]);
+
+	useEffect(() => {
+		if (!page || !viewport || !pdf || !renderAnnotationLayer) return;
+		let active = true;
+		let annotationsLoaded = false;
+		const element = annotationElement.current;
+		if (!element) return;
+		element.replaceChildren();
+		void page.getAnnotations().then(async (loadedAnnotations) => {
+			if (!active) return;
+			annotationsLoaded = true;
+			onGetAnnotationsSuccess?.(loadedAnnotations);
+			const annotations =
+				filterAnnotations
+					? filterAnnotations({ annotations: loadedAnnotations })
+					: loadedAnnotations;
+			const pdfjs = await import('pdfjs-dist');
+			if (!active) return;
+			const annotationViewport = viewport.clone({ dontFlip: true });
+			const parameters = {
+				accessibilityManager: null,
+				annotationCanvasMap: null,
+				annotationEditorUIManager: null,
+				annotationStorage: pdf.annotationStorage,
+				commentManager: null,
+				div: element,
+				l10n: null,
+				linkService: documentContext?.linkService,
+				page,
+				structTreeLayer: null,
+				viewport: annotationViewport,
+			};
+			new pdfjs.AnnotationLayer(parameters as never).render(
+				{
+					annotations,
+					annotationStorage: pdf.annotationStorage,
+					div: element,
+					imageResourcesPath,
+					linkService: documentContext?.linkService,
+					page,
+					renderForms,
+					viewport: annotationViewport,
+				} as never,
+			);
+			onRenderAnnotationLayerSuccess?.();
+		}).catch((caught: unknown) => {
+			if (!active) return;
+			const error =
+				caught instanceof Error ? caught : new Error(String(caught));
+			if (annotationsLoaded) onRenderAnnotationLayerError?.(error);
+			else onGetAnnotationsError?.(error);
+		});
+		return () => {
+			active = false;
+			element.replaceChildren();
+		};
+	}, [filterAnnotations, imageResourcesPath, page, pdf, renderAnnotationLayer, renderForms, viewport]);
+
+	useEffect(() => {
+		let active = true;
+		setStructTree(undefined);
+		if (!page || customTextRenderer || !renderTextLayer) return;
+		void page.getStructTree().then((tree) => {
+			if (!active) return;
+			setStructTree(tree);
+			if (tree) onGetStructTreeSuccess?.(tree);
+		}).catch((caught: unknown) => {
+			if (!active) return;
+			const error =
+				caught instanceof Error ? caught : new Error(String(caught));
+			setStructTree(null);
+			onGetStructTreeError?.(error);
+		});
+		return () => {
+			active = false;
+		};
+	}, [customTextRenderer, page, renderTextLayer]);
 
 	const contextValue =
 		page && viewport && pageIndex != null && pageNumber != null
@@ -505,10 +678,25 @@ export function Page(props: PageProps = {}) {
 			loading,
 		)}</div>;
 	} else {
+		if (renderMode === 'custom' && !customRenderer) {
+			throw new Error('renderMode was set to "custom", but no customRenderer was passed.');
+		}
 		const renderProps = contextValue as PageRenderProps;
 		content = <PageContext.Provider value={contextValue}>
 			{renderMode === 'canvas'
-				? <canvas ref={canvasElement} class="react-pdf__Page__canvas" />
+				? <canvas
+						ref={canvasElement}
+						class="react-pdf__Page__canvas"
+						dir="ltr"
+						style={{ display: 'block', userSelect: 'none' }}
+					>
+						{renderTextLayer && structTree
+							? <StructTreeItem
+									className="react-pdf__Page__structTree structTree"
+									node={structTree}
+								/>
+							: null}
+					</canvas>
 				: null}
 			{renderMode === 'custom' && customRenderer ? createElement(customRenderer, {}) : null}
 			{renderTextLayer
@@ -524,40 +712,50 @@ export function Page(props: PageProps = {}) {
 	}
 
 	return <div
-		{...hostProps}
+		{...withEventData(hostProps, page && viewport ? makePageCallback(page, viewport) : page)}
 		ref={pageElement}
 		class={[_className, classProp, className]}
 		data-page-number={pageNumber}
-		style={[
-			{
-				'--scale-factor': viewport?.scale ?? scaleProp,
-				'--user-unit': '1',
-				backgroundColor: canvasBackground || 'white',
-				minHeight: 'min-content',
-				minWidth: 'min-content',
-				position: 'relative',
-			},
-			style,
-		] as never}
+		style={{
+			'--scale-round-x': '1px',
+			'--scale-round-y': '1px',
+			'--scale-factor': '1',
+			'--user-unit': `${viewport?.scale ?? scaleProp}`,
+			'--total-scale-factor': 'calc(var(--scale-factor) * var(--user-unit))',
+			backgroundColor: canvasBackground || 'white',
+			minHeight: 'min-content',
+			minWidth: 'min-content',
+			position: 'relative',
+		} as never}
 	>{content}</div>;
 }
 
 export function Thumbnail(props: ThumbnailProps = {}) {
 	const documentContext = useDocumentContext();
-	const { onItemClick, pageIndex, pageNumber, ...pageProps } = props;
+	const merged = { ...documentContext, ...props } as ThumbnailProps & DocumentContextValue;
+	const { class: classProp, className, onItemClick, pageIndex, pageNumber, pdf } = merged;
+	if (!pdf) {
+		throw new Error('Attempted to load a thumbnail, but no document was specified.');
+	}
 	const resolvedPageNumber = pageNumber ?? (pageIndex != null ? pageIndex + 1 : undefined);
 	const resolvedPageIndex =
 		resolvedPageNumber != null ? resolvedPageNumber - 1 : 0;
 
-	function handleClick() {
+	function handleClick(event: MouseEvent) {
+		event.preventDefault();
 		if (resolvedPageNumber == null) return;
 		const args = { pageIndex: resolvedPageIndex, pageNumber: resolvedPageNumber };
 		if (onItemClick) onItemClick(args);
-		else if (documentContext?.onItemClick) documentContext.onItemClick(args);
-		else documentContext?.linkService.goToPage(resolvedPageNumber);
+		else if (documentContext?.linkService) documentContext.linkService.goToPage(resolvedPageNumber);
+		else throw new Error('Either onItemClick callback or linkService must be defined in order to navigate to an outline item.');
 	}
 
-	return <div class="react-pdf__Thumbnail" onClick={handleClick}>
+	const { class: _class, className: _className, onItemClick: _onItemClick, ...pageProps } = props;
+	return <a
+		class={['react-pdf__Thumbnail', classProp, className]}
+		href={resolvedPageNumber ? '#' : undefined}
+		onClick={handleClick}
+	>
 		<Page
 			{...pageProps}
 			_className="react-pdf__Thumbnail__page"
@@ -567,37 +765,52 @@ export function Thumbnail(props: ThumbnailProps = {}) {
 			renderAnnotationLayer={false}
 			renderTextLayer={false}
 		/>
-	</div>;
+	</a>;
 }
 
 type OutlineEntry = NonNullable<Awaited<ReturnType<PDFDocumentProxy['getOutline']>>>[number];
 
 function OutlineItem({
 	item,
+	linkService,
 	pdf,
 	onItemClick,
 }: {
 	item: OutlineEntry;
+	linkService?: LinkService;
 	pdf: PDFDocumentProxy;
 	onItemClick?: OutlineProps['onItemClick'];
 }) {
 	async function activate(event: Event) {
 		event.preventDefault();
+		if (!onItemClick && !linkService) {
+			throw new Error('Either onItemClick callback or linkService must be defined in order to navigate to an outline item.');
+		}
+		if (!onItemClick) {
+			void linkService?.goToDestination(item.dest);
+			return;
+		}
 		const dest =
 			typeof item.dest === 'string' ? await pdf.getDestination(item.dest) : item.dest;
-		if (!dest) return;
+		if (!dest) throw new Error('Destination not found.');
 		const reference = dest[0];
 		const pageIndex =
-			typeof reference === 'number' ? reference : await pdf.getPageIndex(reference);
+			typeof reference === 'number' ? reference : await pdf.getPageIndex(new Ref(reference));
 		const args = { dest, pageIndex, pageNumber: pageIndex + 1 };
-		if (onItemClick) onItemClick(args);
+		onItemClick(args);
 	}
 
 	return <li>
 		<a href="#" onClick={activate}>{item.title}</a>
-		{item.items.length
+		{item.items?.length
 			? <ul>{item.items.map(
-					(child) => <OutlineItem item={child} pdf={pdf} onItemClick={onItemClick} />,
+					(child) =>
+						<OutlineItem
+							item={child}
+							linkService={linkService}
+							pdf={pdf}
+							onItemClick={onItemClick}
+						/>,
 				)}</ul>
 			: null}
 	</li>;
@@ -620,6 +833,9 @@ export function Outline(props: OutlineProps = {}) {
 		Awaited<ReturnType<PDFDocumentProxy['getOutline']>> | undefined
 	>();
 	const [failed, setFailed] = useState(false);
+	if (!pdf) {
+		throw new Error('Attempted to load an outline, but no document was specified.');
+	}
 
 	useEffect(() => {
 		setRef(inputRef, outlineElement.current);
@@ -630,7 +846,6 @@ export function Outline(props: OutlineProps = {}) {
 		let active = true;
 		setOutline(undefined);
 		setFailed(false);
-		if (!pdf) return;
 		void pdf.getOutline().then((nextOutline) => {
 			if (!active) return;
 			setOutline(nextOutline);
@@ -647,16 +862,22 @@ export function Outline(props: OutlineProps = {}) {
 		};
 	}, [pdf]);
 
-	if (!pdf || failed || !outline) return null;
+	if (failed || !outline) return null;
 	const clickHandler = onItemClick ?? documentContext?.onItemClick;
 	return <div
-		{...hostProps}
+		{...withEventData(hostProps, outline)}
 		ref={outlineElement}
 		class={['react-pdf__Outline', classProp, className]}
 	>
 		<OutlineContext.Provider value={{ onItemClick: clickHandler }}>
 			<ul>{outline.map(
-				(item) => <OutlineItem item={item} pdf={pdf} onItemClick={clickHandler} />,
+				(item) =>
+					<OutlineItem
+						item={item}
+						linkService={documentContext?.linkService}
+						pdf={pdf}
+						onItemClick={clickHandler}
+					/>,
 			)}</ul>
 		</OutlineContext.Provider>
 	</div>;

@@ -28,6 +28,7 @@ function isFrameworkPrivateEvidence(path: string): boolean {
 }
 
 describe('react-pdf U1 — published public-surface ledger', () => {
+	// @parity-case adapted:react-pdf-runtime-surface
 	it('pins the root runtime exports and package export map', async () => {
 		const [rootModule, packageJson] = await Promise.all([
 			readFile(resolve(upstreamRoot, 'dist/index.js'), 'utf8'),
@@ -45,6 +46,7 @@ describe('react-pdf U1 — published public-surface ledger', () => {
 		expect(runtimeExports).toEqual([...publicSurface.rootRuntimeExports].sort());
 	});
 
+	// @parity-case adapted:react-pdf-type-surface
 	it('pins every root type export named by the published declaration', async () => {
 		const declaration = await readFile(resolve(upstreamRoot, 'dist/index.d.ts'), 'utf8');
 		for (const exportName of publicSurface.rootTypeExports) {
@@ -55,6 +57,7 @@ describe('react-pdf U1 — published public-surface ledger', () => {
 		expect(publicSurface.rootTypeExports).toHaveLength(10);
 	});
 
+	// @parity-case adapted:react-pdf-wildcard
 	it('classifies all 94 published artifacts without silently narrowing the wildcard', async () => {
 		const artifacts = await listFiles(upstreamRoot);
 		const exactExceptions = new Set(publicSurface.wildcardPolicy.exactPublicExceptions);
@@ -71,6 +74,7 @@ describe('react-pdf U1 — published public-surface ledger', () => {
 		for (const path of exactExceptions) expect(artifacts).toContain(path);
 	});
 
+	// @parity-case adapted:react-pdf-documentation
 	it('keeps every documented CSS and worker import in the migration contract', async () => {
 		const readme = await readFile(resolve(upstreamRoot, 'README.md'), 'utf8');
 		for (const entry of publicSurface.documentedSubpaths) {
@@ -78,6 +82,7 @@ describe('react-pdf U1 — published public-surface ledger', () => {
 		}
 	});
 
+	// @parity-case adapted:react-pdf-css
 	it('ships the two documented styles byte-for-byte with their license notices', async () => {
 		for (const path of publicSurface.wildcardPolicy.exactPublicExceptions) {
 			const [upstream, binding] = await Promise.all([

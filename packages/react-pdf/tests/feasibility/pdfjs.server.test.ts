@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 const execFileAsync = promisify(execFile);
 
 describe('react-pdf U1 — PDF.js server feasibility', () => {
+	// @parity-case adapted:react-pdf-legacy-node
 	it('imports the pinned legacy PDF.js build in a pristine Node process', async () => {
 		const { stdout, stderr } = await execFileAsync(process.execPath, [
 			'--input-type=module',
@@ -27,6 +28,7 @@ describe('react-pdf U1 — PDF.js server feasibility', () => {
 		});
 	});
 
+	// @parity-case adapted:react-pdf-modern-node-boundary
 	it('proves the modern PDF.js entry is not directly safe in pristine Node', async () => {
 		await expect(
 			execFileAsync(process.execPath, [

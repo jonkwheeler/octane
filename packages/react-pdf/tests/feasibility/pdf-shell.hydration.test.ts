@@ -38,6 +38,7 @@ async function renderServerShell(): Promise<string> {
 }
 
 describe('react-pdf U1 — shell hydration', () => {
+	// @parity-case adapted:react-pdf-hydration
 	it('adopts the deterministic server shell and activates client effects', async () => {
 		const container = document.createElement('div');
 		container.innerHTML = await renderServerShell();
