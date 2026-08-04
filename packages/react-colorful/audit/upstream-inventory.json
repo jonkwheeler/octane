@@ -1,0 +1,1104 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "package": "react-colorful",
+    "version": "5.8.0",
+    "tag": "v5.8.0",
+    "npmIntegrity": "sha512-Wy9OzPfjSN9bF12OB8N7UQvlsZ0I+7wHxpN+bV5BjNQGxOj6IiwkRjevJK9yOBjJWGQvAaf1OXtn8rUeEatAng==",
+    "npmShasum": "9bc89aac3e8c847b503489614e2d28227b36641f",
+    "commit": "d914e7647c40a8bbdb286985176e769d76061732",
+    "license": "MIT"
+  },
+  "publicSurface": {
+    "runtimeExports": [
+      "HexAlphaColorPicker",
+      "HexColorInput",
+      "HexColorPicker",
+      "HslColorPicker",
+      "HslStringColorPicker",
+      "HslaColorPicker",
+      "HslaStringColorPicker",
+      "HsvColorPicker",
+      "HsvStringColorPicker",
+      "HsvaColorPicker",
+      "HsvaStringColorPicker",
+      "RgbColorPicker",
+      "RgbStringColorPicker",
+      "RgbaColorPicker",
+      "RgbaStringColorPicker",
+      "setNonce"
+    ],
+    "typeExports": ["HslColor", "HslaColor", "HsvColor", "HsvaColor", "RgbColor", "RgbaColor"],
+    "subpaths": ["."]
+  },
+  "artifacts": [
+    {
+      "path": "npm/ACKNOWLEDGMENTS",
+      "bytes": 404,
+      "sha256": "eaa62adefbadd3f8c7733d47f72b185970b4d8c1e738d12e953c1e9d74292ca3"
+    },
+    {
+      "path": "npm/LICENSE",
+      "bytes": 1093,
+      "sha256": "c779efe5dfb04b7b7cac35c4898725e4d22e98b86bc81c9556311d067bf97af5"
+    },
+    {
+      "path": "npm/README.md",
+      "bytes": 18475,
+      "sha256": "609e35e1866fe074d526122205f8b42a145af5ce62e5ea6ef4e6db996240e352"
+    },
+    {
+      "path": "npm/dist/components/HexAlphaColorPicker.d.ts",
+      "bytes": 188,
+      "sha256": "98ebb2a95249996290c91f8cf3ff79b763eff7dc408bff4b50d683e99ba0b7b6"
+    },
+    {
+      "path": "npm/dist/components/HexColorInput.d.ts",
+      "bytes": 376,
+      "sha256": "243c74e5973b2cfa67394e1a76d975d69b2ad5146e2aafb493b44b7f5a5e87cc"
+    },
+    {
+      "path": "npm/dist/components/HexColorPicker.d.ts",
+      "bytes": 183,
+      "sha256": "93ee916c7ae66f5174b637a112fc7b8dff33a794a2d56df8db8aa6a6c3bc92cf"
+    },
+    {
+      "path": "npm/dist/components/HslColorPicker.d.ts",
+      "bytes": 195,
+      "sha256": "6d7b735c5aaba695591a8b4b6f956a8f5cc9d3eda35f956cd802ff2b0286d53a"
+    },
+    {
+      "path": "npm/dist/components/HslStringColorPicker.d.ts",
+      "bytes": 189,
+      "sha256": "068f7448d1de065c9670ac3d6b90e68962feeb93efb63a4cd1552a68b5b2dfbd"
+    },
+    {
+      "path": "npm/dist/components/HslaColorPicker.d.ts",
+      "bytes": 198,
+      "sha256": "3f374acefd8ca5c91a19477bd6949614b07055b26225afc6861b2ede851bcb5b"
+    },
+    {
+      "path": "npm/dist/components/HslaStringColorPicker.d.ts",
+      "bytes": 190,
+      "sha256": "9eb2239d3dfcdfea74054b54c44c7545edbd73731d2993a9f9a3e71673e1ed42"
+    },
+    {
+      "path": "npm/dist/components/HsvColorPicker.d.ts",
+      "bytes": 195,
+      "sha256": "bf4c115726a351387bbf7496e163b28aa39172fe594ae8bdb1513047d795d764"
+    },
+    {
+      "path": "npm/dist/components/HsvStringColorPicker.d.ts",
+      "bytes": 189,
+      "sha256": "f8ede947f461afd37024352017761ce27e9bdddaffd0393ac4682ed0d22cf611"
+    },
+    {
+      "path": "npm/dist/components/HsvaColorPicker.d.ts",
+      "bytes": 198,
+      "sha256": "dc21dc3199469dce30218e96f2451efb33c4787246308b2b8461eb825075249b"
+    },
+    {
+      "path": "npm/dist/components/HsvaStringColorPicker.d.ts",
+      "bytes": 190,
+      "sha256": "83b95913e25b27672b8c4e528c92965230c9d9524ef348587662632dccdc1401"
+    },
+    {
+      "path": "npm/dist/components/RgbColorPicker.d.ts",
+      "bytes": 195,
+      "sha256": "9849c46e6a1effe39e9478870783851a889a8edee024ca3679b0b69dcb36eb47"
+    },
+    {
+      "path": "npm/dist/components/RgbStringColorPicker.d.ts",
+      "bytes": 189,
+      "sha256": "7760bce1a69e0e3c7ea388fcab73be84c98c864bf25c865bd481daee34c503f8"
+    },
+    {
+      "path": "npm/dist/components/RgbaColorPicker.d.ts",
+      "bytes": 198,
+      "sha256": "6717f9fe90fc48da70d33067b301bac254b35542b634307d1597320760a1a832"
+    },
+    {
+      "path": "npm/dist/components/RgbaStringColorPicker.d.ts",
+      "bytes": 190,
+      "sha256": "7971e30a211be5e4e7e77fe55ca2db193880032aa26cd33e62db01fdcbfbc30b"
+    },
+    {
+      "path": "npm/dist/index.d.ts",
+      "bytes": 1153,
+      "sha256": "41bd03a30a315f8e500f9e4d610d68290d73b0e98128e5e3f4ad062762b2b3b5"
+    },
+    {
+      "path": "npm/dist/types.d.ts",
+      "bytes": 1372,
+      "sha256": "49c9dcaf68d362b6c24f1a17ee5b26335044a59c0992e3f192c2d41ddaa4cddf"
+    },
+    {
+      "path": "npm/dist/utils/nonce.d.ts",
+      "bytes": 533,
+      "sha256": "1308a35e0418c7b3feedbac638c9d099daee9b2c5a853c9d929bd59c7e272794"
+    },
+    {
+      "path": "npm/package.json",
+      "bytes": 5802,
+      "sha256": "24bc3ab00382c35e92359f4210d2636e53eb7384bc950f010a035779a4a2bd2b"
+    },
+    {
+      "path": "tag/ACKNOWLEDGMENTS",
+      "bytes": 404,
+      "sha256": "eaa62adefbadd3f8c7733d47f72b185970b4d8c1e738d12e953c1e9d74292ca3"
+    },
+    {
+      "path": "tag/LICENSE",
+      "bytes": 1093,
+      "sha256": "c779efe5dfb04b7b7cac35c4898725e4d22e98b86bc81c9556311d067bf97af5"
+    },
+    {
+      "path": "tag/README.md",
+      "bytes": 18475,
+      "sha256": "609e35e1866fe074d526122205f8b42a145af5ce62e5ea6ef4e6db996240e352"
+    },
+    {
+      "path": "tag/package.json",
+      "bytes": 5739,
+      "sha256": "903aa917b2e53f593b289af758e7a48ce141c49f3c4a773607af7e82d7ec383f"
+    },
+    {
+      "path": "tag/src/components/HexAlphaColorPicker.tsx",
+      "bytes": 552,
+      "sha256": "975da670650cda1f3ef720c814c7b480b02f90de6385d13bcdd18a4eab722f66"
+    },
+    {
+      "path": "tag/src/components/HexColorInput.tsx",
+      "bytes": 1113,
+      "sha256": "8bfe0901a6f3efaf3a76363fcdb78f666f3009c17b1a4b355a3cbdafba5b27f2"
+    },
+    {
+      "path": "tag/src/components/HexColorPicker.tsx",
+      "bytes": 567,
+      "sha256": "80b1bacebd5475a0097f3d4547df522f6e32ba6620d6988857f2f788558cee94"
+    },
+    {
+      "path": "tag/src/components/HslColorPicker.tsx",
+      "bytes": 656,
+      "sha256": "f523551712cedaa8bfc769e77362705221a1c240c696f2e7fd89bf6e721fa847"
+    },
+    {
+      "path": "tag/src/components/HslStringColorPicker.tsx",
+      "bytes": 588,
+      "sha256": "658a5bdd34825c997a9b10f501742d0aa09bbffe339fb415662f56f9ea6100a5"
+    },
+    {
+      "path": "tag/src/components/HslaColorPicker.tsx",
+      "bytes": 607,
+      "sha256": "d865ae465833599fb3088bc2f564eac0659d00d7c815209b9727e524b3d8aeaf"
+    },
+    {
+      "path": "tag/src/components/HslaStringColorPicker.tsx",
+      "bytes": 612,
+      "sha256": "9ed8017aeb77135381bda1f0ea37f33ed3c7fa40a117629b117c3b7ad44097df"
+    },
+    {
+      "path": "tag/src/components/HsvColorPicker.tsx",
+      "bytes": 594,
+      "sha256": "e6fe9abd7011452bb9e4e7cca3488e4d704878253992611500faed0476338e39"
+    },
+    {
+      "path": "tag/src/components/HsvStringColorPicker.tsx",
+      "bytes": 588,
+      "sha256": "8dd4970f1610cab6a90d4fdfd0889add185d232815ae51a3cba007c07ba0aacc"
+    },
+    {
+      "path": "tag/src/components/HsvaColorPicker.tsx",
+      "bytes": 597,
+      "sha256": "94fceaa9e1b148bf956bb8b3505c6934d60f1edd682903ccd7808b1345809d23"
+    },
+    {
+      "path": "tag/src/components/HsvaStringColorPicker.tsx",
+      "bytes": 612,
+      "sha256": "a85727b282b4da3828acdb062d96b65b3de1dba5f69cbc1eabefb6862d801428"
+    },
+    {
+      "path": "tag/src/components/RgbColorPicker.tsx",
+      "bytes": 656,
+      "sha256": "cff8eb1cf240b16c01afbd1c7e3be0057e192270b63b034d174cbb46b26240e6"
+    },
+    {
+      "path": "tag/src/components/RgbStringColorPicker.tsx",
+      "bytes": 586,
+      "sha256": "844bf9bf4d9bb18e90fab4008a5489461dbea4884a67e1a7aba002ff8b7185ac"
+    },
+    {
+      "path": "tag/src/components/RgbaColorPicker.tsx",
+      "bytes": 607,
+      "sha256": "b05a370a57ec4da21cc27da9d87712989962ef1492873dc0778f43f1606e06df"
+    },
+    {
+      "path": "tag/src/components/RgbaStringColorPicker.tsx",
+      "bytes": 610,
+      "sha256": "84060015c9fa01272d60d36bbfe4db436b3e1c82be83c827f15f4973532ee9ff"
+    },
+    {
+      "path": "tag/src/components/common/Alpha.tsx",
+      "bytes": 1908,
+      "sha256": "93026c191872b13005709309c5dab021ce94f9eb07b2977ddaec66b52287ef00"
+    },
+    {
+      "path": "tag/src/components/common/AlphaColorPicker.tsx",
+      "bytes": 1393,
+      "sha256": "0e5793649a6bab31a5dd0cf29d2f3c21cb4ebe60da8dfb0097693120bdddfeda"
+    },
+    {
+      "path": "tag/src/components/common/ColorInput.tsx",
+      "bytes": 2071,
+      "sha256": "f536925af948fcca651f03bf80214f9b84fab55a6cd73e2bcae4f5e6ca7ef20a"
+    },
+    {
+      "path": "tag/src/components/common/ColorPicker.tsx",
+      "bytes": 1278,
+      "sha256": "e48cead2e00511b5e385b8e47d8336c5e43ab9ab3424365f17d3ef7dbd275739"
+    },
+    {
+      "path": "tag/src/components/common/Hue.tsx",
+      "bytes": 1427,
+      "sha256": "eb441f76bced29e9b49de26c16cce07e0fef48405523c9621a76e6f2f9a80735"
+    },
+    {
+      "path": "tag/src/components/common/Interactive.tsx",
+      "bytes": 6277,
+      "sha256": "25b40a792037550fcecde39fe68542e69f4e1a1fcd0dea747b98f90becb16434"
+    },
+    {
+      "path": "tag/src/components/common/Pointer.tsx",
+      "bytes": 599,
+      "sha256": "fc1567fe462bb287f7ba44a81449325fdd5974e145886cf236a153618cfbcc60"
+    },
+    {
+      "path": "tag/src/components/common/Saturation.tsx",
+      "bytes": 1592,
+      "sha256": "2beebd4b5d97fb7cf9e69d9662f712ecd3e9aee404d47d3b5ea7a505c7b649b3"
+    },
+    {
+      "path": "tag/src/css/styles.css",
+      "bytes": 2532,
+      "sha256": "a30615171a131910003a2c23903d3aa9de5bdbb1f7424d8601d2b3f0ba85ebd9"
+    },
+    {
+      "path": "tag/src/css/styles.css.d.ts",
+      "bytes": 59,
+      "sha256": "5432111f034baeaa3a99e253b9a6b3cb804df075d4a25740c69c7a46a9603ce1"
+    },
+    {
+      "path": "tag/src/hooks/useColorManipulation.ts",
+      "bytes": 2481,
+      "sha256": "e8c33b214272b488b4bbb021bf069d41e2145484d893f2160d2fa4aad58796b4"
+    },
+    {
+      "path": "tag/src/hooks/useEventCallback.ts",
+      "bytes": 388,
+      "sha256": "304e90c1bca1a56171de0e0e95759dd83c115392ba4a3c3efe0c585598b96395"
+    },
+    {
+      "path": "tag/src/hooks/useIsomorphicLayoutEffect.ts",
+      "bytes": 348,
+      "sha256": "b705b67aabff0810e69d6a3aacaf149bd6f9ef460a1f7aab8038147c8d69ef01"
+    },
+    {
+      "path": "tag/src/hooks/useStyleSheet.ts",
+      "bytes": 2157,
+      "sha256": "2f46f19074bc1a1dec0c30945c4116d8984e5e709de560ec63dc73db384a7122"
+    },
+    {
+      "path": "tag/src/index.ts",
+      "bytes": 1240,
+      "sha256": "aef7557a567280ecadb055755566550aa8bfc2127b1acbcdf9382b98298a6683"
+    },
+    {
+      "path": "tag/src/types.ts",
+      "bytes": 1312,
+      "sha256": "f0e5d80109c028af69c1c43018a4d82c78a84324590f8c928a1ff37bbe8e96b2"
+    },
+    {
+      "path": "tag/src/utils/clamp.ts",
+      "bytes": 298,
+      "sha256": "b4821c826299040dd46162f68b3f73c327c43a35c70c03ef7f5423c3a68eb7d2"
+    },
+    {
+      "path": "tag/src/utils/compare.ts",
+      "bytes": 1376,
+      "sha256": "795ea7c87f577bc0d3f2acd49c227187d6f75ba57dc821abb4c1e9492a0d5f52"
+    },
+    {
+      "path": "tag/src/utils/convert.ts",
+      "bytes": 5907,
+      "sha256": "91472af7a296d74dec5e3f9818b662a3e3f8a097db568dc432844938481086e3"
+    },
+    {
+      "path": "tag/src/utils/format.ts",
+      "bytes": 94,
+      "sha256": "1f41d614b765a85892f01e4afbf1cfadad190d837d8171cf86ff51a947bd4af6"
+    },
+    {
+      "path": "tag/src/utils/nonce.ts",
+      "bytes": 752,
+      "sha256": "42cf346a078e6814d5ebf27f5c4ddb98b76acc0304392dc10ae09b7787686d30"
+    },
+    {
+      "path": "tag/src/utils/round.ts",
+      "bytes": 138,
+      "sha256": "7c55fee1ddc6cf1f89ff4ffcb0f8b044edbac90ba206321e691d4d5c242d90dd"
+    },
+    {
+      "path": "tag/src/utils/validate.ts",
+      "bytes": 395,
+      "sha256": "8116d49825dfb4ff50982ebba1e4ef36b6972be615e94806482983476e2a8224"
+    },
+    {
+      "path": "tag/tests/__mocks__/styles.css.mock.ts",
+      "bytes": 36,
+      "sha256": "be37800bd1ce690a9523da699ee68b97c2d43df02d9192bca6ce5fc8a0ddeb30"
+    },
+    {
+      "path": "tag/tests/__snapshots__/components.test.js.snap",
+      "bytes": 5629,
+      "sha256": "67df8af4c7b44375f8f56df99ee487aafb909fc3ed1e7fb44b2937fd7961ab9e"
+    },
+    {
+      "path": "tag/tests/components.test.js",
+      "bytes": 20456,
+      "sha256": "916fc3ee12b83adbcdb5bd0668fe6a449e5060d820a7435f85ff15eda279fbef"
+    },
+    {
+      "path": "tag/tests/csp.test.js",
+      "bytes": 577,
+      "sha256": "213e0f90a2da2d617fbca5dd69ed127cacea348b8988df46b5f24fe420a5eba9"
+    },
+    {
+      "path": "tag/tests/shadowDom.test.js",
+      "bytes": 754,
+      "sha256": "c7b1d3c2b5b328320e676a87fece00e15972912895c0dbfa98f91486ea759507"
+    },
+    {
+      "path": "tag/tests/utils.test.js",
+      "bytes": 10097,
+      "sha256": "03c6e433d2b60eb543e69f2c5b15f947105244ba576d5ff662c70d697c491584"
+    },
+    {
+      "path": "tag/tsconfig.build.json",
+      "bytes": 64,
+      "sha256": "5d4ce9ee72d2d20c495146c767ccc7443e24a5f1aab38d183ad734c621107b1a"
+    },
+    {
+      "path": "tag/tsconfig.json",
+      "bytes": 308,
+      "sha256": "3e9e82f2d1bf8723efaa38dec6646754edcf63c7100b0b13479c3b504a4d87cd"
+    }
+  ],
+  "upstreamCases": [
+    {
+      "id": "tag/tests/components.test.js::Renders proper color picker markup",
+      "file": "tag/tests/components.test.js",
+      "line": 49,
+      "name": "Renders proper color picker markup"
+    },
+    {
+      "id": "tag/tests/components.test.js::Renders proper alpha color picker markup",
+      "file": "tag/tests/components.test.js",
+      "line": 55,
+      "name": "Renders proper alpha color picker markup"
+    },
+    {
+      "id": "tag/tests/components.test.js::Works with no props",
+      "file": "tag/tests/components.test.js",
+      "line": 61,
+      "name": "Works with no props"
+    },
+    {
+      "id": "tag/tests/components.test.js::Accepts an additional `className`",
+      "file": "tag/tests/components.test.js",
+      "line": 67,
+      "name": "Accepts an additional `className`"
+    },
+    {
+      "id": "tag/tests/components.test.js::Doesn't trigger `onChange` after mounting",
+      "file": "tag/tests/components.test.js",
+      "line": 74,
+      "name": "Doesn't trigger `onChange` after mounting"
+    },
+    {
+      "id": "tag/tests/components.test.js::Doesn't trigger `onChange` after controlled rerender",
+      "file": "tag/tests/components.test.js",
+      "line": 81,
+      "name": "Doesn't trigger `onChange` after controlled rerender"
+    },
+    {
+      "id": "tag/tests/components.test.js::Doesn't call `onChange` when user changes a hue of a grayscale color",
+      "file": "tag/tests/components.test.js",
+      "line": 90,
+      "name": "Doesn't call `onChange` when user changes a hue of a grayscale color"
+    },
+    {
+      "id": "tag/tests/components.test.js::Triggers `onChange` after a mouse interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 101,
+      "name": "Triggers `onChange` after a mouse interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Triggers `onChangeEnd` after a mouse interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 114,
+      "name": "Triggers `onChangeEnd` after a mouse interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Triggers `onChangeEnd` after a touch interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 131,
+      "name": "Triggers `onChangeEnd` after a touch interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Triggers `onChangeEnd` after a keyboard interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 149,
+      "name": "Triggers `onChangeEnd` after a keyboard interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Doesn't trigger `onChangeEnd` if the color didn't change",
+      "file": "tag/tests/components.test.js",
+      "line": 168,
+      "name": "Doesn't trigger `onChangeEnd` if the color didn't change"
+    },
+    {
+      "id": "tag/tests/components.test.js::Triggers `onChangeEnd` when the pointer is released outside of the window",
+      "file": "tag/tests/components.test.js",
+      "line": 187,
+      "name": "Triggers `onChangeEnd` when the pointer is released outside of the window"
+    },
+    {
+      "id": "tag/tests/components.test.js::Doesn't trigger `onChangeEnd` if the color prop was updated mid-drag",
+      "file": "tag/tests/components.test.js",
+      "line": 205,
+      "name": "Doesn't trigger `onChangeEnd` if the color prop was updated mid-drag"
+    },
+    {
+      "id": "tag/tests/components.test.js::Triggers `onChange` after a touch interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 236,
+      "name": "Triggers `onChange` after a touch interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Supports multitouch",
+      "file": "tag/tests/components.test.js",
+      "line": 248,
+      "name": "Supports multitouch"
+    },
+    {
+      "id": "tag/tests/components.test.js::Pointer doesn't follow the mouse if it was released outside of the document bounds",
+      "file": "tag/tests/components.test.js",
+      "line": 282,
+      "name": "Pointer doesn't follow the mouse if it was released outside of the document bounds"
+    },
+    {
+      "id": "tag/tests/components.test.js::Changes alpha channel value after an interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 299,
+      "name": "Changes alpha channel value after an interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Uses #rrggbbaa format if alpha channel value is less than 1",
+      "file": "tag/tests/components.test.js",
+      "line": 314,
+      "name": "Uses #rrggbbaa format if alpha channel value is less than 1"
+    },
+    {
+      "id": "tag/tests/components.test.js::Doesn't react on mouse events after a touch interaction",
+      "file": "tag/tests/components.test.js",
+      "line": 329,
+      "name": "Doesn't react on mouse events after a touch interaction"
+    },
+    {
+      "id": "tag/tests/components.test.js::Captures arrow keys only",
+      "file": "tag/tests/components.test.js",
+      "line": 345,
+      "name": "Captures arrow keys only"
+    },
+    {
+      "id": "tag/tests/components.test.js::Changes saturation with arrow keys",
+      "file": "tag/tests/components.test.js",
+      "line": 372,
+      "name": "Changes saturation with arrow keys"
+    },
+    {
+      "id": "tag/tests/components.test.js::Changes hue with arrow keys",
+      "file": "tag/tests/components.test.js",
+      "line": 389,
+      "name": "Changes hue with arrow keys"
+    },
+    {
+      "id": "tag/tests/components.test.js::Changes alpha with arrow keys",
+      "file": "tag/tests/components.test.js",
+      "line": 403,
+      "name": "Changes alpha with arrow keys"
+    },
+    {
+      "id": "tag/tests/components.test.js::Ignores keyboard commands if the pointer is already on a saturation edge",
+      "file": "tag/tests/components.test.js",
+      "line": 419,
+      "name": "Ignores keyboard commands if the pointer is already on a saturation edge"
+    },
+    {
+      "id": "tag/tests/components.test.js::Ignores keyboard commands if the pointer is already on a alpha edge",
+      "file": "tag/tests/components.test.js",
+      "line": 438,
+      "name": "Ignores keyboard commands if the pointer is already on a alpha edge"
+    },
+    {
+      "id": "tag/tests/components.test.js::Sets proper `aria-valuetext` attribute value",
+      "file": "tag/tests/components.test.js",
+      "line": 456,
+      "name": "Sets proper `aria-valuetext` attribute value"
+    },
+    {
+      "id": "tag/tests/components.test.js::Accepts any valid `div` attributes",
+      "file": "tag/tests/components.test.js",
+      "line": 478,
+      "name": "Accepts any valid `div` attributes"
+    },
+    {
+      "id": "tag/tests/components.test.js::Supports any event that a regular div does",
+      "file": "tag/tests/components.test.js",
+      "line": 484,
+      "name": "Supports any event that a regular div does"
+    },
+    {
+      "id": "tag/tests/components.test.js::Renders `HexColorInput` component properly",
+      "file": "tag/tests/components.test.js",
+      "line": 492,
+      "name": "Renders `HexColorInput` component properly"
+    },
+    {
+      "id": "tag/tests/components.test.js::Fires `onChange` when user changes `HexColorInput` value",
+      "file": "tag/tests/components.test.js",
+      "line": 500,
+      "name": "Fires `onChange` when user changes `HexColorInput` value"
+    },
+    {
+      "id": "tag/tests/components.test.js::Fires custom `onBlur` when `HexColorInput` has lost focus",
+      "file": "tag/tests/components.test.js",
+      "line": 510,
+      "name": "Fires custom `onBlur` when `HexColorInput` has lost focus"
+    },
+    {
+      "id": "tag/tests/components.test.js::Displays `#` prefix in `HexColorInput` if `prefixed` is turned on",
+      "file": "tag/tests/components.test.js",
+      "line": 520,
+      "name": "Displays `#` prefix in `HexColorInput` if `prefixed` is turned on"
+    },
+    {
+      "id": "tag/tests/components.test.js::Allows to enter `#rgba` and `#rrggbbaa` in `HexColorInput` if `alpha` is turned on",
+      "file": "tag/tests/components.test.js",
+      "line": 529,
+      "name": "Allows to enter `#rgba` and `#rrggbbaa` in `HexColorInput` if `alpha` is turned on"
+    },
+    {
+      "id": "tag/tests/components.test.js::Does not allow to enter `#rrggbbaa` in `HexColorInput` if `alpha` is turned off",
+      "file": "tag/tests/components.test.js",
+      "line": 541,
+      "name": "Does not allow to enter `#rrggbbaa` in `HexColorInput` if `alpha` is turned off"
+    },
+    {
+      "id": "tag/tests/csp.test.js::Signs the `style` element with a nonce",
+      "file": "tag/tests/csp.test.js",
+      "line": 9,
+      "name": "Signs the `style` element with a nonce"
+    },
+    {
+      "id": "tag/tests/shadowDom.test.js::Injects styles into the closest ShadowRoot when mounted inside one",
+      "file": "tag/tests/shadowDom.test.js",
+      "line": 12,
+      "name": "Injects styles into the closest ShadowRoot when mounted inside one"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HEX to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 33,
+      "name": "Converts HEX to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts shorthand HEX to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 41,
+      "name": "Converts shorthand HEX to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to HEX",
+      "file": "tag/tests/utils.test.js",
+      "line": 48,
+      "name": "Converts HSVA to HEX"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to HSLA",
+      "file": "tag/tests/utils.test.js",
+      "line": 56,
+      "name": "Converts HSVA to HSLA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSLA to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 66,
+      "name": "Converts HSLA to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to HSL string",
+      "file": "tag/tests/utils.test.js",
+      "line": 76,
+      "name": "Converts HSVA to HSL string"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSL string to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 81,
+      "name": "Converts HSL string to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSLA string to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 88,
+      "name": "Converts HSLA string to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to RGBA",
+      "file": "tag/tests/utils.test.js",
+      "line": 96,
+      "name": "Converts HSVA to RGBA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts RGBA to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 103,
+      "name": "Converts RGBA to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts RGB string to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 109,
+      "name": "Converts RGB string to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to RGB string",
+      "file": "tag/tests/utils.test.js",
+      "line": 116,
+      "name": "Converts HSVA to RGB string"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to RGBA string",
+      "file": "tag/tests/utils.test.js",
+      "line": 121,
+      "name": "Converts HSVA to RGBA string"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts RGBA string to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 126,
+      "name": "Converts RGBA string to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to HSVA string",
+      "file": "tag/tests/utils.test.js",
+      "line": 132,
+      "name": "Converts HSVA to HSVA string"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA to HSV string",
+      "file": "tag/tests/utils.test.js",
+      "line": 138,
+      "name": "Converts HSVA to HSV string"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSV string to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 143,
+      "name": "Converts HSV string to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Converts HSVA string to HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 151,
+      "name": "Converts HSVA string to HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Rounds HSVA",
+      "file": "tag/tests/utils.test.js",
+      "line": 156,
+      "name": "Rounds HSVA"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Trims alpha-channel",
+      "file": "tag/tests/utils.test.js",
+      "line": 163,
+      "name": "Trims alpha-channel"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Compares two HEX colors",
+      "file": "tag/tests/utils.test.js",
+      "line": 169,
+      "name": "Compares two HEX colors"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Compares two object colors",
+      "file": "tag/tests/utils.test.js",
+      "line": 176,
+      "name": "Compares two object colors"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Compares two string colors",
+      "file": "tag/tests/utils.test.js",
+      "line": 183,
+      "name": "Compares two string colors"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Validates HEX colors",
+      "file": "tag/tests/utils.test.js",
+      "line": 189,
+      "name": "Validates HEX colors"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Formats a class name",
+      "file": "tag/tests/utils.test.js",
+      "line": 206,
+      "name": "Formats a class name"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Rounds a number",
+      "file": "tag/tests/utils.test.js",
+      "line": 212,
+      "name": "Rounds a number"
+    },
+    {
+      "id": "tag/tests/utils.test.js::Clamps a number between bounds",
+      "file": "tag/tests/utils.test.js",
+      "line": 223,
+      "name": "Clamps a number between bounds"
+    }
+  ],
+  "crosswalk": [
+    {
+      "upstream": "tag/tests/components.test.js::Renders proper color picker markup",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::renders every picker variant with the upstream structure and defaults"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Renders proper alpha color picker markup",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::renders every picker variant with the upstream structure and defaults"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Works with no props",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::renders every picker variant with the upstream structure and defaults"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Accepts an additional `className`",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::forwards div attributes, className, and native events"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Doesn't trigger `onChange` after mounting",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::does not emit on mount, equivalent grayscale hue changes, or controlled rerender"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Doesn't trigger `onChange` after controlled rerender",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::does not emit on mount, equivalent grayscale hue changes, or controlled rerender"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Doesn't call `onChange` when user changes a hue of a grayscale color",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::does not emit on mount, equivalent grayscale hue changes, or controlled rerender"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Triggers `onChange` after a mouse interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::emits changed and committed colors for mouse interaction"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` after a mouse interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::emits changed and committed colors for mouse interaction"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` after a touch interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` after a keyboard interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Doesn't trigger `onChangeEnd` if the color didn't change",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::does not commit unchanged input or a drag superseded by controlled color"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` when the pointer is released outside of the window",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::commits release-outside movement but ignores later buttonless moves"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Doesn't trigger `onChangeEnd` if the color prop was updated mid-drag",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::does not commit unchanged input or a drag superseded by controlled color"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Triggers `onChange` after a touch interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Supports multitouch",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Pointer doesn't follow the mouse if it was released outside of the document bounds",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::commits release-outside movement but ignores later buttonless moves"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Changes alpha channel value after an interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::updates alpha and exposes matching ARIA state"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Uses #rrggbbaa format if alpha channel value is less than 1",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::updates alpha and exposes matching ARIA state"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Doesn't react on mouse events after a touch interaction",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Captures arrow keys only",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Changes saturation with arrow keys",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::covers saturation, alpha, edge clamping, and detailed ARIA keyboard state"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Changes hue with arrow keys",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Changes alpha with arrow keys",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::covers saturation, alpha, edge clamping, and detailed ARIA keyboard state"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Ignores keyboard commands if the pointer is already on a saturation edge",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Ignores keyboard commands if the pointer is already on a alpha edge",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Sets proper `aria-valuetext` attribute value",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::updates alpha and exposes matching ARIA state"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Accepts any valid `div` attributes",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::forwards div attributes, className, and native events"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Supports any event that a regular div does",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::forwards div attributes, className, and native events"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Renders `HexColorInput` component properly",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Fires `onChange` when user changes `HexColorInput` value",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Fires custom `onBlur` when `HexColorInput` has lost focus",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports alpha forms and restores invalid values on blur"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Displays `#` prefix in `HexColorInput` if `prefixed` is turned on",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Allows to enter `#rgba` and `#rrggbbaa` in `HexColorInput` if `alpha` is turned on",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::supports alpha forms and restores invalid values on blur"
+    },
+    {
+      "upstream": "tag/tests/components.test.js::Does not allow to enter `#rrggbbaa` in `HexColorInput` if `alpha` is turned off",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+    },
+    {
+      "upstream": "tag/tests/csp.test.js::Signs the `style` element with a nonce",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/styles.test.ts::injects one stylesheet into the closest ShadowRoot and applies a CSP nonce"
+    },
+    {
+      "upstream": "tag/tests/shadowDom.test.js::Injects styles into the closest ShadowRoot when mounted inside one",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/styles.test.ts::injects one stylesheet into the closest ShadowRoot and applies a CSP nonce"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HEX to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HEX to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts shorthand HEX to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts shorthand HEX to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to HEX",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HEX"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to HSLA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSLA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSLA to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSLA to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to HSL string",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSL string"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSL string to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSL string to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSLA string to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSLA string to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to RGBA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to RGBA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts RGBA to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts RGBA to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts RGB string to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts RGB string to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to RGB string",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to RGB string"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to RGBA string",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to RGBA string"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts RGBA string to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts RGBA string to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to HSVA string",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSVA string"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA to HSV string",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSV string"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSV string to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSV string to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Converts HSVA string to HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA string to HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Rounds HSVA",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Rounds HSVA"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Trims alpha-channel",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Trims alpha-channel"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Compares two HEX colors",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Compares two HEX colors"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Compares two object colors",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Compares two object colors"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Compares two string colors",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Compares two string colors"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Validates HEX colors",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Validates HEX colors"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Formats a class name",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Formats a class name"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Rounds a number",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Rounds a number"
+    },
+    {
+      "upstream": "tag/tests/utils.test.js::Clamps a number between bounds",
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/upstream-utils.test.ts::Clamps a number between bounds"
+    }
+  ]
+}
