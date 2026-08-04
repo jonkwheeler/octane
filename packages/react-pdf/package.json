@@ -1,0 +1,61 @@
+{
+  "name": "@octanejs/react-pdf",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "React PDF bindings for the Octane renderer.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/react-pdf"
+  },
+  "main": "src/index.server.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "upstream-public-surface.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "browser": "./src/index.ts",
+      "default": "./src/index.server.ts"
+    },
+    "./dist/Page/AnnotationLayer.css": "./dist/Page/AnnotationLayer.css",
+    "./dist/Page/TextLayer.css": "./dist/Page/TextLayer.css"
+  },
+  "scripts": {
+    "test:browser": "vitest run --root ../.. --project react-pdf-browser",
+    "test:feasibility": "vitest run --root ../.. --project react-pdf-feasibility --project react-pdf-feasibility-ssr --project react-pdf-feasibility-hydration",
+    "test:parity": "vitest run --root ../.. --project react-pdf-parity",
+    "test:ssr": "vitest run --root ../.. --project react-pdf-ssr"
+  },
+  "dependencies": {
+    "pdfjs-dist": "5.4.296"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "octane": "workspace:*",
+    "playwright": "catalog:default",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "react-pdf": "10.4.1",
+    "vite": "catalog:default",
+    "vitest": "catalog:default"
+  }
+}

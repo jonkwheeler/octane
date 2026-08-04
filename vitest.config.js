@@ -260,6 +260,98 @@ export default defineConfig({
 		projects: [
 			{
 				test: {
+					name: 'react-pdf-feasibility',
+					include: ['packages/react-pdf/tests/feasibility/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-pdf/tests/feasibility/*.server.test.ts',
+						'packages/react-pdf/tests/feasibility/*.hydration.test.ts',
+					],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
+					name: 'react-pdf-feasibility-ssr',
+					include: ['packages/react-pdf/tests/feasibility/*.server.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^octane\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-pdf-feasibility-hydration',
+					include: ['packages/react-pdf/tests/feasibility/*.hydration.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
+					name: 'react-pdf-browser',
+					include: ['packages/react-pdf/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
+					name: 'react-pdf-parity',
+					include: ['packages/react-pdf/tests/parity/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				test: {
+					name: 'react-pdf-ssr',
+					include: ['packages/react-pdf/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^octane\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-pdf$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-pdf/src/index.server.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'octane',
 					// The individual cases here run in milliseconds; the 5s default was
 					// being tripped by machine contention, not by the code under test
