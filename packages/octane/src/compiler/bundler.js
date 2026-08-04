@@ -390,12 +390,25 @@ export function findDescriptorChildrenImports(source, id) {
 			}
 		}
 	}
+	const jsxBindings = new Set();
+	const visited = new WeakSet();
+	const pending = [ast];
+	while (pending.length > 0) {
+		const value = pending.pop();
+		if (value === null || typeof value !== 'object' || visited.has(value)) continue;
+		visited.add(value);
+		if (value.type === 'JSXOpeningElement' && value.name?.type === 'JSXIdentifier') {
+			jsxBindings.add(value.name.name);
+		}
+		for (const [key, child] of Object.entries(value)) {
+			if (key === 'loc' || key === 'metadata') continue;
+			if (Array.isArray(child)) pending.push(...child);
+			else pending.push(child);
+		}
+	}
 	const candidates = [];
 	for (const [local, imported] of importedBindings) {
-		const escaped = local.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		if (new RegExp(`<\\s*${escaped}(?:\\s|/|>)`).test(source)) {
-			candidates.push({ ...imported, local });
-		}
+		if (jsxBindings.has(local)) candidates.push({ ...imported, local });
 	}
 	for (const node of ast.body || []) {
 		if (node.type !== 'ExportNamedDeclaration') continue;
