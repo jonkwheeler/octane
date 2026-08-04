@@ -6,7 +6,7 @@ import type { UsePopperOptions, UsePopperResult } from './types';
 
 const EMPTY_MODIFIERS: ReadonlyArray<never> = [];
 
-export function usePopper<Modifiers = string>(
+export function usePopperImpl<Modifiers = string>(
 	referenceElement?: Element | import('@popperjs/core').VirtualElement | null,
 	popperElement?: HTMLElement | null,
 	options: UsePopperOptions<Modifiers> = {},

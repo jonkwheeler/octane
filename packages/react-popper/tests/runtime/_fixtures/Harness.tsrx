@@ -26,6 +26,18 @@ export function UsePopperHarness(props: {
 	/>;
 }
 
+export function UsePopperOptionalArgsHarness(props: { referenceElement: Element }) {
+	const empty = usePopper();
+	const referenceOnly = usePopper(props.referenceElement);
+	const nullPopper = usePopper(props.referenceElement, null);
+	return <output
+		id="optional-results"
+		data-empty-position={String(empty.styles.popper?.position)}
+		data-reference-position={String(referenceOnly.styles.popper?.position)}
+		data-null-position={String(nullPopper.styles.popper?.position)}
+	/>;
+}
+
 export function ManagedPopperHarness(props: {
 	placement?: any;
 	innerRef?: any;

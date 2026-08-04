@@ -8,7 +8,7 @@ import {
 	useState,
 } from 'octane';
 import type { OctaneNode } from 'octane';
-import { usePopper } from './usePopper.tsrx';
+import { usePopper } from './usePopper';
 import type { ManagerProps, PopperChildrenProps, PopperProps, ReferenceProps } from './types';
 import { setRef } from './utils';
 

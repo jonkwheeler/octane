@@ -7,6 +7,7 @@ import {
 	BareReferenceHarness,
 	ManagedPopperHarness,
 	UsePopperHarness,
+	UsePopperOptionalArgsHarness,
 } from './_fixtures/Harness.tsrx';
 
 const roots: Array<{ unmount: () => void }> = [];
@@ -103,6 +104,17 @@ describe('@octanejs/react-popper public contract', () => {
 		expect(result.getAttribute('data-state')).toBe('bottom');
 		expect(result.getAttribute('data-update')).toBe('true');
 		expect(result.getAttribute('data-force-update')).toBe('true');
+	});
+
+	it('preserves defaults when compiled calls omit optional trailing arguments', () => {
+		const root = tracked(UsePopperOptionalArgsHarness, {
+			referenceElement: document.createElement('button'),
+		});
+		settle();
+		const result = root.find('#optional-results');
+		expect(result.getAttribute('data-empty-position')).toBe('absolute');
+		expect(result.getAttribute('data-reference-position')).toBe('absolute');
+		expect(result.getAttribute('data-null-position')).toBe('absolute');
 	});
 
 	it('keeps an instance for equivalent options, uses setOptions for option changes, and recreates for element changes', () => {
