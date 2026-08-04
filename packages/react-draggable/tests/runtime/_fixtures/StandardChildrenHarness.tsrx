@@ -1,4 +1,4 @@
-import DraggableCore from '../../../src/DraggableCore.tsrx';
+import { DraggableCore } from '@octanejs/react-draggable';
 
 export function StandardChildrenHarness() @{
 	<DraggableCore>

@@ -8,6 +8,7 @@
     "node": ">=22"
   },
   "octane": {
+    "commonjsCallableDefault": true,
     "hookSlots": {
       "manual": [
         "src"
@@ -40,7 +41,7 @@
     ".": {
       "types": "./src/index.tsrx",
       "import": "./src/index.tsrx",
-      "require": "./dist/cjs/index.cjs",
+      "require": "./dist/cjs/root.cjs",
       "default": "./src/index.tsrx"
     },
     "./package.json": "./package.json"

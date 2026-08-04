@@ -1,5 +1,4 @@
-import Draggable from '../../../src/Draggable.tsrx';
-import type { DraggableProps } from '../../../src/types.ts';
+import Draggable, { type DraggableProps } from '@octanejs/react-draggable';
 
 export function DraggableHarness(props: DraggableProps & {
 	nodeRef: { current: HTMLDivElement | null };
@@ -25,5 +24,11 @@ export function SvgDraggableHarness(props: DraggableProps & {
 		<svg ref={props.nodeRef} data-svg="yes">
 			<circle cx="2" cy="2" r="2" />
 		</svg>
+	</Draggable>
+}
+
+export function BareDraggableHarness(props: DraggableProps) @{
+	<Draggable {...props}>
+		<div class="bare">drag</div>
 	</Draggable>
 }

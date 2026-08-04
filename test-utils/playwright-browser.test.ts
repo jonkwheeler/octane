@@ -93,7 +93,7 @@ describe('heavy-integration browser ownership', () => {
 	});
 
 	it('contains no direct Playwright browser access in the selected browser directories', () => {
-		const roots = ['octane', 'dexie', 'tiptap', 'three'].map((packageName) =>
+		const roots = ['octane', 'dexie', 'react-draggable', 'tiptap', 'three'].map((packageName) =>
 			resolve(import.meta.dirname, `../packages/${packageName}/tests/browser`),
 		);
 		const browserFiles = roots.flatMap((root) =>

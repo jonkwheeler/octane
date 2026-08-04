@@ -70,6 +70,7 @@ export const PACKED_COMMONJS_CONSUMER_PACKAGES = [
 	'@octanejs/base-ui',
 	'@octanejs/floating-ui',
 	'@octanejs/radix',
+	'@octanejs/react-draggable',
 	'octane',
 ];
 
@@ -97,12 +98,16 @@ const server = require('octane/server');
 const floating = require('@octanejs/floating-ui');
 const base = require('@octanejs/base-ui');
 const radix = require('@octanejs/radix');
+const draggable = require('@octanejs/react-draggable');
 
 assert.equal(typeof octane.createElement, 'function');
 assert.equal(typeof server.renderToString, 'function');
 assert.equal(typeof floating.useFloating, 'function');
 assert.equal(typeof base.Button, 'function');
 assert.equal(typeof radix.Accordion, 'object');
+assert.equal(typeof draggable, 'function');
+assert.equal(draggable.default, draggable);
+assert.equal(typeof draggable.DraggableCore, 'function');
 const ssr = server.renderToString(() => 'conditions');
 assert.deepEqual(ssr, { html: 'conditions', css: '' });
 process.stdout.write(JSON.stringify({
@@ -110,6 +115,7 @@ process.stdout.write(JSON.stringify({
 	floating: Object.keys(floating),
 	octane: Object.keys(octane),
 	radix: Object.keys(radix),
+	draggable: ['default', 'DraggableCore'].filter((key) => key in draggable),
 	ssr,
 }));
 `;
@@ -137,6 +143,16 @@ process.stdout.write(JSON.stringify({
 	radix: Object.keys(radix),
 	ssr,
 }));
+`;
+}
+
+export function renderPackedDraggableEsmConsumerSource() {
+	return `import assert from 'node:assert/strict';
+import * as draggable from '@octanejs/react-draggable';
+
+assert.equal(typeof draggable.default, 'function');
+assert.equal(typeof draggable.DraggableCore, 'function');
+process.stdout.write(JSON.stringify(['default', 'DraggableCore'].filter((key) => key in draggable)));
 `;
 }
 

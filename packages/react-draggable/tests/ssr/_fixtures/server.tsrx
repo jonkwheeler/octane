@@ -1,4 +1,4 @@
-import Draggable, { DraggableCore } from '../../../src/index.tsrx';
+import Draggable, { DraggableCore } from '@octanejs/react-draggable';
 
 const htmlRef = { current: null as HTMLDivElement | null };
 const svgRef = { current: null as SVGSVGElement | null };

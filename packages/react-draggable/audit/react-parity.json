@@ -98,7 +98,7 @@
         {
           "path": "packages/react-draggable/tests/ssr/_fixtures/server.tsrx",
           "role": "support",
-          "sha256": "414e1485b3739ea7b1bd7c3fb4e0962f425a90ee35effd0b251cd91b84481bea"
+          "sha256": "19e1fef4aa786be843783daf513a38668c57f746ac460396ae2fbbd88a58eee9"
         }
       ]
     },
@@ -135,25 +135,15 @@
         {
           "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",
           "role": "test",
-          "sha256": "5a56b6a556858cfa1a19e89eac565183cb8b14d8c1cfc813eb3c30053d36eb4c",
+          "sha256": "dc95822526133d38a68e1f3c9bf7da010bb70f7546eb104c7ab7f0b42ec4ca85",
           "cases": [
             {
-              "id": "browser:react-draggable-chromium-native",
-              "testName": "proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown",
-              "fullName": "Chromium native parity proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown"
-            },
-            {
-              "id": "browser:react-draggable-chromium-ownership-cleanup",
-              "testName": "proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions",
-              "fullName": "Chromium native parity proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions"
-            },
-            {
-              "id": "browser:react-draggable-firefox-native",
+              "id": "browser:react-draggable-native",
               "testName": "proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown",
               "fullName": "Firefox native parity proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown"
             },
             {
-              "id": "browser:react-draggable-firefox-ownership-cleanup",
+              "id": "browser:react-draggable-ownership-cleanup",
               "testName": "proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions",
               "fullName": "Firefox native parity proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions"
             }
@@ -162,7 +152,7 @@
         {
           "path": "packages/react-draggable/tests/browser/harness/main.tsrx",
           "role": "support",
-          "sha256": "731e8680ca001d4eb8349f2fd8bf1dfb4b337c7a527489bf8f944aaf67b108cb"
+          "sha256": "0c854d6f79c4a8b8f7a2fad34d7d36d81df49436a46bee73974d1e16f03c0755"
         },
         {
           "path": "packages/react-draggable/tests/browser/harness/index.html",
@@ -172,7 +162,7 @@
         {
           "path": "packages/react-draggable/tests/browser/harness/frame.tsrx",
           "role": "support",
-          "sha256": "b83bcde35b8586e20d0960ab26237aac96709e4cd4e17aa24651f6890e9eb3bb"
+          "sha256": "278b382f629b5c33ee10c41a291898e0c5de7a86668b632e4c552af6aa809e7a"
         },
         {
           "path": "packages/react-draggable/tests/browser/harness/frame.html",
@@ -204,21 +194,25 @@
           "path": "packages/react-draggable/upstream/tag/typings/test.tsx",
           "role": "test",
           "sha256": "7245c84c62b0ae2e5f3d3e2f698d46cabcf79446962fc601fe874b15d684cd77",
-          "cases": [{
-            "id": "types:react-draggable-pristine-consumer",
-            "testName": "published consumer program",
-            "fullName": "published react-draggable declaration contract: consumer program"
-          }]
+          "cases": [
+            {
+              "id": "types:react-draggable-pristine-consumer",
+              "testName": "published consumer program",
+              "fullName": "published react-draggable declaration contract: consumer program"
+            }
+          ]
         },
         {
           "path": "packages/react-draggable/upstream/tag/test/typeCompat/fixture.tsx",
           "role": "test",
           "sha256": "5d14243c7ed69b5e5c83071facab535a7722c886ae446cf9e6dda2ce6617cbc4",
-          "cases": [{
-            "id": "types:react-draggable-pristine-compatibility",
-            "testName": "complete compatibility fixture",
-            "fullName": "published react-draggable declaration contract: complete compatibility fixture"
-          }]
+          "cases": [
+            {
+              "id": "types:react-draggable-pristine-compatibility",
+              "testName": "complete compatibility fixture",
+              "fullName": "published react-draggable declaration contract: complete compatibility fixture"
+            }
+          ]
         }
       ]
     },
@@ -244,12 +238,14 @@
         {
           "path": "packages/react-draggable/typetests/public-api.test.ts",
           "role": "test",
-          "sha256": "979196db1648973ea2c5c51df30e76c9b73e3a564adc451add83e4e46c8b16ca",
-          "cases": [{
-            "id": "types:react-draggable-adapted-public-api",
-            "testName": "complete Octane public contract",
-            "fullName": "Octane react-draggable declaration contract: complete public API"
-          }]
+          "sha256": "01e8c1a1f662700cc1eea63db66f77b3339d3a0b8e85242c3f7ba4dbf732cbb6",
+          "cases": [
+            {
+              "id": "types:react-draggable-adapted-public-api",
+              "testName": "complete Octane public contract",
+              "fullName": "Octane react-draggable declaration contract: complete public API"
+            }
+          ]
         }
       ]
     }

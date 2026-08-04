@@ -1,8 +1,12 @@
 import { createRoot, flushSync } from 'octane';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { flushEffects } from '../../../octane/tests/_helpers.ts';
-import Draggable, { DraggableCore } from '../../src/index.tsrx';
-import { DraggableHarness, SvgDraggableHarness } from './_fixtures/DraggableHarness.tsrx';
+import Draggable, { DraggableCore } from '@octanejs/react-draggable';
+import {
+	BareDraggableHarness,
+	DraggableHarness,
+	SvgDraggableHarness,
+} from './_fixtures/DraggableHarness.tsrx';
 
 afterEach(() => {
 	vi.restoreAllMocks();
@@ -35,6 +39,16 @@ describe('Draggable visual contract', () => {
 	it('exports the pinned root values and clones one child without a wrapper', () => {
 		expect(Draggable.displayName).toBe('Draggable');
 		expect(typeof DraggableCore).toBe('function');
+		expect(Draggable.defaultProps).toMatchObject({
+			allowAnyClick: false,
+			allowMobileScroll: false,
+			disabled: false,
+			enableUserSelectHack: true,
+			scale: 1,
+		});
+		for (const callback of ['onStart', 'onDrag', 'onStop', 'onMouseDown'] as const) {
+			expect(typeof Draggable.defaultProps[callback]).toBe('function');
+		}
 		const mounted = mount({ defaultPosition: { x: 10, y: 20 } });
 		expect(mounted.container.children).toHaveLength(1);
 		expect(mounted.node.dataset.kept).toBe('yes');
@@ -72,6 +86,46 @@ describe('Draggable visual contract', () => {
 		flushSync(() => {});
 		expect(mounted.node.style.transform).toBe('translate(3px,4px)');
 		mounted.root.unmount();
+	});
+
+	// @parity-case adapted:draggable-controlled-prop-update
+	it('applies controlled position prop updates on an existing mount', () => {
+		const mounted = mount({ position: { x: 3, y: 4 }, onStop: vi.fn() });
+		expect(mounted.node.style.transform).toBe('translate(3px,4px)');
+		mounted.root.render(DraggableHarness, {
+			nodeRef: mounted.nodeRef,
+			enableUserSelectHack: false,
+			position: { x: 100, y: 100 },
+			onStop: vi.fn(),
+		});
+		flushSync(() => {});
+		flushEffects();
+		expect(mounted.node.style.transform).toBe('translate(100px,100px)');
+		mounted.root.unmount();
+	});
+
+	// @parity-case adapted:draggable-missing-node-ref
+	it('matches the React 19 missing-nodeRef mouse and touch boundary', () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		root.render(BareDraggableHarness, { enableUserSelectHack: false });
+		flushSync(() => {});
+		flushEffects();
+		const node = container.querySelector('.bare')!;
+		const errors: Error[] = [];
+		const onError = (event: ErrorEvent) => {
+			errors.push(event.error);
+			event.preventDefault();
+		};
+		window.addEventListener('error', onError);
+		node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+		window.removeEventListener('error', onError);
+		expect(errors[0]?.message).toBe('<DraggableCore> not mounted on DragStart!');
+		expect(() =>
+			node.dispatchEvent(new Event('touchstart', { bubbles: true, cancelable: true })),
+		).not.toThrow();
+		root.unmount();
 	});
 
 	// @parity-case adapted:draggable-offset-handlers

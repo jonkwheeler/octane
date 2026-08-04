@@ -12,7 +12,7 @@ function FrameFixture() @{
 		>
 			<div ref={ref} id="frame-drag" style={{ width: '20px', height: '20px' }}>drag</div>
 		</Draggable>
-		<output id="frame-trace">{trace}</output>
+		<output id="frame-trace">{trace as string}</output>
 	</>
 }
 

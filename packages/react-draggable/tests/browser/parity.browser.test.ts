@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createServer, type ViteDevServer } from 'vite';
+import { browserName, launchBrowser } from '../../../../test-utils/playwright-browser.js';
 import { octane } from '../../../octane/src/compiler/vite.js';
 
 const directory = dirname(fileURLToPath(import.meta.url));
@@ -23,10 +24,7 @@ function freePort(): Promise<number> {
 
 let server: ViteDevServer;
 let origin: string;
-let playwright: typeof import('playwright');
-
 beforeAll(async () => {
-	playwright = await import('playwright');
 	const port = await freePort();
 	server = await createServer({
 		root: harnessRoot,
@@ -49,8 +47,8 @@ afterAll(async () => server?.close());
 // Browser-platform cases adapted from the pinned test/Draggable.test.jsx and
 // test/DraggableCore.test.jsx suites. The same journey is declared for both
 // required engines; missing browser binaries fail instead of silently skipping.
-async function runNativeJourney(engine: 'chromium' | 'firefox') {
-	const browser = await playwright[engine].launch({ headless: true });
+async function runNativeJourney() {
+	const browser = await launchBrowser({ headless: true });
 	const page = await browser.newPage();
 	try {
 		await page.goto(origin, { waitUntil: 'networkidle' });
@@ -116,7 +114,7 @@ async function runNativeJourney(engine: 'chromium' | 'firefox') {
 					.evaluate((node) => node.classList.contains('react-draggable-dragging')),
 			).toBe(false);
 		} else {
-			expect(engine).toBe('firefox');
+			expect(browserName).toBe('firefox');
 		}
 	} finally {
 		await page.close();
@@ -124,8 +122,8 @@ async function runNativeJourney(engine: 'chromium' | 'firefox') {
 	}
 }
 
-async function runOwnershipJourney(engine: 'chromium' | 'firefox') {
-	const browser = await playwright[engine].launch({ headless: true });
+async function runOwnershipJourney() {
+	const browser = await launchBrowser({ headless: true });
 	const page = await browser.newPage();
 	try {
 		await page.goto(origin, { waitUntil: 'networkidle' });
@@ -284,7 +282,7 @@ async function runOwnershipJourney(engine: 'chromium' | 'firefox') {
 		});
 		if (mixed.touchSupported)
 			expect(mixed.trace.slice(0, 2)).toEqual(['start:mousedown', 'start:touchstart']);
-		else expect(engine).toBe('firefox');
+		else expect(browserName).toBe('firefox');
 		expect(mixed.trace).toContain(mixed.touchSupported ? 'stop:touchend' : 'stop:mouseup');
 		expect(mixed.clean).toBe(true);
 	} finally {
@@ -293,32 +291,17 @@ async function runOwnershipJourney(engine: 'chromium' | 'firefox') {
 	}
 }
 
-describe('Chromium native parity', () => {
-	// @parity-case browser:react-draggable-chromium-native
+describe(`${browserName === 'chromium' ? 'Chromium' : 'Firefox'} native parity`, () => {
+	// @parity-case browser:react-draggable-native
 	it(
 		'proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown',
-		() => runNativeJourney('chromium'),
+		() => runNativeJourney(),
 		60_000,
 	);
-	// @parity-case browser:react-draggable-chromium-ownership-cleanup
+	// @parity-case browser:react-draggable-ownership-cleanup
 	it(
 		'proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions',
-		() => runOwnershipJourney('chromium'),
-		60_000,
-	);
-});
-
-describe('Firefox native parity', () => {
-	// @parity-case browser:react-draggable-firefox-native
-	it(
-		'proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown',
-		() => runNativeJourney('firefox'),
-		60_000,
-	);
-	// @parity-case browser:react-draggable-firefox-ownership-cleanup
-	it(
-		'proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions',
-		() => runOwnershipJourney('firefox'),
+		() => runOwnershipJourney(),
 		60_000,
 	);
 });

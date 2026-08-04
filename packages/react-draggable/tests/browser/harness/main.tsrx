@@ -33,7 +33,7 @@ function BrowserFixture() @{
 		<Draggable nodeRef={touchRef} onDrag={(_event, data) => setTrace(`touch:${data.x},${data.y}`)}>
 			<div ref={touchRef} id="touch-drag">touch</div>
 		</Draggable>
-		<output id="trace">{trace}</output>
+		<output id="trace">{trace as string}</output>
 	</div>
 }
 
@@ -51,7 +51,7 @@ function OwnerDocumentFixture(props: { id: string; bounds?: string }) @{
 		>
 			<div ref={ref} id={`${props.id}-drag`} style={{ width: '20px', height: '20px' }}>drag</div>
 		</Draggable>
-		<output id={`${props.id}-trace`}>{trace}</output>
+		<output id={`${props.id}-trace`}>{trace as string}</output>
 	</div>
 }
 
@@ -99,7 +99,10 @@ function ErrorFixture(props: { id: string; throwOnDrag?: boolean; bounds?: strin
 const callbackErrorHost = document.body.appendChild(document.createElement('div'));
 createRoot(callbackErrorHost).render(ErrorFixture, { id: 'callback-error', throwOnDrag: true });
 const selectorErrorHost = document.body.appendChild(document.createElement('div'));
-createRoot(selectorErrorHost).render(ErrorFixture, { id: 'selector-error', bounds: '.missing-bound' });
+createRoot(selectorErrorHost).render(ErrorFixture, {
+	id: 'selector-error',
+	bounds: '.missing-bound',
+});
 
 const mixedTrace: string[] = [];
 function MixedInputFixture() @{

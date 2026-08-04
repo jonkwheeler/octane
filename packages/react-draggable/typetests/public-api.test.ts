@@ -8,7 +8,7 @@ import Draggable, {
 	type DraggableEventHandler,
 	type DraggableProps,
 	type PositionOffsetControlPosition,
-} from '../src/index.tsrx';
+} from '@octanejs/react-draggable';
 
 // One-for-one Octane type-seam adaptation of the pinned tag's typings/test.tsx
 // and test/typeCompat/fixture.tsx public root imports and accept/reject shapes.
@@ -115,9 +115,25 @@ const bareCoreProps: DraggableCoreProps = {};
 const bareProps: DraggableProps = {};
 
 void [
-	Draggable, DraggableCore, coreProps, props, handler, data, mouseEvent, touchEvent,
-	handlerFalse, allCoreProps, allProps, asCore, axisX, axisY, axisNone, objectBounds,
-	falseBounds, bareCoreProps, bareProps,
+	Draggable,
+	DraggableCore,
+	coreProps,
+	props,
+	handler,
+	data,
+	mouseEvent,
+	touchEvent,
+	handlerFalse,
+	allCoreProps,
+	allProps,
+	asCore,
+	axisX,
+	axisY,
+	axisNone,
+	objectBounds,
+	falseBounds,
+	bareCoreProps,
+	bareProps,
 ];
 Draggable.displayName;
 Draggable.defaultProps;

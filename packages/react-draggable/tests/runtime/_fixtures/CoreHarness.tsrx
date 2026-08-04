@@ -1,6 +1,5 @@
 import { createElement } from 'octane';
-import DraggableCore from '../../../src/DraggableCore.tsrx';
-import type { DraggableCoreProps } from '../../../src/DraggableCore.tsrx';
+import { DraggableCore, type DraggableCoreProps } from '@octanejs/react-draggable';
 
 export function CoreHarness(props: DraggableCoreProps & {
 	nodeRef: { current: HTMLDivElement | null };

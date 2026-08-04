@@ -52,8 +52,7 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 			style?: Record<string, unknown>;
 			ref?: unknown;
 		}>;
-	const internalRef = useRef<HTMLElement | SVGElement | null>(null);
-	const nodeRef = props.nodeRef ?? internalRef;
+	const nodeRef = props.nodeRef;
 	const stateRef = useRef<State | null>(null);
 	if (!stateRef.current) {
 		const initial = props.position ?? props.defaultPosition;
@@ -88,7 +87,7 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 		state,
 		lastX: NaN,
 		lastY: NaN,
-		findDOMNode: () => nodeRef.current as HTMLElement | null,
+		findDOMNode: () => nodeRef?.current ?? null,
 	} as DraggableModel;
 	const onStart = (event: DraggableEvent, coreData: DraggableData) => {
 		if (props.onStart?.(event, createDraggableData(model, coreData)) === false) return false;
@@ -123,7 +122,7 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 		rerender((value) => value + 1);
 	};
 	useLayoutEffect(() => {
-		const isSVG = typeof SVGElement !== 'undefined' && nodeRef.current instanceof SVGElement;
+		const isSVG = typeof SVGElement !== 'undefined' && nodeRef?.current instanceof SVGElement;
 		if (state.isElementSVG !== isSVG) {
 			state.isElementSVG = isSVG;
 			rerender((value) => value + 1);
@@ -140,7 +139,6 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 		? { transform: createSVGTransform(position, props.positionOffset!) }
 		: { style: { ...child.props.style, ...createCSSTransform(position, props.positionOffset!) } };
 	const ref = (value: HTMLElement | SVGElement | null) => {
-		internalRef.current = value;
 		if (props.nodeRef) props.nodeRef.current = value as HTMLElement | null;
 		assignRef(child.props.ref as StructuralRef<HTMLElement | SVGElement> | undefined, value);
 	};
@@ -154,7 +152,7 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 	});
 	return (DraggableCore as unknown as (props: Partial<DraggableCoreProps>) => ElementDescriptor)({
 		...props,
-		nodeRef: nodeRef as { current: HTMLElement | null },
+		nodeRef,
 		onStart,
 		onDrag,
 		onStop,
@@ -169,7 +167,7 @@ const Draggable = DraggableImpl as
 		propTypes?: Record<string, unknown>;
 	};
 Draggable.displayName = 'Draggable';
-Draggable.defaultProps = defaults as DraggableProps;
+Draggable.defaultProps = { ...DraggableCore.defaultProps, ...defaults } as DraggableProps;
 
 export { Draggable };
 export default descriptorChildren(Draggable);
