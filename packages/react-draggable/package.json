@@ -54,8 +54,7 @@
     "test:audit": "node --test tests/audit/upstream-inventory.test.mjs"
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "prop-types": "^15.8.1"
+    "clsx": "^2.1.1"
   },
   "peerDependencies": {
     "octane": "workspace:*"

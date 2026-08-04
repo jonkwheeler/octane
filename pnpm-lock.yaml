@@ -4796,9 +4796,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      prop-types:
-        specifier: ^15.8.1
-        version: 15.8.1
     devDependencies:
       '@tsrx/react':
         specifier: catalog:default

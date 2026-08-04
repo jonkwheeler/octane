@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "52c282eca0ebf364c806e8c690ea2861a9b53892e8fbf5b4cd699bda25a65d6b"
+      "lockfileSha256": "25c7b8ba8c69857ae339cff4007822f6ed594f1551b233fd8c2fb0b5f34a9db5"
     }
   },
   "lanes": [
@@ -86,7 +86,7 @@
         {
           "path": "packages/react-draggable/tests/ssr/server.test.ts",
           "role": "test",
-          "sha256": "04dfd8f1869cea10763f67f2b9b274ff329fd500b68033089f72cf86b06dffd6",
+          "sha256": "aefd127fc881f328acfa1d11db13c9dd34bfa03828ed342af5459b1d031a1997",
           "cases": [
             {
               "id": "adapted:react-draggable-ssr",
@@ -98,7 +98,7 @@
         {
           "path": "packages/react-draggable/tests/ssr/_fixtures/server.tsrx",
           "role": "support",
-          "sha256": "19e1fef4aa786be843783daf513a38668c57f746ac460396ae2fbbd88a58eee9"
+          "sha256": "b467366472c72292c0f2a1b6735af597d206bca8c98162057cd65b5758dd177c"
         }
       ]
     },

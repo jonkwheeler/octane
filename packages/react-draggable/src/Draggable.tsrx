@@ -152,6 +152,7 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 	const cloned = cloneElement(child, {
 		...transform,
 		ref,
+		class: undefined,
 		className: clsx(child.props.className ?? child.props.class, props.defaultClassName, {
 			[props.defaultClassNameDragging]: state.dragging,
 			[props.defaultClassNameDragged]: state.dragged,
