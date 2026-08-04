@@ -4,19 +4,26 @@ import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node
 import { pathToFileURL } from 'node:url';
 import { compile } from '../packages/octane/src/compiler/compile.js';
 
-const tsrxPlugin = {
-	name: 'octane-tsrx-commonjs',
-	setup(build) {
-		build.onLoad({ filter: /\.tsrx$/ }, async ({ path }) => {
-			const source = await readFile(path, 'utf8');
-			const result = compile(source, path, { dev: false, mode: 'client' });
-			if (result.diagnostics?.some((diagnostic) => diagnostic.severity === 'error')) {
-				throw new Error(result.diagnostics.map((diagnostic) => diagnostic.message).join('; '));
-			}
-			return { contents: result.code, loader: 'js', resolveDir: dirname(path) };
-		});
-	},
-};
+function createTsrxPlugin(cache) {
+	return {
+		name: 'octane-tsrx-commonjs',
+		setup(build) {
+			build.onLoad({ filter: /\.tsrx$/ }, async ({ path }) => {
+				let compiled = cache.get(path);
+				if (!compiled) {
+					const source = await readFile(path, 'utf8');
+					const result = compile(source, path, { dev: false, mode: 'client' });
+					if (result.diagnostics?.some((diagnostic) => diagnostic.severity === 'error')) {
+						throw new Error(result.diagnostics.map((diagnostic) => diagnostic.message).join('; '));
+					}
+					compiled = { contents: result.code, loader: 'js', resolveDir: dirname(path) };
+					cache.set(path, compiled);
+				}
+				return compiled;
+			});
+		},
+	};
+}
 
 function isWithin(directory, candidate) {
 	const path = relative(directory, candidate);
@@ -28,7 +35,7 @@ function outputRelative(sourceRoot, sourcePath) {
 	return sourceRelative.slice(0, -extname(sourceRelative).length) + '.cjs';
 }
 
-async function discoverGraph({ packageDir, entryPaths }) {
+async function discoverGraph({ packageDir, entryPaths, tsrxPlugin }) {
 	let metadata;
 	try {
 		const result = await build({
@@ -75,6 +82,16 @@ async function discoverGraph({ packageDir, entryPaths }) {
 	return modules;
 }
 
+function dependencyTarget({ dependency, sourceRoot, outdir }) {
+	if (extname(dependency) !== '.json') {
+		return join(outdir, outputRelative(sourceRoot, dependency));
+	}
+	if (isWithin(sourceRoot, dependency)) {
+		return join(outdir, relative(sourceRoot, dependency));
+	}
+	return dependency;
+}
+
 /**
  * Emit an authored JS/TS graph as per-module CommonJS without bundling package dependencies.
  */
@@ -104,7 +121,8 @@ export async function buildPackageCommonjs({ packageDir, entries, outdir, source
 			throw new Error(`CommonJS entry must stay inside the package directory: ${entryPath}`);
 		}
 	}
-	const modules = await discoverGraph({ packageDir: absolutePackageDir, entryPaths });
+	const tsrxPlugin = createTsrxPlugin(new Map());
+	const modules = await discoverGraph({ packageDir: absolutePackageDir, entryPaths, tsrxPlugin });
 	const sourceModules = [...modules.keys()].filter((path) => extname(path) !== '.json');
 	const outputs = new Map();
 	for (const sourcePath of sourceModules) {
@@ -136,31 +154,30 @@ export async function buildPackageCommonjs({ packageDir, entries, outdir, source
 		plugins: [tsrxPlugin],
 	});
 
-	for (const [sourcePath, module] of modules) {
+	await Promise.all([...modules].map(async ([sourcePath, module]) => {
 		if (extname(sourcePath) === '.json') {
 			if (isWithin(absoluteSourceRoot, sourcePath)) {
 				const destination = join(absoluteOutdir, relative(absoluteSourceRoot, sourcePath));
 				await mkdir(dirname(destination), { recursive: true });
 				await cp(sourcePath, destination);
 			}
-			continue;
+			return;
 		}
 		const outputPath = join(absoluteOutdir, outputRelative(absoluteSourceRoot, sourcePath));
 		let output = await readFile(outputPath, 'utf8');
 		for (const [specifier, dependency] of module.relativeImports) {
-			const target =
-				extname(dependency) === '.json'
-					? isWithin(absoluteSourceRoot, dependency)
-						? join(absoluteOutdir, relative(absoluteSourceRoot, dependency))
-						: dependency
-					: join(absoluteOutdir, outputRelative(absoluteSourceRoot, dependency));
+			const target = dependencyTarget({
+				dependency,
+				sourceRoot: absoluteSourceRoot,
+				outdir: absoluteOutdir,
+			});
 			let rewritten = relative(dirname(outputPath), target).split(sep).join('/');
 			if (!rewritten.startsWith('.')) rewritten = `./${rewritten}`;
 			output = output.replaceAll(`require("${specifier}")`, `require("${rewritten}")`);
 			output = output.replaceAll(`require('${specifier}')`, `require('${rewritten}')`);
 		}
 		await writeFile(outputPath, output);
-	}
+	}));
 
 	const resultEntries = Object.fromEntries(
 		entryPaths.map((entryPath, index) => [
