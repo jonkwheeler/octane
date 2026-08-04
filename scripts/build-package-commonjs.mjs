@@ -2,6 +2,21 @@ import { build } from 'esbuild';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { compile } from '../packages/octane/src/compiler/compile.js';
+
+const tsrxPlugin = {
+	name: 'octane-tsrx-commonjs',
+	setup(build) {
+		build.onLoad({ filter: /\.tsrx$/ }, async ({ path }) => {
+			const source = await readFile(path, 'utf8');
+			const result = compile(source, path, { dev: false, mode: 'client' });
+			if (result.diagnostics?.some((diagnostic) => diagnostic.severity === 'error')) {
+				throw new Error(result.diagnostics.map((diagnostic) => diagnostic.message).join('; '));
+			}
+			return { contents: result.code, loader: 'js', resolveDir: dirname(path) };
+		});
+	},
+};
 
 function isWithin(directory, candidate) {
 	const path = relative(directory, candidate);
@@ -27,6 +42,7 @@ async function discoverGraph({ packageDir, entryPaths }) {
 			target: 'node22',
 			packages: 'external',
 			metafile: true,
+			plugins: [tsrxPlugin],
 			logLevel: 'silent',
 		});
 		if (result.warnings.length > 0) {
@@ -42,11 +58,6 @@ async function discoverGraph({ packageDir, entryPaths }) {
 		const path = resolve(packageDir, input);
 		if (!isWithin(packageDir, path)) {
 			throw new Error(`CommonJS source escapes the package directory: ${path}`);
-		}
-		if (path.endsWith('.tsrx')) {
-			throw new Error(
-				`CommonJS publication does not support .tsrx source: ${relative(packageDir, path)}`,
-			);
 		}
 		const relativeImports = new Map();
 		for (const dependencyMetadata of inputMetadata.imports) {
@@ -122,6 +133,7 @@ export async function buildPackageCommonjs({ packageDir, entries, outdir, source
 		target: 'node22',
 		bundle: false,
 		logLevel: 'silent',
+		plugins: [tsrxPlugin],
 	});
 
 	for (const [sourcePath, module] of modules) {
@@ -167,7 +179,7 @@ export async function buildPackageCommonjsSourceTree({
 	const sourceDirectory = resolve(packageDir, sourceRoot);
 	const entries = (await readdir(sourceDirectory, { recursive: true }))
 		.filter(
-			(path) => ['.ts', '.js', '.mts', '.mjs'].includes(extname(path)) && !path.endsWith('.d.ts'),
+			(path) => ['.ts', '.js', '.mts', '.mjs', '.tsrx'].includes(extname(path)) && !path.endsWith('.d.ts'),
 		)
 		.map((path) => join(sourceRoot, path));
 	return buildPackageCommonjs({ packageDir, entries, outdir, sourceRoot });
