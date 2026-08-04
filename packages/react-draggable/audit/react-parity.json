@@ -130,7 +130,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-draggable-browser",
-      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Browser-platform evidence only; no physical-device or mobile-WebKit claim. The branch consumes shared Firefox runner PR #548 through reviewed head 994dc59fe9646e01da137b15825c1743a340017e. CommonJS PR #550 at 4acb3b6052ef27463a791382edbd0f54e2a30470 is outside U5 and unclaimed here.",
+      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Browser-platform evidence only; no physical-device or mobile-WebKit claim. The branch consumes shared Firefox runner PR #548 through reviewed head 994dc59fe9646e01da137b15825c1743a340017e and CommonJS package-condition PR #550 through the TSЯX-capable head 8a43c1ac7.",
       "files": [
         {
           "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",

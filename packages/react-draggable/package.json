@@ -31,15 +31,23 @@
   "types": "./src/index.tsrx",
   "files": [
     "src",
+    "dist/cjs",
     "README.md",
     "UPSTREAM.md",
     "LICENSE"
   ],
   "exports": {
-    ".": "./src/index.tsrx",
+    ".": {
+      "types": "./src/index.tsrx",
+      "import": "./src/index.tsrx",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./src/index.tsrx"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
+    "build:cjs": "node ../../scripts/build-package-commonjs.mjs",
+    "prepack": "pnpm build:cjs",
     "test": "vitest run --root ../.. --project react-draggable --project react-draggable-ssr --project react-draggable-hydration --project react-draggable-differential",
     "upstream:verify": "node audit/upstream-inventory.mjs",
     "test:audit": "node --test tests/audit/upstream-inventory.test.mjs"
