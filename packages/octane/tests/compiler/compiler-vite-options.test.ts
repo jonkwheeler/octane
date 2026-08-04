@@ -221,7 +221,6 @@ describe('octane/compiler/vite public options', () => {
 		const metadata = {
 			'octane:descriptor-children-exports': {
 				exports: ['default'],
-				fingerprint: 'current-graph-transform',
 			},
 		};
 		const result = (await (plugin.transform as any).call(
@@ -287,7 +286,7 @@ describe('octane/compiler/vite public options', () => {
 					load: async () => ({
 						meta: {
 							'octane:descriptor-children-exports': {
-								exports: ['Slot'],
+								exports: ['Slot', null],
 							},
 						},
 					}),

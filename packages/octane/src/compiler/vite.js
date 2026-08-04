@@ -13,7 +13,6 @@
 // module graphs evaluate this file against an externalized `node:*` shim.
 // Named imports trip the shim at evaluation; namespace member access only
 // throws if a Node-only code path actually runs.
-import * as nodeCrypto from 'node:crypto';
 import * as nodeFs from 'node:fs';
 import * as nodePath from 'node:path';
 import {
@@ -64,16 +63,12 @@ function voidImportKey(request, imported) {
 	return `${request}\0${imported}`;
 }
 
-function compiledCodeFingerprint(code) {
-	return nodeCrypto.createHash('sha256').update(code).digest('base64url');
-}
-
 async function loadImportMetadata(
 	context,
 	imports,
 	importer,
 	metadataKey,
-	{ failLoud = false } = {},
+	{ failLoud = false, descriptorSourceCache } = {},
 ) {
 	if (typeof context.resolve !== 'function' || typeof context.load !== 'function') return new Set();
 	const proven = new Set();
@@ -132,26 +127,24 @@ async function loadImportMetadata(
 				// `this.load()` is allowed to expose a pre-transform snapshot. For a
 				// real filesystem module, classify direct markers from the exact source
 				// rather than silently making lowering depend on traversal order.
-				try {
-					const source = nodeFs.readFileSync(cleanModuleId(resolved.id), 'utf8');
-					const exports = findDescriptorChildrenExports(source, resolved.id);
-					if (exports.length > 0) {
-						metadata = {
-							exports,
-							fingerprint: compiledCodeFingerprint(source),
-						};
-					}
-				} catch {
-					// Virtual and non-filesystem modules still rely on graph metadata.
+				const sourceId = cleanModuleId(resolved.id);
+				let classification = descriptorSourceCache?.get(sourceId);
+				if (!classification) {
+					classification = nodeFs.promises
+						.readFile(sourceId, 'utf8')
+						.then((source) => findDescriptorChildrenExports(source, resolved.id))
+						.catch(() => []);
+					descriptorSourceCache?.set(sourceId, classification);
 				}
+				const exports = await classification;
+				if (exports.length > 0) metadata = { exports };
 			}
 			if (metadata == null) return;
 			const valid =
 				metadata !== null &&
 				typeof metadata === 'object' &&
 				Array.isArray(metadata.exports) &&
-				typeof metadata.fingerprint === 'string' &&
-				metadata.fingerprint.length > 0;
+				metadata.exports.every((value) => typeof value === 'string');
 			if (!valid) {
 				if (failLoud)
 					throw new Error(`Invalid descriptor-children metadata for ${request} from ${importer}`);
@@ -171,9 +164,10 @@ async function loadVoidComponentImports(context, imports, importer) {
 	return loadImportMetadata(context, imports, importer, VOID_EXPORTS_META);
 }
 
-async function loadDescriptorChildrenImports(context, imports, importer) {
+async function loadDescriptorChildrenImports(context, imports, importer, descriptorSourceCache) {
 	return loadImportMetadata(context, imports, importer, DESCRIPTOR_CHILDREN_EXPORTS_META, {
 		failLoud: true,
+		descriptorSourceCache,
 	});
 }
 
@@ -261,6 +255,7 @@ export function octane(options = {}) {
 	const requireDirective = options.requireDirective === true;
 	let logger = null;
 	const warn = (message) => (logger ?? console).warn(message);
+	const descriptorSourceCache = new Map();
 	let compiler = createOctaneCompiler({
 		root: projectRoot,
 		exclude: options.exclude,
@@ -274,6 +269,7 @@ export function octane(options = {}) {
 	const forceSsr = options.ssr;
 
 	const resetCompiler = (root) => {
+		descriptorSourceCache.clear();
 		projectRoot = nodePath.resolve(root);
 		compiler = createOctaneCompiler({
 			root: projectRoot,
@@ -348,6 +344,7 @@ export function octane(options = {}) {
 		},
 		watchChange(id) {
 			compiler.invalidate(id);
+			descriptorSourceCache.delete(cleanModuleId(id));
 		},
 		generateBundle(_outputOptions, bundle) {
 			if (!emitClientReferenceManifest) return;
@@ -407,7 +404,6 @@ export function octane(options = {}) {
 						meta: {
 							[DESCRIPTOR_CHILDREN_EXPORTS_META]: {
 								exports: [...new Set(propagatedExports)],
-								fingerprint: compiledCodeFingerprint(code),
 							},
 						},
 					};
@@ -420,7 +416,6 @@ export function octane(options = {}) {
 				if (result.kind === 'compile' && Array.isArray(result.voidComponentExports)) {
 					meta[VOID_EXPORTS_META] = {
 						exports: result.voidComponentExports ?? [],
-						fingerprint: compiledCodeFingerprint(result.code),
 					};
 				}
 				if (
@@ -431,7 +426,6 @@ export function octane(options = {}) {
 						exports: [
 							...new Set([...(result.descriptorChildrenExports ?? []), ...propagatedExports]),
 						],
-						fingerprint: compiledCodeFingerprint(result.code),
 					};
 				}
 				if (result.kind === 'none' && Object.keys(meta).length === 0) return null;
@@ -443,10 +437,12 @@ export function octane(options = {}) {
 			};
 
 			if (server) {
-				return loadClientOnlyImports(this, compiler, code, id).then((imports) =>
-					loadDescriptorChildrenImports(this, findDescriptorChildrenImports(code, id), id).then(
-						(descriptorProven) => transformWithProof(null, descriptorProven, imports),
-					),
+				const descriptorImports = findDescriptorChildrenImports(code, id);
+				return Promise.all([
+					loadClientOnlyImports(this, compiler, code, id),
+					loadDescriptorChildrenImports(this, descriptorImports, id, descriptorSourceCache),
+				]).then(([imports, descriptorProven]) =>
+					transformWithProof(null, descriptorProven, imports),
 				);
 			}
 
@@ -457,7 +453,7 @@ export function octane(options = {}) {
 			const descriptorImports = findDescriptorChildrenImports(code, id);
 			return Promise.all([
 				loadVoidComponentImports(this, voidImports, id),
-				loadDescriptorChildrenImports(this, descriptorImports, id),
+				loadDescriptorChildrenImports(this, descriptorImports, id, descriptorSourceCache),
 			]).then(([proven, descriptorProven]) => transformWithProof(proven, descriptorProven));
 		},
 	};
