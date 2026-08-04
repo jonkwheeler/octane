@@ -282,11 +282,11 @@ describe('CI workflow aggregation', () => {
 				heavyIntegration,
 				new RegExp(`- lane: browser\\n\\s+playwright_browser: ${engine}`),
 			);
-			assert.match(
-				jobSource('release_change'),
-				new RegExp(`"heavy integration \\(browser - ${engine}\\)"`),
-			);
 		}
+		assert.match(
+			jobSource('release_change'),
+			/\.\.\.\["chromium", "firefox"\]\.map\([\s\S]*`heavy integration \(browser - \$\{engine\}\)`/,
+		);
 		assert.equal((heavyIntegration.match(/- lane: browser$/gm) ?? []).length, 2);
 		assert.equal((heavyIntegration.match(/- lane: package-builds$/gm) ?? []).length, 1);
 		assert.equal((heavyIntegration.match(/- lane: astro$/gm) ?? []).length, 1);
@@ -313,7 +313,7 @@ describe('CI workflow aggregation', () => {
 		}
 		assert.deepEqual(baseProjects.get('playwright-browser-selector').test.include, [
 			'test-utils/playwright-browser.test.ts',
-			'packages/three/tests/browser/_playwright.test.ts',
+			'test-utils/three-playwright-launch.test.ts',
 		]);
 	});
 });
