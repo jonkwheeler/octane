@@ -194,9 +194,11 @@ export async function buildPackageCommonjs({
 		]),
 	);
 	if (callableDefault) {
-		const rootEntry = resultEntries['src/index.ts'] ?? resultEntries['src/index.js'];
+		const rootEntry = Object.entries(resultEntries).find(([entry]) =>
+			/^src\/index\.(?:[cm]?[jt]s|[jt]sx|tsrx)$/.test(entry.split(sep).join('/')),
+		)?.[1];
 		if (!rootEntry) {
-			throw new Error('callable CommonJS default requires a src/index.ts or src/index.js entry');
+			throw new Error('callable CommonJS default requires a src/index source entry');
 		}
 		const rootTarget = `./${relative(outdir, rootEntry).split(sep).join('/')}`;
 		await writeFile(
