@@ -11,12 +11,27 @@
     "integrity": "sha256:bc0080ec78244f8d7adeddcad45b270d726e599e6ead2e8183b42bbf97f1701a",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/usehooks-ts/src"], "include": ["$a"], "exclude": [] },
+    "source": {
+      "roots": [
+        "packages/usehooks-ts/src"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    },
     "tests": {
-      "roots": ["packages/usehooks-ts/tests/differential"],
-      "include": ["$a"],
+      "roots": [
+        "packages/usehooks-ts/tests/differential"
+      ],
+      "include": [
+        "$a"
+      ],
       "exclude": []
     }
   },
@@ -33,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "83b2cac4d1e87d2c6312f6d544488418d0c98916fc6c25c0d2d3e9aadca9f872"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -42,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "usehooks-ts",
+      "project": "usehooks-ts-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "One shared fixture compares the supported state-hook cohort through six interactions.",
       "files": [
@@ -76,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "df10fde7a69cb710cc595a47cb792a748d4b9a0633ef87a0f457dc2dd63a286a"
+          "sha256": "81cc684c80fd6637009a9156b0d0a9682be92e56eaf903be194e2df69308c6bb"
         }
       ]
     }
