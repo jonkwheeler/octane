@@ -11,16 +11,29 @@
     "integrity": "sha256:8dc9e1f04cda91beab7818cc11fd5cee8c5f316b84934686c892c8cfb9b808ac",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "absent", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/streamdown/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/streamdown/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/streamdown/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/streamdown/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "streamdown",
+      "project": "streamdown-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM.",
       "files": [
@@ -197,7 +210,9 @@
   "divergences": [
     {
       "id": "streamdown-native-events",
-      "caseIds": ["adapted:streamdown-native-events"],
+      "caseIds": [
+        "adapted:streamdown-native-events"
+      ],
       "upstreamResult": "Custom React components receive React synthetic event objects from rendered Markdown hosts.",
       "octaneResult": "Custom Octane components receive native DOM event objects with native currentTarget semantics.",
       "rationale": "Octane uses delegated native DOM events instead of React's synthetic event layer.",
@@ -209,7 +224,9 @@
     },
     {
       "id": "streamdown-consolidated-plugins",
-      "caseIds": ["adapted:streamdown-consolidated-plugins"],
+      "caseIds": [
+        "adapted:streamdown-consolidated-plugins"
+      ],
       "upstreamResult": "Code, math, Mermaid, and CJK integrations ship as four separate @streamdown packages.",
       "octaneResult": "All four integrations ship as @octanejs/streamdown package subpath exports.",
       "rationale": "The Octane binding consolidates one renderer-specific distribution surface.",
@@ -221,7 +238,9 @@
     },
     {
       "id": "streamdown-independent-animation-timing",
-      "caseIds": ["differential:streamdown-streaming-append"],
+      "caseIds": [
+        "differential:streamdown-streaming-append"
+      ],
       "upstreamResult": "Version 2.5.0 shares animation progress across sibling blocks, producing 0ms durations for later sibling text.",
       "octaneResult": "Each streaming block tracks progress independently, producing 100ms durations and a 40ms third-fragment delay in the pinned fixture.",
       "rationale": "Per-block progress prevents one completed block from suppressing animation in a newly appended sibling.",
@@ -233,7 +252,9 @@
     },
     {
       "id": "streamdown-code-class-corrections",
-      "caseIds": ["adapted:streamdown-code-class-corrections"],
+      "caseIds": [
+        "adapted:streamdown-code-class-corrections"
+      ],
       "upstreamResult": "Version 2.5.0 emits two unbalanced Tailwind arbitrary-value background class strings.",
       "octaneResult": "The light and dark code-block background class strings contain balanced closing parentheses.",
       "rationale": "Balanced arbitrary-value syntax is required for Tailwind to recognize the classes.",
@@ -245,7 +266,9 @@
     },
     {
       "id": "streamdown-icon-sizing",
-      "caseIds": ["adapted:streamdown-icon-sizing"],
+      "caseIds": [
+        "adapted:streamdown-icon-sizing"
+      ],
       "upstreamResult": "Version 2.5.0 leaves the size prop as an inert SVG attribute while width and height remain 16.",
       "octaneResult": "Built-in icons consume size into exact width and height attributes and omit the inert size attribute.",
       "rationale": "The declared icon size should control its rendered dimensions.",
