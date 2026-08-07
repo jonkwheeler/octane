@@ -11,16 +11,27 @@
     "integrity": "sha256:d2f17af8384c1f572cb3133153fe292546f4bb2768afcf30cc02091990ee057f",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/apollo-client/src"],
-      "include": ["\\.(?:js|d\\.ts)$"],
+      "roots": [
+        "packages/apollo-client/src"
+      ],
+      "include": [
+        "\\.(?:js|d\\.ts)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/apollo-client/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/apollo-client/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -46,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "apollo-client",
+      "project": "apollo-client-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs an exact cache-only provider/query scenario against the pinned React adapter.",
       "files": [
