@@ -706,7 +706,10 @@ export default defineConfig({
 				test: {
 					name: 'nuqs',
 					include: ['packages/nuqs/tests/**/*.test.ts'],
-					exclude: ['packages/nuqs/tests/ssr/**/*.test.ts'],
+					exclude: [
+						'packages/nuqs/tests/ssr/**/*.test.ts',
+						'packages/nuqs/tests/differential/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
