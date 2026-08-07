@@ -1,6 +1,5 @@
-import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
-import { beforeAll, describe, it } from 'vitest';
+import { describe, it } from 'vitest';
 import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/render-diff.tsrx');
