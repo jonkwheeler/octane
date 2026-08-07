@@ -1015,6 +1015,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-ai',
 					include: [
@@ -1023,7 +1024,6 @@ export default defineConfig({
 						'packages/tanstack-ai/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					globalSetup: ['packages/tanstack-ai/tests/differential/_setup.ts'],
 					setupFiles: ['packages/tanstack-ai/tests/conformance/test-setup.ts'],
 					globals: false,
 				},
@@ -1046,6 +1046,34 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-ai-differential',
+					include: ['packages/tanstack-ai/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/tanstack-ai/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-ai$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-ai/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-ai-ssr',
 					include: ['packages/tanstack-ai/tests/ssr/**/*.test.ts'],
