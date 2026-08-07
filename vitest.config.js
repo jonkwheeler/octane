@@ -1289,7 +1289,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/wagmi/tests/differential/**/*.test.ts'],
+				},
 				test: {
 					name: 'wagmi',
 					include: ['packages/wagmi/tests/**/*.test.ts'],
