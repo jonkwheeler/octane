@@ -11,14 +11,31 @@
     "integrity": "sha256:90ba3507f7fefcf8654c36bcedffa1f7b96d5a9ed7cde14a9df52107eb90c825",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "insufficient" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "insufficient"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/valtio/src"],
-      "include": ["\\.ts$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/valtio/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
-    "tests": { "roots": ["packages/valtio/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+    "tests": {
+      "roots": [
+        "packages/valtio/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -33,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1aaed814bed9a4c75adadd47ae2f9c2c69e9c636cbfef9bb858386956ee99946"
+      "lockfileSha256": "8f5de954b3e37a59fd07ee31ab5ec040e85f45d08fc4245d2049c489d1504ad2"
     }
   },
   "lanes": [
@@ -42,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "valtio",
+      "project": "valtio-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact accessed-snapshot and mutable useProxy scenarios against valtio@2.3.2.",
       "files": [
@@ -159,7 +176,9 @@
   "divergences": [
     {
       "id": "valtio-debug-labels",
-      "caseIds": ["adapted:valtio-debug-labels"],
+      "caseIds": [
+        "adapted:valtio-debug-labels"
+      ],
       "upstreamResult": "Valtio reports affected snapshot paths through React useDebugValue for React DevTools.",
       "octaneResult": "The Octane hook omits the React-specific debug label while preserving snapshot behavior.",
       "rationale": "Octane useDebugValue is currently a no-op and there is no React DevTools channel to populate.",
