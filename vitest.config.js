@@ -1235,9 +1235,33 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'wagmi',
 					include: ['packages/wagmi/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					exclude: [''packages/wagmi/tests/differential/**/*.test.ts''],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/wagmi$/,
+							replacement: resolve(import.meta.dirname, 'packages/wagmi/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/wagmi\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/wagmi/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'wagmi-differential',
+					include: ['packages/wagmi/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/wagmi/tests/differential/_setup.ts'],
 					globals: false,
