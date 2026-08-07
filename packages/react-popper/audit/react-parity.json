@@ -10,17 +10,31 @@
     "integrity": "sha256:dc36f3a47a18a0a87e83f6488f8c6119ba286b0f9482ce184e8372d245221f04",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-popper/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-popper/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-popper/tests", "packages/react-popper/typetests"],
-      "include": ["\\.test\\.(?:ts|tsx)$"],
-      "exclude": ["/audit/"]
+      "roots": [
+        "packages/react-popper/tests",
+        "packages/react-popper/typetests"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|tsx)$"
+      ],
+      "exclude": [
+        "/audit/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -50,7 +64,7 @@
         {
           "path": "packages/react-popper/tests/runtime/public.test.ts",
           "role": "test",
-          "sha256": "00252a9e2e2453b7855367e4510dfb8f75ebb4aa925d2085d6552733082ee46f",
+          "sha256": "458acc09cc696c60d5b0746406241cb31d4c7b98c40bb74e61252ce7b4ab0cd0",
           "cases": [
             {
               "id": "adapted:react-popper-runtime",
