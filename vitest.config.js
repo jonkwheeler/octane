@@ -2183,6 +2183,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tiptap',
 					include: [
@@ -2191,6 +2192,28 @@ export default defineConfig({
 						'packages/tiptap/tests/differential/**/*.test.ts',
 						'packages/tiptap/tests/hydration/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tiptap\/menus$/,
+							replacement: resolve(import.meta.dirname, 'packages/tiptap/src/menus/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tiptap$/,
+							replacement: resolve(import.meta.dirname, 'packages/tiptap/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tiptap-differential',
+					include: ['packages/tiptap/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/tiptap/tests/differential/_setup.ts'],
 					globals: false,
@@ -2210,6 +2233,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tiptap-ssr',
 					include: ['packages/tiptap/tests/ssr/**/*.test.ts'],
@@ -2235,6 +2259,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tiptap-browser',
 					include: ['packages/tiptap/tests/browser/**/*.test.ts'],
