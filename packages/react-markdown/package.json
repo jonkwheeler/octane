@@ -5,7 +5,7 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "react-markdown 10.1.0 bindings for Octane",
   "publishConfig": {

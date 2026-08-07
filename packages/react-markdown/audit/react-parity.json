@@ -11,17 +11,30 @@
     "integrity": "sha256:205f5c607c68e1e42b8d7a036326bdb3a105ae55e6469ecfcaf998004609d5f7",
     "verification": "verified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-markdown/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/react-markdown/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-markdown/tests"],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-      "exclude": ["packages/react-markdown/tests/pristine/"]
+      "roots": [
+        "packages/react-markdown/tests"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": [
+        "packages/react-markdown/tests/pristine/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -125,7 +138,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "e8faf51e5782aa0ae1494027ad8aafd638d4fcbbaddbfd958d9f3b86d52fe51f"
+          "sha256": "5a3fe39cbb8d83737b644ba9b2f8dbffb820ed76b08cf7c468a208e22e22fe2c"
         }
       ]
     },
@@ -230,7 +243,9 @@
   "divergences": [
     {
       "id": "react-markdown-react-image-preload",
-      "caseIds": ["react-markdown:differential:image-preload"],
+      "caseIds": [
+        "react-markdown:differential:image-preload"
+      ],
       "upstreamResult": "React 19 server rendering inserts an image preload link before Markdown image markup.",
       "octaneResult": "Octane renders the equivalent image element without React framework-managed preloading.",
       "rationale": "Automatic resource hint insertion belongs to the framework renderer rather than react-markdown.",
