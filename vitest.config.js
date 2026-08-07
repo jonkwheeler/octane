@@ -1249,9 +1249,46 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-virtual',
 					include: ['packages/tanstack-virtual/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					exclude: [''packages/tanstack-virtual/tests/differential/**/*.test.ts''],
+					// Same differential precompile, but for virtualizer fixtures: also
+					// rewrites `@octanejs/tanstack-virtual` → `@tanstack/react-virtual` so
+					// the React side runs the real react-virtual adapter over the SAME
+					// virtual-core.
+					// jsdom affordances virtual-core needs (no-op ResizeObserver,
+					// Element.scrollTo shim, MAX_SAFE_INTEGER scroll dimensions) —
+					// installed once for the whole project so BOTH differential sides
+					// share them.
+					setupFiles: ['packages/tanstack-virtual/tests/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				// `@octanejs/tanstack-virtual` is the package under test; alias the
+				// public name (and subpaths) to source so fixtures import it exactly as
+				// a consumer would (and the differential React side rewrites the same
+				// specifiers to `@tanstack/react-virtual`).
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-virtual$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-virtual/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-virtual\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-virtual/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-virtual-differential',
+					include: ['packages/tanstack-virtual/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Same differential precompile, but for virtualizer fixtures: also
 					// rewrites `@octanejs/tanstack-virtual` → `@tanstack/react-virtual` so
@@ -1262,7 +1299,6 @@ export default defineConfig({
 					// Element.scrollTo shim, MAX_SAFE_INTEGER scroll dimensions) —
 					// installed once for the whole project so BOTH differential sides
 					// share them.
-					setupFiles: ['packages/tanstack-virtual/tests/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
