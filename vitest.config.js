@@ -964,6 +964,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-form',
 					include: [
@@ -971,7 +972,6 @@ export default defineConfig({
 						'packages/tanstack-form/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					globalSetup: ['packages/tanstack-form/tests/differential/_setup.ts'],
 					setupFiles: ['packages/tanstack-form/tests/conformance/test-setup.ts'],
 					globals: false,
 				},
@@ -994,6 +994,34 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-form-differential',
+					include: ['packages/tanstack-form/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/tanstack-form/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-form$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-form/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-form-ssr',
 					include: ['packages/tanstack-form/tests/ssr/**/*.test.ts'],
