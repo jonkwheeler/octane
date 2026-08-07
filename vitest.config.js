@@ -2213,7 +2213,7 @@ export default defineConfig({
 					name: 'lexical',
 					include: ['packages/lexical/tests/**/*.test.ts', 'packages/lexical/tests/**/*.test.tsx'],
 					environment: 'jsdom',
-					exclude: [''packages/lexical/tests/differential/**/*.test.ts''],
+					exclude: ['packages/lexical/tests/differential/**/*.test.ts'],
 					// Precompiles `.tsrx` fixtures → real @lexical/react for the differential
 					// oracle (rewrites `@octanejs/lexical/X` → `@lexical/react/X`).
 					globals: false,
