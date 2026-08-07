@@ -61,6 +61,11 @@ export function createTransactionExecutor<TPayload, TSigned, TSignature>(options
 		try {
 			signed = await options.sign(context);
 		} catch (cause) {
+			if (operation !== active || !same(context, options.getContext()))
+				throw new TransactionFailure(
+					'cancelled-before-dispatch',
+					'Transaction context changed before wallet dispatch',
+				);
 			throw new TransactionFailure('signing-failed', 'Wallet rejected or failed signing', cause);
 		}
 		if (operation !== active || !same(context, options.getContext()))
