@@ -2269,6 +2269,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'floating-ui',
 					include: [
@@ -2298,6 +2299,36 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'floating-ui-differential',
+					include: ['packages/floating-ui/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/floating-ui/tests/differential/_setup.ts'],
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				// floating-ui's `.ts` hooks forward the caller's slot via subSlot — its
+				// package.json declares manual hook slots, so the auto-slotting pass skips
+				// them (the `.tsx` fixtures that call them are full-compiled and inject the
+				// trailing slot).
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'floating-ui-browser',
 					include: ['packages/floating-ui/tests/browser/**/*.test.ts'],
