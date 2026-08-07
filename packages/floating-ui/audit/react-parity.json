@@ -11,12 +11,27 @@
     "integrity": "sha256:55480b7a99c1bffdc662c4b67492503bd7d7705b82c43e1fcb522e71a07e695b",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/floating-ui/src"], "include": ["\\.ts$"], "exclude": [] },
+    "source": {
+      "roots": [
+        "packages/floating-ui/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": []
+    },
     "tests": {
-      "roots": ["packages/floating-ui/tests"],
-      "include": ["\\.test\\.(?:ts|tsx)$"],
+      "roots": [
+        "packages/floating-ui/tests"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|tsx)$"
+      ],
       "exclude": []
     }
   },
@@ -33,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "63e1615c5e7f2d68c8248c0d485a35966ae05f53d224c2ecc62b65fd715b610a"
+      "lockfileSha256": "7477d672ad35f1007394d6ff66964d54dd755dc2864a1a9abb1f117d65939d12"
     }
   },
   "lanes": [
@@ -49,7 +64,7 @@
         {
           "path": "packages/floating-ui/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "c8a25b6f10e3c4d916a9136fe7c5d039775a427cd8480daec96ef3a3cfa9257c",
+          "sha256": "8af202037be504182d268d67cd1d05875c0e5e76e92ea2483b3ff37ef773c0da",
           "cases": [
             {
               "id": "differential:floating-ui-hook-isolation",
@@ -144,7 +159,9 @@
   "divergences": [
     {
       "id": "ref-as-prop",
-      "caseIds": ["differential:floating-ui-hook-isolation"],
+      "caseIds": [
+        "differential:floating-ui-hook-isolation"
+      ],
       "upstreamResult": "React component refs use React's ref channel and forwardRef where components forward a ref.",
       "octaneResult": "Octane component APIs receive and forward ref as an ordinary prop.",
       "rationale": "Octane implements ref-as-prop natively and does not require React's forwardRef wrapper.",
