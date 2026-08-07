@@ -11,12 +11,27 @@
     "integrity": "sha256:a0ac35e67812c71b10b834a64704a2aace7e12e4ef0f2bbaea2dd3fe9fee6fe9",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/testing-library/src"], "include": ["\\.ts$"], "exclude": [] },
+    "source": {
+      "roots": [
+        "packages/testing-library/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": []
+    },
     "tests": {
-      "roots": ["packages/testing-library/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/testing-library/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -33,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b7f07a25e00579b4d4f749e76e199c1f7bc5b5e13f51def7c333200f95f46bf8"
+      "lockfileSha256": "81c10e694615b4a76a12bf21584b49778b0c69e4f6229876611f8cd0ca625e04"
     }
   },
   "lanes": [
@@ -42,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "testing-library",
+      "project": "testing-library-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Uses a raw React root and native DOM observations to avoid trusting React Testing Library as the oracle adapter.",
       "files": [
