@@ -300,7 +300,7 @@ catalogs:
     picocolors: ^1.1.1
     '@clack/prompts': ^1.7.0
     prettier: ^3.9.6
-    preact: ^10.29.7
+    preact: ^10.29.8
     preact-render-to-string: ^6.7.0
     proxy-compare: ^3.0.1
     prettier-plugin-svelte: ^4.1.1
