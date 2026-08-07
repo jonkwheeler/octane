@@ -20,8 +20,16 @@ function systemDark(): boolean {
 	return typeof matchMedia === 'undefined' || matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
+function initialDark(theme: OrbTheme): boolean {
+	if (theme === 'dark') return true;
+	if (theme === 'light') return false;
+	return systemDark();
+}
+
 export function useResolvedDark(theme: OrbTheme, hostRef: RefObject<Element | null>): boolean {
-	const [dark, setDark] = useState(true);
+	const [dark, setDark] = useState(function () {
+		return initialDark(theme);
+	});
 
 	useEffect(() => {
 		if (theme === 'dark') {
