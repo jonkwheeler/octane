@@ -2689,10 +2689,46 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'testing-library',
 					include: ['packages/testing-library/tests/**/*.test.ts'],
 					environment: 'jsdom',
+					exclude: [''packages/testing-library/tests/differential/**/*.test.ts''],
+					// hydrate.test.ts renders its server markup through the shared
+					// hydration harness, which boots a real Vite SSR server in beforeAll —
+					// the same reason the other harness-using projects lift the 5s default.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				// The binding's `.ts` sources call hooks with EXPLICIT slot symbols
+				// (renderHook's harness component) — declared in its package.json, so the
+				// auto-slotting pass skips them; the test files themselves stay included so
+				// hook callbacks written inline in tests get their call-site slots.
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'testing-library-differential',
+					include: ['packages/testing-library/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/testing-library/tests/differential/_setup.ts'],
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					// hydrate.test.ts renders its server markup through the shared
 					// hydration harness, which boots a real Vite SSR server in beforeAll —
 					// the same reason the other harness-using projects lift the 5s default.
