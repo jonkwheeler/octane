@@ -483,7 +483,7 @@ export default defineConfig({
 					name: 'rxjs',
 					include: ['packages/rxjs/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/rxjs/tests/differential/**/*.test.ts''],
+					exclude: ['packages/rxjs/tests/differential/**/*.test.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
