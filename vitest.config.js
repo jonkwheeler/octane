@@ -1958,9 +1958,36 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-router',
 					include: ['packages/tanstack-router/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					exclude: [''packages/tanstack-router/tests/differential/**/*.test.ts''],
+					// Differential precompile for router fixtures: rewrites
+					// `@octanejs/tanstack-router` → `@tanstack/react-router` so the React side
+					// runs real react-router.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-router$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-router/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-router\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-router/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-router-differential',
+					include: ['packages/tanstack-router/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential precompile for router fixtures: rewrites
 					// `@octanejs/tanstack-router` → `@tanstack/react-router` so the React side
