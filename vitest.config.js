@@ -1494,9 +1494,35 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux',
 					include: ['packages/redux/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					exclude: [''packages/redux/tests/differential/**/*.test.ts''],
+					// Differential precompile: rewrites `@octanejs/redux` →
+					// `react-redux` so the React side runs the real binding.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/redux$/,
+							replacement: resolve(import.meta.dirname, 'packages/redux/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/redux\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/redux/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'redux-differential',
+					include: ['packages/redux/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential precompile: rewrites `@octanejs/redux` →
 					// `react-redux` so the React side runs the real binding.
