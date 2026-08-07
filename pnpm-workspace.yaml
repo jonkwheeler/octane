@@ -299,7 +299,7 @@ catalogs:
     picocolors: ^1.1.1
     '@clack/prompts': ^1.7.0
     prettier: ^3.9.6
-    preact: ^10.29.7
+    preact: ^10.29.8
     preact-render-to-string: ^6.7.0
     proxy-compare: ^3.0.1
     prettier-plugin-svelte: ^4.1.1
@@ -407,6 +407,7 @@ catalogs:
 # superseded — @tsrx/core >= 0.1.42 ships the fix.
 
 minimumReleaseAgeExclude:
+
   - '@ripple-ts/adapter@0.3.117 || 0.3.118'
   - '@ripple-ts/vite-plugin@0.3.117 || 0.3.118'
   - '@tanstack/ai-client@0.21.0'
