@@ -15,7 +15,7 @@ export function useOnInView(
 	return useCallback((node: Element | null) => {
 		unobserve.current?.();
 		unobserve.current = undefined;
-		lastInView.current = undefined;
+		lastInView.current = options.initialInView;
 		if (!node || options.skip) return;
 		unobserve.current = observe(
 			node,
@@ -45,5 +45,5 @@ export function useOnInView(
 			unobserve.current = undefined;
 			lastInView.current = undefined;
 		};
-	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.fallbackInView, options.delay, options.scrollMargin]);
+	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.fallbackInView, options.delay, options.scrollMargin, options.initialInView]);
 }

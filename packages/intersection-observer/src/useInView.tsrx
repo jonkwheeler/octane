@@ -44,7 +44,7 @@ export function useInView(options: IntersectionOptions | symbol = {}): InViewHoo
 				if (previousInView === undefined && !inView) return;
 				setState({ inView, entry });
 				callback.current?.(inView, entry);
-				if (entry.isIntersecting && triggerOnce && unobserve) {
+				if (inView && triggerOnce && unobserve) {
 					unobserve();
 					unobserve = undefined;
 				}
