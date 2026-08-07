@@ -11,11 +11,18 @@
     "integrity": "sha256:79faf09d544b1558c0ed01c3b6784b4b0d4e84485a6beb3195ce13dcdbf1e94b",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "absent", "types": "insufficient" },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "insufficient"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-devtools/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/tanstack-devtools/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
@@ -23,7 +30,9 @@
         "packages/tanstack-devtools/tests/differential",
         "packages/tanstack-devtools/tests/parity"
       ],
-      "include": ["\\.test\\.ts$"],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +49,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "d4c49adfd08c824001e332191e23ed4950f6ebc6a9c3805550ce0f31474d4cd0"
+      "lockfileSha256": "7912333a55a0f40efac243a318e9686b8d3235cdd338931afb475ddbf190a9c2"
     }
   },
   "lanes": [
@@ -108,7 +117,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f21fd985cd3f5cac06fd8c661d78677ce43fff54250a6c6b86226118323101cd"
+          "sha256": "9e03b71c77493292933cea0e432d881e89bb76c9d481b0bea833962e01e953da"
         }
       ]
     },
@@ -153,7 +162,9 @@
   "divergences": [
     {
       "id": "core-version",
-      "caseIds": ["adapted:tanstack-devtools-core-version"],
+      "caseIds": [
+        "adapted:tanstack-devtools-core-version"
+      ],
       "upstreamResult": "The pinned React adapter publishes with @tanstack/devtools 0.12.4.",
       "octaneResult": "The current Octane catalog resolves @tanstack/devtools 0.12.5.",
       "rationale": "The workspace catalog had advanced before this audit; silently downgrading the shared core is outside this harness PR.",
@@ -165,7 +176,9 @@
     },
     {
       "id": "octane-type-names",
-      "caseIds": ["adapted:tanstack-devtools-type-names"],
+      "caseIds": [
+        "adapted:tanstack-devtools-type-names"
+      ],
       "upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
       "octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",
       "rationale": "Framework-specific public type names identify the runtime they describe.",
@@ -177,7 +190,9 @@
     },
     {
       "id": "extra-core-reexports",
-      "caseIds": ["adapted:tanstack-devtools-core-reexports"],
+      "caseIds": [
+        "adapted:tanstack-devtools-core-reexports"
+      ],
       "upstreamResult": "The React adapter exports only the component and React adapter types.",
       "octaneResult": "Octane additionally re-exports framework-neutral core values and types.",
       "rationale": "Existing Octane consumers use the binding as the plugin-authoring type boundary.",
