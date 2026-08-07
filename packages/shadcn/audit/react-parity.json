@@ -11,16 +11,27 @@
     "integrity": "sha256:015a8c4972120e794fa648ef6604fdd0ff94d4748c9308b0cfe147c177b5df4a",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/shadcn/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/shadcn/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/shadcn/tests"],
-      "include": ["\\.test\\.tsx?$"],
+      "roots": [
+        "packages/shadcn/tests"
+      ],
+      "include": [
+        "\\.test\\.tsx?$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -53,7 +64,7 @@
         {
           "path": "packages/shadcn/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "e48b81608ac7f1da34003277628eef21a453c493c496a9fd8004fbe9f93acdf8",
+          "sha256": "5ec38658a804e455cae4db3da7ccbb0f50a355c3dfb0670b9f1c35986befe8d1",
           "cases": [
             {
               "id": "differential:shadcn-badge-runtime",
@@ -77,20 +88,40 @@
             },
             {
               "id": "differential:shadcn-dropdown-upstream",
-              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical",
-              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical"
+              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical",
+              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical"
             }
           ]
         },
         {
-          "path": "packages/shadcn/tests/_fixtures/shadcn-diff.tsrx",
+          "path": "packages/shadcn/tests/_fixtures/shadcn-diff/badge.tsrx",
           "role": "support",
-          "sha256": "f7d969c84b753ce7a2935c75ea3840c23678b28a279f6ac85240f278b0453c4d"
+          "sha256": "7b893856183181b0568dd84d61dec58fe6a9210a36045ec98ab4d712ee1aea8b"
+        },
+        {
+          "path": "packages/shadcn/tests/_fixtures/shadcn-diff/button.tsrx",
+          "role": "support",
+          "sha256": "00225797a73964d47e7650021f01566cee203364cc600aec459ed9f2247ab2cb"
+        },
+        {
+          "path": "packages/shadcn/tests/_fixtures/shadcn-diff/dialog.tsrx",
+          "role": "support",
+          "sha256": "55080045f249d3e4f64760ca68f8615a4f36527521008749c25ee12da0492228"
+        },
+        {
+          "path": "packages/shadcn/tests/_fixtures/shadcn-diff/dropdown-menu.tsrx",
+          "role": "support",
+          "sha256": "ebc8c0ce2b2765d1c898d50962f46121b89a89369d845c36e588dee32b71bc45"
+        },
+        {
+          "path": "packages/shadcn/tests/_fixtures/shadcn-diff/tabs.tsrx",
+          "role": "support",
+          "sha256": "bfba124a9f072477b668c83bc0137fe06f863160eb027bee2ab7c9df8b22e53b"
         },
         {
           "path": "packages/shadcn/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "c5e09a2bbb1ed5ce8a6919c04c3e894ffe176bd8870e628eef6aa959a37c66a8"
+          "sha256": "b08b55a89704c55eb785011bb320f49d302c75abb93ace7ada9d4d56d652ab4b"
         },
         {
           "path": "packages/shadcn/tests/differential/upstream/index.ts",
@@ -135,7 +166,7 @@
         {
           "path": "packages/shadcn/audit/test-classifications.json",
           "role": "support",
-          "sha256": "2d74cfe418e8cdc5d0a3f3368ad872e11c9493b4a7e310d981e7405101706716"
+          "sha256": "463a3326c9a335d16ba09e21288318d227351c566b70e144dd01014f11dda9fc"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -145,7 +176,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "586e8b82d0f5caed06cc80791ba127c9e47c89cb3966ba616091fc40a219d28e"
         }
       ]
     },
@@ -165,17 +196,17 @@
             {
               "id": "adapted:shadcn-native-input-events",
               "testName": "all three bases expose native input and commit handlers with distinct timing",
-              "fullName": "@octanejs/shadcn — documented runtime divergences all three bases expose native input and commit handlers with distinct timing"
+              "fullName": "@octanejs/shadcn \u2014 documented runtime divergences all three bases expose native input and commit handlers with distinct timing"
             },
             {
               "id": "adapted:shadcn-aschild-descriptors",
               "testName": "Button and Item compose descriptor children through asChild",
-              "fullName": "@octanejs/shadcn — documented runtime divergences Button and Item compose descriptor children through asChild"
+              "fullName": "@octanejs/shadcn \u2014 documented runtime divergences Button and Item compose descriptor children through asChild"
             },
             {
               "id": "adapted:shadcn-icon-resolution",
               "testName": "all marked icon placeholders resolve to the pinned Lucide shapes",
-              "fullName": "@octanejs/shadcn — documented runtime divergences all marked icon placeholders resolve to the pinned Lucide shapes"
+              "fullName": "@octanejs/shadcn \u2014 documented runtime divergences all marked icon placeholders resolve to the pinned Lucide shapes"
             }
           ]
         },
@@ -192,7 +223,7 @@
             {
               "id": "adapted:shadcn-sonner-theme",
               "testName": "renders a toast with the cn-toast class, custom success icon, and theme/style wiring",
-              "fullName": "@octanejs/shadcn — Toaster (sonner wrapper) renders a toast with the cn-toast class, custom success icon, and theme/style wiring"
+              "fullName": "@octanejs/shadcn \u2014 Toaster (sonner wrapper) renders a toast with the cn-toast class, custom success icon, and theme/style wiring"
             }
           ]
         },
@@ -209,12 +240,12 @@
         {
           "path": "packages/shadcn/audit/test-classifications.json",
           "role": "support",
-          "sha256": "2d74cfe418e8cdc5d0a3f3368ad872e11c9493b4a7e310d981e7405101706716"
+          "sha256": "463a3326c9a335d16ba09e21288318d227351c566b70e144dd01014f11dda9fc"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "586e8b82d0f5caed06cc80791ba127c9e47c89cb3966ba616091fc40a219d28e"
         }
       ]
     }
@@ -222,7 +253,9 @@
   "divergences": [
     {
       "id": "shadcn-native-input-events",
-      "caseIds": ["adapted:shadcn-native-input-events"],
+      "caseIds": [
+        "adapted:shadcn-native-input-events"
+      ],
       "upstreamResult": "React component handlers conventionally observe per-keystroke edits through synthetic onChange.",
       "octaneResult": "Every Shadcn component base exposes native per-keystroke edits through onInput; native change retains commit semantics.",
       "rationale": "Octane uses delegated native DOM events rather than React's synthetic change event layer.",
@@ -234,7 +267,9 @@
     },
     {
       "id": "shadcn-aschild-descriptors",
-      "caseIds": ["adapted:shadcn-aschild-descriptors"],
+      "caseIds": [
+        "adapted:shadcn-aschild-descriptors"
+      ],
       "upstreamResult": "React Radix asChild composes an opaque React element child.",
       "octaneResult": "Shadcn asChild composes an Octane element descriptor created with createElement.",
       "rationale": "Octane's Radix Slot contract operates on descriptors rather than opaque compiled children.",
@@ -246,7 +281,9 @@
     },
     {
       "id": "shadcn-icon-resolution",
-      "caseIds": ["adapted:shadcn-icon-resolution"],
+      "caseIds": [
+        "adapted:shadcn-icon-resolution"
+      ],
       "upstreamResult": "The Shadcn CLI resolves IconPlaceholder according to the consumer's configured icon library.",
       "octaneResult": "The published Octane source resolves icon placeholders to @octanejs/lucide at port time.",
       "rationale": "This registry-first package currently publishes one resolved component source flavor.",
@@ -258,7 +295,9 @@
     },
     {
       "id": "shadcn-sonner-theme",
-      "caseIds": ["adapted:shadcn-sonner-theme"],
+      "caseIds": [
+        "adapted:shadcn-sonner-theme"
+      ],
       "upstreamResult": "The upstream Sonner wrapper reads theme state from next-themes.",
       "octaneResult": "The Octane Sonner wrapper accepts an ordinary theme prop and defaults it to system.",
       "rationale": "The Octane package does not depend on the React-specific next-themes provider.",

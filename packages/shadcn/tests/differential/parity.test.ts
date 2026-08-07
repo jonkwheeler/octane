@@ -26,7 +26,8 @@ import { act as reactAct } from 'react';
 import { drainPassiveEffects as octaneDrainEffects } from 'octane';
 import { mountDifferential, type DiffMount } from '../../../octane/tests/differential/_rig.js';
 
-const FIXTURE = resolve(__dirname, '../_fixtures/shadcn-diff.tsrx');
+const fixture = (name: string): string =>
+	resolve(__dirname, `../_fixtures/shadcn-diff/${name}.tsrx`);
 // React fixtures are precompiled into THIS package's cache (see differential
 // _setup.ts) so the React side resolves react/radix-ui/lucide-react from here.
 const CACHE = resolve(__dirname, '.react-cache');
@@ -114,14 +115,14 @@ const clickEl = (el: HTMLElement): void => {
 describe('differential: @octanejs/shadcn vs curated shadcn references on React', () => {
 	// @parity-case differential:shadcn-badge-runtime
 	it('Badge: variants + className merge + asChild anchor, byte-identical', async () => {
-		const d = await mountDifferential(FIXTURE, 'BadgeGallery', undefined, CACHE);
+		const d = await mountDifferential(fixture('badge'), 'BadgeGallery', undefined, CACHE);
 		await d.step('mount', () => {});
 		d.unmount();
 	}, 90_000);
 
 	// @parity-case differential:shadcn-button-runtime
 	it('Button: variants/sizes/disabled + asChild anchor + onClick wiring, byte-identical', async () => {
-		const d = await mountDifferential(FIXTURE, 'ButtonApp', undefined, CACHE);
+		const d = await mountDifferential(fixture('button'), 'ButtonApp', undefined, CACHE);
 		await d.step('mount', () => {});
 		await d.step('click increments to one', async (i, r) => {
 			await i.click('#btn');
@@ -138,7 +139,7 @@ describe('differential: @octanejs/shadcn vs curated shadcn references on React',
 
 	// @parity-case differential:shadcn-tabs-upstream
 	it('Tabs: switch panels via trigger mousedown, byte-identical', async () => {
-		const d = await mountDifferential(FIXTURE, 'TabsApp', undefined, CACHE);
+		const d = await mountDifferential(fixture('tabs'), 'TabsApp', undefined, CACHE);
 		await d.step('mount (one active)', () => {});
 		// Radix Tabs activates on MOUSEDOWN (not click) — dispatch it explicitly
 		// on both sides (radix's parity suite does the same).
@@ -181,7 +182,7 @@ describe('differential: @octanejs/shadcn vs curated shadcn references on React',
 		// ARIA/data-state wiring and the fixture's onOpenChange-driven state text;
 		// portal'd content markup is covered by overlays.test.ts. Close goes
 		// through the trigger toggle — the DialogClose button lives in the portal.
-		const d = await mountDifferential(FIXTURE, 'DialogApp', undefined, CACHE);
+		const d = await mountDifferential(fixture('dialog'), 'DialogApp', undefined, CACHE);
 		await d.step('mount (closed)', () => {});
 		await d.step('open', async (i, r) => {
 			await i.click('#dt');
@@ -198,7 +199,7 @@ describe('differential: @octanejs/shadcn vs curated shadcn references on React',
 
 	// @parity-case differential:shadcn-dropdown-upstream
 	it('DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical', async () => {
-		const d = await mountDifferential(FIXTURE, 'DropdownApp', undefined, CACHE);
+		const d = await mountDifferential(fixture('dropdown-menu'), 'DropdownApp', undefined, CACHE);
 		await d.step('mount (closed)', () => {});
 		await d.step('open', async (i, r) => {
 			pointerdown(i.container, 'mt');

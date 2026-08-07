@@ -73,6 +73,16 @@
       "reason": "Checks Octane React Aria component contracts; it is not a React differential."
     },
     {
+      "path": "packages/shadcn/tests/registry-serve.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks registry server path containment on posix and win32; it is not a React oracle."
+    },
+    {
+      "path": "packages/shadcn/tests/registry-styles.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks multi-base registry style artifacts and cross-references; it is not a React oracle."
+    },
+    {
       "path": "packages/shadcn/tests/registry.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks the generated Octane registry and dependency pins; it is not a React oracle."
