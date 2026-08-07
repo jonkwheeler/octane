@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/aria/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/aria/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/aria/tests"],
-      "include": ["\\.test\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/aria/tests"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -60,15 +68,15 @@
           "cases": [
             {
               "id": "differential:aria-interactions-press",
-              "testName": "usePress: pointer press start → pressed state → press sequence, byte-identical",
-              "fullName": "differential: @octanejs/aria vs real react-aria on React usePress: pointer press start → pressed state → press sequence, byte-identical"
+              "testName": "usePress: pointer press start \u2192 pressed state \u2192 press sequence, byte-identical",
+              "fullName": "differential: @octanejs/aria vs real react-aria on React usePress: pointer press start \u2192 pressed state \u2192 press sequence, byte-identical"
             }
           ]
         },
         {
           "path": "packages/aria/tests/differential/parity-leaf.test.ts",
           "role": "test",
-          "sha256": "49ddc1c494a82362b5cfab4042debc4da6a4aee89f75ec33468b97282a8de19f",
+          "sha256": "261e72ba466fbe241e0fe6f5cae07267853d2e34ebb6bd56a68ada8063c774a0",
           "cases": [
             {
               "id": "differential:aria-leaf-textfield",
@@ -162,7 +170,7 @@
         {
           "path": "packages/aria/tests/_fixtures/aria-diff-leaf.tsrx",
           "role": "support",
-          "sha256": "404505776d14495db155b85aed5b39aaff70ecf864e63c26e053110b37111064"
+          "sha256": "2d7fc4e5c991f47102ca94c9ed1b87862fac29e7418b05f7af52c3dec6a11682"
         },
         {
           "path": "packages/aria/tests/_fixtures/aria-diff-tabs.tsrx",
@@ -217,7 +225,7 @@
             {
               "id": "adapted:aria-ref-as-prop",
               "testName": "forwards the attached node to the original callback ref",
-              "fullName": "@octanejs/aria — useObjectRef forwards the attached node to the original callback ref"
+              "fullName": "@octanejs/aria \u2014 useObjectRef forwards the attached node to the original callback ref"
             }
           ]
         },
@@ -229,7 +237,7 @@
             {
               "id": "adapted:aria-i18n-identifiers",
               "testName": "emits an executable bootstrap script when more than 26 strings are hoisted",
-              "fullName": "@octanejs/aria — i18n server serializer emits an executable bootstrap script when more than 26 strings are hoisted"
+              "fullName": "@octanejs/aria \u2014 i18n server serializer emits an executable bootstrap script when more than 26 strings are hoisted"
             }
           ]
         },
@@ -283,7 +291,7 @@
         {
           "path": "packages/aria/tests/ssr/ssr.test.ts",
           "role": "test",
-          "sha256": "3fd6e58b8098bed119370335b24fb2dff32e610fc54ed7498303cf289ef36699",
+          "sha256": "746b9ca7cbabfcfcbacaf10284193f3bddded08a5c434edd5ba4b9a6720fc46d",
           "cases": [
             {
               "id": "adapted:aria-server-rtl",
@@ -295,7 +303,7 @@
         {
           "path": "packages/aria/tests/ssr/_fixtures/server.tsx",
           "role": "support",
-          "sha256": "93089d1cf8648ee4e2922dc93d15db483a6b961547f029bfd8f756992ce8d044"
+          "sha256": "47fdf1536f82f9ad2c416b1c36567223293e53e85ff4a295d99849afa27d1e70"
         }
       ]
     }
@@ -303,7 +311,9 @@
   "divergences": [
     {
       "id": "native-input-event-wiring",
-      "caseIds": ["differential:aria-leaf-textfield"],
+      "caseIds": [
+        "differential:aria-leaf-textfield"
+      ],
       "upstreamResult": "React maps text editing through its synthetic onChange event layer.",
       "octaneResult": "Octane uses the native input event for per-keystroke DOM wiring while preserving public value callbacks.",
       "rationale": "Octane does not emulate React's synthetic event layer.",
@@ -315,7 +325,9 @@
     },
     {
       "id": "ref-as-prop",
-      "caseIds": ["adapted:aria-ref-as-prop"],
+      "caseIds": [
+        "adapted:aria-ref-as-prop"
+      ],
       "upstreamResult": "React component refs are exposed through forwardRef wrappers.",
       "octaneResult": "Refs arrive as ordinary component props and are forwarded to the authored host node.",
       "rationale": "Octane follows a compiler-visible ref-as-prop contract.",
@@ -327,7 +339,9 @@
     },
     {
       "id": "valid-hoisted-identifiers",
-      "caseIds": ["adapted:aria-i18n-identifiers"],
+      "caseIds": [
+        "adapted:aria-i18n-identifiers"
+      ],
       "upstreamResult": "The pinned serializer derives identifiers from character codes and emits invalid JavaScript after 26 common strings.",
       "octaneResult": "The serializer uses a-z followed by valid underscore-number identifiers.",
       "rationale": "Server bootstrap output must remain executable for every dictionary size.",
@@ -339,7 +353,9 @@
     },
     {
       "id": "server-rtl-direction",
-      "caseIds": ["adapted:aria-server-rtl"],
+      "caseIds": [
+        "adapted:aria-server-rtl"
+      ],
       "upstreamResult": "The pinned SSR branch returns ltr even when the injected locale is RTL.",
       "octaneResult": "SSR direction is derived from the injected locale through isRTL.",
       "rationale": "The returned direction must agree with the locale used by the same server snapshot.",
