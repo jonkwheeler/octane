@@ -2645,12 +2645,34 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'styled-components',
 					include: [
 						'packages/styled-components/tests/**/*.test.ts',
 						'!packages/styled-components/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/styled-components/tests/differential/**/*.test.ts''],
+					// Differential precompile for styled-components fixtures: rewrites
+					// `@octanejs/styled-components` → the real published styled-components.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/styled-components$/,
+							replacement: resolve(import.meta.dirname, 'packages/styled-components/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'styled-components-differential',
+					include: ['packages/styled-components/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential precompile for styled-components fixtures: rewrites
 					// `@octanejs/styled-components` → the real published styled-components.
@@ -2668,6 +2690,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'styled-components-ssr',
 					include: ['packages/styled-components/tests/ssr/**/*.test.ts'],
