@@ -28,7 +28,7 @@ larger than a contained fix, open an issue and agree on the approach first.
 
 ## Setup
 
-Node.js 22 or newer (CI runs the suite on 22 and 24) and pnpm 11. The repo pins
+Node.js 22.22.2 or newer (CI runs the suite on 22.22.2 and 24) and pnpm 11. The repo pins
 its pnpm version in `package.json`, so `corepack enable` is the easiest way to
 get the right one.
 
@@ -143,6 +143,26 @@ own implementation will not think to check.
   skipping, or failing to execute a recorded case, and changing pinned evidence,
   must make validation fail. The tests need tests too; otherwise a green harness
   can be a stale evidence collector.
+
+### Configure parity execution
+
+Follow [the React parity test-execution contract](./docs/react-parity-testing.md)
+when a binding adds executable parity lanes. Keep the complete local project in
+`vitest.config.js`, then declare which work belongs to the generic parity runner:
+
+```js
+testExecution: {
+	group: 'react-parity',
+	include: ['packages/example/tests/upstream/**/*.test.ts'],
+}
+```
+
+Omit `testExecution.include` when the runner owns the complete project. When it
+is present, it contains parity-owned patterns only;
+`vitest.ci-sharded.config.js` derives the complement for ordinary shards. Do not
+put package paths in `ci.yml`, create package-specific parity jobs, or encode
+shard/Node/job details in the base project metadata. Package manifests under
+`packages/*/audit/react-parity.json` are discovered automatically.
 
 Fill the remaining gaps (DOM output over event sequences, render counts, effect
 ordering, ref lifecycle, keyed reorder identity) with differential and
