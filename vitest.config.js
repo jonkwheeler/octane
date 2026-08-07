@@ -2795,6 +2795,151 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
+			},,
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/puck/tests/differential/**/*.test.ts'],
+				},
+				test: {
+					name: 'puck',
+					include: ['packages/puck/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/puck/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					testTimeout: 30_000,
+					setupFiles: ['packages/puck/tests/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/puck$/,
+							replacement: resolve(import.meta.dirname, 'packages/puck/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/puck\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/puck/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/zustand$/,
+							replacement: resolve(import.meta.dirname, 'packages/zustand/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/zustand\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/zustand/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/dnd-kit$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/hooks/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/sortable$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/sortable/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/utilities$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/utilities/index.ts'),
+						},
+						{
+							find: /^@octanejs\/lucide$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/lucide\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/tanstack-pacer$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-pacer/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-pacer\/(.*)$/,
+							replacement:
+								resolve(import.meta.dirname, 'packages/tanstack-pacer/src') + '/$1/index.ts',
+						},
+						{
+							find: /^@octanejs\/tanstack-store$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-store/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'puck-differential',
+					include: ['packages/puck/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					testTimeout: 30_000,
+					globalSetup: ['packages/puck/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/puck$/,
+							replacement: resolve(import.meta.dirname, 'packages/puck/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/puck\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/puck/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/zustand$/,
+							replacement: resolve(import.meta.dirname, 'packages/zustand/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/zustand\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/zustand/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/dnd-kit$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/hooks/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/sortable$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/sortable/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/utilities$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/utilities/index.ts'),
+						},
+						{
+							find: /^@octanejs\/lucide$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/lucide\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/tanstack-pacer$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-pacer/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-pacer\/(.*)$/,
+							replacement:
+								resolve(import.meta.dirname, 'packages/tanstack-pacer/src') + '/$1/index.ts',
+						},
+						{
+							find: /^@octanejs\/tanstack-store$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-store/src/index.ts'),
+						},
+					],
+				},
 			},
 			{
 				test: {
