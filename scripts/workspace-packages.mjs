@@ -31,6 +31,10 @@ const SPECIAL_ROLES = new Map([
 	// uninstallable in the case it is meant to solve.
 	['@octanejs/cli', 'developer tooling'],
 	['@octanejs/evals', 'evaluation tooling'],
+	// The one package people type by name rather than install. It is a thin entry
+	// point onto `octane create`, so it carries no scope and would otherwise fall
+	// through the `@octanejs/` test below into "other package".
+	['create-octane', 'project scaffolder'],
 	// Original Octane API rather than a port of an upstream library, so it has no
 	// binding status.json / parity contract to satisfy.
 	['@octanejs/seo', 'document metadata'],
@@ -158,8 +162,8 @@ export function validateWorkspacePackages(packages = getWorkspacePackages()) {
 	const names = new Set();
 	const workspaceNames = new Set(packages.map((pkg) => pkg.name).filter(Boolean));
 	const rootManifest = readJson(path.join(REPO_ROOT, 'package.json'));
-	if (rootManifest.engines?.node !== '>=22') {
-		errors.push('root package.json must declare engines.node ">=22"');
+	if (rootManifest.engines?.node !== '>=22.22.2') {
+		errors.push('root package.json must declare engines.node ">=22.22.2"');
 	}
 
 	for (const pkg of packages) {
@@ -170,8 +174,8 @@ export function validateWorkspacePackages(packages = getWorkspacePackages()) {
 
 		if (!pkg.private) {
 			if (!pkg.version) errors.push(`${label} is publishable but has no version`);
-			if (pkg.manifest.engines?.node !== '>=22') {
-				errors.push(`${label} must declare engines.node ">=22"`);
+			if (pkg.manifest.engines?.node !== '>=22.22.2') {
+				errors.push(`${label} must declare engines.node ">=22.22.2"`);
 			}
 			if (pkg.manifest.publishConfig?.access !== 'public') {
 				errors.push(`${label} is publishable but publishConfig.access is not "public"`);
@@ -269,7 +273,7 @@ privatizing a package updates every package-wide check together.
 
 **${publishable.length} publishable package(s), including ${bindings.length} framework binding(s) and ${frameworkIntegrations.length} framework integration(s).**
 
-All publishable packages share the enforced Node.js engine baseline \`>=22\`.
+All publishable packages share the enforced Node.js engine baseline \`>=22.22.2\`.
 
 | Package | Directory | Role | Version | Exported entry points |
 | --- | --- | --- | --- | --- |
