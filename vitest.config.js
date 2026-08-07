@@ -1824,6 +1824,7 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'visx',
 					include: [
@@ -1831,6 +1832,19 @@ export default defineConfig({
 						'packages/visx/tests/differential/**/*.test.ts',
 						'packages/visx/tests/hydration/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					globals: false,
+					testTimeout: 30_000,
+					server: { deps: { inline: [/^@visx\//] } },
+				},
+				plugins: [octane(), visxCoverageSource()],
+				resolve: { alias: VISX_ALIASES },
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'visx-differential',
+					include: ['packages/visx/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/visx/tests/differential/_setup.ts'],
 					globals: false,
@@ -1841,6 +1855,7 @@ export default defineConfig({
 				resolve: { alias: VISX_ALIASES },
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'visx-ssr',
 					include: ['packages/visx/tests/ssr/**/*.test.ts'],
