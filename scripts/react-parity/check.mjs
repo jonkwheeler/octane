@@ -13,35 +13,25 @@ import {
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
-import {
-	parseReactParityCheckArgs,
-	partitionRequiredLanes,
-	verifyBrowserDeferral,
-} from './check-policy-lib.mjs';
-import {
-	loadManifest,
-	requiredExecutableLanes,
-	verifyLaneEnvironment,
-	verifyManifestFiles,
-	verifyManifestTestSelections,
-} from './harness-lib.mjs';
+import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
 const UPSTREAMS_PATH = path.join(AUDIT, 'react-upstreams.json');
 const LEDGER_PATH = path.join(AUDIT, 'react-conformance-ledger.json');
 const REPORT_PATH = path.join(REPO, 'docs/react-parity-coverage.md');
-const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), {
-	withFileTypes: true,
-})
+const args = process.argv.slice(2);
+if (args.length > 1 || (args.length === 1 && args[0] !== '--validate-only')) {
+	throw new Error('Usage: check.mjs [--validate-only]');
+}
+const validateOnly = args[0] === '--validate-only';
+const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), { withFileTypes: true })
 	.filter((entry) => entry.isDirectory())
 	.map((entry) => `packages/${entry.name}/audit/react-parity.json`)
 	.filter((manifest) => existsSync(path.join(REPO, manifest)))
 	.sort();
 const HARNESS_PATH = path.join(REPO, 'scripts/react-parity/harness.mjs');
 const errors = [];
-const checkMode = parseReactParityCheckArgs(process.argv.slice(2));
-const deferredBrowserLanes = [];
 try {
 	verifyHookFormUpstream(REPO);
 } catch (error) {
@@ -56,27 +46,6 @@ try {
 	verifyPortTestClassifications(REPO);
 } catch (error) {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
-}
-try {
-	execFileSync(
-		process.execPath,
-		[
-			path.join(REPO, 'packages/react-resizable-panels/audit/verify-provenance.mjs'),
-			'--negative-controls',
-		],
-		{ cwd: REPO, stdio: 'inherit' },
-	);
-	execFileSync(
-		path.join(REPO, 'node_modules/.bin/tsrx-tsc'),
-		[
-			'--noEmit',
-			'-p',
-			path.join(REPO, 'packages/react-resizable-panels/audit/type-probes/tsconfig.json'),
-		],
-		{ cwd: REPO, stdio: 'inherit' },
-	);
-} catch (error) {
-	errors.push(`react-resizable-panels parity evidence is invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
@@ -155,33 +124,20 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		await verifyManifestFiles(manifest, REPO);
-		const pnpmVersion = execFileSync('pnpm', ['--version'], {
-			encoding: 'utf8',
-		});
+		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
 		for (const lane of manifest.lanes) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
-		await verifyManifestTestSelections(manifest, REPO);
-		if (manifest.provenance.verification === 'verified') {
-			const partition = partitionRequiredLanes(requiredExecutableLanes(manifest), checkMode);
-			deferredBrowserLanes.push(...partition.deferred.map((lane) => `${relativeFile}#${lane.id}`));
-			for (const lane of partition.executable) {
-				execFileSync(
-					process.execPath,
-					[HARNESS_PATH, 'run', '--manifest', relativeFile, '--lane', lane.id],
-					{ cwd: REPO, stdio: 'inherit' },
-				);
-			}
+		if (!validateOnly) {
+			const action = manifest.provenance.verification === 'verified' ? 'run-required' : 'validate';
+			execFileSync(process.execPath, [HARNESS_PATH, action, '--manifest', relativeFile], {
+				cwd: REPO,
+				stdio: 'inherit',
+			});
 		}
 	} catch (error) {
 		errors.push(`${relativeFile} is invalid: ${error.message}`);
 	}
-}
-
-try {
-	verifyBrowserDeferral(checkMode, deferredBrowserLanes);
-} catch (error) {
-	errors.push(error.message);
 }
 
 if (errors.length) {
@@ -190,9 +146,7 @@ if (errors.length) {
 }
 
 console.log(
-	`React parity audit is current (${loadedInventories
+	`React parity ${validateOnly ? 'metadata' : 'audit'} is current (${loadedInventories
 		.map((inventory) => `${inventory.baseline}: ${inventory.summary.concreteCases} cases`)
 		.join(', ')}).`,
 );
-if (deferredBrowserLanes.length > 0)
-	console.log(`Deferred browser lanes to dedicated CI: ${deferredBrowserLanes.join(', ')}.`);

@@ -60,15 +60,7 @@ const LANE_KEYS = new Set([
 	'execution',
 	'evidenceOrigin',
 ]);
-const EXECUTION_KEYS = new Set([
-	'kind',
-	'compiler',
-	'project',
-	'inventory',
-	'config',
-	'root',
-	'runner',
-]);
+const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory', 'config', 'root']);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
 const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
 const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full']);
@@ -327,30 +319,19 @@ export function validateManifest(manifest) {
 				exactPath(lane.execution.project, `lane ${lane.id} execution project`);
 				if (lane.execution.inventory !== undefined)
 					fail(`lane ${lane.id} TypeScript execution must not declare an inventory`);
-				if (
-					lane.execution.config !== undefined ||
-					lane.execution.root !== undefined ||
-					lane.execution.runner !== undefined
-				)
+				if (lane.execution.config !== undefined || lane.execution.root !== undefined)
 					fail(`lane ${lane.id} TypeScript execution only accepts compiler and project`);
 			} else if (lane.execution.kind === 'vitest-full') {
 				if (
 					lane.execution.compiler !== undefined ||
 					lane.execution.project !== undefined ||
+					lane.execution.config !== undefined ||
 					lane.execution.root !== undefined
 				)
-					fail(`lane ${lane.id} Vitest execution has unsupported fields`);
+					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
 				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
-				if (lane.execution.config !== undefined)
-					exactPath(lane.execution.config, `lane ${lane.id} execution config`);
-				if (lane.execution.runner !== undefined)
-					exactPath(lane.execution.runner, `lane ${lane.id} execution runner`);
 			} else {
-				if (
-					lane.execution.compiler !== undefined ||
-					lane.execution.project !== undefined ||
-					lane.execution.runner !== undefined
-				)
+				if (lane.execution.compiler !== undefined || lane.execution.project !== undefined)
 					fail(`lane ${lane.id} Jest execution must not declare a compiler or project`);
 				exactPath(lane.execution.config, `lane ${lane.id} execution config`);
 				exactPath(lane.execution.root, `lane ${lane.id} execution root`);
@@ -753,19 +734,15 @@ export async function verifyManifestTestSelections(manifest, root) {
 			candidate.available !== false &&
 			!['typescript', 'jest-full'].includes(candidate.execution?.kind),
 	)) {
-		const runner = lane.execution?.runner ?? 'node_modules/vitest/vitest.mjs';
-		const config = lane.execution?.config;
-		const collectionKey = `${runner}\0${config ?? lane.project}`;
-		let collectedTests = testsByProject.get(collectionKey);
+		let collectedTests = testsByProject.get(lane.project);
 		if (!collectedTests) {
-			const selection = config ? ['--config', config] : ['--project', lane.project];
 			const { stdout } = await execFileAsync(
 				process.execPath,
-				[runner, 'list', ...selection, '--json'],
+				['node_modules/vitest/vitest.mjs', 'list', '--project', lane.project, '--json'],
 				{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 			);
 			collectedTests = JSON.parse(stdout);
-			testsByProject.set(collectionKey, collectedTests);
+			testsByProject.set(lane.project, collectedTests);
 		}
 		if (lane.execution?.kind === 'vitest-full') {
 			const inventory = JSON.parse(await readFile(resolve(root, lane.execution.inventory), 'utf8'));
@@ -776,9 +753,7 @@ export async function verifyManifestTestSelections(manifest, root) {
 					fullName: test.name.replaceAll(' > ', ' '),
 				}))
 				.sort(compareTestIdentities);
-			const expected = inventory.tests
-				.map(({ file, fullName }) => ({ file, fullName }))
-				.sort(compareTestIdentities);
+			const expected = inventory.tests.map(({ file, fullName }) => ({ file, fullName }));
 			if (JSON.stringify(collected) !== JSON.stringify(expected))
 				throw new Error(`lane ${lane.id} collected test identities drifted from its inventory`);
 		} else {
@@ -806,11 +781,15 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 	}
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
-		const runner = lane.execution.runner ?? 'node_modules/vitest/vitest.mjs';
-		const selection = lane.execution.config
-			? ['--config', lane.execution.config]
-			: ['--project', lane.project];
-		return [process.execPath, runner, 'run', ...selection, ...inventory.files, '--reporter=json'];
+		return [
+			process.execPath,
+			'node_modules/vitest/vitest.mjs',
+			'run',
+			'--project',
+			lane.project,
+			...inventory.files,
+			'--reporter=json',
+		];
 	}
 	if (lane.execution?.kind === 'jest-full') {
 		return [
@@ -841,27 +820,33 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 	];
 }
 
+function vitestRunIdentities(lane, result, root) {
+	if (!result || !Array.isArray(result.testResults)) {
+		throw new Error(`lane ${lane.id} returned an invalid Vitest JSON result`);
+	}
+	return result.testResults.flatMap((suite) => {
+		if (typeof suite.name !== 'string' || !Array.isArray(suite.assertionResults)) {
+			throw new Error(`lane ${lane.id} returned an invalid Vitest test result`);
+		}
+		return suite.assertionResults.map((test) => ({
+			file: toPortablePath(relative(root, suite.name)),
+			fullName: test.fullName,
+			status: test.status,
+		}));
+	});
+}
+
 export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 	if (lane.execution?.kind === 'typescript') return true;
 	const result = JSON.parse(stdout);
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
-		const executed = result.testResults
-			.flatMap((suite) =>
-				suite.assertionResults.map((test) => ({
-					file: toPortablePath(relative(root, suite.name)),
-					fullName: test.fullName,
-					status: test.status,
-				})),
-			)
-			.sort(compareTestIdentities);
-		const expected = inventory.tests
-			.map(({ file, fullName }) => ({
-				file,
-				fullName,
-				status: 'passed',
-			}))
-			.sort(compareTestIdentities);
+		const executed = vitestRunIdentities(lane, result, root).sort(compareTestIdentities);
+		const expected = inventory.tests.map(({ file, fullName }) => ({
+			file,
+			fullName,
+			status: 'passed',
+		}));
 		if (JSON.stringify(executed) !== JSON.stringify(expected))
 			throw new Error(
 				`lane ${lane.id} did not execute every inventoried test identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
@@ -884,10 +869,22 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 			);
 		return true;
 	}
-	const expected = lane.files.reduce((count, file) => count + (file.cases?.length ?? 0), 0);
-	if (result.numPassedTests !== expected) {
+	const expected = lane.files
+		.flatMap((file) =>
+			(file.cases ?? []).map((test) => ({
+				file: file.path,
+				fullName: test.fullName,
+				status: 'passed',
+			})),
+		)
+		.sort(compareTestIdentities);
+	const declaredNames = new Set(expected.map((test) => test.fullName));
+	const executed = vitestRunIdentities(lane, result, root)
+		.filter((test) => test.status === 'passed' || declaredNames.has(test.fullName))
+		.sort(compareTestIdentities);
+	if (JSON.stringify(executed) !== JSON.stringify(expected)) {
 		throw new Error(
-			`lane ${lane.id} executed ${result.numPassedTests ?? 0} of ${expected} declared tests`,
+			`lane ${lane.id} did not execute every declared test identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
 		);
 	}
 	return true;
