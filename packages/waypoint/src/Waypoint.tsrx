@@ -38,6 +38,7 @@ function WaypointComponent(props: WaypointProps) {
 		const currentPosition = getCurrentPosition(bounds);
 		const previous = previousPosition.current;
 		if (currentPosition === previous) return;
+		previousPosition.current = currentPosition;
 
 		const args: WaypointCallbackArgs = {
 			currentPosition,
@@ -57,7 +58,6 @@ function WaypointComponent(props: WaypointProps) {
 			if (currentPosition === INSIDE) latest.current.onEnter?.(args);
 			if (previous === INSIDE) latest.current.onLeave?.(args);
 		}
-		previousPosition.current = currentPosition;
 		if (latest.current.debug) {
 			console.log('[Waypoint]', previous, '->', currentPosition, bounds);
 		}
