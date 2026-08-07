@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/cmdk/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/cmdk/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/cmdk/tests/differential"],
-      "include": ["parity\\.test\\.ts$"],
+      "roots": [
+        "packages/cmdk/tests/differential"
+      ],
+      "include": [
+        "parity\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -108,7 +116,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c672de049a4f1a0824c665c709b5cca40dcaca6ca3b20eaedc5cd14501a6d84"
+          "sha256": "2fe1ea2f1e1245e72c580e65a88eb0aade1845fe88eac53824df6acdfdfc6463"
         }
       ]
     },
@@ -143,7 +151,9 @@
   "divergences": [
     {
       "id": "runtime-adaptation-divergences",
-      "caseIds": ["differential:cmdk-filter-selection-empty"],
+      "caseIds": [
+        "differential:cmdk-filter-selection-empty"
+      ],
       "upstreamResult": "cmdk uses React synthetic handlers and forwardRef wrappers, physically relocates ranked nodes, and drops nested initial aria wiring.",
       "octaneResult": "The binding uses native events and ref props, expresses ranking with CSS order, and keeps aria-activedescendant wired while preserving the observed selection and filtering behavior.",
       "rationale": "Octane's event/ref model differs from React and renderer-owned DOM cannot be moved across compiled range markers.",
@@ -155,7 +165,9 @@
     },
     {
       "id": "corrected-group-ordering",
-      "caseIds": ["differential:cmdk-groups"],
+      "caseIds": [
+        "differential:cmdk-groups"
+      ],
       "upstreamResult": "The pinned selector cannot resolve groups by id, so group sorting is effectively inactive.",
       "octaneResult": "Groups resolve by their registered value and reorder by their best matching item score.",
       "rationale": "The binding corrects a dead upstream lookup while retaining the same filtered item set.",
