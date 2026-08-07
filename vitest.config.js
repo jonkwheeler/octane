@@ -1817,12 +1817,36 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'phosphor-icons',
 					include: [
 						'packages/phosphor-icons/tests/**/*.test.ts',
 						'!packages/phosphor-icons/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/phosphor-icons/tests/differential/**/*.test.ts''],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/phosphor-icons$/,
+							replacement: resolve(import.meta.dirname, 'packages/phosphor-icons/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/phosphor-icons\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/phosphor-icons/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'phosphor-icons-differential',
+					include: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/phosphor-icons/tests/differential/_setup.ts'],
 					globals: false,
@@ -1842,6 +1866,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'phosphor-icons-ssr',
 					include: ['packages/phosphor-icons/tests/ssr/**/*.test.ts'],
