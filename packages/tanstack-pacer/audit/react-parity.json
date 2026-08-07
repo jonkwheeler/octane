@@ -17,8 +17,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-pacer/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/tanstack-pacer/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
@@ -26,7 +30,9 @@
         "packages/tanstack-pacer/tests/differential",
         "packages/tanstack-pacer/tests/parity"
       ],
-      "include": ["\\.test\\.ts$"],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -43,7 +49,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "2138b783efa6024930c0a99e134680d5ad696ce29caedbb54b944143f06bed3a"
+      "lockfileSha256": "64ba66ebc97a1bd4351caaa9c295f17689eabbbdc611ba63df6b253cd9e7aec9"
     }
   },
   "lanes": [
@@ -111,7 +117,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ab102da86c24f865d371dea010343f9304c09a30ddcb6d1f95181a139e237e8c"
+          "sha256": "c13f32c791f3910e0471ec6be1ea8b7fafbb0aaa2b6c5c856239747691794e0d"
         }
       ]
     },
@@ -146,7 +152,9 @@
   "divergences": [
     {
       "id": "structural-state-setter-types",
-      "caseIds": ["adapted:tanstack-pacer-state-setters"],
+      "caseIds": [
+        "adapted:tanstack-pacer-state-setters"
+      ],
       "upstreamResult": "React adapter state helpers expose React.Dispatch<React.SetStateAction<T>> types.",
       "octaneResult": "Octane exposes structurally identical local state-setter aliases without a React type dependency.",
       "rationale": "The callback/value union shape is framework-neutral while the React namespace is not.",
