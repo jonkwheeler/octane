@@ -3040,12 +3040,31 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mobx',
 					include: [
 						'packages/mobx/tests/conformance/**/*.test.ts',
 						'packages/mobx/tests/differential/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/mobx$/,
+							replacement: resolve(import.meta.dirname, 'packages/mobx/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'mobx-differential',
+					include: ['packages/mobx/tests/differential/**/*.test.ts'],
 					globalSetup: ['packages/mobx/tests/differential/_setup.ts'],
 					environment: 'jsdom',
 					globals: false,
@@ -3061,6 +3080,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mobx-ssr',
 					include: ['packages/mobx/tests/ssr/**/*.test.ts'],
