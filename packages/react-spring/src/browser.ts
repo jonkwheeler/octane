@@ -155,22 +155,42 @@ export interface InViewOptions extends Omit<IntersectionObserverInit, 'root' | '
 	amount?: 'any' | 'all' | number | number[];
 }
 
+function createInViewRef(
+	setTarget: (target: Element | null) => void,
+): ElementRef<Element> {
+	const state = { value: null as Element | null };
+	return {
+		get current() {
+			return state.value;
+		},
+		set current(next) {
+			if (state.value !== next) {
+				state.value = next;
+				setTarget(next);
+			}
+		},
+	};
+}
+
 export function useInView(
 	optionsOrSlot: InViewOptions | symbol = {},
 	...args: any[]
 ): [ElementRef<Element>, boolean] {
 	const slot = typeof optionsOrSlot === 'symbol' ? optionsOrSlot : browserSlot(args);
 	const options = typeof optionsOrSlot === 'symbol' ? {} : optionsOrSlot;
+	const [target, setTarget] = useState<Element | null>(null, browserSub(slot, 'in-view-target'));
 	const [ref] = useState<ElementRef<Element>>(
-		() => ({ current: null }),
+		function () {
+			return createInViewRef(setTarget);
+		},
 		browserSub(slot, 'in-view-ref'),
 	);
 	const [inView, setInView] = useState(false, browserSub(slot, 'in-view-value'));
 	useLayoutEffect(
-		() => {
+		function () {
 			if (
 				typeof IntersectionObserver === 'undefined' ||
-				ref.current === null ||
+				target === null ||
 				(options.once && inView)
 			) {
 				return;
@@ -178,17 +198,19 @@ export function useInView(
 			const { amount = 'any', once, root, ...observerOptions } = options;
 			const threshold = amount === 'any' ? 0 : amount === 'all' ? 1 : amount;
 			const observer = new IntersectionObserver(
-				([entry]) => {
+				function ([entry]) {
 					if (entry === undefined) return;
 					setInView(entry.isIntersecting);
 					if (entry.isIntersecting && once) observer.disconnect();
 				},
 				{ ...observerOptions, root: root?.current ?? null, threshold },
 			);
-			observer.observe(ref.current);
-			return () => observer.disconnect();
+			observer.observe(target);
+			return function () {
+				observer.disconnect();
+			};
 		},
-		[ref.current, options.root?.current, options.once, options.amount, options.rootMargin],
+		[target, options.root?.current, options.once, options.amount, options.rootMargin],
 		browserSub(slot, 'in-view-effect'),
 	);
 	return [ref, inView];
