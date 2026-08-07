@@ -504,9 +504,9 @@ describe('Agent pull request draft policy', () => {
 		assert.match(draftWorkflow, /^ {6}issues: read$/m);
 		assert.match(draftWorkflow, /contains\(github\.event\.pull_request\.labels\.\*\.name/);
 		assert.doesNotMatch(draftWorkflow, /actions\/checkout/);
-		// Converting to draft changes no repository content, and the fallback
-		// secret is the answer to a token that cannot run the mutation.
-		assert.doesNotMatch(draftWorkflow, /contents: write/);
+		// GitHub's GraphQL permission mapping requires both grants even though
+		// converting a pull request to draft does not change repository content.
+		assert.match(draftWorkflow, /^ {6}contents: write$/m);
 		assert.match(
 			draftWorkflow,
 			/github-token: \$\{\{ secrets\.DRAFT_PR_TOKEN \|\| secrets\.GITHUB_TOKEN \}\}/,
@@ -535,6 +535,7 @@ describe('Pull request labels', () => {
 
 	function runLabeller({
 		title = 'chore: a thing',
+		headRef = 'topic/a-thing',
 		body = `## Provenance\n\n${EMPTY}\n`,
 		labels = [],
 		state = 'open',
@@ -553,6 +554,7 @@ describe('Pull request labels', () => {
 			state,
 			title,
 			body,
+			head: { ref: headRef },
 			labels: labels.map((name) => ({ name })),
 		};
 		const github = {
@@ -622,9 +624,23 @@ describe('Pull request labels', () => {
 		}
 	});
 
+	test('falls back to a type-prefixed title or head branch', async () => {
+		for (const [title, headRef, type] of [
+			['fix/gallery-list-fills-wrapper', 'topic/gallery-list', 'fix'],
+			['Add Solana bindings', 'feat/solana-react-binding', 'feat'],
+		]) {
+			const { added, removed, failures } = await runLabeller({ title, headRef });
+
+			assert.deepEqual(added, [type], `${title} (${headRef})`);
+			assert.deepEqual(removed, []);
+			assert.deepEqual(failures, []);
+		}
+	});
+
 	test('moves the type label when a pull request is retitled', async () => {
 		const { added, removed } = await runLabeller({
 			title: 'fix(compiler): render the non-JSX arm',
+			headRef: 'feat/old-compiler-work',
 			labels: ['feat', 'blocked'],
 		});
 
@@ -840,6 +856,7 @@ describe('Pull request labels', () => {
 		);
 		assert.match(labelWorkflow, /^ {6}issues: read$/m);
 		assert.match(labelWorkflow, /^ {6}pull-requests: write$/m);
+		assert.match(labelWorkflow, /^ {6}contents: write$/m);
 		assert.match(
 			labelWorkflow,
 			/- name: Convert an agent-authored pull request back to draft[\s\S]*?if: always\(\)/,
@@ -849,7 +866,6 @@ describe('Pull request labels', () => {
 			/github-token: \$\{\{ secrets\.DRAFT_PR_TOKEN \|\| secrets\.GITHUB_TOKEN \}\}/,
 		);
 		assert.doesNotMatch(labelWorkflow, /actions\/checkout/);
-		assert.doesNotMatch(labelWorkflow, /contents: write/);
 	});
 });
 
