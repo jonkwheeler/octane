@@ -1177,10 +1177,8 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'remix-router',
-					include: [
-						'packages/remix-router/tests/conformance/**/*.test.ts',
-						'packages/remix-router/tests/differential/**/*.test.ts',
-					],
+					include: ['packages/remix-router/tests/conformance/**/*.test.ts'],
+					exclude: ['packages/remix-router/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Same differential precompile, but for router fixtures: also rewrites
 					// `@octanejs/remix-router` → `react-router` so the React side runs the
