@@ -11,16 +11,27 @@
     "integrity": "sha256:33ce0c6b148117ab4568669492cd8187e8d04f3d1125cd26c598d9110a14e75e",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "absent", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/dnd-kit/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/dnd-kit/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/dnd-kit/tests/parity"],
-      "include": ["contracts\\.test\\.ts$"],
+      "roots": [
+        "packages/dnd-kit/tests/parity"
+      ],
+      "include": [
+        "contracts\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -100,7 +111,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "338397be169909d6d172cef9126367e51cba34b8ce280ba0496f9dcdef917350"
+          "sha256": "0da480c43320dae63456956828f2370848869bd9aea698819f8294767987328f"
         }
       ]
     },
@@ -135,7 +146,9 @@
   "divergences": [
     {
       "id": "renderer-owned-drag-adaptations",
-      "caseIds": ["adapted:dnd-kit-renderer-adaptations"],
+      "caseIds": [
+        "adapted:dnd-kit-renderer-adaptations"
+      ],
       "upstreamResult": "React accepts ordinary element children in DragOverlay and enables optimistic DOM sorting by default.",
       "octaneResult": "The binding distinguishes compiled child blocks from render props and omits the default optimistic sorting plugin.",
       "rationale": "Moving a host before application state commits can split an Octane renderer-owned keyed range.",
