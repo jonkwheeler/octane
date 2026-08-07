@@ -737,10 +737,29 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'usehooks-ts',
 					include: ['packages/usehooks-ts/tests/**/*.test.ts'],
 					exclude: ['packages/usehooks-ts/tests/ssr.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/usehooks-ts$/,
+							replacement: resolve(import.meta.dirname, 'packages/usehooks-ts/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'usehooks-ts-differential',
+					include: ['packages/usehooks-ts/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/usehooks-ts/tests/differential/_setup.ts'],
 					globals: false,
@@ -756,6 +775,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'usehooks-ts-ssr',
 					include: ['packages/usehooks-ts/tests/ssr.test.ts'],
