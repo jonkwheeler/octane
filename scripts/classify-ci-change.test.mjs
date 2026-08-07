@@ -23,6 +23,13 @@ describe('classifyCiChange', () => {
 		assert.equal(classify(['docs/ssr.md', '.changeset/friendly-dogs.md']), false);
 		assert.equal(classify(['AGENTS.md', '.rulesync/rules/root.md']), false);
 		assert.equal(classify(['benchmarks/baselines/local/dbmon.json']), false);
+		assert.equal(
+			classify([
+				'packages/octane-mcp-server/skills/build-octane-software.md',
+				'website/public/llms.txt',
+			]),
+			false,
+		);
 	});
 
 	test('runs full CI when any executable file changes', () => {
@@ -80,11 +87,27 @@ describe('classifyCiChange', () => {
 		);
 	});
 
-	test('treats a newly added formatter helper as isolated developer tooling', () => {
+	test('keeps scoped developer helper paths and script rewrites on the lightweight path', () => {
 		const after = structuredClone(rootPackage);
-		after.scripts['format:files'] = 'prettier --write -- ';
+		after.scripts['format:check'] = 'node scripts/format-files.mjs --check --';
+		after.scripts['format:files'] = 'node scripts/format-files.mjs --write --';
+		after.scripts['typecheck:files'] = 'node scripts/typecheck-files.mjs --';
 
-		assert.equal(classify(['package.json'], rootPackage, after), false);
+		assert.equal(
+			classify(
+				[
+					'package.json',
+					'scripts/file-selection.mjs',
+					'scripts/format-files.mjs',
+					'scripts/format-files.test.mjs',
+					'scripts/typecheck-files.mjs',
+					'scripts/typecheck-files.test.mjs',
+				],
+				rootPackage,
+				after,
+			),
+			false,
+		);
 	});
 
 	test('runs full CI for existing script and dependency changes', () => {

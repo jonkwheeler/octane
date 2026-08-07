@@ -31,7 +31,7 @@
   {
     "title": "Web3",
     "description": "Wallet connection, chain state, contract reads, signing, and transactions.",
-    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit"]
+    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit", "@octanejs/solana-react"]
   },
   {
     "title": "UI and interaction",
@@ -57,12 +57,13 @@
   },
   {
     "title": "Forms and content",
-    "description": "Forms, rich-text editing, MDX, and translations.",
+    "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
     "packages": [
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
       "@octanejs/lexical",
       "@octanejs/tiptap",
+      "@octanejs/streamdown",
       "@octanejs/mdx",
       "@octanejs/i18next"
     ]
@@ -74,7 +75,8 @@
       "@octanejs/tanstack-table",
       "@octanejs/tanstack-virtual",
       "@octanejs/recharts",
-      "@octanejs/visx"
+      "@octanejs/visx",
+      "@octanejs/react-map-gl"
     ]
   },
   {
@@ -84,8 +86,8 @@
   },
   {
     "title": "Desktop",
-    "description": "Tauri v2 commands and events for desktop applications.",
-    "packages": ["@octanejs/tauri"]
+    "description": "Tauri v2 and Electron desktop bindings for Octane applications.",
+    "packages": ["@octanejs/tauri", "@octanejs/electron"]
   },
   {
     "title": "Styling, tests, and devtools",

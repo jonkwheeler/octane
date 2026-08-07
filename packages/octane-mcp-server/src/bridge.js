@@ -50,8 +50,20 @@ export const KNOWN_BINDINGS = {
 	'@dnd-kit/react': '@octanejs/dnd-kit',
 	sonner: '@octanejs/sonner',
 	'react-error-boundary': '@octanejs/react-error-boundary',
+	streamdown: '@octanejs/streamdown',
+	// The official plugins are consolidated as subpaths of the same package.
+	// The bundled bridge skill documents each exact import rewrite.
+	'@streamdown/code': '@octanejs/streamdown',
+	'@streamdown/math': '@octanejs/streamdown',
+	'@streamdown/mermaid': '@octanejs/streamdown',
+	'@streamdown/cjk': '@octanejs/streamdown',
 	shadcn: '@octanejs/shadcn',
 	recharts: '@octanejs/recharts',
+	// react-map-gl@8 is a re-export shell; the binding covers the package its
+	// ./mapbox subpath resolves to, so both specifiers map here.
+	'react-map-gl': '@octanejs/react-map-gl',
+	'react-map-gl/mapbox': '@octanejs/react-map-gl',
+	'@vis.gl/react-mapbox': '@octanejs/react-map-gl',
 	'@react-three/fiber': '@octanejs/three',
 	'@visx/visx': '@octanejs/visx',
 	'@visx/a11y': '@octanejs/visx',
@@ -115,7 +127,11 @@ export const KNOWN_BINDINGS = {
 // Octane-specific ecosystem packages that have no React import to rewrite.
 // Keep these out of KNOWN_BINDINGS so the React bridge never invents a source
 // package mapping for native tooling.
-export const KNOWN_NATIVE_BINDINGS = new Set(['@octanejs/devtools', '@octanejs/tauri']);
+export const KNOWN_NATIVE_BINDINGS = new Set([
+	'@octanejs/devtools',
+	'@octanejs/electron',
+	'@octanejs/tauri',
+]);
 
 // Workspace directory names for the maintained bindings. Keep this derived
 // from both catalogs so repository path routing cannot drift from the public
@@ -548,6 +564,9 @@ function planFor(report) {
 		);
 	}
 	steps.push(
+		"Pin the upstream version you are bridging and copy that release's React binding source into your repository beside the port, keeping the upstream LICENSE and leaving the copy unmodified, then work through it module by module. A bridge written from the README or the type declarations covers the demo path and drops the rest of the API; the copy is also the diff you review on the next upgrade.",
+	);
+	steps.push(
 		'Re-implement the React binding layer (the hooks/components that import react) against Octane hooks of the same names. Most store bindings reduce to useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot).',
 	);
 	const rewrites = (report.apis ?? []).filter(
@@ -569,7 +588,10 @@ function planFor(report) {
 		'Re-author any JSX components shipped by the package in .tsrx: compiled React JSX output cannot run on Octane, and hooks called from non-compiled files need compiler slotting (see the bridge-react-package skill for the subSlot pattern).',
 	);
 	steps.push(
-		'Validate with tests that drive real DOM events and compare behavior against the React original where possible.',
+		"Run the pinned release's own test suite against the bridge where it ships one: framework-neutral suites unmodified against the reused core, React-binding suites ported case by case (fixtures in .tsrx, @octanejs/testing-library for @testing-library/react, upstream case names kept). Note which upstream test files you ran, ported, or left out and why, and triage a failure before touching its assertion.",
+	);
+	steps.push(
+		'Validate the rest with tests that drive real DOM events and compare behavior against the React original where possible.',
 	);
 	return steps;
 }

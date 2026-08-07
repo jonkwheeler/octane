@@ -16,7 +16,7 @@ import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { RxJSDemo } from './demos/RxJS.tsrx';
 import { RainbowKitDemo } from './demos/RainbowKit.tsrx';
-import { ShadcnDemo } from './demos/Shadcn.tsrx';
+import { ShadcnBasesDemo } from './demos/ShadcnBases.tsrx';
 import { SolanaDemo } from './demos/Solana.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
@@ -34,7 +34,7 @@ import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import rxjsSource from './demos/RxJS.tsrx?raw';
 import rainbowKitSource from './demos/RainbowKit.tsrx?raw';
-import shadcnSource from './demos/Shadcn.tsrx?raw';
+import shadcnSource from './demos/ShadcnBases.tsrx?raw';
 import solanaSource from './demos/Solana.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
@@ -109,8 +109,8 @@ export const GROUPS: readonly DemoGroup[] = [
 			},
 			{
 				id: 'shadcn',
-				title: 'shadcn/ui',
-				Component: ShadcnDemo,
+				title: 'shadcn/ui (all bases)',
+				Component: ShadcnBasesDemo,
 				source: shadcnSource,
 			},
 			{
