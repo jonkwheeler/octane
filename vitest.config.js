@@ -1174,12 +1174,42 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'remix-router',
 					include: [
 						'packages/remix-router/tests/conformance/**/*.test.ts',
 						'packages/remix-router/tests/differential/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					// Same differential precompile, but for router fixtures: also rewrites
+					// `@octanejs/remix-router` → `react-router` so the React side runs the
+					// real react-router adapter over the SAME (vendored-equal) core.
+					globals: false,
+				},
+				plugins: [octane()],
+				// `@octanejs/remix-router` is the package under test; alias the public
+				// name (and subpaths — `/dom` → src/dom.ts) to source so fixtures import
+				// it exactly as a consumer would (and the differential React side
+				// rewrites the same specifiers to `react-router`).
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/remix-router$/,
+							replacement: resolve(import.meta.dirname, 'packages/remix-router/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/remix-router\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/remix-router/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'remix-router-differential',
+					include: ['packages/remix-router/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Same differential precompile, but for router fixtures: also rewrites
 					// `@octanejs/remix-router` → `react-router` so the React side runs the
@@ -1206,6 +1236,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				// Static SSR (Phase F): the whole graph compiles in SERVER mode
 				// (`octane({ ssr: true })`) and bare `octane` imports resolve to
 				// `octane/server` (the website's octane-ssr-server-alias pattern) so
