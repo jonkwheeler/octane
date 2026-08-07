@@ -3344,6 +3344,67 @@ function containsComponentCallOrControlFlow(stmts) {
 }
 
 /**
+ * A host-only conditional can share its keyed row's immutable item/dependency
+ * proof, but entering that conditional still needs the row's active scope. Keep
+ * components and every other control-flow boundary on their existing path.
+ */
+function hasOnlyHostConditionalItemBodies(stmts) {
+	let hasConditional = false;
+	let disallowed = false;
+	const seen = new WeakSet();
+	function walk(node) {
+		if (disallowed || !node) return;
+		if (Array.isArray(node)) {
+			for (const child of node) walk(child);
+			return;
+		}
+		if (typeof node !== 'object') return;
+		const type = node.type;
+		if (!type || seen.has(node)) return;
+		seen.add(node);
+		if (
+			type === 'ArrowFunctionExpression' ||
+			type === 'FunctionExpression' ||
+			type === 'FunctionDeclaration'
+		) {
+			return;
+		}
+		if ((type === 'Element' || type === 'JSXElement') && isComponentTag(node)) {
+			disallowed = true;
+			return;
+		}
+		if (type === 'IfStatement' || type === 'JSXIfExpression') {
+			hasConditional = true;
+		} else if (
+			type === 'ForStatement' ||
+			type === 'ForInStatement' ||
+			type === 'ForOfStatement' ||
+			type === 'WhileStatement' ||
+			type === 'DoWhileStatement' ||
+			type === 'TryStatement' ||
+			type === 'SwitchStatement' ||
+			type === 'ActivityStatement' ||
+			type === 'JSXForExpression' ||
+			type === 'JSXTryExpression' ||
+			type === 'JSXSwitchExpression' ||
+			type === 'JSXActivityExpression' ||
+			((type === 'TSRXExpression' || type === 'JSXExpressionContainer') &&
+				node.expression &&
+				isCreatePortalCall(node.expression))
+		) {
+			disallowed = true;
+			return;
+		}
+		for (const key in node) {
+			if (AST_WALK_SKIP_KEYS.has(key)) continue;
+			walk(node[key]);
+		}
+	}
+	for (const statement of stmts) walk(statement);
+	return hasConditional && !disallowed;
+}
+
+/**
  * Classify the narrow opaque shape that an automatically memoized keyed item
  * may safely contain: ordinary JSX component calls, but no template control
  * flow or portals. Imported callees are validated at runtime on the first
@@ -4427,6 +4488,111 @@ function isSsrMarkerlessForItem(node) {
 	const body = node?.body?.body || [];
 	const jsxChildren = body.filter((s) => isJsxNode(s));
 	return jsxChildren.length === 1 && isPlainHostRoot(jsxChildren[0]);
+}
+
+// Direct host-row mounting skips component-render bookkeeping. Keep the proof
+// narrower than markerless item rendering so opaque host lifecycles fail closed.
+const HOST_MOUNT_SAFE_TAGS = new Set([
+	'a',
+	'article',
+	'aside',
+	'b',
+	'br',
+	'div',
+	'em',
+	'footer',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'header',
+	'hr',
+	'i',
+	'li',
+	'main',
+	'nav',
+	'ol',
+	'p',
+	'section',
+	'small',
+	'span',
+	'strong',
+	'table',
+	'tbody',
+	'td',
+	'tfoot',
+	'th',
+	'thead',
+	'tr',
+	'ul',
+]);
+
+const HOST_MOUNT_UNSAFE_ATTRIBUTES = new Set([
+	'autofocus',
+	'checked',
+	'dangerouslysetinnerhtml',
+	'defaultchecked',
+	'defaultvalue',
+	'form',
+	'formaction',
+	'formenctype',
+	'formmethod',
+	'formnovalidate',
+	'formtarget',
+	'innerhtml',
+	'is',
+	'multiple',
+	'ref',
+	'selected',
+	'slot',
+	'src',
+	'srcset',
+	'style',
+	'value',
+]);
+
+function isHostMountSafeTree(root) {
+	const seen = new WeakSet();
+	function walk(node) {
+		if (node == null || typeof node !== 'object') return true;
+		if (Array.isArray(node)) return node.every(walk);
+		if (seen.has(node)) return true;
+		seen.add(node);
+		const type = node.type;
+		if (
+			type === 'ArrowFunctionExpression' ||
+			type === 'FunctionExpression' ||
+			type === 'FunctionDeclaration'
+		) {
+			// Delegated event callbacks run after the live row has mounted.
+			return true;
+		}
+		if (type === 'JSXFragment' || type === 'Fragment') return false;
+		if (type === 'Element' || type === 'JSXElement') {
+			const tag = node.id || node.openingElement?.name;
+			if (
+				(tag?.type !== 'Identifier' && tag?.type !== 'JSXIdentifier') ||
+				!HOST_MOUNT_SAFE_TAGS.has(tag.name)
+			) {
+				return false;
+			}
+			for (const attribute of node.attributes || node.openingElement?.attributes || []) {
+				if (attribute.type !== 'Attribute' && attribute.type !== 'JSXAttribute') return false;
+				const name = jsxAttrRawName(attribute);
+				if (typeof name !== 'string' || HOST_MOUNT_UNSAFE_ATTRIBUTES.has(name.toLowerCase())) {
+					return false;
+				}
+			}
+		}
+		for (const key in node) {
+			if (AST_WALK_SKIP_KEYS.has(key)) continue;
+			if (!walk(node[key])) return false;
+		}
+		return true;
+	}
+	return walk(root);
 }
 
 /**
@@ -17189,11 +17355,21 @@ function planJsx(
 	for (const fc of forCalls) {
 		const isMappedList = fc.mapMethodExpr !== null;
 		const forHelper = isMappedList
-			? 'mapSlot'
+			? fc.hostMountSafe
+				? 'fastMapSlot'
+				: 'mapSlot'
 			: fc.keyedSelectionIndex >= 0
-				? 'keyedForBlock'
-				: 'forBlock';
+				? fc.hostMountSafe
+					? 'fastKeyedForBlock'
+					: 'keyedForBlock'
+				: fc.hostMountSafe
+					? 'fastForBlock'
+					: 'forBlock';
 		ctx.runtimeNeeded.add(forHelper);
+		if (isMappedList && fc.hostMountSafe && fc.autoMemoDeps !== null) {
+			// Memoized maps query the original native-array guard before dispatch.
+			ctx.runtimeNeeded.add('mapSlot');
+		}
 		const slotIndex = fc.slotIndex;
 		const org = fc.origin ?? planOrigin;
 		registerDirectiveOrigin(ctx, org, [
@@ -17211,16 +17387,18 @@ function planJsx(
 		//        bit 3 = indexIndependent (body binds no `index` → a pure reorder
 		//        that only changes a survivor's position need not re-render it),
 		//        bit 4 = SSR emitted markerless direct-host items; hydrate them by root,
-		//        bit 5 = keyed selection; bits 6+ carry its zero-based deps index.
-		// The dedicated eligibility bit distinguishes dependency zero from an
-		// ordinary list without adding a positional argument or tuple allocation.
+		//        bit 5 = conditional item bodies require their active scope,
+		//        bits 6+ = the zero-based keyedForBlock selection dependency index.
+		// keyedForBlock itself identifies a selection, including dependency zero;
+		// ordinary forBlock reuses bit 5 without an argument or tuple allocation.
 		const flags =
 			(fc.pure ? 1 : 0) |
 			(fc.singleRoot ? 2 : 0) |
 			(fc.depEligible ? 4 : 0) |
 			(fc.indexIndependent ? 8 : 0) |
 			(fc.ssrMarkerless ? 16 : 0) |
-			(fc.keyedSelectionIndex >= 0 ? 32 | (fc.keyedSelectionIndex << 6) : 0);
+			(fc.requiresScope ? 32 : 0) |
+			(fc.keyedSelectionIndex >= 0 ? fc.keyedSelectionIndex << 6 : 0);
 		// Arg layout: forBlock(__s, slot, host, items, keyFn, body, flags?, deps?,
 		// emptyBody?, anchor?, ownEnd?).
 		// Optional args backfill positionally: `flags`/`deps` placeholders
@@ -17279,7 +17457,7 @@ function planJsx(
 			if (fc.autoMemoDeps !== null) {
 				const mappedCall = b.stmt(
 					b.call(
-						'_$mapSlot',
+						rtAlias(forHelper),
 						b.id('__s'),
 						b.literal(slotIndex),
 						hostExpr(),
@@ -17321,7 +17499,7 @@ function planJsx(
 					org,
 					b.stmt(
 						b.call(
-							'_$mapSlot',
+							rtAlias(forHelper),
 							b.id('__s'),
 							b.literal(slotIndex),
 							hostExpr(),
@@ -21605,16 +21783,16 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 	// - PURE: body closes over nothing parent-reactive, no hooks, no comps,
 	//   no control flow. Reconciler skips renderBlock when item ref + index
 	//   unchanged. Identified by `pure = true`.
-	// - DEP-PURE: body DOES close over parent locals but is otherwise as
-	//   clean as PURE. The compiler emits an explicit deps array at the
-	//   forBlock call site so the reconciler can do ONE deps-equality check
-	//   per parent render and, if unchanged, treat the body as PURE for the
-	//   survivor short-circuit. Saves the body call entirely for
-	//   item-ref-and-index-stable survivors — no per-row snapshot work.
+	// - DEP-PURE: body DOES close over parent locals but has no hooks or opaque
+	//   components. Proven host-only conditional content is permitted when the
+	//   runtime preserves the row's active scope. The compiler emits an explicit
+	//   deps array so the reconciler can do ONE equality check per parent render
+	//   and, if unchanged, skip item-ref-and-index-stable survivors entirely.
 	// - NORMAL: anything else → body runs every render.
 	let pure = false;
 	const depNames = [];
 	let depEligible = false;
+	let requiresScope = false;
 	let itemMemo = false;
 	let itemMemoContextAware = false;
 	let itemMemoWitnesses = [];
@@ -21788,8 +21966,23 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		// survivor shortcut has no compiler-cache epoch cell to consult).
 		if (itemMemoContextAware && autoMemoDeps === null) itemMemo = false;
 		const hostPure = !hasParentClosure && !hasHook && !hasNestedComp && !hasRenderCall;
+		const conditionalHostDepEligible =
+			ctx.autoMemo === true &&
+			hasNestedComp &&
+			hasParentClosure &&
+			!hasHook &&
+			!hasRenderCall &&
+			node.nativeArrayMap === undefined &&
+			autoMemoDeps !== null &&
+			autoMemoDeps.every((name) => seenDeps.has(name)) &&
+			!containsAutoMemoContextRead(bodyAst, ctx) &&
+			hasOnlyHostConditionalItemBodies(subStmts);
 		const hostDepEligible =
-			!hostPure && !hasHook && hasParentClosure && !hasNestedComp && !hasRenderCall;
+			!hostPure &&
+			!hasHook &&
+			hasParentClosure &&
+			(!hasNestedComp || conditionalHostDepEligible) &&
+			!hasRenderCall;
 		if (itemMemo && itemMemoWitnesses.length > 0) {
 			pure = hostPure;
 			depEligible = hostDepEligible;
@@ -21798,6 +21991,7 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 			pure = hostPure || (itemMemo && depNames.length === 0);
 			depEligible = !pure && !hasHook && (hostDepEligible || (itemMemo && depNames.length > 0));
 		}
+		requiresScope = depEligible && conditionalHostDepEligible;
 		depNames.sort();
 	}
 
@@ -21832,6 +22026,7 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 	const keyedSelectionIndex =
 		ctx.autoMemo === true &&
 		depEligible &&
+		!requiresScope &&
 		!itemMemo &&
 		autoMemoDeps !== null &&
 		!isDestructured &&
@@ -21922,6 +22117,23 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		}
 	}
 
+	const ssrMarkerless = isSsrMarkerlessForItem(node);
+	const hostRootTag = subStmts[0]?.id?.name ?? subStmts[0]?.openingElement?.name?.name;
+	const hostMountSafe =
+		ctx.autoMemo === true &&
+		ctx._universalRuntimeUnit == null &&
+		(parentNs === 'html' || (parentNs === 'opaque' && HTML_ONLY_TAGS.has(hostRootTag))) &&
+		!emptyStmts &&
+		!isDestructured &&
+		!node.index &&
+		subStmts.length === 1 &&
+		singleRoot &&
+		ssrMarkerless &&
+		!containsComponentCallOrControlFlow(subStmts) &&
+		!containsRenderCall(subStmts) &&
+		!containsAutoMemoUnsafeStructure(subStmts) &&
+		isHostMountSafeTree(subStmts[0]);
+
 	const mapCall = node.nativeArrayMap || null;
 	return {
 		id: ctx.nextHelperId++,
@@ -21955,13 +22167,15 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		pure,
 		singleRoot,
 		singleRootExpr,
-		ssrMarkerless: isSsrMarkerlessForItem(node),
+		ssrMarkerless,
+		hostMountSafe,
 		// The env union doubles as the deps array: emitted whenever the helpers
 		// capture anything (Phase 2 — the runtime stamps it as block.extra), and
 		// ALSO compared for the dep-pure survivor short-circuit when depEligible.
 		// Component-local entries remain the tuple prefix the helpers destructure;
 		// any appended import witnesses are comparison-only.
 		depEligible,
+		requiresScope,
 		itemMemoWitnesses,
 		itemMemoFlags,
 		autoMemoDeps,

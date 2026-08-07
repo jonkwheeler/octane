@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-error-boundary/src"],
-      "include": ["$a"],
+      "roots": [
+        "packages/react-error-boundary/src"
+      ],
+      "include": [
+        "$a"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-error-boundary/tests/differential"],
-      "include": ["$a"],
+      "roots": [
+        "packages/react-error-boundary/tests/differential"
+      ],
+      "include": [
+        "$a"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -49,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-error-boundary",
+      "project": "react-error-boundary-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "The same imperative-reset fixture runs through Octane and real react-error-boundary.",
       "files": [
@@ -83,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "a059a3893a1ab818381a267f0b3f5037e2bb964abf3d56e348327f7f95d8ebfb"
+          "sha256": "e59c2930cc1a95e683a999eb7cb01e7b7bc8c50383591d0e2b7f5b52051fc4ae"
         }
       ]
     }
