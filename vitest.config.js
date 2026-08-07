@@ -2916,7 +2916,7 @@ export default defineConfig({
 					name: 'testing-library',
 					include: ['packages/testing-library/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: ['packages/testing-library/tests/differential/**/*.test.ts'],
+					exclude: ['packages/testing-library/tests/differential/**/*.test.ts', 'packages/testing-library/tests/differential.test.ts'],
 					// hydrate.test.ts renders its server markup through the shared
 					// hydration harness, which boots a real Vite SSR server in beforeAll —
 					// the same reason the other harness-using projects lift the 5s default.
@@ -2946,14 +2946,8 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'testing-library-differential',
-					include: ['packages/testing-library/tests/differential/**/*.test.ts'],
+					include: ['packages/testing-library/tests/differential.test.ts'],
 					environment: 'jsdom',
-					globalSetup: ['packages/testing-library/tests/differential/_setup.ts'],
-					testTimeout: 30_000,
-					hookTimeout: 30_000,
-					// hydrate.test.ts renders its server markup through the shared
-					// hydration harness, which boots a real Vite SSR server in beforeAll —
-					// the same reason the other harness-using projects lift the 5s default.
 					testTimeout: 30_000,
 					hookTimeout: 30_000,
 					globals: false,
