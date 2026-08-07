@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f9f91e616b917233a6f5062c80b08c09979d219062075a7cc8957e5c2ee03121"
+      "lockfileSha256": "738f7e56648a0918f26956427392ab7bbb604b291844fa6c198ffbad1b4cad7c"
     }
   },
   "lanes": [
@@ -259,7 +259,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "hook-form",
+      "project": "hook-form-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "The same fixture runs through Octane and real react-hook-form via the shared differential rig.",
       "files": [
@@ -303,7 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "4e0305c524ee363b322fc4e65478d5a2b91b337bbefe27453876144d7461a09b"
+          "sha256": "5198fb7fbfb0199004c84b6f1f2561e9e8056da3f099cb3f4f52fc21589eb565"
         }
       ]
     }

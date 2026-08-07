@@ -156,9 +156,9 @@ function validatePackedPackage(pkg, manifest, files, executableFiles) {
 			}
 		}
 	}
-	if (manifest.engines?.node !== '>=22') {
+	if (manifest.engines?.node !== '>=22.22.2') {
 		errors.push(
-			`packed engines.node is ${JSON.stringify(manifest.engines?.node)}, expected ">=22"`,
+			`packed engines.node is ${JSON.stringify(manifest.engines?.node)}, expected ">=22.22.2"`,
 		);
 	}
 
@@ -388,7 +388,7 @@ async function validatePackedConsumer(tempRoot, archives) {
 				name: 'octane-packed-consumer-smoke',
 				private: true,
 				type: 'module',
-				engines: { node: '>=22' },
+				engines: { node: '>=22.22.2' },
 				dependencies: {
 					'@apollo/client': '4.2.6',
 					'@octanejs/alien-signals': `file:${requireArchive(archives, '@octanejs/alien-signals')}`,
@@ -881,7 +881,7 @@ function validatePackedLynxConsumer(tempRoot, archives) {
 				name: 'octane-packed-lynx-consumer-smoke',
 				private: true,
 				type: 'module',
-				engines: { node: '>=22' },
+				engines: { node: '>=22.22.2' },
 				dependencies: {
 					...LYNX_TOOLCHAIN_LANES.minimum.packages,
 					'@octanejs/lynx': archiveSpecs['@octanejs/lynx'],

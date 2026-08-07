@@ -11,6 +11,7 @@ type HydrationBinding =
 	| 'base-ui'
 	| 'docusaurus'
 	| 'rainbowkit'
+	| 'react-map-gl'
 	| 'testing-library';
 
 const repositoryRoot = resolve(import.meta.dirname, '../../..');
@@ -66,6 +67,10 @@ function bindingAliases(binding: HydrationBinding) {
 				replacement: resolve(repositoryRoot, 'packages/tanstack-query/src/index.ts'),
 			},
 		];
+	}
+
+	if (binding === 'react-map-gl') {
+		return [{ find: /^@octanejs\/react-map-gl$/, replacement: resolve(source, 'index.ts') }];
 	}
 
 	if (binding === 'testing-library') {
