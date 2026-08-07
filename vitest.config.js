@@ -1859,12 +1859,36 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'lucide',
 					include: [
 						'packages/lucide/tests/**/*.test.ts',
 						'!packages/lucide/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/lucide/tests/differential/**/*.test.ts''],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/lucide$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/lucide\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'lucide-differential',
+					include: ['packages/lucide/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/lucide/tests/differential/_setup.ts'],
 					globals: false,
@@ -1884,6 +1908,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'lucide-ssr',
 					include: ['packages/lucide/tests/ssr/**/*.test.ts'],
