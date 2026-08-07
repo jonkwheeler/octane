@@ -49,7 +49,7 @@
     "troika-three-text": "^0.52.4"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "peerDependencies": {
     "@octanejs/three": "workspace:*",
