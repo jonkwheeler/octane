@@ -3716,6 +3716,65 @@ function collectImmutableModuleFunctions(body) {
 	return declared;
 }
 
+// Omitting a JSX descriptor also omits its live `Component.defaultProps` read.
+// Only private declarations whose every reference is an immediately rendered,
+// attribute-free host child can therefore bypass descriptor construction. JSX
+// descriptors returned/stored/passed elsewhere expose their `.type`, so those
+// sites count as escapes even though their tag looks equally static.
+function collectPrivateUnescapedComponents(body, ctx) {
+	const candidates = new Set();
+	for (const statement of body) {
+		if (
+			statement.type === 'FunctionDeclaration' &&
+			statement.id?.type === 'Identifier' &&
+			ctx.componentInfo.get(statement.id.name)?.returnJsx === true &&
+			ctx.moduleFunctionDeclarations.has(statement.id.name)
+		) {
+			candidates.add(statement.id.name);
+		}
+	}
+	if (candidates.size === 0) return candidates;
+
+	const allowed = new Set();
+	const visitHost = (host) => {
+		for (const child of host.children || []) {
+			if (child?.type !== 'Element' && child?.type !== 'JSXElement') continue;
+			if (!isComponentTag(child)) {
+				visitHost(child);
+				continue;
+			}
+			const name = tagBindingName(child);
+			const attrs = child.attributes || child.openingElement?.attributes || [];
+			if (name !== null && candidates.has(name) && attrs.length === 0 && !child.children?.length) {
+				allowed.add(child);
+			}
+		}
+	};
+	for (const info of ctx.componentInfo.values()) {
+		if (!info.returnJsx) continue;
+		for (const statement of info.node.body.body || []) {
+			if (statement.type === 'ReturnStatement' && isPlainHostRoot(statement.argument)) {
+				visitHost(statement.argument);
+			}
+		}
+	}
+
+	// An array deliberately does not introduce a synthetic module Block scope:
+	// sibling function references must remain free for the escape proof.
+	const escaped = collectFreeIdentifiers(body, [], allowed);
+	for (const name of candidates) {
+		if (escaped.has(name)) {
+			candidates.delete(name);
+			continue;
+		}
+		// A declaration binds its own name inside its body. Scan that disjoint
+		// subtree once more so self-assigned properties cannot hide behind it.
+		const declaration = ctx.moduleFunctionDeclarations.get(name);
+		if (collectFreeIdentifiers(declaration.body, [], allowed).has(name)) candidates.delete(name);
+	}
+	return candidates;
+}
+
 // Conservative semantic boundary for compiler-owned component-region memoization.
 // The cached region assumes React Compiler's pure-render / immutable-snapshot
 // contract, but still fails closed for constructs whose commit or retry behavior
@@ -4368,6 +4427,111 @@ function isSsrMarkerlessForItem(node) {
 	const body = node?.body?.body || [];
 	const jsxChildren = body.filter((s) => isJsxNode(s));
 	return jsxChildren.length === 1 && isPlainHostRoot(jsxChildren[0]);
+}
+
+// Direct host-row mounting skips component-render bookkeeping. Keep the proof
+// narrower than markerless item rendering so opaque host lifecycles fail closed.
+const HOST_MOUNT_SAFE_TAGS = new Set([
+	'a',
+	'article',
+	'aside',
+	'b',
+	'br',
+	'div',
+	'em',
+	'footer',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'header',
+	'hr',
+	'i',
+	'li',
+	'main',
+	'nav',
+	'ol',
+	'p',
+	'section',
+	'small',
+	'span',
+	'strong',
+	'table',
+	'tbody',
+	'td',
+	'tfoot',
+	'th',
+	'thead',
+	'tr',
+	'ul',
+]);
+
+const HOST_MOUNT_UNSAFE_ATTRIBUTES = new Set([
+	'autofocus',
+	'checked',
+	'dangerouslysetinnerhtml',
+	'defaultchecked',
+	'defaultvalue',
+	'form',
+	'formaction',
+	'formenctype',
+	'formmethod',
+	'formnovalidate',
+	'formtarget',
+	'innerhtml',
+	'is',
+	'multiple',
+	'ref',
+	'selected',
+	'slot',
+	'src',
+	'srcset',
+	'style',
+	'value',
+]);
+
+function isHostMountSafeTree(root) {
+	const seen = new WeakSet();
+	function walk(node) {
+		if (node == null || typeof node !== 'object') return true;
+		if (Array.isArray(node)) return node.every(walk);
+		if (seen.has(node)) return true;
+		seen.add(node);
+		const type = node.type;
+		if (
+			type === 'ArrowFunctionExpression' ||
+			type === 'FunctionExpression' ||
+			type === 'FunctionDeclaration'
+		) {
+			// Delegated event callbacks run after the live row has mounted.
+			return true;
+		}
+		if (type === 'JSXFragment' || type === 'Fragment') return false;
+		if (type === 'Element' || type === 'JSXElement') {
+			const tag = node.id || node.openingElement?.name;
+			if (
+				(tag?.type !== 'Identifier' && tag?.type !== 'JSXIdentifier') ||
+				!HOST_MOUNT_SAFE_TAGS.has(tag.name)
+			) {
+				return false;
+			}
+			for (const attribute of node.attributes || node.openingElement?.attributes || []) {
+				if (attribute.type !== 'Attribute' && attribute.type !== 'JSXAttribute') return false;
+				const name = jsxAttrRawName(attribute);
+				if (typeof name !== 'string' || HOST_MOUNT_UNSAFE_ATTRIBUTES.has(name.toLowerCase())) {
+					return false;
+				}
+			}
+		}
+		for (const key in node) {
+			if (AST_WALK_SKIP_KEYS.has(key)) continue;
+			if (!walk(node[key])) return false;
+		}
+		return true;
+	}
+	return walk(root);
 }
 
 /**
@@ -6425,6 +6589,9 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 			});
 		}
 	}
+	ctx.privateUnescapedComponents = ctx.autoMemo
+		? collectPrivateUnescapedComponents(ast.body, ctx)
+		: new Set();
 	for (const [, info] of ctx.componentInfo) {
 		const compNode = info.node;
 		const locals = collectComponentLocals(compNode);
@@ -13535,6 +13702,30 @@ function compileReturnJsxFunction(node, ctx, options) {
 		ctx.currentAutoMemoCallsitesSafe = prevAutoMemoCallsitesSafe;
 		ctx.currentMapTemps = prevMapTemps;
 	}
+	if (
+		ctx.autoMemo &&
+		ctx.privateUnescapedComponents.has(name) &&
+		(node.params?.length ?? 0) === 0 &&
+		(node.body.body?.length ?? 0) === 1 &&
+		isPlainHostRoot(node.body.body[0]?.argument) &&
+		compInlinedSubs.length === 0 &&
+		mapTemps.length === 0 &&
+		cssHash === null
+	) {
+		const descriptor = newStatements[0]?.argument;
+		const renderer = descriptor?.arguments?.[0];
+		const props = descriptor?.arguments?.[1];
+		if (
+			descriptor?.type === 'CallExpression' &&
+			descriptor.callee?.type === 'Identifier' &&
+			descriptor.callee.name === '_$createElement' &&
+			descriptor.arguments.length === 2 &&
+			renderer?.type === 'Identifier' &&
+			isStaticFragmentRendererProps(props, ctx)
+		) {
+			ctx.componentInfo.get(name).staticFragmentRenderer = { name: renderer.name, props };
+		}
+	}
 	// The rebuilt function shell maps to the authored declaration. Hoisted
 	// helper fns (compInlinedSubs — filled by the statement mapping above) are
 	// function DECLARATION nodes embedded at the top of the body, matching the
@@ -13714,6 +13905,57 @@ function objectProp(hn, valNode) {
 	return b.prop('init', b.id(hn), valNode);
 }
 
+// A bare, immutable same-module component needs no descriptor when its JSX is
+// consumed immediately by a returned host. Keep every value/props boundary on
+// the ordinary path: only this attribute-free call can remain in the template
+// without moving authored expression evaluation into its hoisted renderer.
+function isStaticFragmentRendererProps(props, ctx) {
+	if (props?.type !== 'ObjectExpression') return false;
+	for (const property of props.properties || []) {
+		if (
+			property.type !== 'Property' ||
+			property.kind !== 'init' ||
+			property.computed ||
+			property.method ||
+			property.shorthand
+		) {
+			return false;
+		}
+		const descriptor = property.value;
+		const component = descriptor?.arguments?.[0];
+		const componentProps = descriptor?.arguments?.[1];
+		if (
+			descriptor?.type !== 'CallExpression' ||
+			descriptor.callee?.type !== 'Identifier' ||
+			descriptor.callee.name !== '_$createElement' ||
+			descriptor.arguments.length !== 2 ||
+			component?.type !== 'Identifier' ||
+			!ctx.privateUnescapedComponents.has(component.name) ||
+			componentProps?.type !== 'ObjectExpression' ||
+			componentProps.properties.length !== 0
+		) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function isStaticReturnedFragmentComponent(node, ctx) {
+	if (!ctx.autoMemo || ctx._foldCtx?.immediateRenderedOutput !== true) return false;
+	const name = tagBindingName(node);
+	if (
+		name === null ||
+		ctx.currentComponentLocals == null ||
+		ctx.currentComponentLocals.has(name) ||
+		!ctx.privateUnescapedComponents.has(name) ||
+		ctx.componentInfo.get(name)?.staticFragmentRenderer === undefined
+	) {
+		return false;
+	}
+	const attrs = node.attributes || node.openingElement?.attributes || [];
+	return attrs.length === 0 && (node.children || []).length === 0;
+}
+
 // Walk a host element or JSX fragment, replacing each DYNAMIC part (an
 // attribute/child expression) with `props.hN` and collecting
 // `{ hN: <originalExpr> }` into `holeProps`. Static structure (tag, literal attrs,
@@ -13831,6 +14073,22 @@ function extractFragment(node, ctx, holeProps, parentNs = 'html') {
 				// a hole too, since it may be a local/member/dynamic tag that the hoisted
 				// renderer cannot reference directly.
 				newChildren.push(extractFragmentComponent(child, ctx, holeProps, childNs));
+			} else if (isComponentTag(child) && isStaticReturnedFragmentComponent(child, ctx)) {
+				// The original function remains callable and still returns its authored
+				// descriptor. Only this nonescaping call can reuse its already-hoisted,
+				// hookless fragment directly through the existing lite component ABI.
+				const extracted = extractFragment(child, ctx, holeProps, childNs);
+				newChildren.push({
+					...extracted,
+					openingElement: {
+						...extracted.openingElement,
+						metadata: {
+							...extracted.openingElement.metadata,
+							staticFragmentRenderer: ctx.componentInfo.get(tagBindingName(child))
+								.staticFragmentRenderer,
+						},
+					},
+				});
 			} else if (isComponentTag(child)) {
 				const hn = `h${holeProps.length}`;
 				holeProps.push(
@@ -17036,11 +17294,21 @@ function planJsx(
 	for (const fc of forCalls) {
 		const isMappedList = fc.mapMethodExpr !== null;
 		const forHelper = isMappedList
-			? 'mapSlot'
+			? fc.hostMountSafe
+				? 'fastMapSlot'
+				: 'mapSlot'
 			: fc.keyedSelectionIndex >= 0
-				? 'keyedForBlock'
-				: 'forBlock';
+				? fc.hostMountSafe
+					? 'fastKeyedForBlock'
+					: 'keyedForBlock'
+				: fc.hostMountSafe
+					? 'fastForBlock'
+					: 'forBlock';
 		ctx.runtimeNeeded.add(forHelper);
+		if (isMappedList && fc.hostMountSafe && fc.autoMemoDeps !== null) {
+			// Memoized maps query the original native-array guard before dispatch.
+			ctx.runtimeNeeded.add('mapSlot');
+		}
 		const slotIndex = fc.slotIndex;
 		const org = fc.origin ?? planOrigin;
 		registerDirectiveOrigin(ctx, org, [
@@ -17126,7 +17394,7 @@ function planJsx(
 			if (fc.autoMemoDeps !== null) {
 				const mappedCall = b.stmt(
 					b.call(
-						'_$mapSlot',
+						rtAlias(forHelper),
 						b.id('__s'),
 						b.literal(slotIndex),
 						hostExpr(),
@@ -17168,7 +17436,7 @@ function planJsx(
 					org,
 					b.stmt(
 						b.call(
-							'_$mapSlot',
+							rtAlias(forHelper),
 							b.id('__s'),
 							b.literal(slotIndex),
 							hostExpr(),
@@ -20770,7 +21038,10 @@ function makeCompCall(
 ) {
 	const id = ctx.nextHelperId++;
 	const compName = tagBindingName(node);
-	const compNode = tagExprNode(node);
+	const staticFragmentRenderer = node.openingElement?.metadata?.staticFragmentRenderer;
+	const compNode = staticFragmentRenderer
+		? inheritOriginLoc(b.id(staticFragmentRenderer.name), node.openingElement?.name || node.id)
+		: tagExprNode(node);
 	// `</Card>` emits nothing — lend it the opening name's generated ranges so a
 	// closing tag is reachable for components the way it is for host elements.
 	registerOriginAlias(ctx, node.closingElement?.name, node.id || node.openingElement?.name);
@@ -20887,7 +21158,7 @@ function makeCompCall(
 	}
 
 	// The props object as a node; the call-site emit embeds it directly.
-	const propsExpr = inheritOriginLoc(b.object(propNodes), node);
+	const propsExpr = staticFragmentRenderer?.props ?? inheritOriginLoc(b.object(propNodes), node);
 
 	// Design (c) v0: decide whether the call site can use componentSlotLite
 	// (Scope-only, no Block / no Comment markers / no CompSlot wrapper).
@@ -20918,7 +21189,12 @@ function makeCompCall(
 	// elides iff the callee carries the definition-site `$$singleRoot` stamp
 	// (docs/comment-marker-elision-plan.md M1).
 	let maybeSingleRoot = false;
-	if (ctx.componentInfo && compName !== null) {
+	if (staticFragmentRenderer) {
+		// The renderer is already a void, hookless component body. A memo boundary
+		// would force a full Block and could hide a hookful descendant's update.
+		liteEligible = true;
+		voidComponent = true;
+	} else if (ctx.componentInfo && compName !== null) {
 		const callSiteOk = !hasSpreadProp && !hasChildrenProp;
 		const calleeInfo = ctx.componentInfo.get(compName);
 		if (calleeInfo) {
@@ -21761,6 +22037,23 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		}
 	}
 
+	const ssrMarkerless = isSsrMarkerlessForItem(node);
+	const hostRootTag = subStmts[0]?.id?.name ?? subStmts[0]?.openingElement?.name?.name;
+	const hostMountSafe =
+		ctx.autoMemo === true &&
+		ctx._universalRuntimeUnit == null &&
+		(parentNs === 'html' || (parentNs === 'opaque' && HTML_ONLY_TAGS.has(hostRootTag))) &&
+		!emptyStmts &&
+		!isDestructured &&
+		!node.index &&
+		subStmts.length === 1 &&
+		singleRoot &&
+		ssrMarkerless &&
+		!containsComponentCallOrControlFlow(subStmts) &&
+		!containsRenderCall(subStmts) &&
+		!containsAutoMemoUnsafeStructure(subStmts) &&
+		isHostMountSafeTree(subStmts[0]);
+
 	const mapCall = node.nativeArrayMap || null;
 	return {
 		id: ctx.nextHelperId++,
@@ -21794,7 +22087,8 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		pure,
 		singleRoot,
 		singleRootExpr,
-		ssrMarkerless: isSsrMarkerlessForItem(node),
+		ssrMarkerless,
+		hostMountSafe,
 		// The env union doubles as the deps array: emitted whenever the helpers
 		// capture anything (Phase 2 — the runtime stamps it as block.extra), and
 		// ALSO compared for the dep-pure survivor short-circuit when depEligible.
