@@ -11,10 +11,29 @@
     "integrity": "sha256:f1311219e6503a768463a4319b9fc264438c62b774b9ef81feaa21085edfd65a",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/rxjs/src"], "include": ["$a"], "exclude": [] },
-    "tests": { "roots": ["packages/rxjs/tests/differential"], "include": ["$a"], "exclude": [] }
+    "source": {
+      "roots": [
+        "packages/rxjs/src"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/rxjs/tests/differential"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -38,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "rxjs",
+      "project": "rxjs-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "One shared fixture compares bind snapshots and later emissions with real @react-rxjs/core.",
       "files": [
@@ -72,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "b3932649733c5ed6dfc9ef7ec17e83c798f131f5a2055962c800d2f8b9506953"
+          "sha256": "fc0613cadb49ecce5d6601919fe3dff71b592334d74574b052ac268559423e87"
         }
       ]
     }
