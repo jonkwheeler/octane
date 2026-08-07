@@ -478,9 +478,33 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rxjs',
 					include: ['packages/rxjs/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					exclude: [''packages/rxjs/tests/differential/**/*.test.ts''],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/rxjs$/,
+							replacement: resolve(import.meta.dirname, 'packages/rxjs/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/rxjs\/utils$/,
+							replacement: resolve(import.meta.dirname, 'packages/rxjs/src/utils/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'rxjs-differential',
+					include: ['packages/rxjs/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/rxjs/tests/differential/_setup.ts'],
 					globals: false,
