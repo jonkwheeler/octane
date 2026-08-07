@@ -347,6 +347,19 @@
       "verified": "2026-08-06"
     },
     {
+      "name": "@octanejs/react-popper",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": { "package": "react-popper", "version": "2.3.0" },
+      "surface": "Complete against the published react-popper 2.3.0 root runtime and type surface: Manager, Reference, Popper, usePopper, render-function refs and styles, explicit and virtual references, arrows, hide data, lifecycle actions, Popper modifiers, and all public types.",
+      "divergences": [
+        "React component classes are Octane function components; React node, ref, and CSS property types are represented by OctaneNode and native structural equivalents while preserving observable render-function values.",
+        "Development misuse warnings are emitted directly through console.error instead of React Popper's warning helper."
+      ],
+      "ssr": "Manager, Reference, and Popper render deterministic initial markup without browser globals, adopt server nodes during hydration, then create and clean up the Popper instance after client refs attach.",
+      "verified": "2026-08-03"
+    },
+    {
       "name": "@octanejs/recharts",
       "version": "0.1.26",
       "category": "Data-heavy screens",
@@ -890,6 +903,7 @@
     "react-i18next": "@octanejs/i18next",
     "react-map-gl": "@octanejs/react-map-gl",
     "react-map-gl/mapbox": "@octanejs/react-map-gl",
+    "react-popper": "@octanejs/react-popper",
     "react-redux": "@octanejs/redux",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
