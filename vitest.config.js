@@ -733,7 +733,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/i18next/tests/differential/**/*.test.ts'],
+				},
 				test: {
 					name: 'i18next',
 					include: ['packages/i18next/tests/**/*.test.ts'],

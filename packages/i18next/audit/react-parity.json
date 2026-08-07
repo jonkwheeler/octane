@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/i18next/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/i18next/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/i18next/tests/differential"],
-      "include": ["parity\\.test\\.ts$"],
+      "roots": [
+        "packages/i18next/tests/differential"
+      ],
+      "include": [
+        "parity\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -49,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "i18next",
+      "project": "i18next-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs the same .tsrx fixture against react-i18next 17.0.9 on React and @octanejs/i18next on Octane, comparing provider, hook, Trans, and language-subscription output at mount and across language changes.",
       "files": [
@@ -83,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "870411ea63cdce53e95baf2ffb09af113017b44df2f5c2e897c179061302bd79"
         }
       ]
     }
