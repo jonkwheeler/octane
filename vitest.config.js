@@ -2509,12 +2509,38 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'sonner',
 					include: [
 						'packages/sonner/tests/**/*.test.ts',
 						'!packages/sonner/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/sonner/tests/differential/**/*.test.ts''],
+					// Differential precompile for Sonner fixtures: rewrites
+					// `@octanejs/sonner` → the real published `sonner@2.0.7`.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/sonner$/,
+							replacement: resolve(import.meta.dirname, 'packages/sonner/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/sonner\/dist\/styles\.css$/,
+							replacement: resolve(import.meta.dirname, 'packages/sonner/src/styles.css'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'sonner-differential',
+					include: ['packages/sonner/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential precompile for Sonner fixtures: rewrites
 					// `@octanejs/sonner` → the real published `sonner@2.0.7`.
@@ -2536,6 +2562,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'sonner-ssr',
 					include: ['packages/sonner/tests/ssr/**/*.test.ts'],
