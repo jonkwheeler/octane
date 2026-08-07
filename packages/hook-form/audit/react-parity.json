@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f7dee4c5da2c7659b6e6b2b708d7a246fe88d41c61f9012c5bf086cce72ffb47"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -77,7 +77,7 @@
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",
           "role": "support",
-          "sha256": "814293ec04c0617093e241064e19f38e18e040cc02d0fb9108dabc87df2b8d5d"
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
         },
         {
           "path": "packages/hook-form/upstream/SHA256SUMS",
@@ -303,7 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6382a3a9da2f251a8d21c4f00e45ca0986152bac29f648f112bdee950e3212bc"
+          "sha256": "0da480c43320dae63456956828f2370848869bd9aea698819f8294767987328f"
         }
       ]
     }
