@@ -11,13 +11,14 @@ remain at zero. Zero pins does **not** imply complete upstream parity. Consult
 [`docs/bindings-status.md`](bindings-status.md) for each binding's supported
 surface and evidence.
 
-**0 active pin(s) across 54 binding package(s).**
+**0 active pin(s) across 55 binding package(s).**
 
 | Package | Active pins |
 | --- | ---: |
 | `@octanejs/apollo-client` | 0 |
 | `@octanejs/aria` | 0 |
 | `@octanejs/base-ui` | 0 |
+| `@octanejs/blocknote` | 0 |
 | `@octanejs/cmdk` | 0 |
 | `@octanejs/devtools` | 0 |
 | `@octanejs/dexie` | 0 |
