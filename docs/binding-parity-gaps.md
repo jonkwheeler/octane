@@ -38,7 +38,7 @@ surface and evidence.
 | `@octanejs/radix` | 0 |
 | `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
-| `@octanejs/react-textarea-autosize` | 0 |
+| `@octanejs/react-map-gl` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
 | `@octanejs/redux-toolkit` | 0 |
