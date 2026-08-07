@@ -11,10 +11,29 @@
     "integrity": "sha256:5f399b15e821be8674d185fdb810357e1147af7e69171e0438fc6e48034fe24e",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/mobx/src"], "include": ["$a"], "exclude": [] },
-    "tests": { "roots": ["packages/mobx/tests/differential"], "include": ["$a"], "exclude": [] }
+    "source": {
+      "roots": [
+        "packages/mobx/src"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/mobx/tests/differential"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -29,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "c2b8c479fcba0b3b86cb11869d32c11e0fcb68ce3210fb107b69b0e4a8ed22f5"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -38,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "mobx",
+      "project": "mobx-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "One shared fixture compares observer and useLocalObservable through an action update.",
       "files": [
@@ -72,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "547c2275940ed430842f9d899da1d31031093fed3f162873550750954f51e406"
+          "sha256": "5bdd432d8a90a3ac67a28566bf378b629138fb5ff929ce1bb41a52ddac8a8b99"
         }
       ]
     }
