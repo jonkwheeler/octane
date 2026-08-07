@@ -17,8 +17,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-router-ssr-query/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/tanstack-router-ssr-query/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
@@ -26,7 +30,9 @@
         "packages/tanstack-router-ssr-query/tests/differential",
         "packages/tanstack-router-ssr-query/tests/parity"
       ],
-      "include": ["\\.test\\.ts$"],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -43,7 +49,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "41b3738ac015ecaf4aa76ee22a9da47b82e19db538fd89ecf3fac4e3ab5c98e5"
+      "lockfileSha256": "d2d25f17370f42afc8ea0d013dd182c8af0d1654c7554b17e6b200da4377290f"
     }
   },
   "lanes": [
@@ -111,7 +117,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "948413dca0974f8323d813a1798652790380f9cc4173102e4b8592035d12d05d"
+          "sha256": "84a39089d08f003ab2b6c36a9a4e7aab4ce40a784d4f6694739fd1fe51ed479a"
         }
       ]
     },
