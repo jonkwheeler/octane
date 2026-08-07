@@ -17,13 +17,23 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/redux-toolkit/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/redux-toolkit/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/redux-toolkit/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/redux-toolkit/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -49,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "redux-toolkit",
+      "project": "redux-toolkit-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs one RTK Query fixture against @reduxjs/toolkit/query/react 2.12.0 on React and @octanejs/redux-toolkit/query/react on Octane, comparing exact query outcomes, lazy/mutation initial and fulfilled outcomes, and infinite-query results.",
       "files": [

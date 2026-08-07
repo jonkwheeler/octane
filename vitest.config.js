@@ -1522,7 +1522,11 @@ export default defineConfig({
 				test: {
 					name: 'redux-toolkit',
 					include: ['packages/redux-toolkit/tests/**/*.test.ts'],
-					exclude: [...configDefaults.exclude, 'packages/redux-toolkit/tests/ssr/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/redux-toolkit/tests/ssr/**/*.test.ts',
+						'packages/redux-toolkit/tests/differential/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					// Differential fixtures rewrite the octane Toolkit and Redux
 					// bindings to their real React counterparts.
