@@ -2955,12 +2955,35 @@ export default defineConfig({
 				plugins: [octaneMdx(websiteMdxOptions), octane()],
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-error-boundary',
 					include: [
 						'packages/react-error-boundary/tests/**/*.test.ts',
 						'!packages/react-error-boundary/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/react-error-boundary/tests/differential/**/*.test.ts''],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-error-boundary$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-error-boundary/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-error-boundary-differential',
+					include: ['packages/react-error-boundary/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/react-error-boundary/tests/differential/_setup.ts'],
 					globals: false,
@@ -2996,6 +3019,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-error-boundary-ssr',
 					include: ['packages/react-error-boundary/tests/ssr/**/*.test.ts'],
