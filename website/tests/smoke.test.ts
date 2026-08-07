@@ -183,8 +183,8 @@ describe('website routes', () => {
 		expect(findLink(why, '/docs/tsrx-vs-tsx')).toBeTruthy();
 
 		// The home composes its sections in a fixed order: hero, features, proven, why,
-		// compat, spin, explorer. (Each section carries a compiler-added scoped class
-		// after its semantic one.)
+		// compat, lynx, spin, explorer. (Each section carries a compiler-added scoped
+		// class after its semantic one.)
 		const homeSections = Array.from(container.querySelectorAll('main .home > section')).map(
 			(section) => section.classList[0],
 		);
@@ -194,9 +194,19 @@ describe('website routes', () => {
 			'proven',
 			'why',
 			'compat',
+			'lynx',
 			'spin',
 			'explorer',
 		]);
+
+		// The Lynx section is the entry point to /docs/lynx: its own link, plus one
+		// card per packaged example. The phones behind them are deferred, so the
+		// server renders the copy and the cards mount when the section comes near.
+		const lynx = container.querySelector('section.lynx')!;
+		expect(lynx.querySelector('.lynx-title')?.textContent).toContain(
+			'Build Native Apps, with Lynx and Octane',
+		);
+		expect(findLink(lynx, '/docs/lynx')).toBeTruthy();
 
 		// The home page renders the interactive benchmark explorer from the checked-in
 		// ×-vs-Octane summary (HOME_SUMMARY). The explorer's own interactions live in
@@ -344,6 +354,36 @@ describe('website routes', () => {
 	it('/docs/quick-start renders highlighted MDX code', async () => {
 		const { container } = await renderRoute('/docs/quick-start');
 		expect(container.querySelector('.prose pre.shiki code')).toBeTruthy();
+	});
+
+	it('/docs/quick-start keeps inline callout prose and links inline', async () => {
+		const { container } = await renderRoute('/docs/quick-start');
+		const callout = Array.from(container.querySelectorAll<HTMLElement>('.doc-callout')).find(
+			(candidate) =>
+				candidate.querySelector('.doc-callout-title')?.textContent ===
+				'Make .tsrx feel native in VS Code',
+		);
+
+		expect(callout).toBeTruthy();
+		expect(callout!.querySelector('p p')).toBeNull();
+		expect(callout!.querySelector('a p')).toBeNull();
+		expect(callout!.querySelector('a')?.textContent).toBe('TSRX for VS Code');
+	});
+
+	it('/docs/tsrx-vs-tsx keeps the editor-support link inline', async () => {
+		const { container } = await renderRoute('/docs/tsrx-vs-tsx');
+		const heading = container.querySelector('h2#editor-support')!;
+		let element = heading.nextElementSibling;
+		let link: HTMLAnchorElement | null = null;
+
+		while (element && element.tagName !== 'H2') {
+			if (element instanceof HTMLAnchorElement) link = element;
+			else link ??= element.querySelector('a');
+			element = element.nextElementSibling;
+		}
+
+		expect(link?.textContent).toBe('TSRX for VS Code');
+		expect(link?.querySelector('p')).toBeNull();
 	});
 
 	it('/docs/publishing-libraries renders the package-manager dry-run selector', async () => {
