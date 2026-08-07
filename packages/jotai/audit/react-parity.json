@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/jotai/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/jotai/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/jotai/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/jotai/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -49,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "jotai",
+      "project": "jotai-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs the same four .tsrx fixtures against jotai 2.20.2 on React and @octanejs/jotai on Octane, comparing primitive and derived atoms, setters, provider scopes, splitAtom lists, and async atom resolution after identical interactions.",
       "files": [
@@ -118,7 +126,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "51b195ba156a2cd5a2411510d042a1845fdebe8140a5e349c4c6ef59fe6492bd"
         }
       ]
     }

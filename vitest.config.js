@@ -672,12 +672,15 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/jotai/tests/differential/**/*.test.ts'],
+				},
 				test: {
 					name: 'jotai',
 					include: ['packages/jotai/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/jotai/tests/differential/**/*.test.ts''],
+					exclude: ['packages/jotai/tests/differential/**/*.test.ts'],
 					// Same differential precompile, but for jotai fixtures: also rewrites
 					// `@octanejs/jotai` → `jotai` so the React side runs real jotai.
 					globals: false,
