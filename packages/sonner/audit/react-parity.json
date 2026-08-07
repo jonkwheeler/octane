@@ -11,16 +11,27 @@
     "integrity": "sha256:eb0f5dd35d890d38e8dcba1b242e9ac38cf45cc92c02aa914f144d98cfa7ce8f",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "absent", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/sonner/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/sonner/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/sonner/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/sonner/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -46,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "sonner",
+      "project": "sonner-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs one exact same-fixture lifecycle case against the published sonner@2.0.7 React runtime.",
       "files": [
@@ -85,7 +96,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "3a9e7f31f062b6fc266e098c3bde049389cbbfb38aa3ec3a82ef9ffdf839eb57"
         }
       ]
     },
@@ -132,7 +143,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "3a9e7f31f062b6fc266e098c3bde049389cbbfb38aa3ec3a82ef9ffdf839eb57"
         }
       ]
     },
@@ -169,7 +180,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "3a9e7f31f062b6fc266e098c3bde049389cbbfb38aa3ec3a82ef9ffdf839eb57"
         }
       ]
     }
@@ -177,7 +188,9 @@
   "divergences": [
     {
       "id": "sonner-native-action-events",
-      "caseIds": ["adapted:sonner-native-action-events"],
+      "caseIds": [
+        "adapted:sonner-native-action-events"
+      ],
       "upstreamResult": "Action callbacks receive React synthetic mouse events.",
       "octaneResult": "Action callbacks receive native DOM MouseEvent objects.",
       "rationale": "Octane uses delegated native DOM events rather than React's synthetic event layer.",
@@ -189,7 +202,9 @@
     },
     {
       "id": "sonner-normal-ref-prop",
-      "caseIds": ["adapted:sonner-normal-ref-prop"],
+      "caseIds": [
+        "adapted:sonner-normal-ref-prop"
+      ],
       "upstreamResult": "React exposes the Toaster ref through forwardRef.",
       "octaneResult": "Toaster accepts ref as an ordinary component prop and forwards it to the host section.",
       "rationale": "Octane components do not require React's forwardRef wrapper.",
@@ -201,7 +216,9 @@
     },
     {
       "id": "sonner-ssr-visibility-guard",
-      "caseIds": ["adapted:sonner-ssr-visibility-guard"],
+      "caseIds": [
+        "adapted:sonner-ssr-visibility-guard"
+      ],
       "upstreamResult": "Version 2.0.7 reads document.hidden during render behind its client boundary.",
       "octaneResult": "The initial visibility read is guarded when document is unavailable during server rendering.",
       "rationale": "Octane executes the Toaster component in its server runtime without an RSC client boundary.",
