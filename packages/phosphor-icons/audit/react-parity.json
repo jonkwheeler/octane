@@ -11,12 +11,27 @@
     "integrity": "sha256:08027417baf5fc4818581a63c487c98ad36c80c17816a0069d4fd0805350ee90",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/phosphor-icons/src"], "include": ["$a"], "exclude": [] },
+    "source": {
+      "roots": [
+        "packages/phosphor-icons/src"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    },
     "tests": {
-      "roots": ["packages/phosphor-icons/tests/differential"],
-      "include": ["$a"],
+      "roots": [
+        "packages/phosphor-icons/tests/differential"
+      ],
+      "include": [
+        "$a"
+      ],
       "exclude": []
     }
   },
@@ -33,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "952b6eea87a5220d441dc7ae2450984d158d1b0f41d7c07328a0b5bc7eac0437"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -42,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "phosphor-icons",
+      "project": "phosphor-icons-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "One shared fixture compares accessible duotone Camera SVG with real @phosphor-icons/react.",
       "files": [
@@ -76,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f36cf7ffc6fd54987d34efd90cdc83e3c10a08e39059fa9d06918788465f1f5b"
+          "sha256": "2e216a079472c5a1e29991c3416a57c6cb137093a7543a6b7f81fb3cdbad90cb"
         }
       ]
     }

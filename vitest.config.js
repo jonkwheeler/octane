@@ -1936,7 +1936,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
+				},
 				test: {
 					name: 'phosphor-icons',
 					include: [
@@ -1944,7 +1947,7 @@ export default defineConfig({
 						'!packages/phosphor-icons/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					exclude: [''packages/phosphor-icons/tests/differential/**/*.test.ts''],
+					exclude: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
