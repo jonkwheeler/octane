@@ -100,7 +100,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "publishConfig": {
     "access": "public"
