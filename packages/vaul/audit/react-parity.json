@@ -16,13 +16,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/vaul/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/vaul/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/vaul/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/vaul/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -39,7 +47,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "87d558e49fb103ce122a78e4adee2e86ed4a07c83734c30e0ab4866a9a763a80"
+      "lockfileSha256": "9828dd5657c35ca31089f74f38f85b160c690ccea5319e0f3fbd629931f26615"
     }
   },
   "lanes": [
