@@ -1,5 +1,29 @@
 # @octanejs/mcp-server
 
+## 0.2.12
+
+### Patch Changes
+
+- 48e2397: Keep universal state updates proportional to their retained owner subtree: a leaf `setState` replays only its owning component, keyed-list item state and several owners updated by one event replay their nearest shared component ancestor instead of the root, updates under an idle `@try`/Suspense boundary stay scoped (active episodes and retained-hidden content still replay from the root, and a scoped render error falls back so the boundary catches it), structural updates that insert, reorder, or remove hosts commit through the scope's physical frame, compact leaf rows driven by list state update within their owning list component, and scoped commits edit the accepted listener tables in place instead of cloning them. Also avoid cloning the object driver's full instance map when preparing a small host batch, and expose the corresponding benchmark through the MCP server.
+
+## 0.2.11
+
+### Patch Changes
+
+- bd8bb1b: Require Node.js 22.22.2 or newer across Octane's published packages.
+
+  Add the `octane/compiler/register` preload for running server and SSG scripts
+  directly with Node or Bun. It compiles imported `.tsrx`/`.tsx` modules and
+  plain TypeScript custom hooks in server mode without a Vite build. Bun also
+  targets bare `octane` imports at `octane/server` in pass-through authored source
+  dependencies, including packages that manage their hook slots manually.
+
+## 0.2.10
+
+### Patch Changes
+
+- f8e5a00: Port guidance now asks for the pinned upstream source and its tests. `bridge-react-package`, the `octane_bridge_react_package` plan steps, and the `octane_engineering_plan` gates for binding paths all require bridging module by module from a pinned copy of the upstream release, covering its exports rather than the demo path, running that release's own suite as the parity oracle where it ships one, and recording whatever parity cannot reach as a divergence.
+
 ## 0.2.9
 
 ### Patch Changes

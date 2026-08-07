@@ -11,7 +11,7 @@ remain at zero. Zero pins does **not** imply complete upstream parity. Consult
 [`docs/bindings-status.md`](bindings-status.md) for each binding's supported
 surface and evidence.
 
-**0 active pin(s) across 52 binding package(s).**
+**0 active pin(s) across 54 binding package(s).**
 
 | Package | Active pins |
 | --- | ---: |
@@ -22,6 +22,7 @@ surface and evidence.
 | `@octanejs/devtools` | 0 |
 | `@octanejs/dexie` | 0 |
 | `@octanejs/dnd-kit` | 0 |
+| `@octanejs/electron` | 0 |
 | `@octanejs/floating-ui` | 0 |
 | `@octanejs/hook-form` | 0 |
 | `@octanejs/i18next` | 0 |
@@ -37,6 +38,7 @@ surface and evidence.
 | `@octanejs/radix` | 0 |
 | `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
+| `@octanejs/react-map-gl` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
 | `@octanejs/redux-toolkit` | 0 |
@@ -44,6 +46,7 @@ surface and evidence.
 | `@octanejs/rxjs` | 0 |
 | `@octanejs/shadcn` | 0 |
 | `@octanejs/sonner` | 0 |
+| `@octanejs/streamdown` | 0 |
 | `@octanejs/styled-components` | 0 |
 | `@octanejs/stylex` | 0 |
 | `@octanejs/tanstack-ai` | 0 |
@@ -65,5 +68,4 @@ surface and evidence.
 | `@octanejs/valtio` | 0 |
 | `@octanejs/visx` | 0 |
 | `@octanejs/wagmi` | 0 |
-| `@octanejs/zag` | 0 |
 | `@octanejs/zustand` | 0 |

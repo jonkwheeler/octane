@@ -159,6 +159,20 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
+		// React-hosted migration boundary: the same React 19 host renders either
+		// upstream Streamdown directly or @octanejs/streamdown through
+		// OctaneCompat. The browser harness checks semantic DOM parity before
+		// publishing mount, replacement, and token-stream timings.
+		name: 'streamdown-hosted',
+		cwd: 'streamdown-hosted',
+		servers: [
+			{ filter: 'react-streamdown-hosted-bench', port: 5300 },
+			{ filter: 'octane-streamdown-hosted-bench', port: 5301 },
+		],
+		iter: { normal: 8, quick: 3 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		name: 'dbmon',
 		cwd: 'dbmon',
 		servers: [
@@ -529,6 +543,15 @@ const SUITES = [
 		cwd: 'lynx-list',
 		servers: [],
 		iter: { normal: 3, quick: 1 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
+		// Universal renderer update locality (Node-only): compiles the public issue
+		// fixture and measures one stateful leaf beside up to 4,000 unrelated owners.
+		name: 'universal-leaf-update',
+		cwd: 'universal-leaf-update',
+		servers: [],
+		iter: { normal: 5, quick: 3 },
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{

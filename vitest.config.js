@@ -110,6 +110,29 @@ const VISX_ALIASES = [
 		replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
 	},
 ];
+const STREAMDOWN_SOURCE = resolve(import.meta.dirname, 'packages/streamdown/src');
+const STREAMDOWN_ALIASES = [
+	{
+		find: /^@octanejs\/streamdown\/code$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'code.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown\/math$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'math.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown\/mermaid$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'mermaid-plugin.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown\/cjk$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'cjk.ts'),
+	},
+	{
+		find: /^@octanejs\/streamdown$/,
+		replacement: resolve(STREAMDOWN_SOURCE, 'index.tsrx'),
+	},
+];
 // Octane's template source map contains zero-width generated segments that are
 // valid in Vite but currently rejected by Vitest's Istanbul/V8 remappers. The
 // Visx coverage project measures the compiled package source directly instead;
@@ -595,6 +618,55 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/tauri$/,
 							replacement: resolve(import.meta.dirname, 'packages/tauri/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'electron',
+					include: [
+						'packages/electron/tests/conformance/**/*.test.ts',
+						'packages/electron/tests/preload/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/electron$/,
+							replacement: resolve(import.meta.dirname, 'packages/electron/src/renderer/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'electron-main',
+					include: ['packages/electron/tests/main/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'electron-ssr',
+					include: ['packages/electron/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/electron$/,
+							replacement: resolve(import.meta.dirname, 'packages/electron/src/renderer/index.ts'),
 						},
 					],
 				},
@@ -1569,17 +1641,37 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'hook-form-pristine',
+					include: ['packages/hook-form/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+				},
+			},
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/hook-form/tests/upstream/**/*.test.ts',
+						'packages/hook-form/tests/upstream/**/*.test.tsx',
+					],
+				},
 				test: {
 					name: 'hook-form',
 					include: [
 						'packages/hook-form/tests/**/*.test.ts',
 						'packages/hook-form/tests/**/*.test.tsx',
 					],
-					exclude: [...configDefaults.exclude, 'packages/hook-form/tests/**/*.server.test.tsx'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/hook-form/tests/**/*.server.test.tsx',
+						'packages/hook-form/tests/upstream-original.test.ts',
+						'packages/hook-form/tests/differential/**/*.test.ts',
+						'packages/hook-form/tests/differential/**/*.test.tsx',
+					],
 					environment: 'jsdom',
-					// Differential precompile: rewrites `@octanejs/hook-form` →
-					// `react-hook-form` so the React side runs the real binding.
-					globalSetup: ['packages/hook-form/tests/differential/_setup.ts'],
 					// The ported upstream suite uses @testing-library/jest-dom matchers
 					// (toBeVisible, toBeInTheDocument, …) — same as react-hook-form's own
 					// jest setup. clear/reset/restore mirror upstream's jest config so
@@ -1617,6 +1709,43 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'hook-form-differential',
+					include: [
+						'packages/hook-form/tests/differential/**/*.test.ts',
+						'packages/hook-form/tests/differential/**/*.test.tsx',
+					],
+					environment: 'jsdom',
+					// Rewrites the fixture imports so the React side runs the real binding.
+					globalSetup: ['packages/hook-form/tests/differential/_setup.ts'],
+					setupFiles: ['packages/hook-form/tests/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/hook-form$/,
+							replacement: resolve(import.meta.dirname, 'packages/hook-form/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/hook-form\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/hook-form/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				// react-hook-form's own jest config runs `*.server.test.tsx` in a
 				// node environment; same split here — node transform mode also makes
 				// the octane plugin compile in `mode: 'server'`, which the server
@@ -1780,7 +1909,29 @@ export default defineConfig({
 					include: [
 						'packages/lucide/tests/**/*.test.ts',
 						'!packages/lucide/tests/ssr/**/*.test.ts',
+						'!packages/lucide/tests/differential/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/lucide$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/lucide\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/lucide/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'lucide-differential',
+					include: ['packages/lucide/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/lucide/tests/differential/_setup.ts'],
 					globals: false,
@@ -1999,10 +2150,44 @@ export default defineConfig({
 					name: 'dnd-kit',
 					include: [
 						'packages/dnd-kit/tests/conformance/**/*.test.ts',
-						'packages/dnd-kit/tests/differential/**/*.test.ts',
 						'packages/dnd-kit/tests/hydration/**/*.test.ts',
 					],
 					environment: 'jsdom',
+					setupFiles: ['packages/dnd-kit/tests/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/dnd-kit$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/hooks$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/hooks/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/sortable$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/sortable/index.ts'),
+						},
+						{
+							find: /^@octanejs\/dnd-kit\/utilities$/,
+							replacement: resolve(import.meta.dirname, 'packages/dnd-kit/src/utilities/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'dnd-kit-differential',
+					include: ['packages/dnd-kit/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					// The shared fixture mounts both adapters and drains both runtimes.
+					// Under full-suite contention this can exceed Vitest's 5s default
+					// even though the focused interaction completes in well under a second.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					globalSetup: ['packages/dnd-kit/tests/differential/_setup.ts'],
 					setupFiles: ['packages/dnd-kit/tests/_setup.ts'],
 					globals: false,
@@ -2252,11 +2437,40 @@ export default defineConfig({
 						'packages/shadcn/tests/**/*.test.ts',
 						'packages/shadcn/tests/**/*.test.tsx',
 						'!packages/shadcn/tests/ssr/**/*.test.ts',
+						'!packages/shadcn/tests/differential/**/*.test.ts',
+						'!packages/shadcn/tests/differential/**/*.test.tsx',
 					],
 					environment: 'jsdom',
-					// Differential precompile for shadcn fixtures: rewrites
-					// `@octanejs/shadcn` → the vendored pinned upstream React sources
-					// (shadcn has no npm runtime package to rewrite to).
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						// Shadcn tests exercise only the Lucide components their fixtures render.
+						// Loading Lucide's full generated root barrel here repeats its own export
+						// inventory in every isolated Shadcn worker and dominates these cases.
+						{
+							find: /^@octanejs\/lucide$/,
+							replacement: resolve(import.meta.dirname, 'packages/shadcn/tests/_lucide.ts'),
+						},
+						// @octanejs/radix deliberately carries no alias: it resolves through
+						// node_modules like any other dependency. That used to mean the pinned
+						// published release (maintainer policy from the cmdk review); since the
+						// package moved to `workspace:*` it means packages/radix, so these
+						// tests now cover the sibling source this repo actually ships.
+					],
+				},
+			},
+			{
+				test: {
+					name: 'shadcn-differential',
+					include: [
+						'packages/shadcn/tests/differential/**/*.test.ts',
+						'packages/shadcn/tests/differential/**/*.test.tsx',
+					],
+					environment: 'jsdom',
+					// Rewrites @octanejs/shadcn subpaths to the matching vendored,
+					// pinned upstream React modules before the differential tests load.
 					globalSetup: ['packages/shadcn/tests/differential/_setup.ts'],
 					testTimeout: 30_000,
 					hookTimeout: 30_000,
@@ -2266,14 +2480,9 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/shadcn$/,
-							replacement: resolve(import.meta.dirname, 'packages/shadcn/src/index.ts'),
+							find: /^@octanejs\/lucide$/,
+							replacement: resolve(import.meta.dirname, 'packages/shadcn/tests/_lucide.ts'),
 						},
-						// @octanejs/radix deliberately carries no alias: it resolves through
-						// node_modules like any other dependency. That used to mean the pinned
-						// published release (maintainer policy from the cmdk review); since the
-						// package moved to `workspace:*` it means packages/radix, so these
-						// tests now cover the sibling source this repo actually ships.
 					],
 				},
 			},
@@ -2290,10 +2499,6 @@ export default defineConfig({
 						{
 							find: /^octane$/,
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
-						},
-						{
-							find: /^@octanejs\/shadcn$/,
-							replacement: resolve(import.meta.dirname, 'packages/shadcn/src/index.ts'),
 						},
 					],
 				},
@@ -2432,6 +2637,126 @@ export default defineConfig({
 					],
 				},
 			},
+			// @vis.gl/react-mapbox's five framework-neutral util specs run BYTE-EXACT
+			// from the vendored tree, once against upstream's own source and once
+			// against the modules this port reuses. Both lanes passing is what backs
+			// the "reused verbatim" claim in UPSTREAM.md; the pristine lane alone
+			// would only prove upstream still works.
+			...['pristine', 'adapted'].map((lane) => ({
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: `react-map-gl-upstream-${lane}`,
+					include: [`packages/react-map-gl/tests/upstream-util/${lane}.test.ts`],
+					environment: 'jsdom',
+					globals: false,
+				},
+				resolve: {
+					alias: [
+						{
+							find: /^tape-promise\/tape$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-map-gl/tests/_harness/tape-adapter.ts',
+							),
+						},
+						{
+							find: /^@vis\.gl\/react-mapbox\/(.*)$/,
+							replacement:
+								resolve(
+									import.meta.dirname,
+									lane === 'pristine'
+										? 'packages/react-map-gl/upstream/src'
+										: 'packages/react-map-gl/src',
+								) + '/$1.ts',
+						},
+					],
+				},
+			})),
+			{
+				test: {
+					name: 'react-map-gl-ssr',
+					include: ['packages/react-map-gl/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-map-gl$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				// The same fixture through Octane and the PUBLISHED @vis.gl/react-mapbox
+				// 8.1.2 on real React — resolved from node_modules so the octane
+				// plugin never touches the oracle. Its own project because the
+				// React-side precompile does not belong to the ordinary suite.
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-map-gl-differential',
+					include: ['packages/react-map-gl/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/react-map-gl/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-map-gl$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				// The ported @vis.gl/react-mapbox suite owns tests/upstream/**; the
+				// remaining files are Octane-only conformance for behavior the
+				// upstream suite cannot observe, so they stay in the ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-map-gl/tests/upstream/**/*.test.ts'],
+				},
+				test: {
+					name: 'react-map-gl',
+					include: ['packages/react-map-gl/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-map-gl/tests/differential/**/*.test.ts',
+						'packages/react-map-gl/tests/ssr/**/*.test.ts',
+						// Owned by the two upstream-util lanes, which alias
+						// @vis.gl/react-mapbox at their own source tree.
+						'packages/react-map-gl/tests/upstream-util/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					// The hydration cases boot a real Vite SSR server, which is well past
+					// the default 5s on its own. Every project using renderHydrationFixture
+					// raises this.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-map-gl$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/index.ts'),
+						},
+					],
+				},
+			},
 			{
 				test: {
 					name: 'sonner',
@@ -2477,6 +2802,42 @@ export default defineConfig({
 							find: /^@octanejs\/sonner$/,
 							replacement: resolve(import.meta.dirname, 'packages/sonner/src/index.ts'),
 						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'streamdown',
+					include: [
+						'packages/streamdown/tests/**/*.test.ts',
+						'!packages/streamdown/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globalSetup: ['packages/streamdown/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+					alias: STREAMDOWN_ALIASES,
+				},
+			},
+			{
+				test: {
+					name: 'streamdown-ssr',
+					include: ['packages/streamdown/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						...STREAMDOWN_ALIASES,
 					],
 				},
 			},
@@ -2538,10 +2899,28 @@ export default defineConfig({
 					include: [
 						'packages/styled-components/tests/**/*.test.ts',
 						'!packages/styled-components/tests/ssr/**/*.test.ts',
+						'!packages/styled-components/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					// Differential precompile for styled-components fixtures: rewrites
-					// `@octanejs/styled-components` → the real published styled-components.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/styled-components$/,
+							replacement: resolve(import.meta.dirname, 'packages/styled-components/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'styled-components-differential',
+					include: ['packages/styled-components/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					// Rewrites @octanejs/styled-components to the published React
+					// package before the differential tests load.
 					globalSetup: ['packages/styled-components/tests/differential/_setup.ts'],
 					globals: false,
 				},
@@ -2581,6 +2960,11 @@ export default defineConfig({
 					name: 'testing-library',
 					include: ['packages/testing-library/tests/**/*.test.ts'],
 					environment: 'jsdom',
+					// hydrate.test.ts renders its server markup through the shared
+					// hydration harness, which boots a real Vite SSR server in beforeAll —
+					// the same reason the other harness-using projects lift the 5s default.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					globals: false,
 				},
 				// The binding's `.ts` sources call hooks with EXPLICIT slot symbols
@@ -2698,6 +3082,47 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'astro',
+					include: ['packages/astro/tests/**/*.test.ts'],
+					exclude: ['packages/astro/tests/**/*.e2e.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				resolve: {
+					alias: [
+						{
+							find: /^astro:octane:opts$/,
+							replacement: resolve(import.meta.dirname, 'packages/astro/tests/_fixtures/opts.js'),
+						},
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^octane\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^octane\/compiler\/vite$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/compiler/vite.js'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'astro-e2e',
+					include: ['packages/astro/tests/astro.e2e.test.ts'],
+					environment: 'node',
+					globals: false,
+					hookTimeout: 320_000,
+					testTimeout: 60_000,
+					fileParallelism: false,
+					...(process.env.CI ? { maxWorkers: 1 } : {}),
+				},
+			},
+			{
+				test: {
 					name: 'octane-mcp-server',
 					include: ['packages/octane-mcp-server/src/**/*.test.js'],
 					environment: 'node',
@@ -2708,6 +3133,14 @@ export default defineConfig({
 				test: {
 					name: 'cli',
 					include: ['packages/cli/tests/**/*.test.js'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'create-octane',
+					include: ['packages/create-octane/tests/**/*.test.js'],
 					environment: 'node',
 					globals: false,
 				},
@@ -2779,9 +3212,23 @@ export default defineConfig({
 			{
 				test: {
 					name: 'rspeedy-plugin',
-					include: ['packages/rspeedy-plugin-octane/tests/**/*.test.ts'],
+					include: [
+						'packages/rspeedy-plugin-octane/tests/**/*.test.ts',
+						'!packages/rspeedy-plugin-octane/tests/browser/**/*.test.ts',
+					],
 					environment: 'node',
 					globals: false,
+				},
+				resolve: { alias: LYNX_ALIASES },
+			},
+			{
+				test: {
+					name: 'rspeedy-plugin-browser',
+					include: ['packages/rspeedy-plugin-octane/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 90_000,
+					hookTimeout: 60_000,
 				},
 				resolve: { alias: LYNX_ALIASES },
 			},
