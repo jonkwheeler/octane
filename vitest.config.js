@@ -449,9 +449,40 @@ export default defineConfig({
 				plugins: [octane({ hmr: false, profile: true })],
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'zustand',
 					include: ['packages/zustand/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					exclude: [''packages/zustand/tests/differential/**/*.test.ts''],
+					// Same differential precompile, but for zustand fixtures: also rewrites
+					// `@octanejs/zustand` → `zustand` so the React side runs real zustand.
+					globals: false,
+				},
+				plugins: [octane()],
+				// `@octanejs/zustand` is the package under test; alias the public name
+				// (and its subpaths) to source so fixtures import it exactly as a consumer
+				// would (and the differential React side rewrites the same specifiers to
+				// `zustand`). Regex aliases so `@octanejs/zustand/shallow` → src/shallow.ts
+				// without the bare entry's file path swallowing the subpath.
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/zustand$/,
+							replacement: resolve(import.meta.dirname, 'packages/zustand/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/zustand\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/zustand/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'zustand-differential',
+					include: ['packages/zustand/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Same differential precompile, but for zustand fixtures: also rewrites
 					// `@octanejs/zustand` → `zustand` so the React side runs real zustand.
