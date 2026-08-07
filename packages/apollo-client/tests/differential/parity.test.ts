@@ -1,16 +1,11 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client';
-import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
-import { beforeAll, describe, it } from 'vitest';
+import { describe, it } from 'vitest';
 import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
 import { QUERY } from '../_fixtures/query-diff.tsrx';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/query-diff.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
-
-beforeAll(() =>
-	execFileSync(process.execPath, [resolve(__dirname, 'compile-runner.mjs'), FIXTURE, CACHE]),
-);
 
 describe('differential: @octanejs/apollo-client vs @apollo/client/react', () => {
 	// @parity-case differential:apollo-cache-query

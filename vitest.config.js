@@ -1392,12 +1392,14 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'apollo-client',
 					include: [
 						'packages/apollo-client/tests/**/*.test.ts',
 						'!packages/apollo-client/tests/ssr/**/*.test.ts',
 					],
+					exclude: ['packages/apollo-client/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
 					// inside the test body (same helper as base-ui/aria); keep the same 30s
@@ -1452,6 +1454,64 @@ export default defineConfig({
 				},
 			},
 			{
+				// Differential lane: precompiles fixtures for the published React oracle.
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'apollo-client-differential',
+					include: ['packages/apollo-client/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/apollo-client/tests/differential/_setup.ts'],
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/apollo-client\/react\/ssr$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/apollo-client/src/react/ssr/index.js',
+							),
+						},
+						{
+							find: /^@octanejs\/apollo-client\/testing\/react$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/apollo-client/src/testing/react/index.js',
+							),
+						},
+						{
+							find: /^@octanejs\/apollo-client\/react\/internal$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/apollo-client/src/react/internal/index.js',
+							),
+						},
+						{
+							find: /^@octanejs\/apollo-client\/testing$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/apollo-client/src/testing/index.js',
+							),
+						},
+						{
+							find: /^@octanejs\/apollo-client\/react$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/apollo-client/src/react/index.js',
+							),
+						},
+						{
+							find: /^@octanejs\/apollo-client$/,
+							replacement: resolve(import.meta.dirname, 'packages/apollo-client/src/index.js'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'apollo-client-ssr',
 					include: ['packages/apollo-client/tests/ssr/**/*.test.ts'],
