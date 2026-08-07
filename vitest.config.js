@@ -791,6 +791,11 @@ export default defineConfig({
 					include: ['packages/usehooks-ts/tests/**/*.test.ts'],
 					exclude: ['packages/usehooks-ts/tests/ssr.test.ts'],
 					environment: 'jsdom',
+					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
+					// inside the test body; keep the same 30s headroom as the other binding
+					// hydration projects so a loaded CI shard does not hit the 5s default.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					globals: false,
 				},
 				plugins: [octane()],
@@ -1289,7 +1294,7 @@ export default defineConfig({
 					name: 'wagmi',
 					include: ['packages/wagmi/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/wagmi/tests/differential/**/*.test.ts''],
+					exclude: ['packages/wagmi/tests/differential/**/*.test.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
