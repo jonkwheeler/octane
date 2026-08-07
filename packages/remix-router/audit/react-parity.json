@@ -178,7 +178,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "4378e90a7edac654db465f6692610b0dd5a7519dd46fb75f2002d9088be822fb"
+          "sha256": "7e9bdf9a7744cbc212e4b366e02369666f58700f256a9a5a2d31c446ba7f63d9"
         }
       ]
     },
@@ -246,7 +246,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "4378e90a7edac654db465f6692610b0dd5a7519dd46fb75f2002d9088be822fb"
+          "sha256": "7e9bdf9a7744cbc212e4b366e02369666f58700f256a9a5a2d31c446ba7f63d9"
         }
       ]
     }
