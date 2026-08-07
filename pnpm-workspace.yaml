@@ -278,12 +278,18 @@ catalogs:
     proxy-compare: ^3.0.1
     prettier-plugin-svelte: ^4.1.1
     '@base-ui/react': ^1.6.0
+    '@blocknote/core': 0.53.0
+    '@blocknote/react': 0.53.0
+    '@measured/puck': 0.20.2
+    '@xyflow/react': 12.11.2
+    '@xyflow/system': 0.0.79
     '@internationalized/date': ^3.12.2
     '@internationalized/number': ^3.6.7
     '@internationalized/string': ^3.2.9
     '@dnd-kit/abstract': 0.5.0
     '@dnd-kit/collision': 0.5.0
     '@dnd-kit/dom': 0.5.0
+    '@dnd-kit/geometry': 0.5.0
     '@dnd-kit/helpers': 0.5.0
     '@dnd-kit/react': 0.5.0
     '@dnd-kit/state': 0.5.0
@@ -294,6 +300,7 @@ catalogs:
     class-variance-authority: 0.7.1
     classnames: ^2.5.1
     clsx: ^2.1.1
+    classcat: 5.0.5
     cmdk: 1.1.1
     tailwind-merge: 3.6.0
     d3-array: 3.2.1
@@ -344,6 +351,7 @@ catalogs:
     rulesync: ^8.32.0
     solid-js: '2.0.0-beta.20'
     sonner: 2.0.7
+    thinking-orbs: 0.2.0
     styled-components: 6.4.3
     stylis: ^4.4.0
     '@types/stylis': ^4.2.7
@@ -401,6 +409,8 @@ minimumReleaseAgeExclude:
   - 'tailwindcss@4.3.3'
   - '@tailwindcss/vite@4.3.3'
   - octane@0.1.16 || 0.1.17
+  - '@blocknote/core@0.53.0'
+  - '@blocknote/react@0.53.0'
 
 # Changesets 2.31.1 assumes npm's error shape and crashes on pnpm 11 duplicate
 # publish errors. Remove this backport once the fix ships on Changesets' stable line.
