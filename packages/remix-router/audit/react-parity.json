@@ -11,16 +11,29 @@
     "integrity": "sha256:4ac4dc0f608dfaced2943da365c95634c9f5a550d33be6c10f1d13d70f59692b",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/remix-router/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/remix-router/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/remix-router/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/remix-router/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "remix-router",
+      "project": "remix-router-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs nine exact scenarios from eight shared fixtures against react-router 8.2.0 on React and @octanejs/remix-router on Octane, with bounded semantic waits before every equality assertion.",
       "files": [
@@ -67,8 +80,8 @@
             },
             {
               "id": "differential:remix-router-await",
-              "testName": "AwaitApp: fallback → resolved render-prop, byte-identical at both steps",
-              "fullName": "differential: @octanejs/remix-router vs real react-router AwaitApp: fallback → resolved render-prop, byte-identical at both steps"
+              "testName": "AwaitApp: fallback \u2192 resolved render-prop, byte-identical at both steps",
+              "fullName": "differential: @octanejs/remix-router vs real react-router AwaitApp: fallback \u2192 resolved render-prop, byte-identical at both steps"
             },
             {
               "id": "differential:remix-router-declarative",
@@ -97,8 +110,8 @@
             },
             {
               "id": "differential:remix-router-pending",
-              "testName": "PendingApp: deterministic loading state → landed page, byte-identical",
-              "fullName": "differential: @octanejs/remix-router vs real react-router PendingApp: deterministic loading state → landed page, byte-identical"
+              "testName": "PendingApp: deterministic loading state \u2192 landed page, byte-identical",
+              "fullName": "differential: @octanejs/remix-router vs real react-router PendingApp: deterministic loading state \u2192 landed page, byte-identical"
             }
           ]
         },
