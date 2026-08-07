@@ -17,20 +17,24 @@
     "title": "AI, data, and routing",
     "description": "Streaming AI, GraphQL, server state, live IndexedDB data, type-safe routes, and React Router-style APIs.",
     "packages": [
-      "@octanejs/tanstack-ai",
       "@octanejs/apollo-client",
       "@octanejs/dexie",
+      "@octanejs/nuqs",
+      "@octanejs/remix-router",
+      "@octanejs/tanstack-ai",
       "@octanejs/tanstack-query",
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
-      "@octanejs/remix-router",
-      "@octanejs/nuqs"
+      "@octanejs/thinking-orbs"
     ]
   },
   {
     "title": "Web3",
     "description": "Wallet connection, chain state, contract reads, signing, and transactions.",
-    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit"]
+    "packages": [
+      "@octanejs/wagmi",
+      "@octanejs/rainbowkit"
+    ]
   },
   {
     "title": "UI and interaction",
@@ -81,12 +85,17 @@
   {
     "title": "Web 3D",
     "description": "Technical-preview, React Three Fiber-style scene graphs on Octane's universal renderer.",
-    "packages": ["@octanejs/three"]
+    "packages": [
+      "@octanejs/three"
+    ]
   },
   {
     "title": "Desktop",
     "description": "Tauri v2 and Electron desktop bindings for Octane applications.",
-    "packages": ["@octanejs/tauri", "@octanejs/electron"]
+    "packages": [
+      "@octanejs/tauri",
+      "@octanejs/electron"
+    ]
   },
   {
     "title": "Styling, tests, and devtools",

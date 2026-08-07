@@ -26,14 +26,15 @@ export function ThinkingOrb({
 	paused = false,
 	style,
 	'aria-label': ariaLabel,
+	ref: consumerRef,
 	...rest
 }: ThinkingOrbProps) {
-	const ref = useRef<HTMLCanvasElement | null>(null);
-	const dark = useResolvedDark(theme, ref);
+	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const dark = useResolvedDark(theme, canvasRef);
 	const reduced = useReducedMotion();
 
 	useEffect(() => {
-		const canvas = ref.current;
+		const canvas = canvasRef.current;
 		if (!canvas) return;
 		const dpr = Math.min(2, (typeof devicePixelRatio !== 'undefined' && devicePixelRatio) || 1);
 		canvas.width = Math.round(size * dpr);
@@ -98,9 +99,18 @@ export function ThinkingOrb({
 		};
 	}, [state, size, dark, speed, paused, reduced]);
 
+	function assignCanvasRef(node: HTMLCanvasElement | null): void {
+		canvasRef.current = node;
+		if (typeof consumerRef === 'function') {
+			consumerRef(node);
+		} else if (consumerRef != null) {
+			consumerRef.current = node;
+		}
+	}
+
 	return (
 		<canvas
-			ref={ref}
+			ref={assignCanvasRef}
 			role="img"
 			aria-label={ariaLabel ?? LABELS[state]}
 			style={{ width: size, height: size, display: 'block', ...style }}
