@@ -75,7 +75,8 @@
       "@octanejs/tanstack-virtual",
       "@octanejs/react-window",
       "@octanejs/recharts",
-      "@octanejs/visx"
+      "@octanejs/visx",
+      "@octanejs/react-map-gl"
     ]
   },
   {
