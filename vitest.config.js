@@ -1785,6 +1785,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'three',
 					include: ['packages/three/tests/**/*.test.ts'],
@@ -1801,6 +1802,18 @@ export default defineConfig({
 							: []),
 					],
 					environment: 'jsdom',
+										globals: false,
+					server: { deps: { inline: ['@react-three/fiber'] } },
+				},
+				plugins: [octane({ renderers: THREE_RENDERERS })],
+				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'three-differential',
+					include: ['packages/three/tests/**/*differential.test.ts'],
+					environment: 'jsdom',
 					globalSetup: ['packages/three/tests/_react-setup.ts'],
 					globals: false,
 					server: { deps: { inline: ['@react-three/fiber'] } },
@@ -1809,6 +1822,7 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'three-browser',
 					include:
