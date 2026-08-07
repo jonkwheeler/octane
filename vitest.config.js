@@ -2557,12 +2557,28 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'streamdown',
 					include: [
 						'packages/streamdown/tests/**/*.test.ts',
 						'!packages/streamdown/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/streamdown/tests/differential/**/*.test.ts''],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+					alias: STREAMDOWN_ALIASES,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'streamdown-differential',
+					include: ['packages/streamdown/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globalSetup: ['packages/streamdown/tests/differential/_setup.ts'],
 					globals: false,
@@ -2574,6 +2590,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'streamdown-ssr',
 					include: ['packages/streamdown/tests/ssr/**/*.test.ts'],
