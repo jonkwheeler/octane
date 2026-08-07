@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/lucide/src"],
-      "include": ["\\.ts$"],
+      "roots": [
+        "packages/lucide/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/lucide/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/lucide/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -56,7 +64,7 @@
         {
           "path": "packages/lucide/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "e72df6ebb4e4f9e25465dfa6abfa5a4f50fb914cf2dd8cc76d34a7946fff251e",
+          "sha256": "167fdf3cdd0ed31eff77554ce11c67b6dc45cce5603940afe6a6d0d720f42ca7",
           "cases": [
             {
               "id": "differential:lucide-icons",
@@ -73,7 +81,7 @@
         {
           "path": "packages/lucide/tests/_fixtures/icons.tsrx",
           "role": "support",
-          "sha256": "371ef899da2cce1696fad4ef6f88ca4b27bd405ce889f3c50e7d14516f43ccd8"
+          "sha256": "0d38592e84a8bac96e94697d97db59a1e7984b945e34fab9574870dc5437bd67"
         },
         {
           "path": "packages/lucide/tests/_fixtures/dynamic.tsrx",
@@ -83,7 +91,7 @@
         {
           "path": "packages/lucide/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "e371440c299f3d2ccfd4467280ee7b4ed131165a1a065532cc73e43b126a6c33"
+          "sha256": "ede9d977d2edca69030bb3f1bdc01abe0b4426315fd2b798985ceaed155e2fff"
         },
         {
           "path": "packages/lucide/audit/test-classifications.json",
@@ -98,7 +106,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "6331aec3bc5401edeb6295b74030ec726fb1cd929f4c4f36d5f963346af4447e"
         }
       ]
     }
