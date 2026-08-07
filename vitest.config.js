@@ -1518,10 +1518,56 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux-toolkit',
 					include: ['packages/redux-toolkit/tests/**/*.test.ts'],
 					exclude: [...configDefaults.exclude, 'packages/redux-toolkit/tests/ssr/**/*.test.ts'],
+					environment: 'jsdom',
+					// Differential fixtures rewrite the octane Toolkit and Redux
+					// bindings to their real React counterparts.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/redux-toolkit\/query\/react$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/redux-toolkit/src/query/react/index.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/redux-toolkit\/query$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/redux-toolkit/src/query/index.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/redux-toolkit\/react$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/redux-toolkit/src/react/index.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/redux-toolkit$/,
+							replacement: resolve(import.meta.dirname, 'packages/redux-toolkit/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/redux$/,
+							replacement: resolve(import.meta.dirname, 'packages/redux/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'redux-toolkit-differential',
+					include: ['packages/redux-toolkit/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential fixtures rewrite the octane Toolkit and Redux
 					// bindings to their real React counterparts.
@@ -1564,6 +1610,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux-toolkit-ssr',
 					include: ['packages/redux-toolkit/tests/ssr/**/*.test.ts'],
