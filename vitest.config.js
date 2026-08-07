@@ -1310,7 +1310,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/rainbowkit/tests/differential/**/*.test.ts'],
+				},
 				test: {
 					name: 'rainbowkit',
 					include: [
@@ -1318,7 +1321,7 @@ export default defineConfig({
 						'!packages/rainbowkit/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					exclude: [''packages/rainbowkit/tests/differential/**/*.test.ts''],
+					exclude: ['packages/rainbowkit/tests/differential/**/*.test.ts'],
 					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
 					// inside the test body (same helper as apollo-client/base-ui); keep the
 					// same 30s headroom so a loaded CI shard doesn't overrun Vitest's 5s default.
