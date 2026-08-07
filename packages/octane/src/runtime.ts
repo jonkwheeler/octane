@@ -7953,14 +7953,15 @@ function recordContextDependency(block: Block | null, context: Context<any>): vo
 	}
 }
 
-// Active only while a scoped JSX value resolves its deferred record (see
-// createScopedValue). A scoped value has to rebuild when a context it actually
-// read changes, and the reads collected here are what "actually read" means:
-// a descriptor that reads no context is never rebuilt by a provider update, so
-// the props object it produced — and every inline callback identity inside it —
-// survives. Rebuilding on a global epoch instead made an unrelated provider
-// update hand a component's children brand-new prop identities, which churns
-// effect/memo deps and cannot converge when such an effect feeds that provider.
+// Active only while a scoped JSX resolver reads its deferred record (see
+// createScopedResolver). A scoped record has to rebuild when a context it
+// actually read changes, and the reads collected here are what "actually read"
+// means: a descriptor that reads no context is never rebuilt by a provider
+// update, so the props object it produced — and every inline callback identity
+// inside it — survives. Rebuilding on a global epoch instead made an unrelated
+// provider update hand a component's children brand-new prop identities, which
+// churns effect/memo deps and cannot converge when such an effect feeds that
+// provider.
 let SCOPED_READ_TRACKING = false;
 let SCOPED_READS: Map<Context<any>, number> | null = null;
 
@@ -7970,6 +7971,49 @@ function scopedReadsChanged(reads: Map<Context<any>, number> | null): boolean {
 		if (context.$$version !== version) return true;
 	}
 	return false;
+}
+
+function createScopedResolver<T>(read: () => T): () => T {
+	let resolved = false;
+	let resolvedScope: Scope | null = null;
+	let resolvedReads: Map<Context<any>, number> | null = null;
+	let resolvedValue: T;
+
+	return (): T => {
+		const scope = CURRENT_SCOPE;
+		const sameScope =
+			resolvedScope === scope ||
+			(resolvedScope !== null &&
+				scope !== null &&
+				scope.block.parentBlock === resolvedScope.block &&
+				scope.$$ctxValues === null);
+		// A record that read no context is the same in every scope, so only a
+		// context-reading one is rebuilt when its resolving scope changes. Host
+		// classification previews a record in the parent block before its direct
+		// child block renders it, so that one same-context handoff is reusable.
+		if (!resolved || scopedReadsChanged(resolvedReads) || (resolvedReads !== null && !sameScope)) {
+			const previousTracking = SCOPED_READ_TRACKING;
+			const previousReads = SCOPED_READS;
+			SCOPED_READ_TRACKING = true;
+			SCOPED_READS = null;
+			let next: T;
+			try {
+				next = read();
+			} finally {
+				resolvedReads = SCOPED_READS;
+				SCOPED_READ_TRACKING = previousTracking;
+				SCOPED_READS = previousReads;
+			}
+			resolvedScope = scope;
+			resolvedValue = next;
+			resolved = true;
+		} else if (resolvedScope !== scope) {
+			// Move ownership from the previewing parent to its direct child so a
+			// later sibling or provider scope still resolves independently.
+			resolvedScope = scope;
+		}
+		return resolvedValue;
+	};
 }
 
 function readContextFrom<T>(reader: Scope | null, block: Block | null, context: Context<T>): T {
@@ -14599,62 +14643,15 @@ type ScopedValueDescriptor<P> = ElementDescriptor<P> & {
  *
  * The marker stays eagerly available to public element checks, while inspecting
  * any actual field resolves type, props, key, ref, and children together in the
- * current render scope. A shared value is rebuilt when its provider scope or
- * context epoch changes, just like a scoped element's deferred children.
+ * current render scope. A shared value is rebuilt when its provider scope or a
+ * context it read changes, just like a scoped element's deferred children.
  *
  * @internal
  */
 export function createScopedValue<P>(
 	readElement: () => ElementDescriptor<P>,
 ): ElementDescriptor<P> {
-	let resolved: ElementDescriptor<P> | undefined;
-	let resolvedScope: Scope | null = null;
-	let resolvedReads: Map<Context<any>, number> | null = null;
-
-	const resolve = (): ElementDescriptor<P> => {
-		const scope = CURRENT_SCOPE;
-		const sameScope =
-			resolvedScope === scope ||
-			(resolvedScope !== null &&
-				scope !== null &&
-				scope.block.parentBlock === resolvedScope.block &&
-				scope.$$ctxValues === null);
-		// A record that read no context is the same in every scope, so only a
-		// context-reading one is rebuilt when its resolving scope changes. Host
-		// classification resolves a child in the parent block before the child
-		// block renders it, so without that condition the two scopes alternate and
-		// every render rebuilds — re-creating props the owner never re-created.
-		if (
-			resolved === undefined ||
-			scopedReadsChanged(resolvedReads) ||
-			(resolvedReads !== null && !sameScope)
-		) {
-			const previousTracking = SCOPED_READ_TRACKING;
-			const previousReads = SCOPED_READS;
-			SCOPED_READ_TRACKING = true;
-			SCOPED_READS = null;
-			let next: ElementDescriptor<P>;
-			try {
-				next = readElement();
-			} finally {
-				resolvedReads = SCOPED_READS;
-				SCOPED_READ_TRACKING = previousTracking;
-				SCOPED_READS = previousReads;
-			}
-			if (next.key === null && KEYED_ELEMENT_DESCRIPTORS.has(next)) {
-				KEYED_ELEMENT_DESCRIPTORS.add(descriptor);
-			}
-			resolvedScope = scope;
-			resolved = next;
-		} else if (resolvedScope !== scope) {
-			// Host classification previews a scoped value in the parent block before
-			// immediately rendering it in the host's direct child block. Reuse that
-			// same-context record once, then move ownership to the child so a later
-			// sibling or provider scope still resolves independently.
-			resolvedScope = scope;
-		}
-		return resolved;
-	};
+	const resolve = createScopedResolver(readElement);
 
 	const descriptor: ElementDescriptor<P> = {
 		$$kind: ELEMENT_TAG,
@@ -14665,7 +14662,12 @@ export function createScopedValue<P>(
 			return resolve().props;
 		},
 		get key() {
-			return resolve().key;
+			const next = resolve();
+			const key = next.key;
+			if (key === null && KEYED_ELEMENT_DESCRIPTORS.has(next)) {
+				KEYED_ELEMENT_DESCRIPTORS.add(descriptor);
+			}
+			return key;
 		},
 		get ref() {
 			return resolve().ref;
@@ -14700,45 +14702,7 @@ export function createScopedElement<P>(
 	const copiedProps = copyElementConfig(src);
 	applyElementDefaultProps(type, copiedProps);
 
-	let resolved = false;
-	let resolvedScope: Scope | null = null;
-	let resolvedReads: Map<Context<any>, number> | null = null;
-	let resolvedChildren: unknown;
-	const children = (): unknown => {
-		const scope = CURRENT_SCOPE;
-		const sameScope =
-			resolvedScope === scope ||
-			(resolvedScope !== null &&
-				scope !== null &&
-				scope.block.parentBlock === resolvedScope.block &&
-				scope.$$ctxValues === null);
-		// Same rule as createScopedValue: scope only matters to children that
-		// actually read context while resolving.
-		if (!resolved || scopedReadsChanged(resolvedReads) || (resolvedReads !== null && !sameScope)) {
-			const previousTracking = SCOPED_READ_TRACKING;
-			const previousReads = SCOPED_READS;
-			SCOPED_READ_TRACKING = true;
-			SCOPED_READS = null;
-			let nextChildren: unknown;
-			try {
-				nextChildren = readChildren();
-			} finally {
-				resolvedReads = SCOPED_READS;
-				SCOPED_READ_TRACKING = previousTracking;
-				SCOPED_READS = previousReads;
-			}
-			resolvedScope = scope;
-			resolvedChildren = nextChildren;
-			resolved = true;
-		} else if (resolvedScope !== scope) {
-			// Host classification previews scoped children in the parent block before
-			// hostElementBody immediately renders them in its direct child block.
-			// Reuse that same-context preview once, then move ownership to the child
-			// so sibling/provider scopes cannot inherit another subtree's values.
-			resolvedScope = scope;
-		}
-		return resolvedChildren;
-	};
+	const children = createScopedResolver(readChildren);
 	const childProperty = { configurable: true, enumerable: true, get: children };
 	Object.defineProperty(copiedProps, 'children', childProperty);
 	SCOPED_ELEMENT_PROPS.add(copiedProps);
@@ -22757,6 +22721,9 @@ interface ForSlot {
 	// Present only on a childSlot owned by the compiler's guarded map ABI.
 	// Keeps descriptor↔compiled adoption off every ordinary descriptor list.
 	mappedNative?: boolean;
+	// Present only when the compiler proved a keyed equality selection. Identity
+	// gates the two-row update without retaining extra state on ordinary lists.
+	selectionItems?: ArrayLike<any>;
 }
 
 export function forBlock<T>(
@@ -23002,6 +22969,314 @@ export function forBlock<T>(
 }
 
 /**
+ * Compiler-only keyed-selection entry. Keeping the specialization outside
+ * forBlock lets applications without a proven selection tree-shake its cost.
+ * Bit 5 identifies the proof; bits 6+ hold its captured dependency index.
+ */
+export function keyedForBlock<T>(
+	parentScope: Scope,
+	slotKey: number,
+	domParent: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags: number,
+	deps: any[],
+	emptyBody?: ComponentBody | null,
+	anchor?: Node | null,
+	ownEnd?: boolean,
+): void {
+	const state = parentScope.slots[slotKey] as ForSlot | undefined;
+	if (TRANSITION_JOURNAL !== null) {
+		if (state !== undefined) {
+			// A transition can commit or roll back without journaling this cache.
+			// Invalidate both snapshots so its next ordinary render re-primes them.
+			state.cachedDeps = null;
+			state.selectionItems = undefined;
+		}
+		// DEP-PURE's direct body call leaves CURRENT_SCOPE on the parent. Force
+		// full row rendering so reversible DOM writes journal each row's own bag.
+		flags &= ~4;
+	} else if (
+		state !== undefined &&
+		activeHydration() === null &&
+		state.cachedDeps !== null &&
+		tryUpdateKeyedSelection(state, items, itemBody, state.cachedDeps, deps, flags >>> 6)
+	) {
+		return;
+	}
+
+	forBlock(
+		parentScope,
+		slotKey,
+		domParent,
+		items,
+		getKey,
+		itemBody,
+		flags,
+		deps,
+		emptyBody,
+		anchor,
+		ownEnd,
+	);
+	if (TRANSITION_JOURNAL === null) {
+		(parentScope.slots[slotKey] as ForSlot).selectionItems = items;
+	}
+}
+
+// Keep the certified host-only mounting path off common small lists.
+const FAST_HOST_LIST_MIN_ITEMS = 16;
+
+/** Select an existing, empty compiler-certified list for direct host mounting. */
+function fastHostListParent(
+	state: ForSlot | null | undefined,
+	items: ArrayLike<any>,
+	flags: number | undefined,
+): Node | null {
+	if (
+		state === undefined ||
+		state === null ||
+		state.size !== 0 ||
+		state.emptyBlock !== null ||
+		state.adopt !== null ||
+		((flags || 0) & 2) === 0 ||
+		!Array.isArray(items) ||
+		items.length < FAST_HOST_LIST_MIN_ITEMS ||
+		TRANSITION_JOURNAL !== null ||
+		activeHydration() !== null ||
+		state.end.parentNode === null ||
+		state.start.parentNode !== state.end.parentNode
+	) {
+		return null;
+	}
+	return state.end.parentNode;
+}
+
+/** Mount certified host-only rows without the full component render machinery. */
+function mountFastHostItems<T>(
+	parentScope: Scope,
+	state: ForSlot,
+	parentNode: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags: number | undefined,
+	deps: any[] | undefined,
+	mapped: boolean,
+): void {
+	const parentBlock = parentScope.block;
+	const renderMode = parentBlock.currentRenderMode ?? 'urgent';
+	const deferred = parentBlock.currentRenderDeferred;
+	const previousScope = CURRENT_SCOPE;
+	const previousBlock = CURRENT_BLOCK;
+	let previous: Block | null = null;
+	let current: Block | null = null;
+	state.env = deps;
+	if (((flags || 0) & 4) !== 0 && deps !== undefined) state.cachedDeps = deps;
+	if (mapped) state.mappedNative = true;
+	try {
+		for (let index = 0; index < items.length; index++) {
+			const item = items[index];
+			const sourceKey = getKey(item, index);
+			const key = mapped ? 'k' + String(sourceKey) : sourceKey;
+			const block = new BlockImpl(
+				'control-flow',
+				parentBlock,
+				parentNode,
+				null,
+				state.end,
+				itemBody as ComponentBody,
+				item,
+				deps,
+				null,
+			) as unknown as Block;
+			current = block;
+			block.forSlot = state;
+			block.itemIndex = index;
+			block.currentRenderMode = renderMode;
+			block.currentRenderDeferred = deferred;
+			CURRENT_SCOPE = block;
+			CURRENT_BLOCK = block;
+			(itemBody as any)(item, block, deps);
+			CURRENT_SCOPE = previousScope;
+			CURRENT_BLOCK = previousBlock;
+			block.mounted = true;
+			const root = state.end.previousSibling!;
+			block.startMarker = root;
+			block.endMarker = root;
+			state.items.set(key, block);
+			block.key = key;
+			block.prevSibling = previous;
+			if (previous !== null) previous.nextSibling = block;
+			else state.head = block;
+			previous = block;
+			current = null;
+		}
+		state.tail = previous;
+		state.size = items.length;
+	} catch (error) {
+		CURRENT_SCOPE = previousScope;
+		CURRENT_BLOCK = previousBlock;
+		if (current !== null) {
+			// A value-position child can throw or suspend after commitBag inserted
+			// its host. The still-unregistered row owns that host and any nested
+			// child scopes, so dispose it before unwinding the completed prefix.
+			if (current.slots[0] !== undefined) {
+				const root = state.end.previousSibling;
+				if (root !== null && root !== state.start) {
+					current.startMarker = root;
+					current.endMarker = root;
+				}
+			}
+			unmountBlock(current, true);
+		}
+		while (previous !== null) {
+			const block = previous;
+			previous = block.prevSibling;
+			state.items.delete(block.key);
+			unmountBlock(block, true);
+		}
+		state.head = null;
+		state.tail = null;
+		state.size = 0;
+		throw error;
+	}
+}
+
+/** Compiler-only direct host-row entry; ordinary list bundles do not retain it. */
+export function fastForBlock<T>(
+	parentScope: Scope,
+	slotKey: number,
+	domParent: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags?: number,
+	deps?: any[],
+	emptyBody?: ComponentBody | null,
+	anchor?: Node | null,
+	ownEnd?: boolean,
+): void {
+	const state = parentScope.slots[slotKey] as ForSlot | undefined;
+	const parent = fastHostListParent(state, items, flags);
+	if (parent === null) {
+		forBlock(
+			parentScope,
+			slotKey,
+			domParent,
+			items,
+			getKey,
+			itemBody,
+			flags,
+			deps,
+			emptyBody,
+			anchor,
+			ownEnd,
+		);
+		return;
+	}
+	mountFastHostItems(parentScope, state!, parent, items, getKey, itemBody, flags, deps, false);
+}
+
+/** Direct host-row mounts composed with the independent keyed-selection proof. */
+export function fastKeyedForBlock<T>(
+	parentScope: Scope,
+	slotKey: number,
+	domParent: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags: number,
+	deps: any[],
+	emptyBody?: ComponentBody | null,
+	anchor?: Node | null,
+	ownEnd?: boolean,
+): void {
+	const state = parentScope.slots[slotKey] as ForSlot | undefined;
+	const parent = fastHostListParent(state, items, flags);
+	if (parent === null) {
+		keyedForBlock(
+			parentScope,
+			slotKey,
+			domParent,
+			items,
+			getKey,
+			itemBody,
+			flags,
+			deps,
+			emptyBody,
+			anchor,
+			ownEnd,
+		);
+		return;
+	}
+	mountFastHostItems(parentScope, state!, parent, items, getKey, itemBody, flags, deps, false);
+	state!.selectionItems = items;
+}
+
+/** Direct host-row mounts for compiler-proven, guarded native JSX map rows. */
+export function fastMapSlot(
+	scopeOrItems: any,
+	slotOrMethod: any,
+	domParent?: Node,
+	items?: any,
+	method?: any,
+	native?: boolean | ((...args: any[]) => any),
+	callback?: (...args: any[]) => any,
+	getKey?: (item: any, index: number) => any,
+	itemBody?: (item: any, scope: Scope) => void,
+	flags?: number,
+	deps?: any[],
+	anchor?: Node | null,
+	ownEnd?: boolean | 1,
+): boolean | void {
+	if (arguments.length === 2) return mapSlot(scopeOrItems, slotOrMethod);
+	// Compact map calls carry the callback in place of the native answer. Mirror
+	// mapSlot's normalization so custom receivers execute exactly one guard and
+	// retain their complete observable map callback/species/getter behavior.
+	if (typeof native === 'function') {
+		ownEnd = anchor as boolean | 1 | undefined;
+		anchor = deps as Node | null | undefined;
+		deps = flags as any[] | undefined;
+		flags = itemBody as unknown as number | undefined;
+		itemBody = getKey as unknown as (item: any, scope: Scope) => void;
+		getKey = callback as (item: any, index: number) => any;
+		callback = native;
+		native = mapSlot(items, method) as boolean;
+	}
+	const state = ((scopeOrItems as Scope).slots[slotOrMethod] as ChildSlot | undefined)?.forSlot;
+	const parent = native === true ? fastHostListParent(state, items, flags) : null;
+	if (parent === null) {
+		return mapSlot(
+			scopeOrItems,
+			slotOrMethod,
+			domParent,
+			items,
+			method,
+			native,
+			callback,
+			getKey,
+			itemBody,
+			flags,
+			deps,
+			anchor,
+			ownEnd,
+		);
+	}
+	mountFastHostItems(
+		scopeOrItems as Scope,
+		state!,
+		parent,
+		items,
+		getKey!,
+		itemBody!,
+		flags,
+		deps,
+		true,
+	);
+}
+
+/**
  * STRUCTURAL recovery for an @for where the SERVER rendered MORE items than the client now
  * renders: after reconcile adopts the client's items, the cursor sits on the first unconsumed
  * server item's marker (or at `end`). Discard everything between the cursor and `end` so the
@@ -23040,6 +23315,60 @@ function depsEqual(a: any[], b: any[]): boolean {
 	if (n !== b.length) return false;
 	for (let i = 0; i < n; i++) {
 		if (!Object.is(a[i], b[i])) return false;
+	}
+	return true;
+}
+
+/**
+ * A compiler-proven equality against the list key changes at most two rows.
+ * The immutable source identity and every other captured dependency must stay
+ * unchanged; anything else falls back to the ordinary keyed reconciliation.
+ */
+function tryUpdateKeyedSelection<T>(
+	state: ForSlot,
+	items: ArrayLike<T>,
+	itemBody: (item: T, scope: Scope) => void,
+	previousDeps: any[],
+	deps: any[],
+	selectionIndex: number,
+): boolean {
+	if (
+		state.selectionItems !== items ||
+		state.size !== items.length ||
+		state.items.size !== state.size ||
+		previousDeps.length !== deps.length ||
+		selectionIndex >= deps.length
+	) {
+		return false;
+	}
+	for (let i = 0; i < deps.length; i++) {
+		if (i !== selectionIndex && !Object.is(previousDeps[i], deps[i])) return false;
+	}
+	const previous = previousDeps[selectionIndex];
+	const next = deps[selectionIndex];
+	// Publish the same snapshots as forBlock before any row can run user code;
+	// reentrant updates must observe the selection currently being committed.
+	state.cachedDeps = deps;
+	state.env = deps;
+	if (Object.is(previous, next)) return true;
+
+	let first = state.items.get(previous) as Block | undefined;
+	let second = state.items.get(next) as Block | undefined;
+	if (first === second) second = undefined;
+	if (first !== undefined && second !== undefined && first.itemIndex > second.itemIndex) {
+		const swap = first;
+		first = second;
+		second = swap;
+	}
+	if (first !== undefined) {
+		first.body = itemBody as ComponentBody;
+		first.extra = deps;
+		(itemBody as any)(first.props, first, deps);
+	}
+	if (second !== undefined) {
+		second.body = itemBody as ComponentBody;
+		second.extra = deps;
+		(itemBody as any)(second.props, second, deps);
 	}
 	return true;
 }
