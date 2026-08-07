@@ -4,11 +4,6 @@ import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/render-diff.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
-
-beforeAll(() => {
-	execFileSync(process.execPath, [resolve(__dirname, 'compile-runner.mjs'), FIXTURE, CACHE]);
-});
-
 describe('differential: @octanejs/motion vs motion/react', () => {
 	// @parity-case differential:motion-render
 	it('motion host rendering, filtered props, and child updates are byte-identical', async () => {
