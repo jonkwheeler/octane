@@ -41,7 +41,12 @@ import {
 import { print as esrapPrint } from 'esrap';
 import esrapTsx from 'esrap/languages/tsx';
 import { buildFatSegments } from './fat-segments.js';
-import { analyzeHookDependencies, applyHookDependencies, isInvariantLiteral } from './hook-deps.js';
+import {
+	METHOD_DEP_IMPORT,
+	analyzeHookDependencies,
+	applyHookDependencies,
+	isInvariantLiteral,
+} from './hook-deps.js';
 import { compileUniversal, UNIVERSAL_COMPILER_RUNTIME_IMPORTS } from './compile-universal.js';
 import {
 	expandDomRendererRegionsAst,
@@ -6064,12 +6069,16 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 			rendererBoundaryPreparation?.universalUnits,
 		),
 	});
+	let hookDepHelperNeeded = false;
 	ast = applyHookDependencies(ast, {
 		filename,
 		hookRuntimeModules: hookRuntimeModulesForCompile(
 			options,
 			rendererBoundaryPreparation?.universalUnits,
 		),
+		onRuntimeHelper: () => {
+			hookDepHelperNeeded = true;
+		},
 	});
 	const hmrOption = options && options.hmr;
 	const hmrDialect = hmrOption === true ? 'vite' : hmrOption || false;
@@ -6202,6 +6211,7 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 		// single module print must carry a loc (OCTANE_COMPILE_ASSERT_LOC).
 		_moduleOrigin: ast.body.find((n) => n?.loc != null) ?? ast,
 	};
+	if (hookDepHelperNeeded) ctx.runtimeNeeded.add(METHOD_DEP_IMPORT);
 	{
 		const imports = collectOctaneImportBindings(ast.body);
 		ctx.octaneImportLocals = imports.locals;
@@ -6822,7 +6832,18 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 			// it. Persist that canonical identity again for the next update. This keeps
 			// working across any number of edits; accept callbacks in webpack are error
 			// handlers, not Vite-style callbacks carrying the new module namespace.
-			const webpackHot = () => b.member(importMeta(), 'webpackHot');
+			// Keep every access after the recognized `import.meta.webpackHot` root on a
+			// local. Rspack's React/Rsbuild transform pipeline otherwise treats deeper
+			// expressions such as `import.meta.webpackHot.data` as unsupported even
+			// though it lowers the root itself to `module.hot`.
+			const webpackHotName = allocCompilerName(ctx, '_$webpackHot');
+			const webpackHot = () => b.id(webpackHotName);
+			hmrNodes.push(
+				inheritOriginLoc(
+					b.const(webpackHotName, b.member(importMeta(), 'webpackHot')),
+					moduleOrigin,
+				),
+			);
 			const previousComponent = (name, optional) =>
 				b.member(
 					b.member(
@@ -7122,9 +7143,13 @@ function compileServer(source, filename, options, analyzedAst = null) {
 	// Mirror the client transform exactly. Effects are server no-ops, but
 	// useMemo/useCallback execute during SSR and must receive the same inferred
 	// dependency shape as hydration's client compile.
+	let hookDepHelperNeeded = false;
 	ast = applyHookDependencies(ast, {
 		filename,
 		hookRuntimeModules: hookRuntimeModulesForCompile(options),
+		onRuntimeHelper: () => {
+			hookDepHelperNeeded = true;
+		},
 	});
 	const ctx = {
 		filename,
@@ -7168,6 +7193,7 @@ function compileServer(source, filename, options, analyzedAst = null) {
 		// Scaffolding without a more precise authored construct maps here.
 		_moduleOrigin: ast.body.find((n) => n?.loc != null) ?? ast,
 	};
+	if (hookDepHelperNeeded) ctx.runtimeNeeded.add(METHOD_DEP_IMPORT);
 	{
 		const imports = collectOctaneImportBindings(ast.body);
 		ctx.octaneImportLocals = imports.locals;
@@ -16713,12 +16739,10 @@ function planJsx(
 			ctx.runtimeNeeded.add('queueRefDetach'); // unmount-detach of a spread-supplied ref
 		}
 		if (b.kind === 'ref') {
-			ctx.runtimeNeeded.add('attachRef');
 			ctx.runtimeNeeded.add('queueRefAttach'); // deferred mount attach (commit-phase timing)
 			ctx.runtimeNeeded.add('queueRefDetach'); // deferred unmount detach (same phasing)
 		}
 		if (b.kind === 'fragmentRef') {
-			ctx.runtimeNeeded.add('attachRef');
 			ctx.runtimeNeeded.add('mountFragmentRef');
 			ctx.runtimeNeeded.add('queueRefAttach'); // deferred update re-attach
 			ctx.runtimeNeeded.add('queueRefDetach'); // deferred update/unmount detach
@@ -17011,11 +17035,16 @@ function planJsx(
 	const pushAfterStmt = (id, org, node) => pushAfter(id, inheritOriginLoc(node, org));
 	for (const fc of forCalls) {
 		const isMappedList = fc.mapMethodExpr !== null;
-		ctx.runtimeNeeded.add(isMappedList ? 'mapSlot' : 'forBlock');
+		const forHelper = isMappedList
+			? 'mapSlot'
+			: fc.keyedSelectionIndex >= 0
+				? 'keyedForBlock'
+				: 'forBlock';
+		ctx.runtimeNeeded.add(forHelper);
 		const slotIndex = fc.slotIndex;
 		const org = fc.origin ?? planOrigin;
 		registerDirectiveOrigin(ctx, org, [
-			isMappedList ? '_$mapSlot' : '_$forBlock',
+			rtAlias(forHelper),
 			fc.keyHelper,
 			fc.bodyHelper,
 			fc.emptyHelper,
@@ -17028,13 +17057,17 @@ function planJsx(
 		//        for survivors when deps unchanged this render),
 		//        bit 3 = indexIndependent (body binds no `index` → a pure reorder
 		//        that only changes a survivor's position need not re-render it),
-		//        bit 4 = SSR emitted markerless direct-host items; hydrate them by root.
+		//        bit 4 = SSR emitted markerless direct-host items; hydrate them by root,
+		//        bit 5 = keyed selection; bits 6+ carry its zero-based deps index.
+		// The dedicated eligibility bit distinguishes dependency zero from an
+		// ordinary list without adding a positional argument or tuple allocation.
 		const flags =
 			(fc.pure ? 1 : 0) |
 			(fc.singleRoot ? 2 : 0) |
 			(fc.depEligible ? 4 : 0) |
 			(fc.indexIndependent ? 8 : 0) |
-			(fc.ssrMarkerless ? 16 : 0);
+			(fc.ssrMarkerless ? 16 : 0) |
+			(fc.keyedSelectionIndex >= 0 ? 32 | (fc.keyedSelectionIndex << 6) : 0);
 		// Arg layout: forBlock(__s, slot, host, items, keyFn, body, flags?, deps?,
 		// emptyBody?, anchor?, ownEnd?).
 		// Optional args backfill positionally: `flags`/`deps` placeholders
@@ -17164,7 +17197,7 @@ function planJsx(
 				slotIndex,
 				b.stmt(
 					b.call(
-						'_$forBlock',
+						rtAlias(forHelper),
 						b.id('__s'),
 						b.literal(slotIndex),
 						hostExpr(),
@@ -17183,7 +17216,7 @@ function planJsx(
 				org,
 				b.stmt(
 					b.call(
-						'_$forBlock',
+						rtAlias(forHelper),
 						b.id('__s'),
 						b.literal(slotIndex),
 						hostExpr(),
@@ -18286,18 +18319,18 @@ function emitBindingMount(bind, elVar, bag) {
 			// bound element rides along as the cleanup target, so a callback ref
 			// shared across elements (ref={registerItem} on every @for row)
 			// releases ITS row's React-19 cleanup, not another row's.
-			// Both deferred closures read through the captured `_b` (committed by the
-			// time attach/cleanup run); `_ref$` must be a LIVE read — updates re-point it.
+			// Both deferred operations retain the bound element. `_ref$` must be a LIVE
+			// cleanup read because updates re-point it. Assigning both bag locals inside
+			// the queue call evaluates each mount value once while avoiding throwaway
+			// temporaries; Suspense still receives the exact ref/target pair.
 			return st(
 				b.block([
-					b.const('_r', bind.expr),
-					b.stmt(b.assignment('=', local(`_ref$${bind.id}`), b.id('_r'))),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
 					b.stmt(
 						b.call(
 							'_$queueRefAttach',
 							b.id('__s'),
-							b.arrow([], b.call('_$attachRef', b.id('_r'), bagFieldNode(bag, `_el$${bind.id}`))),
+							b.assignment('=', local(`_ref$${bind.id}`), bind.expr),
+							b.assignment('=', local(`_el$${bind.id}`), el()),
 						),
 					),
 					cleanupsPush(
@@ -18321,22 +18354,13 @@ function emitBindingMount(bind, elVar, bag) {
 			// the user's ref, and registers a single cleanup that detaches
 			// the ref + destroys the instance on unmount.
 			return st(
-				b.block([
-					b.const('_r', bind.expr),
-					b.stmt(
-						b.assignment(
-							'=',
-							local(`_fi$${bind.id}`),
-							b.call(
-								'_$mountFragmentRef',
-								b.id('__s'),
-								el(),
-								hostVarNode(bind.endElVar),
-								b.id('_r'),
-							),
-						),
+				b.stmt(
+					b.assignment(
+						'=',
+						local(`_fi$${bind.id}`),
+						b.call('_$mountFragmentRef', b.id('__s'), el(), hostVarNode(bind.endElVar), bind.expr),
 					),
-				]),
+				),
 			);
 		}
 	}
@@ -18596,13 +18620,7 @@ function emitBindingUpdate(bind, bag) {
 							),
 							b.if(
 								b.binary('!=', b.id('_r'), nullNode()),
-								b.stmt(
-									b.call(
-										'_$queueRefAttach',
-										b.id('__s'),
-										b.arrow([], b.call('_$attachRef', b.id('_r'), F('_el'))),
-									),
-								),
+								b.stmt(b.call('_$queueRefAttach', b.id('__s'), b.id('_r'), F('_el'))),
 								null,
 							),
 							b.stmt(b.assignment('=', F('_ref'), b.id('_r'))),
@@ -18635,13 +18653,7 @@ function emitBindingUpdate(bind, bag) {
 							),
 							b.if(
 								b.binary('!=', b.id('_r'), nullNode()),
-								b.stmt(
-									b.call(
-										'_$queueRefAttach',
-										b.id('__s'),
-										b.arrow([], b.call('_$attachRef', b.id('_r'), fi())),
-									),
-								),
+								b.stmt(b.call('_$queueRefAttach', b.id('__s'), b.id('_r'), fi())),
 								null,
 							),
 							b.stmt(b.assignment('=', cur(), b.id('_r'))),
@@ -21193,6 +21205,96 @@ function makeSwitchCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = nul
 // for-of inside element children → forBlock call
 // ===========================================================================
 
+/**
+ * Prove that one parent dependency affects a keyed host row only through its
+ * root class's strict comparison with the row key. The runtime can then update
+ * only the old/new selected blocks when every other dependency and the iterable
+ * snapshot remain unchanged.
+ *
+ * This recognizes `selected === item.id` (or its reverse) under `key item.id`,
+ * and the same proof for any other explicit, noncomputed item property.
+ * Dynamic ternary arms, extra references to
+ * `selected` anywhere in the row (including deferred event callbacks), spreads,
+ * and anything other than one direct host root all fail closed.
+ */
+function keyedSelectionDepIndex(itemName, keyBody, subStmts, runtimeDepNames, ctx) {
+	if (subStmts.length !== 1 || !isPlainHostRoot(subStmts[0])) return -1;
+	const root = subStmts[0];
+	const attrs = root.attributes || root.openingElement?.attributes || [];
+	if (attrs.some((attr) => attr.type !== 'Attribute' && attr.type !== 'JSXAttribute')) {
+		return -1;
+	}
+	const classAttrs = attrs.filter((attr) => {
+		const name = attr.name?.name || attr.name;
+		return name === 'class' || name === 'className';
+	});
+	if (classAttrs.length !== 1) return -1;
+	const value = classAttrs[0].value;
+	const conditional = unwrapTsExpr(
+		value?.type === 'JSXExpressionContainer' ? value.expression : value,
+	);
+	if (conditional?.type !== 'ConditionalExpression') return -1;
+	const consequent = unwrapTsExpr(conditional.consequent);
+	const alternate = unwrapTsExpr(conditional.alternate);
+	if (
+		consequent?.type !== 'Literal' ||
+		typeof consequent.value !== 'string' ||
+		alternate?.type !== 'Literal' ||
+		typeof alternate.value !== 'string'
+	) {
+		return -1;
+	}
+
+	const test = unwrapTsExpr(conditional.test);
+	if (test?.type !== 'BinaryExpression' || test.operator !== '===') return -1;
+	const key = unwrapTsExpr(keyBody);
+	if (
+		key?.type !== 'MemberExpression' ||
+		key.computed === true ||
+		key.optional === true ||
+		key.object?.type !== 'Identifier' ||
+		key.object.name !== itemName ||
+		key.property?.type !== 'Identifier'
+	) {
+		return -1;
+	}
+	const keyProperty = key.property.name;
+	const isItemKey = (expression) => {
+		const member = unwrapTsExpr(expression);
+		return (
+			member?.type === 'MemberExpression' &&
+			member.computed !== true &&
+			member.optional !== true &&
+			member.object?.type === 'Identifier' &&
+			member.object.name === itemName &&
+			member.property?.type === 'Identifier' &&
+			member.property.name === keyProperty
+		);
+	};
+	const left = unwrapTsExpr(test.left);
+	const right = unwrapTsExpr(test.right);
+	const selected = isItemKey(left) ? right : isItemKey(right) ? left : null;
+	if (
+		selected?.type !== 'Identifier' ||
+		selected.name === itemName ||
+		!ctx.currentComponentLocals?.has(selected.name)
+	) {
+		return -1;
+	}
+	// Ignore this exact comparison operand, then use the existing scope-aware
+	// reference walker to detect any other capture of the same outer binding.
+	// Shadowed callback parameters therefore stay harmless while a real event
+	// closure over the selection correctly disables the specialization.
+	if (
+		collectFreeIdentifiers(b.block(subStmts), new Set([itemName]), new Set([selected])).has(
+			selected.name,
+		)
+	) {
+		return -1;
+	}
+	return runtimeDepNames.indexOf(selected.name);
+}
+
 function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) {
 	// `@for await (...)` (async iteration) has no meaning for the runtime's
 	// synchronous keyed reconciler. The TSRX parser currently rejects the surface
@@ -21562,6 +21664,22 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		envNames === null
 			? depNames
 			: [...envNames, ...depNames.filter((name) => !envNames.includes(name))];
+	// Restrict targeted invalidation to the existing production-only pure-render
+	// contract. The whole-list memo proof rules out render-time mutations and
+	// opaque state, while DEP-PURE guarantees a hookless host-only item body.
+	// Native `.map()` uses a distinct mapSlot ABI and stays on its current path.
+	const keyedSelectionIndex =
+		ctx.autoMemo === true &&
+		depEligible &&
+		!itemMemo &&
+		autoMemoDeps !== null &&
+		!isDestructured &&
+		!node.index &&
+		!emptyStmts &&
+		node.nativeArrayMap === undefined &&
+		node.key != null
+			? keyedSelectionDepIndex(itemName, keyFn.body, subStmts, runtimeDepNames, ctx)
+			: -1;
 	let emptyHelperName = 'null';
 	if (emptyStmts) {
 		emptyHelperName = hoistBodyHelper(
@@ -21688,6 +21806,7 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		autoMemoDeps,
 		autoMemoWitnesses,
 		autoMemoContextAware,
+		keyedSelectionIndex,
 		depNames: runtimeDepNames,
 		// True only when the header binds NO `index <name>` — the body then can't
 		// observe an item's position, so a pure reorder (same item ref, position
