@@ -28,7 +28,7 @@ larger than a contained fix, open an issue and agree on the approach first.
 
 ## Setup
 
-Node.js 22 or newer (CI runs the suite on 22 and 24) and pnpm 11. The repo pins
+Node.js 22.22.2 or newer (CI runs the suite on 22.22.2 and 24) and pnpm 11. The repo pins
 its pnpm version in `package.json`, so `corepack enable` is the easiest way to
 get the right one.
 
@@ -256,9 +256,9 @@ Octane is 0.x, so every changeset stays on the `patch` track. `major` and
   validate it. Call out anything you deliberately left unverified.
 - Every pull request carries exactly one type label: `feat`, `fix`, `docs`,
   `test`, `perf`, `refactor`, `chore`, or `ci`. You do not apply it;
-  `.github/workflows/label-pr.yml` reads it off the title, so a
-  conventional-commit title is all it takes. `bug` and `enhancement` belong to
-  issues.
+  `.github/workflows/label-pr.yml` reads it off a conventional-commit title and
+  falls back to the `feat/…`, `fix/…`, or other type-prefixed head branch when
+  the title does not declare one. `bug` and `enhancement` belong to issues.
 
 CI intentionally runs nothing while a pull request is a draft and starts on the
 `ready_for_review` event. From there it runs the sharded test suite on Node 22 and

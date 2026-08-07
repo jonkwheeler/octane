@@ -39,6 +39,7 @@ surface and evidence.
 | `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-dropzone` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
+| `@octanejs/react-map-gl` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
 | `@octanejs/redux-toolkit` | 0 |
