@@ -1367,12 +1367,38 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-query',
 					include: [
 						'packages/tanstack-query/tests/conformance/**/*.test.ts',
 						'packages/tanstack-query/tests/differential/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					// Differential precompile for query fixtures: rewrites
+					// `@octanejs/tanstack-query` → `@tanstack/react-query` so the React side runs
+					// real react-query.
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-query$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-query/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-query\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-query/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-query-differential',
+					include: ['packages/tanstack-query/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential precompile for query fixtures: rewrites
 					// `@octanejs/tanstack-query` → `@tanstack/react-query` so the React side runs
@@ -1395,6 +1421,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-query-ssr',
 					include: ['packages/tanstack-query/tests/ssr/**/*.test.ts'],
