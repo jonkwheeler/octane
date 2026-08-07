@@ -1,14 +1,9 @@
-import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
-import { beforeAll, describe, it } from 'vitest';
+import { describe, it } from 'vitest';
 import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/query.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
-
-beforeAll(() =>
-	execFileSync(process.execPath, [resolve(__dirname, 'compile-runner.mjs'), FIXTURE, CACHE]),
-);
 
 async function settleQueue() {
 	for (let index = 0; index < 8; index++) await new Promise((resolve) => setTimeout(resolve, 0));

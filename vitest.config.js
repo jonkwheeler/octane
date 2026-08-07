@@ -702,6 +702,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'nuqs',
 					include: ['packages/nuqs/tests/**/*.test.ts'],
@@ -734,6 +735,42 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'nuqs-differential',
+					include: ['packages/nuqs/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/nuqs/tests/differential/_setup.ts'],
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				// `@octanejs/nuqs` is the package under test; alias the public name and
+				// its subpaths (`./server`, `./testing`, `./adapters/*`) to source so
+				// fixtures import it exactly as a consumer would. The `/server` alias is
+				// listed before the catch-all because it maps to `index.server.ts`, not
+				// `server.ts`; the regex catch-all then maps `@octanejs/nuqs/adapters/react`
+				// -> `src/adapters/react.ts` without the bare entry swallowing the subpath.
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/nuqs$/,
+							replacement: resolve(import.meta.dirname, 'packages/nuqs/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/nuqs\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/nuqs/src/index.server.ts'),
+						},
+						{
+							find: /^@octanejs\/nuqs\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/nuqs/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'nuqs-ssr',
 					include: ['packages/nuqs/tests/ssr/**/*.test.ts'],
