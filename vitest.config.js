@@ -2795,6 +2795,67 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
+			},,
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/interior/tests/differential/**/*.test.ts'],
+				},
+				test: {
+					name: 'interior',
+					include: ['packages/interior/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/interior/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					testTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/interior$/,
+							replacement: resolve(import.meta.dirname, 'packages/interior/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/interior\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/interior/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/motion$/,
+							replacement: resolve(import.meta.dirname, 'packages/motion/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'interior-differential',
+					include: ['packages/interior/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/interior/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/interior$/,
+							replacement: resolve(import.meta.dirname, 'packages/interior/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/interior\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/interior/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/motion$/,
+							replacement: resolve(import.meta.dirname, 'packages/motion/src/index.ts'),
+						},
+					],
+				},
 			},
 			{
 				test: {
