@@ -1256,13 +1256,50 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rainbowkit',
-					globalSetup: ['packages/rainbowkit/tests/differential/_setup.ts'],
 					include: [
 						'packages/rainbowkit/tests/**/*.test.ts',
 						'!packages/rainbowkit/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/rainbowkit/tests/differential/**/*.test.ts''],
+					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
+					// inside the test body (same helper as apollo-client/base-ui); keep the
+					// same 30s headroom so a loaded CI shard doesn't overrun Vitest's 5s default.
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/rainbowkit$/,
+							replacement: resolve(import.meta.dirname, 'packages/rainbowkit/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/rainbowkit\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/rainbowkit/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/wagmi$/,
+							replacement: resolve(import.meta.dirname, 'packages/wagmi/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/wagmi\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/wagmi/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'rainbowkit-differential',
+					globalSetup: ['packages/rainbowkit/tests/differential/_setup.ts'],
+					include: ['packages/rainbowkit/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
 					// inside the test body (same helper as apollo-client/base-ui); keep the
@@ -1294,6 +1331,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rainbowkit-ssr',
 					include: ['packages/rainbowkit/tests/ssr/**/*.test.ts'],
