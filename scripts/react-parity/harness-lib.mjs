@@ -417,9 +417,13 @@ export function validateManifest(manifest) {
 					'verified provenance with present upstream runtime tests requires required full pristine-upstream and adapted-octane lanes with upstream-suite evidence',
 				);
 		} else if (manifest.upstreamSuites.runtime === 'insufficient') {
-			if (!requiredFullRuntime('adapted-octane', 'repo-authored') || !requiredDifferential)
+			if (
+				!requiredFullRuntime('pristine-upstream', 'upstream-suite') ||
+				!requiredFullRuntime('adapted-octane', 'upstream-suite') ||
+				!requiredDifferential
+			)
 				fail(
-					'verified provenance with insufficient upstream runtime tests requires full adapted-octane and differential lanes with repo-authored evidence',
+					'verified provenance with insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence',
 				);
 		} else if (!requiredFullRuntime('adapted-octane', 'repo-authored') || !requiredDifferential) {
 			fail(
@@ -427,25 +431,20 @@ export function validateManifest(manifest) {
 			);
 		}
 
-		if (manifest.upstreamSuites.types === 'absent') {
-			if (manifest.lanes.some((lane) => lane.type.endsWith('-types')))
-				fail('absent upstream type tests must not be represented by synthetic type parity lanes');
-		} else {
-			const expectedOrigin =
-				manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
-			const requiredTypeEvidence = (type) =>
-				manifest.lanes.some(
-					(lane) =>
-						lane.type === type &&
-						lane.oracle === 'required' &&
-						lane.available !== false &&
-						lane.evidenceOrigin === expectedOrigin,
-				);
-			if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
-				fail(
-					`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
-				);
-		}
+		const expectedOrigin =
+			manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
+		const requiredTypeEvidence = (type) =>
+			manifest.lanes.some(
+				(lane) =>
+					lane.type === type &&
+					lane.oracle === 'required' &&
+					lane.available !== false &&
+					lane.evidenceOrigin === expectedOrigin,
+			);
+		if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
+			fail(
+				`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
+			);
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');
@@ -821,20 +820,28 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 	];
 }
 
+function vitestRunIdentities(lane, result, root) {
+	if (!result || !Array.isArray(result.testResults)) {
+		throw new Error(`lane ${lane.id} returned an invalid Vitest JSON result`);
+	}
+	return result.testResults.flatMap((suite) => {
+		if (typeof suite.name !== 'string' || !Array.isArray(suite.assertionResults)) {
+			throw new Error(`lane ${lane.id} returned an invalid Vitest test result`);
+		}
+		return suite.assertionResults.map((test) => ({
+			file: toPortablePath(relative(root, suite.name)),
+			fullName: test.fullName,
+			status: test.status,
+		}));
+	});
+}
+
 export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 	if (lane.execution?.kind === 'typescript') return true;
 	const result = JSON.parse(stdout);
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
-		const executed = result.testResults
-			.flatMap((suite) =>
-				suite.assertionResults.map((test) => ({
-					file: toPortablePath(relative(root, suite.name)),
-					fullName: test.fullName,
-					status: test.status,
-				})),
-			)
-			.sort(compareTestIdentities);
+		const executed = vitestRunIdentities(lane, result, root).sort(compareTestIdentities);
 		const expected = inventory.tests.map(({ file, fullName }) => ({
 			file,
 			fullName,
@@ -862,10 +869,22 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 			);
 		return true;
 	}
-	const expected = lane.files.reduce((count, file) => count + (file.cases?.length ?? 0), 0);
-	if (result.numPassedTests !== expected) {
+	const expected = lane.files
+		.flatMap((file) =>
+			(file.cases ?? []).map((test) => ({
+				file: file.path,
+				fullName: test.fullName,
+				status: 'passed',
+			})),
+		)
+		.sort(compareTestIdentities);
+	const declaredNames = new Set(expected.map((test) => test.fullName));
+	const executed = vitestRunIdentities(lane, result, root)
+		.filter((test) => test.status === 'passed' || declaredNames.has(test.fullName))
+		.sort(compareTestIdentities);
+	if (JSON.stringify(executed) !== JSON.stringify(expected)) {
 		throw new Error(
-			`lane ${lane.id} executed ${result.numPassedTests ?? 0} of ${expected} declared tests`,
+			`lane ${lane.id} did not execute every declared test identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
 		);
 	}
 	return true;
