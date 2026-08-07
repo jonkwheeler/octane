@@ -2330,6 +2330,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'shadcn',
 					include: [
@@ -2337,6 +2338,31 @@ export default defineConfig({
 						'packages/shadcn/tests/**/*.test.tsx',
 						'!packages/shadcn/tests/ssr/**/*.test.ts',
 					],
+					environment: 'jsdom',
+					exclude: [''packages/shadcn/tests/differential/**/*.test.ts''],
+					// Differential precompile for shadcn fixtures: rewrites
+					// `@octanejs/shadcn` → the vendored pinned upstream React sources
+					// (shadcn has no npm runtime package to rewrite to).
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						// @octanejs/radix deliberately carries no alias: it resolves through
+						// node_modules like any other dependency. That used to mean the pinned
+						// published release (maintainer policy from the cmdk review); since the
+						// package moved to `workspace:*` it means packages/radix, so these
+						// tests now cover the sibling source this repo actually ships.
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'shadcn-differential',
+					include: ['packages/shadcn/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					// Differential precompile for shadcn fixtures: rewrites
 					// `@octanejs/shadcn` → the vendored pinned upstream React sources
@@ -2358,6 +2384,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'shadcn-ssr',
 					include: ['packages/shadcn/tests/ssr/**/*.test.ts'],
