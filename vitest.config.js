@@ -1295,6 +1295,7 @@ export default defineConfig({
 					// the React side runs the real react-virtual adapter over the SAME
 					// virtual-core.
 					globalSetup: ['packages/tanstack-virtual/tests/differential/_setup.ts'],
+					setupFiles: ['packages/tanstack-virtual/tests/_setup.ts'],
 					// jsdom affordances virtual-core needs (no-op ResizeObserver,
 					// Element.scrollTo shim, MAX_SAFE_INTEGER scroll dimensions) —
 					// installed once for the whole project so BOTH differential sides
