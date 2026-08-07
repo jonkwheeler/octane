@@ -2795,6 +2795,49 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
+			},,
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'blocknote',
+					include: ['packages/blocknote/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					testTimeout: 30_000,
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/blocknote$/,
+							replacement: resolve(import.meta.dirname, 'packages/blocknote/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/blocknote\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/blocknote/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/tiptap$/,
+							replacement: resolve(import.meta.dirname, 'packages/tiptap/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tiptap\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/tiptap/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/floating-ui$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/floating-ui\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src') + '/$1.ts',
+						},
+						{
+							find: /^@octanejs\/tanstack-store$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-store/src/index.ts'),
+						},
+					],
+				},
 			},
 			{
 				test: {
