@@ -11,10 +11,29 @@
     "integrity": "sha256:d99821507dace914ef6924e95c25beb2d618438fc925517569dd6b083a4df793",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/motion/src"], "include": ["\\.ts$"], "exclude": [] },
-    "tests": { "roots": ["packages/motion/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+    "source": {
+      "roots": [
+        "packages/motion/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/motion/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -29,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "64aadce77ec47f28d30215b6f4759834f1eb1841ef6c83616af1219edc905097"
+      "lockfileSha256": "f835fe24b22dca8d2fc073a48349196c7de598e60b1362672a478dadbb0e4388"
     }
   },
   "lanes": [
@@ -38,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "motion",
+      "project": "motion-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact host rendering, Motion-only prop filtering, and child update behavior against motion/react@12.42.2.",
       "files": [
