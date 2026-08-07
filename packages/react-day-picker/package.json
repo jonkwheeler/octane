@@ -8,7 +8,7 @@
     "./src/style.module.css"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "React DayPicker-compatible calendar components for Octane.",
   "author": {
