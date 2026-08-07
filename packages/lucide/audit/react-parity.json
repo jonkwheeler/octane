@@ -57,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "lucide",
+      "project": "lucide-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs the same icon-gallery and dynamic-icon fixtures against lucide-react 1.24.0 on React and @octanejs/lucide on Octane, comparing named, provided, accessible, custom, and loaded output. Transient fallback timing is excluded because either runtime may resolve first.",
       "files": [
