@@ -11,12 +11,27 @@
     "integrity": "sha256:ebe0f2a2958bf0fc82164bd3def77be8315778d0607de96b0d5977c211a4839a",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/mantine-hooks/src"], "include": ["$a"], "exclude": [] },
+    "source": {
+      "roots": [
+        "packages/mantine-hooks/src"
+      ],
+      "include": [
+        "$a"
+      ],
+      "exclude": []
+    },
     "tests": {
-      "roots": ["packages/mantine-hooks/tests/differential"],
-      "include": ["$a"],
+      "roots": [
+        "packages/mantine-hooks/tests/differential"
+      ],
+      "include": [
+        "$a"
+      ],
       "exclude": []
     }
   },
@@ -33,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "e42ae13391a18ee2b89266928b078dc6681b046ed8ea3d0bc8af946159f17788"
+      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
     }
   },
   "lanes": [
@@ -42,7 +57,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "mantine-hooks",
+      "project": "mantine-hooks-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "One shared fixture compares counter, disclosure, and list-state interactions.",
       "files": [
@@ -76,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3c2f9378aec5da7ea66cc313f840ab17010ba151553b7ce32627b71da5fb72d7"
+          "sha256": "ef4b38bf8ed34b6b61f62f0d824e8fabec5ef62a21eb1d07b31d74e16d1def6e"
         }
       ]
     }
