@@ -17,13 +17,23 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/redux/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/redux/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/redux/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/redux/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
     }
   },
   "lanes": [
@@ -49,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "redux",
+      "project": "redux-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs one counter fixture against react-redux 9.3.0 on React and @octanejs/redux on Octane, comparing byte-identical DOM after mount and three dispatch-driving interactions.",
       "files": [
@@ -60,8 +70,8 @@
           "cases": [
             {
               "id": "differential:redux-counter",
-              "testName": "counter: mount → increment ×2 → decrement renders byte-identical",
-              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount → increment ×2 → decrement renders byte-identical"
+              "testName": "counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical",
+              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical"
             }
           ]
         },
