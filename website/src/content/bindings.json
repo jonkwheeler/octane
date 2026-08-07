@@ -19,7 +19,6 @@
     "packages": [
       "@octanejs/tanstack-ai",
       "@octanejs/apollo-client",
-      "@octanejs/solana-react",
       "@octanejs/dexie",
       "@octanejs/tanstack-query",
       "@octanejs/tanstack-router",
