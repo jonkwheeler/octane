@@ -10,17 +10,31 @@
     "integrity": "sha256:d1ad50cb61882c3e631de05414688d74740281c46633ce40492855bc3816f1c6",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-colorful/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-colorful/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-colorful/tests", "packages/react-colorful/typetests"],
-      "include": ["\\.test\\.(?:ts|tsx)$"],
-      "exclude": ["/audit/"]
+      "roots": [
+        "packages/react-colorful/tests",
+        "packages/react-colorful/typetests"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|tsx)$"
+      ],
+      "exclude": [
+        "/audit/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -36,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "840c2b39061d12c2ae6a2523428cb98d2bfd04eebcc50dbe0b7e3a2d5f27d544"
+      "lockfileSha256": "94a95e9815adbdc5b32d69337704539aa7d2e0bdc549e1a202092054a49d0488"
     }
   },
   "lanes": [
@@ -50,12 +64,12 @@
         {
           "path": "packages/react-colorful/tests/runtime/components.test.ts",
           "role": "test",
-        "sha256": "5af40c5bbf518c4eb67daf30f54c51b1d4b5bc2fea341a1f729cae10dfd608e7",
+          "sha256": "8c065abfcdf27f9f37ee0cd43c64fe34bf7a0ba9f7b73ed04d1b35028accdbe2",
           "cases": [
             {
               "id": "adapted:react-colorful-runtime",
               "testName": "exports the exact upstream runtime surface",
-              "fullName": "@octanejs/react-colorful — public components exports the exact upstream runtime surface"
+              "fullName": "@octanejs/react-colorful \u2014 public components exports the exact upstream runtime surface"
             }
           ]
         }
@@ -98,7 +112,7 @@
             {
               "id": "adapted:react-colorful-ssr",
               "testName": "renders deterministic picker and input markup without browser globals",
-              "fullName": "@octanejs/react-colorful — server rendering renders deterministic picker and input markup without browser globals"
+              "fullName": "@octanejs/react-colorful \u2014 server rendering renders deterministic picker and input markup without browser globals"
             }
           ]
         }
@@ -114,12 +128,12 @@
         {
           "path": "packages/react-colorful/tests/hydration/hydration.test.ts",
           "role": "test",
-        "sha256": "97ffc343e407560e5daaef7e369d52c4763ca64bef9a8f4eb2b88d8e297e8927",
+          "sha256": "97ffc343e407560e5daaef7e369d52c4763ca64bef9a8f4eb2b88d8e297e8927",
           "cases": [
             {
               "id": "adapted:react-colorful-hydration",
               "testName": "adopts server nodes, injects styles after mount, and becomes interactive",
-              "fullName": "@octanejs/react-colorful — hydration adopts server nodes, injects styles after mount, and becomes interactive"
+              "fullName": "@octanejs/react-colorful \u2014 hydration adopts server nodes, injects styles after mount, and becomes interactive"
             }
           ]
         }
@@ -135,7 +149,7 @@
         {
           "path": "packages/react-colorful/tests/browser/parity.browser.test.ts",
           "role": "test",
-        "sha256": "182e5ca671a8133e7b847fb9255ea222f7e1b5777b626f664f834a9375c77ab4",
+          "sha256": "182e5ca671a8133e7b847fb9255ea222f7e1b5777b626f664f834a9375c77ab4",
           "cases": [
             {
               "id": "browser:react-colorful-chromium",
@@ -167,7 +181,7 @@
         {
           "path": "packages/react-colorful/typetests/pristine.test.tsx",
           "role": "test",
-        "sha256": "877d6e9df2fea7c3380c474391e3ceb28244b3f7653f2b9816916f5b6bc06043",
+          "sha256": "877d6e9df2fea7c3380c474391e3ceb28244b3f7653f2b9816916f5b6bc06043",
           "cases": [
             {
               "id": "types:react-colorful-pristine",
@@ -194,7 +208,7 @@
         {
           "path": "packages/react-colorful/typetests/public-api.test.ts",
           "role": "test",
-        "sha256": "e4f182d121cbc5f7871f2cb2223b39ef75b06edd465af75704dfde777719e8a0",
+          "sha256": "e4f182d121cbc5f7871f2cb2223b39ef75b06edd465af75704dfde777719e8a0",
           "cases": [
             {
               "id": "types:react-colorful-adapted",
