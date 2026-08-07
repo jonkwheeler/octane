@@ -2795,6 +2795,58 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
+			},,
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/thinking-orbs/tests/differential/**/*.test.ts'],
+				},
+				test: {
+					name: 'thinking-orbs',
+					include: ['packages/thinking-orbs/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/thinking-orbs/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/thinking-orbs$/,
+							replacement: resolve(import.meta.dirname, 'packages/thinking-orbs/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/thinking-orbs\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/thinking-orbs/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'thinking-orbs-differential',
+					include: ['packages/thinking-orbs/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/thinking-orbs/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/thinking-orbs$/,
+							replacement: resolve(import.meta.dirname, 'packages/thinking-orbs/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/thinking-orbs\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/thinking-orbs/src') + '/$1.ts',
+						},
+					],
+				},
 			},
 			{
 				test: {
