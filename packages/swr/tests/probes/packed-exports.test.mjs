@@ -94,6 +94,18 @@ try {
 	assert.ok(server.i.endsWith('/src/infinite/index.react-server.ts'));
 	assert.ok(server.x.endsWith('/src/_internal/index.react-server.ts'));
 
+	const infiniteReactServerSource = readFileSync(
+		resolve(installedPackage, 'src/infinite/index.react-server.ts'),
+		'utf8',
+	);
+	assert.match(infiniteReactServerSource, /from '\.\/serialize\.js'/);
+	assert.doesNotMatch(infiniteReactServerSource, /from '\.\/index\.js'/);
+	const serializeSource = readFileSync(
+		resolve(installedPackage, 'src/infinite/serialize.ts'),
+		'utf8',
+	);
+	assert.doesNotMatch(serializeSource, /from '\.\/(index|runtime|infinite)\./);
+
 	const metadata = JSON.parse(readFileSync(resolve(installedPackage, 'package.json'), 'utf8'));
 	assert.deepEqual(Object.keys(metadata.exports), [
 		'./package.json',

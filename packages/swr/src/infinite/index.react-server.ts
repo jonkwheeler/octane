@@ -1,1 +1,1 @@
-export { unstable_serialize } from './index.js';
+export { unstable_serialize } from './serialize.js';
