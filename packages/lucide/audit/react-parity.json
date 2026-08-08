@@ -84,6 +84,11 @@
           "sha256": "0d38592e84a8bac96e94697d97db59a1e7984b945e34fab9574870dc5437bd67"
         },
         {
+          "path": "packages/lucide/tests/_fixtures/icons-runtime.ts",
+          "role": "support",
+          "sha256": "0d3e1b68b897154d3dc8ae090307e1768a52aa4bb61b2cb46037b7e97c707bf9"
+        },
+        {
           "path": "packages/lucide/tests/_fixtures/dynamic.tsrx",
           "role": "support",
           "sha256": "946a34413990907d7fdb08d1f4c1426b710bcdc3b10d02437858c1d6e3973c54"
@@ -106,7 +111,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "9b534dde2ce990a0f1333eb68df93c08d4f65570dae6d08f50c6e3b23e9e217c"
+          "sha256": "42fafd91fa76dec5073e2e921754f0dd81ec7f9307f26e91fed4e52a47c6ff2b"
         }
       ]
     }
