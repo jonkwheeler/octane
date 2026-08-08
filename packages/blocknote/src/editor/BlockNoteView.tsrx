@@ -251,20 +251,21 @@ function BlockNoteViewComponent<
  * (.bn-container element).
  */
 function BlockNoteViewContainer({
-  className,
+  class: className,
   renderEditor,
   editorColorScheme,
   children,
   ref,
   ...rest
 }: {
+  class?: string;
   renderEditor: boolean;
   editorColorScheme: "light" | "dark";
   children: OctaneNode;
   ref?: Ref<HTMLDivElement>;
 } & Omit<
   HTMLAttributes<HTMLDivElement>,
-  "onChange" | "onSelectionChange" | "children"
+  "onChange" | "onSelectionChange" | "children" | "class"
 >) {
   return (
     <div

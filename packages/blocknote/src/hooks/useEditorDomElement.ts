@@ -2,9 +2,14 @@ import { BlockNoteEditor } from "@blocknote/core";
 
 import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
 import { useEditorState } from "./useEditorState.js";
+import { withoutSlot } from "./without-slot.js";
 
 // Returns the editor's DOM element reactively.
-export function useEditorDOMElement(editor?: BlockNoteEditor<any, any, any>) {
+export function useEditorDOMElement(
+  editor?: BlockNoteEditor<any, any, any> | symbol,
+  ...rest: [slot?: symbol]
+) {
+  editor = withoutSlot(editor);
   const editorContext = useBlockNoteContext();
   if (!editor) {
     editor = editorContext?.editor;

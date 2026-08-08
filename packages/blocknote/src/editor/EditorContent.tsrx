@@ -1,14 +1,20 @@
 // CHECKPOINT: manual review required — TipTap/react-dom integration boundary
 import { ReactRenderer } from "@octanejs/tiptap";
-import { useSyncExternalStore } from "octane";
-import { createPortal } from "octane";
+import { createPortal, OctaneNode, useSyncExternalStore } from "octane";
 
 // this file takes the methods we need from
 // https://github.com/ueberdosis/tiptap/blob/develop/packages/react/src/EditorContent.tsx
 
+type RendererPortalEntry = {
+  id: string;
+  portal: OctaneNode;
+};
+
+type RendererPortalSnapshot = Record<string, RendererPortalEntry>;
+
 export function getContentComponent() {
   const subscribers = new Set<() => void>();
-  let renderers: Record<string, OctaneNode> = {};
+  let renderers: RendererPortalSnapshot = {};
 
   return {
     /**
@@ -32,7 +38,10 @@ export function getContentComponent() {
     setRenderer(id: string, renderer: ReactRenderer) {
       renderers = {
         ...renderers,
-        [id]: createPortal(renderer.reactElement, renderer.element, id),
+        [id]: {
+          id,
+          portal: createPortal(renderer.reactElement, renderer.element),
+        },
       };
 
       subscribers.forEach((subscriber) => subscriber());
@@ -52,12 +61,18 @@ export function getContentComponent() {
 
 type ContentComponent = ReturnType<typeof getContentComponent>;
 
+function PortalEntry({ entry }: { entry: RendererPortalEntry }) {
+  return entry.portal;
+}
+
 /**
  * This component renders all of the editor's node views.
  */
-export const Portals: FC<{ contentComponent: ContentComponent }> = ({
+export function Portals({
   contentComponent,
-}) => {
+}: {
+  contentComponent: ContentComponent;
+}) @{
   // For performance reasons, we render the node view portals on state changes only
   const renderers = useSyncExternalStore(
     // eslint-disable-next-line @typescript-eslint/unbound-method -- contentComponent is a plain object, not a class
@@ -67,7 +82,11 @@ export const Portals: FC<{ contentComponent: ContentComponent }> = ({
     // eslint-disable-next-line @typescript-eslint/unbound-method -- contentComponent is a plain object, not a class
     contentComponent.getServerSnapshot,
   );
+  const entries = Object.values(renderers);
 
-  // This allows us to directly render the portals without any additional wrapper
-  return <>{Object.values(renderers)}</>;
-};
+  <>
+    @for (const entry of entries; key entry.id) {
+      <PortalEntry entry={entry} />
+    }
+  </>
+}
