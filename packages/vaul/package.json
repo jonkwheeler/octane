@@ -4,7 +4,14 @@
   "description": "Octane binding for Vaul drawers",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
+  },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
   },
   "author": "Emil Kowalski <e@emilkowal.ski>",
   "publishConfig": {
