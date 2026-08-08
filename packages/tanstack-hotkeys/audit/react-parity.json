@@ -65,7 +65,7 @@
         {
           "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "98525a60ca5a3d0385b6fbc903fed3cee0409417c0a574564ef600d73dd1cf26",
+          "sha256": "ee914f27e247c63c26c7518d39188ef0f5595fe6b61c500cee7fd3dd0c2bd5a5",
           "cases": [
             {
               "id": "differential:tanstack-hotkeys-keyboard-lifecycle",
