@@ -14,7 +14,10 @@ interface ObserverRecord {
 }
 
 const observers = new Map<IntersectionObserver, ObserverRecord>();
-let originalIntersectionObserver: typeof IntersectionObserver | undefined;
+// Snapshot at module load so repeated setup/destroy cycles restore the native
+// constructor instead of the mock installed by a prior setup call.
+const originalIntersectionObserver =
+	typeof window !== 'undefined' ? window.IntersectionObserver : undefined;
 
 function entryFor(element: Element, isIntersecting: boolean, ratio: number) {
 	const rect = element.getBoundingClientRect();
@@ -41,7 +44,6 @@ function intersectionState(observer: IntersectionObserver, trigger: boolean | nu
 }
 
 export function setupIntersectionMocking(mockFn: MockFn) {
-	originalIntersectionObserver = window.IntersectionObserver;
 	window.IntersectionObserver = mockFn(function IntersectionObserverMock(
 		callback: IntersectionObserverCallback,
 		options: IntersectionObserverInit = {},
@@ -78,7 +80,6 @@ export function destroyIntersectionMocking() {
 	resetIntersectionMocking();
 	if (originalIntersectionObserver) window.IntersectionObserver = originalIntersectionObserver;
 	else delete (window as any).IntersectionObserver;
-	originalIntersectionObserver = undefined;
 }
 
 export function mockAllIsIntersecting(isIntersecting: boolean | number) {
