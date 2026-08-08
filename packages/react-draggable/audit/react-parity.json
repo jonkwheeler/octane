@@ -9,10 +9,10 @@
     "testRoot": "test",
     "license": "MIT",
     "integrity": "sha256:f96cf6ee39150b9ac5477ee05e4b8a69fbc766c20697fcbdca23773c8fc5261d",
-    "verification": "verified"
+    "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
+    "runtime": "present",
     "types": "present"
   },
   "adaptedRoots": {
