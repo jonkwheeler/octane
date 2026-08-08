@@ -23,6 +23,16 @@ export function FadeFixture() @{
 	<Fade component={FadeProbe} in duration={25} consumer="fade-consumer" />
 }
 
+export function FadeInnerPropsFixture() @{
+	<Fade
+		component={FadeProbe}
+		in
+		duration={25}
+		consumer="fade-consumer"
+		innerProps={{ id: 'fade-placeholder-id', style: { color: 'red' } }}
+	/>
+}
+
 export function CollapseFixture(props: { children?: OctaneNode }) @{
 	<Collapse in>{props.children ?? 'collapse'}</Collapse>
 }

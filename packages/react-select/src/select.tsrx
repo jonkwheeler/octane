@@ -1,5 +1,6 @@
 import {
 	createElement,
+	Fragment,
 	useEffect,
 	useImperativeHandle,
 	useLayoutEffect,
@@ -820,7 +821,7 @@ export function Select<
 					option,
 				);
 			}
-		} else if (!optionIsSelected) {
+		} else {
 			setValue(option as OnChangeValue<Option, IsMulti>, 'select-option');
 		}
 		if (props.blurInputOnSelect) inputRef.current?.blur();
@@ -1255,12 +1256,14 @@ export function Select<
 
 	const renderOption = (option: CategorizedOption<Option>, id: string) => {
 		const optionIsFocused = focusedOption === option.data;
+		const optionId = elementId(`option-${id}`);
 		return <Components.Option
 			{...commonProps}
+			key={optionId}
 			data={option.data}
 			innerRef={optionIsFocused ? focusedOptionRef : null}
 			innerProps={{
-				id: elementId(`option-${id}`),
+				id: optionId,
 				onClick: option.isDisabled ? undefined : () => selectOption(option.data),
 				onMouseMove: option.isDisabled ? undefined : () => setFocusedOption(option.data),
 				onMouseOver: option.isDisabled ? undefined : () => setFocusedOption(option.data),
@@ -1289,6 +1292,7 @@ export function Select<
 						(item) => item.type === 'group'
 							? <Components.Group
 									{...commonProps}
+									key={elementId(`group-${item.index}`)}
 									Heading={Components.GroupHeading}
 									data={item.data}
 									headingProps={{
@@ -1399,8 +1403,13 @@ export function Select<
 				: <div>
 						{selectValue.length
 							? selectValue.map(
-									(option) =>
-										<input name={props.name} type="hidden" value={props.getOptionValue(option)} />,
+									(option, index) =>
+										<input
+											key={`i-${index}`}
+											name={props.name}
+											type="hidden"
+											value={props.getOptionValue(option)}
+										/>,
 								)
 							: <input name={props.name} type="hidden" value="" />}
 					</div>;
@@ -1448,7 +1457,10 @@ export function Select<
 					{createElement(Components.ValueContainer, {
 						...commonProps,
 						isDisabled: props.isDisabled,
-						children: [valueUI, inputUI],
+						children: [
+							createElement(Fragment, { key: 'value', children: valueUI }),
+							createElement(Fragment, { key: 'input', children: inputUI }),
+						],
 					})}
 				</>
 			} @else {

@@ -9,6 +9,7 @@ import {
 	AnimatedInputFixture,
 	CollapseFixture,
 	FadeFixture,
+	FadeInnerPropsFixture,
 	readCapturedInputProps,
 } from './animated-fixture.tsrx';
 
@@ -51,5 +52,12 @@ describe('animated entry point parity', () => {
 		expect(collapse).toContain('overflow:hidden');
 		expect(collapse).toContain('white-space:nowrap');
 		expect(collapse).toContain('collapse');
+	});
+
+	it('merges wrapped innerProps instead of replacing them during fade', () => {
+		const html = renderToString(FadeInnerPropsFixture).html;
+		expect(html).toContain('id="fade-placeholder-id"');
+		expect(html).toContain('opacity:1');
+		expect(html).toContain('color:red');
 	});
 });

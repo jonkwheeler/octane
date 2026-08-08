@@ -349,6 +349,45 @@ describe('full Select in Chromium', () => {
 		}
 	}, 30_000);
 
+	it('closes the menu when reselecting the current single-select value', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+
+			async function reselect(rootId: string) {
+				const combobox = page.locator(`#${rootId} [role="combobox"]`);
+				await combobox.click();
+				await page.locator(`#${rootId} [role="option"]`).filter({ hasText: 'One' }).click();
+				await combobox.click();
+				await page.locator(`#${rootId} [role="option"]`).filter({ hasText: 'One' }).click();
+				return {
+					menuOpen: await page.locator(`#${rootId} [role="listbox"]`).count(),
+					hiddenValue: await page.locator(`#${rootId} input[name="choice"]`).inputValue(),
+				};
+			}
+
+			const octane = await reselect('octane-select-root');
+			const react = await reselect('react-select-root');
+			expect(octane).toEqual(react);
+			expect(octane.menuOpen).toBe(0);
+			expect(octane.hiddenValue).toBe('1');
+
+			const logs = await page.evaluate(() => window.__reactSelectFull.logs());
+			function selectChanges(items: Array<Record<string, unknown>>) {
+				return items.filter(
+					(entry) =>
+						entry.type === 'change' &&
+						(entry.actionMeta as { action?: string } | undefined)?.action === 'select-option',
+				);
+			}
+			expect(selectChanges(logs.octane)).toEqual(selectChanges(logs.react));
+			expect(selectChanges(logs.octane)).toHaveLength(2);
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
 	it('matches React autoFocus behavior on mount', async () => {
 		const page = await browser.newPage();
 		try {
