@@ -2,7 +2,7 @@ import { batch, createSignal } from '@octanejs/formisch/core';
 import { act, fireEvent, render, screen } from '@octanejs/testing-library';
 import { type OctaneNode, useState } from 'octane';
 import { describe, expect, test, vi } from 'vitest';
-import { useSignals } from '@octanejs/formisch';
+import { useSignals } from '../../../../../../../src/hooks/useSignals/useSignals.ts';
 
 describe('useSignals', () => {
 	describe('signal subscription', () => {
