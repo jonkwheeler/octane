@@ -28,14 +28,23 @@ export function Svg({
 	const url = !src.startsWith('<svg') ? src : `data:image/svg+xml;utf8,${src}`;
 	const svg = useLoader(SVGLoader, url);
 	const strokeGeometries = useMemo(
-		() => skipStrokes
-			? []
-			: svg.paths.map((path) =>
-				path.userData?.style.stroke === undefined || path.userData.style.stroke === 'none'
-					? null
-					: path.subPaths.map((subPath) => SVGLoader.pointsToStroke(subPath.getPoints(), path.userData!.style)),
-			),
+		function() {
+			if (skipStrokes) return [];
+			return svg.paths.map(function(path) {
+				if (path.userData?.style.stroke === undefined || path.userData.style.stroke === 'none') return null;
+				return path.subPaths.map(function(subPath) {
+					return SVGLoader.pointsToStroke(subPath.getPoints(), path.userData!.style);
+				});
+			});
+		},
 		[svg, skipStrokes],
+	);
+	const fillShapes = useMemo(
+		function() {
+			if (skipFill) return svg.paths.map(function() { return []; });
+			return svg.paths.map(function(path) { return SVGLoader.createShapes(path); });
+		},
+		[svg, skipFill],
 	);
 	useEffect(() => () => {
 		strokeGeometries.forEach((group) => group?.forEach((geometry) => geometry.dispose()));
@@ -46,7 +55,7 @@ export function Svg({
 			@for (const path of svg.paths; key svg.paths.indexOf(path)) {
 				<>
 				@if (!skipFill && path.userData?.style.fill !== undefined && path.userData.style.fill !== 'none') {
-					@for (const shape of SVGLoader.createShapes(path); key shape.uuid) {
+					@for (const shape of fillShapes[svg.paths.indexOf(path)]; key fillShapes[svg.paths.indexOf(path)].indexOf(shape)) {
 						<mesh {...fillMeshProps} renderOrder={renderOrder++}>
 							<shapeGeometry args={[shape as any]} />
 							<meshBasicMaterial
@@ -61,7 +70,7 @@ export function Svg({
 					}
 				}
 				@if (!skipStrokes && path.userData?.style.stroke !== undefined && path.userData.style.stroke !== 'none') {
-					@for (const subPath of path.subPaths; key subPath.curves.length) {
+					@for (const subPath of path.subPaths; key path.subPaths.indexOf(subPath)) {
 						<mesh geometry={strokeGeometries[svg.paths.indexOf(path)]?.[path.subPaths.indexOf(subPath)] as any} {...strokeMeshProps} renderOrder={renderOrder++}>
 							<meshBasicMaterial
 								color={path.userData!.style.stroke}
