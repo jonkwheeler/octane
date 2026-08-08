@@ -79,14 +79,14 @@
           "sha256": "fa7e006bc8324b4d8d8a0cef8d319831a9d1aa273ea99db2c878cbcb4938ba9d"
         },
         {
-          "path": "packages/nuqs/tests/differential/compile-runner.mjs",
-          "role": "support",
-          "sha256": "8ad98bceb3a298463c9c3ceda0dca3ef995eb991fc4cc3af147a8e6d6c28d39d"
-        },
-        {
           "path": "packages/nuqs/tests/_fixtures/query.tsrx",
           "role": "support",
           "sha256": "f9de71db674b1bc33cff9cc52aefa6261627b5d455509c8a140322b0e36219e0"
+        },
+        {
+          "path": "packages/nuqs/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "45113e4dc61781967a7091ab99e2712d1386e32ecb3f8a4e653eda4ab069ae4a"
         }
       ]
     },
