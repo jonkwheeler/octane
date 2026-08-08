@@ -22695,10 +22695,10 @@ interface ForSlot {
 	size: number; // count of item Blocks
 	// Last-render snapshot of the body's closed-over parent locals. The compiler
 	// emits a fresh `deps` array on every parent render for DEP-PURE for-of
-	// calls (impure body, no hooks/comps/control-flow). When this render's deps
-	// match last render's element-by-element, the runtime treats the body as
-	// PURE for the survivor short-circuit — saving the entire body call for
-	// every item whose ref + position are unchanged.
+	// calls (hookless host bodies, optionally with proven host-only conditional
+	// content). When this render's deps match last render's element-by-element,
+	// the runtime treats the body as PURE for the survivor short-circuit — saving
+	// the entire body call for every item whose ref + position are unchanged.
 	cachedDeps: any[] | null;
 	// `@for (...) { ... } @empty { ... }` support: mounted-empty-branch Block,
 	// or null when there are items (or no `@empty` branch was compiled). The
@@ -22747,7 +22747,9 @@ export function forBlock<T>(
 	// promote body to PURE when unchanged), bit 3 = indexIndependent (the body
 	// binds no `index` name → a pure reorder that only moves a survivor's
 	// position need not re-render it), bit 4 = the server emitted direct-host
-	// items without per-item pairs. Packed into one numeric literal.
+	// items without per-item pairs, bit 5 = a nested host conditional requires
+	// its owning Block's scope whenever an item body does need to render.
+	// Packed into one numeric literal.
 	const parentBlock = parentScope.block;
 	const hydration = activeHydration();
 	let state = parentScope.slots[slotKey] as ForSlot | undefined;
@@ -22915,22 +22917,29 @@ export function forBlock<T>(
 	// and last render's snapshot matches this render's, we can treat the body
 	// as PURE for the survivor short-circuit. The body still runs for moved/
 	// mounted/removed items — only stable survivors get skipped.
-	// `lite` = body is depEligible but did NOT promote to pure this render.
-	// depEligible (see makeForCall's body analysis in compile.js, packed into
-	// the forBlock `flags` bits) means no hooks, no nested comps, no
-	// control flow → the body can't observe CURRENT_SCOPE / CURRENT_BLOCK and
-	// never throws Suspense. We skip renderBlock's activeBlock plumbing and
-	// call itemBody directly. Saves ~10 ops/survivor — meaningful on the
-	// select-row tick where `selected` changes and 1000 survivors all
-	// re-evaluate but only 2 actually flip their class.
+	// `lite` = an unstructured depEligible body did NOT promote to pure this
+	// render. Such a body has no hooks, nested components, or control flow, so
+	// it cannot observe CURRENT_SCOPE / CURRENT_BLOCK and can run directly.
+	// Host-only nested conditionals may also qualify for the survivor skip, but
+	// need their owning Block's scope when a dependency actually changes.
+	// In particular, transition rollback must snapshot each row's own bag.
 	let lite = false;
 	if ((f & 4) !== 0 && deps !== undefined) {
-		if (state.cachedDeps !== null && depsEqual(state.cachedDeps, deps)) {
-			pure = true;
+		const requiresScope = (f & 32) !== 0;
+		if (requiresScope && TRANSITION_JOURNAL !== null) {
+			// The list journal restores membership and DOM, not this dependency
+			// snapshot. A suspended attempt must never leave a rolled-back list
+			// believing that its uncommitted dependencies are still current.
+			state.cachedDeps = null;
+			pure = false;
 		} else {
-			lite = true;
+			if (state.cachedDeps !== null && depsEqual(state.cachedDeps, deps)) {
+				pure = true;
+			} else {
+				lite = !requiresScope;
+			}
+			state.cachedDeps = deps;
 		}
-		state.cachedDeps = deps;
 	}
 	if (state.size === 0) {
 		// First fill (hydration adopt / fresh mount / update-path 0 → N): the
@@ -22971,7 +22980,7 @@ export function forBlock<T>(
 /**
  * Compiler-only keyed-selection entry. Keeping the specialization outside
  * forBlock lets applications without a proven selection tree-shake its cost.
- * Bit 5 identifies the proof; bits 6+ hold its captured dependency index.
+ * This entry point identifies the proof; bits 6+ hold its dependency index.
  */
 export function keyedForBlock<T>(
 	parentScope: Scope,
@@ -23385,6 +23394,15 @@ function tryUpdateKeyedSelection<T>(
 const K_DISP = 4;
 const _disp = new Int32Array(K_DISP);
 
+// Keep at most one numeric source buffer and one LIS predecessor buffer. Source
+// buffers stay live across user rendering, so taking one removes it from the
+// cache until reconciliation finishes; nested lists must receive their own.
+// Oversized lists use disposable buffers instead of retaining their backing
+// stores. The two capped caches can retain at most 128 KiB between renders.
+const MAX_KEYED_REORDER_SCRATCH = 16_384;
+let keyedReorderSources: Int32Array | null = null;
+let keyedLisPredecessors: Int32Array | null = null;
+
 /**
  * Keyed reconciliation over a doubly-linked list of item Blocks.
  *
@@ -23742,260 +23760,276 @@ function reconcileKeyed<T>(
 	}
 
 	// sources[i] = old middle-relative index for new[prefixLen + i], or -1 if new.
-	const sources = new Int32Array(newMidLen);
-	for (let i = 0; i < newMidLen; i++) sources[i] = -1;
-
-	let moved = false;
-	let lastIdx = 0;
-	let patched = 0;
-
-	// Walk old middle (linked-list traversal): re-render survivors, unmount removed.
-	let cur: Block | null = oldFirst;
-	let oldIdx = 0;
-	while (cur !== afterMiddle) {
-		const next: Block | null = cur!.nextSibling!;
-		const newRelIdx = newKeysToIdx.get(cur!.key);
-		if (newRelIdx === undefined) {
-			if (itemRemovalDefers()) parkItemForHold(cur!);
-			else unmountBlock(cur!);
-			oldItems.delete(cur!.key);
-			state.size--;
-		} else {
-			sources[newRelIdx] = oldIdx;
-			if (newRelIdx < lastIdx) moved = true;
-			else lastIdx = newRelIdx;
-			patched++;
-			const newIdx = prefixLen + newRelIdx;
-			updateSurvivor(
-				cur!,
-				items[newIdx],
-				newIdx,
-				itemBody,
-				pure,
-				lite,
-				indexIndependent,
-				state.env,
-			);
-		}
-		cur = next;
-		oldIdx++;
+	const cachedSources = keyedReorderSources;
+	let sources: Int32Array;
+	if (cachedSources !== null && cachedSources.length >= newMidLen) {
+		keyedReorderSources = null;
+		sources = cachedSources;
+	} else {
+		sources = new Int32Array(newMidLen);
 	}
+	try {
+		for (let i = 0; i < newMidLen; i++) sources[i] = -1;
 
-	// Fast bail: all survivors AND no moves AND no mounts → old middle is the
-	// same shape & order as new middle.
-	if (!moved && patched === newMidLen) {
-		// If the survivor walk did NOT unmount anything (oldRemain ===
-		// patched), the linked-list pointers are still correct end-to-end
-		// and we can return without touching them. But if blocks were
-		// unmounted BETWEEN survivors, the survivors' .prevSibling /
-		// .nextSibling pointers still reference now-disposed blocks AND
-		// state.head / state.tail may also point at disposed blocks. The
-		// next reconcile would then walk those stale pointers, decrement
-		// state.size for blocks that no longer exist, and ultimately
-		// crash with a null-pointer access in the prefix/suffix walk.
-		//
-		// Relink the entire middle chain so its prev/next pointers — and
-		// the boundary into beforeMiddle / afterMiddle / state.head /
-		// state.tail — accurately reflect the post-unmount topology.
-		// O(newMidLen); only fires when survivors and removes are mixed.
-		// Surfaced by fuzz-keyed-list seed=-2060211668 action 9 (a
-		// replace-all 13 → 2 where both survivors are in original order).
-		if (oldRemain !== patched) {
-			let prev: Block | null = beforeMiddle;
-			for (let i = 0; i < newMidLen; i++) {
-				const block = oldItems.get(newKeys[i])!;
-				block.prevSibling = prev;
-				if (prev) prev.nextSibling = block;
-				else state.head = block;
-				prev = block;
-			}
-			prev!.nextSibling = afterMiddle;
-			if (afterMiddle) afterMiddle.prevSibling = prev;
-			else state.tail = prev;
-		}
-		return;
-	}
+		let moved = false;
+		let lastIdx = 0;
+		let patched = 0;
 
-	// ── Small-displacement shortcut. When every old item survived AND only a
-	// small number of positions actually changed (≤ K_DISP), we can compute
-	// the exact move set in O(K_DISP) instead of paying the LIS path's O(N)
-	// allocation + back-walk that rewrites every prev/next pointer. This is
-	// a general property of permutations — when survivors are stable and the
-	// permutation has few fixed-point misses, LIS does provably wasted work.
-	//
-	// Real shapes this covers:
-	//   - drag-and-drop reorder (swap two rows, rotate three)
-	//   - undo/redo of a recent local edit
-	//   - animated swap / sort transitions
-	//   - A/B variant toggle that flips a small set of cells
-	//   - any benchmark or test fixture that mutates exactly K positions
-	//
-	// Bail cost on a true large-shuffle permutation: K_DISP + 1 source
-	// compares before falling through to the LIS path, which is sub-µs.
-	if (moved && patched === newMidLen) {
-		let dCount = 0;
-		for (let i = 0; i < newMidLen; i++) {
-			if (sources[i] !== i) {
-				if (dCount === K_DISP) {
-					dCount = K_DISP + 1;
-					break;
-				}
-				_disp[dCount++] = i;
+		// Walk old middle (linked-list traversal): re-render survivors, unmount removed.
+		let cur: Block | null = oldFirst;
+		let oldIdx = 0;
+		while (cur !== afterMiddle) {
+			const next: Block | null = cur!.nextSibling!;
+			const newRelIdx = newKeysToIdx.get(cur!.key);
+			if (newRelIdx === undefined) {
+				if (itemRemovalDefers()) parkItemForHold(cur!);
+				else unmountBlock(cur!);
+				oldItems.delete(cur!.key);
+				state.size--;
+			} else {
+				sources[newRelIdx] = oldIdx;
+				if (newRelIdx < lastIdx) moved = true;
+				else lastIdx = newRelIdx;
+				patched++;
+				const newIdx = prefixLen + newRelIdx;
+				updateSurvivor(
+					cur!,
+					items[newIdx],
+					newIdx,
+					itemBody,
+					pure,
+					lite,
+					indexIndependent,
+					state.env,
+				);
 			}
+			cur = next;
+			oldIdx++;
 		}
-		if (dCount <= K_DISP) {
-			const endAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
-			// Move right-to-left. Positions to the right of the rightmost
-			// displaced index are identity-mapped and have stable startMarkers;
-			// each moved block becomes the next iteration's anchor.
-			for (let j = dCount - 1; j >= 0; j--) {
-				const i = _disp[j];
-				const block = oldItems.get(newKeys[i])!;
-				const anchor: Node =
-					i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])!.startMarker! : endAnchor;
-				moveBlockBefore(block, anchor);
-			}
-			// Relink prev/next around each displaced position. Non-displaced
-			// neighbours of displaced blocks get their boundary pointers updated
-			// here too; non-displaced blocks BETWEEN two displaced positions keep
-			// their internal pointers (they were never touched by the survivor
-			// walk and the moves above don't reorder them).
-			for (let j = 0; j < dCount; j++) {
-				const i = _disp[j];
-				const block = oldItems.get(newKeys[i])!;
-				const prev = i > 0 ? oldItems.get(newKeys[i - 1])! : beforeMiddle;
-				const next = i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])! : afterMiddle;
-				block.prevSibling = prev;
-				block.nextSibling = next;
-				if (prev) prev.nextSibling = block;
-				else state.head = block;
-				if (next) next.prevSibling = block;
-				else state.tail = block;
-			}
-			// Boundary patch: the first and last block of the NEW middle may be
-			// identity-mapped (not in _disp), in which case the displacement
-			// loop never touched them — they still carry their pre-reconcile
-			// neighbour pointers, which can be stale (e.g. pointing at a block
-			// that the survivor walk just unmounted, or at a prior-reconcile
-			// neighbour that has since shifted). Always re-pin the boundary
-			// pointers so state.head / state.tail / beforeMiddle.next /
-			// afterMiddle.prev are correct for the next reconcile.
+
+		// Fast bail: all survivors AND no moves AND no mounts → old middle is the
+		// same shape & order as new middle.
+		if (!moved && patched === newMidLen) {
+			// If the survivor walk did NOT unmount anything (oldRemain ===
+			// patched), the linked-list pointers are still correct end-to-end
+			// and we can return without touching them. But if blocks were
+			// unmounted BETWEEN survivors, the survivors' .prevSibling /
+			// .nextSibling pointers still reference now-disposed blocks AND
+			// state.head / state.tail may also point at disposed blocks. The
+			// next reconcile would then walk those stale pointers, decrement
+			// state.size for blocks that no longer exist, and ultimately
+			// crash with a null-pointer access in the prefix/suffix walk.
 			//
-			// Repro for why this matters: surfaced by fuzz-keyed-list seed
-			// -1491785866 — a `replace-all` that shrinks the list (e.g. 6 → 3)
-			// where the last survivor is identity-mapped. Without the patch,
-			// state.tail keeps pointing at the prior-tail block (now deleted)
-			// and the surviving last block's .nextSibling still points at the
-			// removed sibling. The next reconcile then stops its old-middle
-			// walk early (at the stale nextSibling) and re-mounts the
-			// last survivor as a NEW block, producing a duplicate row.
-			const newMidFirst = oldItems.get(newKeys[0])!;
-			const newMidLast = oldItems.get(newKeys[newMidLen - 1])!;
-			newMidFirst.prevSibling = beforeMiddle;
-			newMidLast.nextSibling = afterMiddle;
-			if (beforeMiddle) beforeMiddle.nextSibling = newMidFirst;
-			else state.head = newMidFirst;
-			if (afterMiddle) afterMiddle.prevSibling = newMidLast;
-			else state.tail = newMidLast;
+			// Relink the entire middle chain so its prev/next pointers — and
+			// the boundary into beforeMiddle / afterMiddle / state.head /
+			// state.tail — accurately reflect the post-unmount topology.
+			// O(newMidLen); only fires when survivors and removes are mixed.
+			// Surfaced by fuzz-keyed-list seed=-2060211668 action 9 (a
+			// replace-all 13 → 2 where both survivors are in original order).
+			if (oldRemain !== patched) {
+				let prev: Block | null = beforeMiddle;
+				for (let i = 0; i < newMidLen; i++) {
+					const block = oldItems.get(newKeys[i])!;
+					block.prevSibling = prev;
+					if (prev) prev.nextSibling = block;
+					else state.head = block;
+					prev = block;
+				}
+				prev!.nextSibling = afterMiddle;
+				if (afterMiddle) afterMiddle.prevSibling = prev;
+				else state.tail = prev;
+			}
 			return;
 		}
-	}
 
-	// Walk new middle back-to-front. For each new position: mount / move / leave.
-	// Track:
-	//   nextBlock  = block at position i+1 (already placed), or afterMiddle initially
-	//                — used as the DOM anchor and prev/next neighbour
-	//   lastPlaced = block placed in the FIRST iteration (= new middle's tail)
-	const middleEndAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
-	let nextBlock: Block | null = afterMiddle;
-	let lastPlaced: Block | null = null;
-
-	if (moved) {
-		const seq = lis(sources);
-		let seqIdx = seq.length - 1;
-		for (let i = newMidLen - 1; i >= 0; i--) {
-			const targetIdx = i + prefixLen;
-			const key = newKeys[i];
-			const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
-			let block: Block;
-			if (sources[i] === -1) {
-				// Mount: new item, no old counterpart.
-				const item = items[targetIdx];
-				block = mountItem(
-					parentBlock,
-					parentNode,
-					anchor,
-					item,
-					targetIdx,
-					itemBody,
-					state,
-					singleRoot,
-					ssrMarkerless,
-				);
-				oldItems.set(key, block);
-				block.key = key;
-				state.size++;
-			} else if (seqIdx < 0 || i !== seq[seqIdx]) {
-				// Move: survivor not in the LIS → DOM range moves before anchor.
-				block = oldItems.get(key)!;
-				moveBlockBefore(block, anchor);
-			} else {
-				// Leave: survivor in the LIS → DOM stays put.
-				block = oldItems.get(key)!;
-				seqIdx--;
+		// ── Small-displacement shortcut. When every old item survived AND only a
+		// small number of positions actually changed (≤ K_DISP), we can compute
+		// the exact move set in O(K_DISP) instead of paying the LIS path's O(N)
+		// allocation + back-walk that rewrites every prev/next pointer. This is
+		// a general property of permutations — when survivors are stable and the
+		// permutation has few fixed-point misses, LIS does provably wasted work.
+		//
+		// Real shapes this covers:
+		//   - drag-and-drop reorder (swap two rows, rotate three)
+		//   - undo/redo of a recent local edit
+		//   - animated swap / sort transitions
+		//   - A/B variant toggle that flips a small set of cells
+		//   - any benchmark or test fixture that mutates exactly K positions
+		//
+		// Bail cost on a true large-shuffle permutation: K_DISP + 1 source
+		// compares before falling through to the LIS path, which is sub-µs.
+		if (moved && patched === newMidLen) {
+			let dCount = 0;
+			for (let i = 0; i < newMidLen; i++) {
+				if (sources[i] !== i) {
+					if (dCount === K_DISP) {
+						dCount = K_DISP + 1;
+						break;
+					}
+					_disp[dCount++] = i;
+				}
 			}
-			// Re-link into the new middle chain. We rebuild middle pointers from
-			// scratch; every middle block's prev/next gets rewritten here.
-			block.nextSibling = nextBlock;
-			if (nextBlock) nextBlock.prevSibling = block;
-			if (lastPlaced === null) lastPlaced = block;
-			nextBlock = block;
-		}
-	} else {
-		// No moves but at least one mount (we'd have returned already if all survivors).
-		for (let i = newMidLen - 1; i >= 0; i--) {
-			const targetIdx = i + prefixLen;
-			const key = newKeys[i];
-			const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
-			let block: Block;
-			if (sources[i] === -1) {
-				const item = items[targetIdx];
-				block = mountItem(
-					parentBlock,
-					parentNode,
-					anchor,
-					item,
-					targetIdx,
-					itemBody,
-					state,
-					singleRoot,
-					ssrMarkerless,
-				);
-				oldItems.set(key, block);
-				block.key = key;
-				state.size++;
-			} else {
-				block = oldItems.get(key)!;
+			if (dCount <= K_DISP) {
+				const endAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
+				// Move right-to-left. Positions to the right of the rightmost
+				// displaced index are identity-mapped and have stable startMarkers;
+				// each moved block becomes the next iteration's anchor.
+				for (let j = dCount - 1; j >= 0; j--) {
+					const i = _disp[j];
+					const block = oldItems.get(newKeys[i])!;
+					const anchor: Node =
+						i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])!.startMarker! : endAnchor;
+					moveBlockBefore(block, anchor);
+				}
+				// Relink prev/next around each displaced position. Non-displaced
+				// neighbours of displaced blocks get their boundary pointers updated
+				// here too; non-displaced blocks BETWEEN two displaced positions keep
+				// their internal pointers (they were never touched by the survivor
+				// walk and the moves above don't reorder them).
+				for (let j = 0; j < dCount; j++) {
+					const i = _disp[j];
+					const block = oldItems.get(newKeys[i])!;
+					const prev = i > 0 ? oldItems.get(newKeys[i - 1])! : beforeMiddle;
+					const next = i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])! : afterMiddle;
+					block.prevSibling = prev;
+					block.nextSibling = next;
+					if (prev) prev.nextSibling = block;
+					else state.head = block;
+					if (next) next.prevSibling = block;
+					else state.tail = block;
+				}
+				// Boundary patch: the first and last block of the NEW middle may be
+				// identity-mapped (not in _disp), in which case the displacement
+				// loop never touched them — they still carry their pre-reconcile
+				// neighbour pointers, which can be stale (e.g. pointing at a block
+				// that the survivor walk just unmounted, or at a prior-reconcile
+				// neighbour that has since shifted). Always re-pin the boundary
+				// pointers so state.head / state.tail / beforeMiddle.next /
+				// afterMiddle.prev are correct for the next reconcile.
+				//
+				// Repro for why this matters: surfaced by fuzz-keyed-list seed
+				// -1491785866 — a `replace-all` that shrinks the list (e.g. 6 → 3)
+				// where the last survivor is identity-mapped. Without the patch,
+				// state.tail keeps pointing at the prior-tail block (now deleted)
+				// and the surviving last block's .nextSibling still points at the
+				// removed sibling. The next reconcile then stops its old-middle
+				// walk early (at the stale nextSibling) and re-mounts the
+				// last survivor as a NEW block, producing a duplicate row.
+				const newMidFirst = oldItems.get(newKeys[0])!;
+				const newMidLast = oldItems.get(newKeys[newMidLen - 1])!;
+				newMidFirst.prevSibling = beforeMiddle;
+				newMidLast.nextSibling = afterMiddle;
+				if (beforeMiddle) beforeMiddle.nextSibling = newMidFirst;
+				else state.head = newMidFirst;
+				if (afterMiddle) afterMiddle.prevSibling = newMidLast;
+				else state.tail = newMidLast;
+				return;
 			}
-			block.nextSibling = nextBlock;
-			if (nextBlock) nextBlock.prevSibling = block;
-			if (lastPlaced === null) lastPlaced = block;
-			nextBlock = block;
+		}
+
+		// Walk new middle back-to-front. For each new position: mount / move / leave.
+		// Track:
+		//   nextBlock  = block at position i+1 (already placed), or afterMiddle initially
+		//                — used as the DOM anchor and prev/next neighbour
+		//   lastPlaced = block placed in the FIRST iteration (= new middle's tail)
+		const middleEndAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
+		let nextBlock: Block | null = afterMiddle;
+		let lastPlaced: Block | null = null;
+
+		if (moved) {
+			const seq = lis(sources, newMidLen);
+			let seqIdx = seq.length - 1;
+			for (let i = newMidLen - 1; i >= 0; i--) {
+				const targetIdx = i + prefixLen;
+				const key = newKeys[i];
+				const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
+				let block: Block;
+				if (sources[i] === -1) {
+					// Mount: new item, no old counterpart.
+					const item = items[targetIdx];
+					block = mountItem(
+						parentBlock,
+						parentNode,
+						anchor,
+						item,
+						targetIdx,
+						itemBody,
+						state,
+						singleRoot,
+						ssrMarkerless,
+					);
+					oldItems.set(key, block);
+					block.key = key;
+					state.size++;
+				} else if (seqIdx < 0 || i !== seq[seqIdx]) {
+					// Move: survivor not in the LIS → DOM range moves before anchor.
+					block = oldItems.get(key)!;
+					moveBlockBefore(block, anchor);
+				} else {
+					// Leave: survivor in the LIS → DOM stays put.
+					block = oldItems.get(key)!;
+					seqIdx--;
+				}
+				// Re-link into the new middle chain. We rebuild middle pointers from
+				// scratch; every middle block's prev/next gets rewritten here.
+				block.nextSibling = nextBlock;
+				if (nextBlock) nextBlock.prevSibling = block;
+				if (lastPlaced === null) lastPlaced = block;
+				nextBlock = block;
+			}
+		} else {
+			// No moves but at least one mount (we'd have returned already if all survivors).
+			for (let i = newMidLen - 1; i >= 0; i--) {
+				const targetIdx = i + prefixLen;
+				const key = newKeys[i];
+				const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
+				let block: Block;
+				if (sources[i] === -1) {
+					const item = items[targetIdx];
+					block = mountItem(
+						parentBlock,
+						parentNode,
+						anchor,
+						item,
+						targetIdx,
+						itemBody,
+						state,
+						singleRoot,
+						ssrMarkerless,
+					);
+					oldItems.set(key, block);
+					block.key = key;
+					state.size++;
+				} else {
+					block = oldItems.get(key)!;
+				}
+				block.nextSibling = nextBlock;
+				if (nextBlock) nextBlock.prevSibling = block;
+				if (lastPlaced === null) lastPlaced = block;
+				nextBlock = block;
+			}
+		}
+
+		// Splice the freshly-built new middle in between beforeMiddle and afterMiddle.
+		// newMiddleHead = `nextBlock` after the loop (last iteration placed item[prefixLen]).
+		// newMiddleTail = `lastPlaced` (first iteration placed item[newEnd]).
+		// newMiddleTail.nextSibling was set to afterMiddle in the first loop iter,
+		// and afterMiddle.prevSibling (if non-null) was set to newMiddleTail. So only
+		// the HEAD side of the splice remains.
+		const newMiddleHead = nextBlock!;
+		const newMiddleTail = lastPlaced!;
+		newMiddleHead.prevSibling = beforeMiddle;
+		if (beforeMiddle) beforeMiddle.nextSibling = newMiddleHead;
+		else state.head = newMiddleHead;
+		if (!afterMiddle) state.tail = newMiddleTail;
+	} finally {
+		if (
+			sources.length <= MAX_KEYED_REORDER_SCRATCH &&
+			(keyedReorderSources === null || keyedReorderSources.length < sources.length)
+		) {
+			keyedReorderSources = sources;
 		}
 	}
-
-	// Splice the freshly-built new middle in between beforeMiddle and afterMiddle.
-	// newMiddleHead = `nextBlock` after the loop (last iteration placed item[prefixLen]).
-	// newMiddleTail = `lastPlaced` (first iteration placed item[newEnd]).
-	// newMiddleTail.nextSibling was set to afterMiddle in the first loop iter,
-	// and afterMiddle.prevSibling (if non-null) was set to newMiddleTail. So only
-	// the HEAD side of the splice remains.
-	const newMiddleHead = nextBlock!;
-	const newMiddleTail = lastPlaced!;
-	newMiddleHead.prevSibling = beforeMiddle;
-	if (beforeMiddle) beforeMiddle.nextSibling = newMiddleHead;
-	else state.head = newMiddleHead;
-	if (!afterMiddle) state.tail = newMiddleTail;
 }
 
 /**
@@ -24326,9 +24360,12 @@ function moveBlockBefore(block: Block, anchor: Node): void {
  * Skips entries where arr[i] === -1 (new items).
  * Ported from the standard O(n log n) patience-sort algorithm used by Ripple/Solid/Vue.
  */
-function lis(arr: Int32Array): number[] {
-	const n = arr.length;
-	const p = new Int32Array(n);
+function lis(arr: Int32Array, n: number): number[] {
+	let p = keyedLisPredecessors;
+	if (p === null || p.length < n) {
+		p = new Int32Array(n);
+		if (n <= MAX_KEYED_REORDER_SCRATCH) keyedLisPredecessors = p;
+	}
 	const result: number[] = [];
 	for (let i = 0; i < n; i++) {
 		const v = arr[i];
