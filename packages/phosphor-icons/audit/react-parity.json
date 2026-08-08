@@ -21,7 +21,7 @@
         "packages/phosphor-icons/src"
       ],
       "include": [
-        "$a"
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     },
@@ -30,7 +30,7 @@
         "packages/phosphor-icons/tests/differential"
       ],
       "include": [
-        "$a"
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     }
