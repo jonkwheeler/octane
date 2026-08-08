@@ -41,7 +41,7 @@
     "./vanilla/utils": "./src/vanilla/utils.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project valtio"
+    "test": "vitest run --root ../.. --project valtio && vitest run --root ../.. --project valtio-differential"
   },
   "dependencies": {
     "proxy-compare": "catalog:default",

@@ -116,21 +116,6 @@
               "fullName": "vanilla entry points omits React DevTools debug labels from the snapshot hook"
             }
           ]
-        },
-        {
-          "path": "packages/valtio/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "f44418aef38ea7f997470c2ddda6964f71b8287f2f9b290d27bb408a28520bc9"
-        },
-        {
-          "path": "packages/valtio/tests/differential/fixture-compiler.ts",
-          "role": "support",
-          "sha256": "35644601b67415e7cd2f1255fee7664442e288cafce47bb894d61172fee45fb4"
-        },
-        {
-          "path": "packages/valtio/tests/_fixtures/store.tsrx",
-          "role": "support",
-          "sha256": "a4ce7f3e535cd5c28698b688fbdf6c967e1649b19f39ef9b10b96fcf196335d2"
         }
       ]
     },

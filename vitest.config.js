@@ -499,7 +499,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'valtio',
 					include: ['packages/valtio/tests/**/*.test.ts'],
@@ -534,7 +533,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'valtio-differential',
 					include: ['packages/valtio/tests/differential/**/*.test.ts'],
