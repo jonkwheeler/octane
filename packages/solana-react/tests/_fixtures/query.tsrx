@@ -9,6 +9,7 @@ export function RequestReader(props: {
 	source: RequestSource<string> | null;
 	enabled?: Enabled;
 	onEnabledQuery?: (query: Query<string, Error, string, readonly unknown[]>) => void;
+	onQueryResult?: (query: ReturnType<typeof useRequestQuery<string>>) => void;
 	onRefetch?: (refetch: () => Promise<unknown>) => void;
 }) @{
 	const enabled =
@@ -19,6 +20,7 @@ export function RequestReader(props: {
 				}
 			: props.enabled;
 	const query = useRequestQuery(['request'], props.source, { enabled, retry: false });
+	props.onQueryResult?.(query);
 	props.onRefetch?.(query.refetch);
 	<>
 		<span id="status">{(query.isPending ? 'pending' : `data:${query.data}`) as string}</span>
@@ -31,6 +33,7 @@ export function RequestApp(props: {
 	source: RequestSource<string> | null;
 	enabled?: Enabled;
 	onEnabledQuery?: (query: Query<string, Error, string, readonly unknown[]>) => void;
+	onQueryResult?: (query: ReturnType<typeof useRequestQuery<string>>) => void;
 	onRefetch?: (refetch: () => Promise<unknown>) => void;
 }) @{
 	<QueryClientProvider client={props.client}>
@@ -38,6 +41,7 @@ export function RequestApp(props: {
 			source={props.source}
 			enabled={props.enabled}
 			onEnabledQuery={props.onEnabledQuery}
+			onQueryResult={props.onQueryResult}
 			onRefetch={props.onRefetch}
 		/>
 	</QueryClientProvider>

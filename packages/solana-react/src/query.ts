@@ -56,10 +56,25 @@ export function useRequestQuery(
 		[],
 		sub(resolvedSlot, 'idle-refetch'),
 	);
-	return source === null
-		? {
+	const idleResultRef = useRef<UseQueryResult<unknown, Error> | undefined>(
+		undefined,
+		sub(resolvedSlot, 'idle-result'),
+	);
+	const trackedResultRef = useRef(result, sub(resolvedSlot, 'tracked-result'));
+	if (source === null) {
+		let idle = idleResultRef.current;
+		if (idle === undefined) {
+			idleResultRef.current = idle = {
 				...result,
 				refetch: idleRefetch,
-			}
-		: result;
+			};
+			trackedResultRef.current = result;
+		} else if (trackedResultRef.current !== result) {
+			Object.assign(idle, result);
+			idle.refetch = idleRefetch;
+			trackedResultRef.current = result;
+		}
+		return idle;
+	}
+	return result;
 }

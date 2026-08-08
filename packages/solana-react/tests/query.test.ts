@@ -2,6 +2,7 @@ import { QueryClient } from '@octanejs/tanstack-query';
 import { Query } from '@tanstack/query-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount, nextPaint } from '../../octane/tests/_helpers';
+import { useRequestQuery } from '../src/query';
 import { OmittedOptionsApp, RequestApp } from './_fixtures/query.tsrx';
 
 let client: QueryClient;
@@ -94,6 +95,19 @@ describe('useRequestQuery', () => {
 
 		expect(refetches).toHaveLength(2);
 		expect(refetches[1]).toBe(refetches[0]);
+		result.unmount();
+	});
+
+	it('keeps the null-source query result identity stable across renders', () => {
+		const queries: Array<ReturnType<typeof useRequestQuery<string>>> = [];
+		const onQueryResult = (query: ReturnType<typeof useRequestQuery<string>>) =>
+			queries.push(query);
+		const result = mount(RequestApp, { client, source: null, onQueryResult });
+
+		result.update(RequestApp, { client, source: null, onQueryResult });
+
+		expect(queries).toHaveLength(2);
+		expect(queries[1]).toBe(queries[0]);
 		result.unmount();
 	});
 
