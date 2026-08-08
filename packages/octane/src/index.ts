@@ -182,6 +182,9 @@ export {
 	namespaceHeadElement,
 	delegateEvents,
 	delegateCaptureEvents,
+	fastForBlock,
+	fastKeyedForBlock,
+	fastMapSlot,
 	forBlock,
 	keyedForBlock,
 	mapSlot,
@@ -192,6 +195,7 @@ export {
 	componentSlot,
 	componentSlotVoid,
 	componentSlotLite,
+	compilerCacheArray,
 	compilerCacheContext,
 	markSingleRoot,
 	// Compact compiler ABI; keep the descriptive export for older compiled output.
