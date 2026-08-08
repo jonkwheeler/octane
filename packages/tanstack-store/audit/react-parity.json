@@ -11,16 +11,29 @@
     "integrity": "sha256:00e8fa1891d1b70a83838b15aec65ea5817c7b88aa737ead07dea9dbce14897f",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-store/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-store/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-store/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-store/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-store",
+      "project": "tanstack-store-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs the exact selector, atom, created-store, action, and context scenario against @tanstack/react-store@0.11.0.",
       "files": [
@@ -180,7 +193,9 @@
   "divergences": [
     {
       "id": "tanstack-store-experimental-use-store",
-      "caseIds": ["adapted:tanstack-store-experimental-use-store"],
+      "caseIds": [
+        "adapted:tanstack-store-experimental-use-store"
+      ],
       "upstreamResult": "@tanstack/react-store exports the experimental _useStore hook.",
       "octaneResult": "@octanejs/tanstack-store intentionally omits _useStore while retaining the stable useSelector and useStore APIs.",
       "rationale": "The experimental hook is not part of the supported stable binding surface.",
