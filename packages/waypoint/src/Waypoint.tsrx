@@ -21,7 +21,7 @@ import {
 
 function WaypointComponent(props: WaypointProps) {
 	const [node, setNode] = useState<Element | null>(null);
-	const previousPosition = useRef<WaypointPosition>(INVISIBLE);
+	const previousPosition = useRef<WaypointPosition | undefined>(undefined);
 	const latest = useRef(props);
 	latest.current = props;
 	const childRef =

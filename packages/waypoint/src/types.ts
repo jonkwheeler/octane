@@ -9,7 +9,7 @@ export type WaypointPosition = typeof ABOVE | typeof BELOW | typeof INSIDE | typ
 
 export interface WaypointCallbackArgs {
 	currentPosition: WaypointPosition;
-	previousPosition: WaypointPosition;
+	previousPosition: WaypointPosition | undefined;
 	event: Event | null;
 	waypointTop: number;
 	waypointBottom: number;

@@ -109,7 +109,12 @@ describe('Waypoint', () => {
 		let markerRect = rect(20, 40);
 		marker.getBoundingClientRect = () => markerRect;
 		vi.runAllTimers();
-		expect(onEnter).toHaveBeenCalledWith(expect.objectContaining({ currentPosition: INSIDE }));
+		expect(onEnter).toHaveBeenCalledWith(
+			expect.objectContaining({ currentPosition: INSIDE, previousPosition: undefined }),
+		);
+		expect(onPositionChange).toHaveBeenCalledWith(
+			expect.objectContaining({ currentPosition: INSIDE, previousPosition: undefined }),
+		);
 
 		markerRect = rect(-40, -20);
 		window.dispatchEvent(new Event('scroll'));
