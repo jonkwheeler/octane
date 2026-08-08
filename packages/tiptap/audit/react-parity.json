@@ -11,14 +11,31 @@
     "integrity": "sha256:92d1d53c119f0e0e6049effd0bba0e94d83508e3a7c7fd8d406e19fe16c49ca5",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "insufficient" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "insufficient"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tiptap/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tiptap/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
-    "tests": { "roots": ["packages/tiptap/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+    "tests": {
+      "roots": [
+        "packages/tiptap/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -33,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -42,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tiptap",
+      "project": "tiptap-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact editor and custom-view lifecycle fixtures against @tiptap/react@3.28.0.",
       "files": [
@@ -331,7 +348,9 @@
   "divergences": [
     {
       "id": "tiptap-native-external-store",
-      "caseIds": ["adapted:tiptap-native-external-store"],
+      "caseIds": [
+        "adapted:tiptap-native-external-store"
+      ],
       "upstreamResult": "@tiptap/react depends on React and use-sync-external-store.",
       "octaneResult": "The Octane binding uses native useSyncExternalStore and publishes neither dependency.",
       "rationale": "Octane supplies the subscription primitive natively.",
@@ -343,7 +362,9 @@
     },
     {
       "id": "tiptap-editor-consumer",
-      "caseIds": ["adapted:tiptap-editor-consumer"],
+      "caseIds": [
+        "adapted:tiptap-editor-consumer"
+      ],
       "upstreamResult": "React exposes EditorContext.Consumer.",
       "octaneResult": "EditorConsumer is a render-prop compatibility component.",
       "rationale": "Octane contexts do not expose a .Consumer property.",
@@ -355,7 +376,9 @@
     },
     {
       "id": "tiptap-ordinary-ref-props",
-      "caseIds": ["adapted:tiptap-ordinary-ref-props"],
+      "caseIds": [
+        "adapted:tiptap-ordinary-ref-props"
+      ],
       "upstreamResult": "React renderer refs use React ref conventions.",
       "octaneResult": "Renderer component refs are ordinary props carrying DOM nodes.",
       "rationale": "Octane refs are props.",
@@ -367,7 +390,9 @@
     },
     {
       "id": "tiptap-node-view-as-prop",
-      "caseIds": ["adapted:tiptap-node-view-as-prop"],
+      "caseIds": [
+        "adapted:tiptap-node-view-as-prop"
+      ],
       "upstreamResult": "@tiptap/react forwards NodeViewWrapper as as an invalid DOM attribute.",
       "octaneResult": "The binding consumes as when selecting the host tag and does not emit the attribute.",
       "rationale": "Host-selection props should not leak to DOM.",
@@ -379,7 +404,9 @@
     },
     {
       "id": "tiptap-native-menu-events",
-      "caseIds": ["adapted:tiptap-native-menu-events"],
+      "caseIds": [
+        "adapted:tiptap-native-menu-events"
+      ],
       "upstreamResult": "React menu handlers receive synthetic events.",
       "octaneResult": "Menu handlers receive native MouseEvent instances.",
       "rationale": "Octane dispatches native browser events.",
@@ -391,7 +418,9 @@
     },
     {
       "id": "tiptap-mark-view-cleanup",
-      "caseIds": ["adapted:tiptap-custom-view-cleanup"],
+      "caseIds": [
+        "adapted:tiptap-custom-view-cleanup"
+      ],
       "upstreamResult": "@tiptap/react@3.28.0 leaves the mark renderer portal mounted when ProseMirror destroys the mark view.",
       "octaneResult": "ReactMarkView.destroy tears down its portal and ref.",
       "rationale": "Prevent detached renderer leaks.",
