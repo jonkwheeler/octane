@@ -42,7 +42,7 @@
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "generate:check": "node scripts/generate.mjs --check",
-    "test": "vitest run --root ../.. --project phosphor-icons --project phosphor-icons-ssr"
+    "test": "vitest run --root ../.. --project phosphor-icons --project phosphor-icons-differential --project phosphor-icons-ssr"
   },
   "peerDependencies": {
     "octane": "workspace:*"

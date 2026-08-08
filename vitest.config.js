@@ -1936,10 +1936,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'phosphor-icons',
 					include: [
@@ -1965,7 +1961,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'phosphor-icons-differential',
 					include: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
@@ -1988,7 +1983,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'phosphor-icons-ssr',
 					include: ['packages/phosphor-icons/tests/ssr/**/*.test.ts'],
