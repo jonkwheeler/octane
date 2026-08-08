@@ -131,6 +131,10 @@ export function DoomDemo() @{
 		);
 	}, [requestPermissions, reset]);
 
+	const retryPermissions = useCallback(function retryPermissions() {
+		void requestPermissions(enterSessionRef.current);
+	}, [requestPermissions]);
+
 	const exit = useCallback(function exit() {
 		invalidateEnterSession();
 		document.exitPointerLock?.();
@@ -461,7 +465,7 @@ export function DoomDemo() @{
 							background: '#110c08dd',
 						}}
 					>
-						<button onClick={requestPermissions}>{'Retry aim / audio'}</button>
+						<button onClick={retryPermissions}>{'Retry aim / audio'}</button>
 						{permissionError ? <span style={{ marginLeft: '8px' }}>{permissionError}</span> : null}
 					</div>
 				}
