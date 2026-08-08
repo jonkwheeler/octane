@@ -17,14 +17,25 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-textarea-autosize/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/react-textarea-autosize/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-textarea-autosize/tests"],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-      "exclude": ["/browser/", "/ssr/"]
+      "roots": [
+        "packages/react-textarea-autosize/tests"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": [
+        "/browser/",
+        "/ssr/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -40,7 +51,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "6b23013f2aabc0ea77baac10d26a1b24ce5069cf0f24e57dbdc8170d9109ded5"
+      "lockfileSha256": "89b988a3c1b6c53ea8babe1d4e652723f2bc8ea538a52515cbcded090753d89e"
     }
   },
   "lanes": [
@@ -241,7 +252,9 @@
   "divergences": [
     {
       "id": "native-input-event",
-      "caseIds": ["runtime:differential:input"],
+      "caseIds": [
+        "runtime:differential:input"
+      ],
       "upstreamResult": "onChange receives a React SyntheticEvent produced by React's change plugin.",
       "octaneResult": "onChange receives the native bubbling InputEvent with textarea target/currentTarget during dispatch.",
       "rationale": "Octane exposes native DOM events and does not ship React's synthetic event system.",
