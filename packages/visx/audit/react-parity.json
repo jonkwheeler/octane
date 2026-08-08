@@ -11,14 +11,31 @@
     "integrity": "sha256:429a337f2a3c437d40707e59c5c7acf2b10db2e6b0e142f415b01a79ec7dae44",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/visx/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/visx/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
-    "tests": { "roots": ["packages/visx/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+    "tests": {
+      "roots": [
+        "packages/visx/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -33,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -42,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "visx",
+      "project": "visx-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact primitive SVG, render-prop layout, and interactive state scenarios against @visx/visx@4.0.0.",
       "files": [
@@ -309,7 +326,9 @@
   "divergences": [
     {
       "id": "visx-native-events",
-      "caseIds": ["adapted:visx-native-events"],
+      "caseIds": [
+        "adapted:visx-native-events"
+      ],
       "upstreamResult": "React Visx callbacks receive React synthetic events.",
       "octaneResult": "Octane Visx callbacks receive native DOM events.",
       "rationale": "Octane delegates native browser events without a synthetic wrapper.",
@@ -321,7 +340,9 @@
     },
     {
       "id": "visx-functional-refs",
-      "caseIds": ["adapted:visx-functional-refs"],
+      "caseIds": [
+        "adapted:visx-functional-refs"
+      ],
       "upstreamResult": "Several upstream controllers are React classes and Brush exposes a legacy innerRef instance.",
       "octaneResult": "Controllers and measurement lifecycles are functional hooks; Brush omits the legacy instance handle.",
       "rationale": "Octane does not expose React class instances.",
@@ -333,7 +354,9 @@
     },
     {
       "id": "visx-deterministic-measurement",
-      "caseIds": ["adapted:visx-deterministic-measurement"],
+      "caseIds": [
+        "adapted:visx-deterministic-measurement"
+      ],
       "upstreamResult": "Text, annotation, path, and wordcloud layouts may depend on browser measurement or canvas packing.",
       "octaneResult": "Fixed-size layouts use deterministic estimates, SVG sampling, and collision-aware rectangles.",
       "rationale": "Deterministic output enables complete SSR and exact hydration adoption.",
@@ -345,7 +368,9 @@
     },
     {
       "id": "visx-animation-adapter",
-      "caseIds": ["adapted:visx-animation-adapter"],
+      "caseIds": [
+        "adapted:visx-animation-adapter"
+      ],
       "upstreamResult": "The react-spring entry uses @react-spring/web and Zoom uses @use-gesture/react.",
       "octaneResult": "Animation uses deterministic requestAnimationFrame interpolation and Zoom uses native listeners.",
       "rationale": "React-owned animation and gesture runtimes cannot execute inside Octane components.",
@@ -357,7 +382,9 @@
     },
     {
       "id": "visx-octane-renderables",
-      "caseIds": ["adapted:visx-octane-renderables"],
+      "caseIds": [
+        "adapted:visx-octane-renderables"
+      ],
       "upstreamResult": "Renderable props use React.ReactNode.",
       "octaneResult": "Renderable props accept Octane renderables while preserving render-prop parameter shapes.",
       "rationale": "Octane elements are nominal and are not assignable to React.ReactNode.",
