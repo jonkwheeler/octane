@@ -11,16 +11,29 @@
     "integrity": "sha256:db24c9288d56428e8f67742ca9e0fcf314917c21c8d8d4ff095aee8043602606",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-form/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-form/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-form/tests"],
-      "include": ["\\.test\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/tanstack-form/tests"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-form",
+      "project": "tanstack-form-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs one exact shared values, validation, array, and reset scenario against @tanstack/react-form@1.33.2.",
       "files": [
@@ -85,7 +98,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "dbaa51ca250e0f68a89d29b18c53deecfade670dee998ee6f4adb83432848e05"
         }
       ]
     },
@@ -132,7 +145,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "dbaa51ca250e0f68a89d29b18c53deecfade670dee998ee6f4adb83432848e05"
         }
       ]
     },
@@ -169,7 +182,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "013b2c28051c93f60e066e59dd2f50931ac2d9a90ca7fbe0559cb527673aafdd"
+          "sha256": "dbaa51ca250e0f68a89d29b18c53deecfade670dee998ee6f4adb83432848e05"
         }
       ]
     },
@@ -230,7 +243,9 @@
   "divergences": [
     {
       "id": "tanstack-form-native-events",
-      "caseIds": ["adapted:tanstack-form-native-event"],
+      "caseIds": [
+        "adapted:tanstack-form-native-event"
+      ],
       "upstreamResult": "React text controls conventionally adapt synthetic onChange events into field values.",
       "octaneResult": "Octane text controls use native onInput events and pass values to field.handleChange.",
       "rationale": "Octane exposes native DOM events rather than React's synthetic event layer.",
@@ -242,7 +257,9 @@
     },
     {
       "id": "tanstack-form-id-lifecycle",
-      "caseIds": ["adapted:tanstack-form-id-lifecycle"],
+      "caseIds": [
+        "adapted:tanstack-form-id-lifecycle"
+      ],
       "upstreamResult": "The React adapter supports StrictMode effect replay and retains a legacy random-UUID fallback.",
       "octaneResult": "Octane always provides a stable useId value and does not double-invoke effects.",
       "rationale": "The host lifecycle and identifier facilities differ.",
@@ -254,7 +271,9 @@
     },
     {
       "id": "tanstack-form-function-components",
-      "caseIds": ["adapted:tanstack-form-function-components"],
+      "caseIds": [
+        "adapted:tanstack-form-function-components"
+      ],
       "upstreamResult": "React adapter component registration accepts React function and class component types.",
       "octaneResult": "Octane adapter registration accepts callable Octane function components only.",
       "rationale": "Octane does not implement the React class-component model.",
