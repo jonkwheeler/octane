@@ -17,11 +17,15 @@ function* walk(directory) {
 	for (const entry of readdirSync(directory, { withFileTypes: true })) {
 		const absolute = path.join(directory, entry.name);
 		if (entry.isDirectory()) {
+			// Vendored packages/*/upstream trees are byte-exact pins and may carry
+			// upstream it.skip markers; adapted suites under tests/upstream stay checked.
+			const relative = path.relative(REPO, absolute).replace(/\\/g, '/');
+			const isVendoredUpstream = /^packages\/[^/]+\/upstream$/.test(relative);
 			if (
 				entry.name !== 'node_modules' &&
 				entry.name !== 'dist' &&
 				entry.name !== 'coverage' &&
-				entry.name !== 'upstream'
+				!isVendoredUpstream
 			) {
 				yield* walk(absolute);
 			}
