@@ -484,6 +484,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
 
+      # Required browser oracle lanes (e.g. Embla's embla-browser) launch real
+      # Chromium via Playwright. Install here — react-parity:check runs those
+      # lanes; lint_checks only validates metadata and never starts a browser.
+      - name: Install Playwright Chromium for parity browser lanes
+        run: pnpm --filter website exec playwright install --with-deps chromium
+
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
       # pre-execution Vitest collection pass.
@@ -730,12 +736,8 @@ jobs:
         run: pnpm parity:gaps:check
 
       # Keep metadata, generated coverage, public claims, and the parity
-      # tooling itself covered on lightweight changes. Embla's required browser
-      # oracle needs the same real Chromium prerequisite as the dedicated
-      # browser integration lane below.
-      - name: Install Playwright Chromium for parity audit
-        run: pnpm --filter website exec playwright install --with-deps chromium
-
+      # tooling itself covered on lightweight changes. Validate-only — no
+      # browser oracle launch here (Chromium is installed in react_parity_checks).
       - name: Validate React parity metadata and public claims
         run: |
           pnpm react-parity:test
