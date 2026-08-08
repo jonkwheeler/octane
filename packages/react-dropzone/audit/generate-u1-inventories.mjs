@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { basename, relative, resolve } from 'node:path';
+import { basename, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+const pristineRoot = resolve(root, 'upstream/canonical');
 const reportPath = process.argv[2];
 if (!reportPath)
 	throw new Error('usage: generate-u1-inventories.mjs <pristine Vitest JSON report>');
@@ -38,7 +39,7 @@ const report = JSON.parse(readFileSync(reportPath, 'utf8'));
 const cases = report.testResults
 	.flatMap((suite) =>
 		suite.assertionResults.map((test) => ({
-			file: relative('/private/tmp/react-dropzone-u1/source', suite.name),
+			file: relative(pristineRoot, suite.name).split(sep).join('/'),
 			title: test.title,
 			fullName: test.fullName,
 			status: test.status,
