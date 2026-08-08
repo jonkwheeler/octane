@@ -12,8 +12,8 @@ export function HotkeysParity() {
 	useHotkeys([
 		{ hotkey: 'Control+L', callback: () => setFirst((value: number) => value + 1) },
 		{ hotkey: 'Alt+X', callback: () => setSecond((value: number) => value + 1) },
-	]);
-	useHotkeySequence(['G', 'G'], () => setSequence((value: number) => value + 1));
+	], {});
+	useHotkeySequence(['G', 'G'], () => setSequence((value: number) => value + 1), {});
 
 	return <main id="hotkeys-parity">
 		<button id="toggle" onClick={() => setEnabled((value: boolean) => !value)}>
