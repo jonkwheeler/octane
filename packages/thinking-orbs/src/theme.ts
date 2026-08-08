@@ -73,8 +73,12 @@ export function useResolvedDark(theme: OrbTheme, hostRef: RefObject<Element | nu
 	return dark;
 }
 
+function initialReducedMotion(): boolean {
+	return typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function useReducedMotion(): boolean {
-	const [reduced, setReduced] = useState(false);
+	const [reduced, setReduced] = useState(initialReducedMotion);
 	useEffect(() => {
 		if (typeof matchMedia === 'undefined') return;
 		const mq = matchMedia('(prefers-reduced-motion: reduce)');

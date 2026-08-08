@@ -30,6 +30,17 @@ export function ThinkingOrb({
 	...rest
 }: ThinkingOrbProps) {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const consumerRefRef = useRef(consumerRef);
+	consumerRefRef.current = consumerRef;
+	const assignCanvasRef = useRef(function assignCanvasRef(node: HTMLCanvasElement | null): void {
+		canvasRef.current = node;
+		const consumer = consumerRefRef.current;
+		if (typeof consumer === 'function') {
+			consumer(node);
+		} else if (consumer != null) {
+			consumer.current = node;
+		}
+	}).current;
 	const dark = useResolvedDark(theme, canvasRef);
 	const reduced = useReducedMotion();
 
@@ -98,15 +109,6 @@ export function ThinkingOrb({
 			document.removeEventListener('visibilitychange', onVis);
 		};
 	}, [state, size, dark, speed, paused, reduced]);
-
-	function assignCanvasRef(node: HTMLCanvasElement | null): void {
-		canvasRef.current = node;
-		if (typeof consumerRef === 'function') {
-			consumerRef(node);
-		} else if (consumerRef != null) {
-			consumerRef.current = node;
-		}
-	}
 
 	return (
 		<canvas
