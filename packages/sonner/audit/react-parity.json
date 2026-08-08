@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "42e5f3008c4092af27024edaf67d812035b3d7447cb50ad2406d8e4c0ebcd85d"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -96,7 +96,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3a9e7f31f062b6fc266e098c3bde049389cbbfb38aa3ec3a82ef9ffdf839eb57"
+          "sha256": "da5af1118c1962fe2aaf140e7452978c5f1dfb025bd2622047c2c1347b52fc8b"
         }
       ]
     },
@@ -116,12 +116,12 @@
             {
               "id": "adapted:sonner-native-action-events",
               "testName": "supports native action/cancel semantics and custom Octane elements",
-              "fullName": "@octanejs/sonner — Toaster supports native action/cancel semantics and custom Octane elements"
+              "fullName": "@octanejs/sonner \u2014 Toaster supports native action/cancel semantics and custom Octane elements"
             },
             {
               "id": "adapted:sonner-normal-ref-prop",
               "testName": "accepts the Toaster host ref as an ordinary prop",
-              "fullName": "@octanejs/sonner — Toaster accepts the Toaster host ref as an ordinary prop"
+              "fullName": "@octanejs/sonner \u2014 Toaster accepts the Toaster host ref as an ordinary prop"
             }
           ]
         },
@@ -143,7 +143,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3a9e7f31f062b6fc266e098c3bde049389cbbfb38aa3ec3a82ef9ffdf839eb57"
+          "sha256": "da5af1118c1962fe2aaf140e7452978c5f1dfb025bd2622047c2c1347b52fc8b"
         }
       ]
     },
@@ -163,7 +163,7 @@
             {
               "id": "adapted:sonner-ssr-visibility-guard",
               "testName": "renders the accessible empty host without reading browser globals",
-              "fullName": "@octanejs/sonner — server rendering renders the accessible empty host without reading browser globals"
+              "fullName": "@octanejs/sonner \u2014 server rendering renders the accessible empty host without reading browser globals"
             }
           ]
         },
@@ -180,7 +180,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3a9e7f31f062b6fc266e098c3bde049389cbbfb38aa3ec3a82ef9ffdf839eb57"
+          "sha256": "da5af1118c1962fe2aaf140e7452978c5f1dfb025bd2622047c2c1347b52fc8b"
         }
       ]
     }
