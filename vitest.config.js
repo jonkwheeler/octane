@@ -478,10 +478,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/rxjs/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'rxjs',
 					include: ['packages/rxjs/tests/**/*.test.ts'],

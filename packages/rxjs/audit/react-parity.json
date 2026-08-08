@@ -21,7 +21,7 @@
         "packages/rxjs/src"
       ],
       "include": [
-        "$a"
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     },
@@ -30,7 +30,7 @@
         "packages/rxjs/tests/differential"
       ],
       "include": [
-        "$a"
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     }
@@ -91,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "fc0613cadb49ecce5d6601919fe3dff71b592334d74574b052ac268559423e87"
+          "sha256": "55a9a843142489edc65732a0ba4398ca22a4cc4c3e5b8eac5238788e3c7c90b5"
         }
       ]
     }
