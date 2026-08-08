@@ -454,7 +454,7 @@ export default defineConfig({
 					name: 'zustand',
 					include: ['packages/zustand/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/zustand/tests/differential/**/*.test.ts''],
+					exclude: ['packages/zustand/tests/differential/**/*.test.ts'],
 					// Same differential precompile, but for zustand fixtures: also rewrites
 					// `@octanejs/zustand` → `zustand` so the React side runs real zustand.
 					globals: false,
