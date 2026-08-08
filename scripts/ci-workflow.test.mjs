@@ -150,10 +150,13 @@ describe('CI workflow aggregation', () => {
 			/--exclude "packages\/embla-carousel\/tests\/browser\/\*\*\/\*\.test\.ts"/,
 		);
 		assert.match(jobSource('heavy_integration'), /packages\/embla-carousel\/tests\/browser/);
-		const lint = jobSource('lint_checks');
-		const install = lint.indexOf('Install Playwright Chromium');
-		const parity = lint.indexOf('Check React parity inventory and ledger');
-		assert.ok(install >= 0 && install < parity);
+		// Required browser oracle lanes run under react-parity:check; Chromium
+		// must be installed in that job, not the validate-only lint_checks path.
+		const parity = jobSource('react_parity_checks');
+		const install = parity.indexOf('Install Playwright Chromium');
+		const check = parity.indexOf('Check React parity inventories and execute required lanes');
+		assert.ok(install >= 0 && install < check);
+		assert.doesNotMatch(jobSource('lint_checks'), /Install Playwright Chromium/);
 	});
 
 	test('skips expensive jobs only after the committed scope classifier opts out', () => {
