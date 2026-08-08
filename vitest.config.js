@@ -1573,7 +1573,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Keep this project in ordinary shards while the manifest stays
+				// recorded-unverified: react-parity:check only validates unverified
+				// manifests and would otherwise never execute this required lane.
 				test: {
 					name: 'redux-toolkit-differential',
 					include: ['packages/redux-toolkit/tests/differential/**/*.test.ts'],
