@@ -1990,7 +1990,7 @@ export default defineConfig({
 					name: 'tanstack-router',
 					include: ['packages/tanstack-router/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/tanstack-router/tests/differential/**/*.test.ts''],
+					exclude: ['packages/tanstack-router/tests/differential/**/*.test.ts'],
 					// Differential precompile for router fixtures: rewrites
 					// `@octanejs/tanstack-router` → `@tanstack/react-router` so the React side
 					// runs real react-router.

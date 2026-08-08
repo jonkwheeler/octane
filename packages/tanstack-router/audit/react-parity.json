@@ -11,16 +11,29 @@
     "integrity": "sha256:921d54033a68692c3528658b6300573743e6a09bb3c316e14cdc513b6bee6c31",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-router/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-router/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-router/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-router/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-router",
+      "project": "tanstack-router-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact initial, multi-navigation, params, active-link, and not-found scenarios against @tanstack/react-router@1.170.18.",
       "files": [
@@ -62,8 +75,8 @@
             },
             {
               "id": "differential:tanstack-router-navigation",
-              "testName": "Link navigation: index → about → params route → back to index",
-              "fullName": "differential: @octanejs/tanstack-router vs real @tanstack/react-router Link navigation: index → about → params route → back to index"
+              "testName": "Link navigation: index \u2192 about \u2192 params route \u2192 back to index",
+              "fullName": "differential: @octanejs/tanstack-router vs real @tanstack/react-router Link navigation: index \u2192 about \u2192 params route \u2192 back to index"
             },
             {
               "id": "differential:tanstack-router-not-found",
@@ -105,12 +118,12 @@
             {
               "id": "adapted:tanstack-router-ref-prop",
               "testName": "passes the custom createLink anchor through the plain ref prop",
-              "fullName": "@octanejs/tanstack-router — Link passes the custom createLink anchor through the plain ref prop"
+              "fullName": "@octanejs/tanstack-router \u2014 Link passes the custom createLink anchor through the plain ref prop"
             },
             {
               "id": "adapted:tanstack-router-native-events",
               "testName": "passes a native MouseEvent to Link callbacks",
-              "fullName": "@octanejs/tanstack-router — Link passes a native MouseEvent to Link callbacks"
+              "fullName": "@octanejs/tanstack-router \u2014 Link passes a native MouseEvent to Link callbacks"
             }
           ]
         },
@@ -207,7 +220,9 @@
   "divergences": [
     {
       "id": "tanstack-router-ref-prop",
-      "caseIds": ["adapted:tanstack-router-ref-prop"],
+      "caseIds": [
+        "adapted:tanstack-router-ref-prop"
+      ],
       "upstreamResult": "React createLink composes the anchor ref through forwardRef.",
       "octaneResult": "Octane components receive and compose ref as a normal prop.",
       "rationale": "Octane has no forwardRef wrapper because refs are ordinary props.",
@@ -219,7 +234,9 @@
     },
     {
       "id": "tanstack-router-native-events",
-      "caseIds": ["adapted:tanstack-router-native-events"],
+      "caseIds": [
+        "adapted:tanstack-router-native-events"
+      ],
       "upstreamResult": "React Link callbacks receive React synthetic mouse events.",
       "octaneResult": "Octane Link callbacks receive native MouseEvent objects.",
       "rationale": "Octane exposes native DOM event semantics.",
@@ -231,7 +248,9 @@
     },
     {
       "id": "tanstack-router-separate-devtools",
-      "caseIds": ["adapted:tanstack-router-separate-devtools"],
+      "caseIds": [
+        "adapted:tanstack-router-separate-devtools"
+      ],
       "upstreamResult": "React Router devtools are available through React-specific packages and integrations.",
       "octaneResult": "The router binding does not publish React devtools; Octane tooling is distributed separately.",
       "rationale": "The React devtools renderer cannot run as an Octane component.",
