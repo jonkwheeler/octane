@@ -6,7 +6,8 @@ import {
   useRef,
   useState,
 } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const INSTANT = { duration: 0 } as const;
 
@@ -208,7 +209,7 @@ export function FloatingLabelInput({
             fieldProps.onBlur();
             onBlur?.();
           }}
-          onChange={(event) => {
+          onInput={(event) => {
             fieldProps.onChange(event);
             onChange?.(event.currentTarget.value, event);
           }}

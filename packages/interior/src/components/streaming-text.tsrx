@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const CHARS_PER_TOKEN = 4;
 

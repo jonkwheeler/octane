@@ -1,6 +1,7 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'octane';
 import type { KeyboardEvent, ReactNode } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const EXIT_EASE = [0.4, 0, 1, 1] as const;

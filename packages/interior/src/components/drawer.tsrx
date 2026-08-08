@@ -1,11 +1,11 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useEffect, useId, useRef, useState } from 'octane';
-import { createPortal } from "react-dom";
+import { createPortal } from "octane";
 import {
   animate,
   motion,
   useDragControls,
   useMotionValue,
-  useReducedMotion,
   useTransform,
 } from '@octanejs/motion';
 

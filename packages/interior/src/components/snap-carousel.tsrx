@@ -1,3 +1,4 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import {
   Children,
   isValidElement,
@@ -12,7 +13,6 @@ import {
   motion,
   useIsomorphicLayoutEffect,
   useMotionValue,
-  useReducedMotion,
 } from '@octanejs/motion';
 
 const CELL = {

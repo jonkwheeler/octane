@@ -1,6 +1,7 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useEffect, useId, useMemo, useRef, useState } from 'octane';
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { createPortal } from "octane";
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const CELL = { type: "spring", stiffness: 520, damping: 34, mass: 0.45 } as const;
 const CROSSFADE = { type: "spring", stiffness: 260, damping: 34, mass: 0.8 } as const;
@@ -265,7 +266,7 @@ export function CommandPalette({
           spellCheck={false}
           value={query}
           placeholder={placeholder}
-          onChange={(e) => setQuery(e.target.value)}
+          onInput={(e) => setQuery(e.target.value)}
           onKeyDown={onKeyDown}
           class="h-full min-w-0 flex-1 bg-transparent text-[13.5px] text-stone-700 outline-none placeholder:text-stone-400 dark:text-stone-200 dark:placeholder:text-stone-500"
         />

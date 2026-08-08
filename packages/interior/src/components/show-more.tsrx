@@ -1,8 +1,8 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useId, useRef, useState } from 'octane';
 import {
   motion,
   useIsomorphicLayoutEffect,
-  useReducedMotion,
 } from '@octanejs/motion';
 
 const DISCLOSE = {

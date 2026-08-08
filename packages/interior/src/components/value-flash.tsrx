@@ -1,5 +1,6 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useEffect, useRef, useState, type ReactNode } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const CELL = { type: "spring", stiffness: 520, damping: 34, mass: 0.45 } as const;
 

@@ -1,3 +1,4 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import {
   useCallback,
   useEffect,
@@ -11,8 +12,8 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'octane';
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { createPortal } from "octane";
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 

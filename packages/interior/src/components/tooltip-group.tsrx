@@ -1,3 +1,4 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import {
   cloneElement,
   createContext,
@@ -7,7 +8,7 @@ import {
   useRef,
   useSyncExternalStore,
 } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const LEAVE = [0.4, 0, 1, 1] as const;
 

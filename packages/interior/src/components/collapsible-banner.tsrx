@@ -1,5 +1,6 @@
 import { useCallback, useId, useRef, useState } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const DISCLOSE = { type: "spring", stiffness: 190, damping: 30, mass: 1 } as const;

@@ -1,8 +1,8 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useRef, useState } from 'octane';
 import {
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,

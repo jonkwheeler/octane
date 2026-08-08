@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'octane';
 import type { ReactNode, RefObject } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const CROSSFADE = { type: "spring", stiffness: 260, damping: 34, mass: 0.8 } as const;
 const INSTANT = { duration: 0 } as const;

@@ -1,5 +1,6 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useEffect, useRef, useState } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const CROSSFADE = {
   type: "spring",

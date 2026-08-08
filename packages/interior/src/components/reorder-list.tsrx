@@ -1,5 +1,6 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useId, useRef, useState } from 'octane';
-import { Reorder, useReducedMotion } from '@octanejs/motion';
+import { Reorder } from '@octanejs/motion';
 
 const CELL = { type: "spring", stiffness: 520, damping: 34, mass: 0.45 } as const;
 const INSTANT = { duration: 0 } as const;

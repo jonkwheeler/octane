@@ -1,3 +1,4 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import {
   useCallback,
   useEffect,
@@ -10,7 +11,7 @@ import {
   type FocusEvent,
   type KeyboardEvent,
 } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const CROSSFADE = { type: "spring", stiffness: 260, damping: 34, mass: 0.8 } as const;
 const EASE = [0.23, 1, 0.32, 1] as const;

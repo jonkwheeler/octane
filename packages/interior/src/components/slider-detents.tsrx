@@ -1,8 +1,8 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'octane';
 import {
   motion,
   useMotionTemplate,
-  useReducedMotion,
   useSpring,
 } from '@octanejs/motion';
 

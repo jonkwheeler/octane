@@ -1,5 +1,6 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useEffect, useMemo, useRef, useState } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const SLOT = { type: "spring", stiffness: 520, damping: 34, mass: 0.45 } as const;
 const FADE = { duration: 0.24, ease: [0.23, 1, 0.32, 1] } as const;

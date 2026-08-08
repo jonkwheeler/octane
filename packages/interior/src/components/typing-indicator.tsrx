@@ -1,10 +1,10 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'octane';
 import {
   AnimatePresence,
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
   type MotionValue,
 } from '@octanejs/motion';

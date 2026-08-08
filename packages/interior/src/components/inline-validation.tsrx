@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const CROSSFADE = { type: "spring", stiffness: 260, damping: 34, mass: 0.8 } as const;
 const INSTANT = { duration: 0 } as const;
@@ -197,7 +198,7 @@ export function InlineValidation({
           required={required}
           aria-required={required || undefined}
           aria-describedby={described || undefined}
-          onChange={(e) => onChange(e.target.value)}
+          onInput={(e) => onChange(e.target.value)}
           {...fieldProps}
           class={`h-10 w-full rounded-[10px] border-2 pl-3 pr-9 text-[13px] text-stone-700 outline-none transition-[background-color,border-color,box-shadow] duration-150 placeholder:text-stone-400 focus-visible:outline-none disabled:opacity-50 dark:text-stone-200 dark:placeholder:text-stone-500 ${
             invalid

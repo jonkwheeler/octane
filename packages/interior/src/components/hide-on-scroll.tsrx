@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const DISCLOSE = { type: "spring", stiffness: 150, damping: 27, mass: 1 } as const;
 const CROSSFADE = { type: "spring", stiffness: 260, damping: 34, mass: 0.8 } as const;

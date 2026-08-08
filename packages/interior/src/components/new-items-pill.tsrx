@@ -1,3 +1,4 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import {
   useCallback,
   useEffect,
@@ -5,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'octane';
-import { AnimatePresence, motion, useReducedMotion } from '@octanejs/motion';
+import { AnimatePresence, motion } from '@octanejs/motion';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 

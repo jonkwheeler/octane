@@ -1,3 +1,4 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import {
   useCallback,
   useEffect,
@@ -6,13 +7,12 @@ import {
   useRef,
   useState,
 } from 'octane';
-import { createPortal } from "react-dom";
+import { createPortal } from "octane";
 import {
   AnimatePresence,
   animate,
   motion,
   useMotionValue,
-  useReducedMotion,
 } from '@octanejs/motion';
 
 const CELL = {

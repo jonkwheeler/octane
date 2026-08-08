@@ -1,5 +1,6 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useCallback, useEffect, useRef, useState } from 'octane';
-import { useIsomorphicLayoutEffect, useReducedMotion } from '@octanejs/motion';
+import { useIsomorphicLayoutEffect } from '@octanejs/motion';
 
 const RAMP = 0.19;
 const SETTLE = 0.16;

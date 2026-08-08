@@ -1,8 +1,8 @@
+import { useReducedMotion } from '../hooks/reduced-motion';
 import { useRef, useState } from 'octane';
 import {
   motion,
   useIsomorphicLayoutEffect,
-  useReducedMotion,
 } from '@octanejs/motion';
 
 const DEVELOP = { duration: 0.65, ease: [0.23, 1, 0.32, 1] } as const;

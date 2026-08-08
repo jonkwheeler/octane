@@ -1,5 +1,6 @@
 import { Fragment, useMemo, useRef } from 'octane';
-import { motion, useInView, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion, useInView } from '@octanejs/motion';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 const DURATION = 0.6;

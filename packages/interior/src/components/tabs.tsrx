@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'octane';
 import type { KeyboardEvent, ReactNode } from 'octane';
-import { motion, useReducedMotion } from '@octanejs/motion';
+import { useReducedMotion } from '../hooks/reduced-motion';
+import { motion } from '@octanejs/motion';
 
 const INDICATOR = { type: "spring", stiffness: 620, damping: 42, mass: 0.35 } as const;
 
