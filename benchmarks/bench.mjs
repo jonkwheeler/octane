@@ -546,6 +546,15 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
+		// Universal renderer update locality (Node-only): compiles the public issue
+		// fixture and measures one stateful leaf beside up to 4,000 unrelated owners.
+		name: 'universal-leaf-update',
+		cwd: 'universal-leaf-update',
+		servers: [],
+		iter: { normal: 5, quick: 3 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		// Native Lynx dual-thread render cost (Node-only): drives the real
 		// background root, async transport, main receiver, and host driver through
 		// a cheap fake Element PAPI, so the milliseconds are Octane's own per-node
@@ -594,6 +603,16 @@ const SUITES = [
 		servers: [],
 		iter: { normal: 1, quick: 1 },
 		runs: [{ script: 'run.mjs', args: () => [] }],
+	},
+	{
+		// Public-import reachability (Node-only): builds and executes isolated
+		// production feature entries, then compares raw/gzip/brotli bytes with
+		// explicit same-run budget targets through the committed ratio guards.
+		name: 'bundle-reachability',
+		cwd: 'bundle-size',
+		servers: [],
+		iter: { normal: 1, quick: 1 },
+		runs: [{ script: 'run-minimal.mjs', args: () => [] }],
 	},
 	{
 		// Three host lifecycle work in a production browser: Octane Three against
