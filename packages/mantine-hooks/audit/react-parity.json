@@ -21,7 +21,7 @@
         "packages/mantine-hooks/src"
       ],
       "include": [
-        "$a"
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     },
@@ -30,7 +30,7 @@
         "packages/mantine-hooks/tests/differential"
       ],
       "include": [
-        "$a"
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     }
@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
+      "lockfileSha256": "fd3680c30709128b72fb05cab0efae140ffd7603d9436930762ddd03f7af482f"
     }
   },
   "lanes": [
@@ -91,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ef4b38bf8ed34b6b61f62f0d824e8fabec5ef62a21eb1d07b31d74e16d1def6e"
+          "sha256": "437fd6d72a245b093d94d0e8c995ef6dc608137b3e687fce7caf7da969ed40a7"
         }
       ]
     }

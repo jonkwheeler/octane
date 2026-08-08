@@ -31,7 +31,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project mantine-hooks --project mantine-hooks-ssr"
+    "test": "vitest run --root ../.. --project mantine-hooks --project mantine-hooks-differential --project mantine-hooks-ssr"
   },
   "peerDependencies": {
     "octane": "workspace:*"

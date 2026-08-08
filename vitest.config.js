@@ -3311,16 +3311,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/mantine-hooks/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'mantine-hooks',
-					include: [
-						'packages/mantine-hooks/tests/conformance/**/*.test.ts',
-						'packages/mantine-hooks/tests/differential/**/*.test.ts',
-					],
+					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -3335,7 +3328,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mantine-hooks-differential',
 					include: ['packages/mantine-hooks/tests/differential/**/*.test.ts'],
@@ -3378,7 +3370,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mantine-hooks-ssr',
 					include: ['packages/mantine-hooks/tests/ssr/**/*.test.ts'],
