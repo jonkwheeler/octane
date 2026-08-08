@@ -1179,7 +1179,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'remix-router',
 					include: ['packages/remix-router/tests/conformance/**/*.test.ts'],
@@ -1209,7 +1208,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'remix-router-differential',
 					include: ['packages/remix-router/tests/differential/**/*.test.ts'],
@@ -1239,7 +1237,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				// Static SSR (Phase F): the whole graph compiles in SERVER mode
 				// (`octane({ ssr: true })`) and bare `octane` imports resolve to
 				// `octane/server` (the website's octane-ssr-server-alias pattern) so
