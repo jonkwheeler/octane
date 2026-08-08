@@ -28,6 +28,7 @@ import recursiveContext from '../../../benchmarks/baselines/local/recursive-cont
 import signalFavoring from '../../../benchmarks/baselines/local/signal-favoring.json';
 import ssrThroughput from '../../../benchmarks/baselines/local/ssr-throughput.json';
 import streamingSsr from '../../../benchmarks/baselines/local/streaming-ssr.json';
+import svgDashboard from '../../../benchmarks/baselines/local/svg-dashboard.json';
 import todoMvc from '../../../benchmarks/baselines/local/todomvc.json';
 
 // `score` is charted when present; older checked-in baselines fall back to
@@ -86,8 +87,8 @@ export interface BenchCard {
 const FRAMEWORKS: SeriesDef[] = [
 	{ key: 'octane-tsrx', label: 'Octane (.tsrx)', color: '#ff415a' },
 	{ key: 'octane-jsx', label: 'Octane (.tsx)', color: '#c98500' },
-	{ key: 'react', label: 'React 19', color: '#1e93b0' },
-	{ key: 'react-compiler', label: 'React Compiler 1.0', color: '#4bafe7' },
+	{ key: 'react', label: 'React 19 + Compiler', color: '#1e93b0' },
+	{ key: 'react-uncompiled', label: 'React 19 (uncompiled control)', color: '#4bafe7' },
 	{ key: 'preact', label: 'Preact 10', color: '#7478fb' },
 	{ key: 'solid', label: 'Solid 2.0 beta', color: '#1baf7a' },
 	{ key: 'svelte', label: 'Svelte 5', color: '#f57547' },
@@ -153,6 +154,19 @@ function frameworkCard(
 	};
 }
 
+const JS_FRAMEWORK_SHARED_OPS = [
+	'run',
+	'replace',
+	'add',
+	'update',
+	'select',
+	'swap',
+	'remove',
+	'runlots',
+	'select_lots',
+	'clear',
+];
+
 // ---------------------------------------------------------------------------
 // Octane vs the field — one card per cross-framework suite.
 // ---------------------------------------------------------------------------
@@ -162,6 +176,10 @@ export const FRAMEWORK_CARDS: BenchCard[] = [
 		'js-framework',
 		'js-framework',
 		'krausest-style table operations over 1,000 rows — create, replace, partial update, select, swap, remove, clear.',
+		undefined,
+		// Keep only shared timings; insertion/fragment diagnostics in Octane's
+		// baseline are not measured by the reference frameworks.
+		JS_FRAMEWORK_SHARED_OPS,
 	),
 	frameworkCard(
 		todoMvc,
@@ -204,6 +222,39 @@ export const FRAMEWORK_CARDS: BenchCard[] = [
 		['streamFine', 'streamCoarse', 'appendHistory', 'switchConv', 'type160'],
 	),
 	frameworkCard(
+		svgDashboard,
+		'svg-dashboard',
+		'svg-dashboard',
+		'A hand-rolled SVG observability dashboard — path and transform churn, keyed reconciliation inside SVG, foreignObject labels, portal tooltips, runtime icons, and style/spread updates.',
+		{
+			charts_tick: 'chart tick',
+			tick_sparse: 'sparse tick',
+			drag_nodes: 'drag nodes',
+			pan_zoom: 'pan and zoom',
+			select_toggle: 'toggle selection',
+			topology_churn: 'topology churn',
+			label_churn: 'label churn',
+			tooltip_swarm: 'tooltip swarm',
+			icon_swap: 'icon swap',
+			series_toggle: 'series toggle',
+			style_spread_pulse: 'style/spread pulse',
+		},
+		[
+			'mount',
+			'charts_tick',
+			'tick_sparse',
+			'drag_nodes',
+			'pan_zoom',
+			'select_toggle',
+			'topology_churn',
+			'label_churn',
+			'tooltip_swarm',
+			'icon_swap',
+			'series_toggle',
+			'style_spread_pulse',
+		],
+	),
+	frameworkCard(
 		jsFrameworkReorder,
 		'js-framework-reorder',
 		'js-framework-reorder',
@@ -225,7 +276,7 @@ export const FRAMEWORK_CARDS: BenchCard[] = [
 		memoWall,
 		'memo-wall',
 		'memo-wall',
-		'Memo bail-out walls — parent re-renders against memoized subtrees, and context updates punching through them. React Compiler is shown separately from vanilla React; Solid, Svelte, Ripple and Vue Vapor have no parent re-render to absorb, so their near-zero wall ops are the fine-grained model’s honest number.',
+		'Memo bail-out walls — parent re-renders against memoized subtrees, and context updates punching through them. The primary React entry uses React Compiler; an additional, explicitly uncompiled React control isolates the compiler’s effect. Solid, Svelte, Ripple and Vue Vapor have no parent re-render to absorb, so their near-zero wall ops are the fine-grained model’s honest number.',
 	),
 	frameworkCard(
 		recursiveContext,
@@ -340,7 +391,9 @@ export const OCTANE_CARDS: BenchCard[] = [];
 		description:
 			'The same 1,000-row app authored four ways: tuned .tsrx, React-style naive .tsrx and .tsx, and plain-.ts createElement with no compiler involvement (the shape every binding produces).',
 		series,
-		rows: rowsFor(b, series),
+		// The tuned fixture also emits deterministic diagnostics that the naive
+		// fixtures do not. Keep this comparison to operations measured by all four.
+		rows: rowsFor(b, series, undefined, JS_FRAMEWORK_SHARED_OPS),
 		iterations: b.iterations,
 	});
 }
