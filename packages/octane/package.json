@@ -61,7 +61,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "default": "./dist/index.js",
+        "require": "./dist/cjs/index.cjs",
+        "import": "./dist/index.js"
       },
       "./jsx-runtime": {
         "types": "./dist/jsx-runtime.d.ts"
@@ -91,7 +93,9 @@
       },
       "./server": {
         "types": "./dist/server/index.d.ts",
-        "default": "./dist/server/index.js"
+        "default": "./dist/server/index.js",
+        "require": "./dist/cjs/server/index.cjs",
+        "import": "./dist/server/index.js"
       },
       "./static": {
         "types": "./dist/static/index.d.ts",
