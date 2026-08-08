@@ -91,6 +91,8 @@ export function Text({
 		sdfGlyphSize={sdfGlyphSize}
 		{...(props as any)}
 	>
-		{nodes}
+		@for (const node of nodes; key nodes.indexOf(node)) {
+			{node}
+		}
 	</primitive>
 }

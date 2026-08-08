@@ -85,6 +85,8 @@ export function Text3D({
 	useImperativeHandle((ref ?? null) as any, () => mesh.current!, []);
 	<mesh {...props} ref={mesh}>
 		<RenamedTextGeometry args={args as any} />
-		{rest}
+		@for (const node of rest; key rest.indexOf(node)) {
+			{node}
+		}
 	</mesh>
 }
