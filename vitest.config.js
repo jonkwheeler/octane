@@ -676,6 +676,7 @@ export default defineConfig({
 					name: 'jotai',
 					include: ['packages/jotai/tests/**/*.test.ts'],
 					environment: 'jsdom',
+					exclude: ['packages/jotai/tests/differential/**/*.test.ts'],
 					// Same differential precompile, but for jotai fixtures: also rewrites
 					// `@octanejs/jotai` → `jotai` so the React side runs real jotai.
 					globals: false,
