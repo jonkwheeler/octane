@@ -1254,7 +1254,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-virtual',
 					include: ['packages/tanstack-virtual/tests/**/*.test.ts'],
@@ -1290,7 +1289,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-virtual-differential',
 					include: ['packages/tanstack-virtual/tests/differential/**/*.test.ts'],
