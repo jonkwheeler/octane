@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**70 publishable package(s), including 56 framework binding(s) and 3 framework integration(s).**
+**69 publishable package(s), including 55 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -20,7 +20,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/astro` | [`packages/astro`](../packages/astro) | framework integration | `0.0.10` | 5 |
 | `@octanejs/base-ui` | [`packages/base-ui`](../packages/base-ui) | framework binding | `0.1.29` | 2 |
 | `@octanejs/cli` | [`packages/cli`](../packages/cli) | developer tooling | `0.0.6` | 2 |
-
 | `@octanejs/cmdk` | [`packages/cmdk`](../packages/cmdk) | framework binding | `0.1.14` | 1 |
 | `@octanejs/devtools` | [`packages/devtools`](../packages/devtools) | framework binding | `0.0.19` | 1 |
 | `@octanejs/dexie` | [`packages/dexie`](../packages/dexie) | framework binding | `0.1.24` | 1 |
@@ -80,7 +79,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/vite-plugin` | [`packages/vite-plugin-octane`](../packages/vite-plugin-octane) | metaframework | `0.1.31` | 3 |
 | `@octanejs/wagmi` | [`packages/wagmi`](../packages/wagmi) | framework binding | `0.0.11` | 3 |
 | `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.30` | 5 |
-
 | `create-octane` | [`packages/create-octane`](../packages/create-octane) | project scaffolder | `0.0.6` | 1 |
 | `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.31` | 21 |
 
