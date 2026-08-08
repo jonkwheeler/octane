@@ -11,16 +11,29 @@
     "integrity": "sha256:1effc6149825d93d72c8a735d9790ee7cb4d96fa149749c7eb2bba39c180755f",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-query/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-query/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-query/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-query/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-query",
+      "project": "tanstack-query-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact cached query, asynchronous query, and mutation scenarios against @tanstack/react-query@5.101.3.",
       "files": [
@@ -62,13 +75,13 @@
             },
             {
               "id": "differential:tanstack-query-async",
-              "testName": "AsyncApp: pending → success renders byte-identical at both steps",
-              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query AsyncApp: pending → success renders byte-identical at both steps"
+              "testName": "AsyncApp: pending \u2192 success renders byte-identical at both steps",
+              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query AsyncApp: pending \u2192 success renders byte-identical at both steps"
             },
             {
               "id": "differential:tanstack-query-mutation",
-              "testName": "MutationApp: idle → pending → success renders byte-identical",
-              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query MutationApp: idle → pending → success renders byte-identical"
+              "testName": "MutationApp: idle \u2192 pending \u2192 success renders byte-identical",
+              "fullName": "differential: @octanejs/tanstack-query vs real @tanstack/react-query MutationApp: idle \u2192 pending \u2192 success renders byte-identical"
             }
           ]
         },
@@ -185,7 +198,9 @@
   "divergences": [
     {
       "id": "tanstack-query-octane-suspense",
-      "caseIds": ["adapted:tanstack-query-suspense"],
+      "caseIds": [
+        "adapted:tanstack-query-suspense"
+      ],
       "upstreamResult": "React Query suspends by throwing the in-flight promise to React Suspense.",
       "octaneResult": "The Octane binding passes the in-flight thenable through Octane use() to @pending or Suspense boundaries.",
       "rationale": "Octane uses its native thenable and pending-boundary integration instead of React's thrown-promise mechanism.",
