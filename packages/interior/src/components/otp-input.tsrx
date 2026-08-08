@@ -43,7 +43,7 @@ export type OtpCellProps = {
   autoCorrect: "off";
   autoCapitalize: "off";
   spellCheck: false;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onInput: (e: ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   onPaste: (e: ClipboardEvent<HTMLInputElement>) => void;
   onFocus: (e: FocusEvent<HTMLInputElement>) => void;
@@ -161,7 +161,7 @@ function useOtpInput({
       autoCorrect: "off",
       autoCapitalize: "off",
       spellCheck: false,
-      onChange: (e) => {
+      onInput: (e) => {
         const previous = charsRef.current[index] ?? "";
         const raw = e.currentTarget.value;
         const trimmed =

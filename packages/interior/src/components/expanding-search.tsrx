@@ -64,7 +64,7 @@ export type UseExpandingSearchReturn = {
     value: string;
     disabled: boolean;
     tabIndex: number;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onInput: (event: React.FormEvent<HTMLInputElement>) => void;
     onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     onFocus: () => void;
   };
@@ -199,7 +199,7 @@ function useExpandingSearch({
   const onInputFocus = useCallback(() => setOpen(true), [setOpen]);
 
   const onInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => commit(event.currentTarget.value),
+    (event: React.FormEvent<HTMLInputElement>) => commit(event.currentTarget.value),
     [commit],
   );
 
@@ -227,7 +227,7 @@ function useExpandingSearch({
       value: query,
       disabled,
       tabIndex: isOpen ? 0 : -1,
-      onChange: onInputChange,
+      onInput: onInputChange,
       onKeyDown: onInputKeyDown,
       onFocus: onInputFocus,
     },

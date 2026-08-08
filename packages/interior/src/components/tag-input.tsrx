@@ -172,13 +172,13 @@ function useTagInput({
 
   const inputProps = {
     value: draft,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      setDraft(e.target.value);
+    onInput: (e: React.FormEvent<HTMLInputElement>) => {
+      setDraft(e.currentTarget.value);
       setArmed(-1);
       dismiss();
     },
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.nativeEvent.isComposing) return;
+      if (e.isComposing) return;
 
       if (e.key === "Enter" || separators.includes(e.key)) {
         e.preventDefault();
