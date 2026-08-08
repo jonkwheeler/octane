@@ -1,5 +1,6 @@
 // Copied from https://github.com/mantinedev/mantine/blob/90900efc7f107933ba027007cf240fea61d9c9f2/packages/%40mantine/hooks/src/use-focus-within/use-focus-within.ts#L16
 import { useCallback, useEffect, useRef, useState } from "octane";
+import { withoutSlot } from "./without-slot.js";
 
 export interface UseFocusWithinOptions {
   onFocus?: (event: FocusEvent) => void;
@@ -29,10 +30,12 @@ function containsRelatedTarget(event: FocusEvent) {
  * @returns An object with a `ref` to attach to the target element and a
  * `focused` boolean indicating current focus-within state.
  */
-export function useFocusWithin<T extends HTMLElement = any>({
-  onBlur,
-  onFocus,
-}: UseFocusWithinOptions = {}): { ref: RefObject<T>; focused: boolean } {
+export function useFocusWithin<T extends HTMLElement = any>(
+  options: UseFocusWithinOptions | symbol = {} as UseFocusWithinOptions,
+  ...rest: [slot?: symbol]
+): { ref: RefObject<T>; focused: boolean } {
+  options = (withoutSlot(options) ?? {}) as UseFocusWithinOptions;
+  const { onBlur, onFocus } = options;
   const ref = useRef<T>(null);
   const [focused, setFocused] = useState(false);
   const focusedRef = useRef(false);

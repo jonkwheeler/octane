@@ -1,6 +1,7 @@
 import type { BlockNoteEditor } from "@blocknote/core";
 import { useEffect } from "octane";
 import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
+import { withoutSlot } from "./without-slot.js";
 
 /**
  * Subscribes to editor content changes. The callback is invoked whenever the
@@ -13,8 +14,10 @@ import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
  */
 export function useEditorChange(
   callback: Parameters<BlockNoteEditor<any, any, any>["onChange"]>[0],
-  editor?: BlockNoteEditor<any, any, any>,
+  editor?: BlockNoteEditor<any, any, any> | symbol,
+  ...rest: [slot?: symbol]
 ) {
+  editor = withoutSlot(editor);
   const editorContext = useBlockNoteContext();
   if (!editor) {
     editor = editorContext?.editor;

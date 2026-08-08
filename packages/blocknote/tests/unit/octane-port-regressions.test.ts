@@ -4,13 +4,31 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { BlockNoteContext } from '../../src/editor/BlockNoteContext.ts';
 import { getContentComponent, Portals } from '../../src/editor/EditorContent.tsrx';
+import { useEditorChange } from '../../src/hooks/useEditorChange.ts';
 import { useEditorDOMElement } from '../../src/hooks/useEditorDomElement.ts';
+import { useFocusWithin } from '../../src/hooks/useFocusWithin.ts';
+import { useUploadLoading } from '../../src/hooks/useUploadLoading.ts';
 import { withoutSlot } from '../../src/hooks/without-slot.ts';
 import { flushEffects, mount } from '../../../octane/tests/_helpers';
 
 vi.mock('../../src/hooks/useEditorState.ts', () => ({
 	useEditorState: ({ editor, selector }: { editor: unknown; selector: (snapshot: { editor: unknown }) => unknown }) =>
 		selector({ editor }),
+}));
+
+let uploadStartCallback: ((blockId?: string) => void) | undefined;
+let uploadEndCallback: ((blockId?: string) => void) | undefined;
+
+vi.mock('../../src/hooks/useOnUploadStart.ts', () => ({
+	useOnUploadStart: (callback: (blockId?: string) => void) => {
+		uploadStartCallback = callback;
+	},
+}));
+
+vi.mock('../../src/hooks/useOnUploadEnd.ts', () => ({
+	useOnUploadEnd: (callback: (blockId?: string) => void) => {
+		uploadEndCallback = callback;
+	},
 }));
 
 function settle(): void {
@@ -21,6 +39,8 @@ function settle(): void {
 
 afterEach(function () {
 	document.body.replaceChildren();
+	uploadStartCallback = undefined;
+	uploadEndCallback = undefined;
 });
 
 describe('@octanejs/blocknote Octane port regressions', function () {
@@ -48,6 +68,87 @@ describe('@octanejs/blocknote Octane port regressions', function () {
 		settle();
 
 		expect(observed).toBe(domElement);
+	});
+
+	it('useEditorChange ignores compiler slot symbols and reads context editor', function () {
+		const contextEditor = {
+			onChange: vi.fn(function () {
+				return function () {};
+			}),
+		};
+
+		function Probe() {
+			useEditorChange(function () {}, Symbol('slot') as never);
+			return createElement('div', { 'data-probe': true });
+		}
+
+		mount(function Wrapper() {
+			return createElement(
+				BlockNoteContext.Provider,
+				{ value: { editor: contextEditor } },
+				createElement(Probe),
+			);
+		});
+		settle();
+
+		expect(contextEditor.onChange).toHaveBeenCalled();
+	});
+
+	it('useFocusWithin accepts a bare compiler slot without throwing', function () {
+		let result: ReturnType<typeof useFocusWithin> | undefined;
+
+		function Probe() {
+			result = useFocusWithin(Symbol('slot') as never);
+			return createElement('div', { ref: result.ref, 'data-probe': true });
+		}
+
+		mount(Probe);
+		settle();
+
+		expect(result).toBeTruthy();
+		expect(result?.focused).toBe(false);
+		expect(result?.ref.current).toBeTruthy();
+	});
+
+	it('useUploadLoading matches upload events when called with a bare compiler slot', function () {
+		let loading = false;
+
+		function Probe() {
+			loading = useUploadLoading(Symbol('slot') as never);
+			return createElement('div', { 'data-loading': loading ? 'true' : 'false' });
+		}
+
+		mount(Probe);
+		settle();
+
+		expect(loading).toBe(false);
+		uploadStartCallback?.('block-1');
+		settle();
+		expect(loading).toBe(false);
+
+		uploadStartCallback?.(undefined);
+		settle();
+		expect(loading).toBe(true);
+	});
+
+	it('useUploadLoading tracks the requested block id', function () {
+		let loading = false;
+
+		function Probe() {
+			loading = useUploadLoading('block-1');
+			return createElement('div', { 'data-loading': loading ? 'true' : 'false' });
+		}
+
+		mount(Probe);
+		settle();
+
+		uploadStartCallback?.('block-1');
+		settle();
+		expect(loading).toBe(true);
+
+		uploadEndCallback?.('block-1');
+		settle();
+		expect(loading).toBe(false);
 	});
 
 	it('BlockNoteView container class prop merges user classes with bn-root', function () {
