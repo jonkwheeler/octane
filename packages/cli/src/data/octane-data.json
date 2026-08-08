@@ -446,7 +446,7 @@
     {
       "name": "@octanejs/solana-react",
       "version": "0.0.1",
-      "category": "AI, data, and routing",
+      "category": "Web3",
       "upstream": {
         "package": "@solana/react",
         "version": "7.0.0",
