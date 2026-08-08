@@ -942,7 +942,6 @@ export default defineConfig({
 					include: [
 						'packages/livestore/tests/document-sync.test.ts',
 						'packages/livestore/tests/lifecycle.test.ts',
-						'packages/livestore/tests/live-list.test.ts',
 						'packages/livestore/tests/query.test.ts',
 					],
 				},

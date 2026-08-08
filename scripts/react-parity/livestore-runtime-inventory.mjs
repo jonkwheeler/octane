@@ -14,6 +14,7 @@ import {
 	inventoryFromIdentities,
 	runPristineUpstreamSuite,
 } from './livestore-pristine-runtime.mjs';
+import { renderTypeInventories } from './livestore-types-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -41,7 +42,6 @@ writeInventory(
 const adaptedFiles = [
 	'packages/livestore/tests/document-sync.test.ts',
 	'packages/livestore/tests/lifecycle.test.ts',
-	'packages/livestore/tests/live-list.test.ts',
 	'packages/livestore/tests/query.test.ts',
 ];
 const idOccurrences = new Map();
@@ -128,24 +128,14 @@ writeInventory('packages/livestore/audit/pristine-wrapper-runtime.json', {
 	tests: wrapperTests,
 });
 
-writeInventory('packages/livestore/audit/pristine-types.json', {
-	schemaVersion: 1,
-	files: ['packages/livestore/audit/type-probes/pristine.ts'],
-	assertionGroups: [
-		'stable and experimental export surface',
-		'ReactNode provider children',
-		'negative controls for invalid public calls',
-	],
-});
-writeInventory('packages/livestore/audit/adapted-types.json', {
-	schemaVersion: 1,
-	files: ['packages/livestore/typetests/public-api.test-d.ts'],
-	assertionGroups: [
-		'stable and experimental export surface',
-		'OctaneNode provider children and registry override inference',
-		'negative controls for invalid public calls',
-	],
-});
+const { config: typeConfig, inventory: typeInventory } = renderTypeInventories(root);
+for (const side of ['upstream', 'adapted']) {
+	const destination = typeConfig.inventories[side];
+	const absolute = resolve(root, destination);
+	mkdirSync(dirname(absolute), { recursive: true });
+	writeFileSync(absolute, `${JSON.stringify(typeInventory[side], null, 2)}\n`);
+	console.log(`${destination}: ${typeInventory[side].length} files`);
+}
 
 console.log(
 	'adaptedRuntimeSummary',

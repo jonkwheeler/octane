@@ -33,14 +33,15 @@
       ],
       "exclude": [
         "/tests/ssr/",
+        "/tests/conformance/",
         "/tests/package-contract\\.test\\.ts$",
         "/tests/upstream-original\\.test\\.ts$"
       ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 27,
-    "uniqueIdentities": 27,
+    "inventoryEntries": 23,
+    "uniqueIdentities": 23,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -71,12 +72,12 @@
         {
           "path": "packages/livestore/audit/pristine-wrapper-runtime.json",
           "role": "support",
-          "sha256": "b571c33884ec6e3b78927fceeea287ae79a9d81d5207ecbd1f80883650d41c12"
+          "sha256": "6e0593fff1f6f96a2e452244ebc8eacee85d2d5b6b6a32c11eff0132132275c7"
         },
         {
           "path": "packages/livestore/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "8b2d57a896ca2ee55cfa100b703e3e3395e4eb874cc80798fd723380bad9a09f"
+          "sha256": "07e130182b9e0e97c9af127ab36feec437be89c9b45d18828b54355a0dde8809"
         },
         {
           "path": "packages/livestore/tests/upstream-original.test.ts",
@@ -86,7 +87,7 @@
         {
           "path": "scripts/react-parity/livestore-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "b17a028d83c13e7916acd909ace1238ac825cd2ff0c62d76f7564637ff12bc6a"
+          "sha256": "1da63bc79c0c7d910a027d6b57668ac25fb074e2be03a8788d68b1febe7c1075"
         },
         {
           "path": "packages/livestore/scripts/run-pristine-upstream.mjs",
@@ -101,7 +102,7 @@
         {
           "path": "packages/livestore/scripts/verify-upstream.mjs",
           "role": "support",
-          "sha256": "1d513ca1f95a854ce2d92c8101a7531359ce2c4a6c9f16e0ca3c0804242fbc17"
+          "sha256": "db37d79eef48654e6cc0b35f748beed7869638c4e740893efe2cf27033b9124b"
         },
         {
           "path": "packages/livestore/upstream/SHA256SUMS",
@@ -126,12 +127,12 @@
         {
           "path": "packages/livestore/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "901664be05b5fc0a5b20e4b4ddee56f66968dba2668c96c9e3e7c78494538a24"
+          "sha256": "ffc00709cc451e87e56e73c69ea55560d98560021ef6db6cadb330538938e3ac"
         },
         {
           "path": "scripts/react-parity/livestore-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "32f510b7228400fd86eceee456d7ecc8734d51f9164ca44fda3ef9d87487a859"
+          "sha256": "236983fbce8bfa11d50fcdf5c6cd5d93e5588a1584192cf8c7c0c6cd7cc93312"
         }
       ]
     },
@@ -152,7 +153,7 @@
         {
           "path": "packages/livestore/audit/pristine-types.json",
           "role": "test",
-          "sha256": "21aeeff46d6538203789c6c3614ed36af3230283fce2c6a42e56623300a0bc0a",
+          "sha256": "1c58647f4bfa89ca19752fb2ead372a8c576a177e481d116652d4aaf9def1934",
           "cases": [
             {
               "id": "types:livestore-pristine",
@@ -162,14 +163,14 @@
           ]
         },
         {
-          "path": "packages/livestore/audit/type-probes/pristine.ts",
+          "path": "packages/livestore/audit/type-probes/public-api.test-d.ts",
           "role": "support",
           "sha256": "9402332d01afb7f6d5ae702d4bde10b4d42232b13734d7f318ff79f101c110f5"
         },
         {
           "path": "packages/livestore/audit/type-probes/tsconfig.pristine.json",
           "role": "support",
-          "sha256": "89e70be3c16ba398997b1862d391b9664600d31493390d3c945356acbec65cbc"
+          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
         },
         {
           "path": "packages/livestore/audit/type-parity.json",
@@ -195,7 +196,7 @@
         {
           "path": "packages/livestore/audit/adapted-types.json",
           "role": "test",
-          "sha256": "f09f13082a471ec4cabaef6a69830f544f3c4376f25d545aeb2eb4762432e715",
+          "sha256": "93c1bf7af01a55f3270893048974dae737ce7fca32753db0538692808acdee52",
           "cases": [
             {
               "id": "types:livestore-adapted",
@@ -207,7 +208,7 @@
         {
           "path": "packages/livestore/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "78273fec000512a1dd06e03a2c3bd1b42bbd40136173127a250f28d5706d65a1"
+          "sha256": "1ebe408d35327ceab3e1a4869386535530c984728620e934be021fcb90bd4a0f"
         },
         {
           "path": "packages/livestore/typetests/tsconfig.json",

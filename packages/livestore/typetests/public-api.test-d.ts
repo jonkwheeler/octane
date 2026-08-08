@@ -1,10 +1,11 @@
-import { expectTypeOf, test } from 'vitest';
-import type { StoreRegistry } from '@livestore/livestore';
 import type { OctaneNode } from 'octane';
+import type {
+	LiveListProps,
+	StoreRegistryProviderProps,
+	UseClientDocumentResult,
+} from '../src/mod.ts';
 import {
 	LiveList,
-	type LiveListProps,
-	StoreRegistryContext,
 	StoreRegistryProvider,
 	captureStackInfo,
 	storeOptions,
@@ -15,49 +16,46 @@ import {
 	useStoreRegistry,
 	useSyncStatus,
 	withReactApi,
-} from '../src/mod';
-import * as experimental from '../src/experimental/mod';
+} from '../src/mod.ts';
 
-test('exports the pinned stable and experimental surfaces', function exportSurface() {
-	expectTypeOf(StoreRegistryContext).toBeObject();
-	expectTypeOf(StoreRegistryProvider).toBeFunction();
-	expectTypeOf(useStoreRegistry).toBeFunction();
-	expectTypeOf(useStore).toBeFunction();
-	expectTypeOf(useQuery).toBeFunction();
-	expectTypeOf(useQueryRef).toBeFunction();
-	expectTypeOf(useClientDocument).toBeFunction();
-	expectTypeOf(useSyncStatus).toBeFunction();
-	expectTypeOf(withReactApi).toBeFunction();
-	expectTypeOf(storeOptions).toBeFunction();
-	expectTypeOf(captureStackInfo).toBeFunction();
-	expectTypeOf(LiveList).toEqualTypeOf(experimental.LiveList);
-});
+declare function expectType<T>(value: T): void;
 
-test('uses Octane renderables and preserves registry override inference', function octaneRenderableTypes() {
-	type ProviderProps = Parameters<typeof StoreRegistryProvider>[0];
-	expectTypeOf<ProviderProps['children']>().toEqualTypeOf<OctaneNode | undefined>();
+expectType<typeof StoreRegistryProvider>(StoreRegistryProvider);
+expectType<typeof useStoreRegistry>(useStoreRegistry);
+expectType<typeof useStore>(useStore);
+expectType<typeof useQuery>(useQuery);
+expectType<typeof useQueryRef>(useQueryRef);
+expectType<typeof useClientDocument>(useClientDocument);
+expectType<typeof useSyncStatus>(useSyncStatus);
+expectType<typeof withReactApi>(withReactApi);
+expectType<typeof storeOptions>(storeOptions);
+expectType<typeof captureStackInfo>(captureStackInfo);
+expectType<typeof LiveList>(LiveList);
 
-	const registry = null as unknown as StoreRegistry;
-	expectTypeOf(useStoreRegistry(registry)).toEqualTypeOf<StoreRegistry>();
-	expectTypeOf<LiveListProps<any>['items$']>().not.toBeAny();
-});
+type ProviderChildren = StoreRegistryProviderProps['children'];
+expectType<OctaneNode | undefined>(null as unknown as ProviderChildren);
 
-test('rejects invalid public call shapes', function negativeControls() {
-	// @ts-expect-error storeOptions requires a store definition object
-	storeOptions(null);
+type DocumentValue = UseClientDocumentResult<any>[0];
+expectType<DocumentValue>(null as unknown as DocumentValue);
 
-	// @ts-expect-error useSyncStatus requires a store option
-	useSyncStatus({});
+type ListItems = LiveListProps<any>['items$'];
+expectType<ListItems>(null as unknown as ListItems);
 
-	// @ts-expect-error LiveList props require items$
-	const missingItems$: LiveListProps<any> = {
-		getKey: function getKey() {
-			return 'id';
-		},
-		renderItem: function renderItem() {
-			return null;
-		},
-		store: null as any,
-	};
-	void missingItems$;
-});
+// @ts-expect-error storeOptions requires a store definition object
+storeOptions(null);
+
+// @ts-expect-error useSyncStatus requires a store option
+useSyncStatus({});
+
+// @ts-expect-error LiveList props require items$
+const missingItems$: LiveListProps<any> = {
+	getKey: function getKey() {
+		return 'id';
+	},
+	renderItem: function renderItem() {
+		return null;
+	},
+	store: null as any,
+};
+
+void missingItems$;

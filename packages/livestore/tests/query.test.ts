@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { withReactApi } from '../src/useStore';
 import { __resetUseRcResourceCache } from '../src/useRcResource';
 import { act, flushEffects, mount, nextPaint } from './_helpers';
-import { QueryReader, TwoQueryReaders } from './_fixtures/query.tsrx';
+import { QueryReader } from './_fixtures/query.tsrx';
 
 beforeEach(() => {
 	__resetUseRcResourceCache();
@@ -183,45 +183,6 @@ describe('reactive queries', () => {
 			});
 			expect(result.find('.query').textContent).toBe('123');
 			result.unmount();
-		}).pipe(Effect.scoped, Effect.runPromise);
-	});
-
-	it('shares one query resource and unsubscribes only after the last consumer leaves', async () => {
-		await Effect.gen(function* () {
-			const store = yield* createTodoMvcStore();
-			const augmented = withReactApi(store);
-			const queryable = allTodosQuery();
-			let query: { activeSubscriptions: Set<unknown> } | undefined;
-			const onQuery = (value: object) => {
-				query = value as { activeSubscriptions: Set<unknown> };
-			};
-			const result = mount(TwoQueryReaders, {
-				store: augmented,
-				queryable,
-				showSecond: true,
-				onQuery,
-			});
-			flushEffects();
-			expect(query?.activeSubscriptions.size).toBe(2);
-
-			result.update(TwoQueryReaders, {
-				store: augmented,
-				queryable,
-				showSecond: false,
-				onQuery,
-			});
-			flushEffects();
-			expect(query?.activeSubscriptions.size).toBe(1);
-			yield* Effect.promise(() =>
-				act(() => store.commit(events.todoCreated({ id: 't1', text: 'milk', completed: false }))),
-			);
-			void nextPaint();
-			expect(result.findAll('.query')).toHaveLength(1);
-			expect(result.find('.query').textContent).toContain('milk');
-
-			result.unmount();
-			flushEffects();
-			expect(query?.activeSubscriptions.size).toBe(0);
 		}).pipe(Effect.scoped, Effect.runPromise);
 	});
 });

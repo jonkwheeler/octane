@@ -7,6 +7,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
+import { verifyLivestoreUpstream } from '../../packages/livestore/scripts/verify-upstream.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../packages/livestore');
 const upstreamRoot = join(packageRoot, 'upstream');
@@ -38,6 +39,8 @@ export function runPristineUpstreamSuite({
 	repoRoot = resolve(packageRoot, '../..'),
 	reportPath = join(tmpdir(), `octane-livestore-pristine-${process.pid}.json`),
 } = {}) {
+	// Provenance verification must pass before any pristine copy/execute.
+	verifyLivestoreUpstream(packageRoot);
 	const runRoot = mkdtempSync(join(packageRoot, '.pristine-upstream-'));
 	try {
 		cpSync(join(upstreamRoot, 'src'), join(runRoot, 'src'), { recursive: true });

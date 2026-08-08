@@ -5,6 +5,7 @@ import {
 	useStoreRegistry,
 	withReactApi,
 } from '@octanejs/livestore';
+import { startTransition, useActionState } from 'octane';
 import { useRcResource } from '../../src/useRcResource';
 
 type Resource = { id: number };
@@ -85,6 +86,40 @@ export function SuspenseStoreReader(props: {
 	<StoreRegistryProvider storeRegistry={props.registry}>
 		@try {
 			<StoreValue options={props.options} />
+		} @pending {
+			<div id="fallback">{'loading'}</div>
+		}
+	</StoreRegistryProvider>
+}
+
+/** Combines useStore with useActionState to test transition compatibility. */
+function StoreWithActionState(props: { options: RegistryStoreOptions<any> }) @{
+	useStore(props.options);
+	const [state, dispatch, isPending] = useActionState(
+		function action(_prev: string | undefined, value: string): string {
+			return value;
+		},
+		undefined as string | undefined,
+	);
+	function onSubmit() {
+		startTransition(function dispatchUpdate() {
+			dispatch('updated');
+		});
+	}
+	<div>
+		<button id="submit" onClick={onSubmit}>{'Submit'}</button>
+		<div id="state">{(state ?? 'none') as string}</div>
+		<div id="pending">{String(isPending)}</div>
+	</div>
+}
+
+export function SuspenseStoreWithActionState(props: {
+	registry: StoreRegistry;
+	options: RegistryStoreOptions<any>;
+}) @{
+	<StoreRegistryProvider storeRegistry={props.registry}>
+		@try {
+			<StoreWithActionState options={props.options} />
 		} @pending {
 			<div id="fallback">{'loading'}</div>
 		}

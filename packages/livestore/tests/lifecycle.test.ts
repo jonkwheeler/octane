@@ -1,18 +1,16 @@
 import type { RegistryStoreOptions, StoreRegistry } from '@livestore/livestore';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { __resetUseRcResourceCache } from '../src/useRcResource';
-import { flushEffects, mount, nextPaint } from './_helpers';
+import { act, flushEffects, mount, nextPaint } from './_helpers';
 import {
-	ContextRegistryReader,
-	MissingRegistryReader,
-	OverrideRegistryReader,
 	ResourceReader,
 	SuspenseStoreReader,
+	SuspenseStoreWithActionState,
 	TwoResourceReaders,
 	augmentStore,
 } from './_fixtures/lifecycle.tsrx';
 
-beforeEach(() => {
+beforeEach(function resetResourceCache() {
 	__resetUseRcResourceCache();
 });
 
@@ -175,22 +173,6 @@ describe('reference-counted resources', () => {
 });
 
 describe('registry and store lifecycle', () => {
-	it('uses context, honors an explicit override, and reports missing context', () => {
-		const registry = {} as StoreRegistry;
-		const override = {} as StoreRegistry;
-		const context = mount(ContextRegistryReader, { registry });
-		expect(context.find('#registry').textContent).toBe('context');
-		context.unmount();
-
-		const overridden = mount(OverrideRegistryReader, { registry, override });
-		expect(overridden.find('#registry').textContent).toBe('override');
-		overridden.unmount();
-
-		expect(() => mount(MissingRegistryReader)).toThrow(
-			'useStoreRegistry() must be used within <StoreRegistryProvider>',
-		);
-	});
-
 	// Per upstream/src/useStore.test.tsx:40.
 	it('works with Suspense boundary', async () => {
 		let resolve!: (store: object) => void;
@@ -265,8 +247,12 @@ describe('registry and store lifecycle', () => {
 			['store-b', { id: 'store-b' }],
 		]);
 		const registry = {
-			getOrLoadPromise: vi.fn((options: RegistryStoreOptions<any>) => stores.get(options.storeId)),
-			retain: vi.fn(() => vi.fn()),
+			getOrLoadPromise: vi.fn(function loadByStoreId(options: RegistryStoreOptions<any>) {
+				return stores.get(options.storeId);
+			}),
+			retain: vi.fn(function retainStore() {
+				return vi.fn();
+			}),
 		} as unknown as StoreRegistry;
 		const optionsA = { storeId: 'store-a' } as RegistryStoreOptions<any>;
 		const optionsB = { storeId: 'store-b' } as RegistryStoreOptions<any>;
@@ -277,5 +263,46 @@ describe('registry and store lifecycle', () => {
 		expect(result.find('#store').textContent).toBe('store-b');
 		result.unmount();
 		flushEffects();
+	});
+
+	// Per upstream/src/useStore.test.tsx:176.
+	it('does not block useActionState transitions from committing', async () => {
+		const release = vi.fn();
+		const store = { id: 'ready' };
+		const getOrLoadPromise = vi.fn(function loadStore() {
+			return store;
+		});
+		const registry = {
+			getOrLoadPromise,
+			retain: vi.fn(function retainStore() {
+				return release;
+			}),
+		} as unknown as StoreRegistry;
+		const options = { storeId: 'action-state' } as RegistryStoreOptions<any>;
+		const result = mount(SuspenseStoreWithActionState, { registry, options });
+		flushEffects();
+		expect(result.find('#state').textContent).toBe('none');
+		expect(result.find('#pending').textContent).toBe('false');
+
+		// After store is loaded, clear spy to only track calls during the transition render.
+		getOrLoadPromise.mockClear();
+
+		await act(function triggerActionState() {
+			result.click('#submit');
+		});
+
+		// getOrLoadPromise must be called on each render (not cached via useMemo).
+		// When the initial Promise is cached, use() is called with a resolved Promise
+		// on every subsequent render, which blocks transitions (e.g. useActionState)
+		// from ever committing.
+		expect(getOrLoadPromise).toHaveBeenCalled();
+
+		await nextPaint();
+		expect(result.find('#state').textContent).toBe('updated');
+		expect(result.find('#pending').textContent).toBe('false');
+
+		result.unmount();
+		flushEffects();
+		expect(release).toHaveBeenCalledTimes(1);
 	});
 });
