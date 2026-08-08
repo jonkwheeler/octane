@@ -1,10 +1,13 @@
+import { withoutSlot } from "../without-slot.js";
 import { useCallback } from "../../react-shim.js";
 import { useAppStoreApi } from "../../store";
 
 export const useOnDragFinished = (
   cb: (finished: boolean) => void,
-  deps: any[] = []
+  deps: any[] | symbol = [],
+  ...rest: [slot?: symbol]
 ) => {
+  deps = withoutSlot(deps) ?? [];
   const appStore = useAppStoreApi();
 
   return useCallback(() => {

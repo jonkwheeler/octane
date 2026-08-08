@@ -3,13 +3,13 @@
     "package": "@measured/puck",
     "version": "0.20.2"
   },
-  "surface": "Full @measured/puck@0.20.2 core port — Puck editor, Render, DropZone, hooks, and config types.",
+  "surface": "Full @measured/puck@0.20.2 core port \u2014 Puck editor, Render, DropZone, hooks, and config types.",
   "divergences": [
-    "Native onChange on controlled text inputs (ExternalInput search field) — upstream React synthetic onChange; Octane uses onInput for per-edit.",
+    "Native onChange on controlled text inputs (ExternalInput search field) \u2014 upstream React synthetic onChange; Octane uses onInput for per-edit.",
     "use-debounce replaced with @octanejs/tanstack-pacer useDebouncer in DragDropContext."
   ],
   "ssr": "Not yet evaluated.",
-  "verified": "partial",
+  "verified": "2026-08-07",
   "notes": [
     "Source ported from puckeditor/puck packages/core via scripts/port-upstream.mjs.",
     "Render and full Puck editor shell mount pass conformance tests (2026-08-07).",

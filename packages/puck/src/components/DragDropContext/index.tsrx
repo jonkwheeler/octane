@@ -54,8 +54,10 @@ type EventKeys = keyof Events;
 export function useDragListener(
   type: EventKeys,
   fn: Events[EventKeys],
-  deps: any[] = []
+  deps: any[] | symbol = [],
+  ...rest: [slot?: symbol]
 ) {
+  deps = withoutSlot(deps) ?? [];
   const { setDragListeners } = useContext(dragListenerContext);
 
   useEffect(() => {

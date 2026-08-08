@@ -24,20 +24,25 @@ const otherDefault = {
   distance: { value: 5 },
 };
 
+import { withoutSlot } from "../without-slot.js";
+
 export const useSensors = (
-  {
-    other = otherDefault,
-    mouse,
-    touch = touchDefault,
-  }: {
+  params: {
     mouse?: ActivationConstraints;
     touch?: ActivationConstraints;
     other?: ActivationConstraints;
-  } = {
+  } | symbol = {
     touch: touchDefault,
     other: otherDefault,
-  }
+  },
+  ...rest: [slot?: symbol]
 ) => {
+  const resolved = withoutSlot(params) ?? { touch: touchDefault, other: otherDefault };
+  const {
+    other = otherDefault,
+    mouse,
+    touch = touchDefault,
+  } = resolved;
   const [sensors] = useState(() => [
     PointerSensor.configure({
       activationConstraints(event, source) {
