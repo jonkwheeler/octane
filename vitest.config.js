@@ -2135,6 +2135,15 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'dnd-kit-parity-audit',
+					include: ['packages/dnd-kit/tests/parity/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				testExecution: { group: 'react-parity' },
+			},
+			{
+				test: {
 					name: 'dnd-kit-differential',
 					include: ['packages/dnd-kit/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
