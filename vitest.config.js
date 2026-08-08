@@ -1259,7 +1259,7 @@ export default defineConfig({
 					name: 'tanstack-virtual',
 					include: ['packages/tanstack-virtual/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/tanstack-virtual/tests/differential/**/*.test.ts''],
+					exclude: ['packages/tanstack-virtual/tests/differential/**/*.test.ts'],
 					// Same differential precompile, but for virtualizer fixtures: also
 					// rewrites `@octanejs/tanstack-virtual` → `@tanstack/react-virtual` so
 					// the React side runs the real react-virtual adapter over the SAME

@@ -11,16 +11,29 @@
     "integrity": "sha256:e93b937aa9cdc910ab9dddae1c342acee8c2d45b5574298383e204b5a94b718e",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "insufficient" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "insufficient"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-virtual/src"],
-      "include": ["\\.ts$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-virtual/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-virtual/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-virtual/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-virtual",
+      "project": "tanstack-virtual-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact element, horizontal, dynamic-measurement, and window-scroll fixtures against @tanstack/react-virtual@3.14.5 with deterministic injected geometry.",
       "files": [
@@ -230,7 +243,9 @@
   "divergences": [
     {
       "id": "tanstack-virtual-nested-flush",
-      "caseIds": ["adapted:tanstack-virtual-nested-flush"],
+      "caseIds": [
+        "adapted:tanstack-virtual-nested-flush"
+      ],
       "upstreamResult": "React flushSync performs a synchronous nested flush for a sync virtualizer notification.",
       "octaneResult": "Octane degrades nested flushSync to a plain dispatch drained by the ambient discrete-event flush.",
       "rationale": "Octane prevents re-entrant flush stacks while retaining the same settled consumer-visible window.",
