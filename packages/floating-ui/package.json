@@ -45,7 +45,8 @@
   },
   "scripts": {
     "test": "vitest run",
-    "build:cjs": "node ../../scripts/build-package-commonjs.mjs"
+    "build:cjs": "node ../../scripts/build-package-commonjs.mjs",
+    "prepack": "pnpm build:cjs"
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:default",
