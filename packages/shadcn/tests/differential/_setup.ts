@@ -20,7 +20,7 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -107,6 +107,17 @@ function compileFixture(srcPath: string): void {
 	writeFileSync(outFile, rewritten);
 }
 
+
+function walk(directory: string): string[] {
+	const files: string[] = [];
+	for (const name of readdirSync(directory)) {
+		const fullPath = join(directory, name);
+		if (statSync(fullPath).isDirectory()) files.push(...walk(fullPath));
+		else if (fullPath.endsWith('.tsrx')) files.push(fullPath);
+	}
+	return files;
+}
+
 export async function setup(): Promise<void> {
 	rmSync(CACHE_DIR, { recursive: true, force: true });
 	mkdirSync(CACHE_DIR, { recursive: true });
@@ -118,7 +129,9 @@ export async function setup(): Promise<void> {
 	compileUpstream('dialog', '.tsx');
 	compileUpstream('dropdown-menu', '.tsx');
 	compileUpstream('index', '.ts');
-	compileFixture(join(FIXTURE_DIR, 'shadcn-diff.tsrx'));
+	for (const fixturePath of walk(join(FIXTURE_DIR, 'shadcn-diff'))) {
+		compileFixture(fixturePath);
+	}
 }
 
 export async function teardown(): Promise<void> {
