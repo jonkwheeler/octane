@@ -2,24 +2,21 @@ import { build } from 'esbuild';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { compile } from '../packages/octane/src/compiler/compile.js';
 
-function createTsrxPlugin(cache) {
+const SOURCE_EXTENSIONS = ['.ts', '.js', '.mts', '.mjs'];
+
+function refuseTsrx(path) {
+	throw new Error(
+		`CommonJS packaging refuses authored .tsrx (${path}); publish source and let consumers compile it`,
+	);
+}
+
+function createTsrxFailClosedPlugin() {
 	return {
-		name: 'octane-tsrx-commonjs',
-		setup(build) {
-			build.onLoad({ filter: /\.tsrx$/ }, async ({ path }) => {
-				let compiled = cache.get(path);
-				if (!compiled) {
-					const source = await readFile(path, 'utf8');
-					const result = compile(source, path, { dev: false, mode: 'client' });
-					if (result.diagnostics?.some((diagnostic) => diagnostic.severity === 'error')) {
-						throw new Error(result.diagnostics.map((diagnostic) => diagnostic.message).join('; '));
-					}
-					compiled = { contents: result.code, loader: 'js', resolveDir: dirname(path) };
-					cache.set(path, compiled);
-				}
-				return compiled;
+		name: 'octane-tsrx-commonjs-fail-closed',
+		setup(buildApi) {
+			buildApi.onLoad({ filter: /\.tsrx$/ }, function onLoadTsrx({ path }) {
+				refuseTsrx(path);
 			});
 		},
 	};
@@ -33,6 +30,14 @@ function isWithin(directory, candidate) {
 function outputRelative(sourceRoot, sourcePath) {
 	const sourceRelative = relative(sourceRoot, sourcePath);
 	return sourceRelative.slice(0, -extname(sourceRelative).length) + '.cjs';
+}
+
+function assertNoTsrx(paths) {
+	for (const path of paths) {
+		if (extname(path) === '.tsrx') {
+			refuseTsrx(path);
+		}
+	}
 }
 
 async function discoverGraph({ packageDir, entryPaths, tsrxPlugin }) {
@@ -79,6 +84,7 @@ async function discoverGraph({ packageDir, entryPaths, tsrxPlugin }) {
 		}
 		modules.set(path, { relativeImports });
 	}
+	assertNoTsrx([...modules.keys()]);
 	return modules;
 }
 
@@ -127,7 +133,8 @@ export async function buildPackageCommonjs({
 			throw new Error(`CommonJS entry must stay inside the package directory: ${entryPath}`);
 		}
 	}
-	const tsrxPlugin = createTsrxPlugin(new Map());
+	assertNoTsrx(entryPaths);
+	const tsrxPlugin = createTsrxFailClosedPlugin();
 	const modules = await discoverGraph({ packageDir: absolutePackageDir, entryPaths, tsrxPlugin });
 	const sourceModules = [...modules.keys()].filter((path) => extname(path) !== '.json');
 	const outputs = new Map();
@@ -195,7 +202,7 @@ export async function buildPackageCommonjs({
 	);
 	if (callableDefault) {
 		const rootEntry = Object.entries(resultEntries).find(([entry]) =>
-			/^src\/index\.(?:[cm]?[jt]s|[jt]sx|tsrx)$/.test(entry.split(sep).join('/')),
+			/^src\/index\.(?:[cm]?[jt]sx?)$/.test(entry.split(sep).join('/')),
 		)?.[1];
 		if (!rootEntry) {
 			throw new Error('callable CommonJS default requires a src/index source entry');
@@ -218,11 +225,12 @@ export async function buildPackageCommonjsSourceTree({
 	const manifest = JSON.parse(await readFile(resolve(packageDir, 'package.json'), 'utf8'));
 	const sourceDirectory = resolve(packageDir, sourceRoot);
 	const entries = (await readdir(sourceDirectory, { recursive: true }))
-		.filter(
-			(path) =>
-				['.ts', '.js', '.mts', '.mjs', '.tsrx'].includes(extname(path)) && !path.endsWith('.d.ts'),
-		)
-		.map((path) => join(sourceRoot, path));
+		.filter(function keepSource(path) {
+			return SOURCE_EXTENSIONS.includes(extname(path)) && !path.endsWith('.d.ts');
+		})
+		.map(function toEntry(path) {
+			return join(sourceRoot, path);
+		});
 	return buildPackageCommonjs({
 		packageDir,
 		entries,

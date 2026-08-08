@@ -82,24 +82,28 @@ describe('buildPackageCommonjs', () => {
 		);
 	});
 
-	test('compiles authored TSRX modules into the CommonJS graph', async () => {
+	test('fails closed when the authored graph includes .tsrx modules', async () => {
 		const packageDir = await fixture({
 			'package.json': JSON.stringify({ name: 'fixture', type: 'module' }),
 			'src/index.ts': "export { default as View } from './view.tsrx';",
 			'src/view.tsrx': 'export default function View() @{ <div>drag</div> }',
 		});
 
-		const result = await buildPackageCommonjs({
-			packageDir,
-			entries: ['src/index.ts'],
-			outdir: 'dist/cjs',
-		});
-
-		assert.equal(result.modules, 2);
-		assert.match(await readFile(join(packageDir, 'dist/cjs/index.cjs'), 'utf8'), /\.\/view\.cjs/);
-		assert.match(
-			await readFile(join(packageDir, 'dist/cjs/view.cjs'), 'utf8'),
-			/require\("octane"\)/,
+		await assert.rejects(
+			buildPackageCommonjs({
+				packageDir,
+				entries: ['src/index.ts'],
+				outdir: 'dist/cjs',
+			}),
+			/\.tsrx|refuses authored/,
+		);
+		await assert.rejects(
+			buildPackageCommonjs({
+				packageDir,
+				entries: ['src/view.tsrx'],
+				outdir: 'dist/cjs',
+			}),
+			/\.tsrx|refuses authored/,
 		);
 	});
 
