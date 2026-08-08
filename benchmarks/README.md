@@ -21,6 +21,16 @@ capability gaps stay explicit: Svelte's public server renderer is buffered, so
 fake stream. `codegen-size`, `dbmon-deopt`, and `js-framework-deopt` remain
 Octane-only by design.
 
+### React Compiler
+
+Every primary React benchmark uses the production React Compiler 1.0 through
+Vite's official React Compiler preset. The shared
+[`react-compiler.mjs`](react-compiler.mjs) integration also compiles server,
+Worker, and `.tsrx` fixtures, so SSR comparisons receive the same treatment as
+browser-rendered React. The memo-wall suite additionally keeps an explicitly
+labeled uncompiled React control to isolate the compiler's effect without
+changing the primary compiled React comparison.
+
 ## Quick start
 
 ```bash
@@ -175,6 +185,7 @@ internally, get their own baseline and guard namespace.
 | `weather-app-lighthouse` | weather-app | octane-tsrx, react, preact, solid, svelte, vue | desktop Lighthouse categories plus FCP/LCP/Speed Index/TBT/CLS |
 | `chat-stream` | chat-stream | Octane + reference frameworks | deterministic token streaming + conversation switches |
 | `streamdown-hosted` | streamdown-hosted | React Streamdown + React-hosted Octane binding | React-hosted compatibility boundary: static mount/replace, fine/coarse Markdown streaming, semantic DOM parity, lifecycle diagnostic, and production bytes |
+| `svg-dashboard` | svg-dashboard | octane-tsrx, react, solid, svelte | hand-rolled SVG observability dashboard: path-d/transform churn, keyed reconcile inside `<svg>`, foreignObject labels, portal tooltip overlay, createElement icon de-opt; byte-exact Node-replay + cross-flavor DOM-parity gates |
 | `dbmon` | dbmon | Octane + reference frameworks | per-cell update churn |
 | `recursive-context` | recursive-context | Octane + reference frameworks | context fan-out |
 | `signal-favoring` | signal-favoring | Octane + reference frameworks | cascade vs targeted |
@@ -242,14 +253,21 @@ runtime cost separately. App-shaped
 sets use `todo_*`, `chat_*`, and `weather_*` operation prefixes; weather's shared
 service and formatting modules count as app code in both framework builds.
 
-`bundle-reachability` builds ten independent public-entry feature fixtures with
-the production Octane compiler, disabled HMR/profiling, and normalized esbuild
-minification. Each measured IIFE executes unchanged in an isolated jsdom realm;
-its visible DOM, interaction, hydration, Suspense, store, and cleanup behavior
-must match its feature oracle. The emitted module graph rejects React, server,
-profiling, devtools, package-metadata, and RPC-serialization reachability. Early
+`bundle-reachability` builds twenty independent public-entry feature fixtures
+across twenty-seven production builds with the production Octane compiler,
+disabled HMR/profiling, and normalized esbuild minification. The seven package
+side-effect fixtures each run through both Vite and esbuild. Each measured IIFE
+executes unchanged in an isolated jsdom realm; its visible DOM, interaction,
+hydration, Suspense, server rendering, store, and cleanup behavior must match its
+feature oracle. Client graphs reject server modules, while server graphs reject
+the client runtime; all reject React, profiling, devtools, package-metadata, and
+RPC-serialization reachability. Early
 hydration-event capture and the vanilla Zustand entry must also exclude the
 client runtime, while the hook binding must retain the real vanilla store.
+The isolated server-hook entry also rejects unrelated DOM namespace tables, and
+the component-owned-effects entry verifies that unused sibling styles, delegated
+events, and ViewTransition initialization disappear while retained styles and
+click handlers remain live.
 
 The two static-root fixtures deliberately measure different public contracts.
 `root-static-specialized` matches an application's disposable top-level
@@ -262,7 +280,7 @@ real and must not be disguised as the specialized entry.
 ceilings for every feature. Budgets leave about 3% deterministic headroom, with
 small byte-aligned allowances for tiny isolated entries. Each scenario publishes
 its committed ceiling as a
-same-run `*-budget` reference target, so thirty `maxRatio: 1` entries in
+same-run `*-budget` reference target, so eighty-one `maxRatio: 1` entries in
 `baselines/ratios.json` enforce all three metrics in the existing weekly/manual
 Bench CI workflow. Run the complete executable and byte guard directly with:
 
