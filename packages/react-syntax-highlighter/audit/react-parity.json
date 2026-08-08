@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-syntax-highlighter/src"],
-      "include": ["\\.(?:js|d\\.ts)$"],
+      "roots": [
+        "packages/react-syntax-highlighter/src"
+      ],
+      "include": [
+        "\\.(?:js|d\\.ts)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-syntax-highlighter/tests/adapted"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/react-syntax-highlighter/tests/adapted"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "5aeaae043b324c9f873be87f0fa80c1a29dea05ac75590c1eddfe76f36d7719a"
+      "lockfileSha256": "8b1ea90e73465ded1291692616237e1ceb7fb20a98e4922330370cd12107ff09"
     }
   },
   "lanes": [
@@ -556,7 +564,9 @@
   "divergences": [
     {
       "id": "compiled-children-value",
-      "caseIds": ["types:adapted-compiled-children"],
+      "caseIds": [
+        "types:adapted-compiled-children"
+      ],
       "upstreamResult": "Nested React children are inspectable source-string values.",
       "octaneResult": "TSRX nested component children are opaque renderer blocks; source text is passed with children={source}.",
       "rationale": "The Octane compiler owns nested component child blocks and intentionally does not expose their captured render scope to userland.",
@@ -568,7 +578,9 @@
     },
     {
       "id": "custom-component-identity",
-      "caseIds": ["types:adapted-custom-components"],
+      "caseIds": [
+        "types:adapted-custom-components"
+      ],
       "upstreamResult": "PreTag and CodeTag accept native tags or React class/function ComponentType values.",
       "octaneResult": "PreTag and CodeTag accept native tags or Octane function ComponentBody values.",
       "rationale": "React class instances and React element identity are renderer-owned objects that Octane cannot execute.",
