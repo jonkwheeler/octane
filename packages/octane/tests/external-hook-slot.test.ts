@@ -661,6 +661,7 @@ describe('manifest-declared manual hook slots', () => {
 			'inertia',
 			'jotai',
 			'lexical',
+			'livestore',
 			'lucide',
 			'mdx',
 			'mobx',
