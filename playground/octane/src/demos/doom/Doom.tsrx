@@ -122,10 +122,8 @@ export function DoomDemo() @{
 			if (phaseRef.current !== 'landing') {
 				document.exitPointerLock?.();
 				audioRef.current?.stop();
-				stateRef.current = createGameState();
-				simulationTimeRef.current = 0;
-				setGame(stateRef.current);
 				setPhase('landing');
+				reset();
 			}
 		};
 		document.addEventListener('pointerlockchange', updatePointerLock);
@@ -136,7 +134,7 @@ export function DoomDemo() @{
 			document.removeEventListener('pointerlockerror', onPointerError);
 			window.removeEventListener('popstate', onPopState);
 		};
-	}, []);
+	}, [reset]);
 
 	useEffect(() => {
 		const setKey = (event: KeyboardEvent, down: boolean) => {
