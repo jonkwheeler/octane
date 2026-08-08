@@ -21,7 +21,7 @@
         "packages/usehooks-ts/src"
       ],
       "include": [
-        "$a"
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     },
@@ -30,7 +30,7 @@
         "packages/usehooks-ts/tests/differential"
       ],
       "include": [
-        "$a"
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     }
