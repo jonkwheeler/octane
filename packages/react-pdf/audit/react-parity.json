@@ -10,17 +10,31 @@
     "integrity": "sha256:afc69e121c7f845dbc6bf88e584c5a7a74154c3e2b89c35ce42b3b3bb93d86ce",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-pdf/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-pdf/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-pdf/tests", "packages/react-pdf/typetests"],
-      "include": ["\\.test\\.(?:ts|tsx|tsrx)$"],
-      "exclude": ["/audit/"]
+      "roots": [
+        "packages/react-pdf/tests",
+        "packages/react-pdf/typetests"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|tsx|tsrx)$"
+      ],
+      "exclude": [
+        "/audit/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -36,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "c1dbfd971973fc124070132bbfc22d7b201bd33823b9b9c022e85a6043c643de"
+      "lockfileSha256": "7034563e6cafdeef75138bf19bb554f9afef2f15267dce71688f603f2694373d"
     }
   },
   "lanes": [
@@ -144,27 +158,27 @@
             {
               "id": "adapted:react-pdf-runtime-surface",
               "testName": "pins the root runtime exports and package export map",
-              "fullName": "react-pdf U1 — published public-surface ledger pins the root runtime exports and package export map"
+              "fullName": "react-pdf U1 \u2014 published public-surface ledger pins the root runtime exports and package export map"
             },
             {
               "id": "adapted:react-pdf-type-surface",
               "testName": "pins every root type export named by the published declaration",
-              "fullName": "react-pdf U1 — published public-surface ledger pins every root type export named by the published declaration"
+              "fullName": "react-pdf U1 \u2014 published public-surface ledger pins every root type export named by the published declaration"
             },
             {
               "id": "adapted:react-pdf-wildcard",
               "testName": "classifies all 94 published artifacts without silently narrowing the wildcard",
-              "fullName": "react-pdf U1 — published public-surface ledger classifies all 94 published artifacts without silently narrowing the wildcard"
+              "fullName": "react-pdf U1 \u2014 published public-surface ledger classifies all 94 published artifacts without silently narrowing the wildcard"
             },
             {
               "id": "adapted:react-pdf-documentation",
               "testName": "keeps every documented CSS and worker import in the migration contract",
-              "fullName": "react-pdf U1 — published public-surface ledger keeps every documented CSS and worker import in the migration contract"
+              "fullName": "react-pdf U1 \u2014 published public-surface ledger keeps every documented CSS and worker import in the migration contract"
             },
             {
               "id": "adapted:react-pdf-css",
               "testName": "ships the two documented styles byte-for-byte with their license notices",
-              "fullName": "react-pdf U1 — published public-surface ledger ships the two documented styles byte-for-byte with their license notices"
+              "fullName": "react-pdf U1 \u2014 published public-surface ledger ships the two documented styles byte-for-byte with their license notices"
             }
           ]
         },
@@ -176,12 +190,12 @@
             {
               "id": "browser:react-pdf-feasibility-chromium",
               "testName": "Chromium loads a worker and renders canvas, text, annotations, outline, and cleanup",
-              "fullName": "react-pdf U1 — real PDF.js browser feasibility Chromium loads a worker and renders canvas, text, annotations, outline, and cleanup"
+              "fullName": "react-pdf U1 \u2014 real PDF.js browser feasibility Chromium loads a worker and renders canvas, text, annotations, outline, and cleanup"
             },
             {
               "id": "browser:react-pdf-feasibility-firefox",
               "testName": "Firefox loads a worker and renders canvas, text, annotations, outline, and cleanup",
-              "fullName": "react-pdf U1 — real PDF.js browser feasibility Firefox loads a worker and renders canvas, text, annotations, outline, and cleanup"
+              "fullName": "react-pdf U1 \u2014 real PDF.js browser feasibility Firefox loads a worker and renders canvas, text, annotations, outline, and cleanup"
             }
           ]
         }
@@ -202,7 +216,7 @@
             {
               "id": "adapted:react-pdf-feasibility-ssr",
               "testName": "renders deterministic loading, error, and page shells without browser globals",
-              "fullName": "react-pdf U1 — SSR-safe shell renders deterministic loading, error, and page shells without browser globals"
+              "fullName": "react-pdf U1 \u2014 SSR-safe shell renders deterministic loading, error, and page shells without browser globals"
             }
           ]
         },
@@ -214,12 +228,12 @@
             {
               "id": "adapted:react-pdf-legacy-node",
               "testName": "imports the pinned legacy PDF.js build in a pristine Node process",
-              "fullName": "react-pdf U1 — PDF.js server feasibility imports the pinned legacy PDF.js build in a pristine Node process"
+              "fullName": "react-pdf U1 \u2014 PDF.js server feasibility imports the pinned legacy PDF.js build in a pristine Node process"
             },
             {
               "id": "adapted:react-pdf-modern-node-boundary",
               "testName": "proves the modern PDF.js entry is not directly safe in pristine Node",
-              "fullName": "react-pdf U1 — PDF.js server feasibility proves the modern PDF.js entry is not directly safe in pristine Node"
+              "fullName": "react-pdf U1 \u2014 PDF.js server feasibility proves the modern PDF.js entry is not directly safe in pristine Node"
             }
           ]
         }
@@ -240,7 +254,7 @@
             {
               "id": "adapted:react-pdf-hydration",
               "testName": "adopts the deterministic server shell and activates client effects",
-              "fullName": "react-pdf U1 — shell hydration adopts the deterministic server shell and activates client effects"
+              "fullName": "react-pdf U1 \u2014 shell hydration adopts the deterministic server shell and activates client effects"
             }
           ]
         }
