@@ -786,10 +786,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/usehooks-ts/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'usehooks-ts',
 					include: ['packages/usehooks-ts/tests/**/*.test.ts'],
@@ -813,7 +809,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'usehooks-ts-differential',
 					include: ['packages/usehooks-ts/tests/differential/**/*.test.ts'],
@@ -832,7 +827,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'usehooks-ts-ssr',
 					include: ['packages/usehooks-ts/tests/ssr.test.ts'],

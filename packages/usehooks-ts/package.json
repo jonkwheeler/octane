@@ -35,7 +35,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --config vitest.config.js --project usehooks-ts --project usehooks-ts-ssr",
+    "test": "vitest run --root ../.. --config vitest.config.js --project usehooks-ts --project usehooks-ts-differential --project usehooks-ts-ssr",
     "typecheck": "tsrx-tsc --noEmit"
   },
   "dependencies": {
