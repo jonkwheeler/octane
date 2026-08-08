@@ -3373,16 +3373,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/mobx/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'mobx',
-					include: [
-						'packages/mobx/tests/conformance/**/*.test.ts',
-						'packages/mobx/tests/differential/**/*.test.ts',
-					],
+					include: ['packages/mobx/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -3397,7 +3390,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mobx-differential',
 					include: ['packages/mobx/tests/differential/**/*.test.ts'],
@@ -3416,7 +3408,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mobx-ssr',
 					include: ['packages/mobx/tests/ssr/**/*.test.ts'],

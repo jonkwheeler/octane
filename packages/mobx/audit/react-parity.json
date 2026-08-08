@@ -21,7 +21,7 @@
         "packages/mobx/src"
       ],
       "include": [
-        "$a"
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     },
@@ -30,7 +30,7 @@
         "packages/mobx/tests/differential"
       ],
       "include": [
-        "$a"
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     }
@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
+      "lockfileSha256": "82bc42dbc3851bc19f0de4ea8353534130d415d3f888691bad95686701c77b9c"
     }
   },
   "lanes": [
@@ -91,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "5bdd432d8a90a3ac67a28566bf378b629138fb5ff929ce1bb41a52ddac8a8b99"
+          "sha256": "f9e6338d8b515a87b5ba366a371912032c3d711f4c1cd5a650592dfe50ded3d1"
         }
       ]
     }

@@ -37,7 +37,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project mobx --project mobx-ssr"
+    "test": "vitest run --root ../.. --project mobx --project mobx-differential --project mobx-ssr"
   },
   "dependencies": {
     "mobx": "catalog:default"
