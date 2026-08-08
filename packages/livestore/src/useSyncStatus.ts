@@ -10,19 +10,24 @@ export function useSyncStatus(
 	const [, slot] = splitSlot(rest);
 	const { store } = options;
 	const [, rerender] = useState(0, subSlot(slot, 'sync:status'));
-	const current = useRef(
-		{ store, status: store.syncStatus() },
-		subSlot(slot, 'sync:current'),
-	);
+	const current = useRef({ store, status: store.syncStatus() }, subSlot(slot, 'sync:current'));
 	if (current.current.store !== store) {
 		current.current = { store, status: store.syncStatus() };
 	}
 	useEffect(
-		() =>
-			store.subscribeSyncStatus((status) => {
+		function subscribeSyncStatusEffect() {
+			const subscribedStore = store;
+			return subscribedStore.subscribeSyncStatus(function onSyncStatus(status) {
+				// Ignore emissions from a previous store while effect cleanup is pending.
+				if (current.current.store !== subscribedStore) {
+					return;
+				}
 				current.current.status = status;
-				rerender((value) => value + 1);
-			}),
+				rerender(function increment(value) {
+					return value + 1;
+				});
+			});
+		},
 		[store],
 		subSlot(slot, 'sync:effect'),
 	);

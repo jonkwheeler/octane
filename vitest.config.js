@@ -927,10 +927,33 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'livestore-pristine',
+					include: ['packages/livestore/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+				},
+			},
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/livestore/tests/document-sync.test.ts',
+						'packages/livestore/tests/lifecycle.test.ts',
+						'packages/livestore/tests/live-list.test.ts',
+						'packages/livestore/tests/query.test.ts',
+					],
+				},
 				test: {
 					name: 'livestore',
 					include: ['packages/livestore/tests/**/*.test.ts'],
-					exclude: [...configDefaults.exclude, 'packages/livestore/tests/ssr/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/livestore/tests/ssr/**/*.test.ts',
+						'packages/livestore/tests/upstream-original.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},

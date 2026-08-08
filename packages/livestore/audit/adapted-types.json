@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"files": [
+		"packages/livestore/typetests/public-api.test-d.ts"
+	],
+	"assertionGroups": [
+		"stable and experimental export surface",
+		"OctaneNode provider children and registry override inference",
+		"negative controls for invalid public calls"
+	]
+}

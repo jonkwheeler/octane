@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"files": [
+		"packages/livestore/audit/type-probes/pristine.ts"
+	],
+	"assertionGroups": [
+		"stable and experimental export surface",
+		"ReactNode provider children",
+		"negative controls for invalid public calls"
+	]
+}

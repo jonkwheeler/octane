@@ -58,6 +58,7 @@ describe('reference-counted resources', () => {
 		const result = mount(ResourceReader, { scope, resourceKey: 'a', create, dispose });
 		flushEffects();
 		result.update(ResourceReader, { scope, resourceKey: 'b', create, dispose });
+		flushEffects();
 		expect(result.find('.resource').textContent).toBe('2');
 		expect(create).toHaveBeenCalledTimes(2);
 		expect(dispose).toHaveBeenCalledTimes(1);
@@ -91,7 +92,9 @@ describe('reference-counted resources', () => {
 		const result = mount(ResourceReader, { scope, resourceKey: '1', create, dispose });
 		flushEffects();
 		result.update(ResourceReader, { scope, resourceKey: '2', create, dispose });
+		flushEffects();
 		result.update(ResourceReader, { scope, resourceKey: '3', create, dispose });
+		flushEffects();
 		expect(result.find('.resource').textContent).toBe('3');
 		expect(create).toHaveBeenCalledTimes(3);
 		expect(dispose).toHaveBeenCalledTimes(2);
@@ -126,6 +129,7 @@ describe('reference-counted resources', () => {
 		const result = mount(ResourceReader, { scope: scopeA, resourceKey: 'k', create, dispose });
 		flushEffects();
 		result.update(ResourceReader, { scope: scopeB, resourceKey: 'k', create, dispose });
+		flushEffects();
 		expect(result.find('.resource').textContent).toBe('2');
 		expect(dispose).toHaveBeenCalledTimes(1);
 		result.unmount();
