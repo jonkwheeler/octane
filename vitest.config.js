@@ -1310,10 +1310,7 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/rainbowkit/tests/differential/**/*.test.ts'],
-				},
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rainbowkit',
 					include: [
