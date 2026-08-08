@@ -461,11 +461,10 @@ jobs:
           --exclude "packages/three/tests/browser/**/*.test.ts"
           --exclude "$ASTRO_E2E_SPEC"
 
-<<<<<<< HEAD
       - name: Run react-resizable-panels pristine upstream suite
         if: ${{ matrix.shard == '1/4' }}
         run: pnpm --filter @octanejs/react-resizable-panels test:upstream
-=======
+
   react_parity_checks:
     name: React parity checks
     needs: release_change
@@ -496,7 +495,6 @@ jobs:
       # pre-execution Vitest collection pass.
       - name: Check React parity inventories and execute required lanes
         run: pnpm react-parity:check
->>>>>>> origin/main
 
   # Keep the existing required check names while the work happens in parallel
   # above. `always()` makes a failed shard produce a failed required check and
@@ -652,20 +650,18 @@ jobs:
       - name: Run ${{ matrix.lane }} integration tests
         run: pnpm vitest run ${{ matrix.specs }} --maxWorkers=1
 
-<<<<<<< HEAD
       - name: Run declared React parity browser lanes
         if: ${{ matrix.lane == 'browser' }}
         run: >-
           node scripts/react-parity/harness.mjs run
           --manifest packages/react-resizable-panels/audit/react-parity.json
           --lane react-resizable-panels-browser
-=======
+
       - name: Run Bun compiler-preload integration test
         if: ${{ matrix.bun }}
         env:
           BUN_BINARY: bun
         run: node --test packages/octane/tests/register-hook-bun.integration.test.mjs
->>>>>>> origin/main
 
   lint_checks:
     name: lint checks
@@ -751,11 +747,7 @@ jobs:
       - name: Validate React parity metadata and public claims
         run: |
           pnpm react-parity:test
-<<<<<<< HEAD
-          pnpm react-parity:check --defer-browser-lanes
-=======
           pnpm react-parity:validate
->>>>>>> origin/main
 
       # Redact's issues, pull requests, and tests are mined at a pinned commit
       # into an authored contract ledger. This network-free gate validates its

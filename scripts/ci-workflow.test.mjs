@@ -88,7 +88,7 @@ function stepScript(workflowSource, stepName) {
 
 describe('CI workflow aggregation', () => {
 	test('defers browser parity execution only to the Chromium-backed heavy lane', () => {
-		assert.match(jobSource('lint_checks'), /pnpm react-parity:check --defer-browser-lanes/);
+		assert.match(jobSource('lint_checks'), /pnpm react-parity:validate/);
 		const heavy = jobSource('heavy_integration');
 		assert.match(heavy, /lane: browser[\s\S]*chromium: true/);
 		assert.match(heavy, /--lane react-resizable-panels-browser/);
