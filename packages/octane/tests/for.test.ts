@@ -14,6 +14,10 @@ import {
 	NestedConditionalCallBodyList,
 	NestedConditionalList,
 	NestedConditionalTransition,
+	NestedProjectedHostBoundary,
+	NestedProjectedHostList,
+	NestedProjectedMethodList,
+	NestedProjectedOpaqueList,
 	PlainCalleeList,
 	KeyedSelectionList,
 	KeyedSelectionTransition,
@@ -33,6 +37,9 @@ import {
 	FastMappedRenderableList,
 	FastMappedBoundaryList,
 	FastSuspendingGetterList,
+	NestedKeyedReorderList,
+	NestedKeyedReorderBoundary,
+	NestedKeyedReorderTransition,
 	setExternal,
 	setNestedConditionalActivityMode,
 } from './_fixtures/for.tsrx';
@@ -1019,6 +1026,551 @@ describe('large keyed list fills', () => {
 			items.map((row) => row.label),
 		);
 		expect(r.find('#fast-host-transition-value').textContent).toBe('resolved');
+		r.unmount();
+	});
+});
+
+describe('nested keyed host projections', () => {
+	const makeGroups = () => [
+		{
+			id: 1,
+			label: 'first',
+			segments: [
+				{ id: 11, label: 'one', code: false },
+				{ id: 12, label: 'two', code: true },
+			],
+		},
+		{
+			id: 2,
+			label: 'second',
+			segments: [{ id: 21, label: 'three', code: false }],
+		},
+		{ id: 3, label: 'third', segments: [] },
+	];
+
+	it('keeps stable nested rows while refreshing immutable values, dependencies, and handlers', () => {
+		const groups = makeGroups();
+		const selected: string[] = [];
+		const onPick = (groupId: number, segmentId: number, prefix: string) => {
+			selected.push(`before:${groupId}:${segmentId}:${prefix}`);
+		};
+		const props = { groups, prefix: 'before', onPick };
+		const root = mount(NestedProjectedHostList, props);
+		const originalGroups = root.findAll('.nested-projected-group');
+		const input = root.find('.nested-projected-input') as HTMLInputElement;
+		input.value = 'unfinished edit';
+
+		const updated = [
+			groups[0]!,
+			{
+				...groups[1]!,
+				segments: [{ ...groups[1]!.segments[0]!, label: 'updated', code: true }],
+			},
+			groups[2]!,
+		];
+		root.update(NestedProjectedHostList, { ...props, groups: updated });
+		expect(root.findAll('.nested-projected-group')).toEqual(originalGroups);
+		expect(root.find('[data-projected-segment="21"] button').textContent).toBe('before:updated');
+		expect(root.find('.nested-projected-input')).toBe(input);
+		expect(input.value).toBe('unfinished edit');
+
+		const nextPick = (groupId: number, segmentId: number, prefix: string) => {
+			selected.push(`after:${groupId}:${segmentId}:${prefix}`);
+		};
+		root.update(NestedProjectedHostList, { groups: updated, prefix: 'after', onPick: nextPick });
+		expect(root.findAll('.nested-projected-group h3').map((title) => title.textContent)).toEqual([
+			'after:first',
+			'after:second',
+			'after:third',
+		]);
+		expect(root.find('.nested-projected-empty').textContent).toBe('after:third:empty');
+		expect(input.value).toBe('unfinished edit');
+		root.click('[data-projected-segment="12"] button');
+		expect(selected).toEqual(['after:1:12:after']);
+		root.unmount();
+	});
+
+	it('preserves keyed identities through nested reordering, removal, and empty-arm changes', () => {
+		const groups = makeGroups();
+		const props = { groups, prefix: 'group', onPick: () => {} };
+		const root = mount(NestedProjectedHostList, props);
+		const groupNodes = new Map(
+			root
+				.findAll('.nested-projected-group')
+				.map((group) => [Number(group.getAttribute('data-projected-group')), group]),
+		);
+		const segmentNodes = new Map(
+			root
+				.findAll('[data-projected-segment]')
+				.map((segment) => [Number(segment.getAttribute('data-projected-segment')), segment]),
+		);
+		const reorderedFirst = { ...groups[0]!, segments: groups[0]!.segments.toReversed() };
+		const reordered = [groups[2]!, reorderedFirst, groups[1]!];
+
+		root.update(NestedProjectedHostList, { ...props, groups: reordered });
+		expect(
+			root
+				.findAll('.nested-projected-group')
+				.map((group) => Number(group.getAttribute('data-projected-group'))),
+		).toEqual([3, 1, 2]);
+		expect(root.find('[data-projected-group="1"]')).toBe(groupNodes.get(1));
+		expect(root.find('[data-projected-segment="12"]')).toBe(segmentNodes.get(12));
+		expect(root.find('[data-projected-segment="11"]')).toBe(segmentNodes.get(11));
+		expect(
+			Array.from(
+				root.find('[data-projected-group="1"]').querySelectorAll('[data-projected-segment]'),
+			).map((segment) => Number(segment.getAttribute('data-projected-segment'))),
+		).toEqual([12, 11]);
+
+		const emptiedFirst = { ...reorderedFirst, segments: [] };
+		root.update(NestedProjectedHostList, {
+			...props,
+			groups: [groups[2]!, emptiedFirst, groups[1]!],
+		});
+		expect(root.find('[data-projected-group="1"]')).toBe(groupNodes.get(1));
+		expect(root.find('[data-projected-group="1"] .nested-projected-empty').textContent).toBe(
+			'group:first:empty',
+		);
+
+		const filledThird = {
+			...groups[2]!,
+			segments: [{ id: 31, label: 'restored', code: false }],
+		};
+		root.update(NestedProjectedHostList, { ...props, groups: [filledThird, emptiedFirst] });
+		expect(root.find('[data-projected-group="3"]')).toBe(groupNodes.get(3));
+		expect(root.find('[data-projected-segment="31"] button').textContent).toBe('group:restored');
+		expect(root.findAll('[data-projected-group="2"]')).toHaveLength(0);
+		root.unmount();
+	});
+
+	it('retries suspended nested conditional rows before finishing an outer and inner reorder', async () => {
+		const groups = makeGroups();
+		let resolve!: (value: string) => void;
+		const promise = new Promise<string>((done) => {
+			resolve = done;
+		});
+		const props = { groups, prefix: 'group', onPick: () => {} };
+		const root = mount(NestedProjectedHostBoundary, props);
+		const first = groups[0]!;
+		const reordered = [
+			groups[2]!,
+			groups[1]!,
+			{
+				...first,
+				segments: first.segments.toReversed().map((segment) =>
+					segment.id === 11
+						? {
+								id: segment.id,
+								code: segment.code,
+								get label() {
+									return use(promise);
+								},
+							}
+						: { ...segment },
+				),
+			},
+		];
+
+		root.update(NestedProjectedHostBoundary, { ...props, groups: reordered });
+		expect(root.find('#nested-projected-pending').textContent).toBe('loading');
+
+		await act(() => resolve('resolved one'));
+		expect(
+			root
+				.findAll('.nested-projected-group')
+				.map((group) => Number(group.getAttribute('data-projected-group'))),
+		).toEqual([3, 2, 1]);
+		expect(
+			Array.from(
+				root.find('[data-projected-group="1"]').querySelectorAll('[data-projected-segment]'),
+			).map((segment) => Number(segment.getAttribute('data-projected-segment'))),
+		).toEqual([12, 11]);
+		expect(root.find('[data-projected-segment="11"] button').textContent).toBe(
+			'group:resolved one',
+		);
+		root.unmount();
+	});
+
+	it('continues reading live nested receiver methods when outer item identities are stable', () => {
+		let current = 'initial';
+		const group = { id: 1, segments: [{ id: 11, read: () => current }] };
+		const props = { groups: [group], prefix: 'value' };
+		const root = mount(NestedProjectedMethodList, props);
+		expect(root.find('.nested-projected-method').textContent).toBe('value:initial');
+
+		current = 'updated';
+		root.update(NestedProjectedMethodList, { ...props, groups: [group] });
+		expect(root.find('.nested-projected-method').textContent).toBe('value:updated');
+		root.unmount();
+	});
+
+	it('keeps nested Activity visibility, context consumers, and callback refs live', () => {
+		const first = makeGroups()[0]!;
+		const group = { ...first, segments: [first.segments[0]!] };
+		const refs: Array<HTMLSpanElement | null> = [];
+		const onRef = (element: HTMLSpanElement | null) => {
+			refs.push(element);
+		};
+		const props = { groups: [group], value: 'initial', visible: true, onRef };
+		const root = mount(NestedProjectedOpaqueList, props);
+		const original = root.find('.nested-projected-context') as HTMLSpanElement;
+
+		try {
+			expect(original.textContent).toBe('initial:one');
+			expect(refs).toEqual([original]);
+
+			setNestedConditionalActivityMode('hidden');
+			root.update(NestedProjectedOpaqueList, { ...props, groups: [group] });
+			expect(original.style.display).toBe('none');
+
+			setNestedConditionalActivityMode('visible');
+			root.update(NestedProjectedOpaqueList, { ...props, groups: [group], value: 'updated' });
+			expect(root.find('.nested-projected-context')).toBe(original);
+			expect(original.style.display).toBe('');
+			expect(original.textContent).toBe('updated:one');
+
+			root.update(NestedProjectedOpaqueList, {
+				...props,
+				groups: [group],
+				value: 'updated',
+				visible: false,
+			});
+			expect(root.findAll('.nested-projected-context')).toHaveLength(0);
+			expect(root.find('.nested-projected-opaque-placeholder').textContent).toBe('hidden');
+			expect(refs.at(-1)).toBeNull();
+		} finally {
+			root.unmount();
+			setNestedConditionalActivityMode('visible');
+		}
+	});
+
+	it('adopts nested projected rows and preserves pre-hydration edits and live handlers', () => {
+		const groups = makeGroups();
+		const picked: string[] = [];
+		const onPick = (groupId: number, segmentId: number, prefix: string) => {
+			picked.push(`${groupId}:${segmentId}:${prefix}`);
+		};
+		const props = { groups, prefix: 'server', onPick };
+		const server = loadServerFixture('packages/octane/tests/_fixtures/for.tsrx', {
+			compileOptions: { hmr: false, dev: false },
+		});
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		container.innerHTML = ServerRuntime.renderToString(server.NestedProjectedHostList, props).html;
+		const originalGroups = Array.from(container.querySelectorAll('.nested-projected-group'));
+		const input = container.querySelector('.nested-projected-input') as HTMLInputElement;
+		input.value = 'typed before hydration';
+		const root = hydrateRoot(container, NestedProjectedHostList, props);
+		flushSync(() => {});
+
+		expect(Array.from(container.querySelectorAll('.nested-projected-group'))).toEqual(
+			originalGroups,
+		);
+		expect(container.querySelector('.nested-projected-input')).toBe(input);
+		expect(input.value).toBe('typed before hydration');
+
+		flushSync(() => root.render(NestedProjectedHostList, { ...props, prefix: 'client' }));
+		expect(Array.from(container.querySelectorAll('.nested-projected-group'))).toEqual(
+			originalGroups,
+		);
+		expect(container.querySelector('[data-projected-segment="12"] button')?.textContent).toBe(
+			'client:two',
+		);
+		expect(input.value).toBe('typed before hydration');
+		(container.querySelector('[data-projected-segment="12"] button') as HTMLButtonElement).click();
+		expect(picked).toEqual(['1:12:client']);
+		root.unmount();
+		container.remove();
+	});
+});
+
+describe('nested keyed list reordering', () => {
+	const makeGroups = (length = 11) =>
+		Array.from({ length }, (_, groupIndex) => {
+			const id = groupIndex + 1;
+			return {
+				id,
+				label: `group ${id}`,
+				rows: Array.from({ length: 17 + (groupIndex % 5) }, (_, rowIndex) => ({
+					id: id * 100 + rowIndex + 1,
+					label: `row ${id}:${rowIndex + 1}`,
+				})),
+			};
+		});
+
+	const reorderGroups = (groups: ReturnType<typeof makeGroups>, prefix = 'updated') =>
+		groups.toReversed().map((group) => ({
+			...group,
+			label: `${prefix} group ${group.id}`,
+			rows: group.rows.toReversed().map((row) => ({
+				...row,
+				label: `${prefix} row ${row.id}`,
+			})),
+		}));
+
+	const expectGroups = (r: ReturnType<typeof mount>, groups: ReturnType<typeof makeGroups>) => {
+		const renderedGroups = r.findAll('.nested-reorder-group');
+		expect(renderedGroups.map((group) => Number(group.getAttribute('data-reorder-group')))).toEqual(
+			groups.map((group) => group.id),
+		);
+		for (let index = 0; index < groups.length; index++) {
+			const group = groups[index]!;
+			const renderedGroup = renderedGroups[index]!;
+			expect(renderedGroup.querySelector('h3')?.textContent).toBe(group.label);
+			const rows = Array.from(renderedGroup.querySelectorAll('.nested-reorder-row'));
+			expect(rows.map((row) => Number(row.getAttribute('data-reorder-row')))).toEqual(
+				group.rows.map((row) => row.id),
+			);
+			expect(rows.map((row) => row.textContent)).toEqual(group.rows.map((row) => row.label));
+		}
+	};
+
+	it('keeps every group and row alive when both nesting levels reorder together', () => {
+		const warmRows = Array.from({ length: 29 }, (_, index) => ({
+			id: index + 1,
+			label: `warm row ${index + 1}`,
+		}));
+		const warm = mount(List, { items: warmRows });
+		warm.update(List, { items: warmRows.toReversed() });
+		warm.unmount();
+
+		const groups = makeGroups();
+		const picked: Array<[number, number]> = [];
+		const onPick = (groupId: number, rowId: number) => picked.push([groupId, rowId]);
+		const r = mount(NestedKeyedReorderList, { groups, onPick });
+		const groupNodes = new Map(
+			r
+				.findAll('.nested-reorder-group')
+				.map((group) => [Number(group.getAttribute('data-reorder-group')), group]),
+		);
+		const rowNodes = new Map(
+			r
+				.findAll('.nested-reorder-row')
+				.map((row) => [Number(row.getAttribute('data-reorder-row')), row]),
+		);
+		const preservedButton = r.find('[data-reorder-row="112"] button') as HTMLButtonElement;
+		preservedButton.focus();
+		expect(document.activeElement).toBe(preservedButton);
+
+		const reversed = groups.toReversed().map((group, groupIndex) => {
+			const split = 2 + (groupIndex % 5);
+			const rows = [...group.rows.slice(split), ...group.rows.slice(0, split)];
+			return {
+				...group,
+				label: `updated group ${group.id}`,
+				rows: rows.map((row) => ({ ...row, label: `updated row ${row.id}` })),
+			};
+		});
+		r.update(NestedKeyedReorderList, { groups: reversed, onPick });
+		expectGroups(r, reversed);
+		for (const group of reversed) {
+			expect(r.find(`[data-reorder-group="${group.id}"]`)).toBe(groupNodes.get(group.id));
+			for (const row of group.rows) {
+				expect(r.find(`[data-reorder-row="${row.id}"]`)).toBe(rowNodes.get(row.id));
+			}
+		}
+		expect(r.find('[data-reorder-row="112"] button')).toBe(preservedButton);
+		preservedButton.focus();
+		expect(document.activeElement).toBe(preservedButton);
+		r.click('[data-reorder-row="112"] button');
+		expect(picked).toEqual([[1, 112]]);
+
+		const shortened = reversed
+			.slice(0, 8)
+			.toReversed()
+			.map((group) => ({
+				...group,
+				label: `short group ${group.id}`,
+				rows: group.rows
+					.slice(0, 13)
+					.toReversed()
+					.map((row) => ({ ...row, label: `short row ${row.id}` })),
+			}));
+		r.update(NestedKeyedReorderList, { groups: shortened, onPick });
+		expectGroups(r, shortened);
+		for (const group of shortened) {
+			expect(r.find(`[data-reorder-group="${group.id}"]`)).toBe(groupNodes.get(group.id));
+			for (const row of group.rows) {
+				expect(r.find(`[data-reorder-row="${row.id}"]`)).toBe(rowNodes.get(row.id));
+			}
+		}
+		r.unmount();
+	});
+
+	it('adopts server-rendered nested rows and preserves their identity during both reorders', () => {
+		const groups = makeGroups(8);
+		const picked: Array<[number, number]> = [];
+		const onPick = (groupId: number, rowId: number) => picked.push([groupId, rowId]);
+		const props = { groups, onPick };
+		const server = loadServerFixture('packages/octane/tests/_fixtures/for.tsrx', {
+			compileOptions: { hmr: false, dev: false },
+		});
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		container.innerHTML = ServerRuntime.renderToString(server.NestedKeyedReorderList, props).html;
+		const groupNodes = new Map(
+			Array.from(container.querySelectorAll('.nested-reorder-group')).map((group) => [
+				Number(group.getAttribute('data-reorder-group')),
+				group,
+			]),
+		);
+		const rowNodes = new Map(
+			Array.from(container.querySelectorAll('.nested-reorder-row')).map((row) => [
+				Number(row.getAttribute('data-reorder-row')),
+				row,
+			]),
+		);
+		const root = hydrateRoot(container, NestedKeyedReorderList, props);
+		flushSync(() => {});
+		expect(Array.from(container.querySelectorAll('.nested-reorder-group'))).toEqual([
+			...groupNodes.values(),
+		]);
+
+		const reordered = reorderGroups(groups, 'hydrated');
+		flushSync(() => root.render(NestedKeyedReorderList, { groups: reordered, onPick }));
+		expect(
+			Array.from(container.querySelectorAll('.nested-reorder-group')).map((group) =>
+				Number(group.getAttribute('data-reorder-group')),
+			),
+		).toEqual(reordered.map((group) => group.id));
+		for (const group of reordered) {
+			expect(container.querySelector(`[data-reorder-group="${group.id}"]`)).toBe(
+				groupNodes.get(group.id),
+			);
+			for (const row of group.rows) {
+				expect(container.querySelector(`[data-reorder-row="${row.id}"]`)).toBe(
+					rowNodes.get(row.id),
+				);
+			}
+		}
+		flushSync(() =>
+			(container.querySelector('[data-reorder-row="112"] button') as HTMLButtonElement).click(),
+		);
+		expect(picked).toEqual([[1, 112]]);
+		root.unmount();
+		container.remove();
+	});
+
+	it('recovers when a nested survivor throws during simultaneous parent and child reorders', () => {
+		const groups = makeGroups();
+		const onPick = () => {};
+		const r = mount(NestedKeyedReorderBoundary, { groups, onPick });
+		let shouldThrow = true;
+		const reordered = reorderGroups(groups).map((group) => ({
+			...group,
+			rows: group.rows.map((row) =>
+				row.id === 112
+					? {
+							id: row.id,
+							get label() {
+								if (shouldThrow) throw new Error('nested row failed');
+								return 'recovered nested row';
+							},
+						}
+					: row,
+			),
+		}));
+
+		r.update(NestedKeyedReorderBoundary, { groups: reordered, onPick });
+		expect(r.findAll('.nested-reorder-row')).toHaveLength(0);
+		expect(r.find('#nested-reorder-retry').textContent).toBe('nested row failed');
+
+		shouldThrow = false;
+		r.click('#nested-reorder-retry');
+		expectGroups(r, reordered);
+		expect(r.find('[data-reorder-row="112"]').textContent).toBe('recovered nested row');
+		const resized = reorderGroups(reordered.slice(0, 7), 'after retry');
+		r.update(NestedKeyedReorderBoundary, { groups: resized, onPick });
+		expectGroups(r, resized);
+		r.unmount();
+	});
+
+	it('retries a nested survivor suspension and then reorders a differently sized list', async () => {
+		const groups = makeGroups();
+		const onPick = () => {};
+		const r = mount(NestedKeyedReorderBoundary, { groups, onPick });
+		let resolve!: (value: string) => void;
+		const promise = new Promise<string>((done) => {
+			resolve = done;
+		});
+		const reordered = reorderGroups(groups).map((group) => ({
+			...group,
+			rows: group.rows.map((row) =>
+				row.id === 112
+					? {
+							id: row.id,
+							get label() {
+								return use(promise);
+							},
+						}
+					: row,
+			),
+		}));
+
+		r.update(NestedKeyedReorderBoundary, { groups: reordered, onPick });
+		expect(r.find('#nested-reorder-pending').textContent).toBe('loading');
+
+		await act(() => resolve('row 1:12'));
+		const resolved = reordered.map((group) => ({
+			...group,
+			rows: group.rows.map((row) => ({
+				id: row.id,
+				label: row.id === 112 ? 'row 1:12' : row.label,
+			})),
+		}));
+		expectGroups(r, resolved);
+		const resized = reorderGroups(resolved.slice(0, 7), 'after resolution');
+		r.update(NestedKeyedReorderBoundary, { groups: resized, onPick });
+		expectGroups(r, resized);
+		r.unmount();
+	});
+
+	it('preserves committed nested rows through a suspended transition and a later urgent reorder', async () => {
+		const groups = makeGroups();
+		const nextGroups = groups.toReversed().map((group) => ({
+			...group,
+			rows: group.rows.toReversed().map((row) => ({ ...row })),
+		}));
+		const picked: Array<[number, number]> = [];
+		const onPick = (groupId: number, rowId: number) => picked.push([groupId, rowId]);
+		const initialPromise = Promise.resolve('initial');
+		let resolveNext!: (value: string) => void;
+		const nextPromise = new Promise<string>((resolve) => {
+			resolveNext = resolve;
+		});
+		await Promise.resolve();
+		const r = mount(NestedKeyedReorderTransition, {
+			initialGroups: groups,
+			nextGroups,
+			initialPromise,
+			nextPromise,
+			onPick,
+		});
+		await act(() => {});
+		const originalGroups = r.findAll('.nested-reorder-group');
+		const originalRows = new Map(
+			r
+				.findAll('.nested-reorder-row')
+				.map((row) => [Number(row.getAttribute('data-reorder-row')), row]),
+		);
+		expect(r.find('#nested-reorder-transition-value').textContent).toBe('initial');
+
+		r.click('#nested-reorder-transition-start');
+		expect(r.findAll('.nested-reorder-group')).toEqual(originalGroups);
+		expect(r.find('#nested-reorder-transition-value').textContent).toBe('initial');
+		expect(r.findAll('#nested-reorder-transition-pending')).toHaveLength(0);
+
+		await act(() => resolveNext('resolved'));
+		expect(r.find('#nested-reorder-transition-value').textContent).toBe('resolved');
+		r.click('#nested-reorder-transition-urgent');
+		expectGroups(r, nextGroups);
+		for (const group of nextGroups) {
+			for (const row of group.rows) {
+				expect(r.find(`[data-reorder-row="${row.id}"]`)).toBe(originalRows.get(row.id));
+			}
+		}
+		r.click('[data-reorder-row="112"] button');
+		expect(picked).toEqual([[1, 112]]);
 		r.unmount();
 	});
 });
