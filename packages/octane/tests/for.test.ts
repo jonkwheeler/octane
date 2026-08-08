@@ -10,6 +10,10 @@ import {
 	ToggleableEmpty,
 	DepPureList,
 	CallBodyList,
+	NestedConditionalActivityList,
+	NestedConditionalCallBodyList,
+	NestedConditionalList,
+	NestedConditionalTransition,
 	PlainCalleeList,
 	KeyedSelectionList,
 	KeyedSelectionTransition,
@@ -29,7 +33,11 @@ import {
 	FastMappedRenderableList,
 	FastMappedBoundaryList,
 	FastSuspendingGetterList,
+	NestedKeyedReorderList,
+	NestedKeyedReorderBoundary,
+	NestedKeyedReorderTransition,
 	setExternal,
+	setNestedConditionalActivityMode,
 } from './_fixtures/for.tsrx';
 
 const labels = (r: ReturnType<typeof mount>) => r.findAll('li').map((li) => li.textContent);
@@ -210,6 +218,23 @@ describe('forBlock — render-time calls defeat the survivor short-circuit', () 
 		r.unmount();
 		setExternal('tick0'); // reset the module-level fixture state
 	});
+
+	it('re-evaluates item methods inside nested conditional markup', () => {
+		const r = mount(NestedConditionalCallBodyList);
+		expect(r.findAll('.nested-call-row').map((row) => row.textContent)).toEqual([
+			'r1:tick0',
+			'r2:tick0',
+		]);
+
+		setExternal('tick1');
+		r.click('#nested-call-rerender');
+		expect(r.findAll('.nested-call-row').map((row) => row.textContent)).toEqual([
+			'r1:tick1',
+			'r2:tick1',
+		]);
+		r.unmount();
+		setExternal('tick0');
+	});
 });
 
 describe('forBlock — DEP-PURE promotion compares deps with Object.is', () => {
@@ -229,6 +254,195 @@ describe('forBlock — DEP-PURE promotion compares deps with Object.is', () => {
 		expect(r.findAll('.dp-row').map((li) => li.textContent)).toEqual(['row1:tick0', 'row2:tick0']);
 		r.unmount();
 		setExternal('tick0'); // reset the module-level fixture state
+	});
+});
+
+describe('keyed rows with nested conditional content', () => {
+	const makeRows = () => [
+		{ id: 1, label: 'first' },
+		{ id: 2, label: 'second' },
+		{ id: 3, label: 'third' },
+	];
+
+	it('updates Activity visibility in stable keyed rows alongside host conditionals', () => {
+		const items = [{ id: 1, label: 'first' }];
+		const r = mount(NestedConditionalActivityList, { items, visible: true });
+		const content = r.find('.nested-conditional-activity-content') as HTMLElement;
+
+		try {
+			expect(content.style.display).toBe('');
+
+			setNestedConditionalActivityMode('hidden');
+			r.update(NestedConditionalActivityList, { items: [...items], visible: true });
+			expect(content.style.display).toBe('none');
+			expect(r.find('.nested-conditional-activity-content')).toBe(content);
+
+			setNestedConditionalActivityMode('visible');
+			r.update(NestedConditionalActivityList, { items: [...items], visible: true });
+			expect(content.style.display).toBe('');
+			expect(r.find('.nested-conditional-activity-label').textContent).toBe('first');
+		} finally {
+			r.unmount();
+			setNestedConditionalActivityMode('visible');
+		}
+	});
+
+	it('preserves surviving rows while updating immutable values, editing state, and callbacks', () => {
+		const initialItems = makeRows();
+		const calls: string[] = [];
+		const originalHandler = (id: number, prefix: string) => {
+			calls.push('original:' + prefix + ':' + id);
+		};
+		const initialProps = {
+			items: initialItems,
+			editing: 2,
+			prefix: 'before',
+			onSelect: originalHandler,
+		};
+		const r = mount(NestedConditionalList, initialProps);
+		const originalRows = r.findAll('li');
+		const editor = r.find('.nested-conditional-editor') as HTMLInputElement;
+		editor.value = 'uncommitted draft';
+
+		const updatedItems = [
+			initialItems[0]!,
+			{ ...initialItems[1]!, label: 'updated second', completed: true },
+			initialItems[2]!,
+		];
+		r.update(NestedConditionalList, { ...initialProps, items: updatedItems });
+		expect(r.findAll('li')).toEqual(originalRows);
+		expect(r.find('.completed .nested-conditional-label').textContent).toBe('updated second');
+		expect(r.find('.nested-conditional-editor')).toBe(editor);
+		expect(editor.value).toBe('uncommitted draft');
+
+		const nextHandler = (id: number, prefix: string) => {
+			calls.push('updated:' + prefix + ':' + id);
+		};
+		r.update(NestedConditionalList, {
+			items: updatedItems,
+			editing: 3,
+			prefix: 'after',
+			onSelect: nextHandler,
+		});
+		expect(r.findAll('li')).toEqual(originalRows);
+		expect(r.findAll('li').map((row) => row.getAttribute('data-prefix'))).toEqual([
+			'after',
+			'after',
+			'after',
+		]);
+		expect(r.find('.editing .nested-conditional-label').textContent).toBe('third');
+		expect((r.find('.nested-conditional-editor') as HTMLInputElement).value).toBe('third');
+		r.click('.editing .nested-conditional-action');
+		expect(calls).toEqual(['updated:after:3']);
+		r.unmount();
+	});
+
+	it('preserves conditional DOM and live events when surviving rows move or disappear', () => {
+		const initialItems = makeRows();
+		const selected: number[] = [];
+		const props = {
+			items: initialItems,
+			editing: 2,
+			prefix: 'row',
+			onSelect: (id: number) => {
+				selected.push(id);
+			},
+		};
+		const r = mount(NestedConditionalList, props);
+		const originalRows = r.findAll('li');
+		const editor = r.find('.nested-conditional-editor') as HTMLInputElement;
+		editor.value = 'keep my draft';
+
+		const reordered = [initialItems[2]!, initialItems[1]!, initialItems[0]!];
+		r.update(NestedConditionalList, { ...props, items: reordered });
+		expect(r.findAll('li')).toEqual([originalRows[2], originalRows[1], originalRows[0]]);
+		expect(r.find('.nested-conditional-editor')).toBe(editor);
+		expect(editor.value).toBe('keep my draft');
+		r.click('.editing .nested-conditional-action');
+
+		r.update(NestedConditionalList, {
+			...props,
+			items: [reordered[0]!, reordered[2]!],
+			editing: null,
+		});
+		expect(r.findAll('li')).toEqual([originalRows[2], originalRows[0]]);
+		expect(r.findAll('.nested-conditional-editor')).toHaveLength(0);
+		r.click('.nested-conditional-action');
+		expect(selected).toEqual([2, 3]);
+		r.unmount();
+	});
+
+	it('adopts server-rendered conditional rows while preserving inputs and live handlers', () => {
+		const items = makeRows();
+		const selected: number[] = [];
+		const props = {
+			items,
+			editing: 2,
+			prefix: 'hydrated',
+			onSelect: (id: number) => {
+				selected.push(id);
+			},
+		};
+		const server = loadServerFixture('packages/octane/tests/_fixtures/for.tsrx', {
+			compileOptions: { hmr: false, dev: false },
+		});
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		container.innerHTML = ServerRuntime.renderToString(server.NestedConditionalList, props).html;
+		const originalRows = Array.from(container.querySelectorAll('li'));
+		const originalEditor = container.querySelector(
+			'.nested-conditional-editor',
+		) as HTMLInputElement;
+		originalEditor.value = 'typed before hydration';
+		const root = hydrateRoot(container, NestedConditionalList, props);
+		flushSync(() => {});
+
+		expect(Array.from(container.querySelectorAll('li'))).toEqual(originalRows);
+		expect(container.querySelector('.nested-conditional-editor')).toBe(originalEditor);
+		expect(originalEditor.value).toBe('typed before hydration');
+
+		flushSync(() => root.render(NestedConditionalList, { ...props, editing: 3 }));
+		expect(Array.from(container.querySelectorAll('li'))).toEqual(originalRows);
+		expect(container.querySelector('.editing .nested-conditional-label')?.textContent).toBe(
+			'third',
+		);
+		(container.querySelector('.editing .nested-conditional-action') as HTMLButtonElement).click();
+		expect(selected).toEqual([3]);
+
+		root.unmount();
+		container.remove();
+	});
+
+	it('keeps committed conditional-row bindings intact while a later transition sibling suspends', async () => {
+		const items = makeRows();
+		const initialPromise = Promise.resolve('initial');
+		let resolveNext!: (value: string) => void;
+		const nextPromise = new Promise<string>((resolve) => {
+			resolveNext = resolve;
+		});
+		await Promise.resolve();
+		const r = mount(NestedConditionalTransition, { items, initialPromise, nextPromise });
+		await act(() => {});
+		const originalRows = r.findAll('#nested-transition-list li');
+		const rowLabels = () => r.findAll('.nested-transition-label').map((row) => row.textContent);
+		expect(rowLabels()).toEqual(['initial:first', 'initial:second', 'initial:third']);
+		expect(r.find('.nested-transition-detail').textContent).toBe('initial:first');
+
+		r.click('#nested-transition-bump');
+		expect(r.findAll('#nested-transition-list li')).toEqual(originalRows);
+		expect(rowLabels()).toEqual(['initial:first', 'initial:second', 'initial:third']);
+		expect(r.find('.nested-transition-detail').textContent).toBe('initial:first');
+		expect(r.findAll('#nested-transition-fallback')).toHaveLength(0);
+
+		await act(() => resolveNext('resolved'));
+		expect(r.findAll('#nested-transition-list li')).toEqual(originalRows);
+		expect(rowLabels()).toEqual(['pending:first', 'pending:second', 'pending:third']);
+		expect(r.find('.nested-transition-detail').textContent).toBe('pending:first');
+
+		r.click('#nested-transition-urgent');
+		expect(rowLabels()).toEqual(['urgent:first', 'urgent:second', 'urgent:third']);
+		expect(r.find('.nested-transition-detail').textContent).toBe('urgent:first');
+		r.unmount();
 	});
 });
 
@@ -808,6 +1022,297 @@ describe('large keyed list fills', () => {
 			items.map((row) => row.label),
 		);
 		expect(r.find('#fast-host-transition-value').textContent).toBe('resolved');
+		r.unmount();
+	});
+});
+
+describe('nested keyed list reordering', () => {
+	const makeGroups = (length = 11) =>
+		Array.from({ length }, (_, groupIndex) => {
+			const id = groupIndex + 1;
+			return {
+				id,
+				label: `group ${id}`,
+				rows: Array.from({ length: 17 + (groupIndex % 5) }, (_, rowIndex) => ({
+					id: id * 100 + rowIndex + 1,
+					label: `row ${id}:${rowIndex + 1}`,
+				})),
+			};
+		});
+
+	const reorderGroups = (groups: ReturnType<typeof makeGroups>, prefix = 'updated') =>
+		groups.toReversed().map((group) => ({
+			...group,
+			label: `${prefix} group ${group.id}`,
+			rows: group.rows.toReversed().map((row) => ({
+				...row,
+				label: `${prefix} row ${row.id}`,
+			})),
+		}));
+
+	const expectGroups = (r: ReturnType<typeof mount>, groups: ReturnType<typeof makeGroups>) => {
+		const renderedGroups = r.findAll('.nested-reorder-group');
+		expect(renderedGroups.map((group) => Number(group.getAttribute('data-reorder-group')))).toEqual(
+			groups.map((group) => group.id),
+		);
+		for (let index = 0; index < groups.length; index++) {
+			const group = groups[index]!;
+			const renderedGroup = renderedGroups[index]!;
+			expect(renderedGroup.querySelector('h3')?.textContent).toBe(group.label);
+			const rows = Array.from(renderedGroup.querySelectorAll('.nested-reorder-row'));
+			expect(rows.map((row) => Number(row.getAttribute('data-reorder-row')))).toEqual(
+				group.rows.map((row) => row.id),
+			);
+			expect(rows.map((row) => row.textContent)).toEqual(group.rows.map((row) => row.label));
+		}
+	};
+
+	it('keeps every group and row alive when both nesting levels reorder together', () => {
+		const warmRows = Array.from({ length: 29 }, (_, index) => ({
+			id: index + 1,
+			label: `warm row ${index + 1}`,
+		}));
+		const warm = mount(List, { items: warmRows });
+		warm.update(List, { items: warmRows.toReversed() });
+		warm.unmount();
+
+		const groups = makeGroups();
+		const picked: Array<[number, number]> = [];
+		const onPick = (groupId: number, rowId: number) => picked.push([groupId, rowId]);
+		const r = mount(NestedKeyedReorderList, { groups, onPick });
+		const groupNodes = new Map(
+			r
+				.findAll('.nested-reorder-group')
+				.map((group) => [Number(group.getAttribute('data-reorder-group')), group]),
+		);
+		const rowNodes = new Map(
+			r
+				.findAll('.nested-reorder-row')
+				.map((row) => [Number(row.getAttribute('data-reorder-row')), row]),
+		);
+		const preservedButton = r.find('[data-reorder-row="112"] button') as HTMLButtonElement;
+		preservedButton.focus();
+		expect(document.activeElement).toBe(preservedButton);
+
+		const reversed = groups.toReversed().map((group, groupIndex) => {
+			const split = 2 + (groupIndex % 5);
+			const rows = [...group.rows.slice(split), ...group.rows.slice(0, split)];
+			return {
+				...group,
+				label: `updated group ${group.id}`,
+				rows: rows.map((row) => ({ ...row, label: `updated row ${row.id}` })),
+			};
+		});
+		r.update(NestedKeyedReorderList, { groups: reversed, onPick });
+		expectGroups(r, reversed);
+		for (const group of reversed) {
+			expect(r.find(`[data-reorder-group="${group.id}"]`)).toBe(groupNodes.get(group.id));
+			for (const row of group.rows) {
+				expect(r.find(`[data-reorder-row="${row.id}"]`)).toBe(rowNodes.get(row.id));
+			}
+		}
+		expect(r.find('[data-reorder-row="112"] button')).toBe(preservedButton);
+		preservedButton.focus();
+		expect(document.activeElement).toBe(preservedButton);
+		r.click('[data-reorder-row="112"] button');
+		expect(picked).toEqual([[1, 112]]);
+
+		const shortened = reversed
+			.slice(0, 8)
+			.toReversed()
+			.map((group) => ({
+				...group,
+				label: `short group ${group.id}`,
+				rows: group.rows
+					.slice(0, 13)
+					.toReversed()
+					.map((row) => ({ ...row, label: `short row ${row.id}` })),
+			}));
+		r.update(NestedKeyedReorderList, { groups: shortened, onPick });
+		expectGroups(r, shortened);
+		for (const group of shortened) {
+			expect(r.find(`[data-reorder-group="${group.id}"]`)).toBe(groupNodes.get(group.id));
+			for (const row of group.rows) {
+				expect(r.find(`[data-reorder-row="${row.id}"]`)).toBe(rowNodes.get(row.id));
+			}
+		}
+		r.unmount();
+	});
+
+	it('adopts server-rendered nested rows and preserves their identity during both reorders', () => {
+		const groups = makeGroups(8);
+		const picked: Array<[number, number]> = [];
+		const onPick = (groupId: number, rowId: number) => picked.push([groupId, rowId]);
+		const props = { groups, onPick };
+		const server = loadServerFixture('packages/octane/tests/_fixtures/for.tsrx', {
+			compileOptions: { hmr: false, dev: false },
+		});
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		container.innerHTML = ServerRuntime.renderToString(server.NestedKeyedReorderList, props).html;
+		const groupNodes = new Map(
+			Array.from(container.querySelectorAll('.nested-reorder-group')).map((group) => [
+				Number(group.getAttribute('data-reorder-group')),
+				group,
+			]),
+		);
+		const rowNodes = new Map(
+			Array.from(container.querySelectorAll('.nested-reorder-row')).map((row) => [
+				Number(row.getAttribute('data-reorder-row')),
+				row,
+			]),
+		);
+		const root = hydrateRoot(container, NestedKeyedReorderList, props);
+		flushSync(() => {});
+		expect(Array.from(container.querySelectorAll('.nested-reorder-group'))).toEqual([
+			...groupNodes.values(),
+		]);
+
+		const reordered = reorderGroups(groups, 'hydrated');
+		flushSync(() => root.render(NestedKeyedReorderList, { groups: reordered, onPick }));
+		expect(
+			Array.from(container.querySelectorAll('.nested-reorder-group')).map((group) =>
+				Number(group.getAttribute('data-reorder-group')),
+			),
+		).toEqual(reordered.map((group) => group.id));
+		for (const group of reordered) {
+			expect(container.querySelector(`[data-reorder-group="${group.id}"]`)).toBe(
+				groupNodes.get(group.id),
+			);
+			for (const row of group.rows) {
+				expect(container.querySelector(`[data-reorder-row="${row.id}"]`)).toBe(
+					rowNodes.get(row.id),
+				);
+			}
+		}
+		flushSync(() =>
+			(container.querySelector('[data-reorder-row="112"] button') as HTMLButtonElement).click(),
+		);
+		expect(picked).toEqual([[1, 112]]);
+		root.unmount();
+		container.remove();
+	});
+
+	it('recovers when a nested survivor throws during simultaneous parent and child reorders', () => {
+		const groups = makeGroups();
+		const onPick = () => {};
+		const r = mount(NestedKeyedReorderBoundary, { groups, onPick });
+		let shouldThrow = true;
+		const reordered = reorderGroups(groups).map((group) => ({
+			...group,
+			rows: group.rows.map((row) =>
+				row.id === 112
+					? {
+							id: row.id,
+							get label() {
+								if (shouldThrow) throw new Error('nested row failed');
+								return 'recovered nested row';
+							},
+						}
+					: row,
+			),
+		}));
+
+		r.update(NestedKeyedReorderBoundary, { groups: reordered, onPick });
+		expect(r.findAll('.nested-reorder-row')).toHaveLength(0);
+		expect(r.find('#nested-reorder-retry').textContent).toBe('nested row failed');
+
+		shouldThrow = false;
+		r.click('#nested-reorder-retry');
+		expectGroups(r, reordered);
+		expect(r.find('[data-reorder-row="112"]').textContent).toBe('recovered nested row');
+		const resized = reorderGroups(reordered.slice(0, 7), 'after retry');
+		r.update(NestedKeyedReorderBoundary, { groups: resized, onPick });
+		expectGroups(r, resized);
+		r.unmount();
+	});
+
+	it('retries a nested survivor suspension and then reorders a differently sized list', async () => {
+		const groups = makeGroups();
+		const onPick = () => {};
+		const r = mount(NestedKeyedReorderBoundary, { groups, onPick });
+		let resolve!: (value: string) => void;
+		const promise = new Promise<string>((done) => {
+			resolve = done;
+		});
+		const reordered = reorderGroups(groups).map((group) => ({
+			...group,
+			rows: group.rows.map((row) =>
+				row.id === 112
+					? {
+							id: row.id,
+							get label() {
+								return use(promise);
+							},
+						}
+					: row,
+			),
+		}));
+
+		r.update(NestedKeyedReorderBoundary, { groups: reordered, onPick });
+		expect(r.find('#nested-reorder-pending').textContent).toBe('loading');
+
+		await act(() => resolve('row 1:12'));
+		const resolved = reordered.map((group) => ({
+			...group,
+			rows: group.rows.map((row) => ({
+				id: row.id,
+				label: row.id === 112 ? 'row 1:12' : row.label,
+			})),
+		}));
+		expectGroups(r, resolved);
+		const resized = reorderGroups(resolved.slice(0, 7), 'after resolution');
+		r.update(NestedKeyedReorderBoundary, { groups: resized, onPick });
+		expectGroups(r, resized);
+		r.unmount();
+	});
+
+	it('preserves committed nested rows through a suspended transition and a later urgent reorder', async () => {
+		const groups = makeGroups();
+		const nextGroups = groups.toReversed().map((group) => ({
+			...group,
+			rows: group.rows.toReversed().map((row) => ({ ...row })),
+		}));
+		const picked: Array<[number, number]> = [];
+		const onPick = (groupId: number, rowId: number) => picked.push([groupId, rowId]);
+		const initialPromise = Promise.resolve('initial');
+		let resolveNext!: (value: string) => void;
+		const nextPromise = new Promise<string>((resolve) => {
+			resolveNext = resolve;
+		});
+		await Promise.resolve();
+		const r = mount(NestedKeyedReorderTransition, {
+			initialGroups: groups,
+			nextGroups,
+			initialPromise,
+			nextPromise,
+			onPick,
+		});
+		await act(() => {});
+		const originalGroups = r.findAll('.nested-reorder-group');
+		const originalRows = new Map(
+			r
+				.findAll('.nested-reorder-row')
+				.map((row) => [Number(row.getAttribute('data-reorder-row')), row]),
+		);
+		expect(r.find('#nested-reorder-transition-value').textContent).toBe('initial');
+
+		r.click('#nested-reorder-transition-start');
+		expect(r.findAll('.nested-reorder-group')).toEqual(originalGroups);
+		expect(r.find('#nested-reorder-transition-value').textContent).toBe('initial');
+		expect(r.findAll('#nested-reorder-transition-pending')).toHaveLength(0);
+
+		await act(() => resolveNext('resolved'));
+		expect(r.find('#nested-reorder-transition-value').textContent).toBe('resolved');
+		r.click('#nested-reorder-transition-urgent');
+		expectGroups(r, nextGroups);
+		for (const group of nextGroups) {
+			for (const row of group.rows) {
+				expect(r.find(`[data-reorder-row="${row.id}"]`)).toBe(originalRows.get(row.id));
+			}
+		}
+		r.click('[data-reorder-row="112"] button');
+		expect(picked).toEqual([[1, 112]]);
 		r.unmount();
 	});
 });
