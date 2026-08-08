@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { compileFixture } from './fixture-compiler.mjs';
+import { compileFixture } from '../differential/fixture-compiler.mjs';
 
 function dependencies(compile: (source: string, path: string) => any) {
 	return {

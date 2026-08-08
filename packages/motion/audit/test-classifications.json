@@ -102,7 +102,7 @@
       "oracle": "Runs the same host-rendering and child-update fixture against motion/react@12.42.2 and @octanejs/motion."
     },
     {
-      "path": "packages/motion/tests/differential/setup.test.ts",
+      "path": "packages/motion/tests/conformance/fixture-compiler.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks fail-closed React fixture compilation."
     },
