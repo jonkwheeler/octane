@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef } from 'octane';
+import { useEffect, useMemo, useRef } from 'octane';
 import { splitSlot, subSlot } from './internal';
 
 type Entry = { _tag: 'active'; rc: number; resource: unknown } | { _tag: 'destroyed' };
@@ -87,7 +87,7 @@ export function useRcResource<T>(
 		subSlot(slot, 'rc:memo'),
 	);
 
-	useLayoutEffect(
+	useEffect(
 		() => {
 			const held = heldRef.current;
 			return () => {
