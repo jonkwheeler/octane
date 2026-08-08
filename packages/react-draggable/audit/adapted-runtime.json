@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "project": "react-draggable",
+  "roots": [
+    "packages/react-draggable/tests/runtime",
+    "packages/react-draggable/tests/upstream"
+  ],
+  "files": [
+    "packages/react-draggable/tests/runtime/core.test.ts",
+    "packages/react-draggable/tests/runtime/draggable.test.ts",
+    "packages/react-draggable/tests/runtime/upstream-public.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:7f40637c63c61dcc",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "DraggableCore native callback-only contract emits exact core deltas and leaves child styles/classes untouched"
+    },
+    {
+      "id": "runtime:b28007e1772789ed",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "accepts a standard compiled tsrx child"
+    },
+    {
+      "id": "runtime:73d080fddd1a3050",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "cancellation and native resource ownership onDrag=false synthesizes mouse stop, while touch retains when identifier is absent"
+    },
+    {
+      "id": "runtime:2cada96a010e5565",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "cancellation and native resource ownership onStart=false installs no document listeners or selection artifact"
+    },
+    {
+      "id": "runtime:1fc6961f83d9e512",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "cancellation and native resource ownership onStop=false retains the gesture until a later accepted stop"
+    },
+    {
+      "id": "runtime:200a10137e514520",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "owner-document replacement and thrown callbacks propagates start callback errors before global resources exist"
+    },
+    {
+      "id": "runtime:0e07af62bc4deaee",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "owner-document replacement and thrown callbacks removes stop resources from the live node document and retains original listeners"
+    },
+    {
+      "id": "runtime:dcbc27bf40118228",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "start filtering and callback ordering calls onMouseDown but rejects macOS control click"
+    },
+    {
+      "id": "runtime:1dc205558772fea5",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "start filtering and callback ordering calls onMouseDown but rejects right click"
+    },
+    {
+      "id": "runtime:746299bb61c5a03c",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "start filtering and callback ordering supports allowAnyClick and keeps disabled after onMouseDown"
+    },
+    {
+      "id": "runtime:8954f9abe432b782",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "start filtering and callback ordering walks handle and cancel selectors to the draggable root"
+    },
+    {
+      "id": "runtime:a38b867463c95e39",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "touch and live props allowMobileScroll and live disabled/callback/grid/scale props are observed"
+    },
+    {
+      "id": "runtime:c26cbef9348bbb9d",
+      "file": "packages/react-draggable/tests/runtime/core.test.ts",
+      "fullName": "touch and live props installs passive:false touchstart, prevents scroll, tracks initiating touch, and cleans up"
+    },
+    {
+      "id": "runtime:a5184fd6d760c68e",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract applies controlled position prop updates on an existing mount"
+    },
+    {
+      "id": "runtime:42ac349373a3de06",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract applies numeric/string position offsets and replaces child drag handlers"
+    },
+    {
+      "id": "runtime:8be1c15528544662",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract applies scale exactly once across Draggable and DraggableCore"
+    },
+    {
+      "id": "runtime:ed6a133d12fce8de",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract clips object bounds and consumes slack before moving back inside"
+    },
+    {
+      "id": "runtime:4de89f9ec367c3ca",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract exports the pinned root values and clones one child without a wrapper"
+    },
+    {
+      "id": "runtime:2624e1d895280e0b",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract matches the React 19 missing-nodeRef mouse and touch boundary"
+    },
+    {
+      "id": "runtime:4e8426e2c550fa14",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract moves uncontrolled, emits data, applies axis, and retains dragged class"
+    },
+    {
+      "id": "runtime:6c70c0e87cc3a843",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract reverts a controlled gesture on stop"
+    },
+    {
+      "id": "runtime:35d0d1de5a0746be",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract snaps visual and callback coordinates to the configured grid"
+    },
+    {
+      "id": "runtime:d25390563f20659f",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract switches mounted SVG children to the transform attribute"
+    },
+    {
+      "id": "runtime:5234547f0d9dd796",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should add dragged class after drag"
+    },
+    {
+      "id": "runtime:ca9751e7a31cd641",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should add dragging class during drag"
+    },
+    {
+      "id": "runtime:b2f3a04fd801f284",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should apply transform style"
+    },
+    {
+      "id": "runtime:18f76f628d162133",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should call onStart when drag starts"
+    },
+    {
+      "id": "runtime:8126293778d4665a",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should cancel drag when onStart returns false"
+    },
+    {
+      "id": "runtime:158a0028952d9163",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should detect SVG elements"
+    },
+    {
+      "id": "runtime:8c124404f830ede5",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should have sensible defaults"
+    },
+    {
+      "id": "runtime:8d5f9e7de2303d23",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should not drag when disabled"
+    },
+    {
+      "id": "runtime:66cbb8c57e5fe9dc",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should not move when axis=\"none\""
+    },
+    {
+      "id": "runtime:dcdebe62b4e51b11",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should not set isElementSVG for non-SVG elements"
+    },
+    {
+      "id": "runtime:00daba641a282329",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should preserve child className"
+    },
+    {
+      "id": "runtime:0d3d252ac486861c",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should preserve child styles"
+    },
+    {
+      "id": "runtime:579a16ce6955c16a",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should render with default class"
+    },
+    {
+      "id": "runtime:3326df9c7f554716",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should respect defaultPosition"
+    },
+    {
+      "id": "runtime:102ce837007932e7",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should respect position prop changes"
+    },
+    {
+      "id": "runtime:b9e6320e7dc6aec8",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should respect positionOffset with numbers"
+    },
+    {
+      "id": "runtime:ce6cfed90a650b31",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should respect positionOffset with percentages"
+    },
+    {
+      "id": "runtime:3f7217bf0b8bd429",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should revert to controlled position after drag"
+    },
+    {
+      "id": "runtime:e57b3a7880a04ff6",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should set initial transform attribute for SVG"
+    },
+    {
+      "id": "runtime:becbd16712dc680f",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should still render when className is set on Draggable"
+    },
+    {
+      "id": "runtime:d7862e4d70534e82",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should still render when style is set on Draggable"
+    },
+    {
+      "id": "runtime:423d2776c33da4e1",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should still render when transform is set on Draggable"
+    },
+    {
+      "id": "runtime:16b554df49adf59a",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should throw when multiple children provided"
+    },
+    {
+      "id": "runtime:9fda13243a92b67f",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should throw when no children provided"
+    },
+    {
+      "id": "runtime:2f40750e97f1c228",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should use controlled position"
+    },
+    {
+      "id": "runtime:7c9c1c1642fe348c",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should use custom class names"
+    },
+    {
+      "id": "runtime:0a97c20f7bef6e90",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned Draggable public cases should use custom defaultClassName"
+    },
+    {
+      "id": "runtime:2fdeeaf6fc09eb62",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases applies the nonce to the injected style element on drag start"
+    },
+    {
+      "id": "runtime:631d321a84394335",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should accept a single child only"
+    },
+    {
+      "id": "runtime:2c57d8c4f49c847d",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should add transparent selection class by default"
+    },
+    {
+      "id": "runtime:2cd8e9d49ae2d59d",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should adjust position based on scale"
+    },
+    {
+      "id": "runtime:2b64923f1927152d",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call onDrag during mouse move"
+    },
+    {
+      "id": "runtime:88c0068f3f5c7c92",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call onMouseDown callback"
+    },
+    {
+      "id": "runtime:de12de2d69641792",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call onMouseDown even when disabled"
+    },
+    {
+      "id": "runtime:b96dc7b52342bc56",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call onStart when mouse down"
+    },
+    {
+      "id": "runtime:f7cb36b1fe6f89c7",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call onStop when mouse up"
+    },
+    {
+      "id": "runtime:dea93e132e66458d",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call preventDefault on touchstart by default"
+    },
+    {
+      "id": "runtime:7ac7e67955e2b668",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should call preventDefault on touchstart when using handle"
+    },
+    {
+      "id": "runtime:479dd0a500960625",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should cancel drag when onStart returns false"
+    },
+    {
+      "id": "runtime:c2f9673e38bcbe9d",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should handle touch start"
+    },
+    {
+      "id": "runtime:8fe32c346cd92855",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not add class when enableUserSelectHack is false"
+    },
+    {
+      "id": "runtime:c963cf4abab82a16",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not add user-select class when onStart returns false"
+    },
+    {
+      "id": "runtime:302b4fcb10808f76",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not call onDrag if movement is less than grid"
+    },
+    {
+      "id": "runtime:9d38046126770ce5",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not call preventDefault on touchstart for cancel elements"
+    },
+    {
+      "id": "runtime:d6199bf500f7541e",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not call preventDefault when allowMobileScroll is true"
+    },
+    {
+      "id": "runtime:525bcea3319726b5",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not continue drag if onStart returns false"
+    },
+    {
+      "id": "runtime:f677ad4549330d36",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not drag from cancel elements"
+    },
+    {
+      "id": "runtime:d6da2d97507ae94f",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should not start dragging when disabled"
+    },
+    {
+      "id": "runtime:38bfded56dfd98ea",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should only drag from handle"
+    },
+    {
+      "id": "runtime:b3b473641c995f7f",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should only respond to left click by default"
+    },
+    {
+      "id": "runtime:b7411fc0d5f3d633",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should provide correct data in callbacks"
+    },
+    {
+      "id": "runtime:624eab72f8f42e14",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should render its child"
+    },
+    {
+      "id": "runtime:987c8ba80cb3f49f",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should respond to any click when allowAnyClick is true"
+    },
+    {
+      "id": "runtime:a04890a046ca85b8",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should snap movement to grid"
+    },
+    {
+      "id": "runtime:bea6b2fd1af5f911",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should stop drag when onDrag returns false"
+    },
+    {
+      "id": "runtime:b57796e09564edb8",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should throw error when no children provided"
+    },
+    {
+      "id": "runtime:3f7adb9d95833568",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should track mounted state correctly"
+    },
+    {
+      "id": "runtime:708369f5c72cdcbc",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should use nodeRef instead of findDOMNode"
+    },
+    {
+      "id": "runtime:1042955b2e584cb5",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should work with forwardRef components"
+    },
+    {
+      "id": "runtime:bba1603f4da7a5e4",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should work with nested elements in handle"
+    },
+    {
+      "id": "runtime:0a4aed8107ad715c",
+      "file": "packages/react-draggable/tests/runtime/upstream-public.test.ts",
+      "fullName": "pinned DraggableCore public cases should work with scale < 1"
+    }
+  ]
+}

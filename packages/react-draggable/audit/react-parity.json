@@ -9,10 +9,10 @@
     "testRoot": "test",
     "license": "MIT",
     "integrity": "sha256:f96cf6ee39150b9ac5477ee05e4b8a69fbc766c20697fcbdca23773c8fc5261d",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
-    "runtime": "present",
+    "runtime": "absent",
     "types": "present"
   },
   "adaptedRoots": {
@@ -24,20 +24,15 @@
     "tests": {
       "roots": [
         "packages/react-draggable/tests/runtime",
-        "packages/react-draggable/tests/upstream",
-        "packages/react-draggable/tests/differential",
-        "packages/react-draggable/tests/hydration",
-        "packages/react-draggable/tests/ssr",
-        "packages/react-draggable/tests/browser",
-        "packages/react-draggable/typetests"
+        "packages/react-draggable/tests/upstream"
       ],
       "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 84,
+    "uniqueIdentities": 84,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -52,6 +47,31 @@
     }
   },
   "lanes": [
+    {
+      "id": "react-draggable-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs every collected adapted runtime and upstream-public test and verifies exact test identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-draggable/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-draggable/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "51cef8fdd4b446a9512ffe930dfb2d8e32d76511be34c6ed6b760c373b33e7ba"
+        },
+        {
+          "path": "scripts/react-parity/react-draggable-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "c0a415c426129547c7c30250445de1420df011cc7be179d989f410f3660a5945"
+        }
+      ]
+    },
     {
       "id": "react-draggable-differential",
       "type": "differential",
@@ -222,7 +242,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-draggable-adapted-types",
-      "evidenceOrigin": "repo-authored",
+      "evidenceOrigin": "upstream-suite",
       "notes": "Compiles the complete exported Octane prop/type contract, including positive assignments and negative controls.",
       "execution": {
         "kind": "typescript",
