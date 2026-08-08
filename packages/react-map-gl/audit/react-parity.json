@@ -17,8 +17,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-map-gl/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/react-map-gl/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
@@ -26,8 +30,12 @@
         "packages/react-map-gl/tests/upstream",
         "packages/react-map-gl/tests/upstream-util"
       ],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-      "exclude": ["tests/upstream-util/pristine\\.test\\.ts$"]
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": [
+        "tests/upstream-util/pristine\\.test\\.ts$"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -43,7 +51,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "bab4dae4a3c179ba787f134ab6728871b9a66b86c5dad1df705d61fae4a43645"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -135,7 +143,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "0da480c43320dae63456956828f2370848869bd9aea698819f8294767987328f"
+          "sha256": "dbf0299fc2066d301acae8517c2f8b3109b1a410e58049f03a63c9976eac3b34"
         }
       ]
     },
@@ -227,7 +235,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "0da480c43320dae63456956828f2370848869bd9aea698819f8294767987328f"
+          "sha256": "dbf0299fc2066d301acae8517c2f8b3109b1a410e58049f03a63c9976eac3b34"
         }
       ]
     },
@@ -429,7 +437,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "0da480c43320dae63456956828f2370848869bd9aea698819f8294767987328f"
+          "sha256": "dbf0299fc2066d301acae8517c2f8b3109b1a410e58049f03a63c9976eac3b34"
         }
       ]
     },
@@ -604,7 +612,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "0da480c43320dae63456956828f2370848869bd9aea698819f8294767987328f"
+          "sha256": "dbf0299fc2066d301acae8517c2f8b3109b1a410e58049f03a63c9976eac3b34"
         }
       ]
     }
@@ -612,7 +620,9 @@
   "divergences": [
     {
       "id": "react-map-gl-source-id-by-context",
-      "caseIds": ["ported:source-layer:3"],
+      "caseIds": [
+        "ported:source-layer:3"
+      ],
       "upstreamResult": "<Source> clones its children with cloneElement(child, {source: id}), which reaches direct children only and overrides any explicit source prop.",
       "octaneResult": "<Source> publishes its id through a context that <Layer> reads, which reaches any descendant layer and likewise overrides an explicit source prop.",
       "rationale": "Octane's compiler lowers a .tsrx parent's element children to a render function, which cannot be cloned, so the id cannot be injected per child.",
@@ -624,7 +634,12 @@
     },
     {
       "id": "react-map-gl-refs-as-props",
-      "caseIds": ["ported:map:1", "ported:marker:1", "ported:popup:1", "ported:controls:3"],
+      "caseIds": [
+        "ported:map:1",
+        "ported:marker:1",
+        "ported:popup:1",
+        "ported:controls:3"
+      ],
       "upstreamResult": "Map, Marker, Popup and GeolocateControl are wrapped in forwardRef and receive their ref through the React ref channel.",
       "octaneResult": "The same components declare `ref` as an ordinary prop; Octane has no forwardRef.",
       "rationale": "Octane follows the React 19 refs-as-props model and does not ship forwardRef.",
