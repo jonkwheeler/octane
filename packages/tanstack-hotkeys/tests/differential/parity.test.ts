@@ -46,8 +46,10 @@ describe('differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys', 
 			await octane.click('#toggle');
 			await react.click('#toggle');
 		});
-		await differential.step('disabled shortcut is inert', async (_octane, react) => {
+		await differential.step('disabled shortcut is inert', async (octane, react) => {
 			await react.keydown('#hotkeys-parity', 'k', { code: 'KeyK', ctrlKey: true });
+			expectHotkeyProgress(octane, { single: 1, first: 1, second: 1, sequence: 1 });
+			expect(octane.container.innerHTML).toContain('enabled:false');
 		});
 		differential.unmount();
 		drainPassiveEffects();
