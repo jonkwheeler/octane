@@ -82,7 +82,7 @@
         {
           "path": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys-diff.tsrx",
           "role": "support",
-          "sha256": "29fa4fd8b6ae6df50bc5306462f0d18a059777969100396ff8cfb756e9836d77"
+          "sha256": "b90154dcaf957c3c63674a8c3bd1ddaf0844b02f1832cd6aa06434b34cdaa444"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
