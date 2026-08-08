@@ -1397,7 +1397,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'apollo-client',
 					include: [
@@ -1460,7 +1459,6 @@ export default defineConfig({
 			},
 			{
 				// Differential lane: precompiles fixtures for the published React oracle.
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'apollo-client-differential',
 					include: ['packages/apollo-client/tests/differential/**/*.test.ts'],
@@ -1516,7 +1514,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'apollo-client-ssr',
 					include: ['packages/apollo-client/tests/ssr/**/*.test.ts'],

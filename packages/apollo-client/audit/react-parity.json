@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1d9827e3c696174116d097eacaceba3bb1f43e4b4a48968e38140166306f1866"
+      "lockfileSha256": "b15d435c782fc2341f66e1969fa10aee4751e227f793128b7857053f4cf5550d"
     }
   },
   "lanes": [
@@ -79,9 +79,9 @@
           "sha256": "8c320a85aac7b8ccb8c3475ca767130aafefe64c2ed80727e67ac901a840cacd"
         },
         {
-          "path": "packages/apollo-client/tests/differential/compile-runner.mjs",
+          "path": "packages/apollo-client/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "8ad98bceb3a298463c9c3ceda0dca3ef995eb991fc4cc3af147a8e6d6c28d39d"
+          "sha256": "4f64f05bc8658282791d96c37418d92ca2374cea2e66aa93d8b1bb14e5581608"
         },
         {
           "path": "packages/apollo-client/tests/_fixtures/query-diff.tsrx",
