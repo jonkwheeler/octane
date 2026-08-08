@@ -28,7 +28,7 @@ export const TextareaField = ({
         autoComplete="off"
         name={name}
         value={typeof value === "undefined" ? "" : value}
-        onChange={(e) => onChange(e.currentTarget.value)}
+        onInput={(e) => onChange(e.currentTarget.value)}
         readOnly={readOnly}
         tabIndex={readOnly ? -1 : undefined}
         rows={5}

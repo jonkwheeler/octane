@@ -38,7 +38,7 @@ export const DefaultField = ({
         title={label || name}
         name={name}
         value={value?.toString ? value.toString() : ""}
-        onChange={(e) => {
+        onInput={(e) => {
           if (field.type === "number") {
             const numberValue = Number(e.currentTarget.value);
 
