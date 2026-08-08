@@ -101,7 +101,7 @@ export function useMachine<T extends MachineSchema>(...rawArgs: unknown[]): Serv
 			return contextRef.current?.[key].initial;
 		},
 		hash(key) {
-			const current = contextRef.current?.[key].get();
+			const current = contextRef.current?.[key].ref.current;
 			return contextRef.current?.[key].hash(current);
 		},
 	};

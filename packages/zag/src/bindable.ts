@@ -46,7 +46,9 @@ function useBindableValue<T>(
 		initial: initialValue,
 		ref: valueRef,
 		get() {
-			return (controlled ? props().value : value) as T;
+			// Prefer valueRef so mid-transition onChange/actions see the value
+			// set() already advanced, not the stale render-time useState snapshot.
+			return valueRef.current as T;
 		},
 		set(nextValue: T | ((prev: T) => T)) {
 			const execute = props().sync ? flushSync : (run: () => void) => run();
