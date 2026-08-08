@@ -348,7 +348,8 @@ describe('CI workflow aggregation', () => {
 		);
 		assert.match(jobSource('heavy_integration'), /packages\/floating-ui\/tests\/browser/);
 		assert.match(jobSource('heavy_integration'), /playwright install --with-deps chromium/);
-		assert.match(jobSource('lint_checks'), /playwright install --with-deps chromium/);
+		assert.match(jobSource('react_parity_checks'), /playwright install --with-deps chromium/);
+		assert.doesNotMatch(jobSource('lint_checks'), /playwright install --with-deps chromium/);
 	});
 });
 
