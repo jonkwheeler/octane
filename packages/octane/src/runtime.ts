@@ -306,6 +306,18 @@ function ensureHooks(scope: Scope): Map<HookSlot, any> {
 	return scope.hooks ?? (scope.hooks = new Map());
 }
 
+// HMR retains hook cells, so tag their long-lived subscriptions/listeners with
+// the existing HMR symbol. A refresh can then run render-owned cleanups while
+// preserving these entries without adding a field to every Scope.
+function registerHookCleanup(scope: Scope, cleanup: Cleanup): void {
+	if (process.env.NODE_ENV !== 'production') {
+		if ((scope.block.body as any)[HMR] !== undefined) {
+			(cleanup as Cleanup & { [HMR]?: true })[HMR] = true;
+		}
+	}
+	(scope.cleanups ??= []).push(cleanup);
+}
+
 // Production helper/custom-hook ABI: reserve a disjoint numeric range for each
 // evaluated module that needs globally composable Symbol descriptions. Direct
 // sites in compiler-owned render Scopes use smaller local numbers and never call
@@ -2391,9 +2403,8 @@ const effectEventQueue: PendingEffectEvent[] = [];
 // transaction below, so an aborted enclosing render drops them.
 const effectEventCommitActions: Array<() => void> = [];
 let passiveScheduled = false;
-// Monotonic enqueue counter — tags each PendingEffect AND deferred ref attach with its
-// DFS pre-order position so the commit drains them in React's post-order (see
-// PendingEffect.seq / comparePostOrder). Shared so refs and effects sequence consistently.
+// Monotonic enqueue counter — tags each PendingEffect with its DFS pre-order position
+// so the effect drains can reconstruct React's post-order (see comparePostOrder).
 let commitSeq = 0;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2453,9 +2464,9 @@ const storeSyncQueue: StoreInst<any>[] = [];
 // callback refs see a connected node and ref.current is populated by the time a
 // layout effect runs — matching React's commit-phase ref attachment.
 interface RefAttach {
-	fn: () => void;
-	/** Enqueue sequence (DFS pre-order) — see commitSeq / comparePostOrder. */
-	seq: number;
+	/** Exact queued ref; initial Fragment mounts use the live-ref trampoline below. */
+	ref: any;
+	el: Element | FragmentInstance;
 	block: Block | null;
 }
 
@@ -2466,6 +2477,13 @@ interface SuspenseRefEntry {
 	scope: Scope;
 }
 const refAttachQueue: RefAttach[] = [];
+// A Fragment can re-point its ref during a render-phase replay before the mount
+// commit drains. Preserve that existing live-read contract with a shared callback
+// trampoline. The common drain remains branch-free, and Fragment instances do not
+// allocate a getter closure.
+function attachLiveFragmentRef(instance: FragmentInstance): void {
+	attachRef(instance._currentRef, instance);
+}
 
 // Off-screen (WIP) effect capture. While a transition swaps in a NEW subtree that
 // may suspend, that subtree is rendered "off-screen" (its DOM kept out of the slot's
@@ -2786,6 +2804,13 @@ function drainQueue(): { err: any } | null {
 		}
 		const crossRenderUpdate = block.crossRenderUpdate;
 		block.crossRenderUpdate = false;
+		const hiddenOwner = findHiddenRenderOwner(block, true);
+		let hiddenActivity: ActivitySlot | null = null;
+		let hiddenTry: TrySlot | null = null;
+		if (hiddenOwner !== null) {
+			if (hiddenOwner.__kind === 'trySlotSlot') hiddenTry = hiddenOwner;
+			else hiddenActivity = hiddenOwner;
+		}
 		try {
 			if (block.nestedUpdateError) {
 				block.nestedUpdateError = false;
@@ -2797,7 +2822,6 @@ function drainQueue(): { err: any } | null {
 			// one transaction. React parity: setState on a suspended component
 			// retries the render; if it no longer suspends (an external store flipped
 			// before the suspending promise resolved), the boundary reveals now.
-			const hiddenTry = findSuspenseHiddenTry(block);
 			if (hiddenTry !== null) {
 				attemptHiddenReveal(hiddenTry, block.pendingMode ?? 'urgent');
 				continue;
@@ -2846,6 +2870,11 @@ function drainQueue(): { err: any } | null {
 				while (root.parentBlock !== null) root = root.parentBlock;
 				if (root.kind === 'root' && !root.disposed) unmountBlock(root);
 			}
+		} finally {
+			// A descendant render can replace an Activity's direct host root. The
+			// Activity itself did not render, so reapply its visual hide after the
+			// complete attempt (including a captured error or Suspense retry).
+			if (hiddenActivity !== null) rehideActivityAfterDescendantRender(hiddenActivity);
 		}
 	}
 	QUEUE.length = 0;
@@ -3254,17 +3283,16 @@ const LAYOUT_CASCADE_LIMIT = 50;
  * Compiler-emitted on a host element's ref MOUNT. Defers the attach until commit
  * (drainRefAttaches) so the node is connected when a callback ref fires and
  * ref.current is set before layout effects run. Each entry records its owning
- * `block` plus an enqueue-order `seq`; drainRefAttaches sorts with
- * comparePostOrder (post-order via the parentBlock chain, seq as tiebreak) for
- * child-before-parent ordering, matching effect ordering. Ref identity UPDATES
- * queue here too (paired with a queueRefDetach of the old ref), so within one
- * commit every detach drains before every attach — a ref hopping between
- * elements never ends null, whichever binding updates first.
+ * `block`; drainRefAttaches preserves enqueue order for disjoint subtrees and
+ * only reorders ancestor/descendant pairs for child-before-parent ordering.
+ * Ref identity UPDATES queue here too (paired with a queueRefDetach of the old
+ * ref), so within one commit every detach drains before every attach — a ref
+ * hopping between elements never ends null, whichever binding updates first.
  */
-export function queueRefAttach(scope: Scope, fn: () => void): void {
+export function queueRefAttach(scope: Scope, ref: any, el: Element | FragmentInstance): void {
 	(WIP_CAPTURE !== null ? WIP_CAPTURE.refs : refAttachQueue).push({
-		fn,
-		seq: commitSeq++,
+		ref,
+		el,
 		block: scope.block,
 	});
 }
@@ -3361,8 +3389,9 @@ function drainRefDetaches(): void {
 function drainRefAttaches(): void {
 	if (refAttachQueue.length === 0) return;
 	const q = refAttachQueue.splice(0);
-	// Post-order, same as effects (refs attach child-first, siblings in tree order).
-	q.sort((a, b) => comparePostOrder(a.block, a.seq, b.block, b.seq));
+	// ES stable sort preserves the queue's DFS/source order for disjoint subtrees;
+	// comparePostOrder moves only descendants ahead of their queued ancestors.
+	q.sort((a, b) => comparePostOrder(a.block, 0, b.block, 0));
 	for (const r of q) {
 		// Skip attaches whose owning subtree was unmounted earlier in THIS flush
 		// (e.g. a try boundary caught a mount-time throw and ran unmountBlock +
@@ -3373,7 +3402,7 @@ function drainRefAttaches(): void {
 		try {
 			REF_CALLBACK_DEPTH++;
 			try {
-				r.fn();
+				attachRef(r.ref, r.el);
 			} finally {
 				REF_CALLBACK_DEPTH--;
 			}
@@ -3394,6 +3423,57 @@ function blockSubtreeDisposed(block: Block | null): boolean {
 		b = b.parentBlock;
 	}
 	return false;
+}
+
+// A target has one effective ref binding; array refs remain one composite value.
+// If render-phase replays queue several identities for the same target, the last
+// canceled attach is the manifest's current ref and therefore the only one the
+// hide walk can attempt to detach.
+type UncommittedRefAttaches = Map<Element | FragmentInstance, any>;
+
+function refAttachWasDiscarded(
+	uncommitted: UncommittedRefAttaches | null,
+	el: Element | FragmentInstance,
+	ref: any,
+): boolean {
+	return uncommitted !== null && uncommitted.get(el) === ref;
+}
+
+function discardSubtreeRefAttachesFrom(
+	queue: RefAttach[],
+	root: Block,
+	uncommitted: UncommittedRefAttaches,
+): void {
+	let write = 0;
+	for (let read = 0; read < queue.length; read++) {
+		const entry = queue[read];
+		const owner = entry.block;
+		if (owner === root || (owner !== null && blockIsAncestorOf(root, owner))) {
+			uncommitted.set(
+				entry.el,
+				entry.ref === attachLiveFragmentRef
+					? (entry.el as FragmentInstance)._currentRef
+					: entry.ref,
+			);
+			continue;
+		}
+		queue[write++] = entry;
+	}
+	queue.length = write;
+}
+
+/**
+ * Drop commit-phase attaches owned by a primary that has just become hidden and
+ * index their exact ref/target pairs. The hide walk uses this cold-path index to
+ * distinguish a ref that committed earlier from one that only reached the queue.
+ */
+function discardSubtreeRefAttaches(
+	root: Block,
+	uncommitted: UncommittedRefAttaches = new Map(),
+): UncommittedRefAttaches {
+	discardSubtreeRefAttachesFrom(refAttachQueue, root, uncommitted);
+	if (WIP_CAPTURE !== null) discardSubtreeRefAttachesFrom(WIP_CAPTURE.refs, root, uncommitted);
+	return uncommitted;
 }
 
 function commitEffects(): void {
@@ -3636,10 +3716,11 @@ function blockIsAncestorOf(anc: Block, node: Block): boolean {
 // and disjoint subtrees fire in tree order. We reconstruct that from the flat queues:
 // descendant-before-ancestor via the parentBlock chain; everything else (disjoint
 // subtrees, and multiple entries on the SAME block) falls back to enqueue order, which
-// IS tree order because rendering is top-down DFS pre-order. This is correct where a
-// plain depth sort was not — a shallow node in an earlier sibling subtree must fire
-// before a deeper node in a LATER sibling subtree, which depth alone gets backwards.
-// Shared by the effect queues AND the deferred ref-attach queue so both commit in order.
+// IS tree order because rendering is top-down DFS pre-order. Effects pass their explicit
+// sequence; refs pass equal sequence values and rely on ES stable sort to retain their
+// queue order. This is correct where a plain depth sort was not — a shallow node in an
+// earlier sibling subtree must fire before a deeper node in a LATER sibling subtree,
+// which depth alone gets backwards.
 function comparePostOrder(
 	aBlock: Block | null,
 	aSeq: number,
@@ -4840,7 +4921,7 @@ function unmountScope(scope: Scope, detachDom: boolean = true): void {
 // recursive teardown. A child may have finished rendering and queued an attach
 // before a later sibling aborts its parent; that child's attach never commits,
 // so its recursive cleanup must not manufacture a matching detach.
-function unmountScopeChildrenAndSlots(scope: Scope, detachDom: boolean): void {
+function runScopeCleanups(scope: Scope): void {
 	const c = scope.cleanups;
 	if (c !== null)
 		for (let i = c.length - 1; i >= 0; i--) {
@@ -4854,6 +4935,17 @@ function unmountScopeChildrenAndSlots(scope: Scope, detachDom: boolean): void {
 				reportTeardownError(err);
 			}
 		}
+}
+
+function unmountScopeChildrenAndSlots(scope: Scope, detachDom: boolean): void {
+	runScopeCleanups(scope);
+	unmountScopeChildrenAndSlotsOnly(scope, detachDom);
+}
+
+// Split from the current scope's own cleanup list so HMR can preserve the
+// component's hook-owned subscriptions while fully deleting rendered children.
+// Ordinary unmount still calls both halves above in the established order.
+function unmountScopeChildrenAndSlotsOnly(scope: Scope, detachDom: boolean): void {
 	// Then recurse into child scopes (parent → child order).
 	const children = scope.children;
 	if (children !== null)
@@ -6089,7 +6181,7 @@ export function useEffectEvent<F extends (...args: any[]) => any>(fn: F, slot?: 
 		s = { impl: fn, active: true };
 		ensureHooks(scope).set(slot, s);
 		const cell = s;
-		(scope.cleanups ??= []).push(() => {
+		registerHookCleanup(scope, () => {
 			cell.active = false;
 		});
 	} else {
@@ -6296,6 +6388,120 @@ function scopedChildrenAsBody(props: { children: unknown }): ComponentBody {
  * `slots` indices the two dialects contend over.
  */
 const CHILDREN_DIALECT_SLOT = Symbol('octane.childrenDialect') as HookSlot;
+
+function hasResettableHmrRange(block: Block): boolean {
+	const start = (block as { startMarker?: Node | null }).startMarker;
+	const end = (block as { endMarker?: Node | null }).endMarker;
+	// componentSlotLite exposes only an insertion context, not an owned Block
+	// range. Decline that handoff so the bundler reloads instead of mutating the
+	// parent Block through the lite scope's compatibility cast.
+	if (start === undefined || end === undefined) return false;
+	if (start === null || end === null) {
+		return (
+			start === null && end === null && (block.kind === 'root' || block.exclusiveMarkers === true)
+		);
+	}
+	if (start !== end) {
+		return start.parentNode === block.parentNode && end.parentNode === block.parentNode;
+	}
+	// A sole-root control-flow or list-item ancestor can borrow this exact node.
+	// Promoting only the hot block would leave the borrowed boundary detached.
+	for (let parent = block.parentBlock; parent !== null; parent = parent.parentBlock) {
+		if (parent.startMarker === start && parent.endMarker === end) return false;
+	}
+	return start.parentNode === block.parentNode;
+}
+
+function promoteHmrBlockRange(block: Block): void {
+	const root = block.startMarker;
+	if (root === null || root !== block.endMarker) return;
+	const parent = block.parentNode;
+	const rangeStart = document.createComment('hmr');
+	const rangeEnd = document.createComment('/hmr');
+	parent.insertBefore(rangeStart, root);
+	parent.insertBefore(rangeEnd, root.nextSibling);
+	block.startMarker = rangeStart;
+	block.endMarker = rangeEnd;
+	block.exclusiveMarkers = false;
+}
+
+/**
+ * Rebuild one hot component's compiled output without replacing its Block.
+ *
+ * Compiler bodies use `slots[0]` as their mount/update discriminator and cache
+ * the exact template/binding layout in that scope. A newly compiled body cannot
+ * safely read the old layout: static edits would never touch the DOM, while an
+ * added binding/component can read a bag field that did not exist. Hot refresh
+ * therefore tears down the rendered structure and hands the new body an empty
+ * slot array, while retaining the Block and its Symbol.for-keyed hook cells.
+ *
+ * Hook-owned subscriptions stay registered; render-owned cleanup entries are
+ * fired because their refs/head/fragment/host state belongs to the outgoing
+ * DOM. Effects and memo callbacks have their deps invalidated so edited
+ * closures publish on the refresh even when their authored dependency arrays
+ * are unchanged. This is called only from HMR.update(), never a normal render.
+ */
+function resetHmrBlock(block: Block): void {
+	if (TEARDOWN_DEPTH === 0) {
+		TEARDOWN_HANDLER = findTryHandler(block.parentBlock) ?? rendererRegionTryHandler(block);
+	}
+	TEARDOWN_DEPTH++;
+	let abortedRefs: SuspenseRefEntry[] | null = null;
+	if (!block.mounted) {
+		abortedRefs = [];
+		collectVisibleSubtreeRefs(block, abortedRefs);
+	}
+	try {
+		withRefDetachSuppression(abortedRefs, () => {
+			if (block.deoptNode !== null) detachDeoptTreeRefs(block.deoptNode, null);
+			const cleanups = block.cleanups;
+			let preserved: Cleanup[] | null = null;
+			if (cleanups !== null) {
+				for (let i = cleanups.length - 1; i >= 0; i--) {
+					const cleanup = cleanups[i] as Cleanup & { [HMR]?: true };
+					if (cleanup[HMR] === true) continue;
+					try {
+						runEffectLifecycleCallback(cleanup);
+					} catch (err) {
+						reportTeardownError(err);
+					}
+				}
+				for (let i = 0; i < cleanups.length; i++) {
+					const cleanup = cleanups[i] as Cleanup & { [HMR]?: true };
+					if (cleanup[HMR] === true) (preserved ??= []).push(cleanup);
+				}
+			}
+
+			unmountScopeChildrenAndSlotsOnly(block, true);
+			removeRange(
+				block.startMarker !== null ? block.startMarker.nextSibling : block.parentNode.firstChild,
+				block.endMarker,
+			);
+
+			block.children = null;
+			block.cleanups = preserved;
+			block._slots = null;
+			block.refFields = null;
+			block.slots = [];
+			block.deoptNode = null;
+		});
+
+		const hooks = block.hooks;
+		if (hooks !== null) {
+			for (const value of hooks.values()) {
+				if (
+					value !== null &&
+					typeof value === 'object' &&
+					Object.prototype.hasOwnProperty.call(value, 'deps')
+				) {
+					value.deps = undefined;
+				}
+			}
+		}
+	} finally {
+		if (--TEARDOWN_DEPTH === 0) dispatchTeardownErrors();
+	}
+}
 
 /**
  * Tear down everything a scope rendered and hand it back empty, so a caller can re-render it from
@@ -7747,7 +7953,73 @@ function recordContextDependency(block: Block | null, context: Context<any>): vo
 	}
 }
 
+// Active only while a scoped JSX resolver reads its deferred record (see
+// createScopedResolver). A scoped record has to rebuild when a context it
+// actually read changes, and the reads collected here are what "actually read"
+// means: a descriptor that reads no context is never rebuilt by a provider
+// update, so the props object it produced — and every inline callback identity
+// inside it — survives. Rebuilding on a global epoch instead made an unrelated
+// provider update hand a component's children brand-new prop identities, which
+// churns effect/memo deps and cannot converge when such an effect feeds that
+// provider.
+let SCOPED_READ_TRACKING = false;
+let SCOPED_READS: Map<Context<any>, number> | null = null;
+
+function scopedReadsChanged(reads: Map<Context<any>, number> | null): boolean {
+	if (reads === null) return false;
+	for (const [context, version] of reads) {
+		if (context.$$version !== version) return true;
+	}
+	return false;
+}
+
+function createScopedResolver<T>(read: () => T): () => T {
+	let resolved = false;
+	let resolvedScope: Scope | null = null;
+	let resolvedReads: Map<Context<any>, number> | null = null;
+	let resolvedValue: T;
+
+	return (): T => {
+		const scope = CURRENT_SCOPE;
+		const sameScope =
+			resolvedScope === scope ||
+			(resolvedScope !== null &&
+				scope !== null &&
+				scope.block.parentBlock === resolvedScope.block &&
+				scope.$$ctxValues === null);
+		// A record that read no context is the same in every scope, so only a
+		// context-reading one is rebuilt when its resolving scope changes. Host
+		// classification previews a record in the parent block before its direct
+		// child block renders it, so that one same-context handoff is reusable.
+		if (!resolved || scopedReadsChanged(resolvedReads) || (resolvedReads !== null && !sameScope)) {
+			const previousTracking = SCOPED_READ_TRACKING;
+			const previousReads = SCOPED_READS;
+			SCOPED_READ_TRACKING = true;
+			SCOPED_READS = null;
+			let next: T;
+			try {
+				next = read();
+			} finally {
+				resolvedReads = SCOPED_READS;
+				SCOPED_READ_TRACKING = previousTracking;
+				SCOPED_READS = previousReads;
+			}
+			resolvedScope = scope;
+			resolvedValue = next;
+			resolved = true;
+		} else if (resolvedScope !== scope) {
+			// Move ownership from the previewing parent to its direct child so a
+			// later sibling or provider scope still resolves independently.
+			resolvedScope = scope;
+		}
+		return resolvedValue;
+	};
+}
+
 function readContextFrom<T>(reader: Scope | null, block: Block | null, context: Context<T>): T {
+	// One boolean test per context read; the map is allocated only for a
+	// descriptor that reads context while resolving.
+	if (SCOPED_READ_TRACKING) (SCOPED_READS ??= new Map()).set(context, context.$$version);
 	if (reader !== null && reader.$$ctxCache !== null) {
 		const hit = reader.$$ctxCache.get(context);
 		if (hit !== undefined) {
@@ -10229,7 +10501,6 @@ export function attachRef(
 	}
 	ref.current = el;
 }
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Fragment refs (React canary `enableFragmentRefs` parity).
 //
@@ -10724,10 +10995,11 @@ export function mountFragmentRef(
 	fi._currentRef = ref;
 	// Defer the attach to commit (after DOM insertion, before layout effects) so
 	// the fragment's markers/children are connected when a callback ref fires —
-	// same React-19 timing as element refs. Read `_currentRef` (not the captured
-	// `ref`) so a ref the compiler re-points via the update path is honored, and
-	// so the detach cleanup always releases whatever ref is current on unmount.
-	queueRefAttach(scope, () => attachRef(fi._currentRef, fi));
+	// same React-19 timing as element refs. A render-phase replay may re-point the
+	// Fragment before this mount commit drains, so the shared trampoline resolves
+	// `_currentRef` at drain/cancellation time. The structured target still lets a
+	// Suspense hide distinguish this uncommitted attach from an older committed ref.
+	queueRefAttach(scope, attachLiveFragmentRef, fi);
 	(scope.cleanups ??= []).push(() => {
 		// Detach at commit, not inline (queueRefDetach) — unmount cleanups run
 		// mid-render, and a state-setter ref firing null synchronously can render
@@ -11718,7 +11990,7 @@ export function setSpread(
 			// across elements. Compiled callers pass their scope on BOTH mount and
 			// update so the attach lands at commit (connected node, ordered after
 			// all detaches); the scope-less inline fallback serves external callers.
-			if (mountScope) queueRefAttach(mountScope, () => attachRef(v, el));
+			if (mountScope) queueRefAttach(mountScope, v, el);
 			else attachRef(v, el);
 			continue;
 		}
@@ -14371,44 +14643,15 @@ type ScopedValueDescriptor<P> = ElementDescriptor<P> & {
  *
  * The marker stays eagerly available to public element checks, while inspecting
  * any actual field resolves type, props, key, ref, and children together in the
- * current render scope. A shared value is rebuilt when its provider scope or
- * context epoch changes, just like a scoped element's deferred children.
+ * current render scope. A shared value is rebuilt when its provider scope or a
+ * context it read changes, just like a scoped element's deferred children.
  *
  * @internal
  */
 export function createScopedValue<P>(
 	readElement: () => ElementDescriptor<P>,
 ): ElementDescriptor<P> {
-	let resolved: ElementDescriptor<P> | undefined;
-	let resolvedScope: Scope | null = null;
-	let resolvedEpoch = 0;
-
-	const resolve = (): ElementDescriptor<P> => {
-		const scope = CURRENT_SCOPE;
-		const epoch = COMPILER_CACHE_CONTEXT_EPOCH;
-		const sameScope =
-			resolvedScope === scope ||
-			(resolvedScope !== null &&
-				scope !== null &&
-				scope.block.parentBlock === resolvedScope.block &&
-				scope.$$ctxValues === null);
-		if (resolved === undefined || !sameScope || resolvedEpoch !== epoch) {
-			const next = readElement();
-			if (next.key === null && KEYED_ELEMENT_DESCRIPTORS.has(next)) {
-				KEYED_ELEMENT_DESCRIPTORS.add(descriptor);
-			}
-			resolvedScope = scope;
-			resolvedEpoch = epoch;
-			resolved = next;
-		} else if (resolvedScope !== scope) {
-			// Host classification previews a scoped value in the parent block before
-			// immediately rendering it in the host's direct child block. Reuse that
-			// same-context record once, then move ownership to the child so a later
-			// sibling or provider scope still resolves independently.
-			resolvedScope = scope;
-		}
-		return resolved;
-	};
+	const resolve = createScopedResolver(readElement);
 
 	const descriptor: ElementDescriptor<P> = {
 		$$kind: ELEMENT_TAG,
@@ -14419,7 +14662,12 @@ export function createScopedValue<P>(
 			return resolve().props;
 		},
 		get key() {
-			return resolve().key;
+			const next = resolve();
+			const key = next.key;
+			if (key === null && KEYED_ELEMENT_DESCRIPTORS.has(next)) {
+				KEYED_ELEMENT_DESCRIPTORS.add(descriptor);
+			}
+			return key;
 		},
 		get ref() {
 			return resolve().ref;
@@ -14454,34 +14702,7 @@ export function createScopedElement<P>(
 	const copiedProps = copyElementConfig(src);
 	applyElementDefaultProps(type, copiedProps);
 
-	let resolved = false;
-	let resolvedScope: Scope | null = null;
-	let resolvedEpoch = 0;
-	let resolvedChildren: unknown;
-	const children = (): unknown => {
-		const scope = CURRENT_SCOPE;
-		const epoch = COMPILER_CACHE_CONTEXT_EPOCH;
-		const sameScope =
-			resolvedScope === scope ||
-			(resolvedScope !== null &&
-				scope !== null &&
-				scope.block.parentBlock === resolvedScope.block &&
-				scope.$$ctxValues === null);
-		if (!resolved || !sameScope || resolvedEpoch !== epoch) {
-			const nextChildren = readChildren();
-			resolvedScope = scope;
-			resolvedEpoch = epoch;
-			resolvedChildren = nextChildren;
-			resolved = true;
-		} else if (resolvedScope !== scope) {
-			// Host classification previews scoped children in the parent block before
-			// hostElementBody immediately renders them in its direct child block.
-			// Reuse that same-context preview once, then move ownership to the child
-			// so sibling/provider scopes cannot inherit another subtree's values.
-			resolvedScope = scope;
-		}
-		return resolvedChildren;
-	};
+	const children = createScopedResolver(readChildren);
 	const childProperty = { configurable: true, enumerable: true, get: children };
 	Object.defineProperty(copiedProps, 'children', childProperty);
 	SCOPED_ELEMENT_PROPS.add(copiedProps);
@@ -15885,7 +16106,7 @@ export function positionalChildren(children: any[]): any[] {
 // setAttribute + `$$type` delegated-event slots + deferred ref attach).
 function applyDeoptProp(el: Element, name: string, v: any, ownerBlock: Block): void {
 	if (name === 'ref') {
-		if (v != null) queueRefAttach(ownerBlock, () => attachRef(v, el));
+		if (v != null) queueRefAttach(ownerBlock, v, el);
 	} else if (name === 'className' || name === 'class') {
 		setDeoptClass(el, v);
 	} else if (name === 'style') {
@@ -16111,7 +16332,7 @@ function applyHostProps(el: Element, props: any, scope: Scope, state: HostCompon
 				// regardless of which element's props apply first (React's
 				// mutation→layout phasing; see queueRefDetach).
 				if (state.ref != null) queueRefDetach(state.ref, el);
-				if (v != null) queueRefAttach(scope, () => attachRef(v, el));
+				if (v != null) queueRefAttach(scope, v, el);
 				state.ref = v;
 			}
 		} else if (name === 'className' || name === 'class') {
@@ -17206,7 +17427,74 @@ const NATIVE_ARRAY_SPECIES_GETTER = Object.getOwnPropertyDescriptor(Array, Symbo
 // per row on every unchanged parent render; holes and intrinsic overrides are
 // still rechecked each time. Mutating an existing data index into an accessor
 // without changing the snapshot identity/length is outside that contract.
-const NATIVE_ARRAY_ACCESSORS = new WeakMap<object, { length: number; accessor: boolean }>();
+const NATIVE_ARRAY_ACCESSORS = new WeakMap<
+	object,
+	{ length: number; accessor: boolean; renderable?: boolean }
+>();
+
+/**
+ * Compiler ABI for a safely reusable value-position array. A plain dense array
+ * of ordinary descriptor snapshots can skip reconciliation while its identity
+ * holds; indexed getters, nested collections, Fragments, and scope-sensitive
+ * descriptors must stay on the ordinary live-render path. A fresh array will
+ * be reconciled regardless, so inspect its entries only when that same identity
+ * can actually skip a later render. Classification is cached by immutable
+ * snapshot identity, just like the existing mapped-array accessor proof, so
+ * subsequent cache hits remain constant-time without penalizing fresh lists.
+ * @internal
+ */
+export function compilerCacheArray(value: unknown, previous: unknown): boolean {
+	if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) return false;
+	// The region's existing identity-miss guard guarantees a changed value runs
+	// its ordinary reconciliation. No safety classification is needed until a
+	// previously rendered array could actually be reused.
+	if (value !== previous) return true;
+	const length = value.length;
+	const cached = NATIVE_ARRAY_ACCESSORS.get(value);
+	if (cached !== undefined && cached.length === length) {
+		if (cached.accessor) return false;
+		if (cached.renderable !== undefined) return cached.renderable;
+	}
+
+	let accessor = false;
+	let renderable = true;
+	for (let index = 0; index < length; index++) {
+		const descriptor = Object.getOwnPropertyDescriptor(value, index);
+		if (descriptor === undefined || descriptor.get !== undefined || descriptor.set !== undefined) {
+			accessor = true;
+			renderable = false;
+			break;
+		}
+		const item = descriptor.value;
+		if (Array.isArray(item)) {
+			renderable = false;
+			continue;
+		}
+		if (item !== null && typeof item === 'object') {
+			if (item.$$kind !== ELEMENT_TAG) {
+				renderable = false;
+				continue;
+			}
+			// A scoped-value descriptor exposes type/props through getters. Check its
+			// private marker before touching either field or moving context reads.
+			if ((item as ScopedValueDescriptor<any>)[SCOPED_VALUE_RECORD] !== undefined) {
+				renderable = false;
+				continue;
+			}
+			// Hosts and Fragments own child collections that may hide live getters;
+			// only ordinary component descriptor snapshots are independently safe.
+			if (typeof item.type !== 'function' || SCOPED_ELEMENT_PROPS.has(item.props as object)) {
+				renderable = false;
+			}
+		} else if (typeof item === 'function' || typeof item === 'symbol') {
+			renderable = false;
+		}
+	}
+	// Continue scanning after a nested/scoped rejection: mapSlot shares this
+	// record and still needs its accessor verdict to cover every array index.
+	NATIVE_ARRAY_ACCESSORS.set(value, { length, accessor, renderable });
+	return renderable;
+}
 
 /** Shared compiler ABI: native-array eligibility query plus stable keyed map dispatch. */
 export function mapSlot(
@@ -18543,6 +18831,49 @@ function restampCtxDeps(block: Block): void {
 	}
 }
 
+// A cached output region bypasses the memo/implicit bailouts that normally
+// restore a skipped subtree's context dependencies onto rerendered ancestors.
+// Descend only until the first stamped boundary: its aggregate already covers
+// the entire live subtree. Lite child scopes are not Blocks, so continue
+// through them rather than mistaking their owning block for a fresh boundary.
+function restampCachedContextScope(scope: Scope): void {
+	if (scope.block === scope) {
+		const block = scope as Block;
+		if ((block.body as any)?.__memo === true || block.$$implicitBail === true) {
+			restampCtxDeps(block);
+			return;
+		}
+		if (block.$$ctxDirect !== null && block.$$ctxDirect.size !== 0) {
+			restampCtxDeps(block);
+		}
+	}
+	forEachSubtreeChild(scope, restampCachedContextScope);
+}
+
+function restampCachedSlotContext(slot: any): void {
+	if (slot.__kind === 'forBlockSlot') {
+		for (let item: Block | null = slot.head; item !== null; item = item.nextSibling) {
+			restampCachedContextScope(item);
+		}
+		if (slot.emptyBlock !== null) restampCachedContextScope(slot.emptyBlock);
+		return;
+	}
+	if (slot.block !== undefined && slot.block !== null) {
+		restampCachedContextScope(slot.block);
+		return;
+	}
+	if (slot.__kind !== 'childSlot') return;
+	if (slot.forSlot !== null) {
+		const list = slot.forSlot as ForSlot;
+		for (let item: Block | null = list.head; item !== null; item = item.nextSibling) {
+			restampCachedContextScope(item);
+		}
+		if (list.emptyBlock !== null) restampCachedContextScope(list.emptyBlock);
+	} else if (slot.portal?.block !== undefined && slot.portal.block !== null) {
+		restampCachedContextScope(slot.portal.block);
+	}
+}
+
 function refreshBlockForContext(block: Block): void {
 	if (ctxDirectChanged(block)) {
 		// This child directly consumes the changed context (or shares its block
@@ -18567,30 +18898,70 @@ function refreshBlockForContext(block: Block): void {
  * Compiler ABI for a flat output-cache hit. Context consumers are normally
  * reached while their parent slot reconciles; a cache hit intentionally skips
  * that reconciliation, so an intervening Provider commit must refresh the
- * slot's existing Block(s) directly. The common path is one numeric equality
- * check. `previous === undefined` snapshots the epoch after a cache miss
- * without refreshing the freshly-rendered subtree.
+ * slot's existing Block(s) directly. Activity/Suspense reveals must also
+ * reconnect effects retained by a skipped subtree, in its live source order,
+ * and opted-in renderable-array regions restore their descendants' context
+ * reads onto memoized ancestors. Existing mapped regions keep their original
+ * constant-time hit; only array-region hits inspect precomputed memo ancestry.
+ * `previous === undefined` snapshots the epoch after a cache miss without
+ * revisiting the freshly-rendered subtree.
  * @internal
  */
 export function compilerCacheContext(
 	scope: Scope,
 	slotKey: number,
 	previous: number | undefined,
+	restampMemoAncestors: boolean = false,
 ): number {
 	const current = COMPILER_CACHE_CONTEXT_EPOCH;
-	if (previous === undefined || previous === current) return current;
+	if (previous === undefined) return current;
+	const reconnect = EFFECT_RECONNECT_CONTEXT !== null;
+	const restamp = restampMemoAncestors && scope.block.memoInChain;
+	if (previous === current && !reconnect && !restamp) return current;
 	const slot = scope.slots[slotKey];
 	if (slot === undefined || slot === null) return current;
-	if (slot.__kind === 'forBlockSlot') {
-		for (const item of slot.items.values()) refreshBlockForContext(item);
-		if (slot.emptyBlock) refreshBlockForContext(slot.emptyBlock);
-	} else if (slot.block) {
-		refreshBlockForContext(slot.block);
-	} else if (slot.__kind === 'childSlot' && slot.forSlot) {
-		for (const item of slot.forSlot.items.values()) refreshBlockForContext(item);
-	} else if (slot.__kind === 'childSlot' && slot.portal?.block) {
-		refreshBlockForContext(slot.portal.block);
+	if (reconnect) {
+		const contextChanged = previous !== current;
+		const list =
+			slot.__kind === 'forBlockSlot'
+				? (slot as ForSlot)
+				: slot.__kind === 'childSlot'
+					? (slot.forSlot as ForSlot | null)
+					: null;
+		if (list !== null) {
+			// Map insertion order stays unchanged when keyed survivors reorder;
+			// effects must reconnect in the live linked chain's source order.
+			for (let item: Block | null = list.head; item !== null; item = item.nextSibling) {
+				if (contextChanged) refreshBlockForContext(item);
+				reconnectBailedEffects(item);
+			}
+			if (list.emptyBlock !== null) {
+				if (contextChanged) refreshBlockForContext(list.emptyBlock);
+				reconnectBailedEffects(list.emptyBlock);
+			}
+		} else {
+			const block = slot.block ?? (slot.__kind === 'childSlot' ? slot.portal?.block : null);
+			if (block !== undefined && block !== null) {
+				if (contextChanged) refreshBlockForContext(block);
+				reconnectBailedEffects(block);
+			}
+		}
+		if (restamp) restampCachedSlotContext(slot);
+		return current;
 	}
+	if (previous !== current) {
+		if (slot.__kind === 'forBlockSlot') {
+			for (const item of slot.items.values()) refreshBlockForContext(item);
+			if (slot.emptyBlock) refreshBlockForContext(slot.emptyBlock);
+		} else if (slot.block) {
+			refreshBlockForContext(slot.block);
+		} else if (slot.__kind === 'childSlot' && slot.forSlot) {
+			for (const item of slot.forSlot.items.values()) refreshBlockForContext(item);
+		} else if (slot.__kind === 'childSlot' && slot.portal?.block) {
+			refreshBlockForContext(slot.portal.block);
+		}
+	}
+	if (restamp) restampCachedSlotContext(slot);
 	return current;
 }
 
@@ -18691,11 +19062,11 @@ export function memo<P>(
 //   2. Tracks every live Block currently using this wrapper in a plain (strong)
 //      Set, pruned lazily: disposed blocks are retained until the next
 //      `update()` call deletes them (dev-only, so retention is bounded by edit
-//      frequency). On `update(newFn)` we mutate each
-//      block's `body` to point at the new fn and re-render — hook state is
-//      preserved because the compiler emits `Symbol.for(stableId)` for hook
-//      slots (re-imports get the same Symbol identity, so the existing
-//      hooks Map continues to work).
+//      frequency). On `update(newFn)` we clear each block's compiler-owned
+//      template/slot state, point its `body` at the new fn, and re-render. Hook
+//      state is preserved because the Block stays live and the compiler emits
+//      `Symbol.for(stableId)` for hook slots (re-imports get the same Symbol
+//      identity, so the existing hooks Map continues to work).
 //   3. Marks the wrapper IDENTITY-stable: HMR wrappers `Foo` and `Foo` (post-
 //      reload) are the same wrapper, so `componentSlot`'s identity check
 //      (`comp !== state.currentComp`) doesn't tear down on every edit.
@@ -18731,14 +19102,26 @@ export function hmr<P>(fn: ComponentBody<P>): ComponentBody<P> {
 			// module instead of reusing a live scope with the incompatible layout.
 			if ((meta.fn as any).__octaneReturnedOutput !== (nextFn as any).__octaneReturnedOutput)
 				return false;
+			// A hot component may live in a single-element or inherited marker-elision
+			// regime. Reject only incoherent/detached ranges; the accepted path promotes
+			// a self-marked element to an HMR-owned comment range before removing it.
+			for (const b of meta.liveBlocks) {
+				if (b.disposed) {
+					meta.liveBlocks.delete(b);
+					continue;
+				}
+				if (!hasResettableHmrRange(b)) return false;
+			}
 			meta.fn = nextFn;
 			if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__)
 				__profileComponentSource(wrapper, meta.fn);
 			// Keep the forwarded fetch plan in sync with the swapped body.
 			(wrapper as any).__warm = (meta.fn as any).__warm;
-			// Mutate every live block's body in place and schedule a re-render.
-			// The hook map persists (stable Symbol.for-based keys), so useState/
-			// useEffect/etc. pick up their existing slots on the next render.
+			// Rebuild every live block's compiler-owned output, then schedule the new
+			// body. The Block + hook map persist (stable Symbol.for-based keys), while
+			// template/binding/component slots start from their mount path so arbitrary
+			// source edits cannot read the previous compilation's layout. An exclusively
+			// owned self-marked root is promoted to a private range during the reset.
 			const it = meta.liveBlocks.values();
 			for (let r = it.next(); !r.done; r = it.next()) {
 				const b = r.value;
@@ -18749,6 +19132,8 @@ export function hmr<P>(fn: ComponentBody<P>): ComponentBody<P> {
 				b.body = wrapper as unknown as ComponentBody<any>;
 				if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__)
 					__profileSchedule(b, 'hmr');
+				promoteHmrBlockRange(b);
+				resetHmrBlock(b);
 				scheduleRender(b);
 			}
 			return true;
@@ -18796,14 +19181,15 @@ export function getTransitionFallbackTimeout(): number {
 	return TRANSITION_FALLBACK_TIMEOUT_MS;
 }
 
-interface SuspenseHiddenDisplay {
+interface HiddenDisplay {
 	owners: number;
+	importantOwners: number;
 	value: string;
 	priority: string;
 	hadStyle: boolean;
 }
 
-interface SuspenseHiddenText {
+interface HiddenText {
 	owners: number;
 	data: string;
 }
@@ -18813,10 +19199,72 @@ interface SuspenseHiddenDom {
 	texts: Set<Text>;
 }
 
-// Nested Suspense boundaries can own the same physical host (notably a portal
-// range). Restore it only after the last hidden ancestor reveals.
-const SUSPENSE_HIDDEN_DISPLAYS = new WeakMap<HTMLElement, SuspenseHiddenDisplay>();
-const SUSPENSE_HIDDEN_TEXTS = new WeakMap<Text, SuspenseHiddenText>();
+// Activity and nested Suspense boundaries can own the same physical host
+// (notably a portal range). Capture authored state only for the first owner and
+// restore it only after the last owner reveals, independent of hide/reveal order.
+const HIDDEN_DISPLAYS = new WeakMap<HTMLElement, HiddenDisplay>();
+const HIDDEN_TEXTS = new WeakMap<Text, HiddenText>();
+
+function enforceHiddenDisplay(el: HTMLElement): void {
+	const hidden = HIDDEN_DISPLAYS.get(el);
+	el.style.setProperty(
+		'display',
+		'none',
+		hidden !== undefined && hidden.importantOwners > 0 ? 'important' : '',
+	);
+}
+
+function retainHiddenDisplay(el: HTMLElement, important: boolean): void {
+	const existing = HIDDEN_DISPLAYS.get(el);
+	if (existing === undefined) {
+		HIDDEN_DISPLAYS.set(el, {
+			owners: 1,
+			importantOwners: important ? 1 : 0,
+			value: el.style.getPropertyValue('display'),
+			priority: el.style.getPropertyPriority('display'),
+			hadStyle: el.hasAttribute('style'),
+		});
+	} else {
+		existing.owners++;
+		if (important) existing.importantOwners++;
+	}
+	enforceHiddenDisplay(el);
+}
+
+function releaseHiddenDisplay(el: HTMLElement, important: boolean): void {
+	const display = HIDDEN_DISPLAYS.get(el);
+	if (display === undefined) return;
+	if (important) display.importantOwners--;
+	if (--display.owners === 0) {
+		HIDDEN_DISPLAYS.delete(el);
+		if (display.value === '') el.style.removeProperty('display');
+		else el.style.setProperty('display', display.value, display.priority);
+		if (!display.hadStyle && el.getAttribute('style') === '') el.removeAttribute('style');
+	} else {
+		enforceHiddenDisplay(el);
+	}
+}
+
+function enforceHiddenText(text: Text): void {
+	if (text.data !== '') text.data = '';
+}
+
+function retainHiddenText(text: Text): void {
+	const existing = HIDDEN_TEXTS.get(text);
+	if (existing === undefined) HIDDEN_TEXTS.set(text, { owners: 1, data: text.data });
+	else existing.owners++;
+}
+
+function releaseHiddenText(text: Text): void {
+	const saved = HIDDEN_TEXTS.get(text);
+	if (saved === undefined) return;
+	if (--saved.owners === 0) {
+		HIDDEN_TEXTS.delete(text);
+		text.data = saved.data;
+	} else {
+		enforceHiddenText(text);
+	}
+}
 
 interface TrySlot {
 	__kind: 'trySlotSlot';
@@ -19378,31 +19826,17 @@ function hideBlockHostRange(block: Block, hidden: SuspenseHiddenDom): void {
 			const el = node as HTMLElement;
 			if (!hidden.displays.has(el)) {
 				hidden.displays.add(el);
-				const existing = SUSPENSE_HIDDEN_DISPLAYS.get(el);
-				if (existing === undefined) {
-					SUSPENSE_HIDDEN_DISPLAYS.set(el, {
-						owners: 1,
-						value: el.style.getPropertyValue('display'),
-						priority: el.style.getPropertyPriority('display'),
-						hadStyle: el.hasAttribute('style'),
-					});
-				} else {
-					existing.owners++;
-				}
+				retainHiddenDisplay(el, true);
+			} else {
+				enforceHiddenDisplay(el);
 			}
-			el.style.setProperty('display', 'none', 'important');
 		} else if (node.nodeType === 3) {
 			const text = node as Text;
 			if (!hidden.texts.has(text)) {
 				hidden.texts.add(text);
-				const existing = SUSPENSE_HIDDEN_TEXTS.get(text);
-				if (existing === undefined) {
-					SUSPENSE_HIDDEN_TEXTS.set(text, { owners: 1, data: text.data });
-				} else {
-					existing.owners++;
-				}
+				retainHiddenText(text);
 			}
-			if (text.data !== '') text.data = '';
+			enforceHiddenText(text);
 		}
 		node = node.nextSibling as ChildNode | null;
 	}
@@ -19434,26 +19868,10 @@ function showTryBlock(state: TrySlot): void {
 	if (hidden === null) return;
 	state.hiddenDom = null;
 	for (const el of hidden.displays) {
-		const display = SUSPENSE_HIDDEN_DISPLAYS.get(el);
-		if (display === undefined) continue;
-		if (--display.owners === 0) {
-			SUSPENSE_HIDDEN_DISPLAYS.delete(el);
-			if (display.value === '') el.style.removeProperty('display');
-			else el.style.setProperty('display', display.value, display.priority);
-			if (!display.hadStyle && el.getAttribute('style') === '') el.removeAttribute('style');
-		} else {
-			el.style.setProperty('display', 'none', 'important');
-		}
+		releaseHiddenDisplay(el, true);
 	}
 	for (const text of hidden.texts) {
-		const saved = SUSPENSE_HIDDEN_TEXTS.get(text);
-		if (saved === undefined) continue;
-		if (--saved.owners === 0) {
-			SUSPENSE_HIDDEN_TEXTS.delete(text);
-			text.data = saved.data;
-		} else if (text.data !== '') {
-			text.data = '';
-		}
+		releaseHiddenText(text);
 	}
 }
 
@@ -19685,6 +20103,12 @@ function hideTryContentAndMountPending(
 	}
 	if (state.tryBlock) {
 		const persistent = state.tryBlock;
+		// A ref mounted before the suspending sibling queued an attach but has not
+		// reached the commit phase. The fallback commit must discard that work;
+		// reveal will enumerate the primary's current manifests and attach them. The
+		// exact canceled pairs also tell the detach walk which current refs never
+		// committed, without retaining a witness for every callback ref in the app.
+		const uncommittedRefs = discardSubtreeRefAttaches(persistent);
 		deactivateScope(persistent, false);
 		// Effect cleanups are user code and may synchronously replace/unmount this
 		// root. Never continue a half-finished fallback commit into detached markers.
@@ -19695,14 +20119,20 @@ function hideTryContentAndMountPending(
 			state.detachedRefs = [];
 			// Nested boundaries may already have detached their hidden primary refs.
 			// Visit only each nested boundary's visible arm here so an outer hide
-			// cannot detach the preserved inner primary a second time.
-			detachSubtreeRefs(persistent, state.detachedRefs, true, false);
+			// cannot detach the preserved inner primary a second time. The canceled
+			// pair index excludes refs that only reached the queue before this
+			// suspension; reveal attaches the current manifests.
+			detachSubtreeRefs(persistent, state.detachedRefs, true, false, uncommittedRefs);
 		}
 		// Callback refs (and React-19 ref cleanups) are user code too. In particular,
 		// ref(null) may synchronously unmount an independent or owning root.
 		if (state.parentBlock.disposed || persistent.disposed || state.tryBlock !== persistent) {
 			return false;
 		}
+		// Ref callbacks can synchronously render. Any fresh attaches they queued for
+		// this still-hidden primary are uncommitted work too; do not publish them at
+		// the fallback commit.
+		discardSubtreeRefAttaches(persistent, uncommittedRefs);
 		persistent.inactive = true;
 	}
 	if (!mountPendingBody(state)) return false;
@@ -19818,6 +20248,7 @@ function commitResume(state: TrySlot): void {
 
 function commitResumeInner(state: TrySlot): void {
 	if (state.parentBlock.disposed) return;
+	const hiddenActivity = findHiddenActivity(state.parentBlock);
 	const wasHeld = state.transitionHeld;
 	if (wasHeld) state.transitionHeld = false;
 	// Leave the coordination sets — this boundary is committing now (a re-suspend
@@ -19953,22 +20384,57 @@ function commitResumeInner(state: TrySlot): void {
 		// the LAYOUT queue stays non-empty and the scheduler never goes quiescent.
 		if (!deferringStagedRevealEffects) commitEffects();
 	} finally {
+		if (hiddenActivity !== null) rehideActivityAfterDescendantRender(hiddenActivity);
 		if (wasHeld) tickTransitionCount(-1);
 	}
 }
 
+type HiddenRenderOwner = TrySlot | ActivitySlot;
+
+function findHiddenRenderOwner(block: Block | null, includeActivity: false): TrySlot | null;
+function findHiddenRenderOwner(
+	block: Block | null,
+	includeActivity: true,
+): HiddenRenderOwner | null;
 /**
- * Nearest enclosing SUSPENSE-HIDDEN boundary: a tryBlock ancestor whose slot
- * has its committed try content recorded in `hiddenDom` (fallback showing). The
- * pending arm's own block also carries `__trySlot`, but only the TRY block
- * matches `slot.tryBlock === p`, so updates inside the fallback render
- * normally. <Activity>-hidden subtrees (also `inactive`) are untouched — their
- * DOM stays connected, but retries still belong to the whole boundary transaction.
+ * Find the boundary that owns an independently scheduled render under hidden
+ * content. A SUSPENSE-HIDDEN boundary owns the whole retry transaction and
+ * therefore wins over Activity and reapplies any Activity ownership around its
+ * own retry transaction. The scheduler's common path stays one allocation-free
+ * ancestor walk.
+ *
+ * The pending arm's own block also carries `__trySlot`, but only the TRY block
+ * matches `slot.tryBlock === p`, so updates inside the fallback render normally.
  */
-function findSuspenseHiddenTry(block: Block | null): TrySlot | null {
+function findHiddenRenderOwner(
+	block: Block | null,
+	includeActivity: boolean,
+): HiddenRenderOwner | null {
+	let activity: ActivitySlot | null = null;
 	for (let p: Block | null = block; p !== null; p = p.parentBlock) {
+		if (includeActivity && activity === null && p.inactive) {
+			const candidate = (p as any).__activitySlot as ActivitySlot | undefined;
+			if (candidate !== undefined && candidate.block === p && candidate.hidden) {
+				activity = candidate;
+			}
+		}
 		const slot = (p as any).__trySlot as TrySlot | undefined;
 		if (slot !== undefined && slot.tryBlock === p && slot.hiddenDom !== null) return slot;
+	}
+	return activity;
+}
+
+/** Nearest enclosing SUSPENSE-HIDDEN boundary, if one owns this render. */
+function findSuspenseHiddenTry(block: Block | null): TrySlot | null {
+	return findHiddenRenderOwner(block, false);
+}
+
+/** Nearest hidden Activity that owns connected DOM in this block's ancestry. */
+function findHiddenActivity(block: Block | null): ActivitySlot | null {
+	for (let p: Block | null = block; p !== null; p = p.parentBlock) {
+		if (!p.inactive) continue;
+		const candidate = (p as any).__activitySlot as ActivitySlot | undefined;
+		if (candidate !== undefined && candidate.block === p && candidate.hidden) return candidate;
 	}
 	return null;
 }
@@ -20140,11 +20606,20 @@ function queueCurrentHiddenRefs(state: TrySlot): void {
 	collectVisibleSubtreeRefs(state.tryBlock, refs);
 	for (let i = 0; i < refs.length; i++) {
 		const entry = refs[i];
-		queueRefAttach(entry.scope, () => attachRef(entry.ref, entry.el));
+		queueRefAttach(entry.scope, entry.ref, entry.el);
 	}
 }
 
 function attemptHiddenReveal(state: TrySlot, scheduledMode?: 'urgent' | 'transition'): void {
+	const hiddenActivity = findHiddenActivity(state.tryBlock);
+	try {
+		attemptHiddenRevealInner(state, scheduledMode);
+	} finally {
+		if (hiddenActivity !== null) rehideActivityAfterDescendantRender(hiddenActivity);
+	}
+}
+
+function attemptHiddenRevealInner(state: TrySlot, scheduledMode?: 'urgent' | 'transition'): void {
 	const tryBlock = state.tryBlock;
 	if (tryBlock === null || tryBlock.disposed || state.hiddenDom === null) return;
 	// A nested boundary cannot reveal independently through an ancestor's hidden
@@ -20152,7 +20627,7 @@ function attemptHiddenReveal(state: TrySlot, scheduledMode?: 'urgent' | 'transit
 	// and either reveal both atomically or keep the whole subtree hidden.
 	const hiddenAncestor = findSuspenseHiddenTry(tryBlock.parentBlock);
 	if (hiddenAncestor !== null) {
-		attemptHiddenReveal(hiddenAncestor, scheduledMode);
+		attemptHiddenRevealInner(hiddenAncestor, scheduledMode);
 		return;
 	}
 	// A fresh retry invalidates any readiness proved by an earlier attempt even
@@ -20322,15 +20797,13 @@ function compareStagedRevealDomOrder(a: TrySlot, b: TrySlot): number {
 	return 0;
 }
 
-/** Rebase speculative enqueue order onto final source/tree commit order. */
-function rebaseOffscreenCaptureSeq(capture: OffscreenCapture): void {
+/** Rebase speculative effect enqueue order onto final source/tree commit order. */
+function rebaseOffscreenEffectSeq(capture: OffscreenCapture): void {
 	const effects = capture.effects[INSERTION].concat(
 		capture.effects[LAYOUT],
 		capture.effects[PASSIVE],
 	).sort((a, b) => a.seq - b.seq);
 	for (let i = 0; i < effects.length; i++) effects[i].seq = commitSeq++;
-	const refs = capture.refs.slice().sort((a, b) => a.seq - b.seq);
-	for (let i = 0; i < refs.length; i++) refs[i].seq = commitSeq++;
 }
 
 function flushStagedReveals(): void {
@@ -20366,10 +20839,10 @@ function flushStagedReveals(): void {
 			const deferEffects = batch.every((state) => state.stagedCapture !== null);
 			if (deferEffects) {
 				// Promise resolution order is not source order. Commit left-to-right and
-				// rebase each capture's enqueue sequence so the shared effect/ref drain
-				// preserves sibling tree order even when the right boundary readies first.
+				// rebase each capture's effect sequence. Ref captures splice in this same
+				// sorted order and retain it through their stable post-order sort.
 				batch.sort(compareStagedRevealDomOrder);
-				for (const state of batch) rebaseOffscreenCaptureSeq(state.stagedCapture!);
+				for (const state of batch) rebaseOffscreenEffectSeq(state.stagedCapture!);
 			}
 			const previousDeferral = deferringStagedRevealEffects;
 			deferringStagedRevealEffects = deferEffects;
@@ -20578,7 +21051,7 @@ export function useTransition(
 			}
 		};
 		TRANSITION_LISTENERS.add(listener);
-		(scope.cleanups ??= []).push(() => TRANSITION_LISTENERS.delete(listener));
+		registerHookCleanup(scope, () => TRANSITION_LISTENERS.delete(listener));
 	}
 	return [s.isPending, s.start];
 }
@@ -20748,7 +21221,7 @@ export function useFormStatus(slot?: HookSlot): FormStatus {
 		s = { form: null, listener: null };
 		const slotRef = s;
 		ensureHooks(scope).set(slot, slotRef);
-		(scope.cleanups ??= []).push(() => {
+		registerHookCleanup(scope, () => {
 			if (slotRef.form && slotRef.listener)
 				FORM_STATUS_LISTENERS.get(slotRef.form)?.delete(slotRef.listener);
 		});
@@ -20870,7 +21343,7 @@ export function useOptimistic<S, V = S>(
 			if (TRANSITION_PENDING_COUNT === 0 && slotRef.armed) clear();
 		};
 		TRANSITION_LISTENERS.add(listener);
-		(scope.cleanups ??= []).push(() => TRANSITION_LISTENERS.delete(listener));
+		registerHookCleanup(scope, () => TRANSITION_LISTENERS.delete(listener));
 	}
 	s.updateFn = updateFn;
 	let optimistic = passthrough;
@@ -21709,6 +22182,13 @@ function renderBranchSlot(
 			);
 		}
 	}
+	// Hydration consumed the whole outer control-flow slot, not only the active
+	// branch nested inside it. Park the shared cursor after that outer range so a
+	// following sibling @if/@switch adopts its own markers instead of seeing this
+	// slot's close marker and mounting fresh DOM at the enclosing anchor.
+	if (hydration !== null && !state.borrowed && state.end !== null) {
+		hydration.node = state.end.nextSibling;
+	}
 }
 
 interface IfSlot extends BranchSlot {
@@ -21803,14 +22283,14 @@ interface ActivitySlot {
 	commitVersion: number;
 	/** The visible effects still need their commit-phase deactivation. */
 	deactivationPending: boolean;
-	/** Direct child elements we hid → their prior inline `display`, for restore. */
-	savedDisplay: Map<HTMLElement, string>;
+	/** Direct child elements for which this Activity owns one shared hide. */
+	hiddenDisplays: Set<HTMLElement>;
 	/**
-	 * Direct child TEXT nodes we hid → their prior `data`, for restore. Text nodes
-	 * have no box and can't take `display:none`, so a bare-text Activity child
+	 * Direct child TEXT nodes for which this Activity owns one shared hide. Text
+	 * nodes have no box and can't take `display:none`, so a bare-text Activity child
 	 * (`<Activity mode="hidden">{'…'}</Activity>`) is hidden by blanking its data.
 	 */
-	savedText: Map<Text, string>;
+	hiddenTexts: Set<Text>;
 }
 
 /**
@@ -21822,27 +22302,57 @@ interface ActivitySlot {
 function hideActivityRange(state: ActivitySlot): void {
 	const b = state.block;
 	if (!b) return;
+	// Branch switches and HMR can replace direct roots while the Activity stays
+	// hidden. Drop detached entries now so a long-hidden, frequently updated
+	// boundary does not retain every outgoing host node until it reveals.
+	for (const el of state.hiddenDisplays) {
+		if (el.parentNode !== b.parentNode) {
+			state.hiddenDisplays.delete(el);
+			releaseHiddenDisplay(el, false);
+		}
+	}
+	for (const text of state.hiddenTexts) {
+		if (text.parentNode !== b.parentNode) {
+			state.hiddenTexts.delete(text);
+			releaseHiddenText(text);
+		}
+	}
 	let node: ChildNode | null = (b.startMarker as Comment).nextSibling;
 	while (node && node !== b.endMarker) {
 		if (node.nodeType === 1) {
 			const el = node as HTMLElement;
-			if (!state.savedDisplay.has(el)) state.savedDisplay.set(el, el.style.display);
-			el.style.display = 'none';
+			if (!state.hiddenDisplays.has(el)) {
+				state.hiddenDisplays.add(el);
+				retainHiddenDisplay(el, false);
+			} else {
+				enforceHiddenDisplay(el);
+			}
 		} else if (node.nodeType === 3) {
 			const t = node as Text;
-			if (!state.savedText.has(t)) state.savedText.set(t, t.nodeValue ?? '');
-			if (t.nodeValue !== '') t.nodeValue = '';
+			if (!state.hiddenTexts.has(t)) {
+				state.hiddenTexts.add(t);
+				retainHiddenText(t);
+			}
+			enforceHiddenText(t);
 		}
 		node = node.nextSibling;
 	}
 }
 
-/** Restore the inline `display` / text content we saved on hide. */
+function rehideActivityAfterDescendantRender(state: ActivitySlot): void {
+	const b = state.block;
+	if (b === null || !state.hidden || state.deactivationPending || blockSubtreeDisposed(b)) return;
+	// A pending visible→hidden commit intentionally keeps the DOM visible until
+	// effect cleanup; its queued commit action will hide the latest range.
+	hideActivityRange(state);
+}
+
+/** Release this Activity's hide ownership, restoring nodes with no other owner. */
 function showActivityRange(state: ActivitySlot): void {
-	for (const [el, display] of state.savedDisplay) el.style.display = display;
-	state.savedDisplay.clear();
-	for (const [t, data] of state.savedText) t.nodeValue = data;
-	state.savedText.clear();
+	for (const el of state.hiddenDisplays) releaseHiddenDisplay(el, false);
+	state.hiddenDisplays.clear();
+	for (const text of state.hiddenTexts) releaseHiddenText(text);
+	state.hiddenTexts.clear();
 }
 
 function queueActivityDeactivation(state: ActivitySlot, block: Block, commitVersion: number): void {
@@ -21916,9 +22426,12 @@ export function activityBlock(
 			hidden: false,
 			commitVersion: 0,
 			deactivationPending: false,
-			savedDisplay: new Map(),
-			savedText: new Map(),
+			hiddenDisplays: new Set(),
+			hiddenTexts: new Set(),
 		};
+		// Activity is a rare boundary, so keep this back-reference off the
+		// monomorphic Block shape (matching the existing Suspense __trySlot tag).
+		(b as any).__activitySlot = state;
 		parentScope.slots[slotKey] = state;
 		registerSlot(parentScope, state);
 		const adopted = open !== null;
@@ -22058,12 +22571,13 @@ function detachSubtreeRefs(
 	out: SuspenseRefEntry[],
 	shouldDetach: boolean = true,
 	includeHiddenTry: boolean = true,
+	uncommitted: UncommittedRefAttaches | null = null,
 ): void {
 	// A block managing a de-opt host subtree (deoptItemBody / pure-host items):
 	// every node the de-opt reconciler built carries its descriptor (DEOPT_DESC),
 	// whose props may hold a ref — walk the DOM subtree for them.
 	const deoptRoot = (scope as any).deoptNode as Node | null | undefined;
-	if (deoptRoot != null) detachDeoptTreeRefs(deoptRoot, out, shouldDetach, scope);
+	if (deoptRoot != null) detachDeoptTreeRefs(deoptRoot, out, shouldDetach, scope, uncommitted);
 	const rm = scope.refFields;
 	if (rm !== null) {
 		const bag = scope.slots[0];
@@ -22076,7 +22590,9 @@ function detachSubtreeRefs(
 					if (ref == null) continue;
 					const el = bag[rm[j + 2]];
 					out.push({ ref, el, scope });
-					if (shouldDetach) attachRef(ref, null, el);
+					if (shouldDetach && !refAttachWasDiscarded(uncommitted, el, ref)) {
+						attachRef(ref, null, el);
+					}
 				} else if (kind === 's') {
 					// Spread binding: the committed spread object may carry a ref.
 					const ref = bag[rm[j + 1]]?.ref;
@@ -22084,14 +22600,18 @@ function detachSubtreeRefs(
 					const el = bag[rm[j + 2]];
 					if (el == null) continue;
 					out.push({ ref, el, scope });
-					if (shouldDetach) attachRef(ref, null, el);
+					if (shouldDetach && !refAttachWasDiscarded(uncommitted, el, ref)) {
+						attachRef(ref, null, el);
+					}
 				} else {
 					// 'f' — <Fragment ref>: detach the FragmentInstance's current ref;
 					// reveal re-attaches the same instance.
 					const fi = bag[rm[j + 1]];
 					if (fi == null || fi._currentRef == null) continue;
 					out.push({ ref: fi._currentRef, el: fi, scope });
-					if (shouldDetach) attachRef(fi._currentRef, null, fi);
+					if (shouldDetach && !refAttachWasDiscarded(uncommitted, fi, fi._currentRef)) {
+						attachRef(fi._currentRef, null, fi);
+					}
 				}
 			}
 		}
@@ -22103,16 +22623,18 @@ function detachSubtreeRefs(
 		// De-opt host element slot (value-position `<tag>` / motion-style): { el, anchor, ref }.
 		if (s.ref != null && s.anchor !== undefined && s.el instanceof Element) {
 			out.push({ ref: s.ref, el: s.el, scope });
-			if (shouldDetach) attachRef(s.ref, null, s.el);
+			if (shouldDetach && !refAttachWasDiscarded(uncommitted, s.el, s.ref)) {
+				attachRef(s.ref, null, s.el);
+			}
 		}
 		// childSlot managing a pure-host de-opt node — same DEOPT_DESC walk.
 		if (s.__kind === 'childSlot' && s.hostNode != null) {
-			detachDeoptTreeRefs(s.hostNode, out, shouldDetach, scope);
+			detachDeoptTreeRefs(s.hostNode, out, shouldDetach, scope, uncommitted);
 		}
 	}
 	forEachSubtreeChild(
 		scope,
-		(child) => detachSubtreeRefs(child, out, shouldDetach, includeHiddenTry),
+		(child) => detachSubtreeRefs(child, out, shouldDetach, includeHiddenTry, uncommitted),
 		includeHiddenTry,
 	);
 }
@@ -22134,13 +22656,16 @@ function detachDeoptTreeRefs(
 	out: SuspenseRefEntry[] | null,
 	shouldDetach: boolean = true,
 	ownerScope?: Scope,
+	uncommitted: UncommittedRefAttaches | null = null,
 ): void {
 	const ref = getDeoptDesc(node)?.props?.ref;
 	if (ref != null) {
 		if (out !== null) {
 			// Suspense-hide: detach NOW (the caller re-attaches on reveal).
 			out.push({ ref, el: node as Element, scope: ownerScope! });
-			if (shouldDetach) attachRef(ref, null, node as Element);
+			if (shouldDetach && !refAttachWasDiscarded(uncommitted, node as Element, ref)) {
+				attachRef(ref, null, node as Element);
+			}
 		} else {
 			// Teardown: DEFER the detach to commit (drainRefDetaches), before the
 			// mount attaches. Teardown runs mid-render (reconcile/unmount), and a
@@ -22163,7 +22688,7 @@ function detachDeoptTreeRefs(
 			c = nodeAfterPortalRange(c, rangeEnd);
 			continue;
 		}
-		detachDeoptTreeRefs(c, out, shouldDetach, ownerScope);
+		detachDeoptTreeRefs(c, out, shouldDetach, ownerScope, uncommitted);
 		c = c.nextSibling;
 	}
 }
@@ -22320,10 +22845,10 @@ interface ForSlot {
 	size: number; // count of item Blocks
 	// Last-render snapshot of the body's closed-over parent locals. The compiler
 	// emits a fresh `deps` array on every parent render for DEP-PURE for-of
-	// calls (impure body, no hooks/comps/control-flow). When this render's deps
-	// match last render's element-by-element, the runtime treats the body as
-	// PURE for the survivor short-circuit — saving the entire body call for
-	// every item whose ref + position are unchanged.
+	// calls (hookless host bodies, optionally with proven host-only conditional
+	// content). When this render's deps match last render's element-by-element,
+	// the runtime treats the body as PURE for the survivor short-circuit — saving
+	// the entire body call for every item whose ref + position are unchanged.
 	cachedDeps: any[] | null;
 	// `@for (...) { ... } @empty { ... }` support: mounted-empty-branch Block,
 	// or null when there are items (or no `@empty` branch was compiled). The
@@ -22346,6 +22871,9 @@ interface ForSlot {
 	// Present only on a childSlot owned by the compiler's guarded map ABI.
 	// Keeps descriptor↔compiled adoption off every ordinary descriptor list.
 	mappedNative?: boolean;
+	// Present only when the compiler proved a keyed equality selection. Identity
+	// gates the two-row update without retaining extra state on ordinary lists.
+	selectionItems?: ArrayLike<any>;
 }
 
 export function forBlock<T>(
@@ -22369,7 +22897,9 @@ export function forBlock<T>(
 	// promote body to PURE when unchanged), bit 3 = indexIndependent (the body
 	// binds no `index` name → a pure reorder that only moves a survivor's
 	// position need not re-render it), bit 4 = the server emitted direct-host
-	// items without per-item pairs. Packed into one numeric literal.
+	// items without per-item pairs, bit 5 = a nested host conditional requires
+	// its owning Block's scope whenever an item body does need to render.
+	// Packed into one numeric literal.
 	const parentBlock = parentScope.block;
 	const hydration = activeHydration();
 	let state = parentScope.slots[slotKey] as ForSlot | undefined;
@@ -22537,22 +23067,29 @@ export function forBlock<T>(
 	// and last render's snapshot matches this render's, we can treat the body
 	// as PURE for the survivor short-circuit. The body still runs for moved/
 	// mounted/removed items — only stable survivors get skipped.
-	// `lite` = body is depEligible but did NOT promote to pure this render.
-	// depEligible (see makeForCall's body analysis in compile.js, packed into
-	// the forBlock `flags` bits) means no hooks, no nested comps, no
-	// control flow → the body can't observe CURRENT_SCOPE / CURRENT_BLOCK and
-	// never throws Suspense. We skip renderBlock's activeBlock plumbing and
-	// call itemBody directly. Saves ~10 ops/survivor — meaningful on the
-	// select-row tick where `selected` changes and 1000 survivors all
-	// re-evaluate but only 2 actually flip their class.
+	// `lite` = an unstructured depEligible body did NOT promote to pure this
+	// render. Such a body has no hooks, nested components, or control flow, so
+	// it cannot observe CURRENT_SCOPE / CURRENT_BLOCK and can run directly.
+	// Host-only nested conditionals may also qualify for the survivor skip, but
+	// need their owning Block's scope when a dependency actually changes.
+	// In particular, transition rollback must snapshot each row's own bag.
 	let lite = false;
 	if ((f & 4) !== 0 && deps !== undefined) {
-		if (state.cachedDeps !== null && depsEqual(state.cachedDeps, deps)) {
-			pure = true;
+		const requiresScope = (f & 32) !== 0;
+		if (requiresScope && TRANSITION_JOURNAL !== null) {
+			// The list journal restores membership and DOM, not this dependency
+			// snapshot. A suspended attempt must never leave a rolled-back list
+			// believing that its uncommitted dependencies are still current.
+			state.cachedDeps = null;
+			pure = false;
 		} else {
-			lite = true;
+			if (state.cachedDeps !== null && depsEqual(state.cachedDeps, deps)) {
+				pure = true;
+			} else {
+				lite = !requiresScope;
+			}
+			state.cachedDeps = deps;
 		}
-		state.cachedDeps = deps;
 	}
 	if (state.size === 0) {
 		// First fill (hydration adopt / fresh mount / update-path 0 → N): the
@@ -22588,6 +23125,314 @@ export function forBlock<T>(
 		discardLeftoverHydrationItems(state.end, hydration);
 		hydration.node = state.end.nextSibling;
 	}
+}
+
+/**
+ * Compiler-only keyed-selection entry. Keeping the specialization outside
+ * forBlock lets applications without a proven selection tree-shake its cost.
+ * This entry point identifies the proof; bits 6+ hold its dependency index.
+ */
+export function keyedForBlock<T>(
+	parentScope: Scope,
+	slotKey: number,
+	domParent: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags: number,
+	deps: any[],
+	emptyBody?: ComponentBody | null,
+	anchor?: Node | null,
+	ownEnd?: boolean,
+): void {
+	const state = parentScope.slots[slotKey] as ForSlot | undefined;
+	if (TRANSITION_JOURNAL !== null) {
+		if (state !== undefined) {
+			// A transition can commit or roll back without journaling this cache.
+			// Invalidate both snapshots so its next ordinary render re-primes them.
+			state.cachedDeps = null;
+			state.selectionItems = undefined;
+		}
+		// DEP-PURE's direct body call leaves CURRENT_SCOPE on the parent. Force
+		// full row rendering so reversible DOM writes journal each row's own bag.
+		flags &= ~4;
+	} else if (
+		state !== undefined &&
+		activeHydration() === null &&
+		state.cachedDeps !== null &&
+		tryUpdateKeyedSelection(state, items, itemBody, state.cachedDeps, deps, flags >>> 6)
+	) {
+		return;
+	}
+
+	forBlock(
+		parentScope,
+		slotKey,
+		domParent,
+		items,
+		getKey,
+		itemBody,
+		flags,
+		deps,
+		emptyBody,
+		anchor,
+		ownEnd,
+	);
+	if (TRANSITION_JOURNAL === null) {
+		(parentScope.slots[slotKey] as ForSlot).selectionItems = items;
+	}
+}
+
+// Keep the certified host-only mounting path off common small lists.
+const FAST_HOST_LIST_MIN_ITEMS = 16;
+
+/** Select an existing, empty compiler-certified list for direct host mounting. */
+function fastHostListParent(
+	state: ForSlot | null | undefined,
+	items: ArrayLike<any>,
+	flags: number | undefined,
+): Node | null {
+	if (
+		state === undefined ||
+		state === null ||
+		state.size !== 0 ||
+		state.emptyBlock !== null ||
+		state.adopt !== null ||
+		((flags || 0) & 2) === 0 ||
+		!Array.isArray(items) ||
+		items.length < FAST_HOST_LIST_MIN_ITEMS ||
+		TRANSITION_JOURNAL !== null ||
+		activeHydration() !== null ||
+		state.end.parentNode === null ||
+		state.start.parentNode !== state.end.parentNode
+	) {
+		return null;
+	}
+	return state.end.parentNode;
+}
+
+/** Mount certified host-only rows without the full component render machinery. */
+function mountFastHostItems<T>(
+	parentScope: Scope,
+	state: ForSlot,
+	parentNode: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags: number | undefined,
+	deps: any[] | undefined,
+	mapped: boolean,
+): void {
+	const parentBlock = parentScope.block;
+	const renderMode = parentBlock.currentRenderMode ?? 'urgent';
+	const deferred = parentBlock.currentRenderDeferred;
+	const previousScope = CURRENT_SCOPE;
+	const previousBlock = CURRENT_BLOCK;
+	let previous: Block | null = null;
+	let current: Block | null = null;
+	state.env = deps;
+	if (((flags || 0) & 4) !== 0 && deps !== undefined) state.cachedDeps = deps;
+	if (mapped) state.mappedNative = true;
+	try {
+		for (let index = 0; index < items.length; index++) {
+			const item = items[index];
+			const sourceKey = getKey(item, index);
+			const key = mapped ? 'k' + String(sourceKey) : sourceKey;
+			const block = new BlockImpl(
+				'control-flow',
+				parentBlock,
+				parentNode,
+				null,
+				state.end,
+				itemBody as ComponentBody,
+				item,
+				deps,
+				null,
+			) as unknown as Block;
+			current = block;
+			block.forSlot = state;
+			block.itemIndex = index;
+			block.currentRenderMode = renderMode;
+			block.currentRenderDeferred = deferred;
+			CURRENT_SCOPE = block;
+			CURRENT_BLOCK = block;
+			(itemBody as any)(item, block, deps);
+			CURRENT_SCOPE = previousScope;
+			CURRENT_BLOCK = previousBlock;
+			block.mounted = true;
+			const root = state.end.previousSibling!;
+			block.startMarker = root;
+			block.endMarker = root;
+			state.items.set(key, block);
+			block.key = key;
+			block.prevSibling = previous;
+			if (previous !== null) previous.nextSibling = block;
+			else state.head = block;
+			previous = block;
+			current = null;
+		}
+		state.tail = previous;
+		state.size = items.length;
+	} catch (error) {
+		CURRENT_SCOPE = previousScope;
+		CURRENT_BLOCK = previousBlock;
+		if (current !== null) {
+			// A value-position child can throw or suspend after commitBag inserted
+			// its host. The still-unregistered row owns that host and any nested
+			// child scopes, so dispose it before unwinding the completed prefix.
+			if (current.slots[0] !== undefined) {
+				const root = state.end.previousSibling;
+				if (root !== null && root !== state.start) {
+					current.startMarker = root;
+					current.endMarker = root;
+				}
+			}
+			unmountBlock(current, true);
+		}
+		while (previous !== null) {
+			const block = previous;
+			previous = block.prevSibling;
+			state.items.delete(block.key);
+			unmountBlock(block, true);
+		}
+		state.head = null;
+		state.tail = null;
+		state.size = 0;
+		throw error;
+	}
+}
+
+/** Compiler-only direct host-row entry; ordinary list bundles do not retain it. */
+export function fastForBlock<T>(
+	parentScope: Scope,
+	slotKey: number,
+	domParent: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags?: number,
+	deps?: any[],
+	emptyBody?: ComponentBody | null,
+	anchor?: Node | null,
+	ownEnd?: boolean,
+): void {
+	const state = parentScope.slots[slotKey] as ForSlot | undefined;
+	const parent = fastHostListParent(state, items, flags);
+	if (parent === null) {
+		forBlock(
+			parentScope,
+			slotKey,
+			domParent,
+			items,
+			getKey,
+			itemBody,
+			flags,
+			deps,
+			emptyBody,
+			anchor,
+			ownEnd,
+		);
+		return;
+	}
+	mountFastHostItems(parentScope, state!, parent, items, getKey, itemBody, flags, deps, false);
+}
+
+/** Direct host-row mounts composed with the independent keyed-selection proof. */
+export function fastKeyedForBlock<T>(
+	parentScope: Scope,
+	slotKey: number,
+	domParent: Node,
+	items: ArrayLike<T>,
+	getKey: (item: T, index: number) => any,
+	itemBody: (item: T, scope: Scope) => void,
+	flags: number,
+	deps: any[],
+	emptyBody?: ComponentBody | null,
+	anchor?: Node | null,
+	ownEnd?: boolean,
+): void {
+	const state = parentScope.slots[slotKey] as ForSlot | undefined;
+	const parent = fastHostListParent(state, items, flags);
+	if (parent === null) {
+		keyedForBlock(
+			parentScope,
+			slotKey,
+			domParent,
+			items,
+			getKey,
+			itemBody,
+			flags,
+			deps,
+			emptyBody,
+			anchor,
+			ownEnd,
+		);
+		return;
+	}
+	mountFastHostItems(parentScope, state!, parent, items, getKey, itemBody, flags, deps, false);
+	state!.selectionItems = items;
+}
+
+/** Direct host-row mounts for compiler-proven, guarded native JSX map rows. */
+export function fastMapSlot(
+	scopeOrItems: any,
+	slotOrMethod: any,
+	domParent?: Node,
+	items?: any,
+	method?: any,
+	native?: boolean | ((...args: any[]) => any),
+	callback?: (...args: any[]) => any,
+	getKey?: (item: any, index: number) => any,
+	itemBody?: (item: any, scope: Scope) => void,
+	flags?: number,
+	deps?: any[],
+	anchor?: Node | null,
+	ownEnd?: boolean | 1,
+): boolean | void {
+	if (arguments.length === 2) return mapSlot(scopeOrItems, slotOrMethod);
+	// Compact map calls carry the callback in place of the native answer. Mirror
+	// mapSlot's normalization so custom receivers execute exactly one guard and
+	// retain their complete observable map callback/species/getter behavior.
+	if (typeof native === 'function') {
+		ownEnd = anchor as boolean | 1 | undefined;
+		anchor = deps as Node | null | undefined;
+		deps = flags as any[] | undefined;
+		flags = itemBody as unknown as number | undefined;
+		itemBody = getKey as unknown as (item: any, scope: Scope) => void;
+		getKey = callback as (item: any, index: number) => any;
+		callback = native;
+		native = mapSlot(items, method) as boolean;
+	}
+	const state = ((scopeOrItems as Scope).slots[slotOrMethod] as ChildSlot | undefined)?.forSlot;
+	const parent = native === true ? fastHostListParent(state, items, flags) : null;
+	if (parent === null) {
+		return mapSlot(
+			scopeOrItems,
+			slotOrMethod,
+			domParent,
+			items,
+			method,
+			native,
+			callback,
+			getKey,
+			itemBody,
+			flags,
+			deps,
+			anchor,
+			ownEnd,
+		);
+	}
+	mountFastHostItems(
+		scopeOrItems as Scope,
+		state!,
+		parent,
+		items,
+		getKey!,
+		itemBody!,
+		flags,
+		deps,
+		true,
+	);
 }
 
 /**
@@ -22633,6 +23478,60 @@ function depsEqual(a: any[], b: any[]): boolean {
 	return true;
 }
 
+/**
+ * A compiler-proven equality against the list key changes at most two rows.
+ * The immutable source identity and every other captured dependency must stay
+ * unchanged; anything else falls back to the ordinary keyed reconciliation.
+ */
+function tryUpdateKeyedSelection<T>(
+	state: ForSlot,
+	items: ArrayLike<T>,
+	itemBody: (item: T, scope: Scope) => void,
+	previousDeps: any[],
+	deps: any[],
+	selectionIndex: number,
+): boolean {
+	if (
+		state.selectionItems !== items ||
+		state.size !== items.length ||
+		state.items.size !== state.size ||
+		previousDeps.length !== deps.length ||
+		selectionIndex >= deps.length
+	) {
+		return false;
+	}
+	for (let i = 0; i < deps.length; i++) {
+		if (i !== selectionIndex && !Object.is(previousDeps[i], deps[i])) return false;
+	}
+	const previous = previousDeps[selectionIndex];
+	const next = deps[selectionIndex];
+	// Publish the same snapshots as forBlock before any row can run user code;
+	// reentrant updates must observe the selection currently being committed.
+	state.cachedDeps = deps;
+	state.env = deps;
+	if (Object.is(previous, next)) return true;
+
+	let first = state.items.get(previous) as Block | undefined;
+	let second = state.items.get(next) as Block | undefined;
+	if (first === second) second = undefined;
+	if (first !== undefined && second !== undefined && first.itemIndex > second.itemIndex) {
+		const swap = first;
+		first = second;
+		second = swap;
+	}
+	if (first !== undefined) {
+		first.body = itemBody as ComponentBody;
+		first.extra = deps;
+		(itemBody as any)(first.props, first, deps);
+	}
+	if (second !== undefined) {
+		second.body = itemBody as ComponentBody;
+		second.extra = deps;
+		(itemBody as any)(second.props, second, deps);
+	}
+	return true;
+}
+
 // Cutoff for the small-displacement shortcut in reconcileKeyed. When fewer
 // than this many positions change between renders (and every item survives),
 // we compute the move set directly in O(K_DISP) instead of paying the LIS
@@ -22644,6 +23543,15 @@ function depsEqual(a: any[], b: any[]): boolean {
 // user code runs in that window — so the buffer is never clobbered while live.
 const K_DISP = 4;
 const _disp = new Int32Array(K_DISP);
+
+// Keep at most one numeric source buffer and one LIS predecessor buffer. Source
+// buffers stay live across user rendering, so taking one removes it from the
+// cache until reconciliation finishes; nested lists must receive their own.
+// Oversized lists use disposable buffers instead of retaining their backing
+// stores. The two capped caches can retain at most 128 KiB between renders.
+const MAX_KEYED_REORDER_SCRATCH = 16_384;
+let keyedReorderSources: Int32Array | null = null;
+let keyedLisPredecessors: Int32Array | null = null;
 
 /**
  * Keyed reconciliation over a doubly-linked list of item Blocks.
@@ -23002,260 +23910,276 @@ function reconcileKeyed<T>(
 	}
 
 	// sources[i] = old middle-relative index for new[prefixLen + i], or -1 if new.
-	const sources = new Int32Array(newMidLen);
-	for (let i = 0; i < newMidLen; i++) sources[i] = -1;
-
-	let moved = false;
-	let lastIdx = 0;
-	let patched = 0;
-
-	// Walk old middle (linked-list traversal): re-render survivors, unmount removed.
-	let cur: Block | null = oldFirst;
-	let oldIdx = 0;
-	while (cur !== afterMiddle) {
-		const next: Block | null = cur!.nextSibling!;
-		const newRelIdx = newKeysToIdx.get(cur!.key);
-		if (newRelIdx === undefined) {
-			if (itemRemovalDefers()) parkItemForHold(cur!);
-			else unmountBlock(cur!);
-			oldItems.delete(cur!.key);
-			state.size--;
-		} else {
-			sources[newRelIdx] = oldIdx;
-			if (newRelIdx < lastIdx) moved = true;
-			else lastIdx = newRelIdx;
-			patched++;
-			const newIdx = prefixLen + newRelIdx;
-			updateSurvivor(
-				cur!,
-				items[newIdx],
-				newIdx,
-				itemBody,
-				pure,
-				lite,
-				indexIndependent,
-				state.env,
-			);
-		}
-		cur = next;
-		oldIdx++;
+	const cachedSources = keyedReorderSources;
+	let sources: Int32Array;
+	if (cachedSources !== null && cachedSources.length >= newMidLen) {
+		keyedReorderSources = null;
+		sources = cachedSources;
+	} else {
+		sources = new Int32Array(newMidLen);
 	}
+	try {
+		for (let i = 0; i < newMidLen; i++) sources[i] = -1;
 
-	// Fast bail: all survivors AND no moves AND no mounts → old middle is the
-	// same shape & order as new middle.
-	if (!moved && patched === newMidLen) {
-		// If the survivor walk did NOT unmount anything (oldRemain ===
-		// patched), the linked-list pointers are still correct end-to-end
-		// and we can return without touching them. But if blocks were
-		// unmounted BETWEEN survivors, the survivors' .prevSibling /
-		// .nextSibling pointers still reference now-disposed blocks AND
-		// state.head / state.tail may also point at disposed blocks. The
-		// next reconcile would then walk those stale pointers, decrement
-		// state.size for blocks that no longer exist, and ultimately
-		// crash with a null-pointer access in the prefix/suffix walk.
-		//
-		// Relink the entire middle chain so its prev/next pointers — and
-		// the boundary into beforeMiddle / afterMiddle / state.head /
-		// state.tail — accurately reflect the post-unmount topology.
-		// O(newMidLen); only fires when survivors and removes are mixed.
-		// Surfaced by fuzz-keyed-list seed=-2060211668 action 9 (a
-		// replace-all 13 → 2 where both survivors are in original order).
-		if (oldRemain !== patched) {
-			let prev: Block | null = beforeMiddle;
-			for (let i = 0; i < newMidLen; i++) {
-				const block = oldItems.get(newKeys[i])!;
-				block.prevSibling = prev;
-				if (prev) prev.nextSibling = block;
-				else state.head = block;
-				prev = block;
-			}
-			prev!.nextSibling = afterMiddle;
-			if (afterMiddle) afterMiddle.prevSibling = prev;
-			else state.tail = prev;
-		}
-		return;
-	}
+		let moved = false;
+		let lastIdx = 0;
+		let patched = 0;
 
-	// ── Small-displacement shortcut. When every old item survived AND only a
-	// small number of positions actually changed (≤ K_DISP), we can compute
-	// the exact move set in O(K_DISP) instead of paying the LIS path's O(N)
-	// allocation + back-walk that rewrites every prev/next pointer. This is
-	// a general property of permutations — when survivors are stable and the
-	// permutation has few fixed-point misses, LIS does provably wasted work.
-	//
-	// Real shapes this covers:
-	//   - drag-and-drop reorder (swap two rows, rotate three)
-	//   - undo/redo of a recent local edit
-	//   - animated swap / sort transitions
-	//   - A/B variant toggle that flips a small set of cells
-	//   - any benchmark or test fixture that mutates exactly K positions
-	//
-	// Bail cost on a true large-shuffle permutation: K_DISP + 1 source
-	// compares before falling through to the LIS path, which is sub-µs.
-	if (moved && patched === newMidLen) {
-		let dCount = 0;
-		for (let i = 0; i < newMidLen; i++) {
-			if (sources[i] !== i) {
-				if (dCount === K_DISP) {
-					dCount = K_DISP + 1;
-					break;
-				}
-				_disp[dCount++] = i;
+		// Walk old middle (linked-list traversal): re-render survivors, unmount removed.
+		let cur: Block | null = oldFirst;
+		let oldIdx = 0;
+		while (cur !== afterMiddle) {
+			const next: Block | null = cur!.nextSibling!;
+			const newRelIdx = newKeysToIdx.get(cur!.key);
+			if (newRelIdx === undefined) {
+				if (itemRemovalDefers()) parkItemForHold(cur!);
+				else unmountBlock(cur!);
+				oldItems.delete(cur!.key);
+				state.size--;
+			} else {
+				sources[newRelIdx] = oldIdx;
+				if (newRelIdx < lastIdx) moved = true;
+				else lastIdx = newRelIdx;
+				patched++;
+				const newIdx = prefixLen + newRelIdx;
+				updateSurvivor(
+					cur!,
+					items[newIdx],
+					newIdx,
+					itemBody,
+					pure,
+					lite,
+					indexIndependent,
+					state.env,
+				);
 			}
+			cur = next;
+			oldIdx++;
 		}
-		if (dCount <= K_DISP) {
-			const endAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
-			// Move right-to-left. Positions to the right of the rightmost
-			// displaced index are identity-mapped and have stable startMarkers;
-			// each moved block becomes the next iteration's anchor.
-			for (let j = dCount - 1; j >= 0; j--) {
-				const i = _disp[j];
-				const block = oldItems.get(newKeys[i])!;
-				const anchor: Node =
-					i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])!.startMarker! : endAnchor;
-				moveBlockBefore(block, anchor);
-			}
-			// Relink prev/next around each displaced position. Non-displaced
-			// neighbours of displaced blocks get their boundary pointers updated
-			// here too; non-displaced blocks BETWEEN two displaced positions keep
-			// their internal pointers (they were never touched by the survivor
-			// walk and the moves above don't reorder them).
-			for (let j = 0; j < dCount; j++) {
-				const i = _disp[j];
-				const block = oldItems.get(newKeys[i])!;
-				const prev = i > 0 ? oldItems.get(newKeys[i - 1])! : beforeMiddle;
-				const next = i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])! : afterMiddle;
-				block.prevSibling = prev;
-				block.nextSibling = next;
-				if (prev) prev.nextSibling = block;
-				else state.head = block;
-				if (next) next.prevSibling = block;
-				else state.tail = block;
-			}
-			// Boundary patch: the first and last block of the NEW middle may be
-			// identity-mapped (not in _disp), in which case the displacement
-			// loop never touched them — they still carry their pre-reconcile
-			// neighbour pointers, which can be stale (e.g. pointing at a block
-			// that the survivor walk just unmounted, or at a prior-reconcile
-			// neighbour that has since shifted). Always re-pin the boundary
-			// pointers so state.head / state.tail / beforeMiddle.next /
-			// afterMiddle.prev are correct for the next reconcile.
+
+		// Fast bail: all survivors AND no moves AND no mounts → old middle is the
+		// same shape & order as new middle.
+		if (!moved && patched === newMidLen) {
+			// If the survivor walk did NOT unmount anything (oldRemain ===
+			// patched), the linked-list pointers are still correct end-to-end
+			// and we can return without touching them. But if blocks were
+			// unmounted BETWEEN survivors, the survivors' .prevSibling /
+			// .nextSibling pointers still reference now-disposed blocks AND
+			// state.head / state.tail may also point at disposed blocks. The
+			// next reconcile would then walk those stale pointers, decrement
+			// state.size for blocks that no longer exist, and ultimately
+			// crash with a null-pointer access in the prefix/suffix walk.
 			//
-			// Repro for why this matters: surfaced by fuzz-keyed-list seed
-			// -1491785866 — a `replace-all` that shrinks the list (e.g. 6 → 3)
-			// where the last survivor is identity-mapped. Without the patch,
-			// state.tail keeps pointing at the prior-tail block (now deleted)
-			// and the surviving last block's .nextSibling still points at the
-			// removed sibling. The next reconcile then stops its old-middle
-			// walk early (at the stale nextSibling) and re-mounts the
-			// last survivor as a NEW block, producing a duplicate row.
-			const newMidFirst = oldItems.get(newKeys[0])!;
-			const newMidLast = oldItems.get(newKeys[newMidLen - 1])!;
-			newMidFirst.prevSibling = beforeMiddle;
-			newMidLast.nextSibling = afterMiddle;
-			if (beforeMiddle) beforeMiddle.nextSibling = newMidFirst;
-			else state.head = newMidFirst;
-			if (afterMiddle) afterMiddle.prevSibling = newMidLast;
-			else state.tail = newMidLast;
+			// Relink the entire middle chain so its prev/next pointers — and
+			// the boundary into beforeMiddle / afterMiddle / state.head /
+			// state.tail — accurately reflect the post-unmount topology.
+			// O(newMidLen); only fires when survivors and removes are mixed.
+			// Surfaced by fuzz-keyed-list seed=-2060211668 action 9 (a
+			// replace-all 13 → 2 where both survivors are in original order).
+			if (oldRemain !== patched) {
+				let prev: Block | null = beforeMiddle;
+				for (let i = 0; i < newMidLen; i++) {
+					const block = oldItems.get(newKeys[i])!;
+					block.prevSibling = prev;
+					if (prev) prev.nextSibling = block;
+					else state.head = block;
+					prev = block;
+				}
+				prev!.nextSibling = afterMiddle;
+				if (afterMiddle) afterMiddle.prevSibling = prev;
+				else state.tail = prev;
+			}
 			return;
 		}
-	}
 
-	// Walk new middle back-to-front. For each new position: mount / move / leave.
-	// Track:
-	//   nextBlock  = block at position i+1 (already placed), or afterMiddle initially
-	//                — used as the DOM anchor and prev/next neighbour
-	//   lastPlaced = block placed in the FIRST iteration (= new middle's tail)
-	const middleEndAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
-	let nextBlock: Block | null = afterMiddle;
-	let lastPlaced: Block | null = null;
-
-	if (moved) {
-		const seq = lis(sources);
-		let seqIdx = seq.length - 1;
-		for (let i = newMidLen - 1; i >= 0; i--) {
-			const targetIdx = i + prefixLen;
-			const key = newKeys[i];
-			const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
-			let block: Block;
-			if (sources[i] === -1) {
-				// Mount: new item, no old counterpart.
-				const item = items[targetIdx];
-				block = mountItem(
-					parentBlock,
-					parentNode,
-					anchor,
-					item,
-					targetIdx,
-					itemBody,
-					state,
-					singleRoot,
-					ssrMarkerless,
-				);
-				oldItems.set(key, block);
-				block.key = key;
-				state.size++;
-			} else if (seqIdx < 0 || i !== seq[seqIdx]) {
-				// Move: survivor not in the LIS → DOM range moves before anchor.
-				block = oldItems.get(key)!;
-				moveBlockBefore(block, anchor);
-			} else {
-				// Leave: survivor in the LIS → DOM stays put.
-				block = oldItems.get(key)!;
-				seqIdx--;
+		// ── Small-displacement shortcut. When every old item survived AND only a
+		// small number of positions actually changed (≤ K_DISP), we can compute
+		// the exact move set in O(K_DISP) instead of paying the LIS path's O(N)
+		// allocation + back-walk that rewrites every prev/next pointer. This is
+		// a general property of permutations — when survivors are stable and the
+		// permutation has few fixed-point misses, LIS does provably wasted work.
+		//
+		// Real shapes this covers:
+		//   - drag-and-drop reorder (swap two rows, rotate three)
+		//   - undo/redo of a recent local edit
+		//   - animated swap / sort transitions
+		//   - A/B variant toggle that flips a small set of cells
+		//   - any benchmark or test fixture that mutates exactly K positions
+		//
+		// Bail cost on a true large-shuffle permutation: K_DISP + 1 source
+		// compares before falling through to the LIS path, which is sub-µs.
+		if (moved && patched === newMidLen) {
+			let dCount = 0;
+			for (let i = 0; i < newMidLen; i++) {
+				if (sources[i] !== i) {
+					if (dCount === K_DISP) {
+						dCount = K_DISP + 1;
+						break;
+					}
+					_disp[dCount++] = i;
+				}
 			}
-			// Re-link into the new middle chain. We rebuild middle pointers from
-			// scratch; every middle block's prev/next gets rewritten here.
-			block.nextSibling = nextBlock;
-			if (nextBlock) nextBlock.prevSibling = block;
-			if (lastPlaced === null) lastPlaced = block;
-			nextBlock = block;
-		}
-	} else {
-		// No moves but at least one mount (we'd have returned already if all survivors).
-		for (let i = newMidLen - 1; i >= 0; i--) {
-			const targetIdx = i + prefixLen;
-			const key = newKeys[i];
-			const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
-			let block: Block;
-			if (sources[i] === -1) {
-				const item = items[targetIdx];
-				block = mountItem(
-					parentBlock,
-					parentNode,
-					anchor,
-					item,
-					targetIdx,
-					itemBody,
-					state,
-					singleRoot,
-					ssrMarkerless,
-				);
-				oldItems.set(key, block);
-				block.key = key;
-				state.size++;
-			} else {
-				block = oldItems.get(key)!;
+			if (dCount <= K_DISP) {
+				const endAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
+				// Move right-to-left. Positions to the right of the rightmost
+				// displaced index are identity-mapped and have stable startMarkers;
+				// each moved block becomes the next iteration's anchor.
+				for (let j = dCount - 1; j >= 0; j--) {
+					const i = _disp[j];
+					const block = oldItems.get(newKeys[i])!;
+					const anchor: Node =
+						i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])!.startMarker! : endAnchor;
+					moveBlockBefore(block, anchor);
+				}
+				// Relink prev/next around each displaced position. Non-displaced
+				// neighbours of displaced blocks get their boundary pointers updated
+				// here too; non-displaced blocks BETWEEN two displaced positions keep
+				// their internal pointers (they were never touched by the survivor
+				// walk and the moves above don't reorder them).
+				for (let j = 0; j < dCount; j++) {
+					const i = _disp[j];
+					const block = oldItems.get(newKeys[i])!;
+					const prev = i > 0 ? oldItems.get(newKeys[i - 1])! : beforeMiddle;
+					const next = i + 1 < newMidLen ? oldItems.get(newKeys[i + 1])! : afterMiddle;
+					block.prevSibling = prev;
+					block.nextSibling = next;
+					if (prev) prev.nextSibling = block;
+					else state.head = block;
+					if (next) next.prevSibling = block;
+					else state.tail = block;
+				}
+				// Boundary patch: the first and last block of the NEW middle may be
+				// identity-mapped (not in _disp), in which case the displacement
+				// loop never touched them — they still carry their pre-reconcile
+				// neighbour pointers, which can be stale (e.g. pointing at a block
+				// that the survivor walk just unmounted, or at a prior-reconcile
+				// neighbour that has since shifted). Always re-pin the boundary
+				// pointers so state.head / state.tail / beforeMiddle.next /
+				// afterMiddle.prev are correct for the next reconcile.
+				//
+				// Repro for why this matters: surfaced by fuzz-keyed-list seed
+				// -1491785866 — a `replace-all` that shrinks the list (e.g. 6 → 3)
+				// where the last survivor is identity-mapped. Without the patch,
+				// state.tail keeps pointing at the prior-tail block (now deleted)
+				// and the surviving last block's .nextSibling still points at the
+				// removed sibling. The next reconcile then stops its old-middle
+				// walk early (at the stale nextSibling) and re-mounts the
+				// last survivor as a NEW block, producing a duplicate row.
+				const newMidFirst = oldItems.get(newKeys[0])!;
+				const newMidLast = oldItems.get(newKeys[newMidLen - 1])!;
+				newMidFirst.prevSibling = beforeMiddle;
+				newMidLast.nextSibling = afterMiddle;
+				if (beforeMiddle) beforeMiddle.nextSibling = newMidFirst;
+				else state.head = newMidFirst;
+				if (afterMiddle) afterMiddle.prevSibling = newMidLast;
+				else state.tail = newMidLast;
+				return;
 			}
-			block.nextSibling = nextBlock;
-			if (nextBlock) nextBlock.prevSibling = block;
-			if (lastPlaced === null) lastPlaced = block;
-			nextBlock = block;
+		}
+
+		// Walk new middle back-to-front. For each new position: mount / move / leave.
+		// Track:
+		//   nextBlock  = block at position i+1 (already placed), or afterMiddle initially
+		//                — used as the DOM anchor and prev/next neighbour
+		//   lastPlaced = block placed in the FIRST iteration (= new middle's tail)
+		const middleEndAnchor: Node = afterMiddle ? afterMiddle.startMarker! : state.end;
+		let nextBlock: Block | null = afterMiddle;
+		let lastPlaced: Block | null = null;
+
+		if (moved) {
+			const seq = lis(sources, newMidLen);
+			let seqIdx = seq.length - 1;
+			for (let i = newMidLen - 1; i >= 0; i--) {
+				const targetIdx = i + prefixLen;
+				const key = newKeys[i];
+				const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
+				let block: Block;
+				if (sources[i] === -1) {
+					// Mount: new item, no old counterpart.
+					const item = items[targetIdx];
+					block = mountItem(
+						parentBlock,
+						parentNode,
+						anchor,
+						item,
+						targetIdx,
+						itemBody,
+						state,
+						singleRoot,
+						ssrMarkerless,
+					);
+					oldItems.set(key, block);
+					block.key = key;
+					state.size++;
+				} else if (seqIdx < 0 || i !== seq[seqIdx]) {
+					// Move: survivor not in the LIS → DOM range moves before anchor.
+					block = oldItems.get(key)!;
+					moveBlockBefore(block, anchor);
+				} else {
+					// Leave: survivor in the LIS → DOM stays put.
+					block = oldItems.get(key)!;
+					seqIdx--;
+				}
+				// Re-link into the new middle chain. We rebuild middle pointers from
+				// scratch; every middle block's prev/next gets rewritten here.
+				block.nextSibling = nextBlock;
+				if (nextBlock) nextBlock.prevSibling = block;
+				if (lastPlaced === null) lastPlaced = block;
+				nextBlock = block;
+			}
+		} else {
+			// No moves but at least one mount (we'd have returned already if all survivors).
+			for (let i = newMidLen - 1; i >= 0; i--) {
+				const targetIdx = i + prefixLen;
+				const key = newKeys[i];
+				const anchor: Node = nextBlock ? nextBlock.startMarker! : middleEndAnchor;
+				let block: Block;
+				if (sources[i] === -1) {
+					const item = items[targetIdx];
+					block = mountItem(
+						parentBlock,
+						parentNode,
+						anchor,
+						item,
+						targetIdx,
+						itemBody,
+						state,
+						singleRoot,
+						ssrMarkerless,
+					);
+					oldItems.set(key, block);
+					block.key = key;
+					state.size++;
+				} else {
+					block = oldItems.get(key)!;
+				}
+				block.nextSibling = nextBlock;
+				if (nextBlock) nextBlock.prevSibling = block;
+				if (lastPlaced === null) lastPlaced = block;
+				nextBlock = block;
+			}
+		}
+
+		// Splice the freshly-built new middle in between beforeMiddle and afterMiddle.
+		// newMiddleHead = `nextBlock` after the loop (last iteration placed item[prefixLen]).
+		// newMiddleTail = `lastPlaced` (first iteration placed item[newEnd]).
+		// newMiddleTail.nextSibling was set to afterMiddle in the first loop iter,
+		// and afterMiddle.prevSibling (if non-null) was set to newMiddleTail. So only
+		// the HEAD side of the splice remains.
+		const newMiddleHead = nextBlock!;
+		const newMiddleTail = lastPlaced!;
+		newMiddleHead.prevSibling = beforeMiddle;
+		if (beforeMiddle) beforeMiddle.nextSibling = newMiddleHead;
+		else state.head = newMiddleHead;
+		if (!afterMiddle) state.tail = newMiddleTail;
+	} finally {
+		if (
+			sources.length <= MAX_KEYED_REORDER_SCRATCH &&
+			(keyedReorderSources === null || keyedReorderSources.length < sources.length)
+		) {
+			keyedReorderSources = sources;
 		}
 	}
-
-	// Splice the freshly-built new middle in between beforeMiddle and afterMiddle.
-	// newMiddleHead = `nextBlock` after the loop (last iteration placed item[prefixLen]).
-	// newMiddleTail = `lastPlaced` (first iteration placed item[newEnd]).
-	// newMiddleTail.nextSibling was set to afterMiddle in the first loop iter,
-	// and afterMiddle.prevSibling (if non-null) was set to newMiddleTail. So only
-	// the HEAD side of the splice remains.
-	const newMiddleHead = nextBlock!;
-	const newMiddleTail = lastPlaced!;
-	newMiddleHead.prevSibling = beforeMiddle;
-	if (beforeMiddle) beforeMiddle.nextSibling = newMiddleHead;
-	else state.head = newMiddleHead;
-	if (!afterMiddle) state.tail = newMiddleTail;
 }
 
 /**
@@ -23586,9 +24510,12 @@ function moveBlockBefore(block: Block, anchor: Node): void {
  * Skips entries where arr[i] === -1 (new items).
  * Ported from the standard O(n log n) patience-sort algorithm used by Ripple/Solid/Vue.
  */
-function lis(arr: Int32Array): number[] {
-	const n = arr.length;
-	const p = new Int32Array(n);
+function lis(arr: Int32Array, n: number): number[] {
+	let p = keyedLisPredecessors;
+	if (p === null || p.length < n) {
+		p = new Int32Array(n);
+		if (n <= MAX_KEYED_REORDER_SCRATCH) keyedLisPredecessors = p;
+	}
 	const result: number[] = [];
 	for (let i = 0; i < n; i++) {
 		const v = arr[i];
