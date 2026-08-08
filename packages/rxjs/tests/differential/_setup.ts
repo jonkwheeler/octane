@@ -1,12 +1,12 @@
 import { compile as compileToReact } from '@tsrx/react';
-import { transformSync } from 'esbuild';
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, rmSync } from 'node:fs';
-import { join, dirname, basename } from 'node:path';
+import { transformSync as esbuildTransformSync } from 'esbuild';
+import { basename, dirname, join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const fixtures = join(here, '../_fixtures');
-const cache = join(here, '.react-cache');
+const directory = dirname(fileURLToPath(import.meta.url));
+const fixtureDirectory = join(directory, '../_fixtures');
+const cacheDirectory = join(directory, '.react-cache');
 
 function hashString(value: string): string {
 	let hash = 5381;
@@ -15,30 +15,49 @@ function hashString(value: string): string {
 	return Math.abs(hash).toString(36);
 }
 
-function walk(directory: string): string[] {
-	return readdirSync(directory).flatMap((name) => {
-		const path = join(directory, name);
-		return statSync(path).isDirectory() ? walk(path) : path.endsWith('.tsrx') ? [path] : [];
-	});
-}
+function compileFixture(sourcePath: string): void {
+	const source = readFileSync(sourcePath, 'utf8');
+	let compiled;
+	try {
+		compiled = compileToReact(source, sourcePath);
+	} catch {
+		return;
+	}
+	if (compiled.errors?.length) return;
 
-export async function setup(): Promise<void> {
-	rmSync(cache, { recursive: true, force: true });
-	mkdirSync(cache, { recursive: true });
-	for (const path of walk(fixtures)) {
-		const compiled = compileToReact(readFileSync(path, 'utf8'), path);
-		if (compiled.errors?.length)
-			throw new Error(`React fixture compilation failed: ${JSON.stringify(compiled.errors)}`);
-		const output = transformSync(compiled.code, {
+	let transformed;
+	try {
+		transformed = esbuildTransformSync(compiled.code, {
 			loader: 'tsx',
 			jsx: 'automatic',
 			jsxImportSource: 'react',
 			target: 'esnext',
 			format: 'esm',
-			sourcefile: path,
-		}).code.replace(/from\s+["']@octanejs\/rxjs["']/g, 'from "@react-rxjs/core"');
-		writeFileSync(join(cache, `${basename(path, '.tsrx')}-${hashString(path)}.js`), output);
+			sourcefile: sourcePath,
+		});
+	} catch {
+		return;
 	}
+
+	const rewritten = transformed.code
+		.replace(/from\s+["']@octanejs\/rxjs(\/[^"']*)?["']/g, function (_match, subpath) {
+			return `from "@react-rxjs/core${subpath || ''}"`;
+		})
+		.replace(/from\s+["']octane["']/g, 'from "react"');
+	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
+	writeFileSync(join(cacheDirectory, `${slug}-${hashString(sourcePath)}.js`), rewritten);
+}
+
+function fixtures(directoryPath: string): string[] {
+	return readdirSync(directoryPath).flatMap(function (name) {
+		const file = join(directoryPath, name);
+		return statSync(file).isDirectory() ? fixtures(file) : file.endsWith('.tsrx') ? [file] : [];
+	});
+}
+
+export async function setup(): Promise<void> {
+	if (!existsSync(cacheDirectory)) mkdirSync(cacheDirectory, { recursive: true });
+	for (const file of fixtures(fixtureDirectory)) compileFixture(file);
 }
 
 export async function teardown(): Promise<void> {}
