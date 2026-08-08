@@ -927,7 +927,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-store',
 					include: [
@@ -948,7 +947,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-store-differential',
 					include: ['packages/tanstack-store/tests/differential/**/*.test.ts'],
@@ -967,7 +965,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-store-ssr',
 					include: ['packages/tanstack-store/tests/ssr/**/*.test.ts'],
