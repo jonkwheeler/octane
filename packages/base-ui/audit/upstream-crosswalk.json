@@ -161,7 +161,11 @@
       "surface-present-unverified",
       "packages/base-ui/src/switch.ts exists; behavior remains bounded by the recorded-unverified manifest lanes."
     ],
-    ["./tabs", "gap", "packages/base-ui/src/tabs.ts is not implemented at this pin."],
+    [
+      "./tabs",
+      "surface-present-unverified",
+      "packages/base-ui/src/tabs.ts exists; behavior remains bounded by the recorded-unverified manifest lanes."
+    ],
     [
       "./toast",
       "surface-present-unverified",
@@ -855,11 +859,36 @@
     ["packages/react/src/slider/value/SliderValue.test.tsx", "runtime-test", "not-adapted"],
     ["packages/react/src/switch/root/SwitchRoot.test.tsx", "runtime-test", "not-adapted"],
     ["packages/react/src/switch/thumb/SwitchThumb.test.tsx", "runtime-test", "not-adapted"],
-    ["packages/react/src/tabs/indicator/TabsIndicator.test.tsx", "runtime-test", "not-adapted"],
-    ["packages/react/src/tabs/list/TabsList.test.tsx", "runtime-test", "not-adapted"],
-    ["packages/react/src/tabs/panel/TabsPanel.test.tsx", "runtime-test", "not-adapted"],
-    ["packages/react/src/tabs/root/TabsRoot.test.tsx", "runtime-test", "not-adapted"],
-    ["packages/react/src/tabs/tab/TabsTab.test.tsx", "runtime-test", "not-adapted"],
+    [
+      "packages/react/src/tabs/indicator/TabsIndicator.test.tsx",
+      "runtime-test",
+      "partially-adapted",
+      "packages/base-ui/tests/upstream/tabs.test.ts"
+    ],
+    [
+      "packages/react/src/tabs/list/TabsList.test.tsx",
+      "runtime-test",
+      "partially-adapted",
+      "packages/base-ui/tests/upstream/tabs.test.ts"
+    ],
+    [
+      "packages/react/src/tabs/panel/TabsPanel.test.tsx",
+      "runtime-test",
+      "partially-adapted",
+      "packages/base-ui/tests/upstream/tabs.test.ts"
+    ],
+    [
+      "packages/react/src/tabs/root/TabsRoot.test.tsx",
+      "runtime-test",
+      "partially-adapted",
+      "packages/base-ui/tests/upstream/tabs.test.ts"
+    ],
+    [
+      "packages/react/src/tabs/tab/TabsTab.test.tsx",
+      "runtime-test",
+      "partially-adapted",
+      "packages/base-ui/tests/upstream/tabs.test.ts"
+    ],
     ["packages/react/src/toast/action/ToastAction.test.tsx", "runtime-test", "not-adapted"],
     ["packages/react/src/toast/arrow/ToastArrow.test.tsx", "runtime-test", "not-adapted"],
     ["packages/react/src/toast/close/ToastClose.test.tsx", "runtime-test", "not-adapted"],
@@ -993,12 +1022,12 @@
   ],
   "summary": {
     "publicSubpaths": 43,
-    "surfacePresentUnverified": 34,
-    "gapSubpaths": 9,
+    "surfacePresentUnverified": 35,
+    "gapSubpaths": 8,
     "upstreamArtifacts": 348,
     "runtimeTests": 273,
     "typeTests": 35,
     "supportArtifacts": 40,
-    "partiallyAdaptedArtifacts": 6
+    "partiallyAdaptedArtifacts": 11
   }
 }

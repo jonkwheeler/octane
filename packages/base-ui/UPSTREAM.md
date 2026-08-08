@@ -32,13 +32,13 @@ git clone --filter=blob:none --depth 1 --branch v1.6.0 \
 ```
 
 `audit/upstream-crosswalk.json` records all 43 public component/utility subpaths and 348
-runtime, type, and support artifacts. It classifies 34 subpaths as
-`surface-present-unverified` and nine as explicit gaps: Autocomplete, Combobox, Drawer,
-Navigation Menu, OTP Field, Scroll Area, Select, Tabs, and Toolbar. Surface presence is not a
+runtime, type, and support artifacts. It classifies 35 subpaths as
+`surface-present-unverified` and eight as explicit gaps: Autocomplete, Combobox, Drawer,
+Navigation Menu, OTP Field, Scroll Area, Select, and Toolbar. Surface presence is not a
 behavioral parity claim.
 
 The canonical package has 273 runtime test files, 35 type-test files, and 40 support
-artifacts. Six upstream Accordion/Collapsible files have selected cases adapted locally; the
+artifacts. Eleven upstream Accordion, Collapsible, and Tabs files have selected cases adapted locally; the
 remaining suite is vendored but not adapted in full, so the binding remains
 `recorded-unverified`. The published npm package contains no canonical test files; that
 registry boundary is not evidence that the repository suite is absent.
@@ -47,7 +47,7 @@ registry boundary is not evidence that the repository suite is absent.
 
 The differential lane runs all 98 authored same-fixture scenarios against both Octane and the
 pinned `@base-ui/react` package and verifies their exact inventory. A separate adapted lane runs
-all 34 collected Accordion and Collapsible cases, including selected cases transcribed from the
+all 49 collected Accordion, Collapsible, and Tabs cases, including selected cases transcribed from the
 pinned suites, and verifies that inventory. Focused lanes bind representative cases to structured
 divergences. The remaining package tests are Octane framework contracts and are not counted as
 React parity evidence.

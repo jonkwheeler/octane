@@ -36,8 +36,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 34,
-    "uniqueIdentities": 34,
+    "inventoryEntries": 49,
+    "uniqueIdentities": 49,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
+      "lockfileSha256": "b15d435c782fc2341f66e1969fa10aee4751e227f793128b7857053f4cf5550d"
     }
   },
   "lanes": [
@@ -84,7 +84,7 @@
       "environment": "workspace-node",
       "project": "base-ui-upstream-adapted",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs every collected adapted Accordion and Collapsible test and rejects inventory drift.",
+      "notes": "Runs every collected adapted Accordion, Collapsible, and Tabs test and rejects inventory drift.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/base-ui/audit/adapted-runtime.json"
@@ -93,7 +93,7 @@
         {
           "path": "packages/base-ui/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7e2a5d5505e518fb1bf32a720992635c41e6cb541bed446919d6af3014e36d42"
+          "sha256": "06208863d8150947c1a27f811003fadddc92d904c244f13c705305ab7d4ebeef"
         },
         {
           "path": "packages/base-ui/scripts/build-runtime-inventories.mjs",
@@ -123,8 +123,8 @@
             },
             {
               "id": "differential:base-ui-switch-native-input",
-              "testName": "Switch: uncontrolled \u2014 click toggles aria-checked + data-checked (native input adaptation)",
-              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Switch: uncontrolled \u2014 click toggles aria-checked + data-checked (native input adaptation)"
+              "testName": "Switch: uncontrolled — click toggles aria-checked + data-checked (native input adaptation)",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Switch: uncontrolled — click toggles aria-checked + data-checked (native input adaptation)"
             },
             {
               "id": "differential:base-ui-number-field",
@@ -190,8 +190,8 @@
             },
             {
               "id": "adapted:base-ui-accordion-default-value",
-              "testName": "prop: defaultValue \u2014 custom item value",
-              "fullName": "<Accordion.Root /> uncontrolled prop: defaultValue \u2014 custom item value"
+              "testName": "prop: defaultValue — custom item value",
+              "fullName": "<Accordion.Root /> uncontrolled prop: defaultValue — custom item value"
             }
           ]
         },
@@ -242,7 +242,7 @@
         {
           "path": "packages/base-ui/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "ec06213ce5512795110b88a882376e6591d4498194faa25622ffcac7172f5c34"
+          "sha256": "baaaad53d34a9037d7e9d02bab8099e5b4c263e1c54e8bd81736022c5be45cb0"
         },
         {
           "path": "packages/base-ui/scripts/build-upstream-crosswalk.mjs",
@@ -257,7 +257,7 @@
         {
           "path": "packages/base-ui/scripts/upstream-crosswalk-lib.mjs",
           "role": "support",
-          "sha256": "4cdd3711f53a7415f963972c42fc60936b62992c89ab3de33137369686e749ba"
+          "sha256": "1f03128462670c85ea7a6303754318bf903e948e6c338dd019f5a70663fe7553"
         },
         {
           "path": "packages/base-ui/scripts/build-vendor-checksums.mjs",
@@ -272,7 +272,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "7f7d4035b69c606f28fb07610109265d834a8586c26fb7984e4a01551e5d5348"
+          "sha256": "f600e6efcc1352adceca19236aaf34e235f7cf3aa4c62d1506f7216da76b8473"
         }
       ]
     }

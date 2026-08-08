@@ -26,6 +26,26 @@ const ADAPTED_ARTIFACTS = new Map([
 		'packages/react/src/collapsible/panel/CollapsiblePanel.test.tsx',
 		'packages/base-ui/tests/upstream/collapsible.test.ts',
 	],
+	[
+		'packages/react/src/tabs/root/TabsRoot.test.tsx',
+		'packages/base-ui/tests/upstream/tabs.test.ts',
+	],
+	[
+		'packages/react/src/tabs/list/TabsList.test.tsx',
+		'packages/base-ui/tests/upstream/tabs.test.ts',
+	],
+	[
+		'packages/react/src/tabs/tab/TabsTab.test.tsx',
+		'packages/base-ui/tests/upstream/tabs.test.ts',
+	],
+	[
+		'packages/react/src/tabs/panel/TabsPanel.test.tsx',
+		'packages/base-ui/tests/upstream/tabs.test.ts',
+	],
+	[
+		'packages/react/src/tabs/indicator/TabsIndicator.test.tsx',
+		'packages/base-ui/tests/upstream/tabs.test.ts',
+	],
 ]);
 
 function walk(root) {

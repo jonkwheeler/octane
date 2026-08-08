@@ -6,7 +6,8 @@
   ],
   "files": [
     "packages/base-ui/tests/upstream/accordion.test.ts",
-    "packages/base-ui/tests/upstream/collapsible.test.ts"
+    "packages/base-ui/tests/upstream/collapsible.test.ts",
+    "packages/base-ui/tests/upstream/tabs.test.ts"
   ],
   "tests": [
     {
@@ -178,6 +179,81 @@
       "id": "runtime:1fe3fe4dd13d4d89",
       "file": "packages/base-ui/tests/upstream/collapsible.test.ts",
       "fullName": "<Collapsible.Trigger /> forwards the id prop"
+    },
+    {
+      "id": "runtime:301c52f74a55b5a5",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) falls back to the first enabled tab when the implicit selection is disabled"
+    },
+    {
+      "id": "runtime:d022d8ce3ba63541",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) gives the list a tablist role and marks vertical orientation for assistive tech"
+    },
+    {
+      "id": "runtime:c821d3d27752716f",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) hides unselected panels and keeps them out of tab order"
+    },
+    {
+      "id": "runtime:1f8c67b7f2aca355",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) honors an explicit defaultValue that points at a disabled tab"
+    },
+    {
+      "id": "runtime:1a0797a073f44e58",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) leaves a controlled root on a disabled selection instead of falling back"
+    },
+    {
+      "id": "runtime:eafdc9cef88443a7",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) marks only the active tab aria-selected"
+    },
+    {
+      "id": "runtime:069e4ed6aff81944",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) publishes orientation as data-orientation at this pin"
+    },
+    {
+      "id": "runtime:35d75baaf6b134e8",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) puts only the selected tab in tab order"
+    },
+    {
+      "id": "runtime:b273b6b600ad20d2",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) reports an automatic initial selection through onValueChange"
+    },
+    {
+      "id": "runtime:7ee60de2c0687b0c",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) selects a tab on click and moves the panel with it"
+    },
+    {
+      "id": "runtime:7162ce7ab01014cb",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) skips past every disabled tab when falling back"
+    },
+    {
+      "id": "runtime:ab80d5aa16c2a49d",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) supports non-numeric values"
+    },
+    {
+      "id": "runtime:3caf55b4d68c3bd5",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) throws a clear error when a part is used outside Tabs.Root"
+    },
+    {
+      "id": "runtime:ee000653cbbcd7d0",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) unmounts a hidden panel unless keepMounted is set"
+    },
+    {
+      "id": "runtime:6bb898e1d40a9e26",
+      "file": "packages/base-ui/tests/upstream/tabs.test.ts",
+      "fullName": "@octanejs/base-ui — Tabs (ported upstream cases) wires aria-controls and aria-labelledby between each tab and its panel"
     }
   ]
 }
