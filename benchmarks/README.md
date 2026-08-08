@@ -21,6 +21,16 @@ capability gaps stay explicit: Svelte's public server renderer is buffered, so
 fake stream. `codegen-size`, `dbmon-deopt`, and `js-framework-deopt` remain
 Octane-only by design.
 
+### React Compiler
+
+Every primary React benchmark uses the production React Compiler 1.0 through
+Vite's official React Compiler preset. The shared
+[`react-compiler.mjs`](react-compiler.mjs) integration also compiles server,
+Worker, and `.tsrx` fixtures, so SSR comparisons receive the same treatment as
+browser-rendered React. The memo-wall suite additionally keeps an explicitly
+labeled uncompiled React control to isolate the compiler's effect without
+changing the primary compiled React comparison.
+
 ## Quick start
 
 ```bash
@@ -43,11 +53,12 @@ suites reuse it. Collected results land in `benchmarks/results/<suite>.json`
 Some suites need no preview servers: **news**, **hydration-interactivity**, and
 the three runtime-stress suites vite-build and time each target themselves (the
 runner loops their per-target invocations and merges them),
-**ssr-throughput**, **streaming-ssr**, **lynx-list**, **lynx-render**, and
-**lynx-bundle-size** are Node-only,
+**ssr-throughput**, **streaming-ssr**, **lynx-list**, **universal-leaf-update**,
+**lynx-render**, and **lynx-bundle-size** are Node-only,
 **ssr-http** and **tanstack-start** boot (and kill) their own production HTTP
 servers per sample — that spawn/listen/first-byte cycle IS the measurement —
-and **codegen-size** / **bundle-size** / **three-bundle-size** /
+and **codegen-size** / **bundle-size** / **bundle-reachability** /
+**three-bundle-size** /
 **lynx-bundle-size** are deterministic build/byte checks.
 
 ## Regression modes
@@ -131,15 +142,17 @@ after printing its normal tables:
   ssr-throughput is time-budgeted: its knob is a per-config seconds value and
   `--quick` passes the harness's own `--quick`.
 
-The DOM-heavy browser suites use `lib/dom-nodes.mjs` to publish a deterministic
-census alongside timings. `nodes_*`, `elements_*`, `text_*`, `comments_*`,
-`empty_text_*`, and `whitespace_text_*` are zero-variance operations suitable
-for ratio guards; detailed comment-payload and parent-element histograms live
-under `meta.dom`. Count the fixture root (`#main`, with `#app` fallback) unless
-the behavior intentionally escapes it: portal-swarm records both `#main` and
-the whole body so target-side portal ranges stay visible. Keep visible
-elements/text as independent guards—a lower total obtained by dropping
-user-visible content is a correctness failure, not an optimization.
+Some DOM-heavy browser suites, including TodoMVC, chat-stream, and portal-swarm,
+use `lib/dom-nodes.mjs` to publish a deterministic census alongside timings.
+TodoMVC and chat-stream expose `nodes_*`, `elements_*`, `text_*`, `comments_*`,
+`empty_text_*`, and `whitespace_text_*` as zero-variance operations suitable for
+ratio guards; detailed comment-payload and parent-element histograms live under
+`meta.dom`. Count the fixture root (`#main`, with `#app` fallback) unless the
+behavior intentionally escapes it: portal-swarm records both `#main` and the
+whole body so target-side portal ranges stay visible. Keep visible elements/text
+as independent guards—a lower total obtained by dropping user-visible content
+is a correctness failure, not an optimization. The js-framework suites report
+timings without a DOM census.
 
 Compiler-sensitive work counts use a separate production `work.mjs` invocation
 with jitless Chromium precise call coverage. This avoids source probes changing
@@ -203,11 +216,13 @@ internally, get their own baseline and guard namespace.
 | `async-waterfall` | async-waterfall | octane-tsrx, react, preact, solid, svelte, ripple | 10-level nested async: `use()` waterfall vs parallel-by-model signals (init + transition update) |
 | `async-composition` | async-composition | octane-tsrx, react | dashboard composition: adjacent async panels, nested children, imported custom hook, and one true dependency |
 | `lynx-list` | lynx-list | none (Node-only) | deterministic 1,000-row native-list physical allocation, reuse, and teardown through a fake Element PAPI |
+| `universal-leaf-update` | universal-leaf-update | none (Node-only) | universal update locality beside 0–4,000 unrelated component siblings through the compiler and native object driver: plain leaf `setState`, keyed `@for` item state, a leaf under an idle `@try`, a structural (insert/remove) update, and compact-row list selection |
 | `lynx-render` | lynx-render | none (Node-only) | dual-thread Lynx render CPU: empty startup, create 1,000 and 10,000 keyed rows through the real background root, transport, and main receiver over a cheap fake Element PAPI, plus a gate that a native tap reaches its background handler via the engine `publishEvent` receiver |
 | `lynx-bundle-size` | lynx-bundle-size | none (builds) | semantic-checksummed production Rspeedy artifact bytes for background preview and dual-thread IFR modes; source/build evidence only |
 | `codegen-size` | codegen-size | none (Node-only) | compiled-output bytes: fixed corpus through octane/compiler, raw/min/gzip, `compiled` vs `source` |
 | `compiler-throughput` | compiler-throughput | none (Node-only) | six real production compiler pipelines, cold/warm/incremental transformations, 10/100/1,000 components, and heap diagnostics |
 | `bundle-size` | bundle-size | none (builds) | shipped JS bytes: production builds of js-framework, TodoMVC, chat-stream, and weather-app, normalized minify, raw/gzip/brotli |
+| `bundle-reachability` | bundle-size | none (builds and executes in jsdom) | isolated public feature imports, exact production-bundle behavior, forbidden-module reachability, and committed raw/gzip/brotli budgets |
 | `three-renderer` | three | Octane Three, R3F, plain Three | 1,000-object lifecycle, reconstruction/disposal, frame subscribers, and raycast events |
 | `three-bundle-size` | three | none (builds, then checks in Chromium) | minimal/full-catalogue shipped JS bytes for Octane Three, R3F, and plain Three |
 
@@ -236,6 +251,41 @@ the primary scaling ratchet as applications grow; `fw_*` tracks the one-time
 runtime cost separately. App-shaped
 sets use `todo_*`, `chat_*`, and `weather_*` operation prefixes; weather's shared
 service and formatting modules count as app code in both framework builds.
+
+`bundle-reachability` builds twenty independent public-entry feature fixtures
+across twenty-seven production builds with the production Octane compiler,
+disabled HMR/profiling, and normalized esbuild minification. The seven package
+side-effect fixtures each run through both Vite and esbuild. Each measured IIFE
+executes unchanged in an isolated jsdom realm; its visible DOM, interaction,
+hydration, Suspense, server rendering, store, and cleanup behavior must match its
+feature oracle. Client graphs reject server modules, while server graphs reject
+the client runtime; all reject React, profiling, devtools, package-metadata, and
+RPC-serialization reachability. Early
+hydration-event capture and the vanilla Zustand entry must also exclude the
+client runtime, while the hook binding must retain the real vanilla store.
+The isolated server-hook entry also rejects unrelated DOM namespace tables, and
+the component-owned-effects entry verifies that unused sibling styles, delegated
+events, and ViewTransition initialization disappear while retained styles and
+click handlers remain live.
+
+The two static-root fixtures deliberately measure different public contracts.
+`root-static-specialized` matches an application's disposable top-level
+`createRoot(container).render(ImportedComponent)` entry, allowing the production
+compiler to specialize the root. `root-static` retains an escaped, reusable
+`Root`, calls `render`, and verifies `unmount`; its broader reachable runtime is
+real and must not be disguised as the specialized entry.
+
+`bundle-size/minimal-budgets.json` supplies explicit raw, gzip, and brotli byte
+ceilings for every feature. Budgets leave about 3% deterministic headroom, with
+small byte-aligned allowances for tiny isolated entries. Each scenario publishes
+its committed ceiling as a
+same-run `*-budget` reference target, so eighty-one `maxRatio: 1` entries in
+`baselines/ratios.json` enforce all three metrics in the existing weekly/manual
+Bench CI workflow. Run the complete executable and byte guard directly with:
+
+```bash
+node benchmarks/bench.mjs --quick --ratios bundle-reachability
+```
 
 ## Adding a suite
 

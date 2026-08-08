@@ -182,7 +182,11 @@ export {
 	namespaceHeadElement,
 	delegateEvents,
 	delegateCaptureEvents,
+	fastForBlock,
+	fastKeyedForBlock,
+	fastMapSlot,
 	forBlock,
+	keyedForBlock,
 	mapSlot,
 	ifBlock,
 	tryBlock,
@@ -191,6 +195,7 @@ export {
 	componentSlot,
 	componentSlotVoid,
 	componentSlotLite,
+	compilerCacheArray,
 	compilerCacheContext,
 	markSingleRoot,
 	// Compact compiler ABI; keep the descriptive export for older compiled output.
@@ -254,3 +259,6 @@ export type {
 
 // Semi-public compiler target for `module server` browser stubs.
 export { __serverRpc } from './server-rpc-client.js';
+
+// Semi-public compiler target for inferred method-call dependencies.
+export { __methodDep } from './method-dep.js';
