@@ -43,12 +43,12 @@ export function createInterpolator<T>(
 		const max = input[index + 1]!;
 		const left = config.extrapolateLeft ?? config.extrapolate ?? 'extend';
 		const right = config.extrapolateRight ?? config.extrapolate ?? 'extend';
+		if (config.map !== undefined) value = config.map(value);
 		if (value < min && left === 'identity') return value as T;
 		if (value > max && right === 'identity') return value as T;
 		if (left === 'clamp') value = Math.max(min, value);
 		if (right === 'clamp') value = Math.min(max, value);
 		let progress = min === max ? (value <= min ? 0 : 1) : (value - min) / (max - min);
-		if (config.map !== undefined) progress = config.map(progress);
 		progress = (config.easing ?? easings.linear)(progress);
 		const from = config.output[index]!;
 		const to = config.output[index + 1]!;
