@@ -1504,7 +1504,7 @@ export default defineConfig({
 					name: 'redux',
 					include: ['packages/redux/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/redux/tests/differential/**/*.test.ts''],
+					exclude: ['packages/redux/tests/differential/**/*.test.ts'],
 					// Differential precompile: rewrites `@octanejs/redux` →
 					// `react-redux` so the React side runs the real binding.
 					globals: false,
