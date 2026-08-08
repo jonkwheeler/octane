@@ -7,6 +7,7 @@ import {
   DefaultStyleSchema,
 } from "@blocknote/core";
 import { DependencyList, useMemo } from "octane";
+import { withoutSlot } from "./without-slot";
 
 /**
  * Hook to instantiate a BlockNote Editor instance in React
@@ -14,8 +15,9 @@ import { DependencyList, useMemo } from "octane";
 export const useCreateBlockNote = <
   Options extends Partial<BlockNoteEditorOptions<any, any, any>> | undefined,
 >(
-  options: Options = {} as Options,
-  deps: DependencyList = [],
+  options: Options | symbol = {} as Options,
+  deps: DependencyList | symbol = [],
+  ...rest: [slot?: symbol]
 ): Options extends {
   schema: CustomBlockNoteSchema<infer BSchema, infer ISchema, infer SSchema>;
 }
@@ -25,6 +27,8 @@ export const useCreateBlockNote = <
       DefaultInlineContentSchema,
       DefaultStyleSchema
     > => {
+  options = (withoutSlot(options) ?? {}) as Options;
+  deps = withoutSlot(deps) ?? [];
   return useMemo(() => {
     const editor = BlockNoteEditor.create(options) as any;
     if (window) {

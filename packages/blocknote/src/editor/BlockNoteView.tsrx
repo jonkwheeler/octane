@@ -5,7 +5,7 @@ import {
   StyleSchema,
   mergeCSSClasses,
 } from "@blocknote/core";
-import React, {
+import {
   HTMLAttributes,
   OctaneNode,
   Ref,
@@ -195,7 +195,7 @@ function BlockNoteViewComponent<
     if (!editor.portalElement) {
       throw new Error("Portal element not found");
     }
-    editor.portalElement.class = mergeCSSClasses(
+    editor.portalElement.className = mergeCSSClasses(
       "bn-root",
       editorColorScheme,
       className || "",
@@ -250,44 +250,51 @@ function BlockNoteViewComponent<
  * Renders the div that wraps the editor and all default UI elements
  * (.bn-container element).
  */
-const BlockNoteViewContainer = React.forwardRef<
-  HTMLDivElement,
-  {
-    renderEditor: boolean;
-    editorColorScheme: "light" | "dark";
-    children: OctaneNode;
-  } & Omit<
-    HTMLAttributes<HTMLDivElement>,
-    "onChange" | "onSelectionChange" | "children"
-  >
->(({ className, renderEditor, editorColorScheme, children, ...rest }, ref) => (
-  <div
-    class={mergeCSSClasses(
-      "bn-root",
-      "bn-container",
-      editorColorScheme,
-      className,
-    )}
-    data-color-scheme={editorColorScheme}
-    {...rest}
-    ref={ref}
-  >
-    {renderEditor ? (
-      <BlockNoteViewEditor>{children}</BlockNoteViewEditor>
-    ) : (
-      children
-    )}
-  </div>
-));
+function BlockNoteViewContainer({
+  className,
+  renderEditor,
+  editorColorScheme,
+  children,
+  ref,
+  ...rest
+}: {
+  renderEditor: boolean;
+  editorColorScheme: "light" | "dark";
+  children: OctaneNode;
+  ref?: Ref<HTMLDivElement>;
+} & Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange" | "onSelectionChange" | "children"
+>) {
+  return (
+    <div
+      class={mergeCSSClasses(
+        "bn-root",
+        "bn-container",
+        editorColorScheme,
+        className,
+      )}
+      data-color-scheme={editorColorScheme}
+      {...rest}
+      ref={ref}
+    >
+      {renderEditor ? (
+        <BlockNoteViewEditor>{children}</BlockNoteViewEditor>
+      ) : (
+        children
+      )}
+    </div>
+  );
+}
 
 // https://fettblog.eu/typescript-react-generic-forward-refs/
-export const BlockNoteViewRaw = React.forwardRef(BlockNoteViewComponent) as <
+export const BlockNoteViewRaw = BlockNoteViewComponent as <
   BSchema extends BlockSchema,
   ISchema extends InlineContentSchema,
   SSchema extends StyleSchema,
 >(
   props: BlockNoteViewProps<BSchema, ISchema, SSchema> & {
-    ref?: React.ForwardedRef<HTMLDivElement>;
+    ref?: Ref<HTMLDivElement>;
   } & Omit<
       HTMLAttributes<HTMLDivElement>,
       "onChange" | "onSelectionChange" | "children"

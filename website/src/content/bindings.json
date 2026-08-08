@@ -30,7 +30,10 @@
   {
     "title": "Web3",
     "description": "Wallet connection, chain state, contract reads, signing, and transactions.",
-    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit"]
+    "packages": [
+      "@octanejs/wagmi",
+      "@octanejs/rainbowkit"
+    ]
   },
   {
     "title": "UI and interaction",
@@ -58,13 +61,14 @@
     "title": "Forms and content",
     "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
     "packages": [
+      "@octanejs/blocknote",
       "@octanejs/hook-form",
-      "@octanejs/tanstack-form",
+      "@octanejs/i18next",
       "@octanejs/lexical",
-      "@octanejs/tiptap",
-      "@octanejs/streamdown",
       "@octanejs/mdx",
-      "@octanejs/i18next"
+      "@octanejs/streamdown",
+      "@octanejs/tanstack-form",
+      "@octanejs/tiptap"
     ]
   },
   {
@@ -81,12 +85,17 @@
   {
     "title": "Web 3D",
     "description": "Technical-preview, React Three Fiber-style scene graphs on Octane's universal renderer.",
-    "packages": ["@octanejs/three"]
+    "packages": [
+      "@octanejs/three"
+    ]
   },
   {
     "title": "Desktop",
     "description": "Tauri v2 and Electron desktop bindings for Octane applications.",
-    "packages": ["@octanejs/tauri", "@octanejs/electron"]
+    "packages": [
+      "@octanejs/tauri",
+      "@octanejs/electron"
+    ]
   },
   {
     "title": "Styling, tests, and devtools",

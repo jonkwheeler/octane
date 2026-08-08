@@ -53,7 +53,7 @@ export function useSuggestionMenuKeyboardHandler<Item>(
       }
 
       const isComposing = isReactEvent(event)
-        ? event.nativeEvent.isComposing
+        ? (event as KeyboardEvent).isComposing
         : event.isComposing;
       if (event.key === "Enter" && !isComposing) {
         event.preventDefault();

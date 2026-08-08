@@ -1,3 +1,4 @@
+import { withoutSlot } from "./without-slot";
 import type { BlockNoteEditor } from "@blocknote/core";
 import { useEffect } from "octane";
 import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
@@ -15,9 +16,12 @@ import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
  */
 export function useEditorSelectionChange(
   callback: () => void,
-  editor?: BlockNoteEditor<any, any, any>,
-  includeSelectionChangedByRemote?: boolean,
+  editor?: BlockNoteEditor<any, any, any> | symbol,
+  includeSelectionChangedByRemote?: boolean | symbol,
+  ...rest: [slot?: symbol]
 ) {
+  editor = withoutSlot(editor);
+  includeSelectionChangedByRemote = withoutSlot(includeSelectionChangedByRemote);
   const editorContext = useBlockNoteContext();
   if (!editor) {
     editor = editorContext?.editor;

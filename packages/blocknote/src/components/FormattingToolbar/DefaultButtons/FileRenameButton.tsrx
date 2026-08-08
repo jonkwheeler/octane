@@ -74,7 +74,7 @@ export const FileRenameButton = () => {
   );
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+    if (event.key === "Enter" && !(event as KeyboardEvent).isComposing) {
       event.preventDefault();
       setPopoverOpen(false);
     }

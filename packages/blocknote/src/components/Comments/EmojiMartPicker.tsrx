@@ -1,7 +1,7 @@
 // CHECKPOINT: manual review required — TipTap/react-dom integration boundary
 // From https://github.com/missive/emoji-mart/blob/main/packages/emoji-mart-react/react.tsx
 import type { EmojiMartData } from "@emoji-mart/data";
-import React, { useEffect, useRef } from "octane";
+import { useEffect, useRef } from "octane";
 
 // Temporary fix for https://github.com/missive/emoji-mart/pull/929
 let emojiLoadingPromise:
@@ -61,5 +61,5 @@ export default function EmojiPicker(props: any) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return React.createElement("div", { ref });
+  return <div ref={ref} />;
 }
