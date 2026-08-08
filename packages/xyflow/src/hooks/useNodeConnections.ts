@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'octane';
-import { resolveHookSlot } from './slot';
+import { resolveHookSlot, withoutSlot } from './slot';
 import {
   areConnectionMapsEqual,
   errorMessages,
@@ -35,14 +35,19 @@ const error014 = errorMessages['error014']();
  *}
  *```
  */
-export function useNodeConnections({
+export function useNodeConnections(
+  params: UseNodeConnectionsParams | symbol = {},
+  ...rest: [slot?: symbol]
+): NodeConnection[]  {
+  let slot = resolveHookSlot(rest);
+  const resolved = withoutSlot(params) ?? {};
+  const {
   id,
   handleType,
   handleId,
   onConnect,
   onDisconnect,
-}: UseNodeConnectionsParams = {}, ...rest: [slot?: symbol]): NodeConnection[]  {
-  const slot = resolveHookSlot(rest);
+} = resolved;
   const nodeId = useNodeId();
   const currentNodeId = id ?? nodeId;
 
