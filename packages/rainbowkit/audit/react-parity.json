@@ -21,7 +21,7 @@
         "packages/rainbowkit/src"
       ],
       "include": [
-        "$a"
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     },
@@ -30,7 +30,7 @@
         "packages/rainbowkit/tests/differential"
       ],
       "include": [
-        "$a"
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
       "exclude": []
     }
