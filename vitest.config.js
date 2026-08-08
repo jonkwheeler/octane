@@ -2774,7 +2774,7 @@ export default defineConfig({
 						'!packages/streamdown/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
-					exclude: [''packages/streamdown/tests/differential/**/*.test.ts''],
+					exclude: ['packages/streamdown/tests/differential/**/*.test.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
