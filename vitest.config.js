@@ -1155,7 +1155,7 @@ export default defineConfig({
 					name: 'tanstack-table',
 					include: ['packages/tanstack-table/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: [''packages/tanstack-table/tests/differential/**/*.test.ts''],
+					exclude: ['packages/tanstack-table/tests/differential/**/*.test.ts'],
 					// Same differential precompile, but for table fixtures: also rewrites
 					// `@octanejs/tanstack-table` → `@tanstack/react-table` so the React side
 					// runs the real react-table adapter over the SAME table-core.

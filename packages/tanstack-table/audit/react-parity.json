@@ -11,16 +11,29 @@
     "integrity": "sha256:924a64009738996f1a2f32ef950aed338a6aafb0dbf85af548c7c98388deb559",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "absent", "types": "insufficient" },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "insufficient"
+  },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-table/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-table/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-table/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-table/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -37,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "15801a1478030e9d4089acf027c04909f419940bc4a44c45ff20f9634faa6eb8"
+      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
     }
   },
   "lanes": [
@@ -46,7 +59,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-table",
+      "project": "tanstack-table-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs exact rendering, sorting, filtering/pagination, selection, and visibility/expanding scenarios against @tanstack/react-table@9.0.0-beta.58.",
       "files": [
@@ -62,8 +75,8 @@
             },
             {
               "id": "differential:tanstack-table-sorting",
-              "testName": "SortingTable: asc → desc → cleared → replace, byte-identical",
-              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table SortingTable: asc → desc → cleared → replace, byte-identical"
+              "testName": "SortingTable: asc \u2192 desc \u2192 cleared \u2192 replace, byte-identical",
+              "fullName": "differential: @octanejs/tanstack-table vs real @tanstack/react-table SortingTable: asc \u2192 desc \u2192 cleared \u2192 replace, byte-identical"
             },
             {
               "id": "differential:tanstack-table-filter-pagination",
@@ -215,7 +228,9 @@
   "divergences": [
     {
       "id": "tanstack-table-component-shapes",
-      "caseIds": ["adapted:tanstack-table-component-shapes"],
+      "caseIds": [
+        "adapted:tanstack-table-component-shapes"
+      ],
       "upstreamResult": "React flexRender recognizes class components and memo/forwardRef exotic component objects.",
       "octaneResult": "Octane components, including memo-wrapped components, are plain functions and flexRender uses the function branch.",
       "rationale": "Octane has no React class-component or exotic-object component model.",
@@ -227,7 +242,9 @@
     },
     {
       "id": "tanstack-table-legacy-api",
-      "caseIds": ["adapted:tanstack-table-legacy-api"],
+      "caseIds": [
+        "adapted:tanstack-table-legacy-api"
+      ],
       "upstreamResult": "React Table publishes a ./legacy migration subpath with useLegacyTable and v8 compatibility types.",
       "octaneResult": "The Octane binding omits the React-v8 migration-only subpath.",
       "rationale": "There is no prior Octane React Table v8 consumer surface to migrate.",
