@@ -155,9 +155,15 @@ export function useSignalScope<T>(callback: () => T, ...rest: [slot?: symbol]): 
 
 	useEffect(
 		() => {
-			if (!controller.cancelled) {
-				controller.current = createSignalScope(callback);
+			if (controller.cancelled) {
+				return controller.disconnect;
 			}
+			const stopScope = createSignalScope(callback);
+			if (controller.cancelled) {
+				stopScope();
+				return controller.disconnect;
+			}
+			controller.current = stopScope;
 			return controller.disconnect;
 		},
 		[controller, callback],

@@ -72,6 +72,20 @@ export function ScopeProbe(props: {
 	<p id="scope-probe">{props.label}</p>
 }
 
+export function SyncStopScopeProbe(props: {
+	source: WritableSignal<number>;
+	log: (entry: string) => void;
+	stopRef: { current: () => void };
+}) @{
+	const stop = useSignalScope(() => {
+		props.stopRef.current();
+		createEffect(() => props.log('scope:' + props.source()));
+	});
+	props.stopRef.current = stop;
+
+	<p id="sync-stop-probe">ready</p>
+}
+
 export function LifecycleEffects(props: {
 	source: WritableSignal<number>;
 	log: (entry: string) => void;

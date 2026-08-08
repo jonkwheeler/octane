@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSignal } from '@octanejs/alien-signals';
 import { mount, nextPaint } from './_helpers';
-import { LifecycleEffects, ScopeProbe } from './_fixtures/hooks.tsrx';
+import { LifecycleEffects, ScopeProbe, SyncStopScopeProbe } from './_fixtures/hooks.tsrx';
 
 describe('@octanejs/alien-signals lifecycle hooks', () => {
 	it('runs effect cleanup before reruns and on unmount', async () => {
@@ -100,6 +100,22 @@ describe('@octanejs/alien-signals lifecycle hooks', () => {
 		await nextPaint();
 		source(1);
 		expect(entries).toEqual(['first:0', 'second:0', 'second:1']);
+		result.unmount();
+	});
+
+	it('disposes a scope stopped during synchronous setup', async () => {
+		const source = createSignal(0);
+		const entries: string[] = [];
+		const stopRef = { current: () => {} };
+		const result = mount(SyncStopScopeProbe, {
+			source,
+			log: (entry) => entries.push(entry),
+			stopRef,
+		});
+		await nextPaint();
+		expect(entries).toEqual([]);
+		source(1);
+		expect(entries).toEqual([]);
 		result.unmount();
 	});
 });
