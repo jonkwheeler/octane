@@ -51,6 +51,7 @@ export function setupIntersectionMocking(mockFn: MockFn) {
 			thresholds: Array.isArray(options.threshold) ? options.threshold : [options.threshold ?? 0],
 			root: options.root ?? null,
 			rootMargin: options.rootMargin ?? '',
+			scrollMargin: options.scrollMargin ?? '',
 			observe: mockFn((element: Element) => {
 				elements.add(element);
 			}),
