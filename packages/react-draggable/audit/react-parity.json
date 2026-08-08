@@ -17,8 +17,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-draggable/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/react-draggable/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
@@ -26,7 +30,9 @@
         "packages/react-draggable/tests/runtime",
         "packages/react-draggable/tests/upstream"
       ],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -150,7 +156,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-draggable-browser",
-      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Browser-platform evidence only; no physical-device or mobile-WebKit claim. The branch consumes shared Firefox runner PR #548 through reviewed head 994dc59fe9646e01da137b15825c1743a340017e and CommonJS package-condition PR #550 through the reviewed cached TSЯX head 369557c3e.",
+      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Browser-platform evidence only; no physical-device or mobile-WebKit claim. The branch consumes shared Firefox runner PR #548 through reviewed head 994dc59fe9646e01da137b15825c1743a340017e and CommonJS package-condition PR #550 through the reviewed cached TS\u042fX head 369557c3e.",
       "files": [
         {
           "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",
