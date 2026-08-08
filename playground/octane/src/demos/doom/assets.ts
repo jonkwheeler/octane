@@ -21,6 +21,7 @@ export function createProceduralAudio() {
 		async unlock() {
 			const audio = ensure();
 			await audio.resume();
+			if (audio.state === 'closed') return;
 			if (!drone) {
 				drone = audio.createOscillator();
 				droneGain = audio.createGain();

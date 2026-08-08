@@ -57,6 +57,8 @@ export function DoomDemo() @{
 	const pointerLockedRef = useRef(false);
 	const audioRef = useRef<ReturnType<typeof createProceduralAudio> | null>(null);
 	const simulationTimeRef = useRef(0);
+	const enterSessionRef = useRef(0);
+	const loadingTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 	const [phase, setPhase] = useState<Phase>('landing');
 	const [game, setGame] = useState<GameState>(stateRef.current);
 	const [paused, setPaused] = useState(false);
@@ -68,6 +70,14 @@ export function DoomDemo() @{
 	pointerLockedRef.current = pointerLocked;
 	permissionErrorRef.current = permissionError;
 
+	function invalidateEnterSession(): void {
+		enterSessionRef.current += 1;
+		if (loadingTimeoutRef.current !== null) {
+			window.clearTimeout(loadingTimeoutRef.current);
+			loadingTimeoutRef.current = null;
+		}
+	}
+
 	const reset = useCallback(() => {
 		stateRef.current = createGameState();
 		inputRef.current = emptyInput();
@@ -76,36 +86,53 @@ export function DoomDemo() @{
 		setPaused(false);
 	}, []);
 
-	const requestPermissions = useCallback(async () => {
+	const requestPermissions = useCallback(async function requestPermissions(session: number) {
 		setPermissionError(null);
 		try {
 			audioRef.current ??= createProceduralAudio();
 			await audioRef.current.unlock();
+			if (enterSessionRef.current !== session) return;
 			const result = shellRef.current?.requestPointerLock();
 			if (result && 'then' in result) await result;
+			if (enterSessionRef.current !== session) return;
 		} catch (error) {
+			if (enterSessionRef.current !== session) return;
 			setPermissionError(error instanceof Error ? error.message : 'Permission was rejected.');
 		}
 	}, []);
 
-	const enter = useCallback(async () => {
+	const enter = useCallback(async function enter() {
 		if (!hasWebGL()) {
 			setPhase('failed');
 			return;
+		}
+		const session = enterSessionRef.current + 1;
+		enterSessionRef.current = session;
+		if (loadingTimeoutRef.current !== null) {
+			window.clearTimeout(loadingTimeoutRef.current);
+			loadingTimeoutRef.current = null;
 		}
 		reset();
 		setPhase('loading');
 		// The playground router owns location.hash. Add an internal history entry
 		// without changing the URL so Back exits the level without unmounting Doom.
 		history.pushState({ ...history.state, octaneDoom: true }, '', location.href);
-		await requestPermissions();
-		window.setTimeout(
-			() => setPhase((current) => current === 'loading' ? 'playing' : current),
+		await requestPermissions(session);
+		if (enterSessionRef.current !== session) return;
+		loadingTimeoutRef.current = window.setTimeout(
+			function startPlaying() {
+				loadingTimeoutRef.current = null;
+				if (enterSessionRef.current !== session) return;
+				setPhase(function advancePhase(current) {
+					return current === 'loading' ? 'playing' : current;
+				});
+			},
 			420,
 		);
 	}, [requestPermissions, reset]);
 
-	const exit = useCallback(() => {
+	const exit = useCallback(function exit() {
+		invalidateEnterSession();
 		document.exitPointerLock?.();
 		audioRef.current?.stop();
 		setPhase('landing');
@@ -118,8 +145,9 @@ export function DoomDemo() @{
 			document.pointerLockElement === shellRef.current,
 		);
 		const onPointerError = () => setPermissionError('Pointer lock was rejected. Click Retry aim.');
-		const onPopState = () => {
+		const onPopState = function onPopState() {
 			if (phaseRef.current !== 'landing') {
+				invalidateEnterSession();
 				document.exitPointerLock?.();
 				audioRef.current?.stop();
 				setPhase('landing');
