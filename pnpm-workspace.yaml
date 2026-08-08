@@ -42,6 +42,8 @@ packages:
   - benchmarks/chat-stream/*
   - benchmarks/streamdown-hosted
   - benchmarks/streamdown-hosted/*
+  - benchmarks/svg-dashboard
+  - benchmarks/svg-dashboard/*
   - benchmarks/tauri-shell
   - benchmarks/tauri-shell/*
   - benchmarks/tanstack-start
