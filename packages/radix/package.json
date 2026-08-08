@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/radix",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -32,20 +32,12 @@
   "types": "src/index.ts",
   "files": [
     "src",
-    "dist/cjs",
     "README.md"
   ],
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts",
-      "require": "./dist/cjs/index.cjs",
-      "default": "./src/index.ts"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build:cjs": "node ../../scripts/build-package-commonjs.mjs",
-    "prepack": "pnpm build:cjs",
     "test": "vitest run"
   },
   "dependencies": {

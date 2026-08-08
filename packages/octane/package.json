@@ -1,6 +1,6 @@
 {
   "name": "octane",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -61,8 +61,6 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/cjs/index.cjs",
         "default": "./dist/index.js"
       },
       "./jsx-runtime": {
@@ -93,8 +91,6 @@
       },
       "./server": {
         "types": "./dist/server/index.d.ts",
-        "import": "./dist/server/index.js",
-        "require": "./dist/cjs/server/index.cjs",
         "default": "./dist/server/index.js"
       },
       "./static": {
