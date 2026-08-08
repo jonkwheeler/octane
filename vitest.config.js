@@ -2085,7 +2085,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'motion',
 					include: ['packages/motion/tests/**/*.test.ts'],
@@ -2108,7 +2107,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'motion-differential',
 					include: ['packages/motion/tests/differential/**/*.test.ts'],

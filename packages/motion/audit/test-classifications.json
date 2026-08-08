@@ -105,6 +105,11 @@
       "path": "packages/motion/tests/differential/setup.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks fail-closed React fixture compilation."
+    },
+    {
+      "path": "packages/motion/tests/production-bundle.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks production-bundle reachability for the public motion entry."
     }
   ]
 }
