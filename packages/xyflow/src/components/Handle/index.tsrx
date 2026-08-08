@@ -141,7 +141,7 @@ function HandleComponent(
       return;
     }
 
-    const isMouseTriggered = isMouseEvent(event.nativeEvent);
+    const isMouseTriggered = isMouseEvent(event);
 
     if (
       isConnectableStart &&
@@ -149,7 +149,7 @@ function HandleComponent(
     ) {
       const currentStore = store.getState();
 
-      XYHandle.onPointerDown(event.nativeEvent, {
+      XYHandle.onPointerDown(event, {
         handleDomNode: event.currentTarget,
         autoPanOnConnect: currentStore.autoPanOnConnect,
         connectionMode: currentStore.connectionMode,
@@ -200,14 +200,14 @@ function HandleComponent(
     }
 
     if (!connectionClickStartHandle) {
-      onClickConnectStart?.(event.nativeEvent, { nodeId, handleId, handleType: type });
+      onClickConnectStart?.(event, { nodeId, handleId, handleType: type });
       store.setState({ connectionClickStartHandle: { nodeId, type, id: handleId } });
       return;
     }
 
     const doc = getHostForElement(event.target);
     const isValidConnectionHandler = isValidConnection || isValidConnectionStore;
-    const { connection, isValid } = XYHandle.isValid(event.nativeEvent, {
+    const { connection, isValid } = XYHandle.isValid(event, {
       handle: {
         nodeId,
         id: handleId,

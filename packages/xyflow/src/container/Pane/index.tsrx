@@ -164,7 +164,7 @@ export function Pane({
 
     selectionInProgress.current = false;
 
-    const { x, y } = getEventPosition(event.nativeEvent, containerBounds.current);
+    const { x, y } = getEventPosition(event, containerBounds.current);
     const userSelectionStartPosition = pointToRendererPoint({ x, y }, transform);
 
     store.setState({
@@ -290,7 +290,7 @@ export function Pane({
       return;
     }
 
-    const { x: mouseX, y: mouseY } = getEventPosition(event.nativeEvent, containerBounds.current);
+    const { x: mouseX, y: mouseY } = getEventPosition(event, containerBounds.current);
     position.current = { x: mouseX, y: mouseY };
 
     const screenStart = rendererPointToPoint({ x: userSelectionRect.startX, y: userSelectionRect.startY }, transform);

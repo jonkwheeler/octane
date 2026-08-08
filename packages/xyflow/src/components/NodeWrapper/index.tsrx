@@ -126,7 +126,7 @@ function NodeWrapper<NodeType extends Node>({
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    if (isInputDOMNode(event.nativeEvent) || disableKeyboardA11y) {
+    if (isInputDOMNode(event) || disableKeyboardA11y) {
       return;
     }
 
