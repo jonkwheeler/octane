@@ -3328,6 +3328,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mantine-hooks-differential',
 					include: ['packages/mantine-hooks/tests/differential/**/*.test.ts'],
