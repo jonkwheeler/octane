@@ -25,6 +25,11 @@
       "path": "packages/floating-ui/tests/positioning.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks broader positioning and interaction behavior under Octane scheduling."
+    },
+    {
+      "path": "packages/floating-ui/tests/package-boundary.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks published sideEffects metadata and tree-shaking boundaries for the positioning entry point."
     }
   ]
 }
