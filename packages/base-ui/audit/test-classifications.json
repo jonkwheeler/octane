@@ -104,8 +104,8 @@
     },
     {
       "path": "packages/base-ui/tests/tooltip-delay-group.test.ts",
-      "disposition": "adapted-upstream-suite",
-      "oracle": "Transcribes the pinned Base UI default delay-group behavior without claiming a framework divergence."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins upstream-transcribed Tooltip delay-group behavior as a port-authored contract test; it is outside adaptedRoots.tests and is not counted as React parity evidence per UPSTREAM.md."
     },
     {
       "path": "packages/base-ui/tests/tooltip.test.ts",
