@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "c3cee7c845bc67b42010be7fec4283e98036c2c3544f39b86223be9a45c9ec96"
+      "lockfileSha256": "b1b7a1065c6fa8b2f90a7ad1072baaa535585d18f8e05ff2a8de157e482e9d8e"
     }
   },
   "lanes": [
@@ -113,7 +113,7 @@
         {
           "path": "packages/react-draggable/tests/hydration/hydration.test.ts",
           "role": "test",
-          "sha256": "030df42835ec2eaf38fb2965560b6a42110f6a7ec1b17e0ef7b6ec6761b266ea",
+          "sha256": "3a2d5178c0120b10dcd5f772576a5bfeaad4f8873800d031b0a47210a4a80674",
           "cases": [
             {
               "id": "adapted:react-draggable-hydration",
@@ -135,17 +135,17 @@
         {
           "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",
           "role": "test",
-          "sha256": "dc95822526133d38a68e1f3c9bf7da010bb70f7546eb104c7ab7f0b42ec4ca85",
+          "sha256": "eac4674195b7f781434dd17911efee16ae94e5444d75337bc6f8e97ad17d87c4",
           "cases": [
             {
               "id": "browser:react-draggable-native",
               "testName": "proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown",
-              "fullName": "Firefox native parity proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown"
+              "fullName": "browser native parity proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown"
             },
             {
               "id": "browser:react-draggable-ownership-cleanup",
               "testName": "proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions",
-              "fullName": "Firefox native parity proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions"
+              "fullName": "browser native parity proves owner-document, shadow selector, unmount, error retention, and overlapping-input dispositions"
             }
           ]
         },

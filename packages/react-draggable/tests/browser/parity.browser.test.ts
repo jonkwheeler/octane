@@ -291,7 +291,7 @@ async function runOwnershipJourney() {
 	}
 }
 
-describe(`${browserName === 'chromium' ? 'Chromium' : 'Firefox'} native parity`, () => {
+describe('browser native parity', () => {
 	// @parity-case browser:react-draggable-native
 	it(
 		'proves real geometry, parent bounds, grid, focus, SVG, touch prevention, and teardown',
