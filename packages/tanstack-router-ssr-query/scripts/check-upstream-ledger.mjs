@@ -106,7 +106,29 @@ if (crosswalk.typeSuite?.disposition !== 'present')
 	throw new Error('type suite must be present and inventoried');
 if (!crosswalk.typeSuite.pristineProject || !crosswalk.typeSuite.adaptedProject)
 	throw new Error('type suite must point at pristine and adapted compile projects');
+if (
+	crosswalk.typeSuite.pristineProject !==
+	'packages/tanstack-router-ssr-query/upstream/package/tsconfig.build.json'
+)
+	throw new Error('pristine type project must be the vendored upstream tsconfig.build.json');
+const expectedCompilers = [
+	'typescript55',
+	'typescript56',
+	'typescript57',
+	'typescript58',
+	'typescript59',
+	'typescript60',
+];
+if (JSON.stringify(crosswalk.typeSuite.pristineCompilers) !== JSON.stringify(expectedCompilers))
+	throw new Error('pristine type suite must inventory typescript55–typescript60');
+if (crosswalk.typeSuite.adaptedCompiler !== 'tsrx-tsc')
+	throw new Error('adapted type suite must use tsrx-tsc');
+if (
+	JSON.stringify(crosswalk.typeSuite.adaptedIncompatibleCompilers) !==
+	JSON.stringify(['typescript55', 'typescript56', 'typescript57', 'typescript58', 'typescript60'])
+)
+	throw new Error('adapted lane must record explicit per-version incompatibilities');
 
 console.log(
-	'TanStack React Router SSR Query upstream ledger is current (9 files, 1 source file, 2 entrypoints, export crosswalk, type compile lanes, no runtime test suite).',
+	'TanStack React Router SSR Query upstream ledger is current (9 files, 1 source file, 2 entrypoints, export crosswalk, TS 5.5–6.0 pristine matrix, no runtime test suite).',
 );

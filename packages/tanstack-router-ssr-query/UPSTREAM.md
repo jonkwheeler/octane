@@ -20,8 +20,11 @@ The byte-exact tagged adapter directory and root license are vendored under `ups
 `SHA256SUMS` authenticates all nine files, including the adapter's single source file. The tagged
 package contains no runtime test, fixture, or snapshot artifacts. Its `test:types` scripts compile
 package source across TypeScript 5.5–6.0 (accept/reject compile results, no dedicated `expectType`
-artifacts). Parity inventories that compile evidence as required pristine `tsc` and adapted
-`tsrx-tsc` lanes.
+artifacts). The pristine type lane invokes the vendored `upstream/package/tsconfig.build.json`
+under `typescript55`–`typescript60` (matching upstream's matrix) and inventories each compiler
+result. The adapted lane mirrors that compile once with `tsrx-tsc` (TypeScript 5.9-equivalent);
+TypeScript 5.5, 5.6, 5.7, 5.8, and 6.0 are recorded as adapted-lane incompatibilities because
+Octane's typecheck toolchain is a single `tsrx-tsc` version.
 
 The package publishes one runtime entrypoint plus a metadata-only `./package.json` entrypoint. The
 export crosswalk maps `Options` and `setupRouterSsrQueryIntegration` individually. The Octane

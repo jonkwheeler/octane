@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-router-ssr-query/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/tanstack-router-ssr-query/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/tanstack-router-ssr-query/tests/differential"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-router-ssr-query/tests/differential"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "ffc90aa9b6ce293e385959a551e4586ba4d3acb719b47c0ef8402bd10439b63a"
+      "lockfileSha256": "25d7fbf58f4627209facc12d3cb3d6fadc2344f57c47b48dd2583a60a05f1924"
     }
   },
   "lanes": [
@@ -88,7 +96,7 @@
         {
           "path": "packages/tanstack-router-ssr-query/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "5e0cdff5d64247ebaf23992b05efa39d48e80a58b7a9014ec1f104174f8d022f"
+          "sha256": "ed1ef2d23b27d2c2162ad7562cb37f8b2692c81b6888417722b4a53846556873"
         },
         {
           "path": "packages/tanstack-router-ssr-query/audit/test-classifications.json",
@@ -98,7 +106,7 @@
         {
           "path": "packages/tanstack-router-ssr-query/scripts/check-upstream-ledger.mjs",
           "role": "support",
-          "sha256": "abbaaa2972dc8bcc212c2be6f92dba6e58c8f3f48aeeafa68b69f6874ae504fd"
+          "sha256": "19b84780ef935e3972a52a973601d36d7e290a22d7f9e163d73d3a4180bea217"
         },
         {
           "path": "scripts/react-parity/tanstack-router-ssr-query-controls.test.mjs",
@@ -119,11 +127,19 @@
       "environment": "workspace-node",
       "project": "tanstack-router-ssr-query-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the upstream adapter source compile with tsc and pinned React types, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
+      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55–typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/tanstack-router-ssr-query/typetests/pristine/tsconfig.json"
+        "compilerBins": [
+          "packages/tanstack-router-ssr-query/node_modules/typescript55/lib/tsc.js",
+          "packages/tanstack-router-ssr-query/node_modules/typescript56/lib/tsc.js",
+          "packages/tanstack-router-ssr-query/node_modules/typescript57/lib/tsc.js",
+          "packages/tanstack-router-ssr-query/node_modules/typescript58/lib/tsc.js",
+          "packages/tanstack-router-ssr-query/node_modules/typescript59/lib/tsc.js",
+          "packages/tanstack-router-ssr-query/node_modules/typescript60/lib/tsc.js"
+        ],
+        "project": "packages/tanstack-router-ssr-query/upstream/package/tsconfig.build.json"
       },
       "files": [
         {
@@ -132,16 +148,51 @@
           "sha256": "5cc143a009df65f9dcc1820a61ab0cb64519b33abf32dc3f71c513496fbc4a5a",
           "cases": [
             {
-              "id": "types:pristine-upstream-compile",
-              "testName": "pinned upstream adapter source compile",
-              "fullName": "pinned upstream adapter source compile"
+              "id": "types:pristine-upstream-compile-ts55",
+              "testName": "pinned upstream adapter source compile (TypeScript 5.5)",
+              "fullName": "pinned upstream adapter source compile (TypeScript 5.5)"
+            },
+            {
+              "id": "types:pristine-upstream-compile-ts56",
+              "testName": "pinned upstream adapter source compile (TypeScript 5.6)",
+              "fullName": "pinned upstream adapter source compile (TypeScript 5.6)"
+            },
+            {
+              "id": "types:pristine-upstream-compile-ts57",
+              "testName": "pinned upstream adapter source compile (TypeScript 5.7)",
+              "fullName": "pinned upstream adapter source compile (TypeScript 5.7)"
+            },
+            {
+              "id": "types:pristine-upstream-compile-ts58",
+              "testName": "pinned upstream adapter source compile (TypeScript 5.8)",
+              "fullName": "pinned upstream adapter source compile (TypeScript 5.8)"
+            },
+            {
+              "id": "types:pristine-upstream-compile-ts59",
+              "testName": "pinned upstream adapter source compile (TypeScript 5.9)",
+              "fullName": "pinned upstream adapter source compile (TypeScript 5.9)"
+            },
+            {
+              "id": "types:pristine-upstream-compile-ts60",
+              "testName": "pinned upstream adapter source compile (TypeScript 6.0)",
+              "fullName": "pinned upstream adapter source compile (TypeScript 6.0)"
             }
           ]
         },
         {
-          "path": "packages/tanstack-router-ssr-query/typetests/pristine/tsconfig.json",
+          "path": "packages/tanstack-router-ssr-query/upstream/package/tsconfig.build.json",
           "role": "support",
-          "sha256": "d78093bcfcdac746b8889f08d14b7ef58aaf559aa190c5581b3c34664a054a00"
+          "sha256": "a7b24536d0421b619917e5b92add24c561237b185e2592ba4b2d4d649b67d5e1"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/upstream/package/tsconfig.json",
+          "role": "support",
+          "sha256": "303acc36428c434a274bde0b6258eba3413dac9147bf647672d7289c4884bdb9"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/tsconfig.json",
+          "role": "support",
+          "sha256": "54593830c286058e815a124ba3d0b2fe0c598879531786e055d7ddb54ac25aed"
         }
       ]
     },
@@ -152,7 +203,7 @@
       "environment": "workspace-node",
       "project": "tanstack-router-ssr-query-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "One-for-one Octane compiler configuration compile of the adapted adapter source with tsrx-tsc.",
+      "notes": "One-for-one Octane compiler configuration compile of the adapted adapter source with tsrx-tsc (TypeScript 5.9-equivalent). TypeScript 5.5, 5.6, 5.7, 5.8, and 6.0 are explicit adapted-lane incompatibilities.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
