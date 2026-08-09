@@ -116,6 +116,7 @@
 		"vitest": "catalog:default",
 		"jsdom": "catalog:default",
 		"happy-dom": "catalog:default",
-		"esbuild": "catalog:default"
+		"esbuild": "catalog:default",
+		"@vitest/browser-playwright": "4.1.10"
 	}
 }
