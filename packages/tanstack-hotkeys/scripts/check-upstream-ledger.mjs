@@ -90,6 +90,28 @@ const expectedNames = [
 	'useKeyHold',
 ];
 const exportNames = crosswalk.adapterExports.map((entry) => entry.name);
+const repoRoot = resolve(packageRoot, '../..');
+const missingEvidence = crosswalk.adapterExports.filter((entry) => {
+	if (typeof entry !== 'object' || !entry?.evidenceTarget || !entry?.name) return true;
+	// Behavioral exports must land on evidence that literally names the symbol.
+	// Type-package rows are authenticated by the type suite path itself.
+	if (entry.classification !== 'behavioral') return false;
+	const absolute = resolve(repoRoot, entry.evidenceTarget);
+	try {
+		const source = readFileSync(absolute, 'utf8');
+		const pattern = new RegExp(`\\b${entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+		return !pattern.test(source);
+	} catch {
+		return true;
+	}
+});
+if (missingEvidence.length > 0) {
+	throw new Error(
+		`upstream crosswalk evidenceTarget missing export symbol: ${missingEvidence
+			.map((entry) => `${entry.name} -> ${entry.evidenceTarget}`)
+			.join(', ')}`,
+	);
+}
 if (
 	crosswalk.publicEntrypoints.length !== 2 ||
 	!Array.isArray(crosswalk.adapterExports) ||
