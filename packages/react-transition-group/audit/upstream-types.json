@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:upstream-public-surface",
+      "testName": "pinned React public type surface",
+      "fullName": "pinned React public type surface across Transition Group entry points"
+    }
+  ]
+}

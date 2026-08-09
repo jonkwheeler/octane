@@ -43,7 +43,7 @@
     "test": "pnpm upstream:check && vitest run --root ../.. --project react-transition-group-pristine --project react-transition-group-adapted --project react-transition-group --project react-transition-group-ssr",
     "parity:inventory": "node ../../scripts/react-parity/react-transition-group-runtime-inventory.mjs",
     "upstream:check": "node audit/check-upstream.mjs",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.local.json && tsc --noEmit -p typetests/tsconfig.upstream.json"
   },
   "peerDependencies": {
     "octane": "workspace:*"
@@ -57,6 +57,7 @@
     "@tsrx/react": "catalog:default",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
+    "@types/react-transition-group": "catalog:default",
     "babel-jest": "30.4.1",
     "babel-plugin-add-module-exports": "^1.0.4",
     "dom-helpers": "5.2.1",

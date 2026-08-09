@@ -9,7 +9,7 @@
     "testRoot": "test",
     "license": "BSD-3-Clause",
     "integrity": "sha256:3d7afd4e95d7ac4fdbbc105c1775556da892de229363736659957ed3c3de40de",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -17,7 +17,7 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-transition-group/src"],
+      "roots": ["packages/react-transition-group/src", "packages/react-transition-group/typetests"],
       "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7aeaed1eee34b20fae693e039c24e89fdc8978d5d1a94114dc1e4d5d9afe3bd1"
+      "lockfileSha256": "444ff768bfa870e040e4a84a4ecf15806f779ff6a507da6f5e40eead883ee6be"
     }
   },
   "lanes": [
@@ -128,6 +128,82 @@
           "path": "scripts/react-parity/react-transition-group-adaptation.test.mjs",
           "role": "support",
           "sha256": "bebad24ecf99b00c424f133a4d8c63f0d4054eb781f545d3e390de844aa79383"
+        }
+      ]
+    },
+    {
+      "id": "react-transition-group-local-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-local-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles consumer-shaped Octane declarations across the public Transition Group entry points.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-transition-group/typetests/tsconfig.local.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/local-types.json",
+          "role": "test",
+          "sha256": "722eb106b8f26afb49872a86fabb9a1e297b875256e4a9752a45f410aefb80db",
+          "cases": [
+            {
+              "id": "types:local-public-surface",
+              "testName": "Octane public type surface",
+              "fullName": "Octane public type surface across Transition Group entry points"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-transition-group/typetests/tsconfig.local.json",
+          "role": "support",
+          "sha256": "a2b99225ec12fafb420eed9a54c94851bd4b5db181437cccb9145141d9ec0175"
+        },
+        {
+          "path": "packages/react-transition-group/typetests/local.ts",
+          "role": "support",
+          "sha256": "b7a9c1fc2922d3f200f5ae9a92d9547327f98f2f93a04d3dab4236c8b24dc16f"
+        }
+      ]
+    },
+    {
+      "id": "react-transition-group-upstream-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-upstream-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the same consumer-shaped fixture against pinned @types/react-transition-group declarations.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-transition-group/typetests/tsconfig.upstream.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/upstream-types.json",
+          "role": "test",
+          "sha256": "50bd24a9a7e3299d5322854c2e83c19253b90befe4ac84ea47e72f17628daecf",
+          "cases": [
+            {
+              "id": "types:upstream-public-surface",
+              "testName": "pinned React public type surface",
+              "fullName": "pinned React public type surface across Transition Group entry points"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-transition-group/typetests/tsconfig.upstream.json",
+          "role": "support",
+          "sha256": "b674593e135c21386a0b6981c4f58feda6bbf0efa0cf2506a0124b44119ec262"
+        },
+        {
+          "path": "packages/react-transition-group/typetests/upstream.ts",
+          "role": "support",
+          "sha256": "70cbdf053962c36291858d6d6969a71cc8e6257478fc212da2036b795930daa2"
         }
       ]
     }
