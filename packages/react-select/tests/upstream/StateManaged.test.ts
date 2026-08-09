@@ -23,6 +23,11 @@ function menu(container: HTMLElement): Element | null {
 	return container.querySelector('.react-select__menu');
 }
 
+upstreamTest('defaults > snapshot', function snapshotsDefaults() {
+	const result = render(Select);
+	expect(result.container).toMatchSnapshot();
+});
+
 upstreamTest('passes down the className prop', function passesClassName() {
 	const result = render(Select, { props: basicProps() });
 	expect(result.container.querySelector('.react-select')).toBeTruthy();
@@ -150,11 +155,6 @@ upstreamTest(
 		expect(hiddenInput(result.container).value).toBe('two');
 	},
 );
-
-upstreamTest('defaults > snapshot', function snapshotsDefaults() {
-	const result = render(Select);
-	expect(result.container).toMatchSnapshot();
-});
 
 function assertControlledOpenMenu(isMulti: boolean): void {
 	const result = render(Select, {

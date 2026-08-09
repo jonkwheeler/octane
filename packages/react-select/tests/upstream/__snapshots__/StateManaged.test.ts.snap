@@ -8,7 +8,7 @@ exports[`defaults > snapshot 1`] = `
     <!--comp-->
     <span
       class="css-fexajy-a11yText"
-      id="react-select-13-live-region"
+      id="react-select-1-live-region"
     />
     <span
       aria-atomic="false"
@@ -32,7 +32,7 @@ exports[`defaults > snapshot 1`] = `
         <!--it-->
         <div
           class=" css-1jqq78o-placeholder"
-          id="react-select-13-placeholder"
+          id="react-select-1-placeholder"
         >
           Select...
         </div>
@@ -46,14 +46,14 @@ exports[`defaults > snapshot 1`] = `
           <input
             aria-activedescendant=""
             aria-autocomplete="list"
-            aria-describedby="react-select-13-placeholder"
+            aria-describedby="react-select-1-placeholder"
             aria-expanded="false"
             aria-haspopup="true"
             autocapitalize="none"
             autocomplete="off"
             autocorrect="off"
             class=""
-            id="react-select-13-input"
+            id="react-select-1-input"
             role="combobox"
             spellcheck="false"
             style="color: inherit; background: 0px center; opacity: 1; width: 100%; grid-area: 1 / 2; font: inherit; min-width: 2px; border: 0px; margin: 0px; outline: 0px; padding: 0px;"
