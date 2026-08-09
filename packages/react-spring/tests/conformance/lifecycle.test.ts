@@ -110,4 +110,22 @@ describe('upstream lifecycle parity', () => {
 		expect(onChange.mock.calls.length).toBeGreaterThan(0);
 		expect(spring.defaultProps.config).toMatchObject({ tension: 250 });
 	});
+
+	it('does not sticky-capture immediate/cancel/pause from default: true', () => {
+		const spring = new SpringValue(0, {
+			immediate: true,
+			config: { tension: 200 },
+		});
+		expect(spring.defaultProps.immediate).toBeUndefined();
+		expect(spring.defaultProps.cancel).toBeUndefined();
+		expect(spring.defaultProps.pause).toBeUndefined();
+		expect(spring.defaultProps.config).toMatchObject({ tension: 200 });
+
+		const sticky = new SpringValue(0, {
+			default: { immediate: true, cancel: true },
+		});
+		// Object-form default may include one-shot flags intentionally.
+		expect(sticky.defaultProps.immediate).toBe(true);
+		expect(sticky.defaultProps.cancel).toBe(true);
+	});
 });

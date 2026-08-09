@@ -49,17 +49,15 @@ export interface SpringUpdate<T> {
 	onResolve?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 }
 
+// Upstream DEFAULT_PROPS: sticky only for `default: true`. One-shot flags
+// (immediate/cancel/pause) and onResolve require `default: { ... }` object form.
 const DEFAULT_PROP_KEYS = [
 	'config',
-	'immediate',
-	'cancel',
-	'pause',
 	'onStart',
 	'onChange',
 	'onPause',
 	'onResume',
 	'onRest',
-	'onResolve',
 ] as const;
 
 export const config = {
@@ -317,9 +315,18 @@ export class SpringValue<T = number> extends FrameValue<T> {
 
 	private captureDefaults(props: SpringUpdate<T>): void {
 		if (!props.default) return;
-		const source = props.default === true ? props : (props.default as Partial<SpringUpdate<T>>);
-		for (const key of DEFAULT_PROP_KEYS) {
-			const value = source[key];
+		if (props.default === true) {
+			for (const key of DEFAULT_PROP_KEYS) {
+				const value = props[key];
+				if (value !== undefined) {
+					(this.defaultProps as Record<string, unknown>)[key] = value;
+				}
+			}
+			return;
+		}
+		const source = props.default as Partial<SpringUpdate<T>>;
+		for (const key of Object.keys(source)) {
+			const value = (source as Record<string, unknown>)[key];
 			if (value !== undefined) {
 				(this.defaultProps as Record<string, unknown>)[key] = value;
 			}
