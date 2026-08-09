@@ -1534,6 +1534,12 @@ export default defineConfig({
 			},
 			{
 				// Differential lane: precompiles fixtures for the published React oracle.
+				// Only the manifest-backed parity file is owned by react-parity; setup.test.ts
+				// stays in ordinary CI via the project include.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/apollo-client/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'apollo-client-differential',
 					include: ['packages/apollo-client/tests/differential/**/*.test.ts'],
