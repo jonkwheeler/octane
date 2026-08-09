@@ -68,7 +68,7 @@
 				{
 					"path": "packages/apollo-client/audit/adapted-runtime.json",
 					"role": "support",
-					"sha256": "33b85edd03a543ea6fb13a8c2fb05025686fbebee9ececb153766fc1c5aef5e4"
+					"sha256": "e2b0b85a931f33a8759c1be4c81f7d20ca7eeb49edba1e4b5c663d3f2427d18d"
 				},
 				{
 					"path": "packages/apollo-client/tests/conformance/upstream-ApolloProvider.test.ts",
@@ -83,12 +83,12 @@
 				{
 					"path": "packages/apollo-client/tests/_fixtures/upstream/ApolloProvider.tsrx",
 					"role": "support",
-					"sha256": "a4d7e2daf3f5cdffa7fbf42d1df80709c4f233d5fbd3e271a7dea1252fdc44ce"
+					"sha256": "50c8ee038a81f19899893d2383991df6449a8c79c81b66aeb8360bdf7e01f3d6"
 				},
 				{
 					"path": "packages/apollo-client/tests/_fixtures/upstream/useApolloClient.tsrx",
 					"role": "support",
-					"sha256": "524f284dc1b5ada7231aef0670871a70ba0787b2950e81749f00944002ba9f6f"
+					"sha256": "93cbf6e91c2e506b32b4fc0c312c10393fb14d463a080768a0cd249544309df6"
 				},
 				{
 					"path": "packages/apollo-client/tests/conformance/test-setup.ts",
@@ -123,7 +123,7 @@
 				{
 					"path": "packages/apollo-client/audit/test-classifications.json",
 					"role": "support",
-					"sha256": "e920d23c3f87fbdcf47384bde808f6dd53d87dfad16efd995f3eb1803b8dc2dc"
+					"sha256": "61a7e95b273ad8f7eb7d53bfeb8ce66f2dd0fa03157ce60364847bd2eca5fb6b"
 				}
 			]
 		},
