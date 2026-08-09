@@ -235,4 +235,36 @@ describe('Draggable visual contract', () => {
 		expect(cleanups).toEqual(['cleanup']);
 		container.remove();
 	});
+
+	// @parity-case adapted:draggable-stable-child-ref
+	it('does not churn child callback-ref cleanups across drag re-renders', () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const nodeRef = { current: null as HTMLDivElement | null };
+		const cleanups: string[] = [];
+		function callbackRef(value: HTMLDivElement | null) {
+			if (value) {
+				return function cleanup() {
+					cleanups.push('cleanup');
+				};
+			}
+		}
+		root.render(ChildRefDraggableHarness, {
+			nodeRef,
+			childRef: callbackRef,
+			enableUserSelectHack: false,
+		});
+		flushSync(() => {});
+		flushEffects();
+		drag(nodeRef.current!, [
+			[10, 0],
+			[20, 0],
+			[30, 0],
+		]);
+		expect(cleanups).toEqual([]);
+		root.unmount();
+		expect(cleanups).toEqual(['cleanup']);
+		container.remove();
+	});
 });

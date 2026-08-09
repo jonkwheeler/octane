@@ -145,13 +145,46 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 					style: { ...child.props.style, ...createCSSTransform(position, props.positionOffset!) },
 					transform: null,
 				};
-	const ref = (value: HTMLElement | SVGElement | null) => {
-		if (props.nodeRef) props.nodeRef.current = value as HTMLElement | null;
-		assignRef(child.props.ref as StructuralRef<HTMLElement | SVGElement> | undefined, value);
-	};
+	// Keep one stable host ref callback across drag re-renders. A fresh function each
+	// render would look like a ref swap to Octane and churn React-19 child cleanups.
+	type HostEl = HTMLElement | SVGElement;
+	type ChildRef = StructuralRef<HostEl> | null | undefined;
+	const forwardRefBag = useRef<
+		| {
+				callback: (value: HostEl | null) => void;
+				nodeRef: DraggableProps['nodeRef'];
+				childRef: ChildRef;
+				attached: HostEl | null;
+		  }
+		| null
+	>(null);
+	if (!forwardRefBag.current) {
+		forwardRefBag.current = {
+			nodeRef,
+			childRef: child.props.ref as ChildRef,
+			attached: null,
+			callback: function forwardChildRef(value: HostEl | null) {
+				const bag = forwardRefBag.current!;
+				bag.attached = value;
+				if (bag.nodeRef) bag.nodeRef.current = value as HTMLElement | null;
+				assignRef(bag.childRef, value);
+			},
+		};
+	} else {
+		const bag = forwardRefBag.current;
+		bag.nodeRef = nodeRef;
+		const nextChildRef = child.props.ref as ChildRef;
+		if (nextChildRef !== bag.childRef) {
+			if (bag.attached != null) {
+				assignRef(bag.childRef, null);
+				assignRef(nextChildRef, bag.attached);
+			}
+			bag.childRef = nextChildRef;
+		}
+	}
 	const cloned = cloneElement(child, {
 		...transform,
-		ref,
+		ref: forwardRefBag.current.callback,
 		class: undefined,
 		className: clsx(child.props.className ?? child.props.class, props.defaultClassName, {
 			[props.defaultClassNameDragging]: state.dragging,
