@@ -59,7 +59,10 @@ export function useInView(options: IntersectionOptions | symbol = {}): InViewHoo
 	const previousTarget = useRef<Element | undefined>(undefined);
 	if (!ref && entryTarget && !triggerOnce && !skip && previousTarget.current !== entryTarget) {
 		previousTarget.current = entryTarget;
-		setState({ inView: Boolean(initialInView) });
+		setState({
+			inView: Boolean(initialInView),
+			entry: undefined,
+		});
 		lastInView.current = initialInView;
 	}
 
