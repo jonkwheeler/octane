@@ -22,13 +22,13 @@ describe('@octanejs/tanstack-router-ssr-query parity audit contracts', () => {
 			commit: '8b3659143f634542c455a9d7915a8c7e8fabb65d',
 			verification: 'recorded-unverified',
 		});
-		expect(() =>
+		expect(function runLedger() {
 			execFileSync(
 				process.execPath,
 				['packages/tanstack-router-ssr-query/scripts/check-upstream-ledger.mjs'],
 				{ cwd: root, stdio: 'pipe' },
-			),
-		).not.toThrow();
+			);
+		}).not.toThrow();
 	});
 
 	// @parity-case adapted:tanstack-router-ssr-query-core-version
@@ -38,5 +38,41 @@ describe('@octanejs/tanstack-router-ssr-query parity audit contracts', () => {
 			version: '1.169.1',
 			disposition: 'published-adapter-version-reused',
 		});
+	});
+
+	it('records export-by-export crosswalk rows and present type compile lanes', () => {
+		const runtime = crosswalk.publicEntrypoints.find(function findRuntime(entry) {
+			return entry.path === '.';
+		});
+		const metadata = crosswalk.publicEntrypoints.find(function findMetadata(entry) {
+			return entry.path === './package.json';
+		});
+		expect(
+			runtime?.exports?.map(function name(entry) {
+				return entry.name;
+			}),
+		).toEqual(['Options', 'setupRouterSsrQueryIntegration']);
+		expect(metadata).toMatchObject({
+			disposition: 'intentionally-omitted',
+		});
+		expect(crosswalk.typeSuite).toMatchObject({
+			disposition: 'present',
+		});
+		expect(manifest.upstreamSuites.types).toBe('present');
+		expect(
+			manifest.lanes.some(function hasPristine(lane) {
+				return lane.id === 'tanstack-router-ssr-query-pristine-types';
+			}),
+		).toBe(true);
+		expect(
+			manifest.lanes.some(function hasAdapted(lane) {
+				return lane.id === 'tanstack-router-ssr-query-adapted-types';
+			}),
+		).toBe(true);
+		expect(
+			manifest.lanes.some(function hasParityAudit(lane) {
+				return lane.id === 'tanstack-router-ssr-query-parity-audit';
+			}),
+		).toBe(false);
 	});
 });

@@ -7,7 +7,7 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamRoot = resolve(packageRoot, 'upstream');
 
 function walk(directory) {
-	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+	return readdirSync(directory, { withFileTypes: true }).flatMap(function walkEntry(entry) {
 		const path = resolve(directory, entry.name);
 		return entry.isDirectory()
 			? walk(path)
@@ -21,19 +21,23 @@ const checksums = new Map(
 	readFileSync(resolve(upstreamRoot, 'SHA256SUMS'), 'utf8')
 		.trim()
 		.split('\n')
-		.map((line) => {
+		.map(function parseChecksum(line) {
 			const match = /^([a-f0-9]{64})  (.+)$/.exec(line);
 			if (!match) throw new Error(`invalid checksum line: ${line}`);
 			return [match[2], match[1]];
 		}),
 );
 const files = walk(upstreamRoot)
-	.map((path) => relative(upstreamRoot, path).split(sep).join('/'))
+	.map(function toPortable(path) {
+		return relative(upstreamRoot, path).split(sep).join('/');
+	})
 	.sort();
 if (
 	files.length !== 9 ||
 	checksums.size !== files.length ||
-	files.some((path) => !checksums.has(path))
+	files.some(function missingChecksum(path) {
+		return !checksums.has(path);
+	})
 )
 	throw new Error('vendored TanStack React Router SSR Query file inventory drifted');
 for (const path of files) {
@@ -51,8 +55,12 @@ if (
 	Object.keys(metadata.exports).length !== 2
 )
 	throw new Error('upstream package metadata drifted');
-const sourceFiles = files.filter((path) => path.startsWith('package/src/'));
-const testFiles = files.filter((path) => /\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
+const sourceFiles = files.filter(function isSource(path) {
+	return path.startsWith('package/src/');
+});
+const testFiles = files.filter(function isTest(path) {
+	return /\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path);
+});
 if (sourceFiles.length !== 1 || testFiles.length !== 0)
 	throw new Error('upstream source or runtime suite inventory drifted');
 
@@ -60,10 +68,45 @@ const crosswalk = JSON.parse(
 	readFileSync(resolve(packageRoot, 'audit/upstream-crosswalk.json'), 'utf8'),
 );
 const upstreamPaths = Object.keys(metadata.exports).sort();
-const declaredPaths = crosswalk.publicEntrypoints.map((entry) => entry.path).sort();
+const declaredPaths = crosswalk.publicEntrypoints
+	.map(function entryPath(entry) {
+		return entry.path;
+	})
+	.sort();
 if (JSON.stringify(upstreamPaths) !== JSON.stringify(declaredPaths))
 	throw new Error('upstream entrypoint crosswalk drifted');
 
+const runtimeEntrypoint = crosswalk.publicEntrypoints.find(function findRuntime(entry) {
+	return entry.path === '.';
+});
+const metadataEntrypoint = crosswalk.publicEntrypoints.find(function findMetadata(entry) {
+	return entry.path === './package.json';
+});
+if (!runtimeEntrypoint?.exports || !Array.isArray(runtimeEntrypoint.exports))
+	throw new Error('runtime entrypoint must declare export-by-export rows');
+const exportNames = runtimeEntrypoint.exports
+	.map(function exportName(entry) {
+		return entry.name;
+	})
+	.sort();
+if (JSON.stringify(exportNames) !== JSON.stringify(['Options', 'setupRouterSsrQueryIntegration']))
+	throw new Error('runtime entrypoint export crosswalk drifted');
+for (const entry of runtimeEntrypoint.exports) {
+	if (!entry.disposition || !entry.evidence || !entry.kind)
+		throw new Error(`export ${entry.name} must declare kind, disposition, and evidence`);
+}
+if (
+	metadataEntrypoint?.disposition !== 'intentionally-omitted' ||
+	!metadataEntrypoint.consumerImpact ||
+	!metadataEntrypoint.statusAgreement
+)
+	throw new Error('./package.json gap must record omission, consumer impact, and status agreement');
+
+if (crosswalk.typeSuite?.disposition !== 'present')
+	throw new Error('type suite must be present and inventoried');
+if (!crosswalk.typeSuite.pristineProject || !crosswalk.typeSuite.adaptedProject)
+	throw new Error('type suite must point at pristine and adapted compile projects');
+
 console.log(
-	'TanStack React Router SSR Query upstream ledger is current (9 files, 1 source file, 2 entrypoints, no runtime test suite).',
+	'TanStack React Router SSR Query upstream ledger is current (9 files, 1 source file, 2 entrypoints, export crosswalk, type compile lanes, no runtime test suite).',
 );

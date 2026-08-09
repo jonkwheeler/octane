@@ -2161,7 +2161,6 @@ export default defineConfig({
 					environment: 'node',
 					globals: false,
 				},
-				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {

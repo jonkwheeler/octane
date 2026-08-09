@@ -1,7 +1,7 @@
 {
   "name": "@octanejs/tanstack-router-ssr-query",
   "version": "0.0.20",
-  "description": "Octane port of @tanstack/react-router-ssr-query — TanStack Router ⇄ Query SSR integration.",
+  "description": "Octane port of @tanstack/react-router-ssr-query \u2014 TanStack Router \u21c4 Query SSR integration.",
   "type": "module",
   "main": "src/index.tsrx",
   "types": "src/index.tsrx.d.ts",
@@ -33,7 +33,10 @@
     "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default",
-    "vitest": "catalog:default"
+    "vitest": "catalog:default",
+    "@tanstack/react-router": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default"
   },
   "engines": {
     "node": ">=22.22.2"

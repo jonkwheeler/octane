@@ -18,13 +18,16 @@
 
 The byte-exact tagged adapter directory and root license are vendored under `upstream/`.
 `SHA256SUMS` authenticates all nine files, including the adapter's single source file. The tagged
-package contains no runtime test, fixture, or snapshot artifacts. Its type scripts compile package
-source across TypeScript versions but contain no dedicated type assertions, so type evidence is
-`insufficient`.
+package contains no runtime test, fixture, or snapshot artifacts. Its `test:types` scripts compile
+package source across TypeScript 5.5–6.0 (accept/reject compile results, no dedicated `expectType`
+artifacts). Parity inventories that compile evidence as required pristine `tsc` and adapted
+`tsrx-tsc` lanes.
 
 The package publishes one runtime entrypoint plus a metadata-only `./package.json` entrypoint. The
-Octane package deliberately omits the metadata subpath. The published `1.167.1` adapter depends on
-core `1.169.1`; the Octane dependency is therefore faithful rather than a version drift.
+export crosswalk maps `Options` and `setupRouterSsrQueryIntegration` individually. The Octane
+package deliberately omits the metadata subpath; that gap, its consumer impact, and agreement with
+`status.json` are recorded in `audit/upstream-crosswalk.json`. The published `1.167.1` adapter
+depends on core `1.169.1`; the Octane dependency is therefore faithful rather than a version drift.
 
 ## Executable evidence
 

@@ -13,16 +13,12 @@
   },
   "upstreamSuites": {
     "runtime": "absent",
-    "types": "insufficient"
+    "types": "present"
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-router-ssr-query/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/tanstack-router-ssr-query/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     },
     "tests": {
@@ -30,9 +26,7 @@
         "packages/tanstack-router-ssr-query/tests/differential",
         "packages/tanstack-router-ssr-query/tests/parity"
       ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -49,7 +43,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "9b0c4d51bb2c7fd08e527d474328ec31d4eaed319dc2af26b7dfc9a47cd3f294"
+      "lockfileSha256": "ffc90aa9b6ce293e385959a551e4586ba4d3acb719b47c0ef8402bd10439b63a"
     }
   },
   "lanes": [
@@ -97,7 +91,7 @@
         {
           "path": "packages/tanstack-router-ssr-query/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "05f0702b53a9d03427777507cfb6d442a45cce7782a3347c1c1834feab862340"
+          "sha256": "5e0cdff5d64247ebaf23992b05efa39d48e80a58b7a9014ec1f104174f8d022f"
         },
         {
           "path": "packages/tanstack-router-ssr-query/audit/test-classifications.json",
@@ -107,7 +101,7 @@
         {
           "path": "packages/tanstack-router-ssr-query/scripts/check-upstream-ledger.mjs",
           "role": "support",
-          "sha256": "a300a2cd3a1279675da09067dee92616dc74f7c358eeebd8905fce3563b1f951"
+          "sha256": "abbaaa2972dc8bcc212c2be6f92dba6e58c8f3f48aeeafa68b69f6874ae504fd"
         },
         {
           "path": "scripts/react-parity/tanstack-router-ssr-query-controls.test.mjs",
@@ -117,34 +111,73 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "9183a38210c3567517c1c7d6bfd2d86302cfb327ff72275cf6b6985bd67212db"
+          "sha256": "85e214a2b2ece1f0a7d86b435a1e15db89bb9829b36a830beb2aceb0d16f2cef"
         }
       ]
     },
     {
-      "id": "tanstack-router-ssr-query-parity-audit",
-      "type": "adapted-octane",
+      "id": "tanstack-router-ssr-query-pristine-types",
+      "type": "pristine-types",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-router-ssr-query-parity-audit",
-      "notes": "Authenticates the complete adapter source, entrypoint boundary, absent runtime suite, and published core dependency.",
+      "project": "tanstack-router-ssr-query-pristine-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the upstream adapter source compile with tsc and pinned React types, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/tanstack-router-ssr-query/typetests/pristine/tsconfig.json"
+      },
       "files": [
         {
-          "path": "packages/tanstack-router-ssr-query/tests/parity/contracts.test.ts",
+          "path": "packages/tanstack-router-ssr-query/upstream/package/src/index.tsx",
           "role": "test",
-          "sha256": "63dace4095fe4c67865e32f13e738d3e13149258dd8e9b07688a09b8444b5852",
+          "sha256": "5cc143a009df65f9dcc1820a61ab0cb64519b33abf32dc3f71c513496fbc4a5a",
           "cases": [
             {
-              "id": "adapted:tanstack-router-ssr-query-upstream-ledger",
-              "testName": "authenticates the complete adapter and absent runtime suite",
-              "fullName": "@octanejs/tanstack-router-ssr-query parity audit contracts authenticates the complete adapter and absent runtime suite"
-            },
-            {
-              "id": "adapted:tanstack-router-ssr-query-core-version",
-              "testName": "records the core version published by the pinned adapter",
-              "fullName": "@octanejs/tanstack-router-ssr-query parity audit contracts records the core version published by the pinned adapter"
+              "id": "types:pristine-upstream-compile",
+              "testName": "pinned upstream adapter source compile",
+              "fullName": "pinned upstream adapter source compile"
             }
           ]
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "d78093bcfcdac746b8889f08d14b7ef58aaf559aa190c5581b3c34664a054a00"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-router-ssr-query-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-router-ssr-query-adapted-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one Octane compiler configuration compile of the adapted adapter source with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-router-ssr-query/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-router-ssr-query/src/index.tsrx",
+          "role": "test",
+          "sha256": "ffb6c68fd523b8c4bab6c754bbbb6c0c5d81507f6236165cf5c3e0416852a774",
+          "cases": [
+            {
+              "id": "types:adapted-octane-compile",
+              "testName": "adapted Octane adapter source compile",
+              "fullName": "adapted Octane adapter source compile"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "aab88b4330137d4e3469590b62299a800c9c552e1fe1c79009fca442b06aaf36"
         }
       ]
     }
