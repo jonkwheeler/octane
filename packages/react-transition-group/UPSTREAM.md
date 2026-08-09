@@ -6,13 +6,13 @@ The upstream project and this adapted package are licensed under BSD-3-Clause. T
 
 ## Vendored evidence
 
-`upstream/src` and `upstream/test` are byte-exact copies of the source and tests at the pinned tag. `audit/SHA256SUMS` records every retained artifact and `pnpm upstream:check` rejects drift. `pnpm upstream:verify` also checks `audit/upstream-test-dispositions.json` so every upstream test artifact and case count stays accounted for.
+`upstream/src` and `upstream/test` are byte-exact copies of the source and tests at the pinned tag. `audit/SHA256SUMS` records every retained artifact and `pnpm upstream:check` rejects drift. `pnpm upstream:verify` also checks `audit/upstream-test-dispositions.json` and `audit/case-crosswalk.json` so every upstream test artifact, case identity, and adapted mapping stays accounted for.
 
 The vendored JavaScript is not published. The maintained implementation is under `src`. Adapted Octane tests are under `tests`. The strongest runtime oracle is the pristine Jest lane: `pnpm test:upstream` runs the pinned suite unchanged against React through the manifest `jest-full` executor and checks every identity against `audit/pristine-runtime.json`.
 
 ## Test-suite disposition
 
-The pinned repository contains seven runtime suites plus four support files under `upstream/test`. Every artifact has a disposition in `audit/upstream-test-dispositions.json` (56 executable cases total). Negative controls in `scripts/react-parity/react-transition-group-upstream-lib.test.mjs` reject a missing artifact disposition, a stale `caseCount`, a deleted suite, and a removed case. Adapted one-for-one coverage lives under `tests/upstream/` with `// Per path:` citations.
+The pinned repository contains seven runtime suites plus four support files under `upstream/test`. Every artifact has a disposition in `audit/upstream-test-dispositions.json` (56 executable cases total). `audit/case-crosswalk.json` maps each upstream case to an adapted identity with a `// Per path:` citation, or records the findDOMNode-without-nodeRef case as not-applicable. Negative controls in `scripts/react-parity/react-transition-group-upstream-lib.test.mjs` reject a missing artifact disposition, a stale `caseCount`, a deleted suite, a removed case, adapted case drift, and a missing citation. Adapted one-for-one coverage lives under `tests/upstream/` with `// Per path:` citations. Port-authored tests and type probes are classified in `audit/test-classifications.json`; type lanes are one-for-one under `audit/type-parity.json`.
 
 | Upstream artifact | Disposition |
 | --- | --- |

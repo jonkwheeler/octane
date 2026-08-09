@@ -11,20 +11,14 @@
       "disposition": "pristine-oracle-adapted",
       "caseCount": 12,
       "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/CSSTransition.test.ts with Per path citations; findDOMNode-free nodeRef paths match Octane's required DOM access model.",
-      "adaptedEvidence": [
-        "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
-        "packages/react-transition-group/tests/transition.test.ts"
-      ]
+      "adaptedEvidence": ["packages/react-transition-group/tests/upstream/CSSTransition.test.ts"]
     },
     {
       "path": "CSSTransitionGroup-test.js",
       "disposition": "pristine-oracle-adapted",
       "caseCount": 10,
       "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage of TransitionGroup+CSSTransition wiring lives in tests/upstream/TransitionGroup.test.ts.",
-      "adaptedEvidence": [
-        "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
-        "packages/react-transition-group/tests/transition.test.ts"
-      ]
+      "adaptedEvidence": ["packages/react-transition-group/tests/upstream/TransitionGroup.test.ts"]
     },
     {
       "path": "ChildMapping-test.js",
@@ -45,30 +39,21 @@
       "disposition": "pristine-oracle-adapted",
       "caseCount": 5,
       "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/SwitchTransition.test.ts.",
-      "adaptedEvidence": [
-        "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
-        "packages/react-transition-group/tests/transition.test.ts"
-      ]
+      "adaptedEvidence": ["packages/react-transition-group/tests/upstream/SwitchTransition.test.ts"]
     },
     {
       "path": "Transition-test.js",
       "disposition": "pristine-oracle-adapted",
       "caseCount": 18,
-      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/Transition.test.ts. The upstream findDOMNode-without-nodeRef case is not applicable: Octane has no findDOMNode and documents nodeRef as the supported DOM path in UPSTREAM.md.",
-      "adaptedEvidence": [
-        "packages/react-transition-group/tests/upstream/Transition.test.ts",
-        "packages/react-transition-group/tests/transition.test.ts"
-      ]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/Transition.test.ts. The upstream findDOMNode-without-nodeRef case is recorded as not-applicable in audit/case-crosswalk.json.",
+      "adaptedEvidence": ["packages/react-transition-group/tests/upstream/Transition.test.ts"]
     },
     {
       "path": "TransitionGroup-test.js",
       "disposition": "pristine-oracle-adapted",
       "caseCount": 4,
-      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/TransitionGroup.test.ts. StrictMode double-appear is not applicable (Octane has no StrictMode double-invoke).",
-      "adaptedEvidence": [
-        "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
-        "packages/react-transition-group/tests/transition.test.ts"
-      ]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/TransitionGroup.test.ts.",
+      "adaptedEvidence": ["packages/react-transition-group/tests/upstream/TransitionGroup.test.ts"]
     },
     {
       "path": "setup.js",

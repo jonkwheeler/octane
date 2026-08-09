@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "upstreamRoot": "packages/react-transition-group/audit/type-probes",
+  "adaptedRoot": "packages/react-transition-group/typetests",
+  "inventories": {
+    "upstream": "packages/react-transition-group/audit/pristine-types.json",
+    "adapted": "packages/react-transition-group/audit/adapted-types.json"
+  },
+  "lanes": {
+    "pristine": {
+      "compiler": "tsc",
+      "project": "packages/react-transition-group/audit/type-probes/tsconfig.pristine.json",
+      "sourcePolicy": "repo-authored React declaration probes against @types/react-transition-group"
+    },
+    "adapted": {
+      "compiler": "tsrx-tsc",
+      "project": "packages/react-transition-group/typetests/tsconfig.json",
+      "sourcePolicy": "one-for-one Octane probes after permitted import-root and ReactNode→OctaneNode transformations"
+    }
+  },
+  "permittedTransformations": [
+    {
+      "kind": "import-root",
+      "rule": "react-transition-group package and subpath imports become relative ../src/index.ts and ../src/types.ts imports"
+    },
+    {
+      "kind": "formatting",
+      "rule": "TypeScript printer output must remain structurally identical after the permitted import rewrites"
+    }
+  ],
+  "divergences": [
+    {
+      "id": "replace-transition-types-absent",
+      "rationale": "@types/react-transition-group 4.4.x does not export ReplaceTransition; the Octane package still ships ReplaceTransition and exports.test.ts covers the runtime export."
+    }
+  ]
+}

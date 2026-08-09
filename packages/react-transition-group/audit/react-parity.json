@@ -61,7 +61,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-pristine",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the byte-exact react-transition-group 4.4.5 Jest suite against React 18 via the manifest jest-full executor and checks every executed identity against the committed inventory.",
+      "notes": "Runs the byte-exact react-transition-group 4.4.5 Jest suite against React 18 via the manifest jest-full executor, checks every executed identity against the committed inventory, and verifies the case-level adapted crosswalk.",
       "execution": {
         "kind": "jest-full",
         "config": "packages/react-transition-group/tests/upstream-jest.config.cjs",
@@ -77,7 +77,22 @@
         {
           "path": "packages/react-transition-group/audit/upstream-test-dispositions.json",
           "role": "support",
-          "sha256": "e5777376ce3fc92c19507cf883b6bbe1b4037b6cb10a03fa9aaa457372480801"
+          "sha256": "7781204d33906bcc575d857fddb43dd4c874980c99c0e11703fddae1a3575bb2"
+        },
+        {
+          "path": "packages/react-transition-group/audit/case-crosswalk.json",
+          "role": "support",
+          "sha256": "2eb08fbd23ddd7e4752f3cacf52c64b7e2dcd1e68770f262f5d64fbcaf25561c"
+        },
+        {
+          "path": "packages/react-transition-group/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "5462b6369303be440d180239e36ddee000e58e68dd98d31a79325f3d35b768d9"
+        },
+        {
+          "path": "packages/react-transition-group/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "65e6cc09e2ba2ae48760c896a1f33d0137c51fad49cac751be7bf6a923842e2e"
         },
         {
           "path": "packages/react-transition-group/audit/SHA256SUMS",
@@ -107,7 +122,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9464ff381a8fe0ea0d7125b2cb120f57719df1ef9845b6102726edf29020b0c0"
+          "sha256": "8d293757d4f7908811f604ae0e683045cfa2a03d82c7d48a45a8ad4efbf3ab59"
         },
         {
           "path": "scripts/react-parity/react-transition-group-upstream.mjs",
@@ -117,7 +132,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.test.mjs",
           "role": "support",
-          "sha256": "6b5c579a420ca1fd7fd30401177b18e689497d09c207b2df1fce7208d92d4052"
+          "sha256": "627e9dab039d86c471bbaa155400bad0456516d42b3bd7164314b8de76886969"
         },
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",
@@ -183,7 +198,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored React declaration probes against @types/react-transition-group for the pinned 4.4.5 surface.",
+      "notes": "Repo-authored React declaration probes against @types/react-transition-group for the pinned 4.4.5 surface, structurally paired one-for-one with the adapted Octane probes.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -193,7 +208,7 @@
         {
           "path": "packages/react-transition-group/audit/pristine-types.json",
           "role": "test",
-          "sha256": "473a8e317e5290d1b71a2870c415bf88c59231ed3d2c9b6d57b5ba21c3def1d9",
+          "sha256": "af892d7ef24da380e72158611d68540575d5a12ce4c020f95e39b5b955c51207",
           "cases": [
             {
               "id": "types:react-transition-group-pristine",
@@ -205,12 +220,47 @@
         {
           "path": "packages/react-transition-group/audit/type-probes/public-api.test-d.ts",
           "role": "support",
-          "sha256": "eb8eb8652dd57d6c69c5433f25b2572ecaec0573869c642070dad177d4e937f6"
+          "sha256": "74f856891c653c20fa4069df2c9309f5f068df5950074642dbb802be86027edf"
         },
         {
           "path": "packages/react-transition-group/audit/type-probes/tsconfig.pristine.json",
           "role": "support",
           "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+        },
+        {
+          "path": "packages/react-transition-group/audit/type-parity.json",
+          "role": "support",
+          "sha256": "c6bd66adb32a3671144640c01190fa162c3497ed039480d6233a448acd16e35f"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
+          "role": "support",
+          "sha256": "8f202c5c675f58635eec435123da84f5bded18d18a92d860e4271afcf1d9c1c7"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types-lib.test.mjs",
+          "role": "support",
+          "sha256": "2ad91fcb83649a6c5520901330b50746eb9c3782327e97f5fd849c7a341c4387"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types.mjs",
+          "role": "support",
+          "sha256": "fff5c3d2712884f24a2f78fc96dd56d0099f9ece95800379b592dd0f0ee5ef79"
+        },
+        {
+          "path": "packages/react-transition-group/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "b7ffd8f5ae33e5ef77ae7ce78d15a469c7e800ece203784fddbff21dad3b8517"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-classifications-lib.mjs",
+          "role": "support",
+          "sha256": "1cf2f28a179ca037af9ee8182a33ec085ab89b6b5923360d1b70aea01c755d02"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-classifications-lib.test.mjs",
+          "role": "support",
+          "sha256": "daf7728d6cfd465f0c2d83716d7742135b4f2d4d74ffd3d1d2a6a8dfe2dce68a"
         }
       ]
     },
@@ -221,7 +271,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Octane public type probes for the adapted binding surface after ReactNode\u2192OctaneNode transformation.",
+      "notes": "Octane public type probes for the adapted binding surface after permitted import-root and ReactNode→OctaneNode transformations, verified one-for-one against the pristine probes.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -231,7 +281,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-types.json",
           "role": "test",
-          "sha256": "318a237c08e7faebcd3be075c8a3d23f561fefca52be6358e670bc7b9b806a54",
+          "sha256": "21c6f742f309c6582802e43cb1c587e6e5d0814e97b59e89c416fdcae60823c7",
           "cases": [
             {
               "id": "types:react-transition-group-adapted",
@@ -243,12 +293,27 @@
         {
           "path": "packages/react-transition-group/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "9ff8109b19cacbbf7078d07627b2f170af402883d119ae6b3b716727edf5e779"
+          "sha256": "6c8dfebca28a4abee2a782e330ee07283ceffa96a41d1d98772ba66dc7956bd7"
         },
         {
           "path": "packages/react-transition-group/typetests/tsconfig.json",
           "role": "support",
           "sha256": "3e5a10a15c7cfc431288f01fe2a1a279724e378d6ab0f154297d6f708dab6417"
+        },
+        {
+          "path": "packages/react-transition-group/audit/type-parity.json",
+          "role": "support",
+          "sha256": "c6bd66adb32a3671144640c01190fa162c3497ed039480d6233a448acd16e35f"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
+          "role": "support",
+          "sha256": "8f202c5c675f58635eec435123da84f5bded18d18a92d860e4271afcf1d9c1c7"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types.mjs",
+          "role": "support",
+          "sha256": "fff5c3d2712884f24a2f78fc96dd56d0099f9ece95800379b592dd0f0ee5ef79"
         }
       ]
     }

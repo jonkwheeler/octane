@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
@@ -16,7 +16,26 @@ async function fixture() {
 		join(root, 'packages/react-transition-group/upstream'),
 		{ recursive: true },
 	);
-	for (const file of ['SHA256SUMS', 'upstream-test-dispositions.json']) {
+	await cp(
+		new URL('../../packages/react-transition-group/tests/upstream', import.meta.url),
+		join(root, 'packages/react-transition-group/tests/upstream'),
+		{ recursive: true },
+	);
+	await mkdir(join(root, 'packages/react-transition-group/tests/ssr'), { recursive: true });
+	await cp(
+		new URL(
+			'../../packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+			import.meta.url,
+		),
+		join(root, 'packages/react-transition-group/tests/ssr/upstream-import.test.ts'),
+	);
+	for (const file of [
+		'SHA256SUMS',
+		'upstream-test-dispositions.json',
+		'case-crosswalk.json',
+		'adapted-runtime.json',
+		'adapted-runtime-server.json',
+	]) {
 		await cp(
 			new URL(`../../packages/react-transition-group/audit/${file}`, import.meta.url),
 			join(root, `packages/react-transition-group/audit/${file}`),
@@ -33,6 +52,8 @@ test('accepts the committed upstream dispositions and case inventory', async fun
 	const summary = verifyReactTransitionGroupUpstream(root);
 	assert.equal(summary.artifacts, 11);
 	assert.equal(summary.cases, collectUpstreamCaseInventory(root).length);
+	assert.equal(summary.adaptedCases, 55);
+	assert.equal(summary.notApplicableCases, 1);
 	assert.ok(summary.cases > 0);
 });
 
@@ -111,4 +132,66 @@ test('rejects a deleted upstream suite file', async function rejectsDeletedSuite
 	assert.throws(function run() {
 		verifyReactTransitionGroupUpstream(root);
 	}, /must account for every upstream\/test artifact/);
+});
+
+test('rejects adapted case drift against the crosswalk', async function rejectsAdaptedCaseDrift(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+	);
+	await writeFile(
+		adaptedPath,
+		`import { describe, expect, it } from 'vitest';
+import * as binding from '../../src/index.ts';
+
+describe('react-transition-group v4.4.5 server rendering', () => {
+	// Per path: packages/react-transition-group/upstream/test/SSR-test.js:8-10
+	it('should import react-transition-group in node env', function importInNode() {
+		expect(binding.Transition).toBeTypeOf('function');
+	});
+	it('drifted adapted case without upstream mapping', function drifted() {
+		expect(true).toBe(true);
+	});
+});
+`,
+	);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /adapted case\/fixture drift|adapted inventory is missing identity|missing \/\/ Per path/);
+});
+
+test('rejects a crosswalk entry with a missing citation', async function rejectsMissingCitation(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+	);
+	const source = await readFile(adaptedPath, 'utf8');
+	await writeFile(adaptedPath, source.replace(/\/\/\s*Per path:[^\n]*\n/, ''));
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /missing \/\/ Per path:/);
+});
+
+test('rejects omitting the findDOMNode not-applicable crosswalk entry', async function rejectsMissingNotApplicable(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const path = join(root, 'packages/react-transition-group/audit/case-crosswalk.json');
+	const crosswalk = JSON.parse(await readFile(path, 'utf8'));
+	crosswalk.cases = crosswalk.cases.filter(function keep(entry) {
+		return entry.disposition !== 'not-applicable';
+	});
+	await writeFile(path, `${JSON.stringify(crosswalk)}\n`);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /cover every upstream case|must match the upstream case inventory/);
 });

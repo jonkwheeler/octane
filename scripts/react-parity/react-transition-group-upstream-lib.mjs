@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 
 import { extractTestCases } from './inventory-lib.mjs';
@@ -9,8 +9,15 @@ const UPSTREAM_ROOT = `${PACKAGE_ROOT}/upstream`;
 const UPSTREAM_TEST_ROOT = `${UPSTREAM_ROOT}/test`;
 const INVENTORY_PATH = `${PACKAGE_ROOT}/audit/SHA256SUMS`;
 const DISPOSITION_PATH = `${PACKAGE_ROOT}/audit/upstream-test-dispositions.json`;
+const CROSSWALK_PATH = `${PACKAGE_ROOT}/audit/case-crosswalk.json`;
+const ADAPTED_INVENTORIES = [
+	`${PACKAGE_ROOT}/audit/adapted-runtime.json`,
+	`${PACKAGE_ROOT}/audit/adapted-runtime-server.json`,
+];
 
 const SUPPORT_ARTIFACTS = new Set(['.eslintrc.yml', 'setup.js', 'setupAfterEnv.js', 'utils.js']);
+const CITATION_RE = /\/\/\s*Per path:\s*(.+)$/;
+const CITATION_PATH_RE = /^(.*?):(\d+)(?:-(\d+))?$/;
 
 function filesBelow(root) {
 	return readdirSync(root, { recursive: true, withFileTypes: true })
@@ -25,6 +32,26 @@ function filesBelow(root) {
 
 function portableRelative(root, file) {
 	return relative(root, file).split(sep).join('/');
+}
+
+function parseCitation(citation) {
+	const match = citation.match(CITATION_PATH_RE);
+	if (!match) return null;
+	return {
+		path: match[1],
+		start: Number(match[2]),
+		end: Number(match[3] ?? match[2]),
+	};
+}
+
+function citationForCase(source, caseLine) {
+	const lines = source.split('\n');
+	const start = Math.max(0, (caseLine ?? 1) - 1);
+	for (let index = start; index >= Math.max(0, start - 8); index--) {
+		const match = lines[index].match(CITATION_RE);
+		if (match) return match[1].trim();
+	}
+	return null;
 }
 
 export function renderReactTransitionGroupUpstreamInventory(repoRoot) {
@@ -59,12 +86,217 @@ export function collectUpstreamCaseInventory(repoRoot) {
 			cases.push({
 				file: `test/${file}`,
 				title: entry.title,
+				line: entry.line,
 			});
 		}
 	}
 	return cases.sort(function compareCases(left, right) {
-		return left.file.localeCompare(right.file) || left.title.localeCompare(right.title);
+		return (
+			left.file.localeCompare(right.file) ||
+			left.line - right.line ||
+			left.title.localeCompare(right.title)
+		);
 	});
+}
+
+function collectAdaptedCases(repoRoot) {
+	const cases = [];
+	const roots = [
+		`${PACKAGE_ROOT}/tests/upstream`,
+		`${PACKAGE_ROOT}/tests/ssr/upstream-import.test.ts`,
+	];
+	for (const root of roots) {
+		const absolute = resolve(repoRoot, root);
+		if (!existsSync(absolute)) {
+			throw new Error(`missing adapted evidence root: ${root}`);
+		}
+		const files = statSync(absolute).isFile()
+			? [absolute]
+			: filesBelow(absolute).filter(function keepTests(file) {
+					return file.endsWith('.test.ts');
+				});
+		for (const file of files) {
+			const relativeFile = portableRelative(repoRoot, file);
+			const source = readFileSync(file, 'utf8');
+			for (const entry of extractTestCases(source, { file: relativeFile })) {
+				cases.push({
+					file: relativeFile,
+					title: entry.title,
+					line: entry.line,
+					citation: citationForCase(source, entry.line),
+				});
+			}
+		}
+	}
+	return cases;
+}
+
+function loadAdaptedInventoryTitles(repoRoot) {
+	const titlesByFile = new Map();
+	for (const inventoryPath of ADAPTED_INVENTORIES) {
+		const inventory = JSON.parse(readFileSync(resolve(repoRoot, inventoryPath), 'utf8'));
+		for (const test of inventory.tests ?? []) {
+			const list = titlesByFile.get(test.file) ?? [];
+			list.push(test.fullName);
+			titlesByFile.set(test.file, list);
+		}
+	}
+	return titlesByFile;
+}
+
+function inventoryMentionsTitle(titlesByFile, file, title) {
+	const fullNames = titlesByFile.get(file) ?? [];
+	return fullNames.some(function includesTitle(fullName) {
+		return fullName === title || fullName.endsWith(` ${title}`) || fullName.endsWith(title);
+	});
+}
+
+function verifyCaseCrosswalk(repoRoot, upstreamCases) {
+	const crosswalkPath = resolve(repoRoot, CROSSWALK_PATH);
+	if (!existsSync(crosswalkPath)) {
+		throw new Error(`missing case crosswalk: ${CROSSWALK_PATH}`);
+	}
+	const crosswalk = JSON.parse(readFileSync(crosswalkPath, 'utf8'));
+	if (crosswalk.schemaVersion !== 1 || !Array.isArray(crosswalk.cases)) {
+		throw new Error('case-crosswalk.json must declare schemaVersion 1 cases');
+	}
+	if (crosswalk.cases.length !== upstreamCases.length) {
+		throw new Error(
+			`case crosswalk must cover every upstream case: found ${crosswalk.cases.length}, expected ${upstreamCases.length}`,
+		);
+	}
+
+	const adaptedCases = collectAdaptedCases(repoRoot);
+	const adaptedKeys = new Set(
+		adaptedCases.map(function keyOf(entry) {
+			return `${entry.file}\0${entry.title}\0${entry.line}`;
+		}),
+	);
+	const usedAdapted = new Set();
+	const titlesByFile = loadAdaptedInventoryTitles(repoRoot);
+	const upstreamKeys = upstreamCases.map(function keyOf(entry) {
+		return `${entry.file}\0${entry.title}\0${entry.line}`;
+	});
+	const crosswalkKeys = [];
+
+	for (const entry of crosswalk.cases) {
+		if (typeof entry.upstreamFile !== 'string' || typeof entry.upstreamTitle !== 'string') {
+			throw new Error('case crosswalk entries require upstreamFile and upstreamTitle');
+		}
+		if (!Number.isInteger(entry.upstreamLine) || entry.upstreamLine < 1) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: crosswalk requires upstreamLine`,
+			);
+		}
+		const upstreamKey = `${entry.upstreamFile}\0${entry.upstreamTitle}\0${entry.upstreamLine}`;
+		crosswalkKeys.push(upstreamKey);
+		if (!upstreamKeys.includes(upstreamKey)) {
+			throw new Error(
+				`${entry.upstreamFile}:${entry.upstreamLine}: crosswalk case is not in the upstream inventory`,
+			);
+		}
+
+		if (entry.disposition === 'not-applicable') {
+			if (typeof entry.rationale !== 'string' || entry.rationale.length < 20) {
+				throw new Error(
+					`${entry.upstreamFile}::${entry.upstreamTitle}: not-applicable cases require a concrete rationale`,
+				);
+			}
+			continue;
+		}
+		if (entry.disposition !== 'adapted') {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: disposition must be adapted or not-applicable`,
+			);
+		}
+		if (
+			typeof entry.adaptedFile !== 'string' ||
+			typeof entry.adaptedTitle !== 'string' ||
+			typeof entry.citation !== 'string'
+		) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: adapted cases require adaptedFile, adaptedTitle, and citation`,
+			);
+		}
+		if (!existsSync(resolve(repoRoot, entry.adaptedFile))) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: missing adaptedEvidence ${entry.adaptedFile}`,
+			);
+		}
+		const parsed = parseCitation(entry.citation);
+		if (!parsed) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: citation must be path:start[-end]`,
+			);
+		}
+		const upstreamLeaf = entry.upstreamFile.replace(/^test\//, '');
+		if (!parsed.path.endsWith(upstreamLeaf) && !parsed.path.endsWith(entry.upstreamFile)) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: citation path does not target the upstream suite`,
+			);
+		}
+		// Citations usually span the case body, so the range may start a few lines
+		// after the `it(` declaration. Reject only clearly unrelated ranges.
+		if (parsed.start > entry.upstreamLine + 20 || parsed.end < entry.upstreamLine - 5) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: citation range ${parsed.start}-${parsed.end} does not target upstreamLine ${entry.upstreamLine}`,
+			);
+		}
+
+		const adaptedSource = readFileSync(resolve(repoRoot, entry.adaptedFile), 'utf8');
+		const adaptedMatches = extractTestCases(adaptedSource, { file: entry.adaptedFile }).filter(
+			function sameTitle(item) {
+				return item.title === entry.adaptedTitle;
+			},
+		);
+		if (adaptedMatches.length === 0) {
+			throw new Error(
+				`${entry.adaptedFile}: adapted case missing title ${JSON.stringify(entry.adaptedTitle)}`,
+			);
+		}
+		const citedMatch = adaptedMatches.find(function hasCitation(item) {
+			return citationForCase(adaptedSource, item.line) === entry.citation;
+		});
+		if (!citedMatch) {
+			throw new Error(
+				`${entry.adaptedFile}: missing // Per path: ${entry.citation} for ${entry.adaptedTitle}`,
+			);
+		}
+		const adaptedKey = `${entry.adaptedFile}\0${entry.adaptedTitle}\0${citedMatch.line}`;
+		if (!adaptedKeys.has(adaptedKey)) {
+			throw new Error(
+				`${entry.adaptedFile}: adapted case identity drifted for ${entry.adaptedTitle}`,
+			);
+		}
+		if (usedAdapted.has(adaptedKey)) {
+			throw new Error(`${entry.adaptedFile}: adapted case ${entry.adaptedTitle} mapped twice`);
+		}
+		usedAdapted.add(adaptedKey);
+
+		if (!inventoryMentionsTitle(titlesByFile, entry.adaptedFile, entry.adaptedTitle)) {
+			throw new Error(
+				`${entry.adaptedFile}: adapted inventory is missing identity for ${entry.adaptedTitle}`,
+			);
+		}
+	}
+
+	if (
+		JSON.stringify(crosswalkKeys.slice().sort()) !== JSON.stringify(upstreamKeys.slice().sort())
+	) {
+		throw new Error('case crosswalk keys must match the upstream case inventory exactly once');
+	}
+	if (usedAdapted.size !== adaptedCases.length) {
+		throw new Error(
+			`adapted case/fixture drift: crosswalk maps ${usedAdapted.size} adapted cases, found ${adaptedCases.length}`,
+		);
+	}
+
+	return {
+		adapted: usedAdapted.size,
+		notApplicable: crosswalk.cases.filter(function na(entry) {
+			return entry.disposition === 'not-applicable';
+		}).length,
+	};
 }
 
 export function verifyReactTransitionGroupUpstream(repoRoot) {
@@ -125,11 +357,17 @@ export function verifyReactTransitionGroupUpstream(repoRoot) {
 			throw new Error(`${entry.path}: disposition requires a non-negative caseCount`);
 		}
 		if (
-			(entry.disposition === 'pristine-oracle-adapted' ||
-				entry.disposition === 'pristine-oracle-partially-adapted') &&
-			(!Array.isArray(entry.adaptedEvidence) || entry.adaptedEvidence.length === 0)
+			entry.disposition === 'pristine-oracle-adapted' ||
+			entry.disposition === 'pristine-oracle-partially-adapted'
 		) {
-			throw new Error(`${entry.path}: adapted dispositions require adaptedEvidence`);
+			if (!Array.isArray(entry.adaptedEvidence) || entry.adaptedEvidence.length === 0) {
+				throw new Error(`${entry.path}: adapted dispositions require adaptedEvidence`);
+			}
+			for (const evidence of entry.adaptedEvidence) {
+				if (!existsSync(resolve(repoRoot, evidence))) {
+					throw new Error(`${entry.path}: missing adaptedEvidence ${evidence}`);
+				}
+			}
 		}
 	}
 
@@ -160,8 +398,12 @@ export function verifyReactTransitionGroupUpstream(repoRoot) {
 		}
 	}
 
+	const crosswalk = verifyCaseCrosswalk(repoRoot, inventoriedCases);
+
 	return {
 		artifacts: artifacts.length,
 		cases: inventoriedCases.length,
+		adaptedCases: crosswalk.adapted,
+		notApplicableCases: crosswalk.notApplicable,
 	};
 }

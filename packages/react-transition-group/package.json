@@ -4,9 +4,9 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "sideEffects": false,
-	"engines": {
-		"node": ">=22.22.2"
-	},
+  "engines": {
+    "node": ">=22.22.2"
+  },
   "description": "React Transition Group-compatible transition components for Octane.",
   "author": {
     "name": "Dominic Gannaway",
@@ -47,7 +47,9 @@
     "upstream:verify": "node ../../scripts/react-parity/react-transition-group-upstream.mjs",
     "parity:pristine-inventory": "node ../../scripts/react-parity/react-transition-group-pristine-runtime.mjs --write",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json",
-    "test:type-parity": "tsc --noEmit -p audit/type-probes/tsconfig.pristine.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
+    "test:type-parity": "tsc --noEmit -p audit/type-probes/tsconfig.pristine.json && tsrx-tsc --noEmit -p typetests/tsconfig.json",
+    "parity:types": "node ../../scripts/react-parity/react-transition-group-types.mjs",
+    "parity:types:write": "node ../../scripts/react-parity/react-transition-group-types.mjs --write"
   },
   "peerDependencies": {
     "octane": "workspace:*"

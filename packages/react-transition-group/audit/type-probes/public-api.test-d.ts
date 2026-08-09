@@ -1,5 +1,6 @@
-import type { TransitionProps } from 'react-transition-group/Transition';
+import type { CSSTransitionProps } from 'react-transition-group/CSSTransition';
 import type { SwitchTransitionProps } from 'react-transition-group/SwitchTransition';
+import type { TransitionProps } from 'react-transition-group/Transition';
 import {
 	CSSTransition,
 	SwitchTransition,
@@ -16,6 +17,10 @@ expectType<typeof TransitionGroup>(TransitionGroup);
 expectType<typeof SwitchTransition>(SwitchTransition);
 expectType<typeof config>(config);
 
-expectType<TransitionProps['timeout']>(0);
+expectType<CSSTransitionProps['classNames']>(undefined);
 expectType<SwitchTransitionProps['mode']>('out-in');
+expectType<TransitionProps['timeout']>(0);
 expectType<TransitionProps['appear']>(true);
+
+// @ts-expect-error mode rejects arbitrary strings
+const _badMode: SwitchTransitionProps['mode'] = 'sideways';
