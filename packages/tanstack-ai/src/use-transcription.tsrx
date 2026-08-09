@@ -98,7 +98,7 @@ export interface UseTranscriptionReturn<TOutput = TranscriptionResult> {
  * }
  * ```
  */
-// OCTANE DIVERGENCE[tanstack-ai-native-events][types:tanstack-ai-native-events]
+// Octane divergence note.
 export function useTranscription<TTransformed = void>(
   options: Omit<UseTranscriptionOptions, 'onResult'> & {
     onResult?: (result: TranscriptionResult) => TTransformed
@@ -108,7 +108,7 @@ export function useTranscription<TTransformed = void>(
 > {
   const devtools = {
     ...options.devtools,
-    // OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
+    // Octane divergence note.
     framework: 'octane',
     hookName: 'useTranscription',
     outputKind: 'text' as const,

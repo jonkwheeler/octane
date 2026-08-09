@@ -98,7 +98,7 @@ export function useGenerateSpeech<TTransformed = void>(
 > {
   const devtools = {
     ...options.devtools,
-    // OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
+    // Octane divergence note.
     framework: 'octane',
     hookName: 'useGenerateSpeech',
     outputKind: 'audio' as const,

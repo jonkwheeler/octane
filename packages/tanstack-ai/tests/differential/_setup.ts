@@ -42,7 +42,8 @@ export async function setup(): Promise<void> {
 	rmSync(cacheDirectory, { recursive: true, force: true });
 	mkdirSync(cacheDirectory, { recursive: true });
 	const fixture = join(fixtureDirectory, 'parity.tsrx');
-	if (!existsSync(fixture)) throw new Error(`Missing declared TanStack AI parity fixture: ${fixture}`);
+	if (!existsSync(fixture))
+		throw new Error(`Missing declared TanStack AI parity fixture: ${fixture}`);
 	compileFixture(fixture);
 }
 

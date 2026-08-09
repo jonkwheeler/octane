@@ -71,7 +71,7 @@ test('verifies an arbitrary binding classification ledger', async (t) => {
 			{ recursive: true },
 		);
 	}
-	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-ai'), { tests: 12 });
+	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-ai'), { tests: 16 });
 	await writeFile(join(root, 'packages/tanstack-ai/tests/unclassified.test.ts'), 'export {};\n');
 	assert.throws(
 		() => verifyPortTestClassifications(root, 'tanstack-ai'),

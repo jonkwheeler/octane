@@ -9,9 +9,20 @@
 - License: MIT
 - npm tarball SHA-256: `27eea2e78722c51e1f30f8ddf4d193b0ebc79a330dc9d0aa876516828e30cbe6`
 
-The canonical tagged repository contains a runtime Vitest suite, while the
-published npm artifact contains source and declarations but omits tests. The
-binding therefore records provenance as unverified rather than claiming a
-pristine-upstream run. Required evidence executes a same-fixture differential
-chat scenario against the pinned React package, exact Octane adaptation and SSR
-contracts, and the repository-authored type suite.
+## Upstream test suite
+
+The pinned repository commit contains an executable Vitest suite under
+`packages/ai-react/tests`, including React runtime cases and type probes.
+Published npm tarballs omit those tests; repository presence is authoritative,
+so `upstreamSuites.runtime` is `present`.
+
+Every upstream `packages/ai-react/tests` artifact at the pin is inventoried in
+[`audit/upstream-suite-artifacts.json`](./audit/upstream-suite-artifacts.json).
+This bounded harness currently executes one exact same-fixture differential
+chat scenario against the pinned published React package through the
+`tanstack-ai-differential` Vitest project (`testExecution: { group: 'react-parity' }`).
+Octane adaptation, SSR, and repository-authored type contracts stay ordinary
+package tests outside parity evidence.
+
+Promoting the inventoried upstream suite into pristine / one-for-one adapted
+lanes remains open follow-up work before provenance can move to `verified`.

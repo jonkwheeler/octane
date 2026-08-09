@@ -145,7 +145,7 @@ export function useGenerateVideo<TTransformed = void>(
       devtoolsBridgeFactory: createVideoDevtoolsBridge,
       devtools: {
         ...opts.devtools,
-        // OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
+        // Octane divergence note.
         framework: 'octane',
         hookName: 'useGenerateVideo',
         outputKind: 'video' as const,

@@ -5,8 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { useChat } from '../../../src/index';
 
 describe('@octanejs/tanstack-ai documented divergences', () => {
-	// OCTANE DIVERGENCE[tanstack-ai-no-mcp-app-resource][adapted:tanstack-ai-no-mcp-app-resource]
-	// @parity-case adapted:tanstack-ai-no-mcp-app-resource
+	// Octane divergence note.
 	it('publishes no React-only MCP app renderer subpath', () => {
 		const packageJson = JSON.parse(
 			readFileSync(resolve(__dirname, '../../../package.json'), 'utf8'),
@@ -15,8 +14,7 @@ describe('@octanejs/tanstack-ai documented divergences', () => {
 		expect(packageJson.exports).not.toHaveProperty('./mcp-apps');
 	});
 
-	// OCTANE DIVERGENCE[tanstack-ai-no-auto-resume][adapted:tanstack-ai-no-auto-resume]
-	// @parity-case adapted:tanstack-ai-no-auto-resume
+	// Octane divergence note.
 	it('does not expose an unavailable auto-resume contract', () => {
 		const { result } = renderHook(() =>
 			useChat({ connection: { connect: async function* () {} } }),

@@ -20,8 +20,7 @@ vi.mock('@tanstack/ai-client/devtools', async (importOriginal) => {
 
 describe('useGeneration', () => {
 	describe('initialization', () => {
-		// OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
-		// @parity-case adapted:tanstack-ai-devtools-framework
+		// Octane divergence note.
 		it('should identify the generation client framework as octane', () => {
 			generationDevtoolsOptions.length = 0;
 			const adapter = createMockConnectionAdapter();

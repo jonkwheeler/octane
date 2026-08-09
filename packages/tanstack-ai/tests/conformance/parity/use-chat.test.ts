@@ -4,8 +4,7 @@ import { createMockConnectionAdapter, createTextChunks, renderUseChat } from '..
 
 describe('useChat', () => {
 	describe('initialization', () => {
-		// OCTANE DIVERGENCE[tanstack-ai-octane-id-lifecycle][adapted:tanstack-ai-octane-id-lifecycle]
-		// @parity-case adapted:tanstack-ai-octane-id-lifecycle
+		// Octane divergence note.
 		it('should generate id if not provided', async () => {
 			const chunks = createTextChunks('Response');
 			const adapter = createMockConnectionAdapter({ chunks });

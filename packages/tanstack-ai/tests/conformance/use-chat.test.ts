@@ -947,7 +947,7 @@ describe('useChat', () => {
 				chunks: createTextChunks('strict response'),
 			});
 
-			// OCTANE DIVERGENCE[tanstack-ai-octane-id-lifecycle][adapted:tanstack-ai-octane-id-lifecycle]
+			// Octane divergence note.
 			const { result } = renderHook(() =>
 				useChat({
 					connection: adapter,

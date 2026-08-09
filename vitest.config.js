@@ -1139,10 +1139,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/tanstack-ai/tests/conformance/parity/**/*.test.ts'],
-				},
+				// Package-authored TanStack AI contracts stay ordinary. Parity owns
+				// only the dedicated differential project below.
 				test: {
 					name: 'tanstack-ai',
 					include: [
@@ -1199,7 +1197,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-ai-ssr',
 					include: ['packages/tanstack-ai/tests/ssr/**/*.test.ts'],

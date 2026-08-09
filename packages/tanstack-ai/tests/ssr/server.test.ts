@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from 'octane/server';
 import { ServerChat } from '../_fixtures/server.tsrx';
 
 describe('@octanejs/tanstack-ai SSR', () => {
-	// @parity-case adapted:tanstack-ai-ssr
 	it('renders the initial chat snapshot without a DOM', () => {
 		expect(typeof document).toBe('undefined');
 

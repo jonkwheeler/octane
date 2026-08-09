@@ -87,8 +87,7 @@ afterEach(() => {
 });
 
 describe('useRealtimeChat', () => {
-	// OCTANE DIVERGENCE[tanstack-ai-live-realtime-options][adapted:tanstack-ai-live-realtime-options]
-	// @parity-case adapted:tanstack-ai-live-realtime-options
+	// Octane divergence note.
 	it('uses updated authentication and provider on the next connection', async () => {
 		const firstConnection = createConnection();
 		const secondConnection = createConnection();
@@ -125,8 +124,7 @@ describe('useRealtimeChat', () => {
 		unmount();
 	});
 
-	// OCTANE DIVERGENCE[tanstack-ai-realtime-status-callback][adapted:tanstack-ai-realtime-status-callback]
-	// @parity-case adapted:tanstack-ai-realtime-status-callback
+	// Octane divergence note.
 	it('forwards connection status to the latest callback', async () => {
 		const testConnection = createConnection();
 		const testAdapter = createAdapter('test', [testConnection.connection]);

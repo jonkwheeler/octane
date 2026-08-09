@@ -101,7 +101,7 @@ export function useSummarize<TTransformed = void>(
 > {
   const devtools = {
     ...options.devtools,
-    // OCTANE DIVERGENCE[tanstack-ai-devtools-framework][adapted:tanstack-ai-devtools-framework]
+    // Octane divergence note.
     framework: 'octane',
     hookName: 'useSummarize',
     outputKind: 'text' as const,
