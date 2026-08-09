@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/zag/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/zag/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/zag/tests/differential"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/zag/tests/differential"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3ed57d70dd3f2fc2cdf611a7e104c5bc0f05bfc06c4b28967bcdd511a431e991"
+      "lockfileSha256": "bf51ff0290a4a884c027e0a526a42ae59a8464251080cf030296342ac18236bc"
     }
   },
   "lanes": [
@@ -78,7 +86,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "22835bf2965604332802b3171ea9f706ec791533f8cc27a82f173f6914be7881"
+          "sha256": "fd2709b7eb03601cec359b81a44e11d3151960d974200e150c7f758e50345613"
         }
       ]
     }
