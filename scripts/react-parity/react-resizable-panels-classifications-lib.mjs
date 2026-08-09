@@ -3,6 +3,8 @@ import { relative, resolve, sep } from 'node:path';
 
 const CONFIG = 'packages/react-resizable-panels/audit/test-classifications.json';
 const MANIFEST = 'packages/react-resizable-panels/audit/react-parity.json';
+const TEST_INVENTORY = 'packages/react-resizable-panels/audit/test-inventory.json';
+const PACKAGE_PREFIX = 'packages/react-resizable-panels/';
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
@@ -11,21 +13,53 @@ const DISPOSITIONS = new Set([
 	'octane-only-framework-contract',
 ]);
 
-export function verifyReactResizablePanelsTestClassifications(root) {
-	const testsRoot = resolve(root, 'packages/react-resizable-panels/tests');
-	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
+function portablePath(root, absolutePath) {
+	return relative(root, absolutePath).split(sep).join('/');
+}
+
+function discoverTestFiles(testsRoot, root) {
+	return readdirSync(testsRoot, { recursive: true, withFileTypes: true })
 		.filter(function keepTestFiles(entry) {
 			return entry.isFile() && /\.(?:browser\.)?test\.(?:ts|tsx|tsrx)$/.test(entry.name);
 		})
 		.map(function toPortablePath(entry) {
-			return relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
-				.split(sep)
-				.join('/');
-		})
-		.filter(function excludeUpstreamCopy(path) {
-			return !path.includes('/tests/upstream/');
+			return portablePath(root, resolve(entry.parentPath ?? entry.path, entry.name));
 		})
 		.sort();
+}
+
+/**
+ * Port-authored tests stay in test-classifications.json. Adapted upstream copies
+ * are exhaustively accounted for by equating the discovered tests/upstream/**
+ * set to inventory adaptedPath entries (with an extra-file negative control).
+ */
+export function verifyReactResizablePanelsTestClassifications(root) {
+	const testsRoot = resolve(root, 'packages/react-resizable-panels/tests');
+	const discovered = discoverTestFiles(testsRoot, root);
+	const portAuthored = discovered.filter(function excludeUpstreamCopy(path) {
+		return !path.includes('/tests/upstream/');
+	});
+	const adaptedDiscovered = discovered
+		.filter(function keepUpstreamCopy(path) {
+			return path.includes('/tests/upstream/');
+		})
+		.sort();
+
+	const inventory = JSON.parse(readFileSync(resolve(root, TEST_INVENTORY), 'utf8'));
+	const adaptedFromInventory = inventory.artifacts
+		.map(function toPackagePath(artifact) {
+			if (!artifact.adaptedPath) {
+				throw new Error(`${artifact.path}: adapted artifact is missing adaptedPath`);
+			}
+			return `${PACKAGE_PREFIX}${artifact.adaptedPath}`;
+		})
+		.sort();
+	if (JSON.stringify(adaptedDiscovered) !== JSON.stringify(adaptedFromInventory)) {
+		throw new Error(
+			'discovered tests/upstream/** must exactly equal test-inventory.json adaptedPath set',
+		);
+	}
+
 	const configPath = resolve(root, CONFIG);
 	if (!existsSync(configPath)) throw new Error(`missing port-test classifications: ${CONFIG}`);
 	const config = JSON.parse(readFileSync(configPath, 'utf8'));
@@ -40,7 +74,7 @@ export function verifyReactResizablePanelsTestClassifications(root) {
 			return entry.path;
 		})
 		.sort();
-	if (JSON.stringify(discovered) !== JSON.stringify(declared)) {
+	if (JSON.stringify(portAuthored) !== JSON.stringify(declared)) {
 		throw new Error(
 			'every port-authored react-resizable-panels test must have exactly one classification',
 		);
@@ -65,5 +99,8 @@ export function verifyReactResizablePanelsTestClassifications(root) {
 				throw new Error(`${entry.path}: divergence id is not present in the parity manifest`);
 		}
 	}
-	return { tests: discovered.length };
+	return {
+		tests: portAuthored.length,
+		adaptedUpstreamSuites: adaptedDiscovered.length,
+	};
 }

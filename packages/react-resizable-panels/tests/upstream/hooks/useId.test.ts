@@ -12,8 +12,7 @@ describe('useId', () => {
 
 	test('should fallback ot React useId', () => {
 		const { result } = renderHook(() => useId(undefined));
-		// Framework adaptation: the fallback is Octane's deterministic useId,
-		// not React's mocked implementation.
+		// OCTANE DIVERGENCE[react-resizable-panels-useId-fallback][runtime:react-resizable-panels:0415]: Upstream mocks React.useId to `:r123:`; Octane's fallback is framework-owned and cannot honor that mock, so this case asserts a non-empty string instead of exact equality.
 		expect(result.current).toEqual(expect.any(String));
 		expect(result.current.length).toBeGreaterThan(0);
 	});

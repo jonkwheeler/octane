@@ -16,13 +16,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-resizable-panels/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-resizable-panels/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-resizable-panels/tests/upstream"],
-      "include": ["\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/react-resizable-panels/tests/upstream"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -109,12 +117,12 @@
         {
           "path": "packages/react-resizable-panels/audit/upstream-adapted.SHA256SUMS",
           "role": "support",
-          "sha256": "ab4792b35ec49a0ae17a444844cfec32220668777e8da7654b8cd6ff845734ad"
+          "sha256": "3663b84224ff4d1bd8710d4fcf2a188423d51299f53f20aa950a67f00d9c715c"
         },
         {
           "path": "scripts/react-parity/react-resizable-panels-upstream-lib.mjs",
           "role": "support",
-          "sha256": "4ba50b19c94dd0b34bcd50a4cff5ce60b82d795d2a13206cf26121bcab33c8d1"
+          "sha256": "d8245036799e594b59277741b4cf2f757aca945a23a4922fa69382e6c0743874"
         },
         {
           "path": "packages/react-resizable-panels/audit/test-classifications.json",
@@ -124,7 +132,7 @@
         {
           "path": "packages/react-resizable-panels/audit/runtime-parity.json",
           "role": "support",
-          "sha256": "f6ac288867880a12206a1202568aa8d1d681db37509ef9b92d0c191c5032cb48"
+          "sha256": "cc3aef3bd85ab599e71a6c882aca9f7c4f69acfc50d0a549a6e82a669edc9e16"
         }
       ]
     },
@@ -240,5 +248,20 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "react-resizable-panels-useId-fallback",
+      "caseIds": [
+        "runtime:react-resizable-panels:0415"
+      ],
+      "upstreamResult": "With React.useId mocked to return ':r123:', useId(undefined) equals ':r123:'.",
+      "octaneResult": "Octane's useId fallback returns a non-empty framework-owned id string; the adapted case cannot reproduce React's mock.",
+      "rationale": "Octane does not expose React's useId mock seam; the fallback identity is an N-A framework boundary, not an equivalent upstream assertion.",
+      "classification": "framework-contract",
+      "consumerImpact": "Callers that relied on React's mocked ':r123:' test seam need Octane-specific id expectations.",
+      "migrationGuidance": "Assert non-empty string (or an explicit id) rather than React's mocked ':r123:' when testing useId(undefined).",
+      "owner": "@octanejs/react-resizable-panels",
+      "reviewCondition": "Review if Octane gains a React-compatible useId mock seam or if upstream stops asserting mocked React.useId output."
+    }
+  ]
 }

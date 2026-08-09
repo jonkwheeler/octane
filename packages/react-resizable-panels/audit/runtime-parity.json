@@ -29,8 +29,9 @@
     },
     {
       "kind": "profiler-omission",
-      "rule": "React Profiler render-count expects collapse to the Panel-children re-render invariant Octane can observe without Profiler.",
-      "files": ["components/panel/Panel.test.tsx"]
+      "rule": "React Profiler render-count expects and surrounding Profiler wrappers collapse to the Panel-children re-render invariant Octane can observe without Profiler.",
+      "files": ["components/panel/Panel.test.tsx"],
+      "cases": ["Panel memoization Panels contents should not re-render on Group layout change"]
     },
     {
       "kind": "cssom-zero",
@@ -38,10 +39,16 @@
       "files": ["components/panel/Panel.test.tsx"]
     },
     {
-      "kind": "useId-fallback",
-      "rule": "React's mocked ':r123:' fallback becomes a non-empty Octane useId string.",
-      "files": ["hooks/useId.test.ts"]
+      "kind": "ref-object-literal",
+      "rule": "createRef<T>() may be written as an explicit { current: null } ref object literal under Octane typings.",
+      "files": ["hooks/useMergedRefs.test.tsx"]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "react-resizable-panels-useId-fallback",
+      "caseIds": ["runtime:react-resizable-panels:0415"],
+      "rule": "Upstream mocks React.useId to return ':r123:'; Octane's useId fallback is framework-owned and cannot reproduce that mock, so the adapted case asserts a non-empty string instead."
+    }
+  ]
 }

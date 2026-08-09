@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -168,6 +168,15 @@ if (process.argv.includes('--negative-controls')) {
 			writeFileSync(adaptedSumsPath, adaptedSums);
 		}
 	});
+	const extraAdaptedPath = join(packageRoot, 'tests/upstream/extra-unlisted.test.ts');
+	writeFileSync(extraAdaptedPath, "test('unlisted', () => {})\n");
+	try {
+		expectFailure('extra adapted upstream file', function extraAdaptedFile() {
+			verifyReactResizablePanelsTestClassifications(repoRoot);
+		});
+	} finally {
+		unlinkSync(extraAdaptedPath);
+	}
 }
 
 console.log(
