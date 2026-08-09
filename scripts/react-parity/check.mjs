@@ -148,11 +148,10 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		for (const lane of manifest.lanes) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
+		// Provenance verification gates completeness, not execution. Required
+		// lanes on recorded-unverified manifests (e.g. redux differential) still
+		// run so parity-owned projects are not skipped after leaving ordinary shards.
 		if (!validateOnly) {
-			// Provenance verification gates completeness, not execution. Required
-			// lanes on recorded-unverified manifests (e.g. redux differential)
-			// still run so parity-owned projects are not skipped after leaving
-			// ordinary shards.
 			const action =
 				requiredExecutableLanes(manifest).length > 0 ? 'run-required' : 'validate';
 			execFileSync(process.execPath, [HARNESS_PATH, action, '--manifest', relativeFile], {
