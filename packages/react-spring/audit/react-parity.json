@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "cd230e7df08125960dfa9ba53d16fee896739dee56e592ccb9bd49db002cc56c"
+      "lockfileSha256": "163a56c9035ec636f1ea8875c14e1f1fa0e1607131bdf2fbfa04bcd5c86ab7e4"
     }
   },
   "lanes": [
@@ -172,16 +172,6 @@
           "path": "packages/react-spring/audit/type-parity.json",
           "role": "support",
           "sha256": "8239daa6d4835f6cd2096048511502db9c77abd185943938a144cc513fdc153f"
-        },
-        {
-          "path": "packages/react-spring/audit/upstream-types.json",
-          "role": "support",
-          "sha256": "afabd3b3675917e8e2672aa76b3d614a2a8529dc93872e3f467073ec8028d44e"
-        },
-        {
-          "path": "packages/react-spring/audit/adapted-types-inventory.json",
-          "role": "support",
-          "sha256": "6a7a3b65e61eec913d19fb1a0d1a55b5d8e6073afe9f73adb2ac94c1cbc3d1bf"
         }
       ]
     },
@@ -220,16 +210,6 @@
           "path": "packages/react-spring/audit/type-parity.json",
           "role": "support",
           "sha256": "8239daa6d4835f6cd2096048511502db9c77abd185943938a144cc513fdc153f"
-        },
-        {
-          "path": "packages/react-spring/audit/upstream-types.json",
-          "role": "support",
-          "sha256": "afabd3b3675917e8e2672aa76b3d614a2a8529dc93872e3f467073ec8028d44e"
-        },
-        {
-          "path": "packages/react-spring/audit/adapted-types-inventory.json",
-          "role": "support",
-          "sha256": "6a7a3b65e61eec913d19fb1a0d1a55b5d8e6073afe9f73adb2ac94c1cbc3d1bf"
         }
       ]
     }
