@@ -1,21 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "react-dropzone",
-  "roots": [
-    "packages/react-dropzone/tests/adapted",
-    "packages/react-dropzone/tests/differential",
-    "packages/react-dropzone/tests/probes"
-  ],
+  "roots": ["packages/react-dropzone/tests/adapted", "packages/react-dropzone/tests/probes"],
   "files": [
     "packages/react-dropzone/tests/adapted/index-u3.spec.ts",
     "packages/react-dropzone/tests/adapted/index-u4.spec.ts",
-    "packages/react-dropzone/tests/adapted/utils/index.spec.ts",
-    "packages/react-dropzone/tests/differential/acquisition-u4.test.ts",
-    "packages/react-dropzone/tests/differential/root-u3.test.ts",
-    "packages/react-dropzone/tests/differential/utils.test.ts",
-    "packages/react-dropzone/tests/probes/architecture.test.ts",
-    "packages/react-dropzone/tests/probes/browser/browser.test.ts",
-    "packages/react-dropzone/tests/probes/hydration.test.ts"
+    "packages/react-dropzone/tests/adapted/utils/index.spec.ts"
   ],
   "tests": [
     {
@@ -482,76 +472,6 @@
       "id": "runtime:afbd8fedd8426de6:1",
       "file": "packages/react-dropzone/tests/adapted/utils/index.spec.ts",
       "fullName": "pickerOptionsFromAccept() returns undefined for an empty object form"
-    },
-    {
-      "id": "runtime:e294478d53762d75:1",
-      "file": "packages/react-dropzone/tests/differential/acquisition-u4.test.ts",
-      "fullName": "react-dropzone U4 React/Octane differential matches accepted/rejected callback payloads for input selection"
-    },
-    {
-      "id": "runtime:6c5540a778cf2744:1",
-      "file": "packages/react-dropzone/tests/differential/acquisition-u4.test.ts",
-      "fullName": "react-dropzone U4 React/Octane differential matches drag/drop max-files validation"
-    },
-    {
-      "id": "runtime:ccf1560d17d2af44:1",
-      "file": "packages/react-dropzone/tests/differential/root-u3.test.ts",
-      "fullName": "react-dropzone U3 React/Octane differential matches click, keyboard, focus, and blur callbacks"
-    },
-    {
-      "id": "runtime:7b999319b57f1ba6:1",
-      "file": "packages/react-dropzone/tests/differential/root-u3.test.ts",
-      "fullName": "react-dropzone U3 React/Octane differential matches default and overridden getter attributes"
-    },
-    {
-      "id": "runtime:681d590bfe5e49cc:1",
-      "file": "packages/react-dropzone/tests/differential/root-u3.test.ts",
-      "fullName": "react-dropzone U3 React/Octane differential matches native input selection state and callback payloads"
-    },
-    {
-      "id": "runtime:9b6e9ee15d0529e6:1",
-      "file": "packages/react-dropzone/tests/differential/utils.test.ts",
-      "fullName": "react-dropzone U2 pure utility differential matches accept flattening, picker filters, and input serialization tables"
-    },
-    {
-      "id": "runtime:6fc00b67d788fbf8:1",
-      "file": "packages/react-dropzone/tests/differential/utils.test.ts",
-      "fullName": "react-dropzone U2 pure utility differential matches event, exception, propagation, and thenable classification"
-    },
-    {
-      "id": "runtime:ea6b02c2a2886460:1",
-      "file": "packages/react-dropzone/tests/differential/utils.test.ts",
-      "fullName": "react-dropzone U2 pure utility differential matches type, size, quantity, and drag verdict tables"
-    },
-    {
-      "id": "runtime:c577b4d82b53e6e5:1",
-      "file": "packages/react-dropzone/tests/probes/architecture.test.ts",
-      "fullName": "react-dropzone U1 architecture gate lets the newer async validator supersede older validation"
-    },
-    {
-      "id": "runtime:11176e61a3d2b84d:1",
-      "file": "packages/react-dropzone/tests/probes/architecture.test.ts",
-      "fullName": "react-dropzone U1 architecture gate lets the newer extraction operation supersede older work"
-    },
-    {
-      "id": "runtime:6d316e9265220693:1",
-      "file": "packages/react-dropzone/tests/probes/architecture.test.ts",
-      "fullName": "react-dropzone U1 architecture gate spreads public prop getters, composes refs, opens input, and delivers selected files"
-    },
-    {
-      "id": "runtime:1c6863f0302c633c:1",
-      "file": "packages/react-dropzone/tests/probes/browser/browser.test.ts",
-      "fullName": "react-dropzone trusted Chromium gate delivers browser-created ClipboardData and File System Access selections"
-    },
-    {
-      "id": "runtime:626f18ea62d4992c:1",
-      "file": "packages/react-dropzone/tests/probes/browser/browser.test.ts",
-      "fullName": "react-dropzone trusted Chromium gate delivers chooser input and browser-created DataTransfer files"
-    },
-    {
-      "id": "runtime:de29aac393a13b47:1",
-      "file": "packages/react-dropzone/tests/probes/hydration.test.ts",
-      "fullName": "react-dropzone U1 hydration gate adopts root/input nodes and remains interactive without diagnostics"
     }
   ]
 }

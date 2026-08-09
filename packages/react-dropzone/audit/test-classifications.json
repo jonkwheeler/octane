@@ -1640,30 +1640,6 @@
       "disposition": "adapted-octane-contract"
     },
     {
-      "path": "packages/react-dropzone/tests/differential/acquisition-u4.test.ts",
-      "disposition": "react-octane-differential"
-    },
-    {
-      "path": "packages/react-dropzone/tests/differential/root-u3.test.ts",
-      "disposition": "react-octane-differential"
-    },
-    {
-      "path": "packages/react-dropzone/tests/differential/utils.test.ts",
-      "disposition": "react-octane-differential"
-    },
-    {
-      "path": "packages/react-dropzone/tests/probes/architecture.test.ts",
-      "disposition": "adapted-octane-contract"
-    },
-    {
-      "path": "packages/react-dropzone/tests/probes/browser/browser.test.ts",
-      "disposition": "trusted-browser-contract"
-    },
-    {
-      "path": "packages/react-dropzone/tests/probes/hydration.test.ts",
-      "disposition": "ssr-hydration-contract"
-    },
-    {
       "path": "packages/react-dropzone/tests/probes/server.test.ts",
       "disposition": "ssr-hydration-contract"
     }

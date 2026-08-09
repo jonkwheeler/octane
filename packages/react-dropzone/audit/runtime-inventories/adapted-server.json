@@ -1,11 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-dropzone-ssr",
-  "roots": [
-    "packages/react-dropzone/tests/adapted",
-    "packages/react-dropzone/tests/differential",
-    "packages/react-dropzone/tests/probes"
-  ],
+  "roots": ["packages/react-dropzone/tests/adapted", "packages/react-dropzone/tests/probes"],
   "files": ["packages/react-dropzone/tests/probes/server.test.ts"],
   "tests": [
     {

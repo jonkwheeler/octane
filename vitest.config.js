@@ -3486,9 +3486,16 @@ export default defineConfig({
 				},
 			},
 			{
+				// Byte-exact upstream Vitest suite plus the inventory wrapper that records
+				// its 218 collected/executed identities. Wholly react-parity owned so the
+				// ordinary shards never re-run the pristine oracle or its wrapper.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-dropzone-pristine',
-					include: ['packages/react-dropzone/upstream/canonical/src/**/*.spec.{ts,tsx}'],
+					include: [
+						'packages/react-dropzone/upstream/canonical/src/**/*.spec.{ts,tsx}',
+						'packages/react-dropzone/tests/pristine/upstream-runtime.test.ts',
+					],
 					environment: 'jsdom',
 					globals: true,
 					clearMocks: true,
@@ -3497,15 +3504,25 @@ export default defineConfig({
 				},
 			},
 			{
+				// Adapted upstream cases are parity-owned; architecture/hydration probes are
+				// Octane-only conformance and stay in the ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-dropzone/tests/adapted/**/*.spec.ts'],
+				},
 				test: {
 					name: 'react-dropzone',
 					include: [
 						'packages/react-dropzone/tests/adapted/**/*.spec.ts',
-						'packages/react-dropzone/tests/differential/**/*.test.ts',
-						'packages/react-dropzone/tests/pristine/upstream-runtime.test.ts',
 						'packages/react-dropzone/tests/probes/architecture.test.ts',
-						'packages/react-dropzone/tests/probes/browser/browser.test.ts',
 						'packages/react-dropzone/tests/probes/hydration.test.ts',
+					],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-dropzone/tests/differential/**/*.test.ts',
+						'packages/react-dropzone/tests/pristine/**/*.test.ts',
+						'packages/react-dropzone/tests/probes/browser/**/*.test.ts',
+						'packages/react-dropzone/tests/probes/server.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -3522,6 +3539,45 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-dropzone-differential',
+					include: ['packages/react-dropzone/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+					fileParallelism: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-dropzone$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-dropzone/src/index.tsrx'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-dropzone-browser',
+					include: ['packages/react-dropzone/tests/probes/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-dropzone-ssr',
 					include: ['packages/react-dropzone/tests/probes/server.test.ts'],

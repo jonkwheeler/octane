@@ -11,7 +11,10 @@
     "integrity": "sha256:e76faa61389e085518b0d8492a7970e9ce4c060e4a2e9181b1eb089805afb95d",
     "verification": "verified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/react-dropzone/src"],
@@ -19,18 +22,18 @@
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-dropzone/tests/adapted",
-        "packages/react-dropzone/tests/differential",
-        "packages/react-dropzone/tests/probes"
-      ],
+      "roots": ["packages/react-dropzone/tests/adapted", "packages/react-dropzone/tests/probes"],
       "include": ["\\.(?:test|spec)\\.(?:ts|tsx)$"],
-      "exclude": []
+      "exclude": [
+        "packages/react-dropzone/tests/probes/architecture\\.test\\.ts$",
+        "packages/react-dropzone/tests/probes/hydration\\.test\\.ts$",
+        "packages/react-dropzone/tests/probes/browser/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 110,
-    "uniqueIdentities": 110,
+    "inventoryEntries": 96,
+    "uniqueIdentities": 96,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -41,7 +44,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "bac5bbc92e6ebd9505f8d1c0f450b03b9dd2d4dbb38a305a62e9368f7f1896bd"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -61,12 +64,12 @@
         {
           "path": "packages/react-dropzone/audit/runtime-inventories/pristine-harness.json",
           "role": "support",
-          "sha256": "afa3206d774b2025f8835728e8e386a2902d6c882508d55bbcc8e5cc27b6e39f"
+          "sha256": "3bb24cd5531ef486e2ea8c3a6cb10d53b4e5cef8b4bcfc45151278429812c8f6"
         },
         {
           "path": "scripts/react-parity/react-dropzone-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "b7af0078146b1fe5cc2af01917803806baebd0b68c9730c2c943ca8d0b1c5ad3"
+          "sha256": "0419e3e09f4de3cee41b5a9300c8f987c19114a4bb8fef151b1798109ab454a5"
         }
       ]
     },
@@ -77,7 +80,7 @@
       "environment": "workspace-node",
       "project": "react-dropzone",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs every adapted DOM, differential, hydration, architecture, provenance, and Chromium identity.",
+      "notes": "Runs the one-for-one Octane adaptation of upstream DOM cases.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json"
@@ -86,12 +89,12 @@
         {
           "path": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json",
           "role": "support",
-          "sha256": "fbf6793959241902718bab7c666e674ac0426fe883fafe6e7b6c440bee53494e"
+          "sha256": "b6d7c7b69e03db2b414aaf042fcefb96e136edf276d3acca125380f2e7bb62ee"
         },
         {
           "path": "packages/react-dropzone/audit/test-classifications.json",
           "role": "support",
-          "sha256": "9ecf46af8e29ed3fc9a5ba484c32c65b110063ffb04fd3d17bd2a5d80356c580"
+          "sha256": "2541de84b5f72070c5a78f7f82b75cf75e7f76eb780487c419165da77c7abc8a"
         },
         {
           "path": "packages/react-dropzone/audit/transformation-ledger.json",
@@ -126,7 +129,7 @@
         {
           "path": "packages/react-dropzone/audit/runtime-inventories/adapted-server.json",
           "role": "support",
-          "sha256": "b45ee908c0ede3331d7bd5dbc96bdeb641ba323d2ca34a76d48c7a3c0f1af0e2"
+          "sha256": "ecb98704ca4dbd183e5db624b4912a5d5af1a58e0b5cb7f469ce52451aea4845"
         }
       ]
     },
@@ -231,7 +234,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-dropzone",
+      "project": "react-dropzone-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs shared inputs against pinned React Dropzone and the Octane binding.",
       "files": [
@@ -303,7 +306,7 @@
       "type": "browser",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-dropzone",
+      "project": "react-dropzone-browser",
       "notes": "Runs real Chromium chooser, DataTransfer, clipboard, picker, and diagnostics journeys.",
       "files": [
         {

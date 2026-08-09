@@ -6,28 +6,29 @@ import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const adaptedRoots = [
+	'packages/react-dropzone/tests/adapted',
+	'packages/react-dropzone/tests/probes',
+];
 const lanes = [
 	{
 		project: 'react-dropzone-pristine',
 		roots: ['packages/react-dropzone/upstream/canonical/src'],
+		keep: (file) => file.startsWith('packages/react-dropzone/upstream/canonical/src/'),
 		output: 'packages/react-dropzone/audit/runtime-inventories/pristine-harness.json',
 	},
 	{
 		project: 'react-dropzone',
-		roots: [
-			'packages/react-dropzone/tests/adapted',
-			'packages/react-dropzone/tests/differential',
-			'packages/react-dropzone/tests/probes',
-		],
+		roots: adaptedRoots,
+		// Full-suite DOM inventory is adapted upstream cases only; Octane-only probes
+		// stay in the project for ordinary shards but are not adapted-suite evidence.
+		keep: (file) => file.startsWith('packages/react-dropzone/tests/adapted/'),
 		output: 'packages/react-dropzone/audit/runtime-inventories/adapted-dom.json',
 	},
 	{
 		project: 'react-dropzone-ssr',
-		roots: [
-			'packages/react-dropzone/tests/adapted',
-			'packages/react-dropzone/tests/differential',
-			'packages/react-dropzone/tests/probes',
-		],
+		roots: adaptedRoots,
+		keep: (file) => file === 'packages/react-dropzone/tests/probes/server.test.ts',
 		output: 'packages/react-dropzone/audit/runtime-inventories/adapted-server.json',
 	},
 ];
@@ -54,7 +55,7 @@ for (const lane of lanes) {
 			identityCounts.set(identity, occurrence);
 			return { id: `${identityId(file, fullName)}:${occurrence}`, file, fullName };
 		})
-		.filter(({ file }) => lane.roots.some((candidate) => file.startsWith(`${candidate}/`)))
+		.filter(({ file }) => lane.keep(file))
 		.sort((left, right) => {
 			const leftKey = `${left.file}\0${left.fullName}`;
 			const rightKey = `${right.file}\0${right.fullName}`;
