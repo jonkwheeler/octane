@@ -43,6 +43,10 @@ interface Box {
 	height: number;
 }
 const layoutCells = new Map<string, Box>();
+// Tracks MotionValue / transform shorthand keys last applied to a host so a
+// rebind can clear stale inline styles without wiping them on unmount (exit
+// clones still need the live visual state).
+const motionStyleKeys = new WeakMap<HTMLElement, string[]>();
 const boxOf = (n: HTMLElement): Box => {
 	const r = n.getBoundingClientRect();
 	return { left: r.left, top: r.top, width: r.width, height: r.height };
@@ -268,6 +272,20 @@ function createMotionComponent(tag: string) {
 		}
 		useLayoutEffect(
 			() => {
+				// Clear prior motion-managed styles at bind time (rebind / empty bag).
+				// Do not clear in cleanup: on unmount the exit effect clones this node
+				// after layout-effect cleanups, and still needs the live transforms.
+				const prevKeys = motionStyleKeys.get(node);
+				if (prevKeys) {
+					for (const key of prevKeys) {
+						if (isTransformKey(key)) node.style.transform = '';
+						else (node.style as any)[key] = '';
+					}
+					motionStyleKeys.delete(node);
+				} else {
+					node.style.transform = '';
+				}
+
 				const style = props.style;
 				if (!style || typeof style !== 'object') return;
 				const transformState: Record<string, any> = {};
@@ -285,14 +303,9 @@ function createMotionComponent(tag: string) {
 						appliedKeys.push(key);
 					}
 				}
-				return function clearMotionStyles() {
+				if (appliedKeys.length) motionStyleKeys.set(node, appliedKeys);
+				return function unsubscribeMotionStyles() {
 					for (const cleanup of cleanups) cleanup();
-					let clearTransform = false;
-					for (const key of appliedKeys) {
-						if (isTransformKey(key)) clearTransform = true;
-						else (node.style as any)[key] = '';
-					}
-					if (clearTransform) node.style.transform = '';
 				};
 			},
 			styleMvDeps,
