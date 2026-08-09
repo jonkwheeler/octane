@@ -40,6 +40,19 @@ describe('Doom fixed-step model', () => {
 		).toBeCloseTo(PLAYER_STEP, 8);
 	});
 
+	it('aligns forward motion and shots with player yaw (Three camera uses -yaw)', () => {
+		const state = createGameState();
+		state.player.yaw = Math.PI / 2;
+		const moved = stepGame(state, { ...idle, forward: true }, 1);
+		expect(moved.player.x - state.player.x).toBeCloseTo(PLAYER_STEP, 8);
+		expect(moved.player.z - state.player.z).toBeCloseTo(0, 8);
+		const fired = stepGame(state, { ...idle, fire: true }, 0);
+		const shot = fired.projectiles.find((projectile) => projectile.owner === 'player')!;
+		expect(shot.dx).toBeCloseTo(1, 8);
+		expect(shot.dz).toBeCloseTo(0, 8);
+	});
+
+
 	it('retains one player projectile and enforces fire and weapon schedules', () => {
 		const first = stepGame(createGameState(), { ...idle, fire: true }, 0);
 		expect(first.projectiles.filter((shot) => shot.owner === 'player')).toHaveLength(1);
