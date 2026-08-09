@@ -136,7 +136,13 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))) {
+		// Livestore uses adapted-upstream-suite dispositions and its own verifier
+		// (verifyLivestoreTestClassifications above). The hook-form helper rejects
+		// those ledgers, so never route livestore through verifyPortTestClassifications.
+		if (
+			binding !== 'livestore' &&
+			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
+		) {
 			verifyPortTestClassifications(REPO, binding);
 		}
 		await verifyManifestFiles(manifest, REPO);
