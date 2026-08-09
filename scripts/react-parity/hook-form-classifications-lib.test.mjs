@@ -66,5 +66,5 @@ test('rejects a stale divergence classification', async (t) => {
 
 test('verifies an arbitrary binding classification ledger', () => {
 	const root = fileURLToPath(new URL('../..', import.meta.url));
-	assert.deepEqual(verifyPortTestClassifications(root, 'visx'), { tests: 10 });
+	assert.deepEqual(verifyPortTestClassifications(root, 'visx'), { tests: 12 });
 });
