@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { BlockNoteContext } from '../../src/editor/BlockNoteContext.ts';
 import { getContentComponent, Portals } from '../../src/editor/EditorContent.tsrx';
+import { ElementRenderer } from '../../src/editor/ElementRenderer.tsrx';
 import { useActiveStyles } from '../../src/hooks/useActiveStyles.ts';
 import { useEditorChange } from '../../src/hooks/useEditorChange.ts';
 import { useEditorDOMElement } from '../../src/hooks/useEditorDomElement.ts';
@@ -264,5 +265,23 @@ describe('@octanejs/blocknote Octane port regressions', function () {
 		expect(entry.id).toBe('node-1');
 		expect(entry.portal).toBeTruthy();
 		expect((entry.portal as { props?: { id?: string } }).props?.id).toBeUndefined();
+	});
+
+	it('ElementRenderer exposes its render handle through the Octane ref prop', function () {
+		let renderHandle: ((node: unknown, container: HTMLElement) => void) | null = null;
+		const target = document.createElement('div');
+
+		mount(ElementRenderer as never, {
+			ref: function (handle: ((node: unknown, container: HTMLElement) => void) | null) {
+				renderHandle = handle;
+			},
+		});
+		settle();
+
+		expect(typeof renderHandle).toBe('function');
+		// ReactRenderUtil clones the container synchronously inside this call,
+		// before the follow-up clear update runs.
+		renderHandle?.(createElement('span', { 'data-rendered': 'true' }, 'hi'), target);
+		expect(target.querySelector('[data-rendered="true"]')?.textContent).toBe('hi');
 	});
 });
