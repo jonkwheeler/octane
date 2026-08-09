@@ -2,11 +2,11 @@
  * Adapted one-for-one from upstream/test/browser/waypoint_test.jsx for Octane.
  * // Per packages/waypoint/upstream/test/browser/waypoint_test.jsx
  */
-import React, { ReactDOM } from './octane-react-shim.js';
+import React, { ReactDOM, useState } from './octane-react-shim.js';
 import { Waypoint } from '@octanejs/waypoint';
 
-// OCTANE DIVERGENCE: refs-as-props; upstream ensureRefIsUsedByChild is not thrown.
 const refNotUsedErrorMessage = 'OCTANE_REF_CONTRACT';
+const WRAPPER_TICK_SLOT = Symbol('waypoint-adapted-wrapper-tick');
 
 let div;
 
@@ -87,6 +87,7 @@ describe('<Waypoint>', () => {
 		jasmine.clock().uninstall();
 	});
 
+	// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:83
 	it('logs to the console when called with debug = true', () => {
 		props.debug = true;
 		subject();
@@ -100,11 +101,13 @@ describe('<Waypoint>', () => {
 			subject();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:96
 		it('does not log to the console', () => {
 			// eslint-disable-next-line no-console
 			expect(console.log).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:101
 		it('calls the onEnter handler', () => {
 			expect(props.onEnter).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -117,6 +120,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:113
 		it('calls the onPositionChange handler', () => {
 			expect(props.onPositionChange).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -129,6 +133,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:126
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
@@ -143,6 +148,7 @@ describe('<Waypoint>', () => {
 			subject();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:140
 		it('calls the onEnter handler', () => {
 			expect(props.onEnter).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -155,6 +161,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:152
 		it('calls the onPositionChange handler', () => {
 			expect(props.onPositionChange).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -167,6 +174,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:165
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
@@ -181,6 +189,7 @@ describe('<Waypoint>', () => {
 			subject();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:179
 		it('calls the onEnter handler', () => {
 			expect(props.onEnter).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -193,6 +202,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:191
 		it('calls the onPositionChange handler', () => {
 			expect(props.onPositionChange).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -205,6 +215,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:204
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
@@ -220,6 +231,7 @@ describe('<Waypoint>', () => {
 			subject();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:219
 		it('calls the onEnter handler', () => {
 			expect(props.onEnter).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -232,6 +244,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:231
 		it('calls the onPositionChange handler', () => {
 			expect(props.onPositionChange).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -244,6 +257,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:244
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
@@ -261,14 +275,17 @@ describe('<Waypoint>', () => {
 			scrollNodeTo(scrollable, topSpacerHeight / 2);
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:261
 		it('does not call the onEnter handler again', () => {
 			expect(props.onEnter.calls.count()).toBe(1);
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:265
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:269
 		it('does not call the onPositionChange handler again', () => {
 			expect(props.onPositionChange.calls.count()).toBe(1);
 		});
@@ -286,6 +303,7 @@ describe('<Waypoint>', () => {
 			scrollNodeTo(scrollable, topSpacerHeight + 10);
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:286
 		it('the onLeave handler is called', () => {
 			expect(props.onLeave).toHaveBeenCalledWith({
 				currentPosition: Waypoint.above,
@@ -298,10 +316,12 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:299
 		it('does not call the onEnter handler', () => {
 			expect(props.onEnter.calls.count()).toBe(1);
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:303
 		it('the onPositionChange is called', () => {
 			expect(props.onPositionChange).toHaveBeenCalledWith({
 				currentPosition: Waypoint.above,
@@ -324,16 +344,19 @@ describe('<Waypoint>', () => {
 			bottomSpacerHeight = 3000;
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:326
 		it('does not call the onEnter handler on mount', () => {
 			subject();
 			expect(props.onEnter).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:331
 		it('does not call the onLeave handler on mount', () => {
 			subject();
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:336
 		it('calls the onPositionChange handler', () => {
 			subject();
 			expect(props.onPositionChange).toHaveBeenCalledWith({
@@ -360,6 +383,7 @@ describe('<Waypoint>', () => {
 				);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:363
 			it('calls the onEnter handler when scrolling down far enough', () => {
 				const component = subject();
 				props.onPositionChange.calls.reset();
@@ -386,19 +410,23 @@ describe('<Waypoint>', () => {
 				scrollNodeTo(component, 99);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:390
 			it('does not call the onEnter handler', () => {
 				expect(props.onEnter).not.toHaveBeenCalled();
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:394
 			it('does not call the onLeave handler', () => {
 				expect(props.onLeave).not.toHaveBeenCalled();
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:398
 			it('does not call the onPositionChange handler', () => {
 				expect(props.onPositionChange).not.toHaveBeenCalled();
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:403
 		it('calls the onEnter handler when scrolling down past the threshold', () => {
 			scrollNodeTo(subject(), 100);
 
@@ -413,6 +441,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:418
 		it('calls the onPositionChange handler when scrolling down past the threshold', () => {
 			scrollNodeTo(subject(), 100);
 
@@ -427,6 +456,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:433
 		it('does not call the onLeave handler when scrolling down past the threshold', () => {
 			scrollNodeTo(subject(), 100);
 			expect(props.onLeave).not.toHaveBeenCalled();
@@ -437,6 +467,7 @@ describe('<Waypoint>', () => {
 				props.fireOnRapidScroll = false;
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:443
 			it('calls the onEnter handler when scrolling down past the threshold', () => {
 				scrollNodeTo(subject(), 100);
 
@@ -451,6 +482,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:458
 			it('calls the onPositionChange handler when scrolling down past the threshold', () => {
 				scrollNodeTo(subject(), 100);
 
@@ -465,6 +497,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:473
 			it('does not call the onLeave handler when scrolling down past the threshold', () => {
 				scrollNodeTo(subject(), 100);
 
@@ -488,6 +521,7 @@ describe('<Waypoint>', () => {
 				};
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:496
 			it('calls the onEnter handler', () => {
 				scrollQuicklyPast();
 				expect(props.onEnter).toHaveBeenCalledWith({
@@ -501,6 +535,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:510
 			it('calls the onLeave handler', () => {
 				scrollQuicklyPast();
 				expect(props.onLeave).toHaveBeenCalledWith({
@@ -514,6 +549,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:524
 			it('calls the onPositionChange handler', () => {
 				scrollQuicklyPast();
 				expect(props.onPositionChange).toHaveBeenCalledWith({
@@ -532,16 +568,19 @@ describe('<Waypoint>', () => {
 					props.fireOnRapidScroll = false;
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:543
 				it('does not call the onEnter handler', () => {
 					scrollQuicklyPast();
 					expect(props.onEnter).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:548
 				it('does not call the onLeave handler', () => {
 					scrollQuicklyPast();
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:553
 				it('calls the onPositionChange handler', () => {
 					scrollQuicklyPast();
 					expect(props.onPositionChange).toHaveBeenCalledWith({
@@ -563,6 +602,7 @@ describe('<Waypoint>', () => {
 					props.topOffset = '-10%';
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:575
 				it('calls the onLeave handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -587,6 +627,7 @@ describe('<Waypoint>', () => {
 					props.bottomOffset = '-10%';
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:600
 				it('does not call the onEnter handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -595,6 +636,7 @@ describe('<Waypoint>', () => {
 					expect(props.onEnter).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:608
 				it('does not call the onLeave handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -603,6 +645,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:616
 				it('does not call onPositionChange handler when scrolling down near bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -611,6 +654,7 @@ describe('<Waypoint>', () => {
 					expect(props.onPositionChange).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:624
 				it('calls the onEnter handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -627,6 +671,7 @@ describe('<Waypoint>', () => {
 					});
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:641
 				it('does not call the onLeave handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -635,6 +680,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:649
 				it('calls the onPositionChange handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -657,6 +703,7 @@ describe('<Waypoint>', () => {
 					props.bottomOffset = '-10';
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:672
 				it('does not call the onEnter handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -665,6 +712,7 @@ describe('<Waypoint>', () => {
 					expect(props.onEnter).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:680
 				it('does not call the onLeave handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -673,6 +721,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:688
 				it('does not call onPositionChange handler when scrolling down near bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -681,6 +730,7 @@ describe('<Waypoint>', () => {
 					expect(props.onPositionChange).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:696
 				it('calls the onEnter handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -697,6 +747,7 @@ describe('<Waypoint>', () => {
 					});
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:713
 				it('does not call the onLeave handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -705,6 +756,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:721
 				it('calls the onPositionChange handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -727,6 +779,7 @@ describe('<Waypoint>', () => {
 					props.bottomOffset = '-10px';
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:744
 				it('does not call the onEnter handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -735,6 +788,7 @@ describe('<Waypoint>', () => {
 					expect(props.onEnter).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:752
 				it('does not call the onLeave handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -743,6 +797,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:760
 				it('does not call onPositionChange handler when scrolling down near bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -751,6 +806,7 @@ describe('<Waypoint>', () => {
 					expect(props.onPositionChange).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:768
 				it('calls the onEnter handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -767,6 +823,7 @@ describe('<Waypoint>', () => {
 					});
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:785
 				it('does not call the onLeave handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -775,6 +832,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:793
 				it('calls the onPositionChange handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -797,6 +855,7 @@ describe('<Waypoint>', () => {
 					props.bottomOffset = -10;
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:816
 				it('does not call the onEnter handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -805,6 +864,7 @@ describe('<Waypoint>', () => {
 					expect(props.onEnter).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:824
 				it('does not call the onLeave handler when scrolling down near the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -813,6 +873,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:832
 				it('does not call onPositionChange handler when scrolling down near bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -821,6 +882,7 @@ describe('<Waypoint>', () => {
 					expect(props.onPositionChange).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:840
 				it('calls the onEnter handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -837,6 +899,7 @@ describe('<Waypoint>', () => {
 					});
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:857
 				it('does not call the onLeave handler when scrolling down past the bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -845,6 +908,7 @@ describe('<Waypoint>', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:865
 				it('calls onPositionChange handler when scrolling down past bottom offset', () => {
 					const component = subject();
 					props.onPositionChange.calls.reset();
@@ -865,11 +929,13 @@ describe('<Waypoint>', () => {
 	});
 
 	describe('when the Waypoint has children', () => {
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:886
 		it('does not throw with a DOM Element as a child', () => {
 			props.children = <div />;
 			expect(subject).not.toThrow();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:891
 		it('does not throw with a Stateful Component as a child', () => {
 			function StatefulComponent(props) {
 				return <div ref={props.innerRef} />;
@@ -885,16 +951,18 @@ describe('<Waypoint>', () => {
 			expect(subject).not.toThrow();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:903
 		it('errors when a Stateful Component does not provide ref to Waypoint', () => {
 			function StatefulComponent() {
 				return <div />;
 			}
 
 			props.children = <StatefulComponent />;
-			// OCTANE DIVERGENCE: missing child ref does not throw ensureRefIsUsedByChild.
+			// OCTANE DIVERGENCE[waypoint-ref-child-contract][runtime:0f5696c86cdcf34e]: refs-as-props; missing child ref does not throw ensureRefIsUsedByChild.
 			expect(subject).not.toThrow();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:915
 		it('does not throw with a Stateless Component as a child', () => {
 			function StatelessComponent(props) {
 				return <div ref={props.innerRef} />;
@@ -910,13 +978,14 @@ describe('<Waypoint>', () => {
 			expect(subject).not.toThrow();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:922
 		it('errors when a Stateless Component does not provide ref to Waypoint', () => {
 			function StatelessComponent() {
 				return <div />;
 			}
 
 			props.children = <StatelessComponent />;
-			// OCTANE DIVERGENCE: missing child ref does not throw ensureRefIsUsedByChild.
+			// OCTANE DIVERGENCE[waypoint-ref-child-contract][runtime:3098ae49fcaaf40e]: refs-as-props; missing child ref does not throw ensureRefIsUsedByChild.
 			expect(subject).not.toThrow();
 		});
 	});
@@ -941,14 +1010,17 @@ describe('<Waypoint>', () => {
 			scrollNodeTo(scrollable, 400);
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:950
 		it('does not call the onEnter handler', () => {
 			expect(props.onEnter).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:954
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:958
 		it('calls the onEnter handler when scrolled back up just past the bottom', () => {
 			scrollNodeTo(scrollable, topSpacerHeight + 50);
 
@@ -963,6 +1035,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:973
 		it('does not call the onLeave handler when scrolled back up just past the bottom', () => {
 			scrollNodeTo(scrollable, topSpacerHeight + 50);
 
@@ -988,30 +1061,36 @@ describe('<Waypoint>', () => {
 			scrollNodeTo(scrollable, 400);
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:998
 		it('does not call the onEnter handler', () => {
 			expect(props.onEnter).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1002
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1006
 		it('does not call the onPositionChange handler', () => {
 			expect(props.onPositionChange).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1010
 		it('does not call the onEnter handler when scrolling up not past the threshold', () => {
 			scrollNodeTo(scrollable, 201);
 
 			expect(props.onEnter).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1016
 		it('does not call the onLeave handler when scrolling up not past the threshold', () => {
 			scrollNodeTo(scrollable, 201);
 
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1022
 		it('does not call onPositionChange handler when scrolling up not past the threshold', () => {
 			scrollNodeTo(scrollable, 201);
 
@@ -1023,6 +1102,7 @@ describe('<Waypoint>', () => {
 				scrollNodeTo(scrollable, 200);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1033
 			it('calls the onEnter handler', () => {
 				expect(props.onEnter).toHaveBeenCalledWith({
 					currentPosition: Waypoint.inside,
@@ -1035,10 +1115,12 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1046
 			it('does not call the onLeave handler', () => {
 				expect(props.onLeave).not.toHaveBeenCalled();
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1050
 			it('calls the onPositionChange handler', () => {
 				expect(props.onPositionChange).toHaveBeenCalledWith({
 					currentPosition: Waypoint.inside,
@@ -1051,6 +1133,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1063
 			it('calls the onLeave handler when scrolling up past the waypoint', () => {
 				scrollNodeTo(scrollable, 99);
 
@@ -1065,12 +1148,14 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1078
 			it('does not call the onEnter handler again when scrolling up past the waypoint', () => {
 				scrollNodeTo(scrollable, 99);
 
 				expect(props.onEnter.calls.count()).toBe(1);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1084
 			it('calls the onPositionChange handler when scrolling up past the waypoint', () => {
 				scrollNodeTo(scrollable, 99);
 
@@ -1095,6 +1180,7 @@ describe('<Waypoint>', () => {
 				scrollNodeTo(scrollable, 0);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1109
 			it('calls the onEnter handler', () => {
 				expect(props.onEnter).toHaveBeenCalledWith({
 					currentPosition: Waypoint.inside,
@@ -1107,6 +1193,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1122
 			it('calls the onLeave handler', () => {
 				expect(props.onLeave).toHaveBeenCalledWith({
 					currentPosition: Waypoint.below,
@@ -1119,6 +1206,7 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1135
 			it('calls the onPositionChange handler', () => {
 				expect(props.onPositionChange).toHaveBeenCalledWith({
 					currentPosition: Waypoint.below,
@@ -1134,6 +1222,7 @@ describe('<Waypoint>', () => {
 	});
 
 	describe('when the scrollable parent is not displayed', () => {
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1151
 		it('calls the onLeave handler', () => {
 			const component = subject();
 			const node = ReactDOM.findDOMNode(component);
@@ -1170,11 +1259,13 @@ describe('<Waypoint>', () => {
 			document.body.style.overflow = '';
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1188
 		it('does not fire the onEnter handler on mount', () => {
 			subject();
 			expect(props.onEnter).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1193
 		it('fires the onPositionChange handler on mount', () => {
 			subject();
 			expect(props.onPositionChange).toHaveBeenCalledWith({
@@ -1188,6 +1279,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1207
 		it('fires the onEnter handler when the Waypoint is in view', () => {
 			subject();
 			scrollNodeTo(window, topSpacerHeight - window.innerHeight / 2);
@@ -1203,6 +1295,7 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1223
 		it('fires the onPositionChange handler when the Waypoint is in view', () => {
 			subject();
 			scrollNodeTo(window, topSpacerHeight - window.innerHeight / 2);
@@ -1219,6 +1312,7 @@ describe('<Waypoint>', () => {
 		});
 	});
 
+	// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1240
 	it('does not throw an error when the <html> is the scrollable parent', () => {
 		// Give the <html> an overflow style
 		document.documentElement.style.overflow = 'auto';
@@ -1234,10 +1328,14 @@ describe('<Waypoint>', () => {
 
 	describe('when the waypoint is updated in the onEnter callback', () => {
 		beforeEach(() => {
-			// OCTANE DIVERGENCE: no class forceUpdate; re-enter still must not double-fire.
+			// OCTANE DIVERGENCE[waypoint-onenter-state-update][runtime:182f948578b98575]: no class forceUpdate; Wrapper bumps useState from onEnter.
 			function Wrapper(wrapperProps) {
+				const [, setTick] = useState(0, WRAPPER_TICK_SLOT);
 				function doOnEnter() {
 					wrapperProps.onEnter();
+					setTick(function bump(previous) {
+						return previous + 1;
+					});
 				}
 				return (
 					<div style={{ margin: `${window.innerHeight * 2}px 0` }}>
@@ -1251,6 +1349,7 @@ describe('<Waypoint>', () => {
 			};
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1274
 		it('only calls onEnter once', function onlyOnce(done) {
 			subject();
 
@@ -1285,6 +1384,7 @@ describe('<Waypoint>', () => {
 			document.body.style.position = '';
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1308
 		it('calls the onEnter handler', () => {
 			expect(props.onEnter).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -1297,10 +1397,12 @@ describe('<Waypoint>', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1321
 		it('does not call the onLeave handler', () => {
 			expect(props.onLeave).not.toHaveBeenCalled();
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1325
 		it('calls the onPositionChange handler', () => {
 			expect(props.onPositionChange).toHaveBeenCalledWith({
 				currentPosition: Waypoint.inside,
@@ -1319,18 +1421,22 @@ describe('<Waypoint>', () => {
 				scrollNodeTo(window, 10);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1344
 			it('does not call the onEnter handler again', () => {
 				expect(props.onEnter.calls.count()).toBe(1);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1348
 			it('does not call the onLeave handler', () => {
 				expect(props.onLeave).not.toHaveBeenCalled();
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1352
 			it('does not call the onPositionChange handler', () => {
 				expect(props.onPositionChange).not.toHaveBeenCalled();
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1356
 			it('the onLeave handler is called when scrolling past the waypoint', () => {
 				scrollNodeTo(window, 25);
 
@@ -1345,12 +1451,14 @@ describe('<Waypoint>', () => {
 				});
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1371
 			it('does not call the onEnter handler when scrolling past the waypoint', () => {
 				scrollNodeTo(window, 25);
 
 				expect(props.onEnter.calls.count()).toBe(1);
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1377
 			it('the onPositionChange handler is called when scrolling past the waypoint', () => {
 				scrollNodeTo(window, 25);
 
@@ -1441,6 +1549,7 @@ describe('<Waypoint> Horizontal', () => {
 	});
 
 	describe('when a div is the scrollable ancestor', () => {
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1464
 		it('calls the onEnter handler when the Waypoint is visible on mount', () => {
 			subject();
 
@@ -1455,6 +1564,7 @@ describe('<Waypoint> Horizontal', () => {
 			});
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1478
 		it('does not call the onEnter handler when the Waypoint is not visible on mount', () => {
 			leftSpacerWidth = 300;
 			subject();
@@ -1469,6 +1579,7 @@ describe('<Waypoint> Horizontal', () => {
 			parentStyle.display = 'inline-block';
 		});
 
+		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1491
 		it('calls the onEnter handler when the Waypoint is visible on mount', () => {
 			subject();
 			expect(props.onEnter).toHaveBeenCalled();
@@ -1480,6 +1591,7 @@ describe('<Waypoint> Horizontal', () => {
 				subject();
 			});
 
+			// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1502
 			it('does not call the onEnter handler', () => {
 				expect(props.onEnter).not.toHaveBeenCalled();
 			});
@@ -1489,14 +1601,17 @@ describe('<Waypoint> Horizontal', () => {
 					scrollNodeToHorizontal(window, window.innerWidth + 100);
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1511
 				it('calls the onEnter handler', () => {
 					expect(props.onEnter).toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1515
 				it('does not call the onLeave handler', () => {
 					expect(props.onLeave).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1519
 				it('does not call the onEnter handler when scrolled back to initial position', () => {
 					props.onEnter.calls.reset();
 					scrollNodeToHorizontal(window, 0);
@@ -1504,6 +1619,7 @@ describe('<Waypoint> Horizontal', () => {
 					expect(props.onEnter).not.toHaveBeenCalled();
 				});
 
+				// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:1526
 				it('calls the onLeave handler when scrolled back to initial position', () => {
 					props.onEnter.calls.reset();
 					scrollNodeToHorizontal(window, 0);

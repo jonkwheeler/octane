@@ -1,0 +1,7 @@
+{
+	"schemaVersion": 1,
+	"adaptedSuite": "packages/waypoint/tests/browser/adapted/harness/waypoint_adapted_suite.jsx",
+	"upstreamSuite": "packages/waypoint/upstream/test/browser/waypoint_test.jsx",
+	"caseCount": 112,
+	"sha256": "1d81adaf21127580752ba39e5c642b5fcb1e5935a40a4f2ed6a6d815d07d6d8d"
+}

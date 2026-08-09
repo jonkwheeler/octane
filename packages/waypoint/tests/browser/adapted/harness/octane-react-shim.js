@@ -9,6 +9,7 @@ import {
 	drainPassiveEffects,
 	flushSync,
 	isValidElement,
+	useState,
 } from 'octane';
 
 const roots = new WeakMap();
@@ -75,4 +76,4 @@ export const ReactDOM = {
 };
 
 export default React;
-export { createElement, cloneElement, isValidElement, Component, PureComponent };
+export { createElement, cloneElement, isValidElement, Component, PureComponent, useState };

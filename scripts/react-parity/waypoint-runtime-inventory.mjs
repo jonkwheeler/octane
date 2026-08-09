@@ -106,13 +106,14 @@ const adaptedTests = listed
 const adaptedInventory = {
 	schemaVersion: 1,
 	project: 'waypoint-adapted',
-	roots: ['packages/waypoint/tests/upstream'],
+	roots: ['packages/waypoint/tests/upstream', 'packages/waypoint/tests/browser/adapted/harness'],
 	files: [
-		...new Set(
-			adaptedTests.map(function fileOf(test) {
+		...new Set([
+			'packages/waypoint/tests/browser/adapted/harness/waypoint_adapted_suite.jsx',
+			...adaptedTests.map(function fileOf(test) {
 				return test.file;
 			}),
-		),
+		]),
 	].sort(),
 	tests: adaptedTests,
 };

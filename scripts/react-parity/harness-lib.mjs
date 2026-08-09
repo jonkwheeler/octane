@@ -497,6 +497,22 @@ export async function verifyManifestFiles(manifest, root) {
 		} else if (
 			lane.oracle === 'required' &&
 			lane.available !== false &&
+			lane.type === 'browser' &&
+			lane.execution?.kind === 'vitest-full' &&
+			typeof lane.execution.inventory === 'string'
+		) {
+			// Browser vitest-full inventories contribute case ids for divergence
+			// markers (e.g. adapted Jasmine harness suites) without joining the
+			// adaptedRoots.tests drift union owned by adapted-octane inventories.
+			const inventory = JSON.parse(
+				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
+			);
+			for (const test of inventory.tests ?? []) {
+				if (typeof test?.id === 'string') runtimeCaseIds.add(test.id);
+			}
+		} else if (
+			lane.oracle === 'required' &&
+			lane.available !== false &&
 			lane.execution?.kind === 'jest-full'
 		) {
 			const inventory = JSON.parse(
@@ -781,13 +797,20 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 	}
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
+		const tests = Array.isArray(inventory.tests) ? inventory.tests : [];
+		const files = Array.isArray(inventory.files) ? inventory.files : [];
+		const runnableFiles = files.filter(function hasTests(path) {
+			return tests.some(function ownedBy(test) {
+				return test.file === path;
+			});
+		});
 		return [
 			process.execPath,
 			'node_modules/vitest/vitest.mjs',
 			'run',
 			'--project',
 			lane.project,
-			...inventory.files,
+			...(runnableFiles.length > 0 ? runnableFiles : files),
 			'--reporter=json',
 		];
 	}

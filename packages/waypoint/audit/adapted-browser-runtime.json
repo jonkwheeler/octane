@@ -1,577 +1,573 @@
 {
-	"schemaVersion": 1,
-	"project": "waypoint-adapted-browser",
-	"roots": [
-		"packages/waypoint/tests/browser/adapted"
-	],
-	"files": [
-		"packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts"
-	],
-	"tests": [
-		{
-			"id": "runtime:aa206b930ad75175",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when a div is the scrollable ancestor calls the onEnter handler when the Waypoint is visible on mount"
-		},
-		{
-			"id": "runtime:0cdfd5958343fe96",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when a div is the scrollable ancestor does not call the onEnter handler when the Waypoint is not visible on mount"
-		},
-		{
-			"id": "runtime:84758e5d01e2477d",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor calls the onEnter handler when the Waypoint is visible on mount"
-		},
-		{
-			"id": "runtime:29b613510cdf2250",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount does not call the onEnter handler"
-		},
-		{
-			"id": "runtime:e1f5e0cb7b48511f",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible calls the onEnter handler"
-		},
-		{
-			"id": "runtime:deb81f5f51594103",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible calls the onLeave handler when scrolled back to initial position"
-		},
-		{
-			"id": "runtime:3a7db8a182a8c3f3",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible does not call the onEnter handler when scrolled back to initial position"
-		},
-		{
-			"id": "runtime:846ef34fb59d446c",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:69d52b79047eb35e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> does not throw an error when the <html> is the scrollable parent"
-		},
-		{
-			"id": "runtime:734802f844514337",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> logs to the console when called with debug = true"
-		},
-		{
-			"id": "runtime:fdd2f7c691520c92",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling past the waypoint while it is visible does not call the onEnter handler"
-		},
-		{
-			"id": "runtime:76e95517c7d795ab",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling past the waypoint while it is visible the onLeave handler is called"
-		},
-		{
-			"id": "runtime:37cc19beca5b3a1a",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling past the waypoint while it is visible the onPositionChange is called"
-		},
-		{
-			"id": "runtime:d80851cf4ba496f6",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling while the waypoint is visible does not call the onEnter handler again"
-		},
-		{
-			"id": "runtime:f42b47a436e28520",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling while the waypoint is visible does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:4c6b1c738cce3d32",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling while the waypoint is visible does not call the onPositionChange handler again"
-		},
-		{
-			"id": "runtime:193988039a4922ba",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin calls the onEnter handler"
-		},
-		{
-			"id": "runtime:000790e0ffb059cb",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:22ea195316919ba1",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:589b7c628c2c8a27",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onEnter handler again"
-		},
-		{
-			"id": "runtime:e8de2b17b51f080f",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onEnter handler when scrolling past the waypoint"
-		},
-		{
-			"id": "runtime:129b58db9ca860d9",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:c55f0c3e9a0d1d09",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onPositionChange handler"
-		},
-		{
-			"id": "runtime:20f6889f142019eb",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible the onLeave handler is called when scrolling past the waypoint"
-		},
-		{
-			"id": "runtime:4e79a7fef25cedb0",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible the onPositionChange handler is called when scrolling past the waypoint"
-		},
-		{
-			"id": "runtime:d33554ebf7a6915b",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top calls the onEnter handler when scrolled back up just past the bottom"
-		},
-		{
-			"id": "runtime:dd1e805cd136b168",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top does not call the onEnter handler"
-		},
-		{
-			"id": "runtime:a0ffca601a7b9057",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:4ef8af205eefe16a",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top does not call the onLeave handler when scrolled back up just past the bottom"
-		},
-		{
-			"id": "runtime:91b34bff858301a4",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children does not throw with a DOM Element as a child"
-		},
-		{
-			"id": "runtime:bcb78dd80506aaad",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children does not throw with a Stateful Component as a child"
-		},
-		{
-			"id": "runtime:deffbdd1e4a193ef",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children does not throw with a Stateless Component as a child"
-		},
-		{
-			"id": "runtime:0f5696c86cdcf34e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children errors when a Stateful Component does not provide ref to Waypoint"
-		},
-		{
-			"id": "runtime:3098ae49fcaaf40e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children errors when a Stateless Component does not provide ref to Waypoint"
-		},
-		{
-			"id": "runtime:b25221a683a9b473",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call onPositionChange handler when scrolling up not past the threshold"
-		},
-		{
-			"id": "runtime:ef56bc6e958c41ba",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onEnter handler"
-		},
-		{
-			"id": "runtime:cda633d3a0c9ab5b",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onEnter handler when scrolling up not past the threshold"
-		},
-		{
-			"id": "runtime:4d7f4e46b9c21b83",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:d8d65c21d2567573",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onLeave handler when scrolling up not past the threshold"
-		},
-		{
-			"id": "runtime:c6dca353c7ccd2c7",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onPositionChange handler"
-		},
-		{
-			"id": "runtime:7888cd98eca8f6fa",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onEnter handler"
-		},
-		{
-			"id": "runtime:1eddc7e8c8575447",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onLeave handler when scrolling up past the waypoint"
-		},
-		{
-			"id": "runtime:8bf97a40d438c40e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:39c7248b4b26f4a4",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onPositionChange handler when scrolling up past the waypoint"
-		},
-		{
-			"id": "runtime:db6d8d6496ca42b5",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold does not call the onEnter handler again when scrolling up past the waypoint"
-		},
-		{
-			"id": "runtime:a002b6d193cdda66",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:1a46ab6b32e61fa3",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up quickly past the waypoint calls the onEnter handler"
-		},
-		{
-			"id": "runtime:786eec0a4a92d69b",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up quickly past the waypoint calls the onLeave handler"
-		},
-		{
-			"id": "runtime:e5cd6557fb159ccd",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up quickly past the waypoint calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:a90954a76cb4455b",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom calls the onEnter handler when scrolling down past the threshold"
-		},
-		{
-			"id": "runtime:c8686bcc9b419f31",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:b665232711ec4cfe",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom calls the onPositionChange handler when scrolling down past the threshold"
-		},
-		{
-			"id": "runtime:3f7d71e92760ab71",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom does not call the onEnter handler on mount"
-		},
-		{
-			"id": "runtime:6b23a3eb29883101",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom does not call the onLeave handler on mount"
-		},
-		{
-			"id": "runtime:8660ae4cdeba4a2f",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom does not call the onLeave handler when scrolling down past the threshold"
-		},
-		{
-			"id": "runtime:beacaea15155a653",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when `fireOnRapidScroll` is disabled calls the onEnter handler when scrolling down past the threshold"
-		},
-		{
-			"id": "runtime:77ed1ed308a33be4",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when `fireOnRapidScroll` is disabled calls the onPositionChange handler when scrolling down past the threshold"
-		},
-		{
-			"id": "runtime:29c8373552082f2a",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when `fireOnRapidScroll` is disabled does not call the onLeave handler when scrolling down past the threshold"
-		},
-		{
-			"id": "runtime:d67a48facee30589",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling down just below the threshold does not call the onEnter handler"
-		},
-		{
-			"id": "runtime:7f7cf7e7fe8c2466",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling down just below the threshold does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:f334015c0c3dd8d8",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling down just below the threshold does not call the onPositionChange handler"
-		},
-		{
-			"id": "runtime:ded7f6896372c2c1",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint calls the onEnter handler"
-		},
-		{
-			"id": "runtime:12424c667e47dca9",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint calls the onLeave handler"
-		},
-		{
-			"id": "runtime:76b3e54ad1d7e773",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:ac5bddc1c9f88048",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint when `fireOnRapidScroll` is disabled calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:3c8cbc94d42fe2d0",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint when `fireOnRapidScroll` is disabled does not call the onEnter handler"
-		},
-		{
-			"id": "runtime:0b72f047b69babe3",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint when `fireOnRapidScroll` is disabled does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:195134debe6cf3fb",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number calls onPositionChange handler when scrolling down past bottom offset"
-		},
-		{
-			"id": "runtime:00bf7bad018e6087",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number calls the onEnter handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:3913a8b0325caf07",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call onPositionChange handler when scrolling down near bottom offset"
-		},
-		{
-			"id": "runtime:9fd93de5afed8415",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call the onEnter handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:3031625097f39c59",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call the onLeave handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:97b5831f0c171d2e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call the onLeave handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:8b3ce8ae3036d22b",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string calls the onEnter handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:3758898a960b60f3",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string calls the onPositionChange handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:687c380622ec43a0",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call onPositionChange handler when scrolling down near bottom offset"
-		},
-		{
-			"id": "runtime:de9105be9f73faa8",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call the onEnter handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:41bb6187bdf1abcc",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call the onLeave handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:69acb25bc83dd17c",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call the onLeave handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:1945d3673a01f4f4",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string calls the onEnter handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:fb2f085f222acea3",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string calls the onPositionChange handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:720678a0689dfb39",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call onPositionChange handler when scrolling down near bottom offset"
-		},
-		{
-			"id": "runtime:49e7eaf480e4d07d",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call the onEnter handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:b5afd5d97481baee",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call the onLeave handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:fc9f70a54c9677ce",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call the onLeave handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:4bd0eb47ab6a96e6",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage calls the onEnter handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:c8f2e8b556831dad",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage calls the onPositionChange handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:5c7290069ea94f70",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call onPositionChange handler when scrolling down near bottom offset"
-		},
-		{
-			"id": "runtime:d17ed89a0842c104",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call the onEnter handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:26454bf7d1678dc6",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call the onLeave handler when scrolling down near the bottom offset"
-		},
-		{
-			"id": "runtime:a198eeff26fce74e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call the onLeave handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:15a00c440e06681e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero topOffset and the topOffset is passed as a percentage calls the onLeave handler when scrolling down past the bottom offset"
-		},
-		{
-			"id": "runtime:026a4cbab09f0dd5",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with children calls the onEnter handler when scrolling down far enough"
-		},
-		{
-			"id": "runtime:99c546eea7152228",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has bottomOffset < -100% calls the onEnter handler"
-		},
-		{
-			"id": "runtime:1df4a0d002e21a10",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has bottomOffset < -100% calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:41eb4ffb46fd319f",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has bottomOffset < -100% does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:9d1a0374dc469df1",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has topOffset < -100% calls the onEnter handler"
-		},
-		{
-			"id": "runtime:795fddd42bb65d9f",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has topOffset < -100% calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:5fd275b59d9eb459",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has topOffset < -100% does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:c9768a5f955be8bc",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and offsets < -100% calls the onEnter handler"
-		},
-		{
-			"id": "runtime:d25045fb7684ea9e",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and offsets < -100% calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:71856c4c4e80e3c6",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and offsets < -100% does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:059a785c75dbe5a1",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount calls the onEnter handler"
-		},
-		{
-			"id": "runtime:596a302c7d6e4507",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount calls the onPositionChange handler"
-		},
-		{
-			"id": "runtime:82b714e3bf365154",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount does not call the onLeave handler"
-		},
-		{
-			"id": "runtime:ff56f0dbdecfacea",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount does not log to the console"
-		},
-		{
-			"id": "runtime:4f1acb107f3129de",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the scrollable parent is not displayed calls the onLeave handler"
-		},
-		{
-			"id": "runtime:182f948578b98575",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the waypoint is updated in the onEnter callback only calls onEnter once"
-		},
-		{
-			"id": "runtime:5d607b6132e29e9b",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent does not fire the onEnter handler on mount"
-		},
-		{
-			"id": "runtime:65a02773cdd2f07a",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent fires the onEnter handler when the Waypoint is in view"
-		},
-		{
-			"id": "runtime:8151c8f2a2785404",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent fires the onPositionChange handler on mount"
-		},
-		{
-			"id": "runtime:9c6a891f936c7370",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent fires the onPositionChange handler when the Waypoint is in view"
-		},
-		{
-			"id": "runtime:221cde1d99d9b2e3",
-			"file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
-			"fullName": "octane waypoint adapted browser suite executes every inventoried upstream identity exactly once"
-		}
-	]
+  "schemaVersion": 1,
+  "project": "waypoint-adapted-browser",
+  "roots": ["packages/waypoint/tests/browser/adapted"],
+  "files": ["packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:aa206b930ad75175",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when a div is the scrollable ancestor calls the onEnter handler when the Waypoint is visible on mount"
+    },
+    {
+      "id": "runtime:0cdfd5958343fe96",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when a div is the scrollable ancestor does not call the onEnter handler when the Waypoint is not visible on mount"
+    },
+    {
+      "id": "runtime:84758e5d01e2477d",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor calls the onEnter handler when the Waypoint is visible on mount"
+    },
+    {
+      "id": "runtime:29b613510cdf2250",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount does not call the onEnter handler"
+    },
+    {
+      "id": "runtime:e1f5e0cb7b48511f",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible calls the onEnter handler"
+    },
+    {
+      "id": "runtime:deb81f5f51594103",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible calls the onLeave handler when scrolled back to initial position"
+    },
+    {
+      "id": "runtime:3a7db8a182a8c3f3",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible does not call the onEnter handler when scrolled back to initial position"
+    },
+    {
+      "id": "runtime:846ef34fb59d446c",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> Horizontal when the window is the scrollable ancestor when the Waypoint is not visible on mount when scrolled sideways to make the waypoint visible does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:69d52b79047eb35e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> does not throw an error when the <html> is the scrollable parent"
+    },
+    {
+      "id": "runtime:734802f844514337",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> logs to the console when called with debug = true"
+    },
+    {
+      "id": "runtime:fdd2f7c691520c92",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling past the waypoint while it is visible does not call the onEnter handler"
+    },
+    {
+      "id": "runtime:76e95517c7d795ab",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling past the waypoint while it is visible the onLeave handler is called"
+    },
+    {
+      "id": "runtime:37cc19beca5b3a1a",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling past the waypoint while it is visible the onPositionChange is called"
+    },
+    {
+      "id": "runtime:d80851cf4ba496f6",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling while the waypoint is visible does not call the onEnter handler again"
+    },
+    {
+      "id": "runtime:f42b47a436e28520",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling while the waypoint is visible does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:4c6b1c738cce3d32",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when scrolling while the waypoint is visible does not call the onPositionChange handler again"
+    },
+    {
+      "id": "runtime:193988039a4922ba",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin calls the onEnter handler"
+    },
+    {
+      "id": "runtime:000790e0ffb059cb",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:22ea195316919ba1",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:589b7c628c2c8a27",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onEnter handler again"
+    },
+    {
+      "id": "runtime:e8de2b17b51f080f",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onEnter handler when scrolling past the waypoint"
+    },
+    {
+      "id": "runtime:129b58db9ca860d9",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:c55f0c3e9a0d1d09",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible does not call the onPositionChange handler"
+    },
+    {
+      "id": "runtime:20f6889f142019eb",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible the onLeave handler is called when scrolling past the waypoint"
+    },
+    {
+      "id": "runtime:4e79a7fef25cedb0",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the <body> itself has a margin when scrolling while the waypoint is visible the onPositionChange handler is called when scrolling past the waypoint"
+    },
+    {
+      "id": "runtime:d33554ebf7a6915b",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top calls the onEnter handler when scrolled back up just past the bottom"
+    },
+    {
+      "id": "runtime:dd1e805cd136b168",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top does not call the onEnter handler"
+    },
+    {
+      "id": "runtime:a0ffca601a7b9057",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:4ef8af205eefe16a",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children and is above the top does not call the onLeave handler when scrolled back up just past the bottom"
+    },
+    {
+      "id": "runtime:91b34bff858301a4",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children does not throw with a DOM Element as a child"
+    },
+    {
+      "id": "runtime:bcb78dd80506aaad",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children does not throw with a Stateful Component as a child"
+    },
+    {
+      "id": "runtime:deffbdd1e4a193ef",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children does not throw with a Stateless Component as a child"
+    },
+    {
+      "id": "runtime:0f5696c86cdcf34e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children errors when a Stateful Component does not provide ref to Waypoint"
+    },
+    {
+      "id": "runtime:3098ae49fcaaf40e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint has children errors when a Stateless Component does not provide ref to Waypoint"
+    },
+    {
+      "id": "runtime:b25221a683a9b473",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call onPositionChange handler when scrolling up not past the threshold"
+    },
+    {
+      "id": "runtime:ef56bc6e958c41ba",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onEnter handler"
+    },
+    {
+      "id": "runtime:cda633d3a0c9ab5b",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onEnter handler when scrolling up not past the threshold"
+    },
+    {
+      "id": "runtime:4d7f4e46b9c21b83",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:d8d65c21d2567573",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onLeave handler when scrolling up not past the threshold"
+    },
+    {
+      "id": "runtime:c6dca353c7ccd2c7",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top does not call the onPositionChange handler"
+    },
+    {
+      "id": "runtime:7888cd98eca8f6fa",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onEnter handler"
+    },
+    {
+      "id": "runtime:1eddc7e8c8575447",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onLeave handler when scrolling up past the waypoint"
+    },
+    {
+      "id": "runtime:8bf97a40d438c40e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:39c7248b4b26f4a4",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold calls the onPositionChange handler when scrolling up past the waypoint"
+    },
+    {
+      "id": "runtime:db6d8d6496ca42b5",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold does not call the onEnter handler again when scrolling up past the waypoint"
+    },
+    {
+      "id": "runtime:a002b6d193cdda66",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up past the threshold does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:1a46ab6b32e61fa3",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up quickly past the waypoint calls the onEnter handler"
+    },
+    {
+      "id": "runtime:786eec0a4a92d69b",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up quickly past the waypoint calls the onLeave handler"
+    },
+    {
+      "id": "runtime:e5cd6557fb159ccd",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is above the top when scrolling up quickly past the waypoint calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:a90954a76cb4455b",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom calls the onEnter handler when scrolling down past the threshold"
+    },
+    {
+      "id": "runtime:c8686bcc9b419f31",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:b665232711ec4cfe",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom calls the onPositionChange handler when scrolling down past the threshold"
+    },
+    {
+      "id": "runtime:3f7d71e92760ab71",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom does not call the onEnter handler on mount"
+    },
+    {
+      "id": "runtime:6b23a3eb29883101",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom does not call the onLeave handler on mount"
+    },
+    {
+      "id": "runtime:8660ae4cdeba4a2f",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom does not call the onLeave handler when scrolling down past the threshold"
+    },
+    {
+      "id": "runtime:beacaea15155a653",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when `fireOnRapidScroll` is disabled calls the onEnter handler when scrolling down past the threshold"
+    },
+    {
+      "id": "runtime:77ed1ed308a33be4",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when `fireOnRapidScroll` is disabled calls the onPositionChange handler when scrolling down past the threshold"
+    },
+    {
+      "id": "runtime:29c8373552082f2a",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when `fireOnRapidScroll` is disabled does not call the onLeave handler when scrolling down past the threshold"
+    },
+    {
+      "id": "runtime:d67a48facee30589",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling down just below the threshold does not call the onEnter handler"
+    },
+    {
+      "id": "runtime:7f7cf7e7fe8c2466",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling down just below the threshold does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:f334015c0c3dd8d8",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling down just below the threshold does not call the onPositionChange handler"
+    },
+    {
+      "id": "runtime:ded7f6896372c2c1",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint calls the onEnter handler"
+    },
+    {
+      "id": "runtime:12424c667e47dca9",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint calls the onLeave handler"
+    },
+    {
+      "id": "runtime:76b3e54ad1d7e773",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:ac5bddc1c9f88048",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint when `fireOnRapidScroll` is disabled calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:3c8cbc94d42fe2d0",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint when `fireOnRapidScroll` is disabled does not call the onEnter handler"
+    },
+    {
+      "id": "runtime:0b72f047b69babe3",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom when scrolling quickly past the waypoint when `fireOnRapidScroll` is disabled does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:195134debe6cf3fb",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number calls onPositionChange handler when scrolling down past bottom offset"
+    },
+    {
+      "id": "runtime:00bf7bad018e6087",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number calls the onEnter handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:3913a8b0325caf07",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call onPositionChange handler when scrolling down near bottom offset"
+    },
+    {
+      "id": "runtime:9fd93de5afed8415",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call the onEnter handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:3031625097f39c59",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call the onLeave handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:97b5831f0c171d2e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a number does not call the onLeave handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:8b3ce8ae3036d22b",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string calls the onEnter handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:3758898a960b60f3",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string calls the onPositionChange handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:687c380622ec43a0",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call onPositionChange handler when scrolling down near bottom offset"
+    },
+    {
+      "id": "runtime:de9105be9f73faa8",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call the onEnter handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:41bb6187bdf1abcc",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call the onLeave handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:69acb25bc83dd17c",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a numeric string does not call the onLeave handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:1945d3673a01f4f4",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string calls the onEnter handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:fb2f085f222acea3",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string calls the onPositionChange handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:720678a0689dfb39",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call onPositionChange handler when scrolling down near bottom offset"
+    },
+    {
+      "id": "runtime:49e7eaf480e4d07d",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call the onEnter handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:b5afd5d97481baee",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call the onLeave handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:fc9f70a54c9677ce",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottom offset is passed as a pixel string does not call the onLeave handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:4bd0eb47ab6a96e6",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage calls the onEnter handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:c8f2e8b556831dad",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage calls the onPositionChange handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:5c7290069ea94f70",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call onPositionChange handler when scrolling down near bottom offset"
+    },
+    {
+      "id": "runtime:d17ed89a0842c104",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call the onEnter handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:26454bf7d1678dc6",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call the onLeave handler when scrolling down near the bottom offset"
+    },
+    {
+      "id": "runtime:a198eeff26fce74e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero bottomOffset and the bottomOffset is passed as a percentage does not call the onLeave handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:15a00c440e06681e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with a non-zero topOffset and the topOffset is passed as a percentage calls the onLeave handler when scrolling down past the bottom offset"
+    },
+    {
+      "id": "runtime:026a4cbab09f0dd5",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is below the bottom with children calls the onEnter handler when scrolling down far enough"
+    },
+    {
+      "id": "runtime:99c546eea7152228",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has bottomOffset < -100% calls the onEnter handler"
+    },
+    {
+      "id": "runtime:1df4a0d002e21a10",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has bottomOffset < -100% calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:41eb4ffb46fd319f",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has bottomOffset < -100% does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:9d1a0374dc469df1",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has topOffset < -100% calls the onEnter handler"
+    },
+    {
+      "id": "runtime:795fddd42bb65d9f",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has topOffset < -100% calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:5fd275b59d9eb459",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and has topOffset < -100% does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:c9768a5f955be8bc",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and offsets < -100% calls the onEnter handler"
+    },
+    {
+      "id": "runtime:d25045fb7684ea9e",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and offsets < -100% calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:71856c4c4e80e3c6",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount and offsets < -100% does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:059a785c75dbe5a1",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount calls the onEnter handler"
+    },
+    {
+      "id": "runtime:596a302c7d6e4507",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount calls the onPositionChange handler"
+    },
+    {
+      "id": "runtime:82b714e3bf365154",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount does not call the onLeave handler"
+    },
+    {
+      "id": "runtime:ff56f0dbdecfacea",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the Waypoint is visible on mount does not log to the console"
+    },
+    {
+      "id": "runtime:4f1acb107f3129de",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the scrollable parent is not displayed calls the onLeave handler"
+    },
+    {
+      "id": "runtime:182f948578b98575",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the waypoint is updated in the onEnter callback only calls onEnter once"
+    },
+    {
+      "id": "runtime:5d607b6132e29e9b",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent does not fire the onEnter handler on mount"
+    },
+    {
+      "id": "runtime:65a02773cdd2f07a",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent fires the onEnter handler when the Waypoint is in view"
+    },
+    {
+      "id": "runtime:8151c8f2a2785404",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent fires the onPositionChange handler on mount"
+    },
+    {
+      "id": "runtime:9c6a891f936c7370",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite <Waypoint> when the window is the scrollable parent fires the onPositionChange handler when the Waypoint is in view"
+    },
+    {
+      "id": "runtime:221cde1d99d9b2e3",
+      "file": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "fullName": "octane waypoint adapted browser suite executes every inventoried upstream identity exactly once"
+    }
+  ]
 }

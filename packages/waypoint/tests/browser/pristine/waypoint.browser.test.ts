@@ -90,28 +90,16 @@ beforeAll(async function setupPristineBrowser() {
 				},
 			},
 			{
-				name: 'waypoint-react-dom-legacy-shim',
-				transform(code, id) {
-					if (!id.includes('waypoint_test.jsx')) return null;
-					let next = code.replace(/from\s+['"]react-dom['"]/g, "from '/react-dom-legacy-shim.js'");
-					// Block-level parents default to 100% width, so oversized
-					// inline-block spacers overflow without growing scrollWidth.
-					// Force shrink-to-content so window horizontal smoke cases can scroll.
-					next = next.replace(
-						'delete parentStyle.overflow;\n      delete parentStyle.width;',
-						"delete parentStyle.overflow;\n      delete parentStyle.width;\n      parentStyle.display = 'inline-block';",
-					);
-					next = next.replace(
-						'window.scroll(scrollLeft, 0);',
-						[
-							'{',
-							'document.documentElement.scrollLeft = scrollLeft;',
-							'document.body.scrollLeft = scrollLeft;',
-							'window.scrollTo(scrollLeft, 0);',
-							'}',
-						].join(''),
-					);
-					return { code: next, map: null };
+				// resolve.alias for bare react-dom would also rewrite the shim's
+				// own react-dom import and break react-dom/client prebundling.
+				// Scope the legacy shim to the vendored suite importer only —
+				// no suite source rewrite.
+				name: 'waypoint-react-dom-legacy-alias',
+				enforce: 'pre',
+				resolveId(source, importer) {
+					if (source !== 'react-dom' || !importer) return null;
+					if (!importer.includes('waypoint_test.jsx')) return null;
+					return resolve(harnessRoot, 'react-dom-legacy-shim.js');
 				},
 			},
 		],

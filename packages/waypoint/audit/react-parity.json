@@ -27,10 +27,12 @@
 		},
 		"tests": {
 			"roots": [
-				"packages/waypoint/tests/upstream"
+				"packages/waypoint/tests/upstream",
+				"packages/waypoint/tests/browser/adapted/harness"
 			],
 			"include": [
-				"\\.test\\.ts$"
+				"\\.test\\.ts$",
+				"waypoint_adapted_suite\\.jsx$"
 			],
 			"exclude": []
 		}
@@ -70,7 +72,7 @@
 				{
 					"path": "packages/waypoint/audit/pristine-runtime.json",
 					"role": "support",
-					"sha256": "6b7acc05032261e1e256c183c6111fe983748e9952f2bc1414133b570aeccca7"
+					"sha256": "d872ec33b12dc259464f3803f966b13b56a63fcac981c0590f6b8f5f923870f7"
 				},
 				{
 					"path": "scripts/react-parity/waypoint-pristine-runtime.mjs",
@@ -115,12 +117,12 @@
 				{
 					"path": "packages/waypoint/audit/adapted-runtime.json",
 					"role": "support",
-					"sha256": "62e808c50c478b6ade3b58ec082fe98c607a0a79f3c629824f365152a9eb08ed"
+					"sha256": "e8e91567341c14f9e911c0967b05e5889e49a288269897edc9e8c39d2d57ed18"
 				},
 				{
 					"path": "scripts/react-parity/waypoint-runtime-inventory.mjs",
 					"role": "support",
-					"sha256": "ef4dd43688f4f2c423bdd68ad70f9a46a371cb0c0922567a11724ec920d08dfc"
+					"sha256": "796e49670f4b8d85e77d8d5b17ddc795f0f15c41048478bdd8ce21c2cb43e086"
 				}
 			]
 		},
@@ -139,7 +141,7 @@
 				{
 					"path": "packages/waypoint/audit/pristine-browser-runtime.json",
 					"role": "support",
-					"sha256": "b0602696f3b96ec44d6c10a2ed3c43cace7c07cb11b4d34dec3bb0e82496d2b6"
+					"sha256": "3baaf8446c02db30db6a5e66bce08c689981c0ed6d2eac59c18b6a58b4dbe3c0"
 				},
 				{
 					"path": "packages/waypoint/tests/browser/_shared/upstream-browser-identities.json",
@@ -154,7 +156,7 @@
 				{
 					"path": "packages/waypoint/tests/browser/pristine/waypoint.browser.test.ts",
 					"role": "support",
-					"sha256": "fc2fcb53f7da5e27f9b82a47922ecce1492aabc789d28deed54276081ea1c2c8"
+					"sha256": "3229cbdaef9b161c3ef60f4b15d160f0427d84dcfdccd71b42c2aa185232a600"
 				}
 			]
 		},
@@ -164,7 +166,7 @@
 			"oracle": "required",
 			"environment": "workspace-node",
 			"project": "waypoint-adapted-browser",
-			"notes": "Same-scenario Octane browser suite adapted from upstream/test/browser/waypoint_test.jsx, executed in Chromium via Playwright.",
+			"notes": "Same-scenario Octane browser suite adapted from upstream/test/browser/waypoint_test.jsx, executed in Chromium via Playwright. Structure/fingerprint fidelity is gated by waypoint-browser-suite-lib.mjs against adapted-browser-suite.json.",
 			"execution": {
 				"kind": "vitest-full",
 				"inventory": "packages/waypoint/audit/adapted-browser-runtime.json"
@@ -173,7 +175,12 @@
 				{
 					"path": "packages/waypoint/audit/adapted-browser-runtime.json",
 					"role": "support",
-					"sha256": "aa7a2286a32ab139315cf7b9ebd38114fbe386ab2557b3a8c7270e425feb9cd8"
+					"sha256": "c3c42b9d5afe82d304d1728708f37bea62eefb179adea78d4f6dc3fc1b285362"
+				},
+				{
+					"path": "packages/waypoint/audit/adapted-browser-suite.json",
+					"role": "support",
+					"sha256": "3dbceee05524f3807a0ef63fe6ee87a454356ca8ba131d278c36a6e103e5a463"
 				},
 				{
 					"path": "packages/waypoint/tests/browser/_shared/upstream-browser-identities.json",
@@ -181,14 +188,29 @@
 					"sha256": "4ae768230faa6a8340eb667b8cdda679c25814716573ee0f3f79e82b3130cd45"
 				},
 				{
+					"path": "packages/waypoint/tests/browser/adapted/ALLOWED_TRANSFORMS.md",
+					"role": "support",
+					"sha256": "e6d73502b521d63a5a592686d699c69c21293c94f0b54333e7cb42ee6fa0fac5"
+				},
+				{
 					"path": "packages/waypoint/tests/browser/adapted/harness/waypoint_adapted_suite.jsx",
 					"role": "support",
-					"sha256": "b73028a74f83f7b86c5dca5858d455b9a80c065b6cbdef045423d8c71f45d088"
+					"sha256": "1d81adaf21127580752ba39e5c642b5fcb1e5935a40a4f2ed6a6d815d07d6d8d"
 				},
 				{
 					"path": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
 					"role": "support",
 					"sha256": "2d4a2f88a6439d59374d4ce9e112fca4838c1e377b667ee5002a147281eff781"
+				},
+				{
+					"path": "scripts/react-parity/waypoint-browser-suite-lib.mjs",
+					"role": "support",
+					"sha256": "426618c6572cb5077a056cafda355be776c9af9f09ba441c5ac6b7916cc84790"
+				},
+				{
+					"path": "scripts/react-parity/waypoint-browser-cite.mjs",
+					"role": "support",
+					"sha256": "91204dd58b47f5cb63386627a90fde0a376004622121d2518a32b48e68415c95"
 				}
 			]
 		},
@@ -231,7 +253,7 @@
 				{
 					"path": "packages/waypoint/audit/pristine-types.json",
 					"role": "support",
-					"sha256": "3e3d5d90b4c7f3ceefdf4cf538e06186aa47ea838d88ec9e3b747e5751a51270"
+					"sha256": "0745cc557ef71356fcb7eb6aa854c239229e76736bf005fd2dfadbe75337eeca"
 				},
 				{
 					"path": "packages/waypoint/audit/type-parity.json",
@@ -284,7 +306,7 @@
 				{
 					"path": "packages/waypoint/audit/adapted-types.json",
 					"role": "support",
-					"sha256": "3684cb083c8f3019ac4fe21aa4d2397d2fbba47fb7387dc2edd53b43a970e1eb"
+					"sha256": "06787ecfcdede58905646b387b30e96e54b3473207611648677639930312a1f4"
 				},
 				{
 					"path": "packages/waypoint/audit/type-parity.json",
@@ -299,5 +321,35 @@
 			]
 		}
 	],
-	"divergences": []
+	"divergences": [
+		{
+			"id": "waypoint-ref-child-contract",
+			"caseIds": [
+				"runtime:0f5696c86cdcf34e",
+				"runtime:3098ae49fcaaf40e"
+			],
+			"upstreamResult": "Waypoint throws ensureRefIsUsedByChild when a custom child omits a ref.",
+			"octaneResult": "Missing child refs do not throw; Octane uses refs-as-props without the upstream forwardRef detection branch.",
+			"rationale": "Octane has no forwardRef and treats ref as an ordinary prop, so the upstream child-ref enforcement API does not apply.",
+			"classification": "api-surface",
+			"consumerImpact": "A child that forgets to forward ref mounts without the upstream development-time throw.",
+			"migrationGuidance": "Forward the Waypoint-provided ref onto a host node when the child must participate in geometry measurement.",
+			"owner": "@octanejs/waypoint",
+			"reviewCondition": "Review if Octane adds a forwardRef-compatible child ref enforcement path."
+		},
+		{
+			"id": "waypoint-onenter-state-update",
+			"caseIds": [
+				"runtime:182f948578b98575"
+			],
+			"upstreamResult": "Class Wrapper calls this.forceUpdate() from onEnter to re-render during the enter smoke case.",
+			"octaneResult": "Function Wrapper bumps useState from onEnter; onEnter still fires only once.",
+			"rationale": "Octane has no class components or forceUpdate; an explicit state bump is the equivalent re-render trigger.",
+			"classification": "api-surface",
+			"consumerImpact": "Consumers that relied on forceUpdate inside onEnter should use a state update instead.",
+			"migrationGuidance": "Replace forceUpdate in onEnter with a useState (or equivalent) update.",
+			"owner": "@octanejs/waypoint",
+			"reviewCondition": "Review if Octane adds a forceUpdate-compatible imperative re-render API for function components."
+		}
+	]
 }

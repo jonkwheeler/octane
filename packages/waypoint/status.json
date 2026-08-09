@@ -11,7 +11,8 @@
   },
   "divergences": [
     "Public node and prop types use Octane structural types and do not import React.",
-    "Octane's ref-as-prop model removes the upstream forwardRef detection branch and does not throw ensureRefIsUsedByChild when a custom child omits a ref.",
+    "waypoint-ref-child-contract: Octane's ref-as-prop model removes the upstream forwardRef detection branch and does not throw ensureRefIsUsedByChild when a custom child omits a ref.",
+    "waypoint-onenter-state-update: no class forceUpdate; adapted onEnter re-render smoke bumps useState instead.",
     "A custom child must be supplied through the children prop so it remains an inspectable element descriptor; nested TSRX children compile to an opaque render block."
   ],
   "ssr": "Supported. The marker renders on the server and measurement/listeners begin after client mount.",

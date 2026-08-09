@@ -17,6 +17,9 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyWaypointTypes } from './waypoint-types-lib.mjs';
+import { verifyWaypointBrowserSuite } from './waypoint-browser-suite-lib.mjs';
+import { verifyWaypointNodeCrosswalk } from './waypoint-runtime-crosswalk-lib.mjs';
+import { verifyWaypointTestClassifications } from './waypoint-classifications-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -70,6 +73,21 @@ try {
 	verifyWaypointTypes(REPO);
 } catch (error) {
 	errors.push(`waypoint type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyWaypointBrowserSuite(REPO);
+} catch (error) {
+	errors.push(`waypoint browser suite evidence is invalid: ${error.message}`);
+}
+try {
+	verifyWaypointNodeCrosswalk(REPO);
+} catch (error) {
+	errors.push(`waypoint node suite crosswalk is invalid: ${error.message}`);
+}
+try {
+	verifyWaypointTestClassifications(REPO);
+} catch (error) {
+	errors.push(`waypoint test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components

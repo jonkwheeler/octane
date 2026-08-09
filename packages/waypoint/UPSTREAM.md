@@ -1,12 +1,24 @@
 # Upstream
 
-- Package: `react-waypoint@10.3.0`
-- Supported upstream range: `10.3.x`
-- Repository: https://github.com/civiccc/react-waypoint
-- Tag: `v10.3.0`
-- Tag commit: `0905ac5a073131147c96dd0694bd6f1b6ee8bc97`
-- License: MIT
-- React oracle: `react-waypoint@10.3.0`
+## Pin and source boundary
+
+| Field | Value |
+|---|---|
+| Package | `react-waypoint` |
+| Version | `10.3.0` |
+| Supported upstream range | `10.3.x` |
+| Repository | https://github.com/civiccc/react-waypoint |
+| Tag | `v10.3.0` |
+| Tag commit | `0905ac5a073131147c96dd0694bd6f1b6ee8bc97` |
+| License | MIT |
+| React / ReactDOM oracle | `19.2.7` |
+| react-test-renderer oracle | `19.2.3` |
+| jasmine-core oracle | `5.12.0` |
+
+Upstream peers React 15–18. The pristine node and browser lanes run above that
+peer ceiling on the React 19 oracle versions above, in the documented
+Chromium/Playwright environment used by `waypoint-pristine-browser` /
+`waypoint-adapted-browser`.
 
 The npm package publishes compiled `cjs`/`es` output and declarations, but not
 the authored source or tests. `upstream/` therefore contains the byte-exact
@@ -47,6 +59,9 @@ Playwright lanes, and repo-authored type probes with assertion-group
 inventories. `tests/waypoint.test.ts` remains Octane-only framework/contract
 evidence outside `testExecution`.
 
-Octane divergences in the adapted browser suite: refs-as-props (no
-`ensureRefIsUsedByChild` throw for a child that omits a ref) and no class
-`forceUpdate` in the onEnter re-render smoke case.
+Structured adapted-browser divergences (see `audit/react-parity.json`):
+
+- `waypoint-ref-child-contract` — refs-as-props; missing child ref does not throw
+  `ensureRefIsUsedByChild` (`runtime:0f5696c86cdcf34e`, `runtime:3098ae49fcaaf40e`).
+- `waypoint-onenter-state-update` — no class `forceUpdate`; Wrapper bumps
+  `useState` from `onEnter` (`runtime:182f948578b98575`).

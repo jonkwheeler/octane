@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted Chromium/Playwright wrapper for the pinned react-waypoint 10.3.0 test/browser/waypoint_test.jsx scenarios against the Octane binding, inventory-gated by packages/waypoint/audit/adapted-browser-runtime.json."
+    },
+    {
+      "path": "packages/waypoint/tests/browser/pristine/waypoint.browser.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Runs the vendored react-waypoint 10.3.0 Karma/Jasmine browser suite (packages/waypoint/upstream/test/browser/waypoint_test.jsx) in Chromium via Playwright against the React binding after vendored-byte verification."
+    },
+    {
+      "path": "packages/waypoint/tests/waypoint.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Geometry helpers, scroll-ancestor discovery, and Octane mount/lifecycle probes for the published binding; unpaired against the adapted upstream node suite and not used as React-parity ownership."
+    }
+  ]
+}

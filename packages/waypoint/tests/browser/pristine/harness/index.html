@@ -12,6 +12,17 @@
 				margin: 0;
 				padding: 0;
 			}
+			/*
+			 * Upstream horizontal window cases delete the subject parent's width.
+			 * Block-level parents stay viewport-wide, so oversized inline-block
+			 * spacers overflow without growing document scrollWidth. Shrink only
+			 * nowrap horizontal parents (vertical suites keep block layout).
+			 */
+			body > div > div[style*='white-space: nowrap'],
+			body > div > div[style*='white-space:nowrap'] {
+				display: inline-block;
+				vertical-align: top;
+			}
 		</style>
 		<script src="/jasmine.js"></script>
 		<script src="/jasmine-boot.js"></script>
