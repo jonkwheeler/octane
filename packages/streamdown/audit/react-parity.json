@@ -61,7 +61,7 @@
       "environment": "workspace-node",
       "project": "streamdown-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM. Upstream repository suite artifacts remain present and explicitly excluded pending pristine / one-for-one adapted lanes.",
+      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM. Upstream repository suite artifacts remain present and explicitly excluded pending pristine / one-for-one adapted lanes. Ordinary shards execute this project while provenance is recorded-unverified.",
       "files": [
         {
           "path": "packages/streamdown/tests/differential/parity.test.ts",
@@ -138,7 +138,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "980b90bb146ac20c6361e0d00171f6d34f95ffce3d794f3f9e3d4dcadcde85bf"
+          "sha256": "008c9dd188c5fbf7b428545082c27691fc8cef2ece48e447e1795cdf434fe942"
         },
         {
           "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
@@ -153,7 +153,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "streamdown",
-      "notes": "Runs exact Octane cases authenticating native custom-component events and consolidated plugin subpaths. Upstream repository suite artifacts are inventoried and explicitly excluded in audit/upstream-suite-artifacts.json until pristine / one-for-one adapted lanes are added.",
+      "notes": "Runs exact Octane cases authenticating native custom-component events and consolidated plugin subpaths. Upstream repository suite artifacts are inventoried and explicitly excluded in audit/upstream-suite-artifacts.json until pristine / one-for-one adapted lanes are added. Vitest projects remain outside react-parity ownership while provenance is recorded-unverified so ordinary shards execute these cases.",
       "files": [
         {
           "path": "packages/streamdown/tests/divergences.test.ts",
@@ -207,7 +207,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "980b90bb146ac20c6361e0d00171f6d34f95ffce3d794f3f9e3d4dcadcde85bf"
+          "sha256": "008c9dd188c5fbf7b428545082c27691fc8cef2ece48e447e1795cdf434fe942"
         },
         {
           "path": "packages/streamdown/audit/upstream-suite-artifacts.json",

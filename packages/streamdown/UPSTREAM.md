@@ -33,6 +33,9 @@ not yet run pristine or one-for-one adapted lanes for that suite. Instead it:
   subpaths.
 
 A later full-suite port should promote inventoried artifacts into pristine /
-adapted lanes rather than re-inferring absence from the npm tarball.
+adapted lanes rather than re-inferring absence from the npm tarball. Until
+provenance is `verified` with executable upstream-suite lanes, Streamdown
+Vitest projects stay off `testExecution` react-parity ownership so ordinary
+shards keep running the differential and adapted evidence.
 
 Every other local test is classified as an Octane framework contract.

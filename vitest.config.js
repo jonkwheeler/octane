@@ -2885,13 +2885,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: [
-						'packages/streamdown/tests/divergences.test.ts',
-						'packages/streamdown/tests/parity-plugins.test.ts',
-					],
-				},
+				// Keep Streamdown off react-parity ownership while provenance is
+				// recorded-unverified: the parity job only validates that manifest
+				// and would otherwise orphan these exact cases from ordinary shards.
+				// Dedicated projects still isolate differential setup and SSR mode.
 				test: {
 					name: 'streamdown',
 					include: [
@@ -2909,7 +2906,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'streamdown-differential',
 					include: ['packages/streamdown/tests/differential/**/*.test.ts'],
