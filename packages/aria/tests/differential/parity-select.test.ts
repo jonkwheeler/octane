@@ -22,6 +22,7 @@ const FIXTURE = resolve(__dirname, '../_fixtures/aria-diff-select.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
 
 describe('differential: @octanejs/aria Phase-3 select vs real react-aria', () => {
+	// @parity-case differential:aria-closed-mount-hidden-native-select
 	it('closed on mount with a hidden native select, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'SelectSpec', undefined, CACHE);
 		await d.step('mount', () => {});

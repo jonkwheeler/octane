@@ -13,6 +13,7 @@ const FIXTURE = resolve(__dirname, '../_fixtures/aria-diff-combobox.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
 
 describe('differential: @octanejs/aria Phase-3 combobox vs real react-aria', () => {
+	// @parity-case differential:aria-closed-mount
 	it('closed on mount, byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'ComboBoxSpec', undefined, CACHE);
 		await d.step('mount', () => {});
