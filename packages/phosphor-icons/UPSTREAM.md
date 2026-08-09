@@ -9,6 +9,7 @@ Generated geometry is pinned separately to MIT-licensed
 The generator covers all 1,512 canonical icons, deprecated aliases, and six
 weights. Refs and events follow Octane's native contracts, and the React-only
 SSR namespace is unnecessary. Existing exhaustive generation/export and SSR
-tests remain package evidence. The manifest's same-fixture lane is bounded to
+tests remain package evidence. Upstream keeps a runtime suite under `test/` and
+has no dedicated type-test suite. The manifest's same-fixture lane is bounded to
 accessible duotone Camera SVG output and remains `recorded-unverified` because
-the pristine upstream runtime/type suites are not vendored one-for-one.
+that pristine upstream runtime suite is not vendored one-for-one.

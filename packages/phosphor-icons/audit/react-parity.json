@@ -6,14 +6,14 @@
     "version": "2.1.10",
     "commit": "57424d5f99b793b585f5c6f5cab76f79772510e5",
     "sourceRoot": "src",
-    "testRoot": "tests",
+    "testRoot": "test",
     "license": "MIT",
     "integrity": "sha256:08027417baf5fc4818581a63c487c98ad36c80c17816a0069d4fd0805350ee90",
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
     "runtime": "present",
-    "types": "present"
+    "types": "absent"
   },
   "adaptedRoots": {
     "source": {
