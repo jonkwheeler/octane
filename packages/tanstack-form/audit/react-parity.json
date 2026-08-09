@@ -17,21 +17,29 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-form/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-form/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-form/tests/conformance"],
+      "roots": [
+        "packages/tanstack-form/tests/conformance"
+      ],
       "include": [
-        "(?:createFormHook|onChangeListenTo\\.adapter|useField|useForm|useFormGroup)\\.test\\.ts$"
+        "(?:createFormHook|useField|useForm|useFormGroup)\\.test\\.ts$"
       ],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 78,
-    "uniqueIdentities": 78,
+    "inventoryEntries": 73,
+    "uniqueIdentities": 73,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -80,7 +88,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "68fd15664543eafa721ea848f7e18bb6add3007f474726df986eb78fca488357"
+          "sha256": "691e6b3b2e0719e0eb53ddd2da9108e627b446b5c12beeb6d4fa9609e1d2aa3b"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -90,7 +98,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6ec3ef511c292580b9fdee0043d5fea591f0b4be1436a58c2be3d24e80c3e7ba"
+          "sha256": "7856e4f606a475d4d178b43d6a12e6572a294efd51505ab8ca5889b91d196cc8"
         }
       ]
     },
@@ -101,7 +109,7 @@
       "environment": "workspace-node",
       "project": "tanstack-form",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the one-for-one adapted createFormHook, onChangeListenTo, useField, useForm, and useFormGroup wrappers against the Octane renderer.",
+      "notes": "Runs the faithful adapted createFormHook, useField, useForm, and useFormGroup wrappers against the Octane renderer.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/tanstack-form/audit/adapted-runtime.json"
@@ -110,17 +118,12 @@
         {
           "path": "packages/tanstack-form/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7bd0f9237f492f8898cf7fdd61801000d82f90be920fdae2c4945c519b89d006"
+          "sha256": "5d18b502d695f01378454bd2957bea590d931e1f1bd8a57c27f2702476547e9e"
         },
         {
           "path": "packages/tanstack-form/tests/conformance/createFormHook.test.ts",
           "role": "support",
           "sha256": "758c069e6e554ab82102464110343f0424517b98177384eb55a4e5859f6c9e5e"
-        },
-        {
-          "path": "packages/tanstack-form/tests/conformance/onChangeListenTo.adapter.test.ts",
-          "role": "support",
-          "sha256": "3a342a581f6a79eab093f24550f3fdd09f34b14888931a260c8afc1932c03c85"
         },
         {
           "path": "packages/tanstack-form/tests/conformance/useField.test.ts",
@@ -140,12 +143,12 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "68fd15664543eafa721ea848f7e18bb6add3007f474726df986eb78fca488357"
+          "sha256": "691e6b3b2e0719e0eb53ddd2da9108e627b446b5c12beeb6d4fa9609e1d2aa3b"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6ec3ef511c292580b9fdee0043d5fea591f0b4be1436a58c2be3d24e80c3e7ba"
+          "sha256": "7856e4f606a475d4d178b43d6a12e6572a294efd51505ab8ca5889b91d196cc8"
         }
       ]
     },

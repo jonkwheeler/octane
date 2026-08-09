@@ -1145,13 +1145,13 @@ export default defineConfig({
 				},
 			},
 			{
-				// Adapted upstream wrappers are parity-owned; divergences and other
-				// Octane-only conformance stay in the ordinary shards.
+				// Faithful adapted upstream wrappers are parity-owned. StrictMode
+				// divergences, repository-only regressions, and other Octane-only
+				// conformance stay in the ordinary shards.
 				testExecution: {
 					group: 'react-parity',
 					include: [
 						'packages/tanstack-form/tests/conformance/createFormHook.test.ts',
-						'packages/tanstack-form/tests/conformance/onChangeListenTo.adapter.test.ts',
 						'packages/tanstack-form/tests/conformance/useField.test.ts',
 						'packages/tanstack-form/tests/conformance/useForm.test.ts',
 						'packages/tanstack-form/tests/conformance/useFormGroup.test.ts',

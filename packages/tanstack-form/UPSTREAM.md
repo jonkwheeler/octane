@@ -18,11 +18,13 @@ dispositions is open follow-up work before provenance can move to `verified`.
 
 This bounded harness currently executes:
 
-- the one-for-one adapted `createFormHook`, `onChangeListenTo`, `useField`,
-  `useForm`, and `useFormGroup` wrappers through the `tanstack-form` Vitest
-  project (`testExecution.include` lists only those files);
+- the faithful adapted `createFormHook`, `useField`, `useForm`, and
+  `useFormGroup` wrappers through the `tanstack-form` Vitest project
+  (`testExecution.include` lists only those files);
 - one exact shared React/Octane differential interaction fixture;
 - the repository-authored adapted type contract.
 
-Documented Octane-only divergences and SSR stay ordinary package tests outside
-React-parity ownership until pristine upstream suites land.
+StrictMode-adapted cases (`onChangeListenTo`, StrictMode-named `useField`
+scenarios), repository-only regressions, documented Octane-only divergences,
+and SSR stay ordinary package tests outside React-parity ownership until
+pristine upstream suites land.
