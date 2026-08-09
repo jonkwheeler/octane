@@ -5,7 +5,6 @@
   },
   "surface": "Full @measured/puck@0.20.2 core port \u2014 Puck editor, Render, DropZone, hooks, and config types.",
   "divergences": [
-    "Native onChange on controlled text inputs (ExternalInput search field) \u2014 upstream React synthetic onChange; Octane uses onInput for per-edit.",
     "use-debounce replaced with @octanejs/tanstack-pacer useDebouncer in DragDropContext."
   ],
   "ssr": "Not yet evaluated.",

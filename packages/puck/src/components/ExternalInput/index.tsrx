@@ -182,7 +182,7 @@ export const ExternalInput = ({
                     name="q"
                     type="search"
                     placeholder={field.placeholder}
-                    onChange={(e) => {
+                    onInput={(e) => {
                       setSearchQuery(e.currentTarget.value);
                     }}
                     autoComplete="off"
