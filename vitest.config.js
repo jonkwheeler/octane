@@ -1385,7 +1385,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rainbowkit',
 					include: [
@@ -1460,7 +1459,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rainbowkit-ssr',
 					include: ['packages/rainbowkit/tests/ssr/**/*.test.ts'],
