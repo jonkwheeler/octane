@@ -13,6 +13,7 @@ beforeEach(function setupMocks() {
 	setupIntersectionMocking(vi.fn);
 });
 
+// Per upstream/src/__tests__/observe.test.ts:5.
 test('should be able to use observe', function shouldBeAbleToUseObserve() {
 	const element = document.createElement('div');
 	const cb = vi.fn();
@@ -30,6 +31,7 @@ test('should be able to use observe', function shouldBeAbleToUseObserve() {
 	);
 });
 
+// Per upstream/src/__tests__/observe.test.ts:22.
 test('should convert options to id', function shouldConvertOptionsToId() {
 	expect(
 		optionsToId({

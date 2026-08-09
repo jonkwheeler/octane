@@ -13,6 +13,7 @@ afterEach(function resetMocks() {
 	vi.resetAllMocks();
 });
 
+// Per upstream/src/__tests__/setup.test.ts:14.
 test('should warn if not running in test env', function shouldWarnIfNotRunningInTestEnv() {
 	vi.spyOn(console, 'error').mockImplementation(function noop() {});
 	// Ensure IntersectionObserver is not a mock for this probe.
@@ -35,6 +36,7 @@ afterEach(() => {
 });`);
 });
 
+// Per upstream/src/__tests__/setup.test.ts:34.
 test('should not warn if running in test env with global "vi"', function shouldNotWarnWithGlobalVi() {
 	vi.spyOn(console, 'error').mockImplementation(function noop() {});
 	setupIntersectionMocking(vi.fn);

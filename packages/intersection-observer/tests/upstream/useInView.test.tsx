@@ -47,6 +47,7 @@ const LazyHookComponent = ({ options }: { options?: IntersectionOptions }) => {
 	);
 };
 
+// Per upstream/src/__tests__/useInView.test.tsx:42.
 test('should create a hook', () => {
 	const { getByTestId } = render(<HookComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -55,6 +56,7 @@ test('should create a hook', () => {
 	expect(instance.observe).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:50.
 test('should create a hook with array threshold', () => {
 	const { getByTestId } = render(<HookComponent options={{ threshold: [0.1, 1] }} />);
 	const wrapper = getByTestId('wrapper');
@@ -63,6 +65,7 @@ test('should create a hook with array threshold', () => {
 	expect(instance.observe).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:60.
 test('should create a hook with scrollMargin', () => {
 	const { getByTestId } = render(<HookComponent options={{ scrollMargin: '10px' }} />);
 	const wrapper = getByTestId('wrapper');
@@ -71,6 +74,7 @@ test('should create a hook with scrollMargin', () => {
 	expect(instance).toHaveProperty('scrollMargin', '10px');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:70.
 test('should create a lazy hook', () => {
 	const { getByTestId } = render(<LazyHookComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -79,6 +83,7 @@ test('should create a lazy hook', () => {
 	expect(instance.observe).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:78.
 test('should create a hook inView', () => {
 	const { getByText } = render(<HookComponent />);
 	mockAllIsIntersecting(true);
@@ -86,6 +91,7 @@ test('should create a hook inView', () => {
 	getByText('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:85.
 test('should mock thresholds', () => {
 	render(<HookComponent options={{ threshold: [0.5, 1] }} />);
 	mockAllIsIntersecting(0.2);
@@ -96,6 +102,7 @@ test('should mock thresholds', () => {
 	screen.getByText('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:95.
 test('should create a hook with initialInView', () => {
 	const { getByText } = render(<HookComponent options={{ initialInView: true }} />);
 	getByText('true');
@@ -103,6 +110,7 @@ test('should create a hook with initialInView', () => {
 	getByText('false');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:104.
 test('should trigger a hook leaving view', () => {
 	const { getByText } = render(<HookComponent />);
 	mockAllIsIntersecting(true);
@@ -110,6 +118,7 @@ test('should trigger a hook leaving view', () => {
 	getByText('false');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:111.
 test('should respect trigger once', () => {
 	const { getByText } = render(<HookComponent options={{ triggerOnce: true }} />);
 	mockAllIsIntersecting(true);
@@ -118,6 +127,7 @@ test('should respect trigger once', () => {
 	getByText('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:121.
 test('should trigger onChange', () => {
 	const onChange = vi.fn();
 	render(<HookComponent options={{ onChange }} />);
@@ -138,6 +148,7 @@ test('should trigger onChange', () => {
 	);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:141.
 test('should respect skip', () => {
 	const { getByText, rerender } = render(<HookComponent options={{ skip: true }} />);
 	mockAllIsIntersecting(false);
@@ -148,6 +159,7 @@ test('should respect skip', () => {
 	getByText('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:153.
 test('should not reset current state if changing skip', () => {
 	const { getByText, rerender } = render(<HookComponent options={{ skip: false }} />);
 	mockAllIsIntersecting(true);
@@ -155,6 +167,7 @@ test('should not reset current state if changing skip', () => {
 	getByText('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:162.
 test('should unmount the hook', () => {
 	const { unmount, getByTestId } = render(<HookComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -163,6 +176,7 @@ test('should unmount the hook', () => {
 	expect(instance.unobserve).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:170.
 test('inView should be false when component is unmounted', () => {
 	const { rerender, getByText } = render(<HookComponent />);
 	mockAllIsIntersecting(true);
@@ -172,11 +186,13 @@ test('inView should be false when component is unmounted', () => {
 	getByText('false');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:179.
 test('should handle trackVisibility', () => {
 	render(<HookComponent options={{ trackVisibility: true, delay: 100 }} />);
 	mockAllIsIntersecting(true);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:184.
 test('should handle trackVisibility when unsupported', () => {
 	render(<HookComponent options={{ trackVisibility: true, delay: 100 }} />);
 });
@@ -210,6 +226,7 @@ const SwitchHookComponent = ({
 /**
  * This is a test for the case where people move the ref around (please don't)
  */
+// Per upstream/src/__tests__/useInView.test.tsx:217.
 test('should handle ref removed', () => {
 	const { rerender, getByTestId } = render(<SwitchHookComponent />);
 	mockAllIsIntersecting(true);
@@ -253,6 +270,7 @@ const MergeRefsComponent = ({ options }: { options?: IntersectionOptions }) => {
 	return <div data-testid="inview" data-inview={inView} ref={setRef} />;
 };
 
+// Per upstream/src/__tests__/useInView.test.tsx:260.
 test('should handle ref merged', () => {
 	const { rerender, getByTestId } = render(<MergeRefsComponent />);
 	mockAllIsIntersecting(true);
@@ -290,6 +308,7 @@ const MultipleHookComponent = ({ options }: { options?: IntersectionOptions }) =
 	);
 };
 
+// Per upstream/src/__tests__/useInView.test.tsx:301.
 test('should handle multiple hooks on the same element', () => {
 	const { getByTestId } = render(<MultipleHookComponent options={{ threshold: 0.1 }} />);
 	mockAllIsIntersecting(true);
@@ -298,6 +317,7 @@ test('should handle multiple hooks on the same element', () => {
 	expect(getByTestId('item-3').getAttribute('data-inview')).toBe('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:311.
 test('should handle thresholds missing on observer instance', () => {
 	render(<HookComponent options={{ threshold: [0.1, 1] }} />);
 	const wrapper = screen.getByTestId('wrapper');
@@ -309,6 +329,7 @@ test('should handle thresholds missing on observer instance', () => {
 	screen.getByText('true');
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:322.
 test('should handle thresholds missing on observer instance with no threshold set', () => {
 	render(<HookComponent />);
 	const wrapper = screen.getByTestId('wrapper');
@@ -335,6 +356,7 @@ const HookComponentWithEntry = ({
 	);
 };
 
+// Per upstream/src/__tests__/useInView.test.tsx:348.
 test('should set intersection ratio as the largest threshold smaller than trigger', () => {
 	render(<HookComponentWithEntry options={{ threshold: [0, 0.25, 0.5, 0.75, 1] }} />);
 	const wrapper = screen.getByTestId('wrapper');
@@ -343,6 +365,7 @@ test('should set intersection ratio as the largest threshold smaller than trigge
 	screen.getByText(/intersectionRatio: 0.5/);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:358.
 test('should handle fallback if unsupported', () => {
 	destroyIntersectionMocking();
 	// @ts-expect-error
@@ -358,6 +381,7 @@ test('should handle fallback if unsupported', () => {
 	}).toThrow(/IntersectionObserver is not a constructor/);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:380.
 test('should handle defaultFallbackInView if unsupported', () => {
 	destroyIntersectionMocking();
 	// @ts-expect-error
@@ -378,6 +402,7 @@ test('should handle defaultFallbackInView if unsupported', () => {
 	}).toThrow(/IntersectionObserver is not a constructor/);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:403.
 test('should restore the browser IntersectionObserver', () => {
 	expect(vi.isMockFunction(window.IntersectionObserver)).toBe(true);
 	destroyIntersectionMocking();
@@ -387,6 +412,7 @@ test('should restore the browser IntersectionObserver', () => {
 	expect(vi.isMockFunction(window.IntersectionObserver)).toBe(false);
 });
 
+// Per upstream/src/__tests__/useInView.test.tsx:412.
 test('should trigger all hooks when using triggerOnce with merged refs', () => {
 	const MultipleHooksWithTriggerOnce = () => {
 		const [ref1, inView1] = useInView({ triggerOnce: true });

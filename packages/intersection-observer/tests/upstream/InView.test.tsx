@@ -14,6 +14,7 @@ beforeEach(function setupMocks() {
 	setupIntersectionMocking(vi.fn);
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:7.
 test('Should render <InView /> intersecting', () => {
 	const callback = vi.fn();
 	render(
@@ -47,22 +48,26 @@ test('Should render <InView /> intersecting', () => {
 	);
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:31.
 test('should render plain children', () => {
 	render(<InView>inner</InView>);
 	screen.getByText('inner');
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:36.
 test('should render as element', () => {
 	const { container } = render(<InView as="span">inner</InView>);
 	const tagName = container.children[0].tagName.toLowerCase();
 	expect(tagName).toBe('span');
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:42.
 test('should render with className', () => {
 	const { container } = render(<InView className="inner-class">inner</InView>);
 	expect(container.children[0].className).toBe('inner-class');
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:47.
 test('Should respect skip', () => {
 	const cb = vi.fn();
 	render(
@@ -75,6 +80,7 @@ test('Should respect skip', () => {
 	expect(cb).not.toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:59.
 test('Should handle initialInView', () => {
 	const cb = vi.fn();
 	render(
@@ -89,6 +95,7 @@ test('Should handle initialInView', () => {
 	screen.getByText('InView: true');
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:69.
 test('Should unobserve old node', () => {
 	const { rerender } = render(
 		<InView
@@ -127,6 +134,7 @@ test('Should unobserve old node', () => {
 	mockAllIsIntersecting(true);
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:91.
 test('Should ensure node exists before observing and unobserving', () => {
 	const { unmount } = render(
 		<InView
@@ -138,6 +146,7 @@ test('Should ensure node exists before observing and unobserving', () => {
 	unmount();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:96.
 test('Should recreate observer when threshold change', () => {
 	const { container, rerender } = render(<InView>Inner</InView>);
 	mockAllIsIntersecting(true);
@@ -148,6 +157,7 @@ test('Should recreate observer when threshold change', () => {
 	expect(instance.unobserve).toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:106.
 test('Should recreate observer when root change', () => {
 	const { container, rerender } = render(<InView>Inner</InView>);
 	mockAllIsIntersecting(true);
@@ -159,6 +169,7 @@ test('Should recreate observer when root change', () => {
 	expect(instance.unobserve).toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:117.
 test('Should recreate observer when rootMargin change', () => {
 	const { container, rerender } = render(<InView>Inner</InView>);
 	mockAllIsIntersecting(true);
@@ -169,6 +180,7 @@ test('Should recreate observer when rootMargin change', () => {
 	expect(instance.unobserve).toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:127.
 test('Should recreate observer when scrollMargin change', () => {
 	const { container, rerender } = render(<InView>Inner</InView>);
 	mockAllIsIntersecting(true);
@@ -179,6 +191,7 @@ test('Should recreate observer when scrollMargin change', () => {
 	expect(instance.unobserve).toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:137.
 test('Should unobserve when triggerOnce comes into view', () => {
 	const { container } = render(<InView triggerOnce>Inner</InView>);
 	mockAllIsIntersecting(false);
@@ -189,6 +202,7 @@ test('Should unobserve when triggerOnce comes into view', () => {
 	expect(instance.unobserve).toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:147.
 test('Should unobserve when unmounted', () => {
 	const { container, unmount } = render(<InView triggerOnce>Inner</InView>);
 	const instance = intersectionMockInstance(container.children[0]);
@@ -200,6 +214,7 @@ test('Should unobserve when unmounted', () => {
 	expect(instance.unobserve).toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:158.
 test('plain children should not catch bubbling onChange event', async () => {
 	const onChange = vi.fn();
 	const { getByLabelText } = render(
@@ -218,6 +233,7 @@ test('plain children should not catch bubbling onChange event', async () => {
 	expect(onChange).not.toHaveBeenCalled();
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:173.
 test('should render with fallback', () => {
 	const cb = vi.fn();
 	// @ts-expect-error
@@ -252,6 +268,7 @@ test('should render with fallback', () => {
 	}).toThrow(/IntersectionObserver is not a constructor/);
 });
 
+// Per upstream/src/__tests__/InView.test.tsx:205.
 test('should render with global fallback', () => {
 	const cb = vi.fn();
 	// @ts-expect-error

@@ -121,6 +121,7 @@ const ThresholdTriggerComponent = ({ options }: { options?: IntersectionEffectOp
 	);
 };
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:121.
 test('should create a hook with useOnInView', () => {
 	const { getByTestId } = render(<OnInViewChangedComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -129,6 +130,7 @@ test('should create a hook with useOnInView', () => {
 	expect(instance.observe).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:129.
 test('should create a hook with array threshold', () => {
 	const { getByTestId } = render(<OnInViewChangedComponent options={{ threshold: [0.1, 1] }} />);
 	const wrapper = getByTestId('wrapper');
@@ -137,6 +139,7 @@ test('should create a hook with array threshold', () => {
 	expect(instance.observe).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:139.
 test('should create a lazy hook with useOnInView', () => {
 	const { getByTestId } = render(<LazyOnInViewChangedComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -145,6 +148,7 @@ test('should create a lazy hook with useOnInView', () => {
 	expect(instance.observe).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:147.
 test('should call the callback when element comes into view', () => {
 	const { getByTestId } = render(<OnInViewChangedComponent />);
 	mockAllIsIntersecting(true);
@@ -154,6 +158,7 @@ test('should call the callback when element comes into view', () => {
 	expect(wrapper.getAttribute('data-call-count')).toBe('1');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:156.
 test('should ignore initial false intersection', () => {
 	const { getByTestId } = render(<OnInViewChangedComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -165,6 +170,7 @@ test('should ignore initial false intersection', () => {
 	expect(wrapper.getAttribute('data-call-count')).toBe('1');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:167.
 test('should call cleanup when element leaves view', () => {
 	const { getByTestId } = render(<OnInViewChangedComponent />);
 	mockAllIsIntersecting(true);
@@ -175,6 +181,7 @@ test('should call cleanup when element leaves view', () => {
 	expect(wrapper.getAttribute('data-cleanup-count')).toBe('1');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:177.
 test('should respect threshold values', () => {
 	const { getByTestId } = render(<OnInViewChangedComponent options={{ threshold: [0.5, 1] }} />);
 	const wrapper = getByTestId('wrapper');
@@ -189,6 +196,7 @@ test('should respect threshold values', () => {
 	expect(wrapper.getAttribute('data-inview')).toBe('true');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:193.
 test('should respect triggerOnce option', () => {
 	const { getByTestId } = render(
 		<>
@@ -209,6 +217,7 @@ test('should respect triggerOnce option', () => {
 	expect(wrapperTriggerOnce.getAttribute('data-call-count')).toBe('1');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:213.
 test('should respect skip option', () => {
 	const { getByTestId, rerender } = render(<OnInViewChangedComponent options={{ skip: true }} />);
 	mockAllIsIntersecting(true);
@@ -224,6 +233,7 @@ test('should respect skip option', () => {
 	expect(wrapper.getAttribute('data-call-count')).toBe('1');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:230.
 test('should handle unmounting properly', () => {
 	const { unmount, getByTestId } = render(<OnInViewChangedComponent />);
 	const wrapper = getByTestId('wrapper');
@@ -233,6 +243,7 @@ test('should handle unmounting properly', () => {
 	expect(instance.unobserve).toHaveBeenCalledWith(wrapper);
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:239.
 test('should handle ref changes', () => {
 	const { rerender, getByTestId } = render(<OnInViewChangedComponent />);
 	mockAllIsIntersecting(true);
@@ -264,6 +275,7 @@ const MergeRefsComponent = ({ options }: { options?: IntersectionEffectOptions }
 	return <div data-testid="inview" data-inview={inView.toString()} ref={setRef} />;
 };
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:279.
 test('should handle merged refs', () => {
 	const { rerender, getByTestId } = render(<MergeRefsComponent />);
 	mockAllIsIntersecting(true);
@@ -316,6 +328,7 @@ const MultipleCallbacksComponent = ({ options }: { options?: IntersectionEffectO
 	);
 };
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:335.
 test('should handle multiple callbacks on the same element', () => {
 	const { getByTestId } = render(<MultipleCallbacksComponent options={{ threshold: 0.1 }} />);
 	mockAllIsIntersecting(true);
@@ -325,6 +338,7 @@ test('should handle multiple callbacks on the same element', () => {
 	expect(getByTestId('item-3').getAttribute('data-inview')).toBe('true');
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:346.
 test('should pass the element to the callback', () => {
 	let capturedElement: Element | undefined;
 
@@ -343,6 +357,7 @@ test('should pass the element to the callback', () => {
 	expect(capturedElement).toBe(element);
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:364.
 test('should track which threshold triggered the visibility change', () => {
 	// Using multiple specific thresholds
 	const { getByTestId } = render(
@@ -383,6 +398,7 @@ test('should track which threshold triggered the visibility change', () => {
 	expect(triggeredThresholds).toContain(0.75);
 });
 
+// Per upstream/src/__tests__/useOnInView.test.tsx:406.
 test('should track thresholds when crossing multiple in a single update', () => {
 	// Using multiple specific thresholds
 	const { getByTestId } = render(

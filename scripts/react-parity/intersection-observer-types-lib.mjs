@@ -135,10 +135,14 @@ function structuralSource(source, fileName) {
 		true,
 		ts.ScriptKind.TS,
 	);
+	// Prettier keeps trailing commas in multiline imports but collapses the
+	// shorter adapted import path to one line without them. That formatting
+	// difference is not a semantic type-test change.
 	return ts
 		.createPrinter({ removeComments: true })
 		.printFile(normalizedFile)
 		.replace(/\s+/g, ' ')
+		.replace(/, ([}\]])/g, ' $1')
 		.trim();
 }
 
