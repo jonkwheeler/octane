@@ -16,5 +16,5 @@
       "react/*": ["./react-types-must-not-be-imported.d.ts"]
     }
   },
-  "include": ["./**/*.test-d.ts", "./react-types-must-not-be-imported.d.ts"]
+  "include": ["./public-api.test-d.ts", "./react-types-must-not-be-imported.d.ts"]
 }
