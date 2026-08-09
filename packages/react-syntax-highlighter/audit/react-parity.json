@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-syntax-highlighter/src"
-      ],
-      "include": [
-        "\\.(?:js|d\\.ts)$"
-      ],
+      "roots": ["packages/react-syntax-highlighter/src"],
+      "include": ["\\.(?:js|d\\.ts)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-syntax-highlighter/tests/adapted"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/react-syntax-highlighter/tests/adapted"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1c461985d09e2c0692a79bebafeaaefaaa85eca92f0942cd1dee1edbd5fb151b"
+      "lockfileSha256": "96c2c6a2e9cf91a8c7f711de3e3bc4d22210479d43d08d9bff37e5209723d453"
     }
   },
   "lanes": [
@@ -115,7 +107,7 @@
         {
           "path": "packages/react-syntax-highlighter/scripts/generate-parity-audit.mjs",
           "role": "support",
-          "sha256": "c44142f2aedea777f658ed4c91bd42395b4970539d7c4b676a23dd90ddd7659a"
+          "sha256": "dccab12c9fb68f8efff707ccc85abfa1f82d2fc040357d4089d3f0d19810ef5f"
         },
         {
           "path": "packages/react-syntax-highlighter/tests/adapted/__snapshots__/code-style-passed-to-line-numbers.test.ts.snap",
@@ -305,131 +297,6 @@
       ]
     },
     {
-      "id": "react-syntax-highlighter-conformance",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-syntax-highlighter",
-      "notes": "Covers public/static APIs, async queues and races, failure fallback, hydration identity, selection, and live updates.",
-      "files": [
-        {
-          "path": "packages/react-syntax-highlighter/tests/feasibility.test.ts",
-          "role": "test",
-          "sha256": "d237fc2af23ceb74c4a0e0103ebb98dcb63517ab2ec4c9f8de42a794d6cc15a9",
-          "cases": [
-            {
-              "id": "conformance:entrypoint-families",
-              "testName": "resolves representative pinned ESM and CJS path families",
-              "fullName": "react-syntax-highlighter feasibility gate resolves representative pinned ESM and CJS path families"
-            },
-            {
-              "id": "conformance:root-static-contract",
-              "testName": "preserves the root export and static-member contract",
-              "fullName": "react-syntax-highlighter feasibility gate preserves the root export and static-member contract"
-            },
-            {
-              "id": "conformance:dynamic-native-tags",
-              "testName": "renders highlighted HAST through dynamic native tags",
-              "fullName": "react-syntax-highlighter feasibility gate renders highlighted HAST through dynamic native tags"
-            },
-            {
-              "id": "conformance:custom-components-renderer",
-              "testName": "supports component-valued tags and a custom renderer",
-              "fullName": "react-syntax-highlighter feasibility gate supports component-valued tags and a custom renderer"
-            },
-            {
-              "id": "conformance:async-unmount",
-              "testName": "does not update an unmounted async highlighter when loading settles",
-              "fullName": "react-syntax-highlighter feasibility gate does not update an unmounted async highlighter when loading settles"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-syntax-highlighter/tests/async-races.test.ts",
-          "role": "test",
-          "sha256": "ddf3ba74538724aa2ca5f38782c09a3e45a4c3d0cb1303925f7f13a83bbc8091",
-          "cases": [
-            {
-              "id": "conformance:async-registration-queue",
-              "testName": "queues registration before the AST generator settles",
-              "fullName": "async lifecycle parity queues registration before the AST generator settles"
-            },
-            {
-              "id": "conformance:async-stale-language",
-              "testName": "ignores an older language completion after switching languages",
-              "fullName": "async lifecycle parity ignores an older language completion after switching languages"
-            },
-            {
-              "id": "conformance:async-rejection-fallback",
-              "testName": "keeps deterministic plain output when a language loader rejects",
-              "fullName": "async lifecycle parity keeps deterministic plain output when a language loader rejects"
-            },
-            {
-              "id": "conformance:async-ast-retry",
-              "testName": "retries a rejected AST loader without an unhandled rejection",
-              "fullName": "async lifecycle parity retries a rejected AST loader without an unhandled rejection"
-            },
-            {
-              "id": "conformance:async-language-retry",
-              "testName": "retries a rejected language after a same-language update",
-              "fullName": "async lifecycle parity retries a rejected language after a same-language update"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-syntax-highlighter/tests/hydration.test.ts",
-          "role": "test",
-          "sha256": "a9ce7a58f85c3fb18ff789db058742382c9f50d00b3a27ca288557caacc5e2a4",
-          "cases": [
-            {
-              "id": "conformance:hydration-adoption",
-              "testName": "adopts highlighted nodes and selected code before supporting a live update",
-              "fullName": "react-syntax-highlighter hydration adopts highlighted nodes and selected code before supporting a live update"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-syntax-highlighter/tests/negative-controls.test.ts",
-          "role": "test",
-          "sha256": "47ac5d42f819d1cd09a0bbf802420f11003caca319933dc1ef10a952334504ba",
-          "cases": [
-            {
-              "id": "conformance:negative-controls",
-              "testName": "fails closed for missing, extra, renamed, collided, stale, and removed-lane evidence",
-              "fullName": "react-syntax-highlighter negative controls fails closed for missing, extra, renamed, collided, stale, and removed-lane evidence"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-syntax-highlighter-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-syntax-highlighter-ssr",
-      "notes": "Covers synchronous variants and deterministic async fallback without DOM globals.",
-      "files": [
-        {
-          "path": "packages/react-syntax-highlighter/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "fd806b270f457e09518926a8d563ae4956c69f39de19ae553ebfc26d34e8ae44",
-          "cases": [
-            {
-              "id": "ssr:sync-variants",
-              "testName": "renders synchronous Highlight.js and Prism variants without DOM globals",
-              "fullName": "react-syntax-highlighter server rendering renders synchronous Highlight.js and Prism variants without DOM globals"
-            },
-            {
-              "id": "ssr:async-fallback",
-              "testName": "renders the deterministic plain fallback for async variants",
-              "fullName": "react-syntax-highlighter server rendering renders the deterministic plain fallback for async variants"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "react-syntax-highlighter-differential",
       "type": "differential",
       "oracle": "required",
@@ -564,9 +431,7 @@
   "divergences": [
     {
       "id": "compiled-children-value",
-      "caseIds": [
-        "types:adapted-compiled-children"
-      ],
+      "caseIds": ["types:adapted-compiled-children"],
       "upstreamResult": "Nested React children are inspectable source-string values.",
       "octaneResult": "TSRX nested component children are opaque renderer blocks; source text is passed with children={source}.",
       "rationale": "The Octane compiler owns nested component child blocks and intentionally does not expose their captured render scope to userland.",
@@ -578,9 +443,7 @@
     },
     {
       "id": "custom-component-identity",
-      "caseIds": [
-        "types:adapted-custom-components"
-      ],
+      "caseIds": ["types:adapted-custom-components"],
       "upstreamResult": "PreTag and CodeTag accept native tags or React class/function ComponentType values.",
       "octaneResult": "PreTag and CodeTag accept native tags or Octane function ComponentBody values.",
       "rationale": "React class instances and React element identity are renderer-owned objects that Octane cannot execute.",
