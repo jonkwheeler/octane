@@ -263,7 +263,10 @@ describe('CI workflow aggregation', () => {
 		assert.equal(shardedProjects.has('react-resizable-panels-browser'), true);
 		assert.equal(shardedProjects.has('react-resizable-panels-server'), true);
 		for (const pattern of baseProjects.get('react-resizable-panels').testExecution.include) {
-			assert.equal(shardedProjects.get('react-resizable-panels').test.exclude.includes(pattern), true);
+			assert.equal(
+				shardedProjects.get('react-resizable-panels').test.exclude.includes(pattern),
+				true,
+			);
 		}
 		assert.equal(shardedProjects.get('react-resizable-panels').testExecution, undefined);
 		for (const project of ['hook-form', 'hook-form-server']) {
