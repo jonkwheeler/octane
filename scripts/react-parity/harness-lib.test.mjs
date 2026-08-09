@@ -13,6 +13,7 @@ import {
 	describeTestIdentityMismatch,
 	nodeMajorSatisfies,
 	requiredExecutableLanes,
+	selectHarnessAction,
 	summarizeRuntimeInventories,
 	toPortablePath,
 	validateManifest,
@@ -261,6 +262,20 @@ test('selects every available required lane for aggregate execution', () => {
 		requiredExecutableLanes(value).map((lane) => lane.id),
 		['adapted', 'differential'],
 	);
+});
+
+test('routes harness execution from required lanes, not provenance verification', () => {
+	const unverified = manifest();
+	unverified.provenance.verification = 'recorded-unverified';
+	assert.equal(selectHarnessAction(unverified), 'run-required');
+
+	const empty = manifest({ lanes: [] });
+	assert.equal(selectHarnessAction(empty), 'validate');
+
+	const unavailableOnly = manifest({
+		lanes: [{ ...manifest().lanes[0], available: false }],
+	});
+	assert.equal(selectHarnessAction(unavailableOnly), 'validate');
 });
 
 test('accepts explicit TypeScript lanes and builds portable compiler argv without a shell', () => {

@@ -4,7 +4,6 @@ import { renderToStaticMarkup } from 'octane/server';
 import { ServerView } from '../_fixtures/server.tsrx';
 
 describe('@octanejs/tanstack-store SSR', () => {
-	// @parity-case adapted:tanstack-store-ssr
 	it('reads store, atom, and contextual snapshots without a DOM', () => {
 		expect(typeof document).toBe('undefined');
 		const store = createStore({ count: 7 });

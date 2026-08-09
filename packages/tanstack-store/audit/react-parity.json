@@ -29,17 +29,17 @@
     },
     "tests": {
       "roots": [
-        "packages/tanstack-store/tests"
+        "packages/tanstack-store/tests/conformance"
       ],
       "include": [
-        "\\.test\\.ts$"
+        "upstream-index\\.test\\.ts$"
       ],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 32,
+    "uniqueIdentities": 32,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
+      "lockfileSha256": "196102fbba708fd9e13ec8b14301a19c2bee2957badf0d4580edb1435bd0ee8d"
     }
   },
   "lanes": [
@@ -91,64 +91,69 @@
           "sha256": "7aff5688701aaba0cd483a9231c2834d2b2a1525f04b52583fe204402a3e61e7"
         },
         {
-          "path": "packages/tanstack-store/tests/_fixtures/conformance.tsrx",
+          "path": "packages/tanstack-store/audit/test-classifications.json",
           "role": "support",
-          "sha256": "a3bec0cadcca27c1c8460a622e50764c0ca616b2ae07d69fa9ec455fd961ef59"
+          "sha256": "4238f5507d5b032aa308e3fcc8bce5378f1d18264d6e1321c5cf696c8d6f4f36"
         },
         {
-          "path": "packages/tanstack-store/tests/_fixtures/server.tsrx",
+          "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "e4a7acf86189deedfe9e760d5205a5fd305e96c1f271d9d0323581e5db2d85db"
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "2be4b40fcabe9e6f8a4e415727dd1af45d8dc45ca8c1fe1f39129136ba8e0435"
         }
       ]
     },
     {
-      "id": "tanstack-store-adapted-divergence",
+      "id": "tanstack-store-adapted-upstream",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "tanstack-store",
-      "notes": "Authenticates the documented omission of the experimental upstream _useStore export.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the one-for-one adapted packages/react-store/tests/index.test.tsx suite fetched from the pinned repository, including OCTANE DIVERGENCE cases for the omitted experimental _useStore export.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/tanstack-store/audit/adapted-runtime.json"
+      },
       "files": [
         {
-          "path": "packages/tanstack-store/tests/conformance/experimental-use-store.parity.test.ts",
-          "role": "test",
-          "sha256": "9943a9ce101d22b8fdc544b92a88976af68c107d00cc88ebe0d3e2b205c21fd3",
-          "cases": [
-            {
-              "id": "adapted:tanstack-store-experimental-use-store",
-              "testName": "matches the supported @tanstack/react-store runtime exports",
-              "fullName": "export surface matches the supported @tanstack/react-store runtime exports"
-            }
-          ]
-        }
-      ]
-    },
-
-    {
-      "id": "tanstack-store-adapted-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-store-ssr",
-      "notes": "Authenticates DOM-free server reads for store, atom, and contextual snapshots.",
-      "files": [
-        {
-          "path": "packages/tanstack-store/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "56fc40d4267882d7d87ea042cb5516dcf37343fc58db0ac4e7f21a5d2873d56e",
-          "cases": [
-            {
-              "id": "adapted:tanstack-store-ssr",
-              "testName": "reads store, atom, and contextual snapshots without a DOM",
-              "fullName": "@octanejs/tanstack-store SSR reads store, atom, and contextual snapshots without a DOM"
-            }
-          ]
+          "path": "packages/tanstack-store/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "7235b5f9b133c1857b1504235de6f685dd9ecd8edf7085f91a0b22db5e8665df"
         },
         {
-          "path": "packages/tanstack-store/tests/_fixtures/server.tsrx",
+          "path": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
           "role": "support",
-          "sha256": "e4a7acf86189deedfe9e760d5205a5fd305e96c1f271d9d0323581e5db2d85db"
+          "sha256": "3a3bfa1f6758c900a3704db911e9fcf03254a8f8fc4c76cb338c77519da1987d"
+        },
+        {
+          "path": "packages/tanstack-store/tests/_fixtures/upstream/index.tsrx",
+          "role": "support",
+          "sha256": "79e1da33d7e451fe9829325948564364e0f7a8e0a721595ea1156f35cc30f17e"
+        },
+        {
+          "path": "packages/tanstack-store/tests/conformance/test-setup.ts",
+          "role": "support",
+          "sha256": "631944237a0593316c06b531b9b1874e190360fb14074da6acc715713ed332b9"
+        },
+        {
+          "path": "packages/tanstack-store/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "1cfaa0a8ae1b465b0f851b8b968c29dfa123d0d56468231f6efbc1384a5328ae"
+        },
+        {
+          "path": "packages/tanstack-store/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "4238f5507d5b032aa308e3fcc8bce5378f1d18264d6e1321c5cf696c8d6f4f36"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "2be4b40fcabe9e6f8a4e415727dd1af45d8dc45ca8c1fe1f39129136ba8e0435"
         }
       ]
     },
@@ -195,7 +200,8 @@
     {
       "id": "tanstack-store-experimental-use-store",
       "caseIds": [
-        "adapted:tanstack-store-experimental-use-store"
+        "runtime:70e0662c775ba7a6",
+        "runtime:ef803bd57bf097a5"
       ],
       "upstreamResult": "@tanstack/react-store exports the experimental _useStore hook.",
       "octaneResult": "@octanejs/tanstack-store intentionally omits _useStore while retaining the stable useSelector and useStore APIs.",

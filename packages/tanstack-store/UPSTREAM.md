@@ -11,7 +11,21 @@
 
 The tagged repository contains the upstream runtime and compile-time suites.
 The published npm artifact contains source and declarations but omits those
-tests, so provenance remains recorded-unverified. Required evidence runs the
-same store, atom, action, and context fixture through React and Octane, checks
-the documented experimental-export divergence, exercises DOM-free SSR, and
-compiles the repository-authored public type contract.
+tests, so provenance remains `recorded-unverified`. `upstreamSuites.runtime`
+and `upstreamSuites.types` remain `present` because the repository pin has
+those suites; promoting them into pristine runtime/type lanes with complete
+dispositions is open follow-up work before provenance can move to `verified`.
+
+The pinned repository suite is vendored under `packages/tanstack-store/upstream/`
+and adapted one-for-one into
+`packages/tanstack-store/tests/_fixtures/upstream/index.tsrx`.
+
+This bounded harness currently executes:
+
+- the one-for-one adapted upstream runtime suite through the `tanstack-store`
+  Vitest project (`testExecution.include` lists only that wrapper);
+- one exact shared React/Octane differential interaction fixture;
+- the repository-authored adapted type contract.
+
+Documented Octane-only divergences and SSR stay ordinary package tests outside
+React-parity ownership until pristine upstream suites land.

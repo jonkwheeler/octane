@@ -17,7 +17,11 @@
       "disposition": "octane-only-framework-contract",
       "reason": "Checks that store-core re-exports are the same module instance used by the differential oracle."
     },
-
+    {
+      "path": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Adapts packages/react-store/tests/index.test.tsx from the pinned repository into the TSRX fixture."
+    },
     {
       "path": "packages/tanstack-store/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",

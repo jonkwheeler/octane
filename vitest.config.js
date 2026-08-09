@@ -1048,9 +1048,7 @@ export default defineConfig({
 			{
 				testExecution: {
 					group: 'react-parity',
-					include: [
-						'packages/tanstack-store/tests/conformance/experimental-use-store.parity.test.ts',
-					],
+					include: ['packages/tanstack-store/tests/conformance/upstream-index.test.ts'],
 				},
 				test: {
 					name: 'tanstack-store',
@@ -1059,6 +1057,7 @@ export default defineConfig({
 						'packages/tanstack-store/tests/differential/setup.test.ts',
 					],
 					environment: 'jsdom',
+					setupFiles: ['packages/tanstack-store/tests/conformance/test-setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
@@ -1067,6 +1066,14 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/tanstack-store$/,
 							replacement: resolve(import.meta.dirname, 'packages/tanstack-store/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
 						},
 					],
 				},
@@ -1091,7 +1098,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-store-ssr',
 					include: ['packages/tanstack-store/tests/ssr/**/*.test.ts'],
