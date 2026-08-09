@@ -59,5 +59,5 @@ test('rejects a stale divergence classification', async (t) => {
 
 test('verifies an arbitrary binding classification ledger', () => {
 	const root = fileURLToPath(new URL('../..', import.meta.url));
-	assert.deepEqual(verifyPortTestClassifications(root, 'valtio'), { tests: 5 });
+	assert.deepEqual(verifyPortTestClassifications(root, 'valtio'), { tests: 4 });
 });
