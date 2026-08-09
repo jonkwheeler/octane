@@ -9,13 +9,12 @@
     {
       "path": "packages/tanstack-devtools/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
-      "oracle": "Runs the same TSRX fixture against the Octane adapter and pinned React adapter source."
+      "oracle": "Runs the same TSRX fixture against the Octane adapter and pinned React adapter public entrypoint, and records the documented public-surface divergences."
     },
     {
       "path": "packages/tanstack-devtools/tests/parity/contracts.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Authenticates upstream evidence and the public surface/dependency divergences.",
-      "divergenceIds": ["core-version", "octane-type-names", "extra-core-reexports"]
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates the vendored upstream ledger and requires a disposition row for every pinned public export; it is not React-parity evidence."
     },
     {
       "path": "packages/tanstack-devtools/tests/ssr/server.test.ts",

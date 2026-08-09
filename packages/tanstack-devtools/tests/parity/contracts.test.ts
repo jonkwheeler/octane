@@ -7,10 +7,12 @@ const root = resolve(import.meta.dirname, '../../../..');
 const crosswalk = JSON.parse(
 	readFileSync(resolve(root, 'packages/tanstack-devtools/audit/upstream-crosswalk.json'), 'utf8'),
 );
-const source = readFileSync(resolve(root, 'packages/tanstack-devtools/src/index.ts'), 'utf8');
+const upstreamIndex = readFileSync(
+	resolve(root, 'packages/tanstack-devtools/upstream/package/src/index.ts'),
+	'utf8',
+);
 
 describe('@octanejs/tanstack-devtools parity audit contracts', () => {
-	// @parity-case adapted:tanstack-devtools-upstream-ledger
 	it('authenticates the complete adapter and absent runtime suite', () => {
 		expect(() =>
 			execFileSync(
@@ -21,27 +23,28 @@ describe('@octanejs/tanstack-devtools parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	// OCTANE DIVERGENCE[core-version][adapted:tanstack-devtools-core-version]
-	// @parity-case adapted:tanstack-devtools-core-version
-	it('records the framework-neutral core version drift', () => {
-		expect(crosswalk.coreDependency).toEqual({
-			upstreamVersion: '0.12.4',
-			octaneVersion: '0.12.5',
-			disposition: 'version-divergence',
-		});
-	});
-
-	// OCTANE DIVERGENCE[octane-type-names][adapted:tanstack-devtools-type-names]
-	// @parity-case adapted:tanstack-devtools-type-names
-	it('records the Octane-prefixed public adapter type names', () => {
-		expect(source).toContain('TanStackDevtoolsOctanePlugin');
-		expect(source).toContain('TanStackDevtoolsOctaneInit');
-	});
-
-	// OCTANE DIVERGENCE[extra-core-reexports][adapted:tanstack-devtools-core-reexports]
-	// @parity-case adapted:tanstack-devtools-core-reexports
-	it('records the additional framework-neutral core re-exports', () => {
-		expect(source).toContain('TanStackDevtoolsCore');
-		expect(source).toContain('PLUGIN_CONTAINER_ID');
+	it('requires a disposition row for every pinned public upstream export', () => {
+		const declared = new Set(
+			(crosswalk.exports as Array<{ name: string }>).map((entry) => entry.name),
+		);
+		for (const name of [
+			'TanStackDevtools',
+			'TanStackDevtoolsReactPlugin',
+			'TanStackDevtoolsReactInit',
+		]) {
+			expect(upstreamIndex).toContain(name);
+			expect(declared.has(name)).toBe(true);
+		}
+		expect(crosswalk.exports).toHaveLength(3);
+		for (const entry of crosswalk.exports as Array<{
+			name: string;
+			disposition: string;
+			evidence: string;
+			octaneExport: string;
+		}>) {
+			expect(entry.disposition.length).toBeGreaterThan(0);
+			expect(entry.evidence.length).toBeGreaterThan(0);
+			expect(entry.octaneExport.length).toBeGreaterThan(0);
+		}
 	});
 });

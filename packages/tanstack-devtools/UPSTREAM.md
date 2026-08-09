@@ -21,5 +21,7 @@ adapter resolves `@tanstack/devtools@0.12.4`; the current Octane catalog resolve
 dependency drift and the Octane-specific type names/core re-exports are recorded as divergences.
 
 A repo-authored same-fixture differential compares mount, config synchronization, plugin/title/
-trigger portals, and teardown against the pinned React source. With no pristine upstream runtime
-suite and only representative differential coverage, verification remains `recorded-unverified`.
+trigger portals, and teardown against the pinned React public entrypoint (`src/index.ts`). The
+export crosswalk lists each public upstream export with an Octane mapping or explicit divergence.
+With no pristine upstream runtime suite and only representative differential coverage, verification
+remains `recorded-unverified`.

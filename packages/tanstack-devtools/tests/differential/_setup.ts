@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const fixture = join(dirname(fileURLToPath(import.meta.url)), '../_fixtures/devtools-diff.tsrx');
 const cacheDirectory = join(dirname(fileURLToPath(import.meta.url)), '.react-cache');
+const upstreamSrc = join(dirname(fileURLToPath(import.meta.url)), '../../upstream/package/src');
 
 function hashString(value: string): string {
 	let hash = 5381;
@@ -14,21 +15,32 @@ function hashString(value: string): string {
 	return Math.abs(hash).toString(36);
 }
 
-export async function setup(): Promise<void> {
-	if (!existsSync(cacheDirectory)) mkdirSync(cacheDirectory, { recursive: true });
-	const upstreamAdapter = join(
-		dirname(fileURLToPath(import.meta.url)),
-		'../../upstream/package/src/devtools.tsx',
-	);
-	const adapter = transformSync(readFileSync(upstreamAdapter, 'utf8'), {
+function compileUpstreamModule(name: string, extension: '.ts' | '.tsx'): string {
+	const sourcePath = join(upstreamSrc, `${name}${extension}`);
+	const adapter = transformSync(readFileSync(sourcePath, 'utf8'), {
 		loader: 'tsx',
 		jsx: 'automatic',
 		jsxImportSource: 'react',
 		target: 'esnext',
 		format: 'esm',
-		sourcefile: upstreamAdapter,
+		sourcefile: sourcePath,
 	});
-	writeFileSync(join(cacheDirectory, 'react-devtools.js'), adapter.code);
+	const rewritten = adapter.code.replace(
+		/from\s+["']\.\/([\w.-]+)["']/g,
+		(_match, specifier: string) => `from "./react-devtools-${specifier}.js"`,
+	);
+	const outFile = join(cacheDirectory, `react-devtools-${name}.js`);
+	writeFileSync(outFile, rewritten);
+	return outFile;
+}
+
+export async function setup(): Promise<void> {
+	if (!existsSync(cacheDirectory)) mkdirSync(cacheDirectory, { recursive: true });
+	// Compile the internal module first, then the public index barrel so the
+	// differential resolves the same entrypoint consumers import.
+	compileUpstreamModule('devtools', '.tsx');
+	const publicEntry = compileUpstreamModule('index', '.ts');
+	writeFileSync(join(cacheDirectory, 'react-devtools.js'), readFileSync(publicEntry));
 	const compiled = compileToReact(readFileSync(fixture, 'utf8'), fixture);
 	if (compiled.errors?.length)
 		throw new Error(`Unable to compile ${fixture}:\n${compiled.errors.join('\n')}`);

@@ -1,8 +1,15 @@
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act as reactAct } from 'react';
 import { drainPassiveEffects, flushSync as octaneFlushSync } from 'octane';
 import { describe, expect, it, vi } from 'vitest';
 import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+
+const root = resolve(__dirname, '../../../..');
+const crosswalk = JSON.parse(
+	readFileSync(resolve(root, 'packages/tanstack-devtools/audit/upstream-crosswalk.json'), 'utf8'),
+);
+const octaneIndex = readFileSync(resolve(root, 'packages/tanstack-devtools/src/index.ts'), 'utf8');
 
 interface FakeCore {
 	plugins: any[];
@@ -86,5 +93,49 @@ describe('differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools'
 		drainPassiveEffects();
 		expect(octaneCore.unmount).toHaveBeenCalledTimes(1);
 		expect(reactCore.unmount).toHaveBeenCalledTimes(1);
+	});
+
+	// OCTANE DIVERGENCE[core-version][differential:tanstack-devtools-core-version]
+	// @parity-case differential:tanstack-devtools-core-version
+	it('records the framework-neutral core version drift', () => {
+		expect(crosswalk.coreDependency).toEqual({
+			upstreamVersion: '0.12.4',
+			octaneVersion: '0.12.5',
+			disposition: 'version-divergence',
+		});
+	});
+
+	// OCTANE DIVERGENCE[octane-type-names][differential:tanstack-devtools-type-names]
+	// @parity-case differential:tanstack-devtools-type-names
+	it('records the Octane-prefixed public adapter type names', () => {
+		expect(octaneIndex).toContain('TanStackDevtoolsOctanePlugin');
+		expect(octaneIndex).toContain('TanStackDevtoolsOctaneInit');
+		expect(crosswalk.exports).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					name: 'TanStackDevtoolsReactPlugin',
+					octaneExport: 'TanStackDevtoolsOctanePlugin',
+					disposition: 'renamed-divergence',
+				}),
+				expect.objectContaining({
+					name: 'TanStackDevtoolsReactInit',
+					octaneExport: 'TanStackDevtoolsOctaneInit',
+					disposition: 'renamed-divergence',
+				}),
+			]),
+		);
+	});
+
+	// OCTANE DIVERGENCE[extra-core-reexports][differential:tanstack-devtools-core-reexports]
+	// @parity-case differential:tanstack-devtools-core-reexports
+	it('records the additional framework-neutral core re-exports', () => {
+		expect(octaneIndex).toContain('TanStackDevtoolsCore');
+		expect(octaneIndex).toContain('PLUGIN_CONTAINER_ID');
+		expect(crosswalk.octaneAdditiveExports).toEqual(
+			expect.objectContaining({
+				disposition: 'additive-divergence',
+				divergenceId: 'extra-core-reexports',
+			}),
+		);
 	});
 });

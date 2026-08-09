@@ -65,19 +65,34 @@
         {
           "path": "packages/tanstack-devtools/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "a6639f26cc5309213d783a4563b0b32b03f68c62c5f81601c2a0a854ad422278",
+          "sha256": "ec572986122d707c2ebb559b8d1351dcab9668d48b537bcb0dc3bafc6a7081c3",
           "cases": [
             {
               "id": "differential:tanstack-devtools-portal-lifecycle",
               "testName": "matches mount, plugin, title, trigger, config, and teardown behavior",
               "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools matches mount, plugin, title, trigger, config, and teardown behavior"
+            },
+            {
+              "id": "differential:tanstack-devtools-core-version",
+              "testName": "records the framework-neutral core version drift",
+              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools records the framework-neutral core version drift"
+            },
+            {
+              "id": "differential:tanstack-devtools-type-names",
+              "testName": "records the Octane-prefixed public adapter type names",
+              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools records the Octane-prefixed public adapter type names"
+            },
+            {
+              "id": "differential:tanstack-devtools-core-reexports",
+              "testName": "records the additional framework-neutral core re-exports",
+              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools records the additional framework-neutral core re-exports"
             }
           ]
         },
         {
           "path": "packages/tanstack-devtools/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "3a910f533f6d7d641fb619933543e49c5864604aba5cf8b81bcf8df488ae4ef6"
+          "sha256": "8e40854c69551c300335674aec1741e44d4a9aa078a0c9c5b0fc0a1a9d6e5dc2"
         },
         {
           "path": "packages/tanstack-devtools/tests/_fixtures/devtools-diff.tsrx",
@@ -97,12 +112,12 @@
         {
           "path": "packages/tanstack-devtools/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "fa78cee28f5c5f5abec2b11197a70d62233d9ad862e686d6f1ddf8edbfa3e29f"
+          "sha256": "e054ec7a7acd70f472b191b9f8b3d687ecc2a8661e824ca698ed909cf91a9ca6"
         },
         {
           "path": "packages/tanstack-devtools/audit/test-classifications.json",
           "role": "support",
-          "sha256": "d935621f457e8bd66557456b63af859ff4fb6e29c4756e41c97568c5f886c8e1"
+          "sha256": "9704dcbadc8c73a28fcf7b96a5334c764b0d846f89b2fe66e224022f76330bcf"
         },
         {
           "path": "packages/tanstack-devtools/scripts/check-upstream-ledger.mjs",
@@ -117,44 +132,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3185f9f186c91b9a8b1f086fd1619759e8b803587c20b9eeb84970296c9144b5"
-        }
-      ]
-    },
-    {
-      "id": "tanstack-devtools-parity-audit",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-devtools-parity-audit",
-      "notes": "Authenticates the complete adapter and the explicit public divergences.",
-      "files": [
-        {
-          "path": "packages/tanstack-devtools/tests/parity/contracts.test.ts",
-          "role": "test",
-          "sha256": "4c34c91cb6462ced9003aac8bec691ea0ca77b1f60d292fd8d92f132f6cf6f71",
-          "cases": [
-            {
-              "id": "adapted:tanstack-devtools-upstream-ledger",
-              "testName": "authenticates the complete adapter and absent runtime suite",
-              "fullName": "@octanejs/tanstack-devtools parity audit contracts authenticates the complete adapter and absent runtime suite"
-            },
-            {
-              "id": "adapted:tanstack-devtools-core-version",
-              "testName": "records the framework-neutral core version drift",
-              "fullName": "@octanejs/tanstack-devtools parity audit contracts records the framework-neutral core version drift"
-            },
-            {
-              "id": "adapted:tanstack-devtools-type-names",
-              "testName": "records the Octane-prefixed public adapter type names",
-              "fullName": "@octanejs/tanstack-devtools parity audit contracts records the Octane-prefixed public adapter type names"
-            },
-            {
-              "id": "adapted:tanstack-devtools-core-reexports",
-              "testName": "records the additional framework-neutral core re-exports",
-              "fullName": "@octanejs/tanstack-devtools parity audit contracts records the additional framework-neutral core re-exports"
-            }
-          ]
+          "sha256": "361356d8b8e444db1a76f8fca83ea8e1d70d0ffffbbf9e9f92d228f7e7676a1e"
         }
       ]
     }
@@ -163,7 +141,7 @@
     {
       "id": "core-version",
       "caseIds": [
-        "adapted:tanstack-devtools-core-version"
+        "differential:tanstack-devtools-core-version"
       ],
       "upstreamResult": "The pinned React adapter publishes with @tanstack/devtools 0.12.4.",
       "octaneResult": "The current Octane catalog resolves @tanstack/devtools 0.12.5.",
@@ -177,7 +155,7 @@
     {
       "id": "octane-type-names",
       "caseIds": [
-        "adapted:tanstack-devtools-type-names"
+        "differential:tanstack-devtools-type-names"
       ],
       "upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
       "octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",
@@ -191,7 +169,7 @@
     {
       "id": "extra-core-reexports",
       "caseIds": [
-        "adapted:tanstack-devtools-core-reexports"
+        "differential:tanstack-devtools-core-reexports"
       ],
       "upstreamResult": "The React adapter exports only the component and React adapter types.",
       "octaneResult": "Octane additionally re-exports framework-neutral core values and types.",
