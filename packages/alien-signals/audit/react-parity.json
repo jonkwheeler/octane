@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/alien-signals/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/alien-signals/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/alien-signals/tests"],
-      "include": ["upstream-adapted\\.test\\.ts$"],
+      "roots": [
+        "packages/alien-signals/tests"
+      ],
+      "include": [
+        "upstream-adapted\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -125,7 +133,7 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "eb28ecbbd4af2aaf60eaf65a86f39e27860f7530a82d3057e73d62998232da42"
+          "sha256": "fa6f141456d7dd723879ceceec63019b21c10281ef661da4053157b4a42bc71c"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
@@ -309,7 +317,9 @@
   "divergences": [
     {
       "id": "alien-signals-readable-computed",
-      "caseIds": ["types:alien-signals-readable-computed"],
+      "caseIds": [
+        "types:alien-signals-readable-computed"
+      ],
       "upstreamResult": "Pinned react-alien-signals declarations narrow useSignalValue to WritableSignal, so readable computed probes are rejected.",
       "octaneResult": "useSignalValue accepts ReadableSignal, including createComputed results, matching the documented Octane surface.",
       "rationale": "Upstream docs and runtime treat computed signals as readable; the published React declaration is narrower than that contract. Octane corrects the accept surface without weakening the read-only computed negative control.",

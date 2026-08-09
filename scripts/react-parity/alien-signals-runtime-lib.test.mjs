@@ -247,6 +247,34 @@ test('rejects dead-code padded setter counts paired with direct source writes', 
 	}, /bypasses .* hook-surface transition/);
 });
 
+test('rejects short-circuit setter padding with nested direct source writes', function rejectsShortCircuitNestedSource() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const padded = fixtureSource.replace(
+		'onClick={() => {\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t}}',
+		'onClick={() => {\n\t\t\t\tfalse && setValue((previous) => previous + 1);\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t\tif (true) props.source((previous) => previous + 1);\n\t\t\t}}',
+	);
+	assert.notEqual(padded, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: padded,
+			expectedFixtureSha256: fixtureFileFingerprint(padded),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects collapsing queued functional updates into one authenticated click write', function rejectsCollapsedFunctionalUpdates() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),

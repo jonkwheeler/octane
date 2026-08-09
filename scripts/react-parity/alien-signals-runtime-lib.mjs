@@ -474,53 +474,60 @@ function isPropsSourceCall(call) {
 }
 
 /**
- * Count setter invocations that always run when the handler runs.
- * Nested functions and non-taken control-flow branches are ignored; a
- * `props.source(...)` write in the same executed path disqualifies the handler.
+ * Count only top-level setter CallExpressions that are the entire statement /
+ * expression-body value. Short-circuit / ternary padding cannot inflate the
+ * count. Any `props.source(...)` write anywhere in the handler (except nested
+ * function bodies) disqualifies authentication.
  */
 function collectAuthenticatedHandlerSetterInvocations(expression, names, sourceFile) {
 	const shapes = [];
 	let hasDirectSourceWrite = false;
 
-	function visitExecutedExpression(node, rootExpression) {
+	function scanForDirectSourceWrite(node, rootExpression) {
 		if (functionLikeOf(node) !== null && node !== rootExpression) {
 			return;
 		}
 		const call = callExpressionOf(node);
-		if (call !== null) {
-			if (isPropsSourceCall(call) && call.arguments.length > 0) {
-				hasDirectSourceWrite = true;
-			}
-			const root = calleeRootIdentifier(call.expression);
-			if (root !== null && names.has(root) && call.arguments.length > 0) {
-				shapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
-			}
+		if (call !== null && isPropsSourceCall(call) && call.arguments.length > 0) {
+			hasDirectSourceWrite = true;
+			return;
 		}
 		ts.forEachChild(node, function visitChild(child) {
-			visitExecutedExpression(child, rootExpression);
+			if (!hasDirectSourceWrite) scanForDirectSourceWrite(child, rootExpression);
 		});
+	}
+
+	function countTopLevelSetterCall(node) {
+		const call = callExpressionOf(node);
+		if (call === null || call.arguments.length === 0) return;
+		const root = calleeRootIdentifier(call.expression);
+		if (root !== null && names.has(root)) {
+			shapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
+		}
 	}
 
 	function visitAlwaysExecutedStatement(statement) {
 		if (ts.isExpressionStatement(statement)) {
-			visitExecutedExpression(statement.expression, statement.expression);
+			countTopLevelSetterCall(statement.expression);
 			return;
 		}
 		if (ts.isReturnStatement(statement) && statement.expression !== undefined) {
-			visitExecutedExpression(statement.expression, statement.expression);
+			countTopLevelSetterCall(statement.expression);
 		}
 	}
 
 	const fn = functionLikeOf(expression);
 	if (fn === null) {
-		visitExecutedExpression(expression, expression);
+		scanForDirectSourceWrite(expression, expression);
+		countTopLevelSetterCall(expression);
 		return { shapes: hasDirectSourceWrite ? [] : shapes, hasDirectSourceWrite };
 	}
 	if (fn.body === undefined) {
 		return { shapes: [], hasDirectSourceWrite: false };
 	}
+	scanForDirectSourceWrite(fn, fn);
 	if (!ts.isBlock(fn.body)) {
-		visitExecutedExpression(fn.body, fn.body);
+		countTopLevelSetterCall(fn.body);
 		return { shapes: hasDirectSourceWrite ? [] : shapes, hasDirectSourceWrite };
 	}
 	for (const statement of fn.body.statements) {
