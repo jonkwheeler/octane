@@ -293,7 +293,7 @@ describe('CI workflow aggregation', () => {
 		);
 		assert.match(
 			reactParityCheck,
-			/if \(!validateOnly\) \{\s+const action =[^;]+;\s+execFileSync\(process\.execPath, \[HARNESS_PATH, action, '--manifest', relativeFile\]/,
+			/if \(!validateOnly\) \{[\s\S]*?const action =[^;]+;\s+execFileSync\(process\.execPath, \[HARNESS_PATH, action, '--manifest', relativeFile\]/,
 		);
 		assert.match(reactParityCheck, /\[HARNESS_PATH, action, '--manifest', relativeFile\]/);
 		assert.doesNotMatch(reactParityCheck, /'--lane'/);
