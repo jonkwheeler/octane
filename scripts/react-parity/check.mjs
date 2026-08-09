@@ -143,12 +143,12 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		for (const lane of manifest.lanes) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
+		// Always execute required lanes. `verified` vs `recorded-unverified`
+		// gates full-suite provenance schema requirements in validateManifest,
+		// not whether declared required evidence runs in CI. Parity-owned
+		// Vitest files are excluded from ordinary shards via testExecution,
+		// so check must run them or they become CI orphans.
 		if (!validateOnly) {
-			// Always execute required lanes. `verified` vs `recorded-unverified`
-			// gates full-suite provenance schema requirements in validateManifest,
-			// not whether declared required evidence runs in CI. Parity-owned
-			// Vitest files are excluded from ordinary shards via testExecution,
-			// so check must run them or they become CI orphans.
 			const action = 'run-required';
 			execFileSync(process.execPath, [HARNESS_PATH, action, '--manifest', relativeFile], {
 				cwd: REPO,
