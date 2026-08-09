@@ -89,6 +89,25 @@ describe('React Spring engine', () => {
 		expect(controller.get()).toEqual({ opacity: 1, x: 10 });
 	});
 
+	// Per packages/core/src/Controller.test.ts:8
+	it('applies async shorthand next steps without re-entering the script', async () => {
+		raf.frameLoop = 'demand';
+		const controller = new Controller({ from: { x: 0 } });
+		let calls = 0;
+		const resultPromise = controller.start({
+			immediate: true,
+			to: async (next) => {
+				calls += 1;
+				await next({ x: 5 });
+				await next({ x: 10 });
+			},
+		});
+		advanceUntilIdle();
+		expect(await resultPromise).toMatchObject({ finished: true });
+		expect(calls).toBe(1);
+		expect(controller.get()).toEqual({ x: 10 });
+	});
+
 	// Per packages/core/src/SpringValue.test.ts:1
 	it('does not reapply from on a same-goal restart without reset', async () => {
 		raf.frameLoop = 'demand';

@@ -109,12 +109,10 @@ export class Controller<State extends StateRecord = StateRecord> {
 			let last = getNoopResult(this.get());
 			await to(async (next) => {
 				if (runId !== this.runId) return getCancelledResult(this.get());
-				last = await this.run(
-					isControllerUpdate(next)
-						? { ...update, ...next, loop: undefined }
-						: { ...update, to: next, loop: undefined },
-					runId,
-				);
+				const step = isControllerUpdate(next)
+					? { ...update, ...next, loop: undefined }
+					: { ...update, to: next, loop: undefined };
+				last = await this.run(normalizeUpdate(step), runId);
 				return last;
 			});
 			if (runId !== this.runId) return getCancelledResult(this.get());
@@ -194,12 +192,18 @@ function withoutTargets<State extends StateRecord>(
 function isControllerUpdate<State extends StateRecord>(
 	value: ControllerUpdate<State> | Partial<State>,
 ): value is ControllerUpdate<State> {
-	const normalized = normalizeUpdate(value);
+	// Check reserved keys on the raw object. Do not run inferTo here: shorthand
+	// steps like `{ x: 1 }` must stay on the `to: next` path so the parent async
+	// `to` function is replaced rather than left in place.
 	return (
-		'to' in normalized ||
-		'from' in normalized ||
+		'to' in value ||
+		'from' in value ||
 		'config' in value ||
 		'immediate' in value ||
-		'delay' in value
+		'delay' in value ||
+		'cancel' in value ||
+		'pause' in value ||
+		'reset' in value ||
+		'loop' in value
 	);
 }
