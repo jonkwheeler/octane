@@ -25,16 +25,14 @@
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
       "@octanejs/remix-router",
+      "@octanejs/inertia",
       "@octanejs/nuqs"
     ]
   },
   {
     "title": "Web3",
     "description": "Wallet connection, chain state, contract reads, signing, and transactions.",
-    "packages": [
-      "@octanejs/wagmi",
-      "@octanejs/rainbowkit"
-    ]
+    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit", "@octanejs/solana-react"]
   },
   {
     "title": "UI and interaction",
@@ -46,6 +44,7 @@
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/animejs",
+      "@octanejs/gsap",
       "@octanejs/motion",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
@@ -64,13 +63,13 @@
     "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
     "packages": [
       "@octanejs/hook-form",
-      "@octanejs/i18next",
-      "@octanejs/lexical",
-      "@octanejs/mdx",
-      "@octanejs/puck",
-      "@octanejs/streamdown",
       "@octanejs/tanstack-form",
-      "@octanejs/tiptap"
+      "@octanejs/lexical",
+      "@octanejs/tiptap",
+      "@octanejs/streamdown",
+      "@octanejs/mdx",
+      "@octanejs/i18next",
+      "@octanejs/puck"
     ]
   },
   {
@@ -87,17 +86,12 @@
   {
     "title": "Web 3D",
     "description": "Technical-preview, React Three Fiber-style scene graphs on Octane's universal renderer.",
-    "packages": [
-      "@octanejs/three"
-    ]
+    "packages": ["@octanejs/three"]
   },
   {
     "title": "Desktop",
     "description": "Tauri v2 and Electron desktop bindings for Octane applications.",
-    "packages": [
-      "@octanejs/tauri",
-      "@octanejs/electron"
-    ]
+    "packages": ["@octanejs/tauri", "@octanejs/electron"]
   },
   {
     "title": "Styling, tests, and devtools",
