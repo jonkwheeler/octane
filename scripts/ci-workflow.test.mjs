@@ -145,22 +145,26 @@ describe('CI workflow aggregation', () => {
 		}
 	});
 
-	test('keeps Embla browser coverage on parity ownership without workflow path entries', () => {
-		assert.doesNotMatch(jobSource('test_shard'), /embla-carousel/);
-		assert.doesNotMatch(jobSource('heavy_integration'), /embla-carousel/);
+	test('keeps Embla parity projects group-owned and browser on the heavy lane', () => {
+		assert.match(
+			jobSource('test_shard'),
+			/packages\/embla-carousel\/tests\/browser\/\*\*\/\*\.test\.ts/,
+		);
+		assert.match(jobSource('heavy_integration'), /packages\/embla-carousel\/tests\/browser/);
 		const baseProjects = new Map(
 			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
 		);
 		for (const project of [
-			'embla-carousel',
 			'embla-carousel-pristine-utils',
-			'embla-carousel-browser',
+			'embla-carousel-audit',
 			'embla-carousel-differential',
 		]) {
 			assert.equal(baseProjects.get(project).testExecution.group, 'react-parity');
 		}
-		// Required browser oracle lanes run under react-parity:check; Chromium
-		// must be installed in that job, not the validate-only lint_checks path.
+		assert.equal(baseProjects.get('embla-carousel').testExecution, undefined);
+		assert.equal(baseProjects.get('embla-carousel-browser').testExecution, undefined);
+		// Reserved install for future parity browser oracles; unpaired Embla browser
+		// coverage runs under heavy_integration with Chromium instead.
 		const parity = jobSource('react_parity_checks');
 		const install = parity.indexOf('Install Playwright Chromium');
 		const check = parity.indexOf('Check React parity inventories and execute required lanes');

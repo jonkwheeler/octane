@@ -3,8 +3,9 @@ import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import useEmblaCarouselReact from 'embla-carousel-react';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { act as octaneAct } from 'octane';
 import useEmblaCarousel from '@octanejs/embla-carousel';
-import { flushEffects, mount } from '../_helpers';
+import { mount } from '../_helpers';
 import { CarouselHarness } from '../_fixtures/carousel.tsrx';
 import { beginObservation, type Observation } from '../test-support/mock-embla';
 
@@ -68,8 +69,9 @@ async function renderReact(sequence: ReactHarnessProps[]): Promise<RenderResult>
 }
 
 function settleEffects(): void {
-	flushEffects();
-	flushEffects();
+	// Sync Octane act drains render + effect cascades the way React's act settles
+	// the matching root.render step — without an extra external root.render.
+	void octaneAct(function settle() {});
 }
 
 function harnessProps(
@@ -94,13 +96,7 @@ function applyOctaneStep(
 	props: ReactHarnessProps,
 	onApi: (api: EmblaCarouselType | undefined) => void,
 ): boolean {
-	const next = harnessProps(props, onApi);
-	result.update(CarouselHarness, next);
-	settleEffects();
-	// Same-props re-apply matches the adapted conformance harness: construction
-	// commits in an effect, and the published tuple member is observed on the
-	// following render.
-	result.update(CarouselHarness, next);
+	result.update(CarouselHarness, harnessProps(props, onApi));
 	settleEffects();
 	return readOctaneApiDefined(result);
 }
@@ -112,7 +108,10 @@ function renderOctane(sequence: ReactHarnessProps[]): RenderResult {
 	const first = sequence[0];
 	const result = mount(CarouselHarness, harnessProps(first, onApi));
 	settleEffects();
-	apiDefined.push(applyOctaneStep(result, first, onApi));
+	// One external render per sequence item, matching React's single root.render
+	// per step. Construction publishes through setState inside an effect; settle
+	// that update before observing — do not issue another same-props root render.
+	apiDefined.push(readOctaneApiDefined(result));
 	for (const props of sequence.slice(1)) {
 		apiDefined.push(applyOctaneStep(result, props, onApi));
 	}

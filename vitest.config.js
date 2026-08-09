@@ -3672,7 +3672,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Package-authored Octane-only conformance (ordinary shards). Paired
+				// React scenarios live in embla-carousel-differential.
 				test: {
 					name: 'embla-carousel',
 					include: ['packages/embla-carousel/tests/conformance/**/*.test.ts'],
@@ -3710,7 +3711,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Unpaired Octane browser harness: ordinary project, heavy_integration
+				// Chromium lane (same shape as dexie/tiptap browser suites).
 				test: {
 					name: 'embla-carousel-browser',
 					include: ['packages/embla-carousel/tests/browser/**/*.test.ts'],

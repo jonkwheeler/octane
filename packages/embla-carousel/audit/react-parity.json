@@ -17,27 +17,19 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/embla-carousel/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/embla-carousel/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/embla-carousel/tests/conformance"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/embla-carousel/tests/differential"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 5,
-    "uniqueIdentities": 5,
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -78,43 +70,18 @@
       ]
     },
     {
-      "id": "embla-adapted-runtime",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "embla-carousel",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs the complete repo-authored adapter lifecycle suite because the pinned React adapter publishes no runtime tests. Each inventory case has a matching differential scenario against the pinned React adapter.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/embla-carousel/audit/adapted-runtime.json"
-      },
-      "files": [
-        {
-          "path": "packages/embla-carousel/audit/adapted-runtime.json",
-          "role": "support",
-          "sha256": "08d74e4183a1d3c624b578e74f0a0acda11de6c85fc36c05f6fb3d5d839848e9"
-        },
-        {
-          "path": "packages/embla-carousel/tests/conformance/binding.test.ts",
-          "role": "support",
-          "sha256": "2be32bf3905610bc444058077bc1852a481c392ce3f9798d78b82b051539f50f"
-        }
-      ]
-    },
-    {
       "id": "embla-react-differential",
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "embla-carousel-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the pinned React and Octane adapters through the same lifecycle sequence against one controlled Embla constructor boundary.",
+      "notes": "Parity-owned evidence: pinned React and Octane adapters through the same lifecycle sequence against one controlled Embla constructor boundary. Package-authored Octane-only conformance stays in ordinary shards.",
       "files": [
         {
           "path": "packages/embla-carousel/tests/differential/react-adapter.test.ts",
           "role": "test",
-          "sha256": "60c7287255beba88240d2d4740a2ebf4c0ec896f2d8b8e7b2ea13d3bc8b5a174",
+          "sha256": "cd3b302a7a125f5e5ceff0fd77e11b2240ea0d366c772b62126902d27abf556c",
           "cases": [
             {
               "id": "embla:differential:lifecycle",
@@ -240,29 +207,6 @@
           "path": "packages/embla-carousel/typetests/tsconfig.json",
           "role": "support",
           "sha256": "8dd585aac58fa2bd20b53179e9e8595062dee0c8e7c7316b9c57cdd3aa1d557c"
-        }
-      ]
-    },
-    {
-      "id": "embla-browser",
-      "type": "browser",
-      "oracle": "required",
-      "available": true,
-      "environment": "workspace-node",
-      "project": "embla-carousel-browser",
-      "notes": "Runs the Octane adapter with Chromium, real nonzero layout, scrolling, selection updates, and destroy cleanup.",
-      "files": [
-        {
-          "path": "packages/embla-carousel/tests/browser/carousel.browser.test.ts",
-          "role": "test",
-          "sha256": "28c32f9b746d33f89f6db0efdb7913efe1147ce96e16d407f636ac437daf6a5f",
-          "cases": [
-            {
-              "id": "embla:browser:layout-scroll-cleanup",
-              "testName": "uses real layout to scroll and destroys the instance on root cleanup",
-              "fullName": "@octanejs/embla-carousel real-browser behavior uses real layout to scroll and destroys the instance on root cleanup"
-            }
-          ]
         }
       ]
     }

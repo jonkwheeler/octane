@@ -42,6 +42,7 @@ published tuple contract.
 
 Real pointer physics and layout remain owned by the unchanged Embla core. The
 adapter suite uses a controlled constructor boundary because jsdom has no
-layout. The required `embla-browser` lane runs in Chromium and verifies nonzero
-layout, scrolling, selection updates, and destroy cleanup. Browser behavior is
-not simulated with jsdom geometry mocks.
+layout. An unpaired Octane browser harness under `tests/browser` runs in
+Chromium (heavy integration) and verifies nonzero layout, scrolling, selection
+updates, and destroy cleanup. Browser behavior is not simulated with jsdom
+geometry mocks.
