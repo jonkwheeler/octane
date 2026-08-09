@@ -9,37 +9,27 @@
     "testRoot": "tests",
     "license": "MIT",
     "integrity": "sha256:90ba3507f7fefcf8654c36bcedffa1f7b96d5a9ed7cde14a9df52107eb90c825",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
-    "runtime": "present",
+    "runtime": "absent",
     "types": "insufficient"
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/valtio/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/valtio/src"],
+      "include": ["\\.ts$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/valtio/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/valtio/tests/upstream"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 6,
+    "uniqueIdentities": 6,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -54,6 +44,31 @@
     }
   },
   "lanes": [
+    {
+      "id": "valtio-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "valtio",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored Octane suite for the public useSnapshot and useProxy surface. Upstream React hook tests are not claimed as an executed one-for-one suite.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/valtio/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/valtio/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "2f3064c67598a3780ff2ee89f3d1c4fc3d5c3abdb2e012a45d0d6e14493a20ee"
+        },
+        {
+          "path": "packages/valtio/tests/upstream/binding.test.ts",
+          "role": "support",
+          "sha256": "c97fa9f4a775eb320676a8e5a3896781332c7df1f001f928f0aa468641811dda"
+        }
+      ]
+    },
     {
       "id": "valtio-runtime-differential",
       "type": "differential",
@@ -103,29 +118,45 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "be57f6f9b3dfa0dcaee6a79cfc5a477154ec07ab96f34260a718e3a1c909237f"
+          "sha256": "22eedf6d9f6e984222b358acf7364497eed8c9d31a8b5f969b8d47e4f7147668"
         }
       ]
     },
     {
-      "id": "valtio-adapted-divergence",
-      "type": "adapted-octane",
+      "id": "valtio-pristine-types",
+      "type": "pristine-types",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "valtio",
-      "notes": "Authenticates the documented omission of React DevTools affected-path labels.",
+      "project": "valtio-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes against pinned valtio@2.3.2 public hooks.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/valtio/typetests/pristine/tsconfig.json"
+      },
       "files": [
         {
-          "path": "packages/valtio/tests/conformance/debug-labels.test.ts",
+          "path": "packages/valtio/audit/pristine-types.json",
           "role": "test",
-          "sha256": "b7d3b7a17c42668ac0abfe64ec34708d67df74a93bc30c62a66d86490e4128c8",
+          "sha256": "ac45ae631e7f5607d9fb9a138b0093ee4bee47a8018d45342a1739e6e251674d",
           "cases": [
             {
-              "id": "adapted:valtio-debug-labels",
-              "testName": "omits React DevTools debug labels from the snapshot hook",
-              "fullName": "valtio debug labels omits React DevTools debug labels from the snapshot hook"
+              "id": "types:valtio-pristine",
+              "testName": "snapshot and mutable proxy inference",
+              "fullName": "snapshot and mutable proxy inference"
             }
           ]
+        },
+        {
+          "path": "packages/valtio/typetests/pristine/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "72757925fcf425ce405e0c14b5d1826bc77a35d2b29cb8876cf4ef175988d47a"
+        },
+        {
+          "path": "packages/valtio/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "5233feb2555d83b7b6d99a472d83c1b41c12aa64834e39a034f1bd58892c4f16"
         }
       ]
     },
@@ -168,20 +199,5 @@
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "valtio-debug-labels",
-      "caseIds": [
-        "adapted:valtio-debug-labels"
-      ],
-      "upstreamResult": "Valtio reports affected snapshot paths through React useDebugValue for React DevTools.",
-      "octaneResult": "The Octane hook omits the React-specific debug label while preserving snapshot behavior.",
-      "rationale": "Octane useDebugValue is currently a no-op and there is no React DevTools channel to populate.",
-      "classification": "framework-integration",
-      "consumerImpact": "React DevTools does not show affected-path labels for the Octane hook.",
-      "migrationGuidance": "Inspect the proxy or Octane component updates directly when debugging.",
-      "owner": "@octanejs/valtio",
-      "reviewCondition": "Review when Octane exposes a functional debug-value channel."
-    }
-  ]
+  "divergences": []
 }

@@ -6,8 +6,6 @@ import { fileURLToPath } from 'node:url';
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 describe('valtio debug labels', () => {
-	// OCTANE DIVERGENCE[valtio-debug-labels][adapted:valtio-debug-labels]
-	// @parity-case adapted:valtio-debug-labels
 	it('omits React DevTools debug labels from the snapshot hook', () => {
 		const source = readFileSync(resolve(packageRoot, 'src/react.ts'), 'utf8');
 		expect(source).not.toContain('useDebugValue');

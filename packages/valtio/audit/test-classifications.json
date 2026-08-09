@@ -2,15 +2,9 @@
   "schemaVersion": 1,
   "tests": [
     {
-      "path": "packages/valtio/tests/conformance/binding.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks additional Octane subscription, slot, and accessed-path behavior beyond the bounded differential scenarios."
-    },
-    {
       "path": "packages/valtio/tests/conformance/debug-labels.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "valtio-debug-labels",
-      "reason": "Authenticates the documented omission of React DevTools affected-path labels."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Guards the intentional omission of React DevTools affected-path labels outside React parity execution."
     },
     {
       "path": "packages/valtio/tests/conformance/exports.test.ts",

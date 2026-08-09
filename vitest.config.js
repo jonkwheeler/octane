@@ -501,7 +501,7 @@ export default defineConfig({
 			{
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/valtio/tests/conformance/debug-labels.test.ts'],
+					include: ['packages/valtio/tests/upstream/**/*.test.ts'],
 				},
 				test: {
 					name: 'valtio',

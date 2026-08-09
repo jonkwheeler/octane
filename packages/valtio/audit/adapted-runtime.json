@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "project": "valtio",
+  "roots": ["packages/valtio/tests/upstream"],
+  "files": ["packages/valtio/tests/upstream/binding.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:cadd15836b11fbb4",
+      "file": "packages/valtio/tests/upstream/binding.test.ts",
+      "fullName": "useSnapshot keeps multiple hook call sites independent"
+    },
+    {
+      "id": "runtime:518a3da7fe38488d",
+      "file": "packages/valtio/tests/upstream/binding.test.ts",
+      "fullName": "useSnapshot reads a current snapshot when a render starts accessing a new path"
+    },
+    {
+      "id": "runtime:a96f7050e741944b",
+      "file": "packages/valtio/tests/upstream/binding.test.ts",
+      "fullName": "useSnapshot renders a snapshot and updates after proxy mutations"
+    },
+    {
+      "id": "runtime:7251f86b9fc0034e",
+      "file": "packages/valtio/tests/upstream/binding.test.ts",
+      "fullName": "useSnapshot supports synchronous subscriptions"
+    },
+    {
+      "id": "runtime:1b7cae00911f6635",
+      "file": "packages/valtio/tests/upstream/binding.test.ts",
+      "fullName": "useSnapshot tracks nested snapshot values"
+    },
+    {
+      "id": "runtime:a01f1db7236abf56",
+      "file": "packages/valtio/tests/upstream/binding.test.ts",
+      "fullName": "useSnapshot useProxy reads snapshots during render and mutates the source in callbacks"
+    }
+  ]
+}
