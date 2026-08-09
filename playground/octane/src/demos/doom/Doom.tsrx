@@ -70,16 +70,12 @@ export function DoomDemo() @{
 	permissionErrorRef.current = permissionError;
 
 	function setPhaseNow(next: Phase): void {
-		// Keep the rAF / input loop in sync before the next paint. Do not mirror
-		// `phase` into phaseRef during render — that would clobber this update if
-		// another state write re-enters with a stale phase.
+		// Sole writer for phaseRef. Never mirror committed `phase` back into the
+		// ref (render or effect) — that races with a newer setPhaseNow in the
+		// commit-to-effect gap and can skip loading→playing or re-arm simulation.
 		phaseRef.current = next;
 		setPhase(next);
 	}
-
-	useEffect(function syncPhaseRef() {
-		phaseRef.current = phase;
-	}, [phase]);
 
 	function invalidateEnterSession(): void {
 		enterSessionRef.current += 1;
