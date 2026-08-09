@@ -22,6 +22,7 @@ const { configureShardedProjects, default: shardedVitestConfig } = await import(
 	pathToFileURL(path.join(REPO, 'vitest.ci-sharded.config.js'))
 );
 const publishWorkflow = readFileSync(path.join(REPO, '.github/workflows/publish.yml'), 'utf8');
+const releaseWorkflow = readFileSync(path.join(REPO, '.github/workflows/release.yml'), 'utf8');
 const draftWorkflow = readFileSync(
 	path.join(REPO, '.github/workflows/draft-agent-prs.yml'),
 	'utf8',
@@ -29,6 +30,10 @@ const draftWorkflow = readFileSync(
 const labelWorkflow = readFileSync(path.join(REPO, '.github/workflows/label-pr.yml'), 'utf8');
 const reviewReadinessWorkflow = readFileSync(
 	path.join(REPO, '.github/workflows/review-readiness-label.yml'),
+	'utf8',
+);
+const reviewFeedbackWorkflow = readFileSync(
+	path.join(REPO, '.github/workflows/review-feedback-signal.yml'),
 	'utf8',
 );
 const vercelPreviewWorkflow = readFileSync(
@@ -173,6 +178,19 @@ describe('CI workflow aggregation', () => {
 		assert.match(jobSource('test'), /\[ "\$FULL_CI" = false \]/);
 		assert.match(jobSource('examples'), /\[ "\$FULL_CI" = false \]/);
 		assert.match(jobSource('provenance'), /\[ "\$FULL_CI" = false \]/);
+	});
+
+	test('accepts the generated Octane version source as release metadata', () => {
+		const generatedVersionAllowance = /file\.filename === "packages\/octane\/src\/version\.ts"/;
+
+		assert.match(
+			stepScript(workflow, 'Identify a generated Changesets release change'),
+			generatedVersionAllowance,
+		);
+		assert.match(
+			stepScript(releaseWorkflow, 'Record lightweight release pull request checks'),
+			generatedVersionAllowance,
+		);
 	});
 
 	test('keeps cheap parity validation universal and full execution on Node 24', () => {
@@ -875,16 +893,13 @@ describe('Pull request labels', () => {
 
 describe('Review readiness label', () => {
 	const READY = 'READY FOR REVIEW';
-	const HEAD_SHA = 'f'.repeat(40);
 
-	function cursorThread({ resolved = false } = {}) {
+	function reviewThread({ resolved = false } = {}) {
 		return {
 			isResolved: resolved,
 			comments: {
 				nodes: [
 					{
-						author: { login: 'cursor' },
-						body: '<!-- BUGBOT_BUG_ID: finding -->',
 						url: 'https://github.com/octanejs/octane/pull/487#discussion_r1',
 					},
 				],
@@ -897,8 +912,7 @@ describe('Review readiness label', () => {
 		body = READY,
 		labels = [],
 		threads = [],
-		headSha = HEAD_SHA,
-		matchingPulls = [{ number: 487, headRefOid: HEAD_SHA }],
+		matchingPulls = [{ number: 487, labels: { nodes: [{ name: READY }] } }],
 		removeErrorStatus,
 	} = {}) {
 		const added = [];
@@ -960,8 +974,8 @@ describe('Review readiness label', () => {
 			eventName,
 			repo: { owner: 'octanejs', repo: 'octane' },
 			payload:
-				eventName === 'check_run'
-					? { check_run: { head_sha: headSha } }
+				eventName === 'workflow_run'
+					? { workflow_run: { conclusion: 'success' } }
 					: { issue: { number: 487 }, comment: { body } },
 		};
 		const core = {
@@ -979,26 +993,36 @@ describe('Review readiness label', () => {
 		return { added, removed, notices, failures };
 	}
 
-	test('uses writable default-branch events without checking out pull request code', () => {
+	test('bridges unprivileged review comments to writable default-branch reconciliation', () => {
+		assert.match(
+			reviewFeedbackWorkflow,
+			/on:\n {2}pull_request_review_comment:\n {4}types: \[created\]/,
+		);
+		assert.match(reviewFeedbackWorkflow, /^permissions: \{\}$/m);
+		assert.doesNotMatch(reviewFeedbackWorkflow, /actions\/checkout/);
+
 		assert.match(
 			reviewReadinessWorkflow,
 			/on:\n {2}issue_comment:\n {4}types: \[created, edited\]/,
 		);
-		assert.match(reviewReadinessWorkflow, /check_run:\n {4}types: \[completed\]/);
+		assert.match(
+			reviewReadinessWorkflow,
+			/workflow_run:\n {4}workflows: \[Review feedback signal\]\n {4}types: \[completed\]/,
+		);
 		assert.match(
 			reviewReadinessWorkflow,
 			/github\.event_name == 'issue_comment' && github\.event\.issue\.pull_request/,
 		);
-		assert.match(reviewReadinessWorkflow, /github\.event\.check_run\.app\.slug == 'cursor'/);
-		assert.match(reviewReadinessWorkflow, /^ {6}checks: read$/m);
+		assert.match(reviewReadinessWorkflow, /github\.event_name == 'workflow_run'/);
+		assert.doesNotMatch(reviewReadinessWorkflow, /github\.event\.workflow_run\.conclusion/);
 		assert.match(reviewReadinessWorkflow, /^ {6}issues: read$/m);
 		assert.match(reviewReadinessWorkflow, /^ {6}pull-requests: write$/m);
 		assert.doesNotMatch(reviewReadinessWorkflow, /actions\/checkout/);
 	});
 
-	test('applies readiness when Cursor has no current unresolved findings', async () => {
+	test('applies readiness when every review thread is resolved', async () => {
 		const result = await runReadiness({
-			threads: [cursorThread({ resolved: true })],
+			threads: [reviewThread({ resolved: true })],
 		});
 
 		assert.deepEqual(result.added, [READY]);
@@ -1006,8 +1030,8 @@ describe('Review readiness label', () => {
 		assert.deepEqual(result.failures, []);
 	});
 
-	test('refuses readiness while a current Cursor finding is unresolved', async () => {
-		const result = await runReadiness({ threads: [cursorThread()] });
+	test('refuses readiness while any reviewer thread is unresolved', async () => {
+		const result = await runReadiness({ threads: [reviewThread()] });
 
 		assert.deepEqual(result.added, []);
 		assert.deepEqual(result.removed, []);
@@ -1015,11 +1039,11 @@ describe('Review readiness label', () => {
 		assert.deepEqual(result.failures, []);
 	});
 
-	test('removes readiness when Cursor completes with an unresolved finding', async () => {
+	test('removes readiness after new unresolved review feedback', async () => {
 		const result = await runReadiness({
-			eventName: 'check_run',
+			eventName: 'workflow_run',
 			labels: [READY],
-			threads: [cursorThread()],
+			threads: [reviewThread()],
 		});
 
 		assert.deepEqual(result.added, []);
@@ -1030,9 +1054,9 @@ describe('Review readiness label', () => {
 
 	test('treats a concurrently removed readiness label as already absent', async () => {
 		const result = await runReadiness({
-			eventName: 'check_run',
+			eventName: 'workflow_run',
 			labels: [READY],
-			threads: [cursorThread()],
+			threads: [reviewThread()],
 			removeErrorStatus: 404,
 		});
 
@@ -1044,9 +1068,9 @@ describe('Review readiness label', () => {
 
 	test('still fails when readiness removal returns another API error', async () => {
 		const result = await runReadiness({
-			eventName: 'check_run',
+			eventName: 'workflow_run',
 			labels: [READY],
-			threads: [cursorThread()],
+			threads: [reviewThread()],
 			removeErrorStatus: 500,
 		});
 
