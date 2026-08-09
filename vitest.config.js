@@ -3509,7 +3509,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mobx-differential',
 					include: ['packages/mobx/tests/differential/**/*.test.ts'],
