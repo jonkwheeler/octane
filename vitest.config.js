@@ -840,10 +840,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/tanstack-hotkeys/tests/upstream/**/*.test.ts'],
-				},
 				test: {
 					name: 'animejs',
 					include: ['packages/animejs/tests/**/*.test.ts'],
@@ -888,6 +884,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/tanstack-hotkeys/tests/upstream/**/*.test.ts'],
+				},
 				test: {
 					name: 'tanstack-hotkeys',
 					include: ['packages/tanstack-hotkeys/tests/**/*.test.ts'],
