@@ -75,3 +75,19 @@ export function ComponentProbe() @{
 		</section>}
 	/>
 }
+
+export function PlainInViewProbe(props: {
+	onChange?(inView: boolean, entry: IntersectionObserverEntry): void;
+	triggerOnce?: boolean;
+	hostRef?(node: Element | null): void;
+}) @{
+	<InView
+		as="div"
+		data-testid="plain-inview"
+		onChange={props.onChange}
+		triggerOnce={props.triggerOnce}
+		ref={props.hostRef}
+	>
+		plain
+	</InView>
+}

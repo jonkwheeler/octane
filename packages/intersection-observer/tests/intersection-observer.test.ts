@@ -15,6 +15,7 @@ import {
 	EffectSwapProbe,
 	HookProbe,
 	HookSwapProbe,
+	PlainInViewProbe,
 } from './_fixtures/probes.tsrx';
 
 beforeEach(() => setupIntersectionMocking(vi.fn));
@@ -210,6 +211,33 @@ describe('Octane binding', () => {
 		expect(target.textContent).toBe('outside');
 		mockIsIntersecting(target, true);
 		expect(target.textContent).toBe('inside');
+		result.unmount();
+	});
+
+	it('keeps a stable composed host ref across InView visibility updates', () => {
+		const onChange = vi.fn();
+		const hostRef = vi.fn();
+		const result = mount(PlainInViewProbe, {
+			onChange,
+			hostRef,
+		});
+		flushEffects();
+		const target = result.find('[data-testid="plain-inview"]');
+		expect(hostRef).toHaveBeenCalledWith(target);
+
+		mockIsIntersecting(target, true);
+		mockIsIntersecting(target, false);
+		mockIsIntersecting(target, true);
+		expect(
+			onChange.mock.calls.map(function (call) {
+				return call[0];
+			}),
+		).toEqual([true, false, true]);
+		expect(
+			hostRef.mock.calls.filter(function (call) {
+				return call[0] == null;
+			}),
+		).toHaveLength(0);
 		result.unmount();
 	});
 });

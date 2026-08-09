@@ -1,4 +1,4 @@
-import { createElement, isChildrenBlock } from 'octane';
+import { createElement, isChildrenBlock, useRef } from 'octane';
 import { useInView } from './useInView.tsrx';
 import type { InViewProps, InViewRenderProps } from './types.js';
 
@@ -32,6 +32,7 @@ export function InView(props: InViewProps) {
 		delay,
 		scrollMargin,
 	});
+	const composedRefs = useRef<[typeof result.ref, unknown] | null>(null);
 	const renderProps: InViewRenderProps = {
 		ref: result.ref,
 		inView: result.inView,
@@ -40,7 +41,13 @@ export function InView(props: InViewProps) {
 	if (typeof children === 'function' && !isChildrenBlock(children)) return children(renderProps);
 	const consumerRef = rest.ref;
 	const { ref: _ignoredRef, ...domProps } = rest;
-	const hostRef =
-		consumerRef == null ? result.ref : [result.ref, consumerRef];
+	let hostRef: typeof result.ref | [typeof result.ref, unknown] = result.ref;
+	if (consumerRef != null) {
+		const previous = composedRefs.current;
+		if (previous == null || previous[0] !== result.ref || previous[1] !== consumerRef) {
+			composedRefs.current = [result.ref, consumerRef];
+		}
+		hostRef = composedRefs.current!;
+	}
 	return createElement(as, { ...domProps, ref: hostRef }, children);
 }
