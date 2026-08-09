@@ -16,13 +16,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/livestore/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/livestore/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/livestore/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/livestore/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": [
         "/tests/ssr/",
         "/tests/conformance/",
@@ -44,7 +52,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "cce7b29f9435b3f2181ee4ba1ec86418c31e0715c2793f27746dc3d8b146f2fe"
+      "lockfileSha256": "312d886836fd6450f5242d2602dd6f5c81d8c0862289bfdd7f7002a5e4f6b444"
     }
   },
   "lanes": [
