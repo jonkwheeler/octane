@@ -168,8 +168,11 @@ const supportPaths = [
 	'packages/alien-signals/scripts/run-pristine-upstream.mjs',
 	'packages/alien-signals/scripts/verify-upstream.mjs',
 	'packages/alien-signals/upstream/SHA256SUMS',
+	'packages/alien-signals/upstream/package.json',
+	'packages/alien-signals/upstream/tsconfig.json',
 	'packages/alien-signals/audit/type-probes/public-api.test-d.ts',
 	'packages/alien-signals/audit/type-probes/tsconfig.pristine.json',
+	'packages/alien-signals/typetests/upstream-typecheck.test-d.ts',
 	'packages/alien-signals/typetests/public-api.test-d.ts',
 	'packages/alien-signals/typetests/tsconfig.json',
 ];

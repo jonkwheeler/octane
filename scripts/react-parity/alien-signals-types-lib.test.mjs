@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
@@ -7,8 +7,9 @@ import { buildTypeInventory } from './alien-signals-types-lib.mjs';
 
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'alien-signals-types-'));
-	const upstreamRoot = join(root, 'upstream');
+	const upstreamRoot = join(root, 'probes');
 	const adaptedRoot = join(root, 'adapted');
+	const typecheckRoot = join(root, 'upstream');
 	await cp(
 		new URL('../../packages/alien-signals/audit/type-probes', import.meta.url),
 		upstreamRoot,
@@ -17,13 +18,37 @@ async function fixture() {
 	await cp(new URL('../../packages/alien-signals/typetests', import.meta.url), adaptedRoot, {
 		recursive: true,
 	});
+	await mkdir(join(typecheckRoot, 'src'), { recursive: true });
+	await writeFile(join(typecheckRoot, 'tsconfig.json'), '{ "compilerOptions": { "strict": true } }\n');
+	await writeFile(
+		join(typecheckRoot, 'src/index.test.ts'),
+		await readFile(
+			new URL('../../packages/alien-signals/upstream/src/index.test.ts', import.meta.url),
+			'utf8',
+		),
+	);
 	await rm(join(upstreamRoot, 'tsconfig.pristine.json'), { force: true });
 	await rm(join(adaptedRoot, 'tsconfig.json'), { force: true });
 	return {
 		root,
 		upstreamRoot,
 		adaptedRoot,
-		config: { upstreamRoot: 'upstream', adaptedRoot: 'adapted' },
+		typecheckRoot,
+		config: {
+			upstreamTypecheck: {
+				project: 'upstream/tsconfig.json',
+				root: 'upstream',
+				files: [
+					{
+						upstream: 'src/index.test.ts',
+						adapted: 'upstream-typecheck.test-d.ts',
+						compare: 'assertion-groups',
+					},
+				],
+			},
+			upstreamRoot: 'probes',
+			adaptedRoot: 'adapted',
+		},
 	};
 }
 
@@ -33,6 +58,19 @@ test('rejects a skipped adapted type-test file', async function rejectsSkippedFi
 		return rm(value.root, { recursive: true, force: true });
 	});
 	await rm(join(value.adaptedRoot, 'public-api.test-d.ts'));
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /every upstream type artifact/);
+});
+
+test('rejects a skipped adapted upstream-typecheck counterpart', async function rejectsSkippedTypecheck(
+	t,
+) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	await rm(join(value.adaptedRoot, 'upstream-typecheck.test-d.ts'));
 	assert.throws(function run() {
 		buildTypeInventory(value.root, value.config);
 	}, /every upstream type artifact/);
@@ -58,6 +96,22 @@ test('rejects removing an adapted @ts-expect-error', async function rejectsRemov
 		return rm(value.root, { recursive: true, force: true });
 	});
 	const file = join(value.adaptedRoot, 'public-api.test-d.ts');
+	const source = await readFile(file, 'utf8');
+	assert.equal(source.includes('@ts-expect-error'), true, 'fixture must contain @ts-expect-error');
+	await writeFile(file, source.replace(/\s*\/\/\s*@ts-expect-error[^\n]*\n/, '\n'));
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /assertion groups differ/);
+});
+
+test('rejects removing the upstream-typecheck @ts-expect-error', async function rejectsTypecheckExpectError(
+	t,
+) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.adaptedRoot, 'upstream-typecheck.test-d.ts');
 	const source = await readFile(file, 'utf8');
 	assert.equal(source.includes('@ts-expect-error'), true, 'fixture must contain @ts-expect-error');
 	await writeFile(file, source.replace(/\s*\/\/\s*@ts-expect-error[^\n]*\n/, '\n'));

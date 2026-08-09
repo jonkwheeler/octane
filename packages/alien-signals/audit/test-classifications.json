@@ -34,13 +34,18 @@
     {
       "path": "packages/alien-signals/typetests/public-api.test-d.ts",
       "disposition": "adapted-upstream-suite",
-      "oracle": "Adapted Octane public type probes paired with the pristine type-probes lane (alien-signals-adapted-types)."
+      "oracle": "Supplemental Octane public type probes paired with audit/type-probes; primary type evidence is the upstream typecheck suite."
     },
     {
       "path": "packages/alien-signals/typetests/readable-computed.test-d.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "alien-signals-readable-computed",
       "reason": "Octane useSignalValue accepts ReadableSignal/computed signals; the pinned React declaration narrows to WritableSignal, so this acceptance is unpaired from the pristine type oracle."
+    },
+    {
+      "path": "packages/alien-signals/typetests/upstream-typecheck.test-d.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "One-for-one adapted assertion group for the upstream typecheck @ts-expect-error at src/index.test.ts:392."
     },
     {
       "path": "playground/octane/src/demos/AlienSignals.test.ts",

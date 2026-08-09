@@ -51,6 +51,15 @@ The pinned package has one public entry point, `react-alien-signals`.
 `ReadableSignal` and `DependencyList` are explicit Octane type exports. They describe public call
 shapes that the upstream implementation documents but does not name as exports.
 
+## Type suite
+
+Upstream ships an executable typecheck: `package.json` defines `typecheck: tsc --noEmit`, and the
+pinned `tsconfig.json` typechecks `src/index.ts` plus `src/index.test.ts` (including the
+`@ts-expect-error` at `src/index.test.ts:392`). Those artifacts are vendored under
+[`upstream/`](./upstream/) and run byte-exact in the `alien-signals-pristine-types` lane.
+`typetests/upstream-typecheck.test-d.ts` keeps the matching adapted assertion group; supplemental
+public-api probes remain under `audit/type-probes/` and `typetests/`.
+
 ## Test disposition
 
 The pinned repository contains one runtime test file, `src/index.test.ts`. It is vendored unchanged

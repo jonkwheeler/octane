@@ -13,7 +13,7 @@
   },
   "upstreamSuites": {
     "runtime": "present",
-    "types": "absent"
+    "types": "present"
   },
   "adaptedRoots": {
     "source": {
@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1f99f94d363b46089c31c8eeffad4bda8851c3a04093ec274240a093a25be0c3"
+      "lockfileSha256": "cf8ed18931c2ff0b2504a94364bbe0de84c15a288b5f0d0010ae889088d95110"
     }
   },
   "lanes": [
@@ -68,12 +68,12 @@
         {
           "path": "packages/alien-signals/audit/pristine-wrapper-runtime.json",
           "role": "support",
-          "sha256": "c0b9b567ca1c007b97833304ab21c728dfe225b29ae3564362f93948fbbfce48"
+          "sha256": "0817100f90425e1f94a410a57c7a8af6963688a8fe2d7d50dc306e8c761643a2"
         },
         {
           "path": "packages/alien-signals/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "357c847b911ac0e967f3bd2fd1fa24d04bb38827b8c49cba00f684da524ef51a"
+          "sha256": "a982cee9399860cd85d58167f2ba8709b5bc5b55f9160e774915d8708eaf47f3"
         },
         {
           "path": "packages/alien-signals/tests/upstream-original.test.ts",
@@ -98,7 +98,7 @@
         {
           "path": "packages/alien-signals/upstream/SHA256SUMS",
           "role": "support",
-          "sha256": "6cd8b2e5d49973e75033f66cd74024918c8e635621dc5f18aaa556dcfccda06c"
+          "sha256": "7f67ce32b4d7d512d6afe8a3b91bde057d93b2a74d32ab9a4da97920cd7ef426"
         },
         {
           "path": "packages/alien-signals/audit/pristine-oracle-environment.json",
@@ -123,12 +123,12 @@
         {
           "path": "packages/alien-signals/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7ff8ffffada071328a7741bcc12d03380a384ba42f7053f2b2276f526cfc0174"
+          "sha256": "82fc24dae9f73a5a5b969082877072959beea6bf3648815775f1b697ff1fba48"
         },
         {
           "path": "scripts/react-parity/alien-signals-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "f27c15393c38f7a60643d27d8841755f567d9f741d7863c7eaa6502eed114610"
+          "sha256": "33e30f12cf9703a67d4a75dfb448a7c49f0e46ee7592ed2619384dee49f88417"
         },
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
@@ -138,17 +138,17 @@
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
           "role": "support",
-          "sha256": "2d48b894d20326fa71b64d057890d5bda6c14089033076d0ac5dbde83729347c"
+          "sha256": "8eb9c93b7c28f476ef99a29502e6e6e7be58e06c3c28de81ff55ffbfcb9e739c"
         },
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "71052d2615f2870c3fdce2539cc0566b97c5eef21761b28d395193eb17bb5b95"
+          "sha256": "dc3075d880b84e73075a8b5053f35b65720024cb4c7b467c78e673c61eefa1f5"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
           "role": "support",
-          "sha256": "f1ad6feaa104901ae356b3cc4bf345a77c090abc9332bbe1eae167e361a741bc"
+          "sha256": "6d8094368440dce3eb12a76ceab951d2f6523d4180d0e69462de73f514edfaa5"
         },
         {
           "path": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
@@ -168,25 +168,40 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "alien-signals-pristine-types",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored React declaration probes against the vendored react-alien-signals 0.3.0 surface, including negative controls.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the pinned upstream typecheck (tsc --noEmit via vendored tsconfig) over src/index.ts + src/index.test.ts, including the @ts-expect-error at index.test.ts:392.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/alien-signals/audit/type-probes/tsconfig.pristine.json"
+        "project": "packages/alien-signals/upstream/tsconfig.json"
       },
       "files": [
         {
           "path": "packages/alien-signals/audit/pristine-types.json",
           "role": "test",
-          "sha256": "16f38e8af984aa64515f27ad9b134f4df5435af22290182d5771c8e313b8bd14",
+          "sha256": "07403329449cb71cb9c4bd2543e17ddf38990708cdc87265af7e1d34c97c45c9",
           "cases": [
             {
               "id": "types:alien-signals-pristine",
-              "testName": "pinned React declaration probes",
-              "fullName": "pinned React declaration probes"
+              "testName": "pinned upstream typecheck",
+              "fullName": "pinned upstream typecheck"
             }
           ]
+        },
+        {
+          "path": "packages/alien-signals/upstream/tsconfig.json",
+          "role": "support",
+          "sha256": "21b91ad5888e2c1507015b6909d8f64a73d352c22229d74d210b5a4ebe9b6ae2"
+        },
+        {
+          "path": "packages/alien-signals/upstream/package.json",
+          "role": "support",
+          "sha256": "4a343737443ed940988641cb14dcdefaacd08d00c1a2b4a78e70d0ed21064386"
+        },
+        {
+          "path": "packages/alien-signals/upstream/src/index.test.ts",
+          "role": "support",
+          "sha256": "479232596a061b5226bba6061b1ae8b66698e5bde8dc342d84b27ce01c4af500"
         },
         {
           "path": "packages/alien-signals/audit/type-probes/public-api.test-d.ts",
@@ -194,14 +209,9 @@
           "sha256": "7205108d1bad438525a8114bdf37793faab70558dd7bdbd9f4679a273d8f8465"
         },
         {
-          "path": "packages/alien-signals/audit/type-probes/tsconfig.pristine.json",
-          "role": "support",
-          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
-        },
-        {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "ce0e88ebb7c5a6e17097d8f151d37ad12eef52ade0fbd806b77c69c9398a349a"
+          "sha256": "ebbaaf29fa91b45492087a2f5882b827076dd9c8d71cbd3fbcf502a49ebc7599"
         }
       ]
     },
@@ -211,8 +221,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "alien-signals-adapted-types",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Octane public type probes with matching negative controls for the @octanejs/alien-signals surface.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Adapted upstream typecheck assertion groups plus supplemental Octane public-api probes and the readable-computed divergence typetest.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -222,14 +232,19 @@
         {
           "path": "packages/alien-signals/audit/adapted-types.json",
           "role": "test",
-          "sha256": "65376250a77a2e71a2addbf76d7221fab0633f02dc01845f48a824ccf8d9d806",
+          "sha256": "69a82cdcac44a2ff3c392360863351e32ad1ccefa9efad73f7270fdcb4a79676",
           "cases": [
             {
               "id": "types:alien-signals-adapted",
-              "testName": "adapted Octane declaration probes",
-              "fullName": "adapted Octane declaration probes"
+              "testName": "adapted Octane type suite",
+              "fullName": "adapted Octane type suite"
             }
           ]
+        },
+        {
+          "path": "packages/alien-signals/typetests/upstream-typecheck.test-d.ts",
+          "role": "support",
+          "sha256": "3d2b4bd023e4d01bb9674847b284309c5d54ff1de9ba706b41818650550181c6"
         },
         {
           "path": "packages/alien-signals/typetests/public-api.test-d.ts",
@@ -256,7 +271,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "ce0e88ebb7c5a6e17097d8f151d37ad12eef52ade0fbd806b77c69c9398a349a"
+          "sha256": "ebbaaf29fa91b45492087a2f5882b827076dd9c8d71cbd3fbcf502a49ebc7599"
         }
       ]
     }
