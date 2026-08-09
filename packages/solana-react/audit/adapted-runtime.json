@@ -4,7 +4,8 @@
   "roots": ["packages/solana-react/tests/upstream"],
   "files": [
     "packages/solana-react/tests/upstream/client-provider.test.ts",
-    "packages/solana-react/tests/upstream/use-client-capability.test.ts"
+    "packages/solana-react/tests/upstream/use-client-capability.test.ts",
+    "packages/solana-react/tests/upstream/use-request-query.test.ts"
   ],
   "tests": [
     {
@@ -36,6 +37,66 @@
       "id": "runtime:d19263abe251ae27",
       "file": "packages/solana-react/tests/upstream/use-client-capability.test.ts",
       "fullName": "useClientCapability throws with hookName + providerHint when the capability is absent"
+    },
+    {
+      "id": "runtime:6cbe8b7c5c12d7cf",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a ReactiveActionSource (PendingRpc-like) builds a store per fetch and resolves through `dispatchAsync()`"
+    },
+    {
+      "id": "runtime:fddd99e3936b2c85",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a ReactiveActionSource (PendingRpc-like) does not fire the queryFn when the source is null"
+    },
+    {
+      "id": "runtime:7c34c03a598a3504",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a ReactiveActionSource (PendingRpc-like) starts firing once the source transitions from null to non-null"
+    },
+    {
+      "id": "runtime:3b66fb16e7e1cdd4",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a ReactiveActionSource (PendingRpc-like) surfaces the rejection as `error`"
+    },
+    {
+      "id": "runtime:2026bcb104674ce4",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source auto-fires the queryFn on mount and transitions to data on success"
+    },
+    {
+      "id": "runtime:cc7f8c7bfce523f3",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source does not fire the queryFn when the source is null"
+    },
+    {
+      "id": "runtime:1a418617d923d890",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source does not fire the queryFn while disabled via `enabled: false`"
+    },
+    {
+      "id": "runtime:07cad863c34e9c38",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source invokes the user-supplied `getAbortSignal` factory"
+    },
+    {
+      "id": "runtime:d62e1babbbe535f2",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source starts firing once the source transitions from null to non-null"
+    },
+    {
+      "id": "runtime:ec71090383dee6db",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source surfaces the rejection as `error`"
+    },
+    {
+      "id": "runtime:f96742377b3add37",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source threads an `AbortSignal` into the function"
+    },
+    {
+      "id": "runtime:2db0c2a8cc0decc0",
+      "file": "packages/solana-react/tests/upstream/use-request-query.test.ts",
+      "fullName": "useRequestQuery with a function source uses the latest source closure when `refetch()` is called"
     }
   ]
 }

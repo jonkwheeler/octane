@@ -3,18 +3,18 @@ import type { Query } from '@tanstack/query-core';
 import { useRequestQuery } from '../../src/query';
 import type { RequestSource } from '../../src/query';
 
-type Enabled = boolean | ((query: Query<string, Error, string, readonly unknown[]>) => boolean);
+type Enabled = boolean | ((query: Query) => boolean);
 
 export function RequestReader(props: {
 	source: RequestSource<string> | null;
 	enabled?: Enabled;
-	onEnabledQuery?: (query: Query<string, Error, string, readonly unknown[]>) => void;
-	onQueryResult?: (query: ReturnType<typeof useRequestQuery<string>>) => void;
+	onEnabledQuery?: (query: Query) => void;
+	onQueryResult?: (query: ReturnType<typeof useRequestQuery>) => void;
 	onRefetch?: (refetch: () => Promise<unknown>) => void;
 }) @{
 	const enabled =
 		typeof props.enabled === 'function'
-			? (query: Query<string, Error, string, readonly unknown[]>) => {
+			? (query: Query) => {
 					props.onEnabledQuery?.(query);
 					return props.enabled!(query);
 				}
@@ -32,8 +32,8 @@ export function RequestApp(props: {
 	client: unknown;
 	source: RequestSource<string> | null;
 	enabled?: Enabled;
-	onEnabledQuery?: (query: Query<string, Error, string, readonly unknown[]>) => void;
-	onQueryResult?: (query: ReturnType<typeof useRequestQuery<string>>) => void;
+	onEnabledQuery?: (query: Query) => void;
+	onQueryResult?: (query: ReturnType<typeof useRequestQuery>) => void;
 	onRefetch?: (refetch: () => Promise<unknown>) => void;
 }) @{
 	<QueryClientProvider client={props.client}>

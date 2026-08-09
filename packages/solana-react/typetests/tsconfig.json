@@ -16,5 +16,9 @@
     "jsxImportSource": "octane",
     "allowImportingTsExtensions": true
   },
-  "include": ["./**/*.test-d.ts"]
+  "include": [
+    "./public-api.test-d.ts",
+    "./__typetests__/**/*-typetest.ts",
+    "./query/__typetests__/**/*-typetest.ts"
+  ]
 }

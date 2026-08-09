@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRoot": "packages/solana-react/audit/type-probes",
+  "upstreamRoot": "packages/solana-react/upstream/src",
   "adaptedRoot": "packages/solana-react/typetests",
   "inventories": {
     "upstream": "packages/solana-react/audit/pristine-types.json",
@@ -9,27 +9,27 @@
   "lanes": {
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/solana-react/audit/type-probes/tsconfig.pristine.json",
-      "sourcePolicy": "repo-authored React declaration probes against vendored @solana/react 7.0.0"
+      "project": "packages/solana-react/audit/upstream-typetests/tsconfig.json",
+      "sourcePolicy": "byte-exact pinned upstream typetests for the ported client/capability/query surface"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
       "project": "packages/solana-react/typetests/tsconfig.json",
-      "sourcePolicy": "structurally equivalent Octane public probes after permitted transformations"
+      "sourcePolicy": "structurally equivalent after permitted import-root and query-type-package transformations"
     }
   },
   "permittedTransformations": [
     {
+      "kind": "formatting",
+      "rule": "TypeScript printer output must remain structurally identical"
+    },
+    {
       "kind": "import-root",
-      "rule": "React probes import the pinned @solana/react package types; Octane probes import the package public entry"
+      "rule": "relative upstream hook imports retarget Octane src/hooks/useClient or src/query"
     },
     {
-      "kind": "renderable-type",
-      "rule": "ReactNode children become OctaneNode children"
-    },
-    {
-      "kind": "surface-extension",
-      "rule": "Octane probes may additionally assert createClientStore, createWalletStore, and createTransactionExecutor, which have no upstream React twin"
+      "kind": "query-type-package",
+      "rule": "@tanstack/react-query UseQueryResult imports become @octanejs/tanstack-query"
     },
     {
       "kind": "negative-control",

@@ -32,7 +32,7 @@ byte.
 | `useClient` | Ported with slot forwarding; throws a plain `Error` instead of `SolanaError` | `tests/upstream/client-provider.test.ts` |
 | `useClientCapability`, `UseClientCapabilityConfig` | Ported with slot forwarding; throws a plain `Error` instead of `SolanaError` | `tests/upstream/use-client-capability.test.ts` |
 | `useRequest` / `useRequestResult` | Not ported; request work goes through `@octanejs/solana-react/query` | gap / out of scope for this surface |
-| `useRequestQuery` (`@solana/react/query`) | Ported as `useRequestQuery` over `@octanejs/tanstack-query` | `tests/query.test.ts` (Octane conformance; not parity-owned) |
+| `useRequestQuery` (`@solana/react/query`) | Ported as `useRequestQuery` over `@octanejs/tanstack-query`, including `ReactiveActionSource`, function sources, and `getAbortSignal` | `tests/upstream/use-request-query.test.ts`, pristine useRequestQuery suite |
 | `useSubscription*` / `useTrackedData*` | Deferred pending streamed-query lifecycle characterization | gap |
 | `@solana/react/swr` | Excluded; Octane has no SWR binding | gap |
 | Selected-wallet provider / signer hooks | Replaced by structural `createWalletStore` (no React / `@wallet-standard/react` types on the public boundary) | `tests/wallet.test.ts` (Octane conformance) |
@@ -43,18 +43,71 @@ byte.
 
 Parity-owned adapted cases live only under `tests/upstream/`. Ordinary
 Octane-authored conformance stays in `tests/*.test.ts` and is outside
-`testExecution` ownership.
+`testExecution` ownership. Octane-only declaration probes live in
+`typetests/public-api.test-d.ts` and are **not** parity type evidence.
+
+### Runtime files
 
 | Upstream artifact | Disposition |
 |---|---|
 | `src/__tests__/ClientProvider-test.browser.tsx` | Pristine-run in full. Sync publish/nested/missing-provider cases adapted in `tests/upstream/client-provider.test.ts`. Async client / Suspense cases are pristine-only (Octane `ClientProvider` accepts a resolved client). |
 | `src/__tests__/useClientCapability-test.browser.tsx` | Pristine-run in full. Present/missing/partial-array cases adapted in `tests/upstream/use-client-capability.test.ts`. |
-| `src/query/__tests__/useRequestQuery-test.browser.tsx` | Present at the pin; not yet adapted. Octane request-query contracts are covered by non-parity `tests/query.test.ts`. |
-| Remaining `src/__tests__/*`, `src/swr/**`, subscription/tracked suites | Out of scope for this surface (see crosswalk gaps). |
-| `src/**/__typetests__/*` | Insufficient for one-for-one execution against the narrower Octane surface; repo-authored probes cover the overlapping public API. |
+| `src/query/__tests__/useRequestQuery-test.browser.tsx` | Pristine-run in full. Function-source, ReactiveActionSource, null/enabled, getAbortSignal, refetch-closure, and SSR cases adapted in `tests/upstream/use-request-query.test.ts`. |
+| `src/__tests__/SelectedWalletAccountContextProvider-test.browser.tsx` | Out of scope: Octane replaces selected-wallet React context with structural `createWalletStore` (no `@wallet-standard/react` public types). |
+| `src/__tests__/staticStores-test.ts` | Out of scope: internal upstream disabled-store helpers, not a public Octane export. |
+| `src/__tests__/useAction-test.browser.tsx` | Out of scope: internal upstream helper; not exported by `@octanejs/solana-react`. |
+| `src/__tests__/useLatest-test.browser.tsx` | Out of scope: internal upstream helper; Octane bindings use slot-aware refs instead. |
+| `src/__tests__/useReactiveStoreLifecycle-test.browser.tsx` | Out of scope: internal upstream helper for Kit store wiring, not a public Octane export. |
+| `src/__tests__/useRequest-test.browser.tsx` | Out of scope: Octane does not port `useRequest`; request UI goes through `useRequestQuery`. |
+| `src/__tests__/useSignAndSendTransaction-test.ts` | Out of scope: signing surface replaced by `createTransactionExecutor`. |
+| `src/__tests__/useSignIn-test.ts` | Out of scope: signing surface replaced by `createTransactionExecutor`. |
+| `src/__tests__/useSignMessage-test.ts` | Out of scope: signing surface replaced by `createTransactionExecutor`. |
+| `src/__tests__/useSignTransaction-test.ts` | Out of scope: signing surface replaced by `createTransactionExecutor`. |
+| `src/__tests__/useSubscription-test.browser.tsx` | Out of scope for this pin: streamed-query lifecycle not yet characterized on Octane. |
+| `src/__tests__/useTrackedData-test.browser.tsx` | Out of scope for this pin: streamed-query lifecycle not yet characterized on Octane. |
+| `src/__tests__/useWalletAccountMessageSigner-test.ts` | Out of scope: wallet-account signer hooks replaced by `createWalletStore` / executor. |
+| `src/__tests__/useWalletAccountTransactionSendingSigner-test.ts` | Out of scope: wallet-account signer hooks replaced by `createWalletStore` / executor. |
+| `src/__tests__/useWalletAccountTransactionSigner-test.ts` | Out of scope: wallet-account signer hooks replaced by `createWalletStore` / executor. |
+| `src/query/__tests__/bridgeStoreToAsyncIterable-test.ts` | Out of scope: framework-neutral bridge used only by deferred subscription/tracked query adapters. |
+| `src/query/__tests__/useSubscriptionQuery-test.browser.tsx` | Out of scope for this pin: streamed TanStack subscription adapter deferred. |
+| `src/query/__tests__/useTrackedDataQuery-test.browser.tsx` | Out of scope for this pin: streamed TanStack tracked-data adapter deferred. |
+| `src/swr/__tests__/bridgeStoreToSWR-test.ts` | Out of scope: Octane has no SWR binding. |
+| `src/swr/__tests__/useRequestSWR-test.browser.tsx` | Out of scope: Octane has no SWR binding. |
+| `src/swr/__tests__/useSubscriptionSWR-test.browser.tsx` | Out of scope: Octane has no SWR binding. |
+| `src/swr/__tests__/useTrackedDataSWR-test.browser.tsx` | Out of scope: Octane has no SWR binding. |
+
+Omission/rename negative controls for the pristine runtime inventory live in
+`scripts/react-parity/solana-react-parity-controls.test.mjs`.
+
+### Type files
+
+| Upstream artifact | Disposition |
+|---|---|
+| `src/__typetests__/useClient-typetest.ts` | Pristine + one-for-one adapted under `typetests/__typetests__/`. |
+| `src/__typetests__/useClientCapability-typetest.ts` | Pristine + one-for-one adapted under `typetests/__typetests__/`. |
+| `src/query/__typetests__/useRequestQuery-typetest.ts` | Pristine + one-for-one adapted under `typetests/query/__typetests__/`. |
+| `src/__typetests__/selectedWalletAccountContextProvider-typetest.ts` | Out of scope: selected-wallet React types are not on the Octane public boundary. |
+| `src/__typetests__/useAction-typetest.ts` | Out of scope: internal helper, not exported. |
+| `src/__typetests__/useRequest-typetest.ts` | Out of scope: `useRequest` is not ported. |
+| `src/__typetests__/useSignAndSendTransaction-typetest.ts` | Out of scope: signing hooks replaced by `createTransactionExecutor`. |
+| `src/__typetests__/useSignIn-typetest.ts` | Out of scope: signing hooks replaced by `createTransactionExecutor`. |
+| `src/__typetests__/useSignTransaction-typetest.ts` | Out of scope: signing hooks replaced by `createTransactionExecutor`. |
+| `src/__typetests__/useSubscription-typetest.ts` | Out of scope for this pin: streamed query surface deferred. |
+| `src/__typetests__/useTrackedData-typetest.ts` | Out of scope for this pin: streamed query surface deferred. |
+| `src/query/__typetests__/useSubscriptionQuery-typetest.ts` | Out of scope for this pin: streamed TanStack subscription adapter deferred. |
+| `src/query/__typetests__/useTrackedDataQuery-typetest.ts` | Out of scope for this pin: streamed TanStack tracked-data adapter deferred. |
+| `src/swr/__typetests__/useRequestSWR-typetest.ts` | Out of scope: Octane has no SWR binding. |
+| `src/swr/__typetests__/useSubscriptionSWR-typetest.ts` | Out of scope: Octane has no SWR binding. |
+| `src/swr/__typetests__/useTrackedDataSWR-typetest.ts` | Out of scope: Octane has no SWR binding. |
+
+Type inventories, the permitted-transformation ledger, and skipped-file /
+deleted-assertion / removed-`@ts-expect-error` negative controls live in
+`packages/solana-react/audit/type-parity.json` and
+`scripts/react-parity/solana-react-types-lib{,.test}.mjs`.
 
 ## Intentional divergences
 
 - Missing-provider and missing-capability failures throw plain `Error` messages rather than `@solana/kit` `SolanaError` codes.
 - `ClientProvider` does not accept a `Promise<Client>` and does not suspend; callers resolve async plugin setup before mount.
 - Wallet and transaction APIs are Octane-native rather than upstream selected-wallet / sign-* hooks.
+- `useRequestQuery` additionally accepts an Octane `{ send }` source shape for Kit transports that expose `send({ abortSignal })` rather than `reactiveStore()`.

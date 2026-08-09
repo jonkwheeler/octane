@@ -1,5 +1,6 @@
 import { useQuery } from '@octanejs/tanstack-query';
 import type { UseQueryOptions, UseQueryResult } from '@octanejs/tanstack-query';
+import type { ReactiveActionSource } from '@solana/kit';
 import { skipToken, type QueryKey } from '@tanstack/query-core';
 import { useCallback, useRef } from 'octane';
 
@@ -16,35 +17,80 @@ function sub(slot: symbol | undefined, tag: string): symbol | undefined {
 	return symbol;
 }
 
-export type RequestSource<T> =
-	| ((signal: AbortSignal) => Promise<T>)
-	| { send(options?: { abortSignal?: AbortSignal }): Promise<T> };
+export type UseRequestOptions = {
+	getAbortSignal?: () => AbortSignal;
+};
 
-export function useRequestQuery<T, TError = Error, TData = T>(
+export type SendSource<T> = {
+	send(options?: { abortSignal?: AbortSignal }): Promise<T>;
+};
+
+export type RequestSource<T> =
+	((signal: AbortSignal) => Promise<T>) | ReactiveActionSource<T> | SendSource<T>;
+
+export type UseRequestQueryOptions<T, TError = unknown, TData = T> = Omit<
+	UseQueryOptions<T, TError, TData, QueryKey>,
+	'queryFn' | 'queryKey'
+> &
+	UseRequestOptions;
+
+function isSendSource<T>(source: object): source is SendSource<T> {
+	return 'send' in source && typeof (source as SendSource<T>).send === 'function';
+}
+
+function isReactiveSource<T>(source: object): source is ReactiveActionSource<T> {
+	return (
+		'reactiveStore' in source &&
+		typeof (source as ReactiveActionSource<T>).reactiveStore === 'function'
+	);
+}
+
+async function dispatchSource<T>(source: RequestSource<T>, signal: AbortSignal): Promise<T> {
+	if (typeof source === 'function') return source(signal);
+	if (isSendSource<T>(source)) return source.send({ abortSignal: signal });
+	if (isReactiveSource<T>(source)) {
+		return source.reactiveStore().withSignal(signal).dispatchAsync();
+	}
+	throw new Error('useRequestQuery: unsupported request source');
+}
+
+export function useRequestQuery<T, TError = unknown, TData = T>(
 	key: QueryKey,
 	source: RequestSource<T> | null,
-	options?: Omit<UseQueryOptions<T, TError, TData, QueryKey>, 'queryFn' | 'queryKey'>,
+	options?: UseRequestQueryOptions<T, TError, TData>,
 ): UseQueryResult<TData, TError>;
 export function useRequestQuery(
 	key: QueryKey,
 	source: RequestSource<unknown> | null,
-	optionsOrSlot?:
-		Omit<UseQueryOptions<unknown, Error, unknown, QueryKey>, 'queryFn' | 'queryKey'> | symbol,
+	optionsOrSlot?: UseRequestQueryOptions<unknown, unknown, unknown> | symbol,
 	slot?: symbol,
 ) {
 	const options = typeof optionsOrSlot === 'symbol' ? undefined : optionsOrSlot;
 	const resolvedSlot = typeof optionsOrSlot === 'symbol' ? optionsOrSlot : slot;
+	const { getAbortSignal, ...queryOptions } = options ?? {};
 
-	const result = (useQuery as (...args: unknown[]) => UseQueryResult<unknown, Error>)(
+	const sourceRef = useRef(source, sub(resolvedSlot, 'source'));
+	sourceRef.current = source;
+	const getAbortSignalRef = useRef(getAbortSignal, sub(resolvedSlot, 'get-abort-signal'));
+	getAbortSignalRef.current = getAbortSignal;
+
+	const result = (useQuery as (...args: unknown[]) => UseQueryResult<unknown, unknown>)(
 		{
-			...options,
-			enabled: source === null ? false : options?.enabled,
+			...queryOptions,
+			enabled: source != null && (queryOptions.enabled ?? true),
 			queryKey: key,
 			queryFn:
 				source === null
 					? skipToken
-					: ({ signal }: { signal: AbortSignal }) =>
-							typeof source === 'function' ? source(signal) : source.send({ abortSignal: signal }),
+					: ({ signal }: { signal: AbortSignal }) => {
+							const current = sourceRef.current;
+							if (current == null) {
+								throw new Error('useRequestQuery: the queryFn ran with a null source');
+							}
+							const userSignal = getAbortSignalRef.current?.();
+							const combinedSignal = userSignal ? AbortSignal.any([signal, userSignal]) : signal;
+							return dispatchSource(current, combinedSignal);
+						},
 		},
 		undefined,
 		resolvedSlot,
@@ -56,7 +102,7 @@ export function useRequestQuery(
 		[],
 		sub(resolvedSlot, 'idle-refetch'),
 	);
-	const idleResultRef = useRef<UseQueryResult<unknown, Error> | undefined>(
+	const idleResultRef = useRef<UseQueryResult<unknown, unknown> | undefined>(
 		undefined,
 		sub(resolvedSlot, 'idle-result'),
 	);

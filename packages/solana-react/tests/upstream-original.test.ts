@@ -11,7 +11,7 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 type Identity = { file: string; fullName: string; status?: string };
 
 // @parity-case pristine:solana-react-original-suite
-it('runs the pinned @solana/react 7.0.0 client-provider suite unchanged', function runsPinnedSolanaReactSuite() {
+it('runs the pinned @solana/react 7.0.0 client/capability/query suite unchanged', function runsPinnedSolanaReactSuite() {
 	const expected = JSON.parse(
 		readFileSync(resolve(repoRoot, 'packages/solana-react/audit/pristine-runtime.json'), 'utf8'),
 	).tests as Identity[];

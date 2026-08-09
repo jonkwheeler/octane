@@ -13,6 +13,7 @@ export default defineConfig({
 		include: [
 			'src/__tests__/ClientProvider-test.browser.tsx',
 			'src/__tests__/useClientCapability-test.browser.tsx',
+			'src/query/__tests__/useRequestQuery-test.browser.tsx',
 		],
 		environment: 'jsdom',
 		globals: true,
