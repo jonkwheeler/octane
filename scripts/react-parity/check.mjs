@@ -15,6 +15,8 @@ import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+import { verifyZagTestClassifications } from './zag-classifications-lib.mjs';
+import { verifyZagUpstream } from '../../packages/zag/scripts/verify-upstream.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -58,6 +60,16 @@ try {
 	verifyLivestoreTestClassifications(REPO);
 } catch (error) {
 	errors.push(`livestore test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyZagUpstream(path.join(REPO, 'packages/zag'));
+} catch (error) {
+	errors.push(`zag upstream evidence is invalid: ${error.message}`);
+}
+try {
+	verifyZagTestClassifications(REPO);
+} catch (error) {
+	errors.push(`zag test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components

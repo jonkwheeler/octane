@@ -36,9 +36,14 @@ function useBindableValue<T>(
 			console.log(`[bindable > ${props().debug}] setValue`, { next, prev: previous });
 		}
 
-		valueRef.current = next;
-		prevValue.current = next;
-		if (!controlled) setValue(next);
+		// Controlled values stay pinned to props().value (re-synced each render).
+		// Uncontrolled updates advance valueRef immediately so mid-transition
+		// action chains read the value set() already wrote.
+		if (!controlled) {
+			valueRef.current = next;
+			prevValue.current = next;
+			setValue(next);
+		}
 		if (!eq(next, previous)) props().onChange?.(next, previous);
 	};
 
@@ -46,9 +51,7 @@ function useBindableValue<T>(
 		initial: initialValue,
 		ref: valueRef,
 		get() {
-			// Prefer valueRef so mid-transition onChange/actions see the value
-			// set() already advanced, not the stale render-time useState snapshot.
-			return valueRef.current as T;
+			return (controlled ? props().value : valueRef.current) as T;
 		},
 		set(nextValue: T | ((prev: T) => T)) {
 			const execute = props().sync ? flushSync : (run: () => void) => run();

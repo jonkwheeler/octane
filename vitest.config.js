@@ -1067,10 +1067,21 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/zag/tests/upstream/**/*.test.ts'],
+				},
 				test: {
 					name: 'zag',
-					include: ['packages/zag/tests/conformance/**/*.test.ts'],
-					exclude: [...configDefaults.exclude, 'packages/zag/tests/differential/**/*.test.ts'],
+					include: [
+						'packages/zag/tests/conformance/**/*.test.ts',
+						'packages/zag/tests/upstream/**/*.test.ts',
+					],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/zag/tests/differential/**/*.test.ts',
+						'packages/zag/tests/upstream-original.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1081,7 +1092,21 @@ export default defineConfig({
 							find: /^@octanejs\/zag$/,
 							replacement: resolve(import.meta.dirname, 'packages/zag/src/index.ts'),
 						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
 					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'zag-pristine',
+					include: ['packages/zag/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
 				},
 			},
 			{
