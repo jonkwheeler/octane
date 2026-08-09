@@ -11,6 +11,10 @@ const lanes = [
 	['react-day-picker', 'packages/react-day-picker/audit/adapted-runtime.json'],
 	['react-day-picker-ssr', 'packages/react-day-picker/audit/adapted-runtime-server.json'],
 	['react-day-picker-browser', 'packages/react-day-picker/audit/adapted-runtime-browser.json'],
+	[
+		'react-day-picker-differential',
+		'packages/react-day-picker/audit/differential-runtime.json',
+	],
 ];
 
 for (const [project, destination] of lanes) {

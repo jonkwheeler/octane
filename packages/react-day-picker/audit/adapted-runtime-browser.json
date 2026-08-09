@@ -1,8 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "react-day-picker-browser",
-  "roots": ["packages/react-day-picker/tests"],
-  "files": ["packages/react-day-picker/tests/browser/day-picker.browser.test.ts"],
+  "roots": [
+    "packages/react-day-picker/tests"
+  ],
+  "files": [
+    "packages/react-day-picker/tests/browser/day-picker.browser.test.ts"
+  ],
   "tests": [
     {
       "id": "runtime:67426abace68f4da",

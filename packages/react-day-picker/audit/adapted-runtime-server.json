@@ -1,8 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "react-day-picker-ssr",
-  "roots": ["packages/react-day-picker/tests"],
-  "files": ["packages/react-day-picker/tests/ssr/server.test.ts"],
+  "roots": [
+    "packages/react-day-picker/tests"
+  ],
+  "files": [
+    "packages/react-day-picker/tests/ssr/server.test.ts"
+  ],
   "tests": [
     {
       "id": "runtime:dd8c9e9f8caf9f77",

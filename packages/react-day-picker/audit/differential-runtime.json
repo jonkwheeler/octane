@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "project": "react-day-picker-differential",
+  "roots": [
+    "packages/react-day-picker/tests"
+  ],
+  "files": [
+    "packages/react-day-picker/tests/differential/parity.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:0e18bdb6c3b9d3bc",
+      "file": "packages/react-day-picker/tests/differential/parity.test.ts",
+      "fullName": "differential: @octanejs/react-day-picker vs react-day-picker 10.0.1 matches React month navigation output"
+    },
+    {
+      "id": "runtime:0abf0668fe8a83f9",
+      "file": "packages/react-day-picker/tests/differential/parity.test.ts",
+      "fullName": "differential: @octanejs/react-day-picker vs react-day-picker 10.0.1 matches the default calendar semantic shape and constraints"
+    }
+  ]
+}

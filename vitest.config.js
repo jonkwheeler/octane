@@ -3386,12 +3386,14 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker',
 					include: [
 						'packages/react-day-picker/tests/**/*.test.ts',
 						'!packages/react-day-picker/tests/ssr/**/*.test.ts',
 						'!packages/react-day-picker/tests/browser/**/*.test.ts',
+						'!packages/react-day-picker/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -3407,6 +3409,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker-ssr',
 					include: ['packages/react-day-picker/tests/ssr/**/*.test.ts'],
@@ -3428,6 +3431,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker-browser',
 					include: ['packages/react-day-picker/tests/browser/**/*.test.ts'],
@@ -3435,6 +3439,27 @@ export default defineConfig({
 					globals: false,
 					testTimeout: 60_000,
 					hookTimeout: 60_000,
+				},
+			},
+			{
+				// React oracle evidence: Octane fixtures vs published react-day-picker on
+				// real React. Own project so the React-side path stays out of the adapted
+				// suite inventory.
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-day-picker-differential',
+					include: ['packages/react-day-picker/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-day-picker$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-day-picker/src/index.ts'),
+						},
+					],
 				},
 			},
 			{

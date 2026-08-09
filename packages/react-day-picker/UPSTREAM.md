@@ -9,3 +9,16 @@
 The exact upstream package source, tests, styles, package metadata, and license are retained under `upstream/`. `audit/SHA256SUMS` and `audit/check-upstream.mjs` make additions, removals, and byte changes detectable.
 
 The Octane implementation preserves the root, locale, stylesheet, and package metadata entry points. React-specific hooks and JSX components are adapted to Octane; framework-neutral date calculations and formatters retain their upstream behavior.
+
+## Parity status: incomplete
+
+This port is **explicitly incomplete** for React-parity evidence. Upstream ships both runtime and type suites under `upstream/src/**/*.test.*`, and the manifest records those suites as `present`, but this package does **not** yet execute them as parity lanes.
+
+Still missing before this binding can claim a parity suite:
+
+- pristine runtime lane that runs the unchanged pinned upstream suite with case/assertion negative controls
+- adapted one-for-one upstream runtime inventory (today's `adapted-runtime*.json` files are provisional repo-authored evidence only)
+- pristine type lane and one-for-one adapted type inventory with accept/reject negative controls
+- exhaustive upstream-test disposition for every vendored test artifact
+
+Until those land, do not treat the adapted/browser/differential inventories as a substitute for the upstream suite. Current Vitest projects (`react-day-picker`, `react-day-picker-ssr`, `react-day-picker-browser`, `react-day-picker-differential`) are owned by `testExecution.group: react-parity` and provide provisional repo-authored smoke and differential evidence only. Provenance verification remains `recorded-unverified`.

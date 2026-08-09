@@ -1,11 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "react-day-picker",
-  "roots": ["packages/react-day-picker/tests"],
+  "roots": [
+    "packages/react-day-picker/tests"
+  ],
   "files": [
     "packages/react-day-picker/tests/calendar.test.ts",
-    "packages/react-day-picker/tests/exports.test.ts",
-    "packages/react-day-picker/tests/react-oracle.test.ts"
+    "packages/react-day-picker/tests/exports.test.ts"
   ],
   "tests": [
     {
@@ -62,16 +63,6 @@
       "id": "runtime:78c18eae9c59f98e",
       "file": "packages/react-day-picker/tests/exports.test.ts",
       "fullName": "@octanejs/react-day-picker exports matches the pinned upstream root runtime entry"
-    },
-    {
-      "id": "runtime:5f22746069abe5b4",
-      "file": "packages/react-day-picker/tests/react-oracle.test.ts",
-      "fullName": "react-day-picker v10.0.1 React oracle matches React month navigation output"
-    },
-    {
-      "id": "runtime:69ac6c396dea4b83",
-      "file": "packages/react-day-picker/tests/react-oracle.test.ts",
-      "fullName": "react-day-picker v10.0.1 React oracle matches the default calendar semantic shape and constraints"
     }
   ]
 }

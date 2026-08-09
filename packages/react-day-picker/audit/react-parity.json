@@ -23,12 +23,12 @@
     "tests": {
       "roots": ["packages/react-day-picker/tests"],
       "include": ["\\.test\\.ts$"],
-      "exclude": []
+      "exclude": ["/tests/differential/"]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 15,
-    "uniqueIdentities": 15,
+    "inventoryEntries": 13,
+    "uniqueIdentities": 13,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -50,7 +50,7 @@
       "environment": "workspace-node",
       "project": "react-day-picker",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the complete adapted DOM, export, interaction, and bounded React-oracle suite with exact test identities.",
+      "notes": "Provisional repo-authored adapted DOM and export smoke evidence. Not a one-for-one upstream-suite substitute; see UPSTREAM.md parity incompleteness.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-day-picker/audit/adapted-runtime.json"
@@ -59,12 +59,12 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "913a263c15e3c95d6dfa33afa2c9e3692c8708e9b0b26a403cf9bfb09f96ed39"
+          "sha256": "f785229a30636788dd3ab6ba43ec9ed34b9149fc90e5ec60d160f2918125b0ac"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "da40b0d1ecbd4c150f2eefec9783c2cf258892d1cc6b52f1e42050cd2f689ad9"
+          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
         },
         {
           "path": "packages/react-day-picker/audit/upstream-integrity.json",
@@ -80,7 +80,7 @@
       "environment": "workspace-node",
       "project": "react-day-picker-ssr",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the complete adapted server-rendering suite with exact test identities.",
+      "notes": "Provisional repo-authored server-rendering smoke evidence. Not a one-for-one upstream-suite substitute; see UPSTREAM.md parity incompleteness.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-day-picker/audit/adapted-runtime-server.json"
@@ -89,12 +89,12 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "3ff855613de52b31504edc305739759726f976a0cc154f6afaa7a2bd9ea40c36"
+          "sha256": "52195ca5b501debf0fcae0f3ffc0f42799b11f3f2c51a6d39f118a4d0a4a0dba"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "da40b0d1ecbd4c150f2eefec9783c2cf258892d1cc6b52f1e42050cd2f689ad9"
+          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
         }
       ]
     },
@@ -105,7 +105,7 @@
       "environment": "workspace-node",
       "project": "react-day-picker-browser",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the DayPicker interaction and stylesheet contract in real headless Chromium, covering selection, focus movement, navigation, and animation cleanup.",
+      "notes": "Provisional real-browser smoke for selection, focus movement, navigation, and animation cleanup. Not a one-for-one upstream-suite substitute; see UPSTREAM.md parity incompleteness.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-day-picker/audit/adapted-runtime-browser.json"
@@ -114,12 +114,37 @@
         {
           "path": "packages/react-day-picker/audit/adapted-runtime-browser.json",
           "role": "support",
-          "sha256": "83ea1125a41e38766a5c8aeef2ea31b6e51614b3ec328b1f52280f285e04b61f"
+          "sha256": "84d95b31beee6e6e4aedb16f0607808724f4fbac1a18397ea8c9d6c70fee1088"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "da40b0d1ecbd4c150f2eefec9783c2cf258892d1cc6b52f1e42050cd2f689ad9"
+          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
+        }
+      ]
+    },
+    {
+      "id": "react-day-picker-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-day-picker-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Bounded React/Octane differential: Octane fixtures versus published react-day-picker 10.0.1 on real React for default calendar shape and month navigation.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-day-picker/audit/differential-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-day-picker/audit/differential-runtime.json",
+          "role": "support",
+          "sha256": "de615e7ae95e028eae74ccaa3fdd0b1a80daf2faeaddee85a072035ad4b97519"
+        },
+        {
+          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
         }
       ]
     }
