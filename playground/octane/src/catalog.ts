@@ -13,6 +13,7 @@ import { DoomDemo } from './demos/doom/Doom.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
+import { LiveStoreDemo } from './demos/LiveStore.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
 import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
@@ -35,6 +36,7 @@ import doomAssetsSource from './demos/doom/assets.ts?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
+import liveStoreSource from './demos/LiveStore.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
 import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
@@ -144,6 +146,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'shadcn/ui (all bases)',
 				Component: ShadcnBasesDemo,
 				source: shadcnSource,
+			},
+			{
+				id: 'livestore',
+				title: 'LiveStore',
+				Component: LiveStoreDemo,
+				source: liveStoreSource,
 			},
 			{
 				id: 'phosphor-icons',

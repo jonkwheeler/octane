@@ -427,9 +427,25 @@ export function validateManifest(manifest) {
 			);
 		}
 
+		const typeLanes = manifest.lanes.filter((lane) => lane.type.endsWith('-types'));
 		if (manifest.upstreamSuites.types === 'absent') {
-			if (manifest.lanes.some((lane) => lane.type.endsWith('-types')))
-				fail('absent upstream type tests must not be represented by synthetic type parity lanes');
+			// Drei-style ports may omit type lanes entirely when upstream has no type
+			// suite. LiveStore/react-map-gl-style ports still publish repo-authored
+			// pristine/adapted type lanes under the same upstreamSuites.types value.
+			if (typeLanes.length > 0) {
+				const requiredTypeEvidence = (type) =>
+					manifest.lanes.some(
+						(lane) =>
+							lane.type === type &&
+							lane.oracle === 'required' &&
+							lane.available !== false &&
+							lane.evidenceOrigin === 'repo-authored',
+					);
+				if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
+					fail(
+						'verified provenance with absent upstream type tests requires available required pristine-types and adapted-types lanes with repo-authored evidence when type lanes are declared',
+					);
+			}
 		} else {
 			const expectedOrigin =
 				manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
