@@ -49,7 +49,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
+      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
     }
   },
   "lanes": [
@@ -187,7 +187,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "4f5f1b86e24f0889c14852c9aa4deab2624a04c548a5b4aa9a84313c798205c2"
+          "sha256": "5c4149679742eefb3b811fabd1a24668fed7ba65ab2a5d2a3bd8aae209a47e61"
         },
         {
           "path": "packages/radix/audit/export-crosswalk.json",
