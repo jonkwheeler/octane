@@ -47,7 +47,7 @@ const manifest = {
 				'packages/react-markdown/tests/hydration/',
 				'packages/react-markdown/tests/ssr/',
 				'packages/react-markdown/tests/parity/',
-				'\\.local\\.test\\.',
+				'\\.local\\.',
 			],
 		},
 	},

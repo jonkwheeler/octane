@@ -29,7 +29,7 @@
         "packages/react-markdown/tests/hydration/",
         "packages/react-markdown/tests/ssr/",
         "packages/react-markdown/tests/parity/",
-        "\\.local\\.test\\."
+        "\\.local\\."
       ]
     }
   },
@@ -46,7 +46,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "057e86cece20c6eaae3fad4d928a979e8619ef72c21dd604501a0ddcca56773b"
+      "lockfileSha256": "9c62a1c4e0c8f93ccd18f75199815d4a0cb6cc5f0d36a801624b879feceb57b3"
     }
   },
   "lanes": [
@@ -134,7 +134,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c5ef2332edc2fc0a709b40d642a2fe4f2ce234a7614fa8466b8e495298e488d4"
+          "sha256": "7206ddcb12289638ada9c593989942e0dcf73f389c40f4734cb5d1622f2051c1"
         }
       ]
     },
