@@ -39,6 +39,8 @@ export interface SpringUpdate<T> {
 	pause?: boolean;
 	cancel?: boolean;
 	loop?: LoopProp<T>;
+	/** When true (constructor default), capture event/config props into `defaultProps`. */
+	default?: boolean | Partial<SpringUpdate<T>>;
 	onStart?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 	onChange?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 	onPause?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
@@ -46,6 +48,19 @@ export interface SpringUpdate<T> {
 	onRest?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 	onResolve?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 }
+
+const DEFAULT_PROP_KEYS = [
+	'config',
+	'immediate',
+	'cancel',
+	'pause',
+	'onStart',
+	'onChange',
+	'onPause',
+	'onResume',
+	'onRest',
+	'onResolve',
+] as const;
 
 export const config = {
 	default: { tension: 170, friction: 26 },
@@ -71,6 +86,8 @@ export class SpringValue<T = number> extends FrameValue<T> {
 	private active?: Active<T>;
 	private paused = false;
 	private hasAnimated = false;
+	/** Upstream-compatible defaults applied to later `start` calls. */
+	defaultProps: Partial<SpringUpdate<T>> = {};
 
 	constructor(from: T, props?: Omit<SpringUpdate<T>, 'to'> & { to?: T | FrameValue<T> });
 	constructor(props?: SpringUpdate<T>);
@@ -80,16 +97,20 @@ export class SpringValue<T = number> extends FrameValue<T> {
 			typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1) && arg2 === undefined;
 		if (propsObject) {
 			const props = { ...(arg1 as SpringUpdate<T>) };
+			if (props.default === undefined) props.default = true;
 			this.value = (props.from ?? goal(props.to, undefined as T)) as T;
+			this.captureDefaults(props);
 			// Only start when there is a goal; event/config-only props must not set hasAnimated.
-			if (props.to !== undefined) void this.start(props);
+			if (props.to !== undefined) void this.start({ ...props, default: false });
 			return;
 		}
 		if (arg2 !== undefined) {
-			// Upstream: spread props then assign positional `from` last.
+			// Upstream: spread props then assign positional `from` last; constructor defaults to true.
 			const props = { ...(arg2 as SpringUpdate<T>), from: arg1 as T };
+			if (props.default === undefined) props.default = true;
 			this.value = (props.from ?? goal(props.to, undefined as T)) as T;
-			if (props.to !== undefined) void this.start(props);
+			this.captureDefaults(props);
+			if (props.to !== undefined) void this.start({ ...props, default: false });
 			return;
 		}
 		// Scalar seed only — leave hasAnimated false so later `from` updates still apply.
@@ -104,7 +125,8 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		return this;
 	}
 	start(update: T | SpringUpdate<T>): Promise<AnimationResult<T>> {
-		const props = asUpdate(update);
+		const props = mergeWithDefaults(this.defaultProps, asUpdate(update));
+		this.captureDefaults(props);
 		if (props.cancel) {
 			this.stop(true);
 			return Promise.resolve(getCancelledResult(this.value));
@@ -292,6 +314,17 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		this.value = value;
 		this.emitChange(value);
 	}
+
+	private captureDefaults(props: SpringUpdate<T>): void {
+		if (!props.default) return;
+		const source = props.default === true ? props : (props.default as Partial<SpringUpdate<T>>);
+		for (const key of DEFAULT_PROP_KEYS) {
+			const value = source[key];
+			if (value !== undefined) {
+				(this.defaultProps as Record<string, unknown>)[key] = value;
+			}
+		}
+	}
 }
 
 function looksLikeSpringUpdate(value: object): boolean {
@@ -316,10 +349,26 @@ function looksLikeSpringUpdate(value: object): boolean {
 }
 
 function asUpdate<T>(update: T | SpringUpdate<T>): SpringUpdate<T> {
-	if (typeof update === 'object' && update !== null && !Array.isArray(update) && looksLikeSpringUpdate(update)) {
+	if (
+		typeof update === 'object' &&
+		update !== null &&
+		!Array.isArray(update) &&
+		looksLikeSpringUpdate(update)
+	) {
 		return update as SpringUpdate<T>;
 	}
 	return { to: update as T };
+}
+
+function mergeWithDefaults<T>(
+	defaults: Partial<SpringUpdate<T>>,
+	props: SpringUpdate<T>,
+): SpringUpdate<T> {
+	const merged: SpringUpdate<T> = { ...defaults, ...props };
+	if (defaults.config !== undefined || props.config !== undefined) {
+		merged.config = { ...defaults.config, ...props.config };
+	}
+	return merged;
 }
 
 function goal<T>(value: T | FrameValue<T> | undefined, fallback?: T): T {

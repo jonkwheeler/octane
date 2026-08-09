@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createInterpolator as createPublicInterpolator } from '../../src/index';
 import { createInterpolator, createStringInterpolator } from '../../src/shared/index';
 
 // Additional upstream provenance for shared adapted evidence:
@@ -20,6 +21,15 @@ describe('upstream interpolation parity', () => {
 		expect(interpolate(0.25)).toBe(5);
 		expect(interpolate(0.75)).toBe(20);
 		expect(interpolate(2)).toBe(30);
+	});
+
+	// Per packages/shared/src/createInterpolator.test.ts:77
+	it('public createInterpolator blends string outputs instead of snapping', () => {
+		const interpolate = createPublicInterpolator({
+			range: [0, 1],
+			output: ['0px', '10px'],
+		});
+		expect(interpolate(0.5)).toBe('5px');
 	});
 
 	// Per packages/shared/src/createInterpolator.test.ts:77

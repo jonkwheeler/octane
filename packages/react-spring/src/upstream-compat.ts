@@ -26,38 +26,8 @@ export interface InterpolatorConfig<T = number> {
 	map?: (value: number) => number;
 }
 
-export function createInterpolator<T>(
-	rangeOrConfig: readonly number[] | ((value: number) => T) | InterpolatorConfig<T>,
-	output?: readonly T[],
-	extrapolate?: 'identity' | 'clamp' | 'extend',
-): (value: number) => T {
-	if (typeof rangeOrConfig === 'function') return rangeOrConfig;
-	const config: InterpolatorConfig<T> = Array.isArray(rangeOrConfig)
-		? { range: rangeOrConfig, output: output!, extrapolate }
-		: (rangeOrConfig as InterpolatorConfig<T>);
-	const input = config.range ?? [0, 1];
-	return (value) => {
-		let index = 0;
-		while (index < input.length - 2 && value > input[index + 1]!) index++;
-		const min = input[index]!;
-		const max = input[index + 1]!;
-		const left = config.extrapolateLeft ?? config.extrapolate ?? 'extend';
-		const right = config.extrapolateRight ?? config.extrapolate ?? 'extend';
-		if (config.map !== undefined) value = config.map(value);
-		if (value < min && left === 'identity') return value as T;
-		if (value > max && right === 'identity') return value as T;
-		if (left === 'clamp') value = Math.max(min, value);
-		if (right === 'clamp') value = Math.min(max, value);
-		let progress = min === max ? (value <= min ? 0 : 1) : (value - min) / (max - min);
-		progress = (config.easing ?? easings.linear)(progress);
-		const from = config.output[index]!;
-		const to = config.output[index + 1]!;
-		if (typeof from === 'number' && typeof to === 'number') {
-			return (from + (to - from) * progress) as T;
-		}
-		return (progress < 1 ? from : to) as T;
-	};
-}
+// Public `createInterpolator` is re-exported from `./shared/createInterpolator`
+// via the package root so string/color ranges blend instead of snapping.
 
 const bounceOut = (x: number) => {
 	const n = 7.5625;

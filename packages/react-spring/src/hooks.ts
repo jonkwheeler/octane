@@ -237,7 +237,13 @@ export function useSpringValue<T>(
 ): SpringValue<T> {
 	const slot = typeof propsOrSlot === 'symbol' ? propsOrSlot : trailingSlot(args);
 	const props = typeof propsOrSlot === 'symbol' ? undefined : propsOrSlot;
-	const [value] = useState(() => new SpringValue(initial), sub(slot, 'value'));
+	// Upstream: `new SpringValue(initial, props)` with constructor `default: true`.
+	const [value] = useState(
+		function createSpringValue() {
+			return new SpringValue(initial, props);
+		},
+		sub(slot, 'value'),
+	);
 	useLayoutEffect(
 		() => () => {
 			value.stop(true);
@@ -245,7 +251,6 @@ export function useSpringValue<T>(
 		[],
 		sub(slot, 'cleanup'),
 	);
-	if (props?.from !== undefined && value.get() === initial) value.set(props.from);
 	return value;
 }
 

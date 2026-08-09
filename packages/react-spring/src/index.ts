@@ -1,11 +1,11 @@
 export * from './engine';
 export * from './hooks';
 export * from './browser';
+export { createInterpolator } from './shared/createInterpolator';
 export {
 	Any,
 	BailSignal,
 	Globals,
-	createInterpolator,
 	easings,
 	inferTo,
 	update,

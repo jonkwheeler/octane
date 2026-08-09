@@ -94,4 +94,20 @@ describe('upstream lifecycle parity', () => {
 		expect(result).toMatchObject({ value: 1, finished: true, cancelled: false });
 		expect(calls).toEqual(['start', 'change', 'rest', 'resolve']);
 	});
+
+	// Per packages/core/src/hooks/useSpringValue.test.ts:64
+	it('applies constructor default config and onChange to later start calls', async () => {
+		raf.frameLoop = 'demand';
+		const onChange = vi.fn();
+		const spring = new SpringValue(0, {
+			onChange,
+			config: { tension: 250 },
+		});
+		expect(spring.get()).toBe(0);
+		const result = spring.start(1);
+		advance(40);
+		expect(await result).toMatchObject({ value: 1, finished: true, cancelled: false });
+		expect(onChange.mock.calls.length).toBeGreaterThan(0);
+		expect(spring.defaultProps.config).toMatchObject({ tension: 250 });
+	});
 });
