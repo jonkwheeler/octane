@@ -943,7 +943,7 @@ describe('<Waypoint>', () => {
 
 			props.children = <StatefulComponent />;
 			expect(subject).not.toThrow();
-			// OCTANE DIVERGENCE[waypoint-ref-child-forward]: Waypoint injects ref (not innerRef); assert measurement so a non-forwarding child cannot pass.
+			// Waypoint injects ref (not innerRef); assert measurement so a non-forwarding child cannot pass.
 			expect(props.onPositionChange).toHaveBeenCalled();
 		});
 
@@ -966,7 +966,7 @@ describe('<Waypoint>', () => {
 
 			props.children = <StatelessComponent />;
 			expect(subject).not.toThrow();
-			// OCTANE DIVERGENCE[waypoint-ref-child-forward]: Waypoint injects ref (not innerRef); assert measurement so a non-forwarding child cannot pass.
+			// Waypoint injects ref (not innerRef); assert measurement so a non-forwarding child cannot pass.
 			expect(props.onPositionChange).toHaveBeenCalled();
 		});
 

@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
-  "adaptedSuite": "packages/waypoint/tests/browser/adapted/harness/waypoint_adapted_suite.jsx",
-  "upstreamSuite": "packages/waypoint/upstream/test/browser/waypoint_test.jsx",
-  "caseCount": 112,
-  "sha256": "f3e663e44cf6668261cb2fc2c380e283967cfa46401112de2f317cef3e524bc7"
+	"schemaVersion": 1,
+	"adaptedSuite": "packages/waypoint/tests/browser/adapted/harness/waypoint_adapted_suite.jsx",
+	"upstreamSuite": "packages/waypoint/upstream/test/browser/waypoint_test.jsx",
+	"caseCount": 112,
+	"sha256": "bf1bc354794cdbb8633cd3a4c7c286d67c5c165238bf007b6b23a1b0ae04e6b9"
 }
