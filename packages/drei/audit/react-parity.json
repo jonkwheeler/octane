@@ -11,7 +11,7 @@
     "verification": "verified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
+    "runtime": "insufficient",
     "types": "absent"
   },
   "adaptedRoots": {
@@ -34,8 +34,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 259,
-    "uniqueIdentities": 259,
+    "inventoryEntries": 257,
+    "uniqueIdentities": 257,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -46,7 +46,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f88e091a9649fc49c06e1247e17fd8980e74cd87a22ae11da17c57c364a27288"
+      "lockfileSha256": "bbbc63a0f763d292ea025e23cac4d3c9d3715c629a1edce2989e6ad3c7d16ce5"
     }
   },
   "lanes": [
@@ -66,27 +66,27 @@
         {
           "path": "packages/drei/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "ee7f62bdf35eb11f166d08f63aa1d1f8c8a304cb670c8e316acda89b7dda4e2c"
+          "sha256": "2ded5c934b480f237f7391d618dbf4256f8a2798ad1ea87a54d3f9b956ec2409"
         },
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "a8711e0e0c339cac0b16521a88a4d3c0029dfae78455e4a4d90cc9789bda5d28"
+          "sha256": "92d74b414305bd9bd1fb076c10aa6904548993ccb2e66c4302732dc984191d4c"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "f7573603afeafe09425c6a340ad1bcf5fe8778a9197ae66190e27742056592ed"
+          "sha256": "f9d8282ce7776a3e1d205ef5b39f0c99e141137cb645ceac47897b39c818109d"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
           "role": "support",
-          "sha256": "9e88401f6d60bce151ab106b8e41ad4cbe30501218a6899e6f79e263b9409236"
+          "sha256": "0e292b763338aab8f765479129eb2c23c4cac3486a5a57be2b39c3f426876836"
         },
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "63b97e0c0783eff953558498a9bcd3cabbeff8847cf5b1505911c711eb43b271"
+          "sha256": "798217e7bd30c8b2f2d2f8de5581b478c189bd41537014d08a43dce7d783e10d"
         }
       ]
     },
@@ -119,25 +119,33 @@
       ]
     },
     {
-      "id": "drei-view-renderer-boundary",
-      "type": "differential",
+      "id": "drei-upstream-e2e-browser",
+      "type": "browser",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "drei-guards",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Ordinary-project framework-contract pin for the intentional DOM-root View renderer-boundary divergence.",
+      "project": "drei-upstream-browser",
+      "notes": "Runs the vendored upstream Playwright gallery case in Chromium through a local Vite wrapper.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/drei/audit/upstream-browser.json"
+      },
       "files": [
         {
-          "path": "packages/drei/tests/view-renderer-boundary.test.ts",
+          "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
           "role": "test",
-          "sha256": "e9976c3f5058b4e1261f5cc3f2da755fd3247e6796cb138439b35a8b04bf9e6e",
+          "sha256": "ea050d2e37980ed6972dea2fd02aa17efd227467d6372b6f0235676f040bcfc2",
           "cases": [
             {
-              "id": "differential:view-renderer-boundary",
-              "testName": "documents the outside-DOM renderer boundary while keeping View.Port callable",
-              "fullName": "View renderer boundary documents the outside-DOM renderer boundary while keeping View.Port callable"
+              "id": "upstream:e2e-snapshot",
+              "testName": "should match previous one",
+              "fullName": "upstream Drei e2e screenshot (Playwright) should match previous one"
             }
           ]
+        },
+        {
+          "path": "packages/drei/audit/upstream-browser.json",
+          "role": "support",
+          "sha256": "5e18f075c4512dcd04abd1f65b1b69610b22808e3bef4ac32fd69e0b516709cc"
         }
       ]
     },
@@ -158,7 +166,7 @@
         {
           "path": "packages/drei/typetests/pristine/public-api.test-d.ts",
           "role": "test",
-          "sha256": "fdf17cddfdc52e8cb630da6d412b1f2b0b6b293813e992f2bc2311a934fcc1b4",
+          "sha256": "76511be992ca6678425f22717debe31f46312cf1497db9f0d041cce1e35e3bfc",
           "cases": [
             {
               "id": "types:pristine",
@@ -168,9 +176,9 @@
           ]
         },
         {
-          "path": "packages/drei/typetests/pristine/tsconfig.json",
+          "path": "packages/drei/typetests/assertions.md",
           "role": "support",
-          "sha256": "346135592efdf66be1fa1978bb6a1c79256fbbbe10d6e0e6ae28200524fed97c"
+          "sha256": "4c7c154076e8b8548c1c14c5fbbf93279c40eb84f5e8909ab437cb9eb56a6d0f"
         }
       ]
     },
@@ -191,7 +199,7 @@
         {
           "path": "packages/drei/typetests/adapted/public-api.test-d.ts",
           "role": "test",
-          "sha256": "8819e2eee6d8bbd7d078f75de1964ca834da515dff49c9375de62da348b92ba5",
+          "sha256": "d3c2baa4c25635b7fc1ed2abf4aaefe9acf420fa8288d08280a6bba67247d5f8",
           "cases": [
             {
               "id": "types:adapted",
@@ -201,25 +209,12 @@
           ]
         },
         {
-          "path": "packages/drei/typetests/adapted/tsconfig.json",
+          "path": "packages/drei/typetests/assertions.md",
           "role": "support",
-          "sha256": "e367114dd3ea6ac51e879cbdb14a440e3043d00cca2d45824ffadc047c4de5c1"
+          "sha256": "4c7c154076e8b8548c1c14c5fbbf93279c40eb84f5e8909ab437cb9eb56a6d0f"
         }
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "view-renderer-boundary",
-      "caseIds": ["differential:view-renderer-boundary"],
-      "upstreamResult": "React Drei can move View children between DOM and Three roots through tunnel-rat.",
-      "octaneResult": "Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
-      "rationale": "Octane components are statically owned by one renderer.",
-      "classification": "intentional-divergence",
-      "consumerImpact": "A View cannot transport authored Three children from an independent DOM root.",
-      "migrationGuidance": "Author View inside the Three Canvas and avoid the DOM-root View.Port transport form.",
-      "owner": "@octanejs/drei",
-      "reviewCondition": "Revisit if Octane gains cross-renderer component transport."
-    }
-  ]
+  "divergences": []
 }

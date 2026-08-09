@@ -32,6 +32,11 @@
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
     },
     {
+      "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
+      "disposition": "upstream-pristine-executed",
+      "oracle": "Runs the vendored upstream Playwright screenshot case in Chromium through a Vitest/Vite wrapper."
+    },
+    {
       "path": "packages/drei/tests/bvh.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
@@ -353,6 +358,11 @@
     },
     {
       "path": "packages/drei/tests/octane-contracts/performance-monitor.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/pivot-controls.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
     },

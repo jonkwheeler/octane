@@ -71,6 +71,15 @@ function snapshot(texture: THREE.Texture) {
 }
 
 describe('useEnvironment (Octane-only contracts)', () => {
+	it('rejects unknown extensions and invalid presets', function () {
+		expect(function () {
+			useEnvironment.preload({ files: '/unknown.txt' });
+		}).toThrow('Unrecognized file extension');
+		expect(function () {
+			useEnvironment.preload({ preset: 'invalid' as never });
+		}).toThrow('Preset must be one of');
+	});
+
 	it('restores defaults after the compiler-injected trailing slot', async () => {
 		const textures: THREE.Texture[] = [];
 		const root = await createOctaneThree(DefaultEnvironmentBoundary, {

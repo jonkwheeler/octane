@@ -118,12 +118,6 @@ describe('useEnvironment', () => {
 		expect(() => reactUseEnvironment.preload({ files: '/gainmap.jpg' })).toThrow(
 			'Preloading gainmaps is not supported',
 		);
-		expect(() => useEnvironment.preload({ files: '/unknown.txt' })).toThrow(
-			'Unrecognized file extension',
-		);
-		expect(() => useEnvironment.preload({ preset: 'invalid' as never })).toThrow(
-			'Preset must be one of',
-		);
 		expect(typeof useEnvironment.preload).toBe(typeof reactUseEnvironment.preload);
 		expect(typeof useEnvironment.clear).toBe(typeof reactUseEnvironment.clear);
 	});

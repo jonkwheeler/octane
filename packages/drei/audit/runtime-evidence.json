@@ -39,6 +39,12 @@
       "assertionInventorySha256": "3ab838b226511b02346d1815b244356679bff1ad7bb8cdb73d244305bc06def3"
     },
     {
+      "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
+      "sha256": "ea050d2e37980ed6972dea2fd02aa17efd227467d6372b6f0235676f040bcfc2",
+      "assertionCount": 0,
+      "assertionInventorySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "path": "packages/drei/tests/bvh.test.ts",
       "sha256": "4d221d1b315e244aca0be0d1a4639cceef74443b91d5b8a8ac48947b16f21448",
       "assertionCount": 2,
@@ -88,9 +94,9 @@
     },
     {
       "path": "packages/drei/tests/cloud.test.ts",
-      "sha256": "ccb99993310ade95a2c0f3965f14da6f3b5791323b1970a32f2e5e4d4e1da7bd",
-      "assertionCount": 2,
-      "assertionInventorySha256": "d47a6f548164e0713ca2c1a694e7ce09faa8a8beb1cf2008e67b83d5eb521e3b"
+      "sha256": "e9f93206bb06076f6f9c5b87adbbfe3dc23c79f087660e2a61a33f959ecdbec4",
+      "assertionCount": 1,
+      "assertionInventorySha256": "26d7299fce15fe36291d440ad37cf73223908133720f6da3ddb8d814c672eb50"
     },
     {
       "path": "packages/drei/tests/config.test.ts",
@@ -184,7 +190,7 @@
     },
     {
       "path": "packages/drei/tests/environment.test.ts",
-      "sha256": "e78941bb86a33b536cad631d7519e76d736c5205cf2988e5fa2d9370020a5289",
+      "sha256": "b23a3d1ea3022fd8f55010c5f1edaa67109a680bd633e959961c9d40a7187d71",
       "assertionCount": 5,
       "assertionInventorySha256": "64279b50757fe22873417750871260df5623eaf10871e614fa973b02c272a44b"
     },
@@ -208,7 +214,7 @@
     },
     {
       "path": "packages/drei/tests/facemesh.test.ts",
-      "sha256": "00e317546191f8a80ea48788ad73880975186644e959ebb101e8d468e349ffe3",
+      "sha256": "4fab5f624afb080f932a8cb99a3b7c5f3e1d6dd27bc601f3956ff04bf896e895",
       "assertionCount": 3,
       "assertionInventorySha256": "58bbb3d1261b7bbbb693e5fb53666565caaca51e4e358b532fa311bbd1b2117b"
     },
@@ -370,9 +376,9 @@
     },
     {
       "path": "packages/drei/tests/octane-contracts/cloud.test.ts",
-      "sha256": "1c0a5750c0c4c535399d861ee899177226f8b572ccd030051f9468ab10afe04f",
-      "assertionCount": 1,
-      "assertionInventorySha256": "45e3c40d11e4113ec157ccb42fb7de2807b99c6ef905dc33c3ae9014fd48a69f"
+      "sha256": "0c5e3f3de7c41a50f491a1191c87a3bdc54af6bae71634dabc88adc70687be9f",
+      "assertionCount": 2,
+      "assertionInventorySha256": "9f4e53affc42f4a9da56969d796778d5136382bae4008356df6498f85abf188d"
     },
     {
       "path": "packages/drei/tests/octane-contracts/core-utilities.test.ts",
@@ -388,9 +394,9 @@
     },
     {
       "path": "packages/drei/tests/octane-contracts/environment.test.ts",
-      "sha256": "29f831808c54d2921b7559681df3b48df1d60b85661139590ce1baec220fc685",
-      "assertionCount": 1,
-      "assertionInventorySha256": "9096ec5dc30019f335e01c7fe592f8745a934707185219898a9bfdb3a37cb069"
+      "sha256": "37bc35c6e608fbf662dca7b7707bf1236cbdc5d612c92d6adae574b380caa413",
+      "assertionCount": 2,
+      "assertionInventorySha256": "62e9a31f1b6991371b5006fb981867c84356194eae77f619bd2a829e66129922"
     },
     {
       "path": "packages/drei/tests/octane-contracts/fbo.test.ts",
@@ -427,6 +433,12 @@
       "sha256": "e41872b57980c2d89ccd2f3c8a0bf9a64113988951f914c891f2e69b811bd317",
       "assertionCount": 1,
       "assertionInventorySha256": "d979f90773e2449bdd1063eca65456ecb20961eefbff4254fa1aebaa5b421c53"
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/pivot-controls.test.ts",
+      "sha256": "af5410608a189b4ab99097f93928102cbe0fdf4b65754a86d861d1fd8c1e1b42",
+      "assertionCount": 1,
+      "assertionInventorySha256": "5ebfe4b18b5802181ba5defca435bd20c3e6bdc7ad3a31b4763106f0224b84d0"
     },
     {
       "path": "packages/drei/tests/octane-contracts/points.test.ts",
@@ -508,9 +520,9 @@
     },
     {
       "path": "packages/drei/tests/pivot-controls.test.ts",
-      "sha256": "5d4278752817faba8236f4fe63b9a0a1a9493aed2981f1bf75b402ada4cfdc12",
-      "assertionCount": 8,
-      "assertionInventorySha256": "9f2865faf24689ad99b9a29645c8b14f0ffec4918019fdfce73a3e66e3b306c0"
+      "sha256": "5fe5ec520719322cfeebccc530e8996f97ed94223f4102216174ca930b4dae22",
+      "assertionCount": 7,
+      "assertionInventorySha256": "7fbdde852bd8236d4747a8dac085c175e1cf4552c1039b3ee2074b9f0f57b4c3"
     },
     {
       "path": "packages/drei/tests/pointer-lock.test.ts",
@@ -550,9 +562,9 @@
     },
     {
       "path": "packages/drei/tests/react-parity-guard.test.ts",
-      "sha256": "86d87fec9783e902a677998bf7fa5758b6601e2a1524826d15337fc3ffc0cca3",
-      "assertionCount": 4,
-      "assertionInventorySha256": "0e2a56d6b2800f2a5c5a61db2f1548d8b1d4397b7f429239cd2a46148c633fdb"
+      "sha256": "d8081bf2f89a35ba5c5645407fea60ba6b40c76186e2dee57232ab3f3802a55d",
+      "assertionCount": 7,
+      "assertionInventorySha256": "2f4fe252055e821a94f0ef9811f512699f2730b74a1f08aa8d33634bae684710"
     },
     {
       "path": "packages/drei/tests/render-textures.test.ts",
@@ -754,13 +766,13 @@
     },
     {
       "path": "packages/drei/tests/video-textures.test.ts",
-      "sha256": "8a7534895422085797da56c016ae6137ffd9b9c3f0208e07e32d0ec203811d5f",
+      "sha256": "61f91373a1be970d31a3defa82dea760338bc002fbc1c714e2d73c286715228e",
       "assertionCount": 3,
       "assertionInventorySha256": "236937023f0ce9cdbec67928927c4930ca0cf7ceee9900f2be912de587f669b8"
     },
     {
       "path": "packages/drei/tests/view-renderer-boundary.test.ts",
-      "sha256": "e9976c3f5058b4e1261f5cc3f2da755fd3247e6796cb138439b35a8b04bf9e6e",
+      "sha256": "f2fa1fb526aa00be14e67979c50ad86f342f75cfb1d96283ef459adb6196309e",
       "assertionCount": 1,
       "assertionInventorySha256": "94da7a2764f9178115fa4c3a2c6b2b62f74c4c7e760ee513483f76f36c9113fc"
     },

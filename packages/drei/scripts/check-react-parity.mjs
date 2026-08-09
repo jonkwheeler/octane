@@ -7,6 +7,9 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const override = process.env.OCTANE_DREI_PARITY_AUDIT;
 const audit = override ? resolve(override) : resolve(root, 'packages/drei/audit');
+const typeRoot = process.env.OCTANE_DREI_PARITY_TYPE_ROOT
+	? resolve(process.env.OCTANE_DREI_PARITY_TYPE_ROOT)
+	: resolve(root, 'packages/drei/typetests');
 const read = (name) => JSON.parse(readFileSync(resolve(audit, name), 'utf8'));
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 const portable = (value) => value.replaceAll('\\', '/');
@@ -22,6 +25,18 @@ const OCTANE_ONLY_GUARDS = new Set([
 ]);
 const isOctaneOnly = (path) =>
 	OCTANE_ONLY_GUARDS.has(path) || path.includes('/tests/octane-contracts/');
+
+function typeAssertionGroups(source) {
+	return [...source.matchAll(/^\/\/ Assertion group (\d+): (.+)$/gm)].map((match) =>
+		match.slice(1),
+	);
+}
+
+function normalizedTypeAssertions(source) {
+	return source
+		.replace(/^\/\/ (?:Pristine|Adapted) side:.*\n/, '')
+		.replaceAll('@react-three/drei', '@octanejs/drei');
+}
 
 const inventory = read('adapted-runtime.json');
 const evidence = read('runtime-evidence.json');
@@ -40,7 +55,12 @@ const inventoried = [...inventory.files].sort();
 const differential = discovered.filter((path) => path.includes('/tests/differential/'));
 const guards = discovered.filter((path) => isOctaneOnly(path));
 const expectedAdapted = discovered
-	.filter((path) => !isOctaneOnly(path) && !path.includes('/tests/differential/'))
+	.filter(
+		(path) =>
+			!isOctaneOnly(path) &&
+			!path.includes('/tests/differential/') &&
+			!path.includes('/tests/browser/'),
+	)
 	.sort();
 if (JSON.stringify(expectedAdapted) !== JSON.stringify(inventoried))
 	fail('adapted inventory must cover every paired file and exclude guards/differential');
@@ -64,6 +84,14 @@ for (const entry of classifications.tests) {
 			fail(`${entry.path} no longer imports its React oracle`);
 		if (isOctaneOnly(entry.path))
 			fail(`${entry.path} is classified as parity evidence but is an Octane-only guard`);
+	} else if (entry.disposition === 'upstream-pristine-executed') {
+		const source = readFileSync(resolve(root, entry.path), 'utf8');
+		if (
+			!entry.path.includes('/tests/browser/') ||
+			!entry.oracle ||
+			!source.includes('@parity-case upstream:e2e-snapshot')
+		)
+			fail(`${entry.path} does not execute the vendored upstream browser case`);
 	} else if (!entry.disposition.startsWith('octane-only-') || !entry.reason || entry.oracle) {
 		fail(`${entry.path} has an invalid unpaired classification`);
 	} else if (!isOctaneOnly(entry.path)) {
@@ -101,17 +129,25 @@ if (
 for (const artifact of upstream.artifacts) {
 	if (!artifact.disposition || !artifact.reason)
 		fail(`${artifact.path} lacks a disposition or reason`);
-	if (artifact.disposition !== 'out-of-scope')
-		fail(`${artifact.path} must be out-of-scope for the Playwright gallery suite`);
+	if (artifact.path.endsWith('/snapshot.test.ts') && artifact.disposition !== 'executed-pristine')
+		fail('the vendored Playwright screenshot case must execute in the browser lane');
+	if (
+		!artifact.path.endsWith('/snapshot.test.ts') &&
+		!['out-of-scope', 'support'].includes(artifact.disposition)
+	)
+		fail(`${artifact.path} has an invalid supporting artifact disposition`);
 	if (!existsSync(resolve(root, artifact.path))) fail(`${artifact.path} is missing`);
 	if (digest(readFileSync(resolve(root, artifact.path))) !== artifact.sha256)
 		fail(`${artifact.path} hash drifted`);
 }
-if (upstream.upstreamRuntimeSuite !== 'absent')
-	fail('pinned Drei Playwright gallery must be recorded as an absent Vitest/Jest runtime suite');
+if (upstream.upstreamRuntimeSuite !== 'insufficient')
+	fail('pinned Drei Playwright gallery must be recorded as an insufficient runtime suite');
 if (upstream.upstreamTypeSuite !== 'absent')
 	fail('pinned Drei must not claim an upstream type suite');
-if (manifest.upstreamSuites?.runtime !== 'absent' || manifest.upstreamSuites?.types !== 'absent')
+if (
+	manifest.upstreamSuites?.runtime !== 'insufficient' ||
+	manifest.upstreamSuites?.types !== 'absent'
+)
 	fail('react-parity manifest suite states must match the upstream artifact ledger');
 const upstreamFiles = readdirSync(resolve(root, 'packages/drei/upstream'), {
 	recursive: true,
@@ -140,8 +176,48 @@ const actualExpectErrors = upstreamFiles.flatMap((path) =>
 );
 if (JSON.stringify(actualExpectErrors) !== JSON.stringify(upstream.upstreamSourceExpectErrors))
 	fail('an upstream source @ts-expect-error directive was removed, added, or changed');
-if (upstream.allowedTransformations.length !== 0)
-	fail('Drei has no adapted upstream suite, so its transformation ledger must be empty');
+if (
+	JSON.stringify(upstream.allowedTransformations) !==
+	JSON.stringify([
+		{
+			kind: 'import-root',
+			from: '@react-three/drei',
+			to: '@octanejs/drei',
+			reason: 'Selects the binding under test.',
+		},
+		{
+			kind: 'leading-comment',
+			reason: 'Describes each compiler lane.',
+		},
+	])
+)
+	fail('Drei type parity transformation ledger drifted');
+
+const pristineTypePath = resolve(typeRoot, 'pristine/public-api.test-d.ts');
+const adaptedTypePath = resolve(typeRoot, 'adapted/public-api.test-d.ts');
+const assertionsPath = resolve(typeRoot, 'assertions.md');
+const pristineTypes = readFileSync(pristineTypePath, 'utf8');
+const adaptedTypes = readFileSync(adaptedTypePath, 'utf8');
+const groups = typeAssertionGroups(pristineTypes);
+if (JSON.stringify(groups) !== JSON.stringify(typeAssertionGroups(adaptedTypes)))
+	fail('pristine and adapted type assertion-group inventories differ');
+if (groups.length === 0) fail('type assertion-group inventory is empty');
+if (!readFileSync(assertionsPath, 'utf8').includes('1. Public exports and accepted prop shapes.'))
+	fail('type assertion ledger does not document the assertion groups');
+if (!pristineTypes.includes('@ts-expect-error') || !adaptedTypes.includes('@ts-expect-error'))
+	fail('type assertion pair must retain matching @ts-expect-error directives');
+if (normalizedTypeAssertions(pristineTypes) !== normalizedTypeAssertions(adaptedTypes))
+	fail('type assertion sources differ outside permitted transformations');
+for (const lane of manifest.lanes.filter((lane) =>
+	['drei-pristine-types', 'drei-adapted-types'].includes(lane.id),
+)) {
+	const expectedPath =
+		lane.id === 'drei-pristine-types'
+			? 'packages/drei/typetests/pristine/public-api.test-d.ts'
+			: 'packages/drei/typetests/adapted/public-api.test-d.ts';
+	if (!lane.files?.some((file) => file.path === expectedPath && file.role === 'test'))
+		fail(`${lane.id} must execute its public API type assertion file`);
+}
 
 console.log(
 	`Drei parity evidence is current (${inventory.tests.length} adapted assertions in ${inventory.files.length} files; ${differential.length} differential file(s); ${guards.length} Octane-only guards).`,

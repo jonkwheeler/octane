@@ -28,13 +28,11 @@ The complete tagged test tree contains exactly four artifacts, all under
 They form one whole-gallery Playwright screenshot case. Their byte hashes and
 dispositions are recorded in `audit/upstream-test-artifacts.json`.
 
-That gallery runner is **out of scope** for the Vitest/Jest React-parity harness:
-`e2e.sh` packs a release tarball and boots temporary Vite/Next apps before
-Playwright compares a whole-canvas screenshot. Octane's parity execution kinds
-are `vitest-full` and `jest-full`, so the pin treats the upstream runtime suite
-as `absent` for harness purposes while still vendoring the four artifacts with
-an explicit `out-of-scope` reason. Export-level behavior is covered by
-repo-authored paired React/Octane Vitest tests instead.
+The full tarball/Vite/Next workflow in `e2e.sh` remains out of scope, but the
+vendored `App.tsx` and `snapshot.test.ts` case execute in Chromium through the
+`drei-upstream-browser` Vitest/Vite wrapper. The upstream runtime suite is
+therefore `insufficient`: its sole case is real browser evidence, while complete
+pristine and adapted whole-gallery screenshot lanes are not available.
 
 The tag contains no upstream type-test suite. The upstream `tsconfig.json`
 compiles package source, while the `@ts-expect-error` comments in that source are
@@ -47,8 +45,9 @@ package typecheck.
 ## Executable parity evidence
 
 `audit/react-parity.json` registers the adapted `drei` Vitest project (paired
-files only), an isolated `drei-differential` View canary, and repo-authored
-pristine/adapted type lanes with the global `react-parity:check` harness.
+files only), an isolated `drei-differential` View canary, the upstream browser
+lane, and repo-authored pristine/adapted type lanes with the global
+`react-parity:check` harness.
 `audit/test-classifications.json` gives every port-authored test file exactly
 one disposition. Paired files import the pinned React Drei oracle in the test
 body; `config.test.ts`, `crosswalk-guard.test.ts`, and `react-parity-guard.test.ts`
@@ -56,10 +55,12 @@ are Octane-only and execute in the ordinary `drei-guards` project outside
 `testExecution`.
 
 `audit/runtime-evidence.json` hashes every test file and every collected assertion
-inventory. `audit/upstream-test-artifacts.json` records the out-of-scope Playwright
-gallery and an empty transformation ledger. The audit guard includes negative
-controls for a dropped adapted inventory file, deleted assertion, removed upstream
-`@ts-expect-error` inventory entry, and fabricated upstream type suite.
+inventory. `audit/upstream-test-artifacts.json` records the executed screenshot
+case and its supporting artifacts. `typetests/assertions.md` defines the
+permitted import/comment transformations and shared assertion groups. The audit
+guard includes negative controls for a dropped adapted inventory file, deleted
+assertion, removed upstream `@ts-expect-error` inventory entry, and fabricated
+upstream type suite.
 
 ## Completeness contract
 

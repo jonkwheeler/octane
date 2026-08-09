@@ -29,7 +29,7 @@
     "upstream:ready": "node scripts/check-upstream-crosswalk.mjs --ready",
     "react-parity:generate": "node scripts/generate-react-parity.mjs",
     "react-parity:check": "node scripts/check-react-parity.mjs",
-    "test": "node scripts/check-react-parity.mjs && vitest run --root ../.. --project drei --project drei-differential --project drei-guards",
+    "test": "node scripts/check-react-parity.mjs && vitest run --root ../.. --project drei --project drei-differential --project drei-guards --project drei-upstream-browser",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "dependencies": {
@@ -81,15 +81,16 @@
     "@react-three/drei": "catalog:default",
     "@react-three/fiber": "catalog:default",
     "@tsrx/react": "catalog:default",
-    "@types/three": "catalog:default",
+    "@types/react": "catalog:default",
     "@types/stats.js": "^0.17.4",
+    "@types/three": "catalog:default",
     "octane": "workspace:*",
     "playwright": "catalog:default",
     "react": "catalog:default",
     "react-dom": "catalog:default",
     "three": "catalog:default",
     "typescript": "catalog:default",
-    "vitest": "catalog:default",
-    "@types/react": "catalog:default"
+    "vite": "catalog:default",
+    "vitest": "catalog:default"
   }
 }

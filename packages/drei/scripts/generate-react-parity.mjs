@@ -56,6 +56,7 @@ function withIds(tests) {
 
 const adaptedTests = withIds(listProject('drei'));
 const differentialTests = withIds(listProject('drei-differential'));
+const browserTests = withIds(listProject('drei-upstream-browser'));
 const guardTests = listProject('drei-guards');
 
 const inventory = {
@@ -65,10 +66,18 @@ const inventory = {
 	files: [...new Set(adaptedTests.map((test) => test.file))],
 	tests: adaptedTests,
 };
+const browserInventory = {
+	schemaVersion: 1,
+	project: 'drei-upstream-browser',
+	roots: ['packages/drei/tests/browser'],
+	files: [...new Set(browserTests.map((test) => test.file))],
+	tests: browserTests,
+};
 
 const allParityAndGuardFiles = [
 	...inventory.files,
 	...differentialTests.map((test) => test.file),
+	...browserTests.map((test) => test.file),
 	...guardTests.map((test) => test.file),
 ].sort();
 const uniqueFiles = [...new Set(allParityAndGuardFiles)];
@@ -76,6 +85,14 @@ const uniqueFiles = [...new Set(allParityAndGuardFiles)];
 const classifications = {
 	schemaVersion: 1,
 	tests: uniqueFiles.map((path) => {
+		if (path.includes('/tests/browser/')) {
+			return {
+				path,
+				disposition: 'upstream-pristine-executed',
+				oracle:
+					'Runs the vendored upstream Playwright screenshot case in Chromium through a Vitest/Vite wrapper.',
+			};
+		}
 		if (isOctaneOnly(path)) {
 			if (path.endsWith('/config.test.ts')) {
 				return {
@@ -138,7 +155,7 @@ const runtimeEvidence = {
 
 const upstreamArtifacts = {
 	schemaVersion: 1,
-	upstreamRuntimeSuite: 'absent',
+	upstreamRuntimeSuite: 'insufficient',
 	upstreamTypeSuite: 'absent',
 	typeSuiteAudit: {
 		searchedRoots: [
@@ -151,7 +168,18 @@ const upstreamArtifacts = {
 		],
 		result: 'No upstream type-test suite or @ts-expect-error assertion exists at the pinned tag.',
 	},
-	allowedTransformations: [],
+	allowedTransformations: [
+		{
+			kind: 'import-root',
+			from: '@react-three/drei',
+			to: '@octanejs/drei',
+			reason: 'Selects the binding under test.',
+		},
+		{
+			kind: 'leading-comment',
+			reason: 'Describes each compiler lane.',
+		},
+	],
 	upstreamSourceExpectErrors: readdirRecursive(resolve(root, 'packages/drei/upstream/src'))
 		.filter((path) => /\.[cm]?[jt]sx?$/.test(path))
 		.flatMap((path) => {
@@ -179,14 +207,14 @@ const upstreamArtifacts = {
 		},
 		{
 			path: 'packages/drei/upstream/test/e2e/snapshot.test.ts',
-			disposition: 'out-of-scope',
+			disposition: 'executed-pristine',
 			reason:
-				'Sole upstream runtime case is a whole-gallery screenshot. Recorded out of scope for export-level Vitest parity; repo-authored differential tests cover export behavior.',
+				'Executed through the drei-upstream-browser Vitest/Playwright wrapper against the vendored App.tsx and pinned React Drei runtime.',
 		},
 		{
 			path: 'packages/drei/upstream/test/e2e/snapshot.test.ts-snapshots/should-match-previous-one-1-linux.png',
-			disposition: 'out-of-scope',
-			reason: 'Screenshot oracle for the out-of-scope Playwright gallery case.',
+			disposition: 'support',
+			reason: 'Vendored Linux screenshot oracle retained with the executed upstream case.',
 		},
 	].map((entry) => ({ ...entry, sha256: digest(readFileSync(resolve(root, entry.path))) })),
 };
@@ -199,6 +227,7 @@ function readdirRecursive(directory) {
 
 const generatedFiles = [
 	['adapted-runtime.json', inventory],
+	['upstream-browser.json', browserInventory],
 	['test-classifications.json', classifications],
 	['runtime-evidence.json', runtimeEvidence],
 	['upstream-test-artifacts.json', upstreamArtifacts],
@@ -222,7 +251,7 @@ execFileSync(
 const manifestPath = resolve(auditRoot, 'react-parity.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 const runtimeIdentities = new Set(adaptedTests.map((test) => `${test.file}\0${test.fullName}`));
-manifest.upstreamSuites = { runtime: 'absent', types: 'absent' };
+manifest.upstreamSuites = { runtime: 'insufficient', types: 'absent' };
 manifest.adaptedRoots = {
 	source: {
 		roots: ['packages/drei/src'],
@@ -265,13 +294,11 @@ const viewRenderingCase = requireDifferentialCase(
 const viewVisibilityCase = requireDifferentialCase(
 	'matches invisible and offscreen clear/render boundaries and event connection cleanup',
 );
-const boundaryCase = guardTests.find((test) =>
-	test.fullName.includes(
-		'documents the outside-DOM renderer boundary while keeping View.Port callable',
-	),
+const upstreamScreenshotCase = browserTests.find((test) =>
+	test.fullName.endsWith('should match previous one'),
 );
-if (!boundaryCase) {
-	throw new Error('view renderer-boundary case missing from drei-guards project');
+if (!upstreamScreenshotCase) {
+	throw new Error('upstream screenshot case missing from drei-upstream-browser project');
 }
 
 manifest.lanes = [
@@ -353,29 +380,36 @@ manifest.lanes = [
 		],
 	},
 	{
-		id: 'drei-view-renderer-boundary',
-		type: 'differential',
+		id: 'drei-upstream-e2e-browser',
+		type: 'browser',
 		oracle: 'required',
 		environment: 'workspace-node',
-		project: 'drei-guards',
-		evidenceOrigin: 'repo-authored',
+		project: 'drei-upstream-browser',
 		notes:
-			'Ordinary-project framework-contract pin for the intentional DOM-root View renderer-boundary divergence.',
+			'Runs the vendored upstream Playwright gallery case in Chromium through a local Vite wrapper.',
+		execution: {
+			kind: 'vitest-full',
+			inventory: 'packages/drei/audit/upstream-browser.json',
+		},
 		files: [
 			{
-				path: 'packages/drei/tests/view-renderer-boundary.test.ts',
+				path: 'packages/drei/tests/browser/upstream-e2e.browser.test.ts',
 				role: 'test',
 				sha256: digest(
-					readFileSync(resolve(root, 'packages/drei/tests/view-renderer-boundary.test.ts')),
+					readFileSync(resolve(root, 'packages/drei/tests/browser/upstream-e2e.browser.test.ts')),
 				),
 				cases: [
 					{
-						id: 'differential:view-renderer-boundary',
-						testName:
-							'documents the outside-DOM renderer boundary while keeping View.Port callable',
-						fullName: boundaryCase.fullName,
+						id: 'upstream:e2e-snapshot',
+						testName: 'should match previous one',
+						fullName: upstreamScreenshotCase.fullName,
 					},
 				],
+			},
+			{
+				path: 'packages/drei/audit/upstream-browser.json',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/upstream-browser.json'))),
 			},
 		],
 	},
@@ -409,11 +443,9 @@ manifest.lanes = [
 				],
 			},
 			{
-				path: 'packages/drei/typetests/pristine/tsconfig.json',
+				path: 'packages/drei/typetests/assertions.md',
 				role: 'support',
-				sha256: digest(
-					readFileSync(resolve(root, 'packages/drei/typetests/pristine/tsconfig.json')),
-				),
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/typetests/assertions.md'))),
 			},
 		],
 	},
@@ -446,33 +478,15 @@ manifest.lanes = [
 				],
 			},
 			{
-				path: 'packages/drei/typetests/adapted/tsconfig.json',
+				path: 'packages/drei/typetests/assertions.md',
 				role: 'support',
-				sha256: digest(
-					readFileSync(resolve(root, 'packages/drei/typetests/adapted/tsconfig.json')),
-				),
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/typetests/assertions.md'))),
 			},
 		],
 	},
 ];
 
-manifest.divergences = [
-	{
-		id: 'view-renderer-boundary',
-		caseIds: ['differential:view-renderer-boundary'],
-		upstreamResult:
-			'React Drei can move View children between DOM and Three roots through tunnel-rat.',
-		octaneResult:
-			"Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
-		rationale: 'Octane components are statically owned by one renderer.',
-		classification: 'intentional-divergence',
-		consumerImpact: 'A View cannot transport authored Three children from an independent DOM root.',
-		migrationGuidance:
-			'Author View inside the Three Canvas and avoid the DOM-root View.Port transport form.',
-		owner: '@octanejs/drei',
-		reviewCondition: 'Revisit if Octane gains cross-renderer component transport.',
-	},
-];
+manifest.divergences = [];
 
 for (const lane of manifest.lanes) {
 	for (const file of lane.files ?? []) {

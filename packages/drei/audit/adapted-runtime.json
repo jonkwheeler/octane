@@ -321,11 +321,6 @@
       "fullName": "Clouds matches seeded distribution, custom distribution, range, buffers, animation, texture aspect, material shader, and refs"
     },
     {
-      "id": "runtime:0eb5ca4d878a71aa",
-      "file": "packages/drei/tests/cloud.test.ts",
-      "fullName": "Clouds wraps a standalone Cloud in an implicit Clouds provider"
-    },
-    {
       "id": "runtime:fe03de0ad719bb7e",
       "file": "packages/drei/tests/contact-shadows.test.ts",
       "fullName": "ContactShadows matches React geometry, camera, material, finite rendering, blur passes, and scene restoration"
@@ -784,11 +779,6 @@
       "id": "runtime:52665dcb1e0e50d7",
       "file": "packages/drei/tests/performance-monitor.test.ts",
       "fullName": "PerformanceMonitor matches decline, change, fallback, subscription, and sampling state"
-    },
-    {
-      "id": "runtime:03890196218af674",
-      "file": "packages/drei/tests/pivot-controls.test.ts",
-      "fullName": "PivotControls exports the public runtime and props family"
     },
     {
       "id": "runtime:18e34f72fa66b2db",

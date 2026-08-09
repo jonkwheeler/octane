@@ -2148,6 +2148,7 @@ export default defineConfig({
 						'packages/drei/tests/view-renderer-boundary.test.ts',
 						'packages/drei/tests/octane-contracts/**/*.test.ts',
 						'packages/drei/tests/differential/**/*.test.ts',
+						'packages/drei/tests/browser/**/*.browser.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -2184,6 +2185,17 @@ export default defineConfig({
 						},
 					],
 					dedupe: ['react', 'react-dom', 'three'],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'drei-upstream-browser',
+					include: ['packages/drei/tests/browser/**/*.browser.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
 				},
 			},
 			{
