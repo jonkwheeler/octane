@@ -26,8 +26,7 @@ function settle(): void {
 }
 
 describe('@octanejs/tiptap menus', function () {
-	// OCTANE DIVERGENCE[tiptap-native-menu-events][adapted:tiptap-native-menu-events]
-	// @parity-case adapted:tiptap-native-menu-events
+	// Extra native-menu conformance; required divergence marker is on tests/upstream/BubbleMenu.test.ts.
 	it('registers real menu plugins and syncs the detached menu element', function () {
 		const editor = new Editor({ extensions, content: '<p></p>' });
 		const bubblePluginKey = new PluginKey('octaneBubbleMenu');

@@ -355,16 +355,16 @@ describe('CI workflow aggregation', () => {
 		assert.equal(projects[1].testExecution, undefined);
 	});
 
-	test('keeps React parity browser lanes on the generic parity job', () => {
+	test('keeps TipTap browser coverage on heavy integration ordinary shards', () => {
 		const parity = jobSource('react_parity_checks');
 		assert.match(parity, /pnpm --filter website exec playwright install --with-deps chromium/);
 		assert.match(parity, /pnpm react-parity:check/);
 		assert.doesNotMatch(workflow, /@octanejs\/tiptap exec playwright/);
-		assert.doesNotMatch(
+		assert.match(
 			jobSource('test_shard'),
 			/--exclude "packages\/tiptap\/tests\/browser\/\*\*\/\*\.test\.ts"/,
 		);
-		assert.doesNotMatch(jobSource('heavy_integration'), /packages\/tiptap\/tests\/browser/);
+		assert.match(jobSource('heavy_integration'), /packages\/tiptap\/tests\/browser/);
 		assert.doesNotMatch(jobSource('lint_checks'), /playwright install --with-deps chromium/);
 		assert.match(jobSource('heavy_integration'), /playwright install --with-deps chromium/);
 	});

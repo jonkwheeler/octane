@@ -8,9 +8,31 @@
 - Test root: `packages/react/src/**/*.spec.ts`
 - License: MIT
 - npm tarball SHA-256: `92d1d53c119f0e0e6049effd0bba0e94d83508e3a7c7fd8d406e19fe16c49ca5`
+- Verification: verified (`packages/tiptap/upstream/` vendored from that npm pin; `pnpm --filter @octanejs/tiptap upstream:verify`)
 
-The canonical tag and npm artifact both contain a small React runtime suite,
-but no dedicated compile-time suite. Provenance remains recorded-unverified.
-Required evidence runs same-fixture editor/custom-view scenarios, six exact
-framework divergences, SSR and hydration contracts, five real Chromium cases,
-and the repository-authored public declaration suite.
+## Upstream runtime suite
+
+The pin ships four Vitest specs (seven cases). They are preserved byte-exact under
+`packages/tiptap/upstream/src/**/*.spec.ts` and executed by the
+`tiptap-pristine` project. One-for-one Octane adaptations live in
+`packages/tiptap/tests/upstream/` (`tiptap-upstream`).
+
+| Upstream file | Disposition | Adapted evidence |
+| --- | --- | --- |
+| `src/use-client.spec.ts` | pristine + adapted | `tests/upstream/use-client.test.ts` |
+| `src/EditorContent.spec.ts` | pristine + adapted | `tests/upstream/EditorContent.test.ts` |
+| `src/menus/BubbleMenu.spec.ts` | pristine + adapted | `tests/upstream/BubbleMenu.test.ts` |
+| `src/menus/FloatingMenu.spec.ts` | pristine + adapted | `tests/upstream/FloatingMenu.test.ts` |
+
+## Type suites
+
+Upstream has no dedicated compile-time suite (`upstreamSuites.types:
+insufficient`). Repo-authored pristine assertions compile against
+`@tiptap/react` under `typetests/pristine/`; adapted declaration contracts live
+under `typetests/*.test-d.ts`.
+
+## Additional evidence
+
+Repo-authored differential fixtures cover editor and custom-view lifecycles.
+Package-authored SSR, hydration, browser, and framework-contract unit tests
+remain ordinary-shard coverage and are not React-parity evidence.

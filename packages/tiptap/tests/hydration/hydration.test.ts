@@ -31,7 +31,6 @@ afterEach(() => {
 });
 
 describe('@octanejs/tiptap hydration', () => {
-	// @parity-case adapted:tiptap-hydration-editor
 	it('adopts the deferred server host and mounts a live editor after hydration', () => {
 		vi.useFakeTimers();
 		const container = document.createElement('div');
@@ -75,7 +74,6 @@ describe('@octanejs/tiptap hydration', () => {
 		container.remove();
 	});
 
-	// @parity-case adapted:tiptap-hydration-custom-views
 	it('adopts a deferred shell before mounting an interactive custom view and menu', async () => {
 		vi.useFakeTimers();
 		const container = document.createElement('div');

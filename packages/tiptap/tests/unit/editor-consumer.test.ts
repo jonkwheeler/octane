@@ -20,8 +20,7 @@ function settle(): void {
 }
 
 describe('@octanejs/tiptap components', function () {
-	// OCTANE DIVERGENCE[tiptap-editor-consumer][adapted:tiptap-editor-consumer]
-	// @parity-case adapted:tiptap-editor-consumer
+	// Octane divergence: EditorConsumer render-prop (framework contract; not parity-owned).
 	it('provides modern and legacy context while useTiptapState follows editor changes and transactions', function () {
 		const editor = new Editor({ extensions, content: '<p>Initial context</p>' });
 		const replacementEditor = new Editor({

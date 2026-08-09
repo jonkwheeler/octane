@@ -10,7 +10,6 @@ function stripMarkers(html: string): string {
 }
 
 describe('@octanejs/tiptap SSR', () => {
-	// @parity-case adapted:tiptap-ssr-deferred-editor
 	it('keeps a deferred editor server-safe without touching the DOM', () => {
 		expect(typeof document).toBe('undefined');
 
@@ -24,7 +23,6 @@ describe('@octanejs/tiptap SSR', () => {
 		expect(css).toBe('');
 	});
 
-	// @parity-case adapted:tiptap-ssr-menus
 	it('leaves client-owned menu portal targets out of server output', () => {
 		expect(typeof document).toBe('undefined');
 
@@ -36,7 +34,6 @@ describe('@octanejs/tiptap SSR', () => {
 		expect(css).toBe('');
 	});
 
-	// @parity-case adapted:tiptap-ssr-static-views
 	it('renders static node and mark view content without constructing a DOM renderer', () => {
 		expect(typeof document).toBe('undefined');
 

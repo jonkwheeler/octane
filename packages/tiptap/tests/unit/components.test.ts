@@ -68,11 +68,9 @@ describe('@octanejs/tiptap components', function () {
 
 		expect(editor).toBeTruthy();
 		expect(
-			result
-				.findAll('[data-provider-piece]')
-				.map(function (element) {
-					return element.getAttribute('data-provider-piece');
-				}),
+			result.findAll('[data-provider-piece]').map(function (element) {
+				return element.getAttribute('data-provider-piece');
+			}),
 		).toEqual(['before', 'content', 'child', 'after']);
 		expect(result.find('[data-provider-piece="content"] .ProseMirror').textContent).toBe(
 			'Provided content',

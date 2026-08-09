@@ -1,434 +1,298 @@
 {
-  "$schema": "../../hook-form/audit/react-parity.schema.json",
-  "schemaVersion": 1,
-  "provenance": {
-    "repo": "https://github.com/ueberdosis/tiptap.git",
-    "version": "@tiptap/react@3.28.0",
-    "commit": "c5f4b576eb2d521364bba524616e0702027987d3",
-    "sourceRoot": "packages/react/src",
-    "testRoot": "packages/react/src",
-    "license": "MIT",
-    "integrity": "sha256:92d1d53c119f0e0e6049effd0bba0e94d83508e3a7c7fd8d406e19fe16c49ca5",
-    "verification": "recorded-unverified"
-  },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "insufficient"
-  },
-  "adaptedRoots": {
-    "source": {
-      "roots": [
-        "packages/tiptap/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
-    },
-    "tests": {
-      "roots": [
-        "packages/tiptap/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
-      "exclude": []
-    }
-  },
-  "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
-    "duplicateEntriesWithinLanes": 0,
-    "identitiesSharedAcrossLanes": 0
-  },
-  "environments": {
-    "workspace-node": {
-      "node": ">=22",
-      "platform": "any",
-      "arch": "any",
-      "packageManager": "pnpm@11.15.1",
-      "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
-    }
-  },
-  "lanes": [
-    {
-      "id": "tiptap-runtime-differential",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tiptap-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact editor and custom-view lifecycle fixtures against @tiptap/react@3.28.0.",
-      "files": [
-        {
-          "path": "packages/tiptap/tests/differential/parity.test.ts",
-          "role": "test",
-          "sha256": "97c24a6cd7086e33204f1ba8685637b1efa5a44a335ead3a3bd279d0e7d8ad5c",
-          "cases": [
-            {
-              "id": "differential:tiptap-editor",
-              "testName": "renders and updates a StarterKit editor identically",
-              "fullName": "differential: @octanejs/tiptap vs @tiptap/react renders and updates a StarterKit editor identically"
-            },
-            {
-              "id": "differential:tiptap-custom-views",
-              "testName": "matches renderer, node-view, and mark-view behavior through their visible lifecycles",
-              "fullName": "differential: @octanejs/tiptap vs @tiptap/react matches renderer, node-view, and mark-view behavior through their visible lifecycles"
-            }
-          ]
-        },
-        {
-          "path": "packages/tiptap/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "1f352aa16a2a485536f25febb344b11ce3e46718974bd3d2f8cff68c4b2bf11b"
-        },
-        {
-          "path": "packages/tiptap/tests/differential/fixture-compiler.ts",
-          "role": "support",
-          "sha256": "cae05bd5a72b711aa8fa10823a066ce5cbf369ed9bd04ea7b9bebfb7073f4834"
-        },
-        {
-          "path": "packages/tiptap/tests/_fixtures/basic-editor.tsrx",
-          "role": "support",
-          "sha256": "92c218dcffa37ede5ab9655249e75b874bf12912803cd56459850c4cdfa0453d"
-        },
-        {
-          "path": "packages/tiptap/tests/_fixtures/custom-views-parity.tsrx",
-          "role": "support",
-          "sha256": "335c358464ef8cdf396eee577010b790740b7defd48742479ea770effc93216c"
-        }
-      ]
-    },
-    {
-      "id": "tiptap-adapted-divergences",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tiptap",
-      "notes": "Authenticates all six documented framework and lifecycle divergences.",
-      "files": [
-        {
-          "path": "packages/tiptap/tests/unit/native-external-store.test.ts",
-          "role": "test",
-          "sha256": "8aa7723543a5b5ab18cff597ca415b92dd99382bb67fc7e80b41df6d098c57f4",
-          "cases": [
-            {
-              "id": "adapted:tiptap-native-external-store",
-              "testName": "does not publish React or use-sync-external-store dependencies",
-              "fullName": "@octanejs/tiptap public module surface does not publish React or use-sync-external-store dependencies"
-            }
-          ]
-        },
-        {
-          "path": "packages/tiptap/tests/unit/editor-consumer.test.ts",
-          "role": "test",
-          "sha256": "0f81b20d939c75b95ef2d0fe6dbacb0f5dae9356be6ef4a26c0f7aa00ebd08d6",
-          "cases": [
-            {
-              "id": "adapted:tiptap-editor-consumer",
-              "testName": "provides modern and legacy context while useTiptapState follows editor changes and transactions",
-              "fullName": "@octanejs/tiptap components provides modern and legacy context while useTiptapState follows editor changes and transactions"
-            }
-          ]
-        },
-        {
-          "path": "packages/tiptap/tests/unit/custom-views.test.ts",
-          "role": "test",
-          "sha256": "c0fa03bb6e2998cafb0923dea5cf792fe733bf395197d7082e7342fcf1474e10",
-          "cases": [
-            {
-              "id": "adapted:tiptap-ordinary-ref-props",
-              "testName": "updates and destroys a public ReactRenderer while preserving context, state, effects, and refs",
-              "fullName": "@octanejs/tiptap custom views updates and destroys a public ReactRenderer while preserving context, state, effects, and refs"
-            },
-            {
-              "id": "adapted:tiptap-node-view-as-prop",
-              "testName": "consumes the node view as prop without forwarding it to the DOM",
-              "fullName": "@octanejs/tiptap custom views consumes the node view as prop without forwarding it to the DOM"
-            },
-            {
-              "id": "adapted:tiptap-custom-view-cleanup",
-              "testName": "keeps non-leaf node and mark content live across updates, then cleans both views up",
-              "fullName": "@octanejs/tiptap custom views keeps non-leaf node and mark content live across updates, then cleans both views up"
-            }
-          ]
-        },
-        {
-          "path": "packages/tiptap/tests/unit/native-menu-events.test.ts",
-          "role": "test",
-          "sha256": "94aba473cbbae74fcc98cb27c249a662c414df9735b71c1013d6e56e364bd95c",
-          "cases": [
-            {
-              "id": "adapted:tiptap-native-menu-events",
-              "testName": "registers real menu plugins and syncs the detached menu element",
-              "fullName": "@octanejs/tiptap menus registers real menu plugins and syncs the detached menu element"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "tiptap-adapted-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tiptap-ssr",
-      "notes": "Authenticates deferred editors, menu portals, and static custom views in DOM-free SSR.",
-      "files": [
-        {
-          "path": "packages/tiptap/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "d361eecd0202659f420f540afbf05561a433a280a3ca67ab21093eea95050439",
-          "cases": [
-            {
-              "id": "adapted:tiptap-ssr-deferred-editor",
-              "testName": "keeps a deferred editor server-safe without touching the DOM",
-              "fullName": "@octanejs/tiptap SSR keeps a deferred editor server-safe without touching the DOM"
-            },
-            {
-              "id": "adapted:tiptap-ssr-menus",
-              "testName": "leaves client-owned menu portal targets out of server output",
-              "fullName": "@octanejs/tiptap SSR leaves client-owned menu portal targets out of server output"
-            },
-            {
-              "id": "adapted:tiptap-ssr-static-views",
-              "testName": "renders static node and mark view content without constructing a DOM renderer",
-              "fullName": "@octanejs/tiptap SSR renders static node and mark view content without constructing a DOM renderer"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "tiptap-adapted-hydration",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tiptap",
-      "notes": "Authenticates deferred shell adoption and live custom-view/menu activation.",
-      "files": [
-        {
-          "path": "packages/tiptap/tests/hydration/hydration.test.ts",
-          "role": "test",
-          "sha256": "16be3eb5e745c0b517654b41d160914e2e79568fa9dbdb866359c4e43ed2dfed",
-          "cases": [
-            {
-              "id": "adapted:tiptap-hydration-editor",
-              "testName": "adopts the deferred server host and mounts a live editor after hydration",
-              "fullName": "@octanejs/tiptap hydration adopts the deferred server host and mounts a live editor after hydration"
-            },
-            {
-              "id": "adapted:tiptap-hydration-custom-views",
-              "testName": "adopts a deferred shell before mounting an interactive custom view and menu",
-              "fullName": "@octanejs/tiptap hydration adopts a deferred shell before mounting an interactive custom view and menu"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "tiptap-browser",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tiptap-browser",
-      "notes": "Runs real Chromium caret, selection, menu geometry, mode-switch, and drag behavior.",
-      "files": [
-        {
-          "path": "packages/tiptap/tests/browser/editor.browser.test.ts",
-          "role": "test",
-          "sha256": "83c9f16a64b7f89e165fb257b12ad87969b48336c7f3433608424cc7a2c4d23c",
-          "cases": [
-            {
-              "id": "browser:tiptap-editor-mode-switch",
-              "testName": "switches EditorContent and a lazy Suspense source editor without detached anchors",
-              "fullName": "@octanejs/tiptap real-browser behavior switches EditorContent and a lazy Suspense source editor without detached anchors"
-            },
-            {
-              "id": "browser:tiptap-caret",
-              "testName": "keeps a live caret while typing updates editor content",
-              "fullName": "@octanejs/tiptap real-browser behavior keeps a live caret while typing updates editor content"
-            },
-            {
-              "id": "browser:tiptap-bubble-menu",
-              "testName": "shows and positions BubbleMenu from a real text selection",
-              "fullName": "@octanejs/tiptap real-browser behavior shows and positions BubbleMenu from a real text selection"
-            },
-            {
-              "id": "browser:tiptap-floating-menu",
-              "testName": "shows and positions FloatingMenu beside an empty paragraph",
-              "fullName": "@octanejs/tiptap real-browser behavior shows and positions FloatingMenu beside an empty paragraph"
-            },
-            {
-              "id": "browser:tiptap-node-view-drag",
-              "testName": "delivers a NodeView drag handle payload through the native browser drag flow",
-              "fullName": "@octanejs/tiptap real-browser behavior delivers a NodeView drag handle payload through the native browser drag flow"
-            }
-          ]
-        },
-        {
-          "path": "packages/tiptap/tests/browser/harness/editor-mode-switch.tsx",
-          "role": "support",
-          "sha256": "5e9cd6d17134c1f5abe299e2d2d770ea44b067dd0b7b6b08738b41f999ece494"
-        },
-        {
-          "path": "packages/tiptap/tests/browser/harness/editor-switch.html",
-          "role": "support",
-          "sha256": "9bbb9d807974ea51fc703072ef42e7ea22edc450b6a327a5405aac8a946b014a"
-        },
-        {
-          "path": "packages/tiptap/tests/browser/harness/editor-switch.tsx",
-          "role": "support",
-          "sha256": "4b42cb523457f88c5e612cb9e2ad3ab45999e93d26b8d552eab11a5a82612423"
-        },
-        {
-          "path": "packages/tiptap/tests/browser/harness/index.html",
-          "role": "support",
-          "sha256": "ef17dcc3fc36804bd876589d9c4b2f5dfd0f5eb243ad5aa4c07098d50365193b"
-        },
-        {
-          "path": "packages/tiptap/tests/browser/harness/main.tsrx",
-          "role": "support",
-          "sha256": "e0792996b7cd45cdb323ae300d98bb4a01d8b0c6538d52c0d7f7734d297c0566"
-        },
-        {
-          "path": "packages/tiptap/tests/browser/harness/source-editor.tsx",
-          "role": "support",
-          "sha256": "59682f5189826f38dc8f7bdc3d89a883a6072a89668dd9d9d2f0e27bcb695c5c"
-        }
-      ]
-    },
-    {
-      "id": "tiptap-adapted-types",
-      "type": "adapted-types",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tiptap-adapted-types",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the root and menus public declaration contracts with standard TypeScript.",
-      "execution": {
-        "kind": "typescript",
-        "compiler": "tsc",
-        "project": "packages/tiptap/typetests/tsconfig.json"
-      },
-      "files": [
-        {
-          "path": "packages/tiptap/audit/adapted-types.json",
-          "role": "test",
-          "sha256": "a59d45818ef1ccd62396f9a0d74eac96134f61126abdf12b8b5f857b6d05d87a",
-          "cases": [
-            {
-              "id": "types:tiptap-public-api",
-              "testName": "root and menus public declaration contracts",
-              "fullName": "root and menus public declaration contracts"
-            }
-          ]
-        },
-        {
-          "path": "packages/tiptap/typetests/menus-api.test-d.ts",
-          "role": "support",
-          "sha256": "e85acf127278b830e31be56fa990934d1de22d2e54e4880cfcc2eb593a37bf94"
-        },
-        {
-          "path": "packages/tiptap/typetests/public-api.test-d.ts",
-          "role": "support",
-          "sha256": "91a6aeffe4664204a1cc39ff28f7bfbe79d61b5ae0b317bcd73943af7ab24b0a"
-        },
-        {
-          "path": "packages/tiptap/typetests/tsconfig.json",
-          "role": "support",
-          "sha256": "5324c97ed23f9a12b7873fa638d68eacac39fb932793d31b3e9406199435a1f3"
-        }
-      ]
-    }
-  ],
-  "divergences": [
-    {
-      "id": "tiptap-native-external-store",
-      "caseIds": [
-        "adapted:tiptap-native-external-store"
-      ],
-      "upstreamResult": "@tiptap/react depends on React and use-sync-external-store.",
-      "octaneResult": "The Octane binding uses native useSyncExternalStore and publishes neither dependency.",
-      "rationale": "Octane supplies the subscription primitive natively.",
-      "classification": "framework-integration",
-      "consumerImpact": "No React runtime is installed for subscriptions.",
-      "migrationGuidance": "None.",
-      "owner": "@octanejs/tiptap",
-      "reviewCondition": "Review if Octane changes external-store support."
-    },
-    {
-      "id": "tiptap-editor-consumer",
-      "caseIds": [
-        "adapted:tiptap-editor-consumer"
-      ],
-      "upstreamResult": "React exposes EditorContext.Consumer.",
-      "octaneResult": "EditorConsumer is a render-prop compatibility component.",
-      "rationale": "Octane contexts do not expose a .Consumer property.",
-      "classification": "framework-integration",
-      "consumerImpact": "Use EditorConsumer with a function child.",
-      "migrationGuidance": "Prefer useCurrentEditor or pass a function child to EditorConsumer.",
-      "owner": "@octanejs/tiptap",
-      "reviewCondition": "Review if Octane contexts gain Consumer."
-    },
-    {
-      "id": "tiptap-ordinary-ref-props",
-      "caseIds": [
-        "adapted:tiptap-ordinary-ref-props"
-      ],
-      "upstreamResult": "React renderer refs use React ref conventions.",
-      "octaneResult": "Renderer component refs are ordinary props carrying DOM nodes.",
-      "rationale": "Octane refs are props.",
-      "classification": "framework-integration",
-      "consumerImpact": "Ref callbacks receive the same nodes without forwardRef.",
-      "migrationGuidance": "Declare ref as an ordinary component prop.",
-      "owner": "@octanejs/tiptap",
-      "reviewCondition": "Review if Octane ref semantics change."
-    },
-    {
-      "id": "tiptap-node-view-as-prop",
-      "caseIds": [
-        "adapted:tiptap-node-view-as-prop"
-      ],
-      "upstreamResult": "@tiptap/react forwards NodeViewWrapper as as an invalid DOM attribute.",
-      "octaneResult": "The binding consumes as when selecting the host tag and does not emit the attribute.",
-      "rationale": "Host-selection props should not leak to DOM.",
-      "classification": "behavioral-fix",
-      "consumerImpact": "Rendered markup omits the invalid as attribute.",
-      "migrationGuidance": "No action required.",
-      "owner": "@octanejs/tiptap",
-      "reviewCondition": "Review when upstream stops forwarding as."
-    },
-    {
-      "id": "tiptap-native-menu-events",
-      "caseIds": [
-        "adapted:tiptap-native-menu-events"
-      ],
-      "upstreamResult": "React menu handlers receive synthetic events.",
-      "octaneResult": "Menu handlers receive native MouseEvent instances.",
-      "rationale": "Octane dispatches native browser events.",
-      "classification": "framework-integration",
-      "consumerImpact": "There is no nativeEvent wrapper property.",
-      "migrationGuidance": "Use standard DOM event fields directly.",
-      "owner": "@octanejs/tiptap",
-      "reviewCondition": "Review if Octane introduces synthetic events."
-    },
-    {
-      "id": "tiptap-mark-view-cleanup",
-      "caseIds": [
-        "adapted:tiptap-custom-view-cleanup"
-      ],
-      "upstreamResult": "@tiptap/react@3.28.0 leaves the mark renderer portal mounted when ProseMirror destroys the mark view.",
-      "octaneResult": "ReactMarkView.destroy tears down its portal and ref.",
-      "rationale": "Prevent detached renderer leaks.",
-      "classification": "behavioral-fix",
-      "consumerImpact": "Cleanup effects and null refs run when the mark leaves the document.",
-      "migrationGuidance": "Do not rely on leaked mark renderers.",
-      "owner": "@octanejs/tiptap",
-      "reviewCondition": "Review when upstream adds equivalent teardown."
-    }
-  ]
+	"$schema": "../../hook-form/audit/react-parity.schema.json",
+	"schemaVersion": 1,
+	"provenance": {
+		"repo": "https://github.com/ueberdosis/tiptap.git",
+		"version": "@tiptap/react@3.28.0",
+		"commit": "c5f4b576eb2d521364bba524616e0702027987d3",
+		"sourceRoot": "packages/react/src",
+		"testRoot": "packages/react/src",
+		"license": "MIT",
+		"integrity": "sha256:92d1d53c119f0e0e6049effd0bba0e94d83508e3a7c7fd8d406e19fe16c49ca5",
+		"verification": "verified"
+	},
+	"upstreamSuites": {
+		"runtime": "present",
+		"types": "insufficient"
+	},
+	"adaptedRoots": {
+		"source": {
+			"roots": [
+				"packages/tiptap/src"
+			],
+			"include": [
+				"\\.(?:ts|tsrx)$"
+			],
+			"exclude": [
+				"\\.d\\.ts$"
+			]
+		},
+		"tests": {
+			"roots": [
+				"packages/tiptap/tests/upstream"
+			],
+			"include": [
+				"\\.test\\.ts$"
+			],
+			"exclude": []
+		}
+	},
+	"adaptedRuntimeSummary": {
+		"inventoryEntries": 7,
+		"uniqueIdentities": 7,
+		"duplicateEntriesWithinLanes": 0,
+		"identitiesSharedAcrossLanes": 0
+	},
+	"environments": {
+		"workspace-node": {
+			"node": ">=22",
+			"platform": "any",
+			"arch": "any",
+			"packageManager": "pnpm@11.15.1",
+			"lockfile": "pnpm-lock.yaml",
+			"lockfileSha256": "9a6737a204eb9b78d94955f49374b7b2f9c361077d70a29865ce2d48c5cb0c47"
+		}
+	},
+	"lanes": [
+		{
+			"id": "tiptap-pristine-upstream",
+			"type": "pristine-upstream",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tiptap-pristine",
+			"evidenceOrigin": "upstream-suite",
+			"notes": "Runs the byte-exact @tiptap/react@3.28.0 Vitest suite from the vendored npm pin against upstream's own React binding.",
+			"execution": {
+				"kind": "vitest-full",
+				"inventory": "packages/tiptap/audit/pristine-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/tiptap/audit/pristine-runtime.json",
+					"role": "support",
+					"sha256": "94603d4fc4bb1764842eef97a48b1023c70eb29ffde69db0466eda8d8db6dfed"
+				},
+				{
+					"path": "packages/tiptap/upstream/SHA256SUMS",
+					"role": "support",
+					"sha256": "20cd60a54d60da3e0768e825bc98c5d1798e697384459fd9ee424f1194694663"
+				},
+				{
+					"path": "packages/tiptap/scripts/verify-upstream.mjs",
+					"role": "support",
+					"sha256": "cabf860a8921ce538d2786e0a457dc3f56f31c9351db4602c747c844e06513e5"
+				},
+				{
+					"path": "packages/tiptap/upstream/LICENSE.md",
+					"role": "support",
+					"sha256": "c96e5ecb55ac593157ad1d21d1f44a611187f494a0f04c235a1ae692c88d6ba9"
+				},
+				{
+					"path": "packages/tiptap/upstream/package.json",
+					"role": "support",
+					"sha256": "2aed9edf82538a76d8696aa248397b160302793bd5081b235359335a688ccf95"
+				},
+				{
+					"path": "packages/tiptap/upstream/src/EditorContent.spec.ts",
+					"role": "support",
+					"sha256": "f676c23f770da71f583d92c0b8e0c34cdd70ad745cee4ac18ef7c2dc5cc98c9d"
+				},
+				{
+					"path": "packages/tiptap/upstream/src/menus/BubbleMenu.spec.ts",
+					"role": "support",
+					"sha256": "1985f9acd85325f9c73d18dbfba9c2db3d717266e6ddabcea5c22c01e20e1381"
+				},
+				{
+					"path": "packages/tiptap/upstream/src/menus/FloatingMenu.spec.ts",
+					"role": "support",
+					"sha256": "c3c97eee056f785002c0355103b00e0cbd22a04755d0d714174ad629778c60d8"
+				},
+				{
+					"path": "packages/tiptap/upstream/src/use-client.spec.ts",
+					"role": "support",
+					"sha256": "d4e2c3db1a642276358d27f138b7f7f35e4c3a02368d8525d7573ec143f36f7e"
+				}
+			]
+		},
+		{
+			"id": "tiptap-adapted-upstream",
+			"type": "adapted-octane",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tiptap-upstream",
+			"evidenceOrigin": "upstream-suite",
+			"notes": "One-for-one Octane adaptation of every upstream React runtime case, including the native-event menu divergence.",
+			"execution": {
+				"kind": "vitest-full",
+				"inventory": "packages/tiptap/audit/adapted-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/tiptap/audit/adapted-runtime.json",
+					"role": "support",
+					"sha256": "0fc93e667d800b5fa3583786ee6bd20b56c964bc6101937710ba0b116f544cc0"
+				},
+				{
+					"path": "packages/tiptap/tests/upstream/BubbleMenu.test.ts",
+					"role": "support",
+					"sha256": "2a5040b23a3676e7b1d83723930c7d076146d9611c96afe0710586863e91e9cf"
+				},
+				{
+					"path": "packages/tiptap/tests/upstream/EditorContent.test.ts",
+					"role": "support",
+					"sha256": "87a6eb08e5abe98b3d0030b23b2b7481030fde777fdaec4fe4555409a7e76e77"
+				},
+				{
+					"path": "packages/tiptap/tests/upstream/FloatingMenu.test.ts",
+					"role": "support",
+					"sha256": "7f9e23ca1cd25c10d3df5ade2c5000fbb58b71134b0aab7138748dfc52a5194c"
+				},
+				{
+					"path": "packages/tiptap/tests/upstream/use-client.test.ts",
+					"role": "support",
+					"sha256": "3cb4a193805895b70d913d5ee7985de65c4a7dfe53aa90f18a50e239c8eb82ac"
+				}
+			]
+		},
+		{
+			"id": "tiptap-differential",
+			"type": "differential",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tiptap-differential",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Runs exact editor and custom-view lifecycle fixtures against @tiptap/react@3.28.0.",
+			"files": [
+				{
+					"path": "packages/tiptap/tests/differential/parity.test.ts",
+					"role": "test",
+					"sha256": "97c24a6cd7086e33204f1ba8685637b1efa5a44a335ead3a3bd279d0e7d8ad5c",
+					"cases": [
+						{
+							"id": "differential:tiptap-editor",
+							"testName": "renders and updates a StarterKit editor identically",
+							"fullName": "differential: @octanejs/tiptap vs @tiptap/react renders and updates a StarterKit editor identically"
+						},
+						{
+							"id": "differential:tiptap-custom-views",
+							"testName": "matches renderer, node-view, and mark-view behavior through their visible lifecycles",
+							"fullName": "differential: @octanejs/tiptap vs @tiptap/react matches renderer, node-view, and mark-view behavior through their visible lifecycles"
+						}
+					]
+				},
+				{
+					"path": "packages/tiptap/tests/differential/_setup.ts",
+					"role": "support",
+					"sha256": "1f352aa16a2a485536f25febb344b11ce3e46718974bd3d2f8cff68c4b2bf11b"
+				},
+				{
+					"path": "packages/tiptap/tests/differential/fixture-compiler.ts",
+					"role": "support",
+					"sha256": "cae05bd5a72b711aa8fa10823a066ce5cbf369ed9bd04ea7b9bebfb7073f4834"
+				},
+				{
+					"path": "packages/tiptap/tests/_fixtures/basic-editor.tsrx",
+					"role": "support",
+					"sha256": "92c218dcffa37ede5ab9655249e75b874bf12912803cd56459850c4cdfa0453d"
+				},
+				{
+					"path": "packages/tiptap/tests/_fixtures/custom-views-parity.tsrx",
+					"role": "support",
+					"sha256": "335c358464ef8cdf396eee577010b790740b7defd48742479ea770effc93216c"
+				}
+			]
+		},
+		{
+			"id": "tiptap-pristine-types",
+			"type": "pristine-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tiptap-pristine-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Repo-authored public surface type assertions compiled against @tiptap/react@3.28.0 with tsc.",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsc",
+				"project": "packages/tiptap/typetests/pristine/tsconfig.json"
+			},
+			"files": [
+				{
+					"path": "packages/tiptap/typetests/pristine/types.test-d.ts",
+					"role": "test",
+					"sha256": "d90ca9141937a2c78c8dd40a4fc73f41b760ad8e253a6c0fd501a9162cc4bb37",
+					"cases": [
+						{
+							"id": "types:tiptap-pristine",
+							"testName": "public surface type assertions",
+							"fullName": "public surface type assertions"
+						}
+					]
+				},
+				{
+					"path": "packages/tiptap/typetests/pristine/tsconfig.json",
+					"role": "support",
+					"sha256": "625adac63dfb75c80a49670b8e58122bebf57f8395a4729d8f69e9a26c5c28fb"
+				}
+			]
+		},
+		{
+			"id": "tiptap-adapted-types",
+			"type": "adapted-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tiptap-adapted-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Compiles the root and menus public declaration contracts with standard TypeScript.",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsc",
+				"project": "packages/tiptap/typetests/tsconfig.json"
+			},
+			"files": [
+				{
+					"path": "packages/tiptap/audit/adapted-types.json",
+					"role": "test",
+					"sha256": "a59d45818ef1ccd62396f9a0d74eac96134f61126abdf12b8b5f857b6d05d87a",
+					"cases": [
+						{
+							"id": "types:tiptap-public-api",
+							"testName": "root and menus public declaration contracts",
+							"fullName": "root and menus public declaration contracts"
+						}
+					]
+				},
+				{
+					"path": "packages/tiptap/typetests/menus-api.test-d.ts",
+					"role": "support",
+					"sha256": "e85acf127278b830e31be56fa990934d1de22d2e54e4880cfcc2eb593a37bf94"
+				},
+				{
+					"path": "packages/tiptap/typetests/public-api.test-d.ts",
+					"role": "support",
+					"sha256": "91a6aeffe4664204a1cc39ff28f7bfbe79d61b5ae0b317bcd73943af7ab24b0a"
+				},
+				{
+					"path": "packages/tiptap/typetests/tsconfig.json",
+					"role": "support",
+					"sha256": "5324c97ed23f9a12b7873fa638d68eacac39fb932793d31b3e9406199435a1f3"
+				}
+			]
+		}
+	],
+	"divergences": [
+		{
+			"id": "tiptap-native-menu-events",
+			"caseIds": [
+				"runtime:6b2bf62b801a2b07"
+			],
+			"upstreamResult": "React menu handlers receive synthetic events.",
+			"octaneResult": "Menu handlers receive native MouseEvent instances.",
+			"rationale": "Octane dispatches native browser events.",
+			"classification": "framework-integration",
+			"consumerImpact": "There is no nativeEvent wrapper property.",
+			"migrationGuidance": "Use standard DOM event fields directly.",
+			"owner": "@octanejs/tiptap",
+			"reviewCondition": "Review if Octane introduces synthetic events."
+		}
+	]
 }

@@ -126,7 +126,6 @@ async function readMenuGeometry(kind: 'bubble' | 'floating') {
 }
 
 describe('@octanejs/tiptap real-browser behavior', () => {
-	// @parity-case browser:tiptap-editor-mode-switch
 	it('switches EditorContent and a lazy Suspense source editor without detached anchors', async () => {
 		await page.goto(`${origin}/editor-switch.html`, { waitUntil: 'networkidle' });
 
@@ -154,7 +153,6 @@ describe('@octanejs/tiptap real-browser behavior', () => {
 		expect(pageErrors).toEqual([]);
 	});
 
-	// @parity-case browser:tiptap-caret
 	it('keeps a live caret while typing updates editor content', async () => {
 		const paragraph = page.locator('.ProseMirror > p').first();
 		await paragraph.click();
@@ -173,7 +171,6 @@ describe('@octanejs/tiptap real-browser behavior', () => {
 		await expect.poll(() => paragraph.textContent()).toBe('Select this text and keep typing!?');
 	});
 
-	// @parity-case browser:tiptap-bubble-menu
 	it('shows and positions BubbleMenu from a real text selection', async () => {
 		const paragraph = page.locator('.ProseMirror > p').first();
 		const bounds = await paragraph.boundingBox();
@@ -210,7 +207,6 @@ describe('@octanejs/tiptap real-browser behavior', () => {
 		expect(Math.abs(geometry.y - selectionRect.y)).toBeLessThan(100);
 	});
 
-	// @parity-case browser:tiptap-floating-menu
 	it('shows and positions FloatingMenu beside an empty paragraph', async () => {
 		const emptyParagraph = page.locator('.ProseMirror > p').nth(1);
 		await emptyParagraph.click();
@@ -239,7 +235,6 @@ describe('@octanejs/tiptap real-browser behavior', () => {
 		expect(Math.abs(geometry.x - paragraphRect.x)).toBeLessThan(160);
 	});
 
-	// @parity-case browser:tiptap-node-view-drag
 	it('delivers a NodeView drag handle payload through the native browser drag flow', async () => {
 		const source = page.locator('[data-card-label="first card"] [data-drag-handle]');
 		const dropTarget = page.locator('#drop-target');

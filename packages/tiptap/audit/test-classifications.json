@@ -33,19 +33,13 @@
     },
     {
       "path": "packages/tiptap/tests/unit/custom-views.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceIds": [
-        "tiptap-ordinary-ref-props",
-        "tiptap-node-view-as-prop",
-        "tiptap-mark-view-cleanup"
-      ],
-      "reason": "Authenticates ordinary refs, consumed as props, and mark-view cleanup."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins ordinary refs, consumed as props, and mark-view cleanup as Octane framework contracts outside the upstream suite."
     },
     {
       "path": "packages/tiptap/tests/unit/editor-consumer.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tiptap-editor-consumer",
-      "reason": "Authenticates the EditorConsumer render-prop context adaptation."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins EditorConsumer render-prop context adaptation as an Octane framework contract."
     },
     {
       "path": "packages/tiptap/tests/unit/editor.test.ts",
@@ -64,15 +58,14 @@
     },
     {
       "path": "packages/tiptap/tests/unit/native-external-store.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tiptap-native-external-store",
-      "reason": "Authenticates the React-free subscription dependency surface."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins the React-free subscription dependency surface as an Octane framework contract."
     },
     {
       "path": "packages/tiptap/tests/unit/native-menu-events.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tiptap-native-menu-events",
-      "reason": "Authenticates native menu callback events."
+      "reason": "Extra conformance around native menu callbacks; the required adapted upstream case authenticates the divergence."
     },
     {
       "path": "packages/tiptap/tests/unit/public-surface.test.ts",

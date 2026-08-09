@@ -46,7 +46,8 @@
     "./menus": "./src/menus/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "upstream:verify": "node ./scripts/verify-upstream.mjs"
   },
   "dependencies": {
     "@tiptap/core": "catalog:default",
@@ -63,6 +64,7 @@
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
     "@testing-library/jest-dom": "catalog:default",
+    "@testing-library/react": "16.3.2",
     "@tiptap/react": "catalog:default",
     "@tiptap/starter-kit": "catalog:default",
     "@tsrx/react": "catalog:default",
@@ -72,6 +74,9 @@
     "react": "catalog:default",
     "react-dom": "catalog:default",
     "vite": "catalog:default",
-    "vitest": "catalog:default"
+    "vitest": "catalog:default",
+    "use-sync-external-store": "^1.4.0",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default"
   }
 }

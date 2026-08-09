@@ -39,8 +39,7 @@ afterEach(() => {
 });
 
 describe('@octanejs/tiptap custom views', () => {
-	// OCTANE DIVERGENCE[tiptap-ordinary-ref-props][adapted:tiptap-ordinary-ref-props]
-	// @parity-case adapted:tiptap-ordinary-ref-props
+	// Octane framework contract: ordinary renderer refs (not parity-owned).
 	it('updates and destroys a public ReactRenderer while preserving context, state, effects, and refs', async () => {
 		let editor: Editor | undefined;
 		let renderer: any;
@@ -111,8 +110,7 @@ describe('@octanejs/tiptap custom views', () => {
 		editor?.destroy();
 	});
 
-	// OCTANE DIVERGENCE[tiptap-node-view-as-prop][adapted:tiptap-node-view-as-prop]
-	// @parity-case adapted:tiptap-node-view-as-prop
+	// Octane framework contract: consumed as prop (not parity-owned).
 	it('consumes the node view as prop without forwarding it to the DOM', async () => {
 		let editor: Editor | undefined;
 		const result = mount(CustomViewsEditor as any, {
@@ -138,8 +136,7 @@ describe('@octanejs/tiptap custom views', () => {
 		editor?.destroy();
 	});
 
-	// OCTANE DIVERGENCE[tiptap-mark-view-cleanup][adapted:tiptap-custom-view-cleanup]
-	// @parity-case adapted:tiptap-custom-view-cleanup
+	// Octane framework contract: mark-view cleanup (not parity-owned).
 	it('keeps non-leaf node and mark content live across updates, then cleans both views up', async () => {
 		let editor: Editor | undefined;
 		const nodeLifecycle: string[] = [];
