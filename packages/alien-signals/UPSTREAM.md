@@ -57,8 +57,9 @@ Upstream ships an executable typecheck: `package.json` defines `typecheck: tsc -
 pinned `tsconfig.json` typechecks `src/index.ts` plus `src/index.test.ts` (including the
 `@ts-expect-error` at `src/index.test.ts:392`). Those artifacts are vendored under
 [`upstream/`](./upstream/) and run byte-exact in the `alien-signals-pristine-types` lane.
-`typetests/upstream-typecheck.test-d.ts` keeps the matching adapted assertion group; supplemental
-public-api probes remain under `audit/type-probes/` and `typetests/`.
+`typetests/upstream-typecheck.test-d.ts` keeps the matching adapted assertion group and the full
+accepted public-API call inventory from that suite; supplemental public-api probes remain under
+`audit/type-probes/` and `typetests/`.
 
 ## Test disposition
 

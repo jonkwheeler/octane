@@ -133,17 +133,17 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "fa6f141456d7dd723879ceceec63019b21c10281ef661da4053157b4a42bc71c"
+          "sha256": "89d8d6d33ac49c92a1cf8c1906f9398d71ac6a293392646c8ee9f5861e7691db"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
           "role": "support",
-          "sha256": "328be1f7fd15881c49136788959b8d7e141785651e4a41712e3381f454b15ef3"
+          "sha256": "89edc0f93cc73ddc38324599b02b425fc3c30fc170a4a534de644650fe6de804"
         },
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "b670c3002599d9c302254ab209182c38e297d9124368bb14117334b20ece7d94"
+          "sha256": "244e28d6bc0872773329c4e268c662c0a1cd0b2a10981e43274d4c6d4896bde8"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
@@ -179,7 +179,7 @@
         {
           "path": "packages/alien-signals/audit/pristine-types.json",
           "role": "test",
-          "sha256": "07403329449cb71cb9c4bd2543e17ddf38990708cdc87265af7e1d34c97c45c9",
+          "sha256": "6c2a8f4ce1bfa801d5eb8399f86de0996c849e1ec9b1f1ff3914125720137176",
           "cases": [
             {
               "id": "types:alien-signals-pristine",
@@ -206,7 +206,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "9cede6604817fa9ed009fc8a1a1850b47df149f0152ff5bdc3b34a28c8ea155e"
+          "sha256": "1d89f0520d3cc2f472c3bcb8e31eea51a9301b33fd91b7afd6aa11c030f93e5f"
         }
       ]
     },
@@ -249,7 +249,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "9cede6604817fa9ed009fc8a1a1850b47df149f0152ff5bdc3b34a28c8ea155e"
+          "sha256": "1d89f0520d3cc2f472c3bcb8e31eea51a9301b33fd91b7afd6aa11c030f93e5f"
         }
       ]
     },
@@ -270,7 +270,7 @@
         {
           "path": "packages/alien-signals/audit/adapted-types.json",
           "role": "test",
-          "sha256": "41b109668c877b4b5b3d458635a5830446ff9fa6e33fbd5737eb55a8dfc3beda",
+          "sha256": "c8708f71937fe78341b7beffed1854937890e8f21d94f80ea2ec6a0e6e9f587d",
           "cases": [
             {
               "id": "types:alien-signals-adapted",
@@ -282,7 +282,7 @@
         {
           "path": "packages/alien-signals/typetests/upstream-typecheck.test-d.ts",
           "role": "support",
-          "sha256": "6aba5615fdb24329246f8c05421d3b3717e8ca9eca868938f881975f11a75cb9"
+          "sha256": "41f30ce121ad82df54f9b28831ec666ffdf0884851f1e52eb6d3eefadf687ace"
         },
         {
           "path": "packages/alien-signals/typetests/public-api.test-d.ts",
@@ -309,7 +309,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "9cede6604817fa9ed009fc8a1a1850b47df149f0152ff5bdc3b34a28c8ea155e"
+          "sha256": "1d89f0520d3cc2f472c3bcb8e31eea51a9301b33fd91b7afd6aa11c030f93e5f"
         }
       ]
     }

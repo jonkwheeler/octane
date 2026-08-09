@@ -498,3 +498,115 @@ test('rejects record pushes of a no-op in place of the hook setter', function re
 		});
 	}, /bypasses .* hook-surface transition/);
 });
+
+test('rejects dead props.record of the setter paired with a live source record', function rejectsDeadFixtureRecord() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const mutated = fixtureSource.replace(
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(setValue);',
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(props.source);\n\tif (false) props.record(setValue);',
+	);
+	assert.notEqual(mutated, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: mutated,
+			expectedFixtureSha256: fixtureFileFingerprint(mutated),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
+test('rejects dead record-callback param pushes paired with a live source push', function rejectsDeadRecordParamPush() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const substituted = adaptedSource.replace(
+		'const record = function recordSetter(\n\t\t\tsetter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(setter);\n\t\t};',
+		'const record = function recordSetter(\n\t\t\tsetter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(signal);\n\t\t\tif (false) setters.push(setter);\n\t\t};',
+	);
+	assert.notEqual(substituted, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: substituted,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
+test('rejects dead case clicks paired with live direct source writes', function rejectsDeadCaseClickPadding() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const padded = adaptedSource.replace(
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tresult.click('#set');\n\t\texpect(countSignal()).toBe(10);\n\t\tresult.click('#inc');\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tif (false) result.click('#set');\n\t\tif (false) result.click('#inc');\n\t\tcountSignal(10);\n\t\texpect(countSignal()).toBe(10);\n\t\tcountSignal(15);\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+	);
+	assert.notEqual(padded, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: padded,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
+test('rejects post-return setter padding in authenticated handlers', function rejectsPostReturnSetterPadding() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const padded = fixtureSource.replace(
+		'onClick={() => {\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t}}',
+		'onClick={() => {\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t\treturn;\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t}}',
+	);
+	assert.notEqual(padded, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: padded,
+			expectedFixtureSha256: fixtureFileFingerprint(padded),
+		});
+	}, /bypasses .* hook-surface transition/);
+});

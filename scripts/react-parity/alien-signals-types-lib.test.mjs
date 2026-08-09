@@ -140,6 +140,20 @@ test('rejects an unauthorized non-assertion structural change', async function r
 	}, /change outside the permitted transformations/);
 });
 
+test('rejects removing an accepted upstream typecheck API call', async function rejectsRemovedAcceptedCall(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.adaptedRoot, 'upstream-typecheck.test-d.ts');
+	const source = await readFile(file, 'utf8');
+	assert.match(source, /useSignalValue\(countSignal\)/, 'fixture must contain an accepted call');
+	await writeFile(file, source.replace(/\n\tuseSignalValue\(countSignal\);/, ''));
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /accepted API call inventory differs/);
+});
+
 test('rejects inventoried probes missing from the pristine compiler program', async function rejectsProbeOutsideProgram(t) {
 	const value = await fixture();
 	t.after(function cleanup() {

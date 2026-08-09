@@ -70,6 +70,19 @@ function listProbeFiles(root) {
 		.sort();
 }
 
+const PUBLIC_API_CALLEES = new Set([
+	'createSignal',
+	'createComputed',
+	'createEffect',
+	'createSignalScope',
+	'useSignal',
+	'useSignalValue',
+	'useSetSignal',
+	'useSignalEffect',
+	'useSignalScope',
+	'useComputed',
+]);
+
 export function assertionGroups(source, fileName) {
 	const sourceFile = ts.createSourceFile(
 		fileName,
@@ -100,6 +113,44 @@ export function assertionGroups(source, fileName) {
 	}
 	visit(sourceFile);
 	return groups;
+}
+
+/**
+ * Unique public-API call sites that must typecheck (not covered by @ts-expect-error).
+ * Pins the positive type surface of the upstream typecheck suite one-for-one.
+ */
+export function acceptedApiCalls(source, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const printer = ts.createPrinter({ removeComments: true });
+	const expectErrorLines = new Set();
+	for (const match of source.matchAll(/\/\/\s*@ts-expect-error[^\n]*\n/g)) {
+		const nextLine = source.slice(0, match.index + match[0].length).split('\n').length;
+		expectErrorLines.add(nextLine);
+	}
+	const calls = new Set();
+	function visit(node) {
+		if (
+			ts.isCallExpression(node) &&
+			ts.isIdentifier(node.expression) &&
+			PUBLIC_API_CALLEES.has(node.expression.text)
+		) {
+			const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+			if (!expectErrorLines.has(line)) {
+				calls.add(
+					printer.printNode(ts.EmitHint.Unspecified, node, sourceFile).replace(/\s+/g, ' ').trim(),
+				);
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(sourceFile);
+	return [...calls].sort();
 }
 
 function normalizeSpecifier(specifier) {
@@ -213,6 +264,16 @@ function inventoryTypecheckPairs(root, config) {
 				`${entry.adapted}: assertion groups differ between pristine and adapted type suites`,
 			);
 		}
+		const upstreamAccepted = acceptedApiCalls(upstreamSource, entry.upstream);
+		const adaptedAccepted = acceptedApiCalls(adaptedSource, entry.adapted);
+		if (upstreamAccepted.length === 0) {
+			throw new Error(`${entry.upstream}: upstream typecheck file has no accepted API calls`);
+		}
+		if (JSON.stringify(upstreamAccepted) !== JSON.stringify(adaptedAccepted)) {
+			throw new Error(
+				`${entry.adapted}: accepted API call inventory differs between pristine and adapted type suites`,
+			);
+		}
 		if (entry.compare === 'structural') {
 			if (
 				structuralSource(upstreamSource, entry.upstream) !==
@@ -227,12 +288,14 @@ function inventoryTypecheckPairs(root, config) {
 			path: entry.upstream,
 			sha256: sha256(upstreamSource),
 			assertionGroups: upstreamGroups.map(sha256),
+			acceptedApiCalls: upstreamAccepted.map(sha256),
 			origin: 'upstream-typecheck',
 		});
 		adapted.push({
 			path: entry.adapted,
 			sha256: sha256(adaptedSource),
 			assertionGroups: adaptedGroups.map(sha256),
+			acceptedApiCalls: adaptedAccepted.map(sha256),
 			origin: 'upstream-typecheck',
 		});
 	}

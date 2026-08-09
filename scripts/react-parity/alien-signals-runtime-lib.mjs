@@ -366,6 +366,171 @@ function functionLikeOf(node) {
 	return null;
 }
 
+function isTrueLiteral(node) {
+	return node !== undefined && node.kind === ts.SyntaxKind.TrueKeyword;
+}
+
+function isFalseLiteral(node) {
+	return node !== undefined && node.kind === ts.SyntaxKind.FalseKeyword;
+}
+
+function isUnconditionalTerminator(statement) {
+	return ts.isReturnStatement(statement) || ts.isThrowStatement(statement);
+}
+
+/**
+ * Visit nodes on the always-executed entry path of `root`.
+ *
+ * Skips dead `if (false)` / `false &&` arms, statements after `return`/`throw`,
+ * and nested function bodies that are not call arguments (or IIFEs). Callbacks
+ * passed to calls on the executed path (e.g. `Promise.then(fn)`) are entered.
+ * A nested function's `return`/`throw` only stops that function body.
+ */
+function forEachAlwaysExecutedNode(root, visitNode) {
+	function visitFunctionBody(fn) {
+		if (fn.body === undefined) return;
+		if (ts.isBlock(fn.body)) {
+			visitStatementList(fn.body.statements);
+			return;
+		}
+		visitExpression(fn.body, 'value');
+	}
+
+	function visitExpression(node, context) {
+		if (node === undefined || node === null) return;
+		visitNode(node);
+
+		const asFunction = functionLikeOf(node);
+		if (asFunction !== null) {
+			if (context === 'call-arg' || context === 'iife') {
+				visitFunctionBody(asFunction);
+			}
+			return;
+		}
+
+		if (ts.isParenthesizedExpression(node)) {
+			visitExpression(node.expression, context);
+			return;
+		}
+
+		if (ts.isBinaryExpression(node)) {
+			if (node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
+				visitExpression(node.left, 'value');
+				if (!isFalseLiteral(node.left)) visitExpression(node.right, 'value');
+				return;
+			}
+			if (node.operatorToken.kind === ts.SyntaxKind.BarBarToken) {
+				visitExpression(node.left, 'value');
+				if (!isTrueLiteral(node.left)) visitExpression(node.right, 'value');
+				return;
+			}
+		}
+
+		if (ts.isConditionalExpression(node)) {
+			visitExpression(node.condition, 'value');
+			if (isTrueLiteral(node.condition)) {
+				visitExpression(node.whenTrue, 'value');
+			} else if (isFalseLiteral(node.condition)) {
+				visitExpression(node.whenFalse, 'value');
+			}
+			return;
+		}
+
+		const call = callExpressionOf(node);
+		if (call !== null) {
+			const calleeFn = functionLikeOf(call.expression);
+			if (calleeFn !== null) {
+				visitExpression(call.expression, 'iife');
+			} else {
+				visitExpression(call.expression, 'value');
+			}
+			for (const argument of call.arguments) {
+				visitExpression(argument, 'call-arg');
+			}
+			return;
+		}
+
+		ts.forEachChild(node, function visitChild(child) {
+			if (functionLikeOf(child) !== null) return;
+			if (ts.isStatement(child) && !ts.isBlock(child)) return;
+			visitExpression(child, 'value');
+		});
+	}
+
+	function visitStatement(statement) {
+		visitNode(statement);
+
+		if (ts.isBlock(statement)) {
+			return visitStatementList(statement.statements);
+		}
+
+		if (ts.isIfStatement(statement)) {
+			visitExpression(statement.expression, 'value');
+			if (isTrueLiteral(statement.expression)) {
+				return visitStatement(statement.thenStatement);
+			}
+			if (isFalseLiteral(statement.expression)) {
+				if (statement.elseStatement !== undefined) return visitStatement(statement.elseStatement);
+			}
+			return false;
+		}
+
+		if (ts.isExpressionStatement(statement)) {
+			visitExpression(statement.expression, 'value');
+			return false;
+		}
+
+		if (ts.isReturnStatement(statement)) {
+			if (statement.expression !== undefined) visitExpression(statement.expression, 'value');
+			return true;
+		}
+
+		if (ts.isThrowStatement(statement)) {
+			visitExpression(statement.expression, 'value');
+			return true;
+		}
+
+		if (ts.isVariableStatement(statement)) {
+			for (const declaration of statement.declarationList.declarations) {
+				visitNode(declaration);
+				if (declaration.initializer !== undefined) {
+					visitExpression(declaration.initializer, 'value');
+				}
+			}
+			return false;
+		}
+
+		ts.forEachChild(statement, function visitChild(child) {
+			if (ts.isStatement(child)) {
+				visitStatement(child);
+				return;
+			}
+			if (functionLikeOf(child) !== null) return;
+			visitExpression(child, 'value');
+		});
+		return isUnconditionalTerminator(statement);
+	}
+
+	function visitStatementList(statements) {
+		for (const statement of statements) {
+			if (visitStatement(statement)) return true;
+		}
+		return false;
+	}
+
+	visitNode(root);
+	const rootFn = functionLikeOf(root);
+	if (rootFn !== null) {
+		visitFunctionBody(rootFn);
+		return;
+	}
+	if (ts.isBlock(root)) {
+		visitStatementList(root.statements);
+		return;
+	}
+	visitExpression(root, 'value');
+}
+
 function firstParameterName(fn) {
 	if (fn === null || fn.parameters.length === 0) return null;
 	const name = fn.parameters[0].name;
@@ -532,6 +697,8 @@ function collectAuthenticatedHandlerSetterInvocations(expression, names, sourceF
 	}
 	for (const statement of fn.body.statements) {
 		visitAlwaysExecutedStatement(statement);
+		// Post-return / post-throw padding must not authenticate extra writes.
+		if (isUnconditionalTerminator(statement)) break;
 	}
 	return { shapes: hasDirectSourceWrite ? [] : shapes, hasDirectSourceWrite };
 }
@@ -604,7 +771,7 @@ export function extractFixturesThatRecordHookSetters(fixtureSource) {
 		const setters = collectUseSignalSetterNames(statement.body);
 		if (setters.size === 0) continue;
 		let recordsHookSetter = false;
-		function visit(node) {
+		forEachAlwaysExecutedNode(statement.body, function visitExecuted(node) {
 			if (recordsHookSetter) return;
 			const call = callExpressionOf(node);
 			if (
@@ -619,11 +786,8 @@ export function extractFixturesThatRecordHookSetters(fixtureSource) {
 				setters.has(call.arguments[0].text)
 			) {
 				recordsHookSetter = true;
-				return;
 			}
-			ts.forEachChild(node, visit);
-		}
-		visit(statement.body);
+		});
 		if (recordsHookSetter) names.add(statement.name.text);
 	}
 	return names;
@@ -751,26 +915,35 @@ function collectAuthenticRecordedSetterArrays(caseBody, recordSetterFixtures) {
 
 	function markPushesOfParam(fn, paramName) {
 		if (fn.body === undefined) return;
-		function visitFn(node) {
+		const candidateArrays = new Set();
+		const taintedArrays = new Set();
+		forEachAlwaysExecutedNode(fn, function visitExecuted(node) {
 			const call = callExpressionOf(node);
 			if (
-				call !== null &&
-				ts.isPropertyAccessExpression(call.expression) &&
-				ts.isIdentifier(call.expression.expression) &&
-				ts.isIdentifier(call.expression.name) &&
-				call.expression.name.text === 'push' &&
-				call.arguments.length > 0 &&
-				ts.isIdentifier(call.arguments[0]) &&
-				call.arguments[0].text === paramName
+				call === null ||
+				!ts.isPropertyAccessExpression(call.expression) ||
+				!ts.isIdentifier(call.expression.expression) ||
+				!ts.isIdentifier(call.expression.name) ||
+				call.expression.name.text !== 'push' ||
+				call.arguments.length === 0
 			) {
-				arrays.add(call.expression.expression.text);
+				return;
 			}
-			ts.forEachChild(node, visitFn);
+			const arrayName = call.expression.expression.text;
+			const argument = call.arguments[0];
+			if (ts.isIdentifier(argument) && argument.text === paramName) {
+				candidateArrays.add(arrayName);
+				return;
+			}
+			// A live competing push (source signal, no-op, etc.) disqualifies the array.
+			taintedArrays.add(arrayName);
+		});
+		for (const arrayName of candidateArrays) {
+			if (!taintedArrays.has(arrayName)) arrays.add(arrayName);
 		}
-		visitFn(fn.body);
 	}
 
-	function visit(node) {
+	forEachAlwaysExecutedNode(caseBody, function visitExecuted(node) {
 		const call = callExpressionOf(node);
 		if (
 			call !== null &&
@@ -788,9 +961,7 @@ function collectAuthenticRecordedSetterArrays(caseBody, recordSetterFixtures) {
 				if (fn !== null && paramName !== null) markPushesOfParam(fn, paramName);
 			}
 		}
-		ts.forEachChild(node, visit);
-	}
-	visit(caseBody);
+	});
 	return arrays;
 }
 
@@ -879,7 +1050,7 @@ export function extractCaseTransitionStructure(
 			const hookSurfaceShapes = [];
 			const hookPathShapes = [];
 
-			function visitBody(bodyNode) {
+			function observeExecutedNode(bodyNode) {
 				if (ts.isVariableDeclaration(bodyNode) && bodyNode.initializer && bodyNode.name) {
 					if (
 						ts.isCallExpression(bodyNode.initializer) &&
@@ -907,50 +1078,48 @@ export function extractCaseTransitionStructure(
 				}
 
 				const call = callExpressionOf(bodyNode);
-				if (call !== null) {
-					const expression = call.expression;
+				if (call === null) return;
+				const expression = call.expression;
+				if (
+					ts.isPropertyAccessExpression(expression) &&
+					ts.isIdentifier(expression.expression) &&
+					ts.isIdentifier(expression.name) &&
+					expression.name.text === 'click'
+				) {
+					const fixtureName = mountBindings.get(expression.expression.text);
+					const selectorId = clickSelectorId(call);
 					if (
-						ts.isPropertyAccessExpression(expression) &&
-						ts.isIdentifier(expression.expression) &&
-						ts.isIdentifier(expression.name) &&
-						expression.name.text === 'click'
+						fixtureName !== undefined &&
+						selectorId !== null &&
+						fixtureHookSetterClicks !== null
 					) {
-						const fixtureName = mountBindings.get(expression.expression.text);
-						const selectorId = clickSelectorId(call);
-						if (
-							fixtureName !== undefined &&
-							selectorId !== null &&
-							fixtureHookSetterClicks !== null
-						) {
-							const authenticated = fixtureHookSetterClicks.get(fixtureName);
-							const clickMeta =
-								authenticated !== undefined ? authenticated.get(selectorId) : undefined;
-							if (clickMeta !== undefined) {
-								fixtureClicks += clickMeta.writes;
-								for (const shape of clickMeta.shapes) hookPathShapes.push(shape);
-							}
+						const authenticated = fixtureHookSetterClicks.get(fixtureName);
+						const clickMeta =
+							authenticated !== undefined ? authenticated.get(selectorId) : undefined;
+						if (clickMeta !== undefined) {
+							fixtureClicks += clickMeta.writes;
+							for (const shape of clickMeta.shapes) hookPathShapes.push(shape);
 						}
-					} else if (isResultCurrentAccess(expression) && call.arguments.length > 0) {
-						hookSurfaceWrites += 1;
-						hookSurfaceShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
-					} else {
-						const root = calleeRootIdentifier(expression);
-						if (root !== null && call.arguments.length > 0) {
-							if (hookAliases.has(root)) {
-								hookSurfaceWrites += 1;
-								hookSurfaceShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
-							} else if (signalBindings.has(root)) {
-								directSourceWrites += 1;
-							} else if (recordedSetterAliases.has(root)) {
-								recordedSetterWrites += 1;
-								hookPathShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
-							}
+					}
+				} else if (isResultCurrentAccess(expression) && call.arguments.length > 0) {
+					hookSurfaceWrites += 1;
+					hookSurfaceShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
+				} else {
+					const root = calleeRootIdentifier(expression);
+					if (root !== null && call.arguments.length > 0) {
+						if (hookAliases.has(root)) {
+							hookSurfaceWrites += 1;
+							hookSurfaceShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
+						} else if (signalBindings.has(root)) {
+							directSourceWrites += 1;
+						} else if (recordedSetterAliases.has(root)) {
+							recordedSetterWrites += 1;
+							hookPathShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
 						}
 					}
 				}
-				ts.forEachChild(bodyNode, visitBody);
 			}
-			visitBody(titled.body);
+			forEachAlwaysExecutedNode(titled.body, observeExecutedNode);
 			cases.push({
 				title: titled.title,
 				hookSurfaceWrites,
