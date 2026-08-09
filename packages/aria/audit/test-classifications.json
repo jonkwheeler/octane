@@ -119,6 +119,11 @@
       "reason": "Exercises Octane-specific compiler, DOM, hydration, focus, scheduling, or component integration and is not counted as React parity."
     },
     {
+      "path": "packages/aria/tests/package-boundary.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Guards the published Aria package boundary and production-bundle side effects; it is not used as React-parity evidence."
+    },
+    {
       "path": "packages/aria/tests/press.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Exercises Octane-specific compiler, DOM, hydration, focus, scheduling, or component integration and is not counted as React parity."

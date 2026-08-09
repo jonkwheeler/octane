@@ -13,6 +13,8 @@ import {
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
+import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
+import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -42,6 +44,16 @@ try {
 	verifyHookFormTypes(REPO);
 } catch (error) {
 	errors.push(`react-hook-form type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyLivestoreTypes(REPO);
+} catch (error) {
+	errors.push(`livestore type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyLivestoreTestClassifications(REPO);
+} catch (error) {
+	errors.push(`livestore test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
@@ -120,7 +132,12 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`)))
+		// Livestore keeps a dedicated classifier (different dispositions); other
+		// ports share binding-classifications-lib via the manifest loop.
+		if (
+			binding !== 'livestore' &&
+			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
+		)
 			verifyPortTestClassifications(REPO, binding);
 		await verifyManifestFiles(manifest, REPO);
 		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
