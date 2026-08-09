@@ -859,12 +859,7 @@
     ["packages/react/src/slider/value/SliderValue.test.tsx", "runtime-test", "not-adapted"],
     ["packages/react/src/switch/root/SwitchRoot.test.tsx", "runtime-test", "not-adapted"],
     ["packages/react/src/switch/thumb/SwitchThumb.test.tsx", "runtime-test", "not-adapted"],
-    [
-      "packages/react/src/tabs/indicator/TabsIndicator.test.tsx",
-      "runtime-test",
-      "partially-adapted",
-      "packages/base-ui/tests/upstream/tabs.test.ts"
-    ],
+    ["packages/react/src/tabs/indicator/TabsIndicator.test.tsx", "runtime-test", "not-adapted"],
     [
       "packages/react/src/tabs/list/TabsList.test.tsx",
       "runtime-test",
@@ -1028,6 +1023,6 @@
     "runtimeTests": 273,
     "typeTests": 35,
     "supportArtifacts": 40,
-    "partiallyAdaptedArtifacts": 11
+    "partiallyAdaptedArtifacts": 10
   }
 }

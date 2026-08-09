@@ -34,16 +34,9 @@ const ADAPTED_ARTIFACTS = new Map([
 		'packages/react/src/tabs/list/TabsList.test.tsx',
 		'packages/base-ui/tests/upstream/tabs.test.ts',
 	],
-	[
-		'packages/react/src/tabs/tab/TabsTab.test.tsx',
-		'packages/base-ui/tests/upstream/tabs.test.ts',
-	],
+	['packages/react/src/tabs/tab/TabsTab.test.tsx', 'packages/base-ui/tests/upstream/tabs.test.ts'],
 	[
 		'packages/react/src/tabs/panel/TabsPanel.test.tsx',
-		'packages/base-ui/tests/upstream/tabs.test.ts',
-	],
-	[
-		'packages/react/src/tabs/indicator/TabsIndicator.test.tsx',
 		'packages/base-ui/tests/upstream/tabs.test.ts',
 	],
 ]);

@@ -38,7 +38,7 @@ Navigation Menu, OTP Field, Scroll Area, Select, and Toolbar. Surface presence i
 behavioral parity claim.
 
 The canonical package has 273 runtime test files, 35 type-test files, and 40 support
-artifacts. Eleven upstream Accordion, Collapsible, and Tabs files have selected cases adapted locally; the
+artifacts. Ten upstream Accordion, Collapsible, and Tabs files have selected cases adapted locally; the
 remaining suite is vendored but not adapted in full, so the binding remains
 `recorded-unverified`. The published npm package contains no canonical test files; that
 registry boundary is not evidence that the repository suite is absent.
