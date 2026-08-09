@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/zustand/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/zustand/src"],
+      "include": ["\\.ts$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/zustand/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/zustand/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -50,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b15d435c782fc2341f66e1969fa10aee4751e227f793128b7857053f4cf5550d"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -181,9 +171,7 @@
   "divergences": [
     {
       "id": "zustand-unstable-selectors",
-      "caseIds": [
-        "adapted:zustand-unstable-selectors"
-      ],
+      "caseIds": ["adapted:zustand-unstable-selectors"],
       "upstreamResult": "A selector returning a fresh reference on every read enters React useSyncExternalStore's warning/update loop.",
       "octaneResult": "Octane settles the unstable selection after a bounded number of renders.",
       "rationale": "Octane's external-store scheduling prevents an unbounded render loop while preserving the latest value.",
