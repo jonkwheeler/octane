@@ -56,6 +56,7 @@ export default defineConfig({
 		// subpaths against the same map re-read from disk. No restart needed.
 		exclude: [
 			'octane',
+			'@octanejs/animejs',
 			'@octanejs/base-ui',
 			'@octanejs/drei',
 			'@octanejs/three',

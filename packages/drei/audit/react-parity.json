@@ -44,7 +44,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "469220e8697de9430a72891ba87d8bb224c4faa8eef1cb07fe43e943f0a7f962"
+      "lockfileSha256": "f65f2317208855460534da1505588164ae2e3480613261263453d275b20f3747"
     }
   },
   "lanes": [
@@ -84,7 +84,7 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "43134d441350880596c79370b03bad7befc2c671b7d101e4bd624c4de6bc278d"
+          "sha256": "b34830b8bbd2cb6c535ffff7274ac18fcc006c29f33875817bd42cb821e043aa"
         }
       ]
     },
