@@ -1467,7 +1467,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Outside testExecution until provenance is verified; otherwise ordinary
+				// shards omit this project while react-parity:check only validates it.
 				test: {
 					name: 'rainbowkit-differential',
 					globalSetup: ['packages/rainbowkit/tests/differential/_setup.ts'],
