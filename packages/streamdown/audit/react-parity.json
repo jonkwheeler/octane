@@ -6,13 +6,13 @@
     "version": "streamdown@2.5.0 + official pinned plugins",
     "commit": "e5deed330aa4231751a106445d93d62e4716a22f",
     "sourceRoot": "packages",
-    "testRoot": "packages/streamdown/tests",
+    "testRoot": "packages/streamdown/__tests__",
     "license": "Apache-2.0",
     "integrity": "sha256:8dc9e1f04cda91beab7818cc11fd5cee8c5f316b84934686c892c8cfb9b808ac",
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
+    "runtime": "present",
     "types": "absent"
   },
   "adaptedRoots": {
@@ -61,7 +61,7 @@
       "environment": "workspace-node",
       "project": "streamdown-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM.",
+      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM. Upstream repository suite artifacts remain present and explicitly excluded pending pristine / one-for-one adapted lanes.",
       "files": [
         {
           "path": "packages/streamdown/tests/differential/parity.test.ts",
@@ -128,7 +128,7 @@
         {
           "path": "packages/streamdown/audit/test-classifications.json",
           "role": "support",
-          "sha256": "f646a6899b186b5712cf6ea515a7d2603b856a993666a79cf5759eb15ed76881"
+          "sha256": "78924782daa2140eb820d33ce032d2a6a61720bb0538d938268eaab0db5794e2"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -138,7 +138,12 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ac863a4a0b84b3617e99c25eea23d048733efe45caa3c02aa28846219bc097e6"
+          "sha256": "479ae1481b9a1e9572c44b74e437c6b1033d69e6e6cc4e4b75629f95b9276f38"
+        },
+        {
+          "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
+          "role": "support",
+          "sha256": "b1a41e384eb34659ec68c76a095553c0dadc8d3b104235d15767674f078f9e41"
         }
       ]
     },
@@ -148,7 +153,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "streamdown",
-      "notes": "Runs exact Octane cases authenticating native custom-component events and consolidated plugin subpaths.",
+      "notes": "Runs exact Octane cases authenticating native custom-component events and consolidated plugin subpaths. Upstream repository suite artifacts are inventoried and explicitly excluded in audit/upstream-suite-artifacts.json until pristine / one-for-one adapted lanes are added.",
       "files": [
         {
           "path": "packages/streamdown/tests/divergences.test.ts",
@@ -178,9 +183,9 @@
           "sha256": "e412363d703d4b5771d72e0bf0f00c791c773c7c838385c2b7e0789891343903"
         },
         {
-          "path": "packages/streamdown/tests/plugins.test.ts",
+          "path": "packages/streamdown/tests/parity-plugins.test.ts",
           "role": "test",
-          "sha256": "eab360a8d86bb7f23ca94c4ee45a1fe03e3ee1e247fb255cb260dfeaecc71f18",
+          "sha256": "4bb3ed375d2069fe65b77834e4c741dc4479505d5d6d9f73601dc859a8ef8687",
           "cases": [
             {
               "id": "adapted:streamdown-consolidated-plugins",
@@ -197,12 +202,17 @@
         {
           "path": "packages/streamdown/audit/test-classifications.json",
           "role": "support",
-          "sha256": "f646a6899b186b5712cf6ea515a7d2603b856a993666a79cf5759eb15ed76881"
+          "sha256": "78924782daa2140eb820d33ce032d2a6a61720bb0538d938268eaab0db5794e2"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ac863a4a0b84b3617e99c25eea23d048733efe45caa3c02aa28846219bc097e6"
+          "sha256": "479ae1481b9a1e9572c44b74e437c6b1033d69e6e6cc4e4b75629f95b9276f38"
+        },
+        {
+          "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
+          "role": "support",
+          "sha256": "b1a41e384eb34659ec68c76a095553c0dadc8d3b104235d15767674f078f9e41"
         }
       ]
     }

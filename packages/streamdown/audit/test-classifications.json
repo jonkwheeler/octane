@@ -33,10 +33,15 @@
       "reason": "Checks Octane Mermaid and image state races; it is not a React oracle."
     },
     {
-      "path": "packages/streamdown/tests/plugins.test.ts",
+      "path": "packages/streamdown/tests/parity-plugins.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "streamdown-consolidated-plugins",
       "reason": "Authenticates the four official plugin surfaces consolidated under Octane package subpaths."
+    },
+    {
+      "path": "packages/streamdown/tests/plugins.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane plugin runtime contracts beyond the consolidated-subpath divergence case; it is not a React oracle."
     },
     {
       "path": "packages/streamdown/tests/public-surface.test.ts",

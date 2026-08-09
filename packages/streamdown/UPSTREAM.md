@@ -15,9 +15,24 @@ The framework-neutral Markdown, HAST, remark/rehype, code-highlighting,
 Mermaid, math, and CJK logic is retained from upstream. React-owned component,
 hook, portal, element, and JSX-runtime boundaries are ported to Octane.
 
-The published npm artifacts do not include the upstream test suite, so this
-repository does not claim pristine-upstream test execution. The required
-differential lane instead executes eight exact same-fixture scenarios against
-the pinned published React packages. A separate adapted lane authenticates the
-native-event and consolidated-plugin-package divergences. Every other local
-test is classified as an Octane framework contract.
+## Upstream test suite
+
+The pinned repository commit contains an executable suite under
+`packages/streamdown/__tests__`, plus suites for each official plugin package
+and `remend`. Published npm tarballs omit those tests; repository presence is
+authoritative, so `upstreamSuites.runtime` is `present`.
+
+Every upstream `__tests__` artifact at the pin is inventoried in
+[`audit/upstream-suite-artifacts.json`](./audit/upstream-suite-artifacts.json)
+with an explicit per-artifact `excluded` disposition. This bounded harness does
+not yet run pristine or one-for-one adapted lanes for that suite. Instead it:
+
+- runs eight exact same-fixture differential cases against the pinned published
+  React packages;
+- runs adapted cases for native custom-component events and consolidated plugin
+  subpaths.
+
+A later full-suite port should promote inventoried artifacts into pristine /
+adapted lanes rather than re-inferring absence from the npm tarball.
+
+Every other local test is classified as an Octane framework contract.

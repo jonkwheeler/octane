@@ -2841,7 +2841,13 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/streamdown/tests/divergences.test.ts',
+						'packages/streamdown/tests/parity-plugins.test.ts',
+					],
+				},
 				test: {
 					name: 'streamdown',
 					include: [
@@ -2874,7 +2880,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'streamdown-ssr',
 					include: ['packages/streamdown/tests/ssr/**/*.test.ts'],
