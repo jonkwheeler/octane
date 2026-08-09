@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -161,9 +161,9 @@
       "notes": "Authenticates the documented legacy-subpath omission and Octane plain-function component model.",
       "files": [
         {
-          "path": "packages/tanstack-table/tests/conformance/parity.test.ts",
+          "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
           "role": "test",
-          "sha256": "9d4e0e0a93ee47d493e161852bbe75d9158f5870252ba8339c0b020e7129ff0f",
+          "sha256": "8be9996ca69053a3675814698a69e8413f19598f679083e34578cd3cbcdc2327",
           "cases": [
             {
               "id": "adapted:tanstack-table-legacy-api",
@@ -173,9 +173,9 @@
           ]
         },
         {
-          "path": "packages/tanstack-table/tests/conformance/flex-render.test.ts",
+          "path": "packages/tanstack-table/tests/conformance/flex-render-component-shapes.test.ts",
           "role": "test",
-          "sha256": "e15b689f82bb7217305580e758bdb9a0593c6856e5c5e441b216cbb12df12f37",
+          "sha256": "dd83af7e21efd5e337c43741663d601ece87ffec30b053e840a43be725e9d188",
           "cases": [
             {
               "id": "adapted:tanstack-table-component-shapes",

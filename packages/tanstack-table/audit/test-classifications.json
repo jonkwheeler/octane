@@ -17,26 +17,36 @@
       "reason": "Checks additional adapted feature behavior; it is not a React runtime oracle."
     },
     {
-      "path": "packages/tanstack-table/tests/conformance/flex-render.test.ts",
+      "path": "packages/tanstack-table/tests/conformance/fixture-compiler.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
+    },
+    {
+      "path": "packages/tanstack-table/tests/conformance/flex-render-component-shapes.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tanstack-table-component-shapes",
       "reason": "Authenticates Octane's plain-function component model in flexRender."
     },
     {
-      "path": "packages/tanstack-table/tests/conformance/parity.test.ts",
+      "path": "packages/tanstack-table/tests/conformance/flex-render.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks adapted flexRender renderer shapes through Octane; it is not same-scenario React execution."
+    },
+    {
+      "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tanstack-table-legacy-api",
       "reason": "Authenticates omission of the React-only legacy migration subpath."
     },
     {
+      "path": "packages/tanstack-table/tests/conformance/parity.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks adapted export surface and shared table-core identity; it is not same-scenario React execution."
+    },
+    {
       "path": "packages/tanstack-table/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Runs five exact table scenarios against @tanstack/react-table@9.0.0-beta.58."
-    },
-    {
-      "path": "packages/tanstack-table/tests/differential/setup.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
     }
   ]
 }
