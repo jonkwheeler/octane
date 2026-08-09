@@ -108,6 +108,29 @@ describe('React Spring engine', () => {
 		expect(controller.get()).toEqual({ x: 10 });
 	});
 
+	// Per packages/core/src/Controller.ts: async next + reserved lifecycle props
+	it('treats async next steps with lifecycle props as controller updates', async () => {
+		raf.frameLoop = 'demand';
+		const controller = new Controller({ from: { x: 0 } });
+		let rested = false;
+		const resultPromise = controller.start({
+			immediate: true,
+			to: async (next) => {
+				await next({
+					x: 10,
+					onRest: function () {
+						rested = true;
+					},
+				});
+			},
+		});
+		advanceUntilIdle();
+		expect(await resultPromise).toMatchObject({ finished: true });
+		expect(controller.get()).toEqual({ x: 10 });
+		expect(Object.keys(controller.springs)).toEqual(['x']);
+		expect(rested).toBe(true);
+	});
+
 	// Per packages/core/src/SpringValue.test.ts:1
 	it('does not reapply from on a same-goal restart without reset', async () => {
 		raf.frameLoop = 'demand';

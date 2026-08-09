@@ -175,6 +175,13 @@ const RESERVED = new Set([
 	'keys',
 ]);
 
+export function hasReservedProps(props: object): boolean {
+	for (const key of Object.keys(props)) {
+		if (RESERVED.has(key)) return true;
+	}
+	return false;
+}
+
 export function inferTo<T extends object>(props: T): T & { to?: object } {
 	const to: Record<string, unknown> = {};
 	const rest: Record<string, unknown> = {};

@@ -1,5 +1,5 @@
 // React-free behavioral port of react-spring v10.1.2 packages/core/src/Controller.ts.
-import { inferTo } from '../upstream-compat';
+import { hasReservedProps, inferTo } from '../upstream-compat';
 import {
 	type AnimationResult,
 	getCancelledResult,
@@ -194,16 +194,7 @@ function isControllerUpdate<State extends StateRecord>(
 ): value is ControllerUpdate<State> {
 	// Check reserved keys on the raw object. Do not run inferTo here: shorthand
 	// steps like `{ x: 1 }` must stay on the `to: next` path so the parent async
-	// `to` function is replaced rather than left in place.
-	return (
-		'to' in value ||
-		'from' in value ||
-		'config' in value ||
-		'immediate' in value ||
-		'delay' in value ||
-		'cancel' in value ||
-		'pause' in value ||
-		'reset' in value ||
-		'loop' in value
-	);
+	// `to` function is replaced rather than left in place. Lifecycle keys such as
+	// onRest/onStart must still count as updates so they are not animated.
+	return hasReservedProps(value as object);
 }

@@ -146,6 +146,11 @@
       "fullName": "React Spring engine settles a loop without a usable from value instead of recursing"
     },
     {
+      "id": "runtime:3fc7cc771b9abccb",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine treats async next steps with lifecycle props as controller updates"
+    },
+    {
       "id": "runtime:6f732ede512cbf91",
       "file": "packages/react-spring/tests/conformance/frame-loop.test.ts",
       "fullName": "upstream frame loop parity advances animations in ascending priority and retains active work"
