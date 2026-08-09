@@ -132,11 +132,15 @@ for (const relativeFile of CLAIM_FILES) {
 			errors.push(`${relativeFile} contains a misleading React-port count claim (${pattern}).`);
 	}
 }
+// Bindings that opt into the shared hook-form disposition schema fail closed here.
+// livestore uses its own verifier; bindings without classifications stay optional.
+const PORT_TEST_CLASSIFICATION_BINDINGS = new Set(['hook-form', 'visx']);
 for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		verifyPortTestClassifications(REPO, binding);
+		if (PORT_TEST_CLASSIFICATION_BINDINGS.has(binding))
+			verifyPortTestClassifications(REPO, binding);
 		await verifyManifestFiles(manifest, REPO);
 		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
 		for (const lane of manifest.lanes) {
