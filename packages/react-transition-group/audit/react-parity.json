@@ -208,7 +208,7 @@
         {
           "path": "packages/react-transition-group/audit/pristine-types.json",
           "role": "test",
-          "sha256": "af892d7ef24da380e72158611d68540575d5a12ce4c020f95e39b5b955c51207",
+          "sha256": "6adbb89acbd063ac217accfe8b051e81ba1992485f66d9bca31656cf750b0d57",
           "cases": [
             {
               "id": "types:react-transition-group-pristine",
@@ -220,7 +220,7 @@
         {
           "path": "packages/react-transition-group/audit/type-probes/public-api.test-d.ts",
           "role": "support",
-          "sha256": "74f856891c653c20fa4069df2c9309f5f068df5950074642dbb802be86027edf"
+          "sha256": "b48989dcbc49bb81a7a39a0de8e92b55f1a69fa40ed1ce8af9be0ac24338094e"
         },
         {
           "path": "packages/react-transition-group/audit/type-probes/tsconfig.pristine.json",
@@ -230,37 +230,12 @@
         {
           "path": "packages/react-transition-group/audit/type-parity.json",
           "role": "support",
-          "sha256": "c6bd66adb32a3671144640c01190fa162c3497ed039480d6233a448acd16e35f"
+          "sha256": "1ac188e9529ac450c5d45ae606b881195b124aae1f7813c3a886ea190bbf2493"
         },
         {
           "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
           "role": "support",
-          "sha256": "8f202c5c675f58635eec435123da84f5bded18d18a92d860e4271afcf1d9c1c7"
-        },
-        {
-          "path": "scripts/react-parity/react-transition-group-types-lib.test.mjs",
-          "role": "support",
-          "sha256": "2ad91fcb83649a6c5520901330b50746eb9c3782327e97f5fd849c7a341c4387"
-        },
-        {
-          "path": "scripts/react-parity/react-transition-group-types.mjs",
-          "role": "support",
-          "sha256": "fff5c3d2712884f24a2f78fc96dd56d0099f9ece95800379b592dd0f0ee5ef79"
-        },
-        {
-          "path": "packages/react-transition-group/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "b7ffd8f5ae33e5ef77ae7ce78d15a469c7e800ece203784fddbff21dad3b8517"
-        },
-        {
-          "path": "scripts/react-parity/react-transition-group-classifications-lib.mjs",
-          "role": "support",
-          "sha256": "1cf2f28a179ca037af9ee8182a33ec085ab89b6b5923360d1b70aea01c755d02"
-        },
-        {
-          "path": "scripts/react-parity/react-transition-group-classifications-lib.test.mjs",
-          "role": "support",
-          "sha256": "daf7728d6cfd465f0c2d83716d7742135b4f2d4d74ffd3d1d2a6a8dfe2dce68a"
+          "sha256": "b1c9f1c17d5e2044c440b7ecc8f6cb381d2fe8b4d68c270b11418993f5b58b8b"
         }
       ]
     },
@@ -281,7 +256,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-types.json",
           "role": "test",
-          "sha256": "21c6f742f309c6582802e43cb1c587e6e5d0814e97b59e89c416fdcae60823c7",
+          "sha256": "97b8d8dc037ba31112c584817101a3123d17d4e968ba8454176bc7d57255e656",
           "cases": [
             {
               "id": "types:react-transition-group-adapted",
@@ -293,7 +268,7 @@
         {
           "path": "packages/react-transition-group/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "6c8dfebca28a4abee2a782e330ee07283ceffa96a41d1d98772ba66dc7956bd7"
+          "sha256": "cccde5ff9d74c77b50a53b55f693bfa5a3ecc49cf3b1fd3c6050b4c8ceccae64"
         },
         {
           "path": "packages/react-transition-group/typetests/tsconfig.json",
@@ -303,17 +278,12 @@
         {
           "path": "packages/react-transition-group/audit/type-parity.json",
           "role": "support",
-          "sha256": "c6bd66adb32a3671144640c01190fa162c3497ed039480d6233a448acd16e35f"
+          "sha256": "1ac188e9529ac450c5d45ae606b881195b124aae1f7813c3a886ea190bbf2493"
         },
         {
           "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
           "role": "support",
-          "sha256": "8f202c5c675f58635eec435123da84f5bded18d18a92d860e4271afcf1d9c1c7"
-        },
-        {
-          "path": "scripts/react-parity/react-transition-group-types.mjs",
-          "role": "support",
-          "sha256": "fff5c3d2712884f24a2f78fc96dd56d0099f9ece95800379b592dd0f0ee5ef79"
+          "sha256": "b1c9f1c17d5e2044c440b7ecc8f6cb381d2fe8b4d68c270b11418993f5b58b8b"
         }
       ]
     }

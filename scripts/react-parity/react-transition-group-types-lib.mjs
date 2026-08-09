@@ -81,6 +81,8 @@ function assertionGroups(source, fileName) {
 
 function structuralSource(source, fileName) {
 	let normalized = source
+		.replace(/\bReactNode\b/g, 'OctaneNode')
+		.replace(/from ['"]react['"]/g, "from 'octane'")
 		.replace(/from ['"]react-transition-group(?:\/[^'"]+)?['"]/g, "from 'CANONICAL_RTG'")
 		.replace(/from ['"]\.\.\/src\/(?:types|index)\.ts['"]/g, "from 'CANONICAL_RTG'");
 	normalized = normalized.replace(
