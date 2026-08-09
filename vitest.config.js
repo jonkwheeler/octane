@@ -2877,10 +2877,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/thinking-orbs/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'thinking-orbs',
 					include: ['packages/thinking-orbs/tests/**/*.test.ts'],

@@ -1,0 +1,100 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/Jakubantalik/thinking-orbs.git",
+    "version": "0.2.0",
+    "commit": "8157b726c35712acba57f5d72149c2d33b5f0fd6",
+    "sourceRoot": "src",
+    "testRoot": "src",
+    "license": "MIT",
+    "integrity": "sha256:017ae281d5a6daa5474d37984541722a4a9b8f37da14ff10c01e47e5cfdaf8bb",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": [
+        "packages/thinking-orbs/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/thinking-orbs/tests/differential"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "7eb03d4b63061132ffbe4653396e126ca62a42d649616a6f717b62c45361ab86"
+    }
+  },
+  "lanes": [
+    {
+      "id": "thinking-orbs-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "thinking-orbs-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same fixture runs through @octanejs/thinking-orbs and published thinking-orbs@0.2.0 via the shared differential rig.",
+      "files": [
+        {
+          "path": "packages/thinking-orbs/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "b165c2ce72428954865428bfa48bcb849b8864dc69699bb44ad4f2d10bcbe40c",
+          "cases": [
+            {
+              "id": "differential:mount-presets",
+              "testName": "matches mount markup for avatar and inline presets",
+              "fullName": "differential: @octanejs/thinking-orbs vs thinking-orbs@0.2.0 matches mount markup for avatar and inline presets"
+            }
+          ]
+        },
+        {
+          "path": "packages/thinking-orbs/tests/_fixtures/thinking-orbs-diff.tsrx",
+          "role": "support",
+          "sha256": "729e4b6777143f3b33e64ab3def101ed0591fada8ae4e8a01c5f2dd519cb1fa6"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/thinking-orbs/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "002f8482b1db892bad1f69627f6702077ccf3db4c0a72d67c56469caaafb3652"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "0672dbb8f47cd60dfa18eb59107fb82a480af113b1a61a939f1f118b6d475589"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}
