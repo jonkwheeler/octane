@@ -3452,7 +3452,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'vaul-ssr',
 					include: ['packages/vaul/tests/ssr/**/*.test.ts'],

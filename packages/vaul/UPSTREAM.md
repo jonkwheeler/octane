@@ -27,7 +27,7 @@ is the adapted Vitest / real-browser lanes in `audit/react-parity.json`.
 
 | Upstream artifact | Disposition |
 | --- | --- |
-| `test/tests/base.spec.ts` | **Adapted.** Open/close through trigger and `Drawer.Close`, plus controlled close: `tests/drawer.test.ts` (`// Per …:10`, `:27`, `:35`). Open-state semantic snapshot vs published React Vaul: `tests/react-oracle.test.ts` (`// Per …:10`). Drag-down close / drag-up stay-open and background dismiss: `tests/browser/vaul.browser.test.ts`. `defaultOpen` and context-menu-cancel drag remain gaps. |
+| `test/tests/base.spec.ts` | **Adapted (partial).** Open/close through trigger and `Drawer.Close`, plus controlled close: `tests/drawer.test.ts` (`// Per …:10`, `:27`, `:35`). Open-state semantic snapshot vs published React Vaul: `tests/react-oracle.test.ts` (`// Per …:10`). Browser lane covers open/close and snap-point drag gestures; upstream drag-down close (`:49`) is not counted as adapted evidence (snap-point fixture retains open on mid-drag release). `defaultOpen` and context-menu-cancel drag remain gaps. |
 | `test/tests/controlled.spec.ts` | **Adapted (partial).** Overlay dismiss with `open` + `onOpenChange` is covered by the controlled fixture path in `tests/drawer.test.ts` and browser close. Overlay non-dismiss when only `open` is passed remains a gap. |
 | `test/tests/initial-snap.spec.ts` | **Adapted (partial).** Initial open snap height and handle-driven snap cycling: `tests/browser/vaul.browser.test.ts` (also cites `with-handle`). Upstream's commented drag-snap cases stay unported. |
 | `test/tests/with-handle.spec.ts` | **Adapted.** Handle click cycles snap points: `tests/browser/vaul.browser.test.ts` (`// Per …:9`). |
@@ -45,19 +45,18 @@ is the adapted Vitest / real-browser lanes in `audit/react-parity.json`.
 | `tests/drawer.test.ts` | adapted upstream | cites `upstream/test/tests/base.spec.ts` open/close cases |
 | `tests/react-oracle.test.ts` | React/Octane differential | same open-drawer scenario against published `vaul@1.1.2` on React and `@octanejs/vaul`; also cites `base.spec.ts:10` |
 | `tests/exports.test.ts` | package surface | root/`Drawer` export keys match pinned `vaul@1.1.2` |
-| `tests/ssr/server.test.ts` | Octane-only framework contract | unpaired — upstream ships no SSR suite; closed trigger must render without browser globals |
+| `tests/ssr/server.test.ts` | Octane-only framework contract | unpaired — upstream ships no SSR suite; closed trigger must render without browser globals. Runs in ordinary Vitest shards; not React-parity evidence. |
 | `tests/browser/vaul.browser.test.ts` | adapted upstream (real browser) | cites base / with-handle / snap scenarios; executes in the `vaul-real-browser` lane |
-| `tests/types/public-api.ts` | adapted types | accept/reject matrix for public props; no upstream type suite at the pin |
+| `tests/types/public-api.ts` | package conformance (types) | accept/reject matrix for public props; optional lane only — not required React-parity type evidence |
 
 ## Registered parity lanes
 
 | Lane id | Kind | Project | Notes |
 | --- | --- | --- | --- |
-| `vaul-adapted-types` | adapted-types | `vaul-types` | `tsrx-tsc` public API matrix |
+| `vaul-adapted-types` | adapted-types (optional) | `vaul-types` | package-conformance `tsrx-tsc` matrix; not a required parity oracle |
 | `vaul-adapted-full-suite` | adapted-octane | `vaul` | DOM / export / React-oracle inventory |
-| `vaul-adapted-full-suite-server` | adapted-octane | `vaul-ssr` | server-render inventory |
 | `vaul-real-browser` | adapted-octane (real browser) | `vaul-browser` | headless Chromium inventory |
 
 No pristine-upstream or pristine-types lane is registered: the Playwright demo app
 is absent from the vendored tree, and upstream ships no type-test suite at
-`v1.1.2`.
+`v1.1.2`. The `vaul-ssr` Vitest project stays outside parity ownership.

@@ -55,9 +55,10 @@ afterAll(async () => {
 describe('vaul real-browser evidence', () => {
 	// Per upstream/test/tests/base.spec.ts:10 (should open drawer).
 	// Per upstream/test/tests/base.spec.ts:27 (should close when `Drawer.Close` is clicked).
-	// Per upstream/test/tests/base.spec.ts:49 (should close when dragged down) — drag gesture retained open here with snap points.
 	// Per upstream/test/tests/with-handle.spec.ts:9 (click should cycle to the next snap point).
 	// Per upstream/test/tests/initial-snap.spec.ts:24 (should be open and snapped on initial load) — open height asserted after open.
+	// Drag-down close from base.spec.ts:49 is not counted here: this fixture uses
+	// snap points, so a mid-drag release stays open rather than asserting upstream close.
 	it('preserves styling, focus semantics, snap points, dragging, and cleanup', async () => {
 		await page.getByRole('button', { name: 'Open drawer' }).click();
 		const drawer = page.locator('[data-vaul-drawer]');

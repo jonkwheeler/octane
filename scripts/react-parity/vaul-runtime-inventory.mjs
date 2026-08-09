@@ -9,7 +9,6 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const lanes = [
 	['vaul', 'packages/vaul/audit/adapted-runtime.json'],
-	['vaul-ssr', 'packages/vaul/audit/adapted-runtime-server.json'],
 	['vaul-browser', 'packages/vaul/audit/adapted-runtime-browser.json'],
 ];
 

@@ -23,12 +23,12 @@
     "tests": {
       "roots": ["packages/vaul/tests"],
       "include": ["\\.test\\.ts$"],
-      "exclude": []
+      "exclude": ["packages/vaul/tests/ssr/"]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 5,
-    "uniqueIdentities": 5,
+    "inventoryEntries": 4,
+    "uniqueIdentities": 4,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -39,18 +39,18 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "83fc46edbcad126a4c051344a0536bd115fd85bb26ee8436aa4841760267dc50"
+      "lockfileSha256": "7d51d721b064800f878eac833b6b04248c6c38eb51233bc4f89302ba9711d9f8"
     }
   },
   "lanes": [
     {
       "id": "vaul-adapted-types",
       "type": "adapted-types",
-      "oracle": "required",
+      "oracle": "optional",
       "environment": "workspace-node",
       "project": "vaul-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Typechecks representative valid and invalid public Vaul props without collapsing the adapted Radix surface to any.",
+      "notes": "Package-conformance accept/reject matrix for public Vaul props. Optional because it is not executed against pinned React/Vaul types, has no hashed assertion-group inventory, and lacks machinery negative controls required for a required React-parity types lane.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -92,42 +92,17 @@
         {
           "path": "packages/vaul/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "72610d6a4052460929cae3b5a9627b6a1411cf9444d5b371b9733bc3fd6b69e9"
+          "sha256": "031d431b948307a29ae40461b3d75bbfb940dad56d72f59ad689bfd174d19f96"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "bcc5d1c58554479e9b523c22817c25ab6c5bfee188d6899d6f0b28e4b6593287"
+          "sha256": "d501afd6ed1c33f784154cfae42fdb00173fb5671946a5329790977833598e87"
         },
         {
           "path": "packages/vaul/audit/upstream-integrity.json",
           "role": "support",
           "sha256": "9141868b120f498705d5becdc8102dd8e1b1f47fa298a7711881f314aed2e691"
-        }
-      ]
-    },
-    {
-      "id": "vaul-adapted-full-suite-server",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "vaul-ssr",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs the adapted server-rendering suite with exact test identities.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/vaul/audit/adapted-runtime-server.json"
-      },
-      "files": [
-        {
-          "path": "packages/vaul/audit/adapted-runtime-server.json",
-          "role": "support",
-          "sha256": "dca1bf522c2ad5df2a59077fd8ba749bfc88acf7b50bc375027902fb47f247c6"
-        },
-        {
-          "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
-          "role": "support",
-          "sha256": "bcc5d1c58554479e9b523c22817c25ab6c5bfee188d6899d6f0b28e4b6593287"
         }
       ]
     },
@@ -147,12 +122,12 @@
         {
           "path": "packages/vaul/audit/adapted-runtime-browser.json",
           "role": "support",
-          "sha256": "7248bd15aff80dc1f32c556acf8359080964c76dcff0023fe346dc298c79972c"
+          "sha256": "19956116615fbf3a754aa8a1cd32a39e15def42e1e4aebbf450dfb9238e46bcd"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "bcc5d1c58554479e9b523c22817c25ab6c5bfee188d6899d6f0b28e4b6593287"
+          "sha256": "d501afd6ed1c33f784154cfae42fdb00173fb5671946a5329790977833598e87"
         },
         {
           "path": "packages/vaul/tests/browser/harness/main.tsrx",
