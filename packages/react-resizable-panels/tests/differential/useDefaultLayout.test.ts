@@ -95,19 +95,20 @@ describe('react-resizable-panels useDefaultLayout differential', () => {
 		);
 
 		// Checkpoint 2: the same non-user trigger is filtered synchronously.
+		expect(writes(octaneStorage.trace)).toEqual([]);
+		expect(writes(reactStorage.trace)).toEqual([]);
 		expect(writes(octaneStorage.trace)).toEqual(writes(reactStorage.trace));
 
-		reactAct(() =>
-			reactCurrent.onLayoutChanged({ navigation: 45, content: 55 }, { isUserInteraction: true }),
-		);
+		const committedLayout = { navigation: 45, content: 55 };
+		const expectedWrite: ['set', string, string] = ['set', key, JSON.stringify(committedLayout)];
+		reactAct(() => reactCurrent.onLayoutChanged(committedLayout, { isUserInteraction: true }));
 		octaneAct(() =>
-			octane.result.current.onLayoutChanged(
-				{ navigation: 45, content: 55 },
-				{ isUserInteraction: true },
-			),
+			octane.result.current.onLayoutChanged(committedLayout, { isUserInteraction: true }),
 		);
 
 		// Checkpoint 3: the same user trigger commits the same key and payload.
+		expect(writes(octaneStorage.trace)).toEqual([expectedWrite]);
+		expect(writes(reactStorage.trace)).toEqual([expectedWrite]);
 		expect(writes(octaneStorage.trace)).toEqual(writes(reactStorage.trace));
 		reactAct(() => reactRoot.unmount());
 	});

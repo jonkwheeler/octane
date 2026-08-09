@@ -1037,18 +1037,16 @@ describe('Group', () => {
 	});
 
 	describe('invariants', () => {
-		function expectLayoutEffectError(callback: () => void, message: string) {
+		function captureLayoutEffectError(callback: () => void, message: string) {
 			// Fidelity: Octane reports layout-effect exceptions through console.error;
 			// React RTL rethrows the same exception from render(). Only the observation
 			// boundary differs here—the invariant and exact upstream message stay intact.
 			const report = vi.spyOn(console, 'error').mockImplementation(() => {});
 			try {
 				callback();
-				expect(
-					report.mock.calls.some(
-						(args) => args.some((value) => value instanceof Error && value.message === message),
-					),
-				).toBe(true);
+				return report.mock.calls.some(
+					(args) => args.some((value) => value instanceof Error && value.message === message),
+				);
 			} finally {
 				report.mockRestore();
 			}
@@ -1065,30 +1063,34 @@ describe('Group', () => {
 			);
 
 			// This is not allowed
-			expectLayoutEffectError(
-				() => render(
-					<Group>
-						<Panel id="foo" />
-						<Panel id="foo" />
-					</Group>,
+			expect(
+				captureLayoutEffectError(
+					() => render(
+						<Group>
+							<Panel id="foo" />
+							<Panel id="foo" />
+						</Group>,
+					),
+					'Panel ids must be unique; id "foo" was used more than once',
 				),
-				'Panel ids must be unique; id "foo" was used more than once',
-			);
+			).toBe(true);
 		});
 
 		test('duplicate separator ids', () => {
-			expectLayoutEffectError(
-				() => render(
-					<Group>
-						<Panel id="left" />
-						<Separator id="foo" />
-						<Panel id="center" />
-						<Separator id="foo" />
-						<Panel id="right" />
-					</Group>,
+			expect(
+				captureLayoutEffectError(
+					() => render(
+						<Group>
+							<Panel id="left" />
+							<Separator id="foo" />
+							<Panel id="center" />
+							<Separator id="foo" />
+							<Panel id="right" />
+						</Group>,
+					),
+					'Separator ids must be unique; id "foo" was used more than once',
 				),
-				'Separator ids must be unique; id "foo" was used more than once',
-			);
+			).toBe(true);
 		});
 	});
 

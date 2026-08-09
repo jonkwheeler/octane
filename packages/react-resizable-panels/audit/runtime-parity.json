@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "upstreamRoot": "packages/react-resizable-panels/upstream/source/lib",
+  "adaptedRoot": "packages/react-resizable-panels/tests/upstream",
+  "inventories": {
+    "adaptedBodies": "packages/react-resizable-panels/audit/upstream-adapted.SHA256SUMS"
+  },
+  "permittedTransformations": [
+    {
+      "kind": "formatting",
+      "rule": "Quote style, trailing commas, and insignificant whitespace may differ after TypeScript printer normalization."
+    },
+    {
+      "kind": "import-root",
+      "rule": "Adapted suites import Octane sources and @octanejs/testing-library; pristine suites import relative React upstream modules and @testing-library/react."
+    },
+    {
+      "kind": "extension",
+      "rule": "Component test files may use .tsrx instead of .tsx; a few utilities move under components/{group,panel}/."
+    },
+    {
+      "kind": "jest-dom-attribute",
+      "rule": "expect(node).toHaveAttribute(name, value) maps to expect(node.getAttribute(name)).toBe(value); bare toHaveAttribute(name) maps to hasAttribute(name)).toBe(true)."
+    },
+    {
+      "kind": "error-observation",
+      "rule": "Layout-effect invariant failures observed via React RTL toThrow map to captureLayoutEffectError(...).toBe(true) because Octane reports those exceptions through console.error.",
+      "files": ["components/group/Group.test.tsx"]
+    },
+    {
+      "kind": "profiler-omission",
+      "rule": "React Profiler render-count expects collapse to the Panel-children re-render invariant Octane can observe without Profiler.",
+      "files": ["components/panel/Panel.test.tsx"]
+    },
+    {
+      "kind": "cssom-zero",
+      "rule": "Numeric style zero may serialize as '0' (React/jsdom) or '0px' (Octane CSSOM normalization) for minHeight/minWidth.",
+      "files": ["components/panel/Panel.test.tsx"]
+    },
+    {
+      "kind": "useId-fallback",
+      "rule": "React's mocked ':r123:' fallback becomes a non-empty Octane useId string.",
+      "files": ["hooks/useId.test.ts"]
+    }
+  ],
+  "divergences": []
+}

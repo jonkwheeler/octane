@@ -21,14 +21,14 @@
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-resizable-panels/tests"],
+      "roots": ["packages/react-resizable-panels/tests/upstream"],
       "include": ["\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"],
-      "exclude": ["/tests/(?:browser|differential)/", "/tests/upstream-original\\.test\\.ts$"]
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 434,
-    "uniqueIdentities": 329,
+    "inventoryEntries": 426,
+    "uniqueIdentities": 321,
     "duplicateEntriesWithinLanes": 105,
     "identitiesSharedAcrossLanes": 0
   },
@@ -95,7 +95,7 @@
       "environment": "workspace-node",
       "project": "react-resizable-panels",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Complete adapted DOM suite with registration identity matching plus SHA256-locked adapted bodies wired into react-parity:check.",
+      "notes": "Complete adapted upstream DOM suite with registration identity matching, pristine-to-adapted assertion-group mapping, permitted-transformation ledger, and SHA256-locked adapted bodies wired into react-parity:check.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-resizable-panels/audit/adapted-runtime.json"
@@ -104,61 +104,27 @@
         {
           "path": "packages/react-resizable-panels/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "6a59e184b378fc0983540b3a6a89da7933856443c138e47f2180111875d9e478"
+          "sha256": "912cc2bef4232d03d9623e64b49813c0d0f3c6a651501a576a969cee320b1704"
         },
         {
           "path": "packages/react-resizable-panels/audit/upstream-adapted.SHA256SUMS",
           "role": "support",
-          "sha256": "0f24dbb97db24b1e1c37882d311f45381bcc3848a258e059954419cf50063890"
+          "sha256": "ab4792b35ec49a0ae17a444844cfec32220668777e8da7654b8cd6ff845734ad"
         },
         {
           "path": "scripts/react-parity/react-resizable-panels-upstream-lib.mjs",
           "role": "support",
-          "sha256": "576c07bf88aa0930a50874067287aa3eeb8f87bd1d2c6b4d65bd83a0f59fe09b"
+          "sha256": "4ba50b19c94dd0b34bcd50a4cff5ce60b82d795d2a13206cf26121bcab33c8d1"
         },
         {
           "path": "packages/react-resizable-panels/audit/test-classifications.json",
           "role": "support",
           "sha256": "4f9f582058ff6abf658cd33ae0b09755bcb24dba98d29de41b370f32d4f202ab"
-        }
-      ]
-    },
-    {
-      "id": "react-resizable-panels-server",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-resizable-panels-server",
-      "evidenceOrigin": "repo-authored",
-      "notes": "React-free SSR persistence lane compiled with octane({ ssr: true }) and the server runtime alias.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-resizable-panels/audit/adapted-runtime-server.json"
-      },
-      "files": [
+        },
         {
-          "path": "packages/react-resizable-panels/audit/adapted-runtime-server.json",
+          "path": "packages/react-resizable-panels/audit/runtime-parity.json",
           "role": "support",
-          "sha256": "0cc32156f962f7ab65e7b4a51f13c5bb52de178fd669fa3f8ee2cf3a6f1d45b7"
-        }
-      ]
-    },
-    {
-      "id": "react-resizable-panels-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-resizable-panels-browser",
-      "notes": "Six real Chromium interaction cases (Octane-only framework contract; classified outside React-parity inventories).",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-resizable-panels/audit/adapted-runtime-browser.json"
-      },
-      "files": [
-        {
-          "path": "packages/react-resizable-panels/audit/adapted-runtime-browser.json",
-          "role": "support",
-          "sha256": "1a48d246dacd8f64ea4f572698dc7d8f35014f26bf58108558128385b4df96e2"
+          "sha256": "f6ac288867880a12206a1202568aa8d1d681db37509ef9b92d0c191c5032cb48"
         }
       ]
     },

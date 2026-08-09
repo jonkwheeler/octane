@@ -3,7 +3,10 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { verifyReactResizablePanelsUpstream } from '../../../scripts/react-parity/react-resizable-panels-upstream-lib.mjs';
+import {
+	renderReactResizablePanelsAdaptedInventory,
+	verifyReactResizablePanelsUpstream,
+} from '../../../scripts/react-parity/react-resizable-panels-upstream-lib.mjs';
 import { verifyReactResizablePanelsTestClassifications } from '../../../scripts/react-parity/react-resizable-panels-classifications-lib.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -137,16 +140,24 @@ if (process.argv.includes('--negative-controls')) {
 	if (!adaptedMatch) fail('Malformed adapted checksum line');
 	const adaptedFile = join(packageRoot, 'tests/upstream', adaptedMatch[2]);
 	const originalAdapted = readFileSync(adaptedFile);
+	const weakenedAdapted = `${originalAdapted.toString('utf8').replace(/\n\s*expect\([^;]+;/, '\n')}`;
 	try {
-		writeFileSync(
-			adaptedFile,
-			`${originalAdapted.toString('utf8').replace(/\n\s*expect\([^;]+;/, '\n')}`,
-		);
+		writeFileSync(adaptedFile, weakenedAdapted);
 		expectFailure('deleted adapted assertion body', function deletedAssertion() {
 			verifyReactResizablePanelsUpstream(repoRoot);
 		});
+		// Regenerating the blessed SHA list must not hide a deleted assertion: the
+		// pristine-to-adapted assertion-group mapping remains fail-closed.
+		writeFileSync(adaptedSumsPath, renderReactResizablePanelsAdaptedInventory(repoRoot));
+		expectFailure(
+			'deleted assertion after regenerating adapted SHA list',
+			function deletedAssertionAfterHashBlessing() {
+				verifyReactResizablePanelsUpstream(repoRoot);
+			},
+		);
 	} finally {
 		writeFileSync(adaptedFile, originalAdapted);
+		writeFileSync(adaptedSumsPath, adaptedSums);
 	}
 	const renamed = adaptedSums.replace(adaptedMatch[1], '0'.repeat(64));
 	expectFailure('adapted SHA256SUMS drift', function adaptedHashDrift() {
@@ -160,5 +171,5 @@ if (process.argv.includes('--negative-controls')) {
 }
 
 console.log(
-	`Verified ${readFileSync(join(packageRoot, 'upstream/SHA256SUMS'), 'utf8').trim().split('\n').length} vendored files, ${expectedRuntime.length} runtime exports, ${expectedTypes.length} public types, ${upstream.upstreamCases} upstream registrations, ${upstream.portedCases} adapted registrations (SHA256-locked), and ${classifications.tests} classified port tests.`,
+	`Verified ${readFileSync(join(packageRoot, 'upstream/SHA256SUMS'), 'utf8').trim().split('\n').length} vendored files, ${expectedRuntime.length} runtime exports, ${expectedTypes.length} public types, ${upstream.upstreamCases} upstream registrations, ${upstream.portedCases} adapted registrations (${upstream.assertionGroups} assertion groups after ${upstream.permittedTransformations} permitted transforms), and ${classifications.tests} classified port tests.`,
 );
