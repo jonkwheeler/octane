@@ -13,7 +13,7 @@ export type HTMLAttributes<T> = Octane.HTMLAttributes<T>;
 export type ImgHTMLAttributes<T> = Octane.ImgHTMLAttributes<T>;
 export type SVGProps<T> = Octane.SVGProps<T>;
 
-// OCTANE DIVERGENCE[streamdown-native-events][adapted:streamdown-native-events]:
+// Package contract (ordinary test evidence, not parity-counted):
 // consumer callbacks receive native DOM events rather than React synthetic events.
 export type NativeMouseEvent<T extends Element> = globalThis.MouseEvent & {
 	currentTarget: T;

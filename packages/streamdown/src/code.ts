@@ -1,6 +1,6 @@
 'use client';
 
-// OCTANE DIVERGENCE[streamdown-consolidated-plugins][adapted:streamdown-consolidated-plugins]:
+// Package contract (ordinary test evidence, not parity-counted):
 // the four official plugin packages are published as @octanejs/streamdown subpaths.
 
 import {

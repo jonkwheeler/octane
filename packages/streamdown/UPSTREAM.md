@@ -23,19 +23,14 @@ and `remend`. Published npm tarballs omit those tests; repository presence is
 authoritative, so `upstreamSuites.runtime` is `present`.
 
 Every upstream `__tests__` artifact at the pin is inventoried in
-[`audit/upstream-suite-artifacts.json`](./audit/upstream-suite-artifacts.json)
-with an explicit per-artifact `excluded` disposition. This bounded harness does
-not yet run pristine or one-for-one adapted lanes for that suite. Instead it:
+[`audit/upstream-suite-artifacts.json`](./audit/upstream-suite-artifacts.json).
+This bounded harness currently executes eight exact same-fixture differential
+cases against the pinned published React packages through the
+`streamdown-differential` Vitest project (`testExecution: { group: 'react-parity' }`).
+Native-event delivery and consolidated plugin subpath contracts stay ordinary
+package tests outside parity evidence.
 
-- runs eight exact same-fixture differential cases against the pinned published
-  React packages;
-- runs adapted cases for native custom-component events and consolidated plugin
-  subpaths.
-
-A later full-suite port should promote inventoried artifacts into pristine /
-adapted lanes rather than re-inferring absence from the npm tarball. Until
-provenance is `verified` with executable upstream-suite lanes, Streamdown
-Vitest projects stay off `testExecution` react-parity ownership so ordinary
-shards keep running the differential and adapted evidence.
-
-Every other local test is classified as an Octane framework contract.
+Promoting the inventoried upstream suite into pristine / one-for-one adapted
+lanes (framework-neutral remend unchanged; React-facing suites adapted or given
+specific incompatibility reasons) remains open follow-up work before provenance
+can move to `verified`.

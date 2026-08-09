@@ -8,9 +8,8 @@
     },
     {
       "path": "packages/streamdown/tests/divergences.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "streamdown-native-events",
-      "reason": "Authenticates native DOM event delivery through a custom Markdown component."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates Octane native-event and controls-surface contracts without a pinned React oracle; not counted as React-parity evidence."
     },
     {
       "path": "packages/streamdown/tests/highlight-race.test.ts",
@@ -34,9 +33,8 @@
     },
     {
       "path": "packages/streamdown/tests/parity-plugins.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "streamdown-consolidated-plugins",
-      "reason": "Authenticates the four official plugin surfaces consolidated under Octane package subpaths."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates consolidated plugin subpath exports as an Octane package layout contract; not counted as React-parity evidence."
     },
     {
       "path": "packages/streamdown/tests/plugins.test.ts",

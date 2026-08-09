@@ -712,7 +712,7 @@ Scope/evidence last checked: 2026-08-02.
 
 - The HAST adapter delegates to Octane createElement while preserving hast-util-to-jsx-runtime key, component, node, and Fragment semantics.
 - Upstream source provenance and the Apache-2.0 license are retained in UPSTREAM.md and LICENSE.
-- Bounded React parity runs eight exact same-fixture scenarios against the pinned published React packages. Five structured divergences are asserted with exact upstream and Octane outcomes before narrowly removing only those identified attributes for the remaining DOM comparison.
+- Bounded React parity inventories the pinned repository suite, runs eight exact same-fixture differential scenarios under the react-parity job, and keeps native-event plus consolidated-plugin contracts as ordinary package tests. Structured differential divergences cover independent animation timing and controls-surface class/icon corrections.
 
 ## @octanejs/styled-components
 

@@ -5,7 +5,6 @@ import { mount } from '../../octane/tests/_helpers';
 import { NativeEventProbe } from './_fixtures/divergence-events.tsrx';
 
 describe('@octanejs/streamdown documented runtime divergences', () => {
-	// @parity-case adapted:streamdown-native-events
 	it('delivers native DOM events to custom Markdown components', () => {
 		const root = mount(NativeEventProbe);
 		const anchor = root.container.querySelector('a');
@@ -17,7 +16,6 @@ describe('@octanejs/streamdown documented runtime divergences', () => {
 		root.unmount();
 	});
 
-	// @parity-case adapted:streamdown-code-class-corrections
 	it('emits balanced code-block background classes', async () => {
 		const root = mount(Streamdown, {
 			children: '```ts\nconst value = 1;\n```',
@@ -37,7 +35,6 @@ describe('@octanejs/streamdown documented runtime divergences', () => {
 		root.unmount();
 	});
 
-	// @parity-case adapted:streamdown-icon-sizing
 	it('consumes built-in icon sizes into SVG dimensions', async () => {
 		const root = mount(Streamdown, {
 			children: '```ts\nconst value = 1;\n```',

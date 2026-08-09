@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/streamdown/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/streamdown/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/streamdown/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/streamdown/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -61,7 +51,7 @@
       "environment": "workspace-node",
       "project": "streamdown-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM. Upstream repository suite artifacts remain present and explicitly excluded pending pristine / one-for-one adapted lanes. Ordinary shards execute this project while provenance is recorded-unverified.",
+      "notes": "Runs eight exact same-fixture cases against streamdown@2.5.0 and the four pinned official React plugin packages. The streaming and controls cases assert exact upstream and Octane outcomes for three documented upstream corrections, then remove only those identified element attributes before comparing the remaining DOM. Native-event and consolidated-plugin Octane contracts remain ordinary package tests outside parity evidence.",
       "files": [
         {
           "path": "packages/streamdown/tests/differential/parity.test.ts",
@@ -128,7 +118,7 @@
         {
           "path": "packages/streamdown/audit/test-classifications.json",
           "role": "support",
-          "sha256": "78924782daa2140eb820d33ce032d2a6a61720bb0538d938268eaab0db5794e2"
+          "sha256": "6bcaec184b396a1461ef48afc0399e6c176d1bf492290957318c86676a1b8d01"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -138,76 +128,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "008c9dd188c5fbf7b428545082c27691fc8cef2ece48e447e1795cdf434fe942"
-        },
-        {
-          "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
-          "role": "support",
-          "sha256": "b1a41e384eb34659ec68c76a095553c0dadc8d3b104235d15767674f078f9e41"
-        }
-      ]
-    },
-    {
-      "id": "streamdown-adapted-divergence-contracts",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "streamdown",
-      "notes": "Runs exact Octane cases authenticating native custom-component events and consolidated plugin subpaths. Upstream repository suite artifacts are inventoried and explicitly excluded in audit/upstream-suite-artifacts.json until pristine / one-for-one adapted lanes are added. Vitest projects remain outside react-parity ownership while provenance is recorded-unverified so ordinary shards execute these cases.",
-      "files": [
-        {
-          "path": "packages/streamdown/tests/divergences.test.ts",
-          "role": "test",
-          "sha256": "9046c21c3c3daeb62672f1240cd29a763d54c486e8c550cf946e5d135d6832f1",
-          "cases": [
-            {
-              "id": "adapted:streamdown-native-events",
-              "testName": "delivers native DOM events to custom Markdown components",
-              "fullName": "@octanejs/streamdown documented runtime divergences delivers native DOM events to custom Markdown components"
-            },
-            {
-              "id": "adapted:streamdown-code-class-corrections",
-              "testName": "emits balanced code-block background classes",
-              "fullName": "@octanejs/streamdown documented runtime divergences emits balanced code-block background classes"
-            },
-            {
-              "id": "adapted:streamdown-icon-sizing",
-              "testName": "consumes built-in icon sizes into SVG dimensions",
-              "fullName": "@octanejs/streamdown documented runtime divergences consumes built-in icon sizes into SVG dimensions"
-            }
-          ]
-        },
-        {
-          "path": "packages/streamdown/tests/_fixtures/divergence-events.tsrx",
-          "role": "support",
-          "sha256": "e412363d703d4b5771d72e0bf0f00c791c773c7c838385c2b7e0789891343903"
-        },
-        {
-          "path": "packages/streamdown/tests/parity-plugins.test.ts",
-          "role": "test",
-          "sha256": "4bb3ed375d2069fe65b77834e4c741dc4479505d5d6d9f73601dc859a8ef8687",
-          "cases": [
-            {
-              "id": "adapted:streamdown-consolidated-plugins",
-              "testName": "exposes every official plugin factory and default instance",
-              "fullName": "@octanejs/streamdown plugin entry points exposes every official plugin factory and default instance"
-            }
-          ]
-        },
-        {
-          "path": "packages/octane/tests/_helpers.ts",
-          "role": "support",
-          "sha256": "a4a9ee179a2dcaf20a96cb5807f5584f484deddc2bf25fb94cc90ade9e920572"
-        },
-        {
-          "path": "packages/streamdown/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "78924782daa2140eb820d33ce032d2a6a61720bb0538d938268eaab0db5794e2"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "008c9dd188c5fbf7b428545082c27691fc8cef2ece48e447e1795cdf434fe942"
+          "sha256": "2c23f627763e2f47be4d86e90df662b97a74b7bcc5582de355b36a141643f610"
         },
         {
           "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
@@ -219,38 +140,8 @@
   ],
   "divergences": [
     {
-      "id": "streamdown-native-events",
-      "caseIds": [
-        "adapted:streamdown-native-events"
-      ],
-      "upstreamResult": "Custom React components receive React synthetic event objects from rendered Markdown hosts.",
-      "octaneResult": "Custom Octane components receive native DOM event objects with native currentTarget semantics.",
-      "rationale": "Octane uses delegated native DOM events instead of React's synthetic event layer.",
-      "classification": "event-model",
-      "consumerImpact": "Custom component callbacks observe native event identity and lifecycle semantics.",
-      "migrationGuidance": "Type custom component event callbacks against the exported native Octane event props.",
-      "owner": "@octanejs/streamdown",
-      "reviewCondition": "Review if Octane introduces React-compatible synthetic events."
-    },
-    {
-      "id": "streamdown-consolidated-plugins",
-      "caseIds": [
-        "adapted:streamdown-consolidated-plugins"
-      ],
-      "upstreamResult": "Code, math, Mermaid, and CJK integrations ship as four separate @streamdown packages.",
-      "octaneResult": "All four integrations ship as @octanejs/streamdown package subpath exports.",
-      "rationale": "The Octane binding consolidates one renderer-specific distribution surface.",
-      "classification": "distribution",
-      "consumerImpact": "Consumers import official integrations from @octanejs/streamdown/code, /math, /mermaid, and /cjk.",
-      "migrationGuidance": "Replace separate @streamdown plugin package specifiers with the corresponding Octane subpath.",
-      "owner": "@octanejs/streamdown",
-      "reviewCondition": "Review if the integrations are published as independent Octane packages."
-    },
-    {
       "id": "streamdown-independent-animation-timing",
-      "caseIds": [
-        "differential:streamdown-streaming-append"
-      ],
+      "caseIds": ["differential:streamdown-streaming-append"],
       "upstreamResult": "Version 2.5.0 shares animation progress across sibling blocks, producing 0ms durations for later sibling text.",
       "octaneResult": "Each streaming block tracks progress independently, producing 100ms durations and a 40ms third-fragment delay in the pinned fixture.",
       "rationale": "Per-block progress prevents one completed block from suppressing animation in a newly appended sibling.",
@@ -261,32 +152,16 @@
       "reviewCondition": "Review when upstream isolates animation state per block."
     },
     {
-      "id": "streamdown-code-class-corrections",
-      "caseIds": [
-        "adapted:streamdown-code-class-corrections"
-      ],
-      "upstreamResult": "Version 2.5.0 emits two unbalanced Tailwind arbitrary-value background class strings.",
-      "octaneResult": "The light and dark code-block background class strings contain balanced closing parentheses.",
-      "rationale": "Balanced arbitrary-value syntax is required for Tailwind to recognize the classes.",
+      "id": "streamdown-controls-surface-corrections",
+      "caseIds": ["differential:streamdown-controls"],
+      "upstreamResult": "Version 2.5.0 emits unbalanced Tailwind arbitrary-value code-block background classes and leaves icon size props as inert SVG attributes at 16x16.",
+      "octaneResult": "Code-block background classes use balanced closing parentheses, and built-in icons consume size into exact width and height attributes without an inert size attribute.",
+      "rationale": "Balanced arbitrary-value syntax is required for Tailwind recognition, and the declared icon size should control rendered dimensions.",
       "classification": "styling-correction",
-      "consumerImpact": "Code-block theme backgrounds can be generated correctly by Tailwind scans.",
-      "migrationGuidance": "Include the Octane package source in the Tailwind content scan as documented.",
+      "consumerImpact": "Code-block theme backgrounds scan correctly, and control icons render at the requested 14px or 20px dimensions instead of always 16px.",
+      "migrationGuidance": "Include the Octane package source in the Tailwind content scan and account for requested icon sizes in pixel-sensitive styling.",
       "owner": "@octanejs/streamdown",
-      "reviewCondition": "Review when the pinned upstream classes are balanced."
-    },
-    {
-      "id": "streamdown-icon-sizing",
-      "caseIds": [
-        "adapted:streamdown-icon-sizing"
-      ],
-      "upstreamResult": "Version 2.5.0 leaves the size prop as an inert SVG attribute while width and height remain 16.",
-      "octaneResult": "Built-in icons consume size into exact width and height attributes and omit the inert size attribute.",
-      "rationale": "The declared icon size should control its rendered dimensions.",
-      "classification": "rendering-correction",
-      "consumerImpact": "Control icons render at the requested 14px or 20px dimensions instead of always 16px.",
-      "migrationGuidance": "Account for the requested icon sizes in pixel-sensitive styling or snapshots.",
-      "owner": "@octanejs/streamdown",
-      "reviewCondition": "Review when upstream consumes icon size into dimensions."
+      "reviewCondition": "Review when upstream balances the class strings and consumes icon size into dimensions."
     }
   ]
 }
