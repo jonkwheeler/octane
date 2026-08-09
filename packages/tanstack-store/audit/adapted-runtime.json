@@ -1,12 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "tanstack-store",
-  "roots": [
-    "packages/tanstack-store/tests/conformance"
-  ],
-  "files": [
-    "packages/tanstack-store/tests/conformance/upstream-index.test.ts"
-  ],
+  "roots": ["packages/tanstack-store/tests/conformance"],
+  "files": ["packages/tanstack-store/tests/conformance/upstream-index.test.ts"],
   "tests": [
     {
       "id": "runtime:70e0662c775ba7a6",
