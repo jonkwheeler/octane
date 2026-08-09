@@ -29,7 +29,9 @@
   "sideEffects": false,
   "octane": {
     "hookSlots": {
-      "manual": ["src/hooks"]
+      "manual": [
+        "src/hooks"
+      ]
     }
   },
   "exports": {

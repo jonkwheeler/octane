@@ -65,10 +65,7 @@ function compileOne(sourcePath: string): void {
 		sourcefile: sourcePath,
 	});
 	const rewritten = transformed.code
-		.replace(
-			/from\s+["']@octanejs\/interior(?:\/[^"']*)?["']/g,
-			'from "./upstream-copy-button.js"',
-		)
+		.replace(/from\s+["']@octanejs\/interior(?:\/[^"']*)?["']/g, 'from "./upstream-copy-button.js"')
 		.replace(/from\s+["']octane["']/g, 'from "react"');
 	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
 	writeFileSync(join(CACHE_DIR, `${slug}-${hashString(sourcePath)}.js`), rewritten);

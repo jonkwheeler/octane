@@ -38,8 +38,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 1,
-    "uniqueIdentities": 1,
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "cc4f1e266b8aaefacf9d25ddf84ba42adf8fdf51274528ed1636b2133ceb60ba"
+      "lockfileSha256": "e606abe100070a29f00d7dadb7efe1d7a8b912ac3e884aa652a0ba7b7ed44be6"
     }
   },
   "lanes": [
@@ -66,7 +66,7 @@
         {
           "path": "packages/interior/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "ef397eb527b7e39c4386c04829f6d7f39ac54764c408557c38de393592aa5395",
+          "sha256": "8972e8ab6c38ed7e8e080f88a943f9d09aef974146e233d74d29d81ea5ae8f9a",
           "cases": [
             {
               "id": "differential:copy-button",
@@ -78,7 +78,7 @@
         {
           "path": "packages/interior/tests/differential/_fixtures/copy-button-diff.tsrx",
           "role": "support",
-          "sha256": "e28e452385f6cfcd53d91934ed069b3205cfe6557a5723b87f00644fd228e057"
+          "sha256": "7164c5237f750486124dccbc5ecfb1b1ee24c31aa4d74cc79b32ea3ab9e803b2"
         },
         {
           "path": "packages/interior/tests/differential/upstream/copy-button.tsx",
@@ -93,12 +93,12 @@
         {
           "path": "packages/interior/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "ee4c72c82320500c322426857a551e7033c106db193e929dbabd3333e21c8d8a"
+          "sha256": "59fdf64f9c474e2e3594a4a70d6e34dcb9271d1804b767ff3c1e0d8b61cb239d"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3032ba8995af2b93e18c2ee874faf42c417a89a237aecb7ce1614c3b6f2bd0d9"
+          "sha256": "4818102638b5595e86b01500fc8d9ce29b36cc048602172487af7560e05ed95b"
         }
       ]
     }

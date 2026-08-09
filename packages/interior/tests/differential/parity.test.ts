@@ -21,11 +21,11 @@ async function settle(): Promise<void> {
 }
 
 /**
- * OCTANE DIVERGENCE (motion SVG emission): upstream motion/react stamps
- * pathLength/stroke-dash* on the check path even at pathLength 0, and keeps
- * camelCase viewBox. @octanejs/motion omits the idle dash attrs and lowercases
- * the SVG attribute. Strip only those tokens so the rest of the CopyButton
- * markup still has to match byte-for-byte.
+ * OCTANE DIVERGENCE[interior-motion-svg-emission][differential:copy-button]:
+ * upstream motion/react stamps pathLength/stroke-dash* on the check path even
+ * at pathLength 0, and keeps camelCase viewBox. @octanejs/motion omits the idle
+ * dash attrs and lowercases the SVG attribute. Strip only those tokens so the
+ * rest of the CopyButton markup still has to match byte-for-byte.
  */
 function stripMotionSvgNoise(html: string): string {
 	return html
@@ -113,15 +113,18 @@ describe('differential: @octanejs/interior vs ddoemonn/interior CopyButton', fun
 			expect(react.find('button').getAttribute('aria-label')).toBe('Copy');
 		});
 
-		await differential.observe('copy click reaches copied state', async function copy(octane, react) {
-			await octane.click('button');
-			await react.click('button');
-			await settle();
-			await settle();
-			expectEqualCopyButtonMarkup(octane, react);
-			expect(octane.container.textContent).toContain('Copied');
-			expect(react.container.textContent).toContain('Copied');
-		});
+		await differential.observe(
+			'copy click reaches copied state',
+			async function copy(octane, react) {
+				await octane.click('button');
+				await react.click('button');
+				await settle();
+				await settle();
+				expectEqualCopyButtonMarkup(octane, react);
+				expect(octane.container.textContent).toContain('Copied');
+				expect(react.container.textContent).toContain('Copied');
+			},
+		);
 
 		differential.unmount();
 	});

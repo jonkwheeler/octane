@@ -8,12 +8,26 @@ const COMPONENTS = join(__dirname, '../src/components');
 const HOOKS = join(__dirname, '../src/hooks');
 
 const OCTANE_HOOKS = [
-	'useState', 'useEffect', 'useLayoutEffect', 'useCallback', 'useMemo', 'useRef', 'useId',
-	'useSyncExternalStore', 'useContext', 'useImperativeHandle', 'useReducer',
+	'useState',
+	'useEffect',
+	'useLayoutEffect',
+	'useCallback',
+	'useMemo',
+	'useRef',
+	'useId',
+	'useSyncExternalStore',
+	'useContext',
+	'useImperativeHandle',
+	'useReducer',
 ];
 const MOTION_HOOKS = [
-	'useMotionValue', 'useTransform', 'useScroll', 'useSpring', 'useInView',
-	'useMotionValueEvent', 'useIsomorphicLayoutEffect',
+	'useMotionValue',
+	'useTransform',
+	'useScroll',
+	'useSpring',
+	'useInView',
+	'useMotionValueEvent',
+	'useIsomorphicLayoutEffect',
 ];
 const SKIP = new Set(['copy-button']);
 
@@ -63,7 +77,12 @@ function extractTopLevelFunctions(source) {
 		if (braceStart === -1) continue;
 		const braceEnd = findMatchingBrace(source, braceStart);
 		if (braceEnd === -1) continue;
-		functions.push({ name: match[1], text: source.slice(start, braceEnd + 1), start, end: braceEnd + 1 });
+		functions.push({
+			name: match[1],
+			text: source.slice(start, braceEnd + 1),
+			start,
+			end: braceEnd + 1,
+		});
 	}
 	return functions;
 }
@@ -139,17 +158,26 @@ function instrumentHookCalls(body) {
 		let result = sourceText;
 		for (let i = matches.length - 1; i >= 0; i--) {
 			const { start, open, close } = matches[i];
-			const inner = result.slice(open + 1, close).trimEnd().replace(/,\s*$/, '');
+			const inner = result
+				.slice(open + 1, close)
+				.trimEnd()
+				.replace(/,\s*$/, '');
 			const tagExpr = `subSlot(${nextTag()})`;
-			const slotty = name === 'useState' || name === 'useRef' || name === 'useId' || name === 'useReducedMotion';
+			const slotty =
+				name === 'useState' || name === 'useRef' || name === 'useId' || name === 'useReducedMotion';
 			const replacement = slotty
-				? (inner.length ? `${name}(${inner}, ${tagExpr})` : `${name}(${tagExpr})`)
-				: (inner.length ? `${name}(${inner}, ${tagExpr})` : `${name}(${tagExpr})`);
+				? inner.length
+					? `${name}(${inner}, ${tagExpr})`
+					: `${name}(${tagExpr})`
+				: inner.length
+					? `${name}(${inner}, ${tagExpr})`
+					: `${name}(${tagExpr})`;
 			result = result.slice(0, start) + replacement + result.slice(close + 1);
 		}
 		return result;
 	}
-	for (const hook of [...OCTANE_HOOKS, 'useReducedMotion', ...MOTION_HOOKS]) out = instrument(hook, out);
+	for (const hook of [...OCTANE_HOOKS, 'useReducedMotion', ...MOTION_HOOKS])
+		out = instrument(hook, out);
 	return out;
 }
 
@@ -162,7 +190,9 @@ function convertFunctionToExport(fnText) {
 	const braceStart = fnText.indexOf('{', parenEnd);
 	const braceEnd = findMatchingBrace(fnText, braceStart);
 	const body = instrumentHookCalls(fnText.slice(braceStart + 1, braceEnd));
-	const restParams = params.length ? `${params}, ...rest: [slot?: symbol]` : '...rest: [slot?: symbol]';
+	const restParams = params.length
+		? `${params}, ...rest: [slot?: symbol]`
+		: '...rest: [slot?: symbol]';
 	return `export function ${nameMatch[1]}(${restParams}) {\n  const slot = resolveHookSlot(rest);${body}\n}`;
 }
 
@@ -181,14 +211,23 @@ function insertAfterImports(source, line) {
 }
 
 function migrateReducedMotionImport(source) {
-	return source.replace(/import \{([^}]*)\} from '@octanejs\/motion';/g, function split(_m, imports) {
-		const parts = imports.split(',').map(function trim(p) { return p.trim(); });
-		const motionParts = parts.filter(function keep(p) { return p && p !== 'useReducedMotion'; });
-		const out = [];
-		if (motionParts.length) out.push(`import { ${motionParts.join(', ')} } from '@octanejs/motion';`);
-		if (parts.includes('useReducedMotion')) out.push(`import { useReducedMotion } from '../hooks/reduced-motion';`);
-		return out.join('\n');
-	});
+	return source.replace(
+		/import \{([^}]*)\} from '@octanejs\/motion';/g,
+		function split(_m, imports) {
+			const parts = imports.split(',').map(function trim(p) {
+				return p.trim();
+			});
+			const motionParts = parts.filter(function keep(p) {
+				return p && p !== 'useReducedMotion';
+			});
+			const out = [];
+			if (motionParts.length)
+				out.push(`import { ${motionParts.join(', ')} } from '@octanejs/motion';`);
+			if (parts.includes('useReducedMotion'))
+				out.push(`import { useReducedMotion } from '../hooks/reduced-motion';`);
+			return out.join('\n');
+		},
+	);
 }
 
 function processComponent(file) {
@@ -202,21 +241,31 @@ function processComponent(file) {
 	if (!functions.length) return;
 
 	const preamble = extractPreamble(source, functions[0].start);
-	const merged = functions.reduce(function acc(cur, fn) {
-		const found = collectHookImports(fn.text);
-		for (const h of found.octane) cur.octane.add(h);
-		for (const h of found.motion) cur.motion.add(h);
-		cur.needsReducedMotion ||= found.needsReducedMotion;
-		return cur;
-	}, { octane: new Set(), motion: new Set(), needsReducedMotion: false });
+	const merged = functions.reduce(
+		function acc(cur, fn) {
+			const found = collectHookImports(fn.text);
+			for (const h of found.octane) cur.octane.add(h);
+			for (const h of found.motion) cur.motion.add(h);
+			cur.needsReducedMotion ||= found.needsReducedMotion;
+			return cur;
+		},
+		{ octane: new Set(), motion: new Set(), needsReducedMotion: false },
+	);
 
 	const hookImports = [];
-	if (merged.octane.size) hookImports.push(`import { ${[...merged.octane].sort().join(', ')} } from 'octane';`);
-	if (merged.motion.size) hookImports.push(`import { ${[...merged.motion].sort().join(', ')} } from '@octanejs/motion';`);
-	if (merged.needsReducedMotion) hookImports.push(`import { useReducedMotion } from './reduced-motion';`);
+	if (merged.octane.size)
+		hookImports.push(`import { ${[...merged.octane].sort().join(', ')} } from 'octane';`);
+	if (merged.motion.size)
+		hookImports.push(`import { ${[...merged.motion].sort().join(', ')} } from '@octanejs/motion';`);
+	if (merged.needsReducedMotion)
+		hookImports.push(`import { useReducedMotion } from './reduced-motion';`);
 	hookImports.push(`import { resolveHookSlot, subSlot } from './slot';`);
 
-	const hookSource = `${hookImports.join('\n')}\n\n${preamble ? `${preamble}\n\n` : ''}${functions.map(function mapFn(fn) { return convertFunctionToExport(fn.text); }).join('\n\n')}\n`;
+	const hookSource = `${hookImports.join('\n')}\n\n${preamble ? `${preamble}\n\n` : ''}${functions
+		.map(function mapFn(fn) {
+			return convertFunctionToExport(fn.text);
+		})
+		.join('\n\n')}\n`;
 	writeFileSync(hookFile, hookSource);
 
 	let component = source;
@@ -225,17 +274,36 @@ function processComponent(file) {
 	}
 	component = component.replace(/\n{3,}/g, '\n\n');
 	component = migrateReducedMotionImport(component);
-	component = insertAfterImports(component, `import { ${functions.map(function f(fn) { return fn.name; }).join(', ')} } from '../hooks/${name}';`);
+	component = insertAfterImports(
+		component,
+		`import { ${functions
+			.map(function f(fn) {
+				return fn.name;
+			})
+			.join(', ')} } from '../hooks/${name}';`,
+	);
 
 	const stillNeeds = new Set();
-	for (const hook of OCTANE_HOOKS) if (new RegExp(`\\b${hook}\\b`).test(component)) stillNeeds.add(hook);
-	component = component.replace(/^import \{([^}]+)\} from 'octane';?\n/gm, function trim(_m, imports) {
-		const kept = imports.split(',').map(function trim(p) { return p.trim(); }).filter(function keep(p) {
-			const base = p.replace(/^type\s+/, '').split(/\s+as\s+/)[0].trim();
-			return stillNeeds.has(base) || base === 'createContext';
-		});
-		return kept.length ? `import { ${kept.join(', ')} } from 'octane';\n` : '';
-	});
+	for (const hook of OCTANE_HOOKS)
+		if (new RegExp(`\\b${hook}\\b`).test(component)) stillNeeds.add(hook);
+	component = component.replace(
+		/^import \{([^}]+)\} from 'octane';?\n/gm,
+		function trim(_m, imports) {
+			const kept = imports
+				.split(',')
+				.map(function trim(p) {
+					return p.trim();
+				})
+				.filter(function keep(p) {
+					const base = p
+						.replace(/^type\s+/, '')
+						.split(/\s+as\s+/)[0]
+						.trim();
+					return stillNeeds.has(base) || base === 'createContext';
+				});
+			return kept.length ? `import { ${kept.join(', ')} } from 'octane';\n` : '';
+		},
+	);
 	writeFileSync(file, component);
 }
 
