@@ -16,6 +16,7 @@ import { verifyPortTestClassifications } from './hook-form-classifications-lib.m
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyReactTransitionGroupUpstream } from './react-transition-group-upstream-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -54,6 +55,11 @@ try {
 	verifyLivestoreTypes(REPO);
 } catch (error) {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);
+}
+try {
+	verifySolanaReactTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/solana-react type evidence is invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);

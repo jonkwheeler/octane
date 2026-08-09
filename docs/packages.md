@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**71 publishable package(s), including 57 framework binding(s) and 3 framework integration(s).**
+**74 publishable package(s), including 60 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -28,8 +28,10 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/docusaurus` | [`packages/docusaurus`](../packages/docusaurus) | framework integration | `0.0.16` | 8 |
 | `@octanejs/electron` | [`packages/electron`](../packages/electron) | framework binding | `0.0.10` | 6 |
 | `@octanejs/floating-ui` | [`packages/floating-ui`](../packages/floating-ui) | framework binding | `0.1.31` | 1 |
+| `@octanejs/gsap` | [`packages/gsap`](../packages/gsap) | framework binding | `0.0.1` | 1 |
 | `@octanejs/hook-form` | [`packages/hook-form`](../packages/hook-form) | framework binding | `0.1.29` | 1 |
 | `@octanejs/i18next` | [`packages/i18next`](../packages/i18next) | framework binding | `0.1.27` | 3 |
+| `@octanejs/inertia` | [`packages/inertia`](../packages/inertia) | framework binding | `0.0.1` | 3 |
 | `@octanejs/jotai` | [`packages/jotai`](../packages/jotai) | framework binding | `0.1.29` | 7 |
 | `@octanejs/lexical` | [`packages/lexical`](../packages/lexical) | framework binding | `0.1.31` | 42 |
 | `@octanejs/livestore` | [`packages/livestore`](../packages/livestore) | framework binding | `0.0.2` | 2 |
@@ -55,6 +57,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/rxjs` | [`packages/rxjs`](../packages/rxjs) | framework binding | `0.1.11` | 2 |
 | `@octanejs/seo` | [`packages/seo`](../packages/seo) | document metadata | `0.0.17` | 1 |
 | `@octanejs/shadcn` | [`packages/shadcn`](../packages/shadcn) | framework binding | `0.0.17` | 121 |
+| `@octanejs/solana-react` | [`packages/solana-react`](../packages/solana-react) | framework binding | `0.0.1` | 2 |
 | `@octanejs/sonner` | [`packages/sonner`](../packages/sonner) | framework binding | `0.1.27` | 2 |
 | `@octanejs/streamdown` | [`packages/streamdown`](../packages/streamdown) | framework binding | `0.1.11` | 6 |
 | `@octanejs/styled-components` | [`packages/styled-components`](../packages/styled-components) | framework binding | `0.1.24` | 1 |
