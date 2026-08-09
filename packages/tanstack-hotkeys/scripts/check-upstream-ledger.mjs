@@ -9,6 +9,7 @@ const upstreamRoot = resolve(packageRoot, 'upstream');
 function walk(directory) {
 	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
 		const path = resolve(directory, entry.name);
+		if (entry.name === 'node_modules' || entry.name === '.vite') return [];
 		return entry.isDirectory()
 			? walk(path)
 			: entry.isFile() && entry.name !== 'SHA256SUMS'

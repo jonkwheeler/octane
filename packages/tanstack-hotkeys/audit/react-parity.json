@@ -76,7 +76,7 @@
 				{
 					"path": "packages/tanstack-hotkeys/tests/upstream-pristine.vitest.config.ts",
 					"role": "support",
-					"sha256": "bce0aea47706b5cd8c190944298c5b85bd494b5913baac6336de36484b8d0eaa"
+					"sha256": "4ff7a9c63e85bd9abc53cb5ea8861b479b72ead23abac97dd1774ce4bad82d7f"
 				},
 				{
 					"path": "packages/tanstack-hotkeys/upstream/SHA256SUMS",
@@ -86,7 +86,7 @@
 				{
 					"path": "packages/tanstack-hotkeys/scripts/check-upstream-ledger.mjs",
 					"role": "support",
-					"sha256": "f2db3f73877d0c56cdd9830630b7fa16da528a585b16bfa2f53442ed10d5be41"
+					"sha256": "1036c0324def0e6522fd8c8050c390edd6aabe8339e1fd34f64b3011490d20af"
 				}
 			]
 		},

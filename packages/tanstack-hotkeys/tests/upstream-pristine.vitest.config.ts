@@ -7,6 +7,7 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../upstrea
 
 export default defineConfig({
 	root: packageRoot,
+	cacheDir: resolve(dirname(fileURLToPath(import.meta.url)), '../.vite-pristine'),
 	configFile: false,
 	plugins: [
 		react({
