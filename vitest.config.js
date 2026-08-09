@@ -733,14 +733,14 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/i18next/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'i18next',
 					include: ['packages/i18next/tests/**/*.test.ts'],
-					exclude: [...configDefaults.exclude, 'packages/i18next/tests/ssr/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/i18next/tests/differential/**/*.test.ts',
+						'packages/i18next/tests/ssr/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					setupFiles: ['packages/i18next/tests/_setup.ts'],
 					globals: false,
@@ -791,7 +791,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'i18next-ssr',
 					include: ['packages/i18next/tests/ssr/**/*.test.ts'],
