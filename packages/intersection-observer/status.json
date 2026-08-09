@@ -5,7 +5,7 @@
     "source": "https://github.com/thebuilder/react-intersection-observer/tree/v10.1.0",
     "license": "MIT"
   },
-  "surface": "Public runtime surface at react-intersection-observer 10.1.0: useInView, useOnInView, InView, observe, defaultFallbackInView, and test utilities. Upstream case-by-case runtime and type parity evidence remains incomplete.",
+  "surface": "Public runtime surface at react-intersection-observer 10.1.0: useInView, useOnInView, InView, observe, defaultFallbackInView, and test utilities. Pinned upstream unit suite and one-for-one adapted runtime/type probes are registered with react-parity:check; browser-provider cases remain outstanding.",
   "inventory": {
     "supported": ["useInView", "useOnInView", "InView", "observe", "defaultFallbackInView"],
     "subpaths": ["test-utils"]
@@ -14,7 +14,7 @@
     "Public node and prop types use Octane structural types and do not import React.",
     "InView is implemented as a function component while preserving the upstream render-prop and wrapper behavior.",
     "In TSRX, an InView render function must be supplied through the children prop; nested children compile to an opaque render block.",
-    "The vendored upstream runtime and type suites are not yet fully adapted or registered with react-parity:check; see UPSTREAM.md."
+    "Browser-provider upstream cases (`browser.test.tsx`) are not yet in the jsdom parity lanes; see UPSTREAM.md."
   ],
   "ssr": "Supported. Observation begins in an effect; initialInView controls deterministic server output.",
   "verified": "2026-07-30"

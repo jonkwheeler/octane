@@ -40,6 +40,7 @@ export function InView(props: InViewProps) {
 	if (typeof children === 'function' && !isChildrenBlock(children)) return children(renderProps);
 	const consumerRef = rest.ref;
 	const { ref: _ignoredRef, ...domProps } = rest;
-	const hostRef = consumerRef == null ? result.ref : [result.ref, consumerRef];
+	const hostRef =
+		consumerRef == null ? result.ref : [result.ref, consumerRef];
 	return createElement(as, { ...domProps, ref: hostRef }, children);
 }

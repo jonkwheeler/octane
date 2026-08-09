@@ -830,11 +830,61 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'intersection-observer-pristine',
+					include: ['packages/intersection-observer/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+				},
+			},
+			{
 				test: {
 					name: 'intersection-observer',
-					include: ['packages/intersection-observer/tests/**/*.test.ts'],
+					include: [
+						'packages/intersection-observer/tests/**/*.test.ts',
+						'packages/intersection-observer/tests/**/*.test.tsx',
+					],
+					exclude: [
+						'packages/intersection-observer/tests/upstream/**/*.test.ts',
+						'packages/intersection-observer/tests/upstream/**/*.test.tsx',
+						'packages/intersection-observer/tests/upstream-original.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/intersection-observer$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/intersection-observer/src/index.ts',
+							),
+						},
+						{
+							find: /^@octanejs\/intersection-observer\/test-utils$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/intersection-observer/src/test-utils.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'intersection-observer-adapted',
+					include: [
+						'packages/intersection-observer/tests/upstream/**/*.test.ts',
+						'packages/intersection-observer/tests/upstream/**/*.test.tsx',
+					],
+					environment: 'jsdom',
+					globals: false,
+					setupFiles: ['packages/intersection-observer/tests/upstream/_setup.ts'],
 				},
 				plugins: [octane()],
 				resolve: {

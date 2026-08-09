@@ -36,15 +36,14 @@ It is development evidence and is excluded from the published `files`.
 
 | Upstream artifact | Disposition |
 | --- | --- |
-| `src/__tests__/observe.test.ts` | Partially adapted in `tests/intersection-observer.test.ts`; a case-level inventory and remaining cases are still required. |
-| `src/__tests__/useInView.test.tsx` | Partially adapted in `tests/intersection-observer.test.ts`; not yet one-for-one. |
-| `src/__tests__/useOnInView.test.tsx` | Partially adapted in `tests/intersection-observer.test.ts`; not yet one-for-one. |
-| `src/__tests__/InView.test.tsx` | Partially adapted in `tests/intersection-observer.test.ts`; not yet one-for-one. |
-| `src/__tests__/setup.test.ts` | Gap: test-utility setup cases are not yet adapted one-for-one. |
-| `src/__tests__/browser.test.tsx` | Gap: requires the browser/playground CI lane. |
+| `src/__tests__/observe.test.ts` | Adapted one-for-one in `tests/upstream/observe.test.ts`; pristine + adapted inventories registered. |
+| `src/__tests__/useInView.test.tsx` | Adapted one-for-one in `tests/upstream/useInView.test.tsx`. |
+| `src/__tests__/useOnInView.test.tsx` | Adapted one-for-one in `tests/upstream/useOnInView.test.tsx`. |
+| `src/__tests__/InView.test.tsx` | Adapted one-for-one in `tests/upstream/InView.test.tsx`. |
+| `src/__tests__/setup.test.ts` | Adapted one-for-one in `tests/upstream/setup.test.ts`. |
+| `src/__tests__/browser.test.tsx` | Gap: requires Vitest browser/Playwright provider; excluded from the jsdom pristine/adapted lanes. |
 
-The current suite is classified as Octane-only framework/contract evidence.
-It does not yet satisfy the repository's pristine/adapted runtime and type-parity
-lanes, inventories, or negative controls. Until those gaps are closed and wired
-into `react-parity:check`, this package must remain a draft and its status must
-not be read as a complete React-parity claim.
+Ordinary Octane-only contract tests remain in `tests/intersection-observer.test.ts`
+outside `testExecution`. Parity evidence is owned by the
+`intersection-observer-pristine` and `intersection-observer-adapted` projects and
+`packages/intersection-observer/audit/react-parity.json`.

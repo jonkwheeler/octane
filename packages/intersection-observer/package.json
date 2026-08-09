@@ -43,7 +43,13 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@octanejs/testing-library": "workspace:*",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
     "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
     "react-intersection-observer": "10.1.0",
     "vitest": "catalog:default"
   }
