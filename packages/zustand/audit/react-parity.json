@@ -96,9 +96,9 @@
       "notes": "Authenticates bounded stabilization for unstable fresh-reference selectors.",
       "files": [
         {
-          "path": "packages/zustand/tests/conformance/extras.test.ts",
+          "path": "packages/zustand/tests/conformance/unstable-selectors.test.ts",
           "role": "test",
-          "sha256": "ddec18b64d8da1c23d57d963bc75058904dfa5a6a101cc066fda1dd9d6ad2150",
+          "sha256": "64ab52e93e8b36e52fddeb71178b413e6f4420c8d08f6ed70b44965bf392c149",
           "cases": [
             {
               "id": "adapted:zustand-unstable-selectors",

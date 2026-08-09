@@ -8,14 +8,19 @@
     },
     {
       "path": "packages/zustand/tests/conformance/extras.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "zustand-unstable-selectors",
-      "reason": "Authenticates the unstable-selector divergence plus reused shallow and middleware contracts."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks reused shallow and middleware contracts plus store-swap re-subscription."
     },
     {
       "path": "packages/zustand/tests/conformance/traditional.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks equality-function render bailouts that cannot be observed through differential DOM output."
+    },
+    {
+      "path": "packages/zustand/tests/conformance/unstable-selectors.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "zustand-unstable-selectors",
+      "reason": "Authenticates the unstable-selector divergence from React useSyncExternalStore."
     },
     {
       "path": "packages/zustand/tests/differential/parity.test.ts",
