@@ -9,7 +9,7 @@
     "testRoot": "packages/frameworks/react/tests",
     "license": "MIT",
     "integrity": "sha256:037f857d00462559b9790acc2214c818678eb9d61970d6c394dc26dcfcd1516d",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "441c717552daac8018eac0bfcc2c03747cdc6a6a0986ef0c87eb0b83d19a17ae"
+      "lockfileSha256": "c173dcaac521196913fe9be0616596ebfcb5a1587983cb68e509a06091416209"
     }
   },
   "lanes": [
@@ -130,7 +130,7 @@
         {
           "path": "scripts/react-parity/zag-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "473f4b8879da52dfc1180a607ed0421e05759ed3fa1af07173aeaa0438ef8319"
+          "sha256": "bc7b7e6863ddbed601f20b0451ca97265c9da34262dc007dbcb4825a4cdef647"
         },
         {
           "path": "scripts/react-parity/zag-runtime-crosswalk.mjs",
@@ -184,6 +184,92 @@
           "path": "vitest.config.js",
           "role": "support",
           "sha256": "6bc78f67f2b45e1dc9f2f4de22bd10f64571093e762029dbebd8fdd6020bf827"
+        }
+      ]
+    },
+    {
+      "id": "zag-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zag-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes against the vendored @zag-js/react 1.42.0 surface, including negative controls.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/zag/audit/type-probes/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/zag/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "7c0c9e541267df391b8a96daf7242b7e359f01890f7c3e51f8aaf3d99ca273f1",
+          "cases": [
+            {
+              "id": "types:zag-pristine",
+              "testName": "pinned React declaration probes",
+              "fullName": "pinned React declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/zag/audit/type-probes/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "952cd942d9dc9238721a42d3d8b7b53db430ae7126b710d81566ee1d1005b938"
+        },
+        {
+          "path": "packages/zag/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+        },
+        {
+          "path": "packages/zag/audit/type-parity.json",
+          "role": "support",
+          "sha256": "3bac60bab74289ab8c2786f8eecd2dcc69bc14abc40e286a31cfaeef9311af07"
+        }
+      ]
+    },
+    {
+      "id": "zag-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zag-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Octane public type probes with matching negative controls after the permitted ReactNode→OctaneNode transformation.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/zag/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/zag/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "ea39b0f64ce1dd59d4de7b3fd907a9aef00c5551bb813583565e368ae8e7140e",
+          "cases": [
+            {
+              "id": "types:zag-adapted",
+              "testName": "adapted Octane declaration probes",
+              "fullName": "adapted Octane declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/zag/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "9a892dc8d2beb8436c93d3b7cbd3c3e9e02a6840058d6695da54171f8d7e9e25"
+        },
+        {
+          "path": "packages/zag/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "3e5a10a15c7cfc431288f01fe2a1a279724e378d6ab0f154297d6f708dab6417"
+        },
+        {
+          "path": "packages/zag/audit/type-parity.json",
+          "role": "support",
+          "sha256": "3bac60bab74289ab8c2786f8eecd2dcc69bc14abc40e286a31cfaeef9311af07"
         }
       ]
     }

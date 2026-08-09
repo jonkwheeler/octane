@@ -15,6 +15,7 @@ import {
 	assertPristineAdaptedCrosswalk,
 	loadZagRuntimeCaseDispositions,
 } from './zag-runtime-crosswalk.mjs';
+import { renderTypeInventories } from './zag-types-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -136,3 +137,12 @@ console.log(
 	'adaptedRuntimeSummary',
 	JSON.stringify(summarizeRuntimeInventories([adaptedInventory]), null, 2),
 );
+
+const { config: typeConfig, inventory: typeInventory } = renderTypeInventories(root);
+for (const side of ['upstream', 'adapted']) {
+	const destination = typeConfig.inventories[side];
+	const absolute = resolve(root, destination);
+	mkdirSync(dirname(absolute), { recursive: true });
+	writeFileSync(absolute, `${JSON.stringify(typeInventory[side], null, 2)}\n`);
+	console.log(`${destination}: ${typeInventory[side].length} files`);
+}

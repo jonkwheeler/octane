@@ -49,6 +49,8 @@ Parity evidence:
 - pristine full suite: `zag-pristine` Vitest project / `tests/upstream-original.test.ts`
 - adapted full suite: `zag` Vitest project / `tests/upstream/**/*.test.ts`
 - differential (supplementary): `zag-differential` / `tests/differential/machine.test.ts`
+- pristine types: `packages/zag/audit/type-probes` via `tsc`
+- adapted types: `packages/zag/typetests` via `tsrx-tsc`
 
 Conformance and SSR tests remain ordinary `zag` / `zag-ssr` package coverage and
 are not counted as adapted upstream-suite identities.

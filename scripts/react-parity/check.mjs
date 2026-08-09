@@ -16,6 +16,7 @@ import { verifyPortTestClassifications } from './hook-form-classifications-lib.m
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifyZagTestClassifications } from './zag-classifications-lib.mjs';
+import { verifyZagTypes } from './zag-types-lib.mjs';
 import { verifyZagUpstream } from '../../packages/zag/scripts/verify-upstream.mjs';
 import { verifyZagRuntimeCrosswalk } from './zag-runtime-crosswalk.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
@@ -66,6 +67,11 @@ try {
 	verifyZagUpstream(path.join(REPO, 'packages/zag'));
 } catch (error) {
 	errors.push(`zag upstream evidence is invalid: ${error.message}`);
+}
+try {
+	verifyZagTypes(REPO);
+} catch (error) {
+	errors.push(`zag type evidence is invalid: ${error.message}`);
 }
 try {
 	verifyZagTestClassifications(REPO);
