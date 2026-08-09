@@ -16,19 +16,28 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-select/src"],
-      "include": ["\\.(?:ts|tsrx|mjs)$"],
+      "roots": [
+        "packages/react-select/src",
+        "packages/react-select/typetests"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx|mjs)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-select/tests"],
-      "include": ["\\.test\\.(?:ts|mjs)$"],
+      "roots": [
+        "packages/react-select/tests/upstream"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|mjs)$"
+      ],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 139,
-    "uniqueIdentities": 139,
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -43,6 +52,78 @@
     }
   },
   "lanes": [
+    {
+      "id": "react-select-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-select-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-select 5.10.2 Jest suites against the vendored React implementation, verifies all 255 passing identities and five snapshots, and preserves the three canonical upstream skips.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/react-select/tests/upstream-jest.config.cjs",
+        "root": "packages/react-select/upstream",
+        "inventory": "packages/react-select/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-select/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "5f097f6c4debdf0a515629aeebbfc542ff70e614a0d2d9958ee07321b580a444"
+        },
+        {
+          "path": "packages/react-select/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "5907ef3ba5c8ef071a4ce6a335f7c1ec4725702e1cc63f6ca6fb4365e61d5f2c"
+        },
+        {
+          "path": "scripts/react-parity/react-select-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "ddefb179b66cbb244733c6ec7d5bf3785c9e0de90c112dc900917b0bd1426b07"
+        },
+        {
+          "path": "scripts/react-parity/react-select-pristine-runtime.d.mts",
+          "role": "support",
+          "sha256": "0a4b3469c1c64107be9e3e1f6f475fd06b10e84ecc2e9dfad6f5fa767c3b8c22"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "63641841ef1036467238d4a01188d14d529b639808814783b86d886efa00dc92"
+        },
+        {
+          "path": "packages/react-select/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "afe9505b2eb1fc35eec286aec284a35524eab572bde3946703a2453c343a1b8a"
+        },
+        {
+          "path": "packages/react-select/scripts/verify-upstream.mjs",
+          "role": "support",
+          "sha256": "7ffdf13642702886444dd2646cf11c4ba17d4f0c1a80ea0c3385173109dd672d"
+        },
+        {
+          "path": "packages/react-select/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "01af40b831f03a23dd941a7fed22273c369db07638228f87bc0c5d75b70ac4f6"
+        },
+        {
+          "path": "packages/react-select/tests/upstream-jest.setup.ts",
+          "role": "support",
+          "sha256": "a46d66851af2c056e805fdd574bf5ec3adb1181c43c5e41f0a1c592e338afe64"
+        },
+        {
+          "path": "packages/react-select/tests/upstream-jest-transformer.cjs",
+          "role": "support",
+          "sha256": "3fadc0e3e5f5fe6a276f9a6e356807e60228dd65e791fa19d7d133d54c7a56e1"
+        },
+        {
+          "path": "packages/react-select/tests/upstream-emotion-serializer.cjs",
+          "role": "support",
+          "sha256": "f05297f58037be355c988f4eed0149cacbd1e08fde2039981029fafaaba1de9a"
+        }
+      ]
+    },
     {
       "id": "react-select-local-types",
       "type": "adapted-types",
@@ -173,32 +254,7 @@
         {
           "path": "packages/react-select/typetests/compat.ts",
           "role": "support",
-          "sha256": "2b98cc9d21371e6d5d504d6a6b8b3f00d8379078dd4b7c8c714db0ba0444dc05"
-        }
-      ]
-    },
-    {
-      "id": "react-select-adapted-full-suite",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-select",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs every collected adapted runtime, SSR, Chromium, verifier, and React differential test and verifies exact test identities.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-select/audit/adapted-runtime.json"
-      },
-      "files": [
-        {
-          "path": "packages/react-select/audit/adapted-runtime.json",
-          "role": "support",
-          "sha256": "c4e9cf8b9bcff26bfeb9c9fd9f5a7cceea47697547325141afc9ea90ec50b9b1"
-        },
-        {
-          "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
-          "role": "support",
-          "sha256": "78961a23aa7d23fba87dd697abd0938d145b870c016827b2e64231617ce28385"
+          "sha256": "4e8cef1b166dd6f816dbf35ec8da8f5a95c7cb18825c594e5ad288cc2b9e60a6"
         }
       ]
     }
@@ -206,7 +262,9 @@
   "divergences": [
     {
       "id": "react-select-octane-node",
-      "caseIds": ["types:octane-node-adaptation"],
+      "caseIds": [
+        "types:octane-node-adaptation"
+      ],
       "upstreamResult": "Renderable callbacks and component contracts use ReactNode.",
       "octaneResult": "Renderable callbacks and component contracts use OctaneNode.",
       "rationale": "Octane components render Octane nodes without a React runtime dependency.",
@@ -218,7 +276,9 @@
     },
     {
       "id": "react-select-native-events",
-      "caseIds": ["types:native-event-adaptation"],
+      "caseIds": [
+        "types:native-event-adaptation"
+      ],
       "upstreamResult": "Event-bearing contracts expose React synthetic events.",
       "octaneResult": "Event-bearing contracts expose native DOM events.",
       "rationale": "Octane delivers native DOM events rather than React synthetic events.",
@@ -230,7 +290,9 @@
     },
     {
       "id": "react-select-octane-styles",
-      "caseIds": ["types:octane-style-adaptation"],
+      "caseIds": [
+        "types:octane-style-adaptation"
+      ],
       "upstreamResult": "Renderer-owned style contracts expose Emotion CSSObjectWithLabel values.",
       "octaneResult": "Renderer-owned style contracts expose Octane style objects.",
       "rationale": "Octane owns style serialization and does not require Emotion at runtime.",

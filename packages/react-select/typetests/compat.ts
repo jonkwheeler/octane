@@ -1,3 +1,7 @@
+// OCTANE DIVERGENCE[react-select-octane-node][types:octane-node-adaptation]: renderer-owned renderable contracts use OctaneNode instead of ReactNode.
+// OCTANE DIVERGENCE[react-select-native-events][types:native-event-adaptation]: event-bearing contracts use native DOM events instead of React synthetic events.
+// OCTANE DIVERGENCE[react-select-octane-styles][types:octane-style-adaptation]: renderer-owned style contracts use Octane style objects instead of Emotion CSS objects.
+
 import type * as Local from '../src/index';
 import type * as LocalAsync from '../src/async.tsrx';
 import type * as LocalAsyncCreatable from '../src/async-creatable.tsrx';

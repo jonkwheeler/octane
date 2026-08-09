@@ -3512,11 +3512,24 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
+					name: 'react-select-pristine',
+					include: ['packages/react-select/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+				},
+			},
+			{
+				// Repo-authored SSR/Chromium/verifier/crosswalk coverage stays in the
+				// ordinary shards. Upstream-suite adapted evidence will use a narrow
+				// testExecution.include once packages/react-select/tests/upstream/** exists.
+				test: {
 					name: 'react-select',
 					include: [
 						'packages/react-select/tests/**/*.test.ts',
 						'packages/react-select/tests/**/*.test.mjs',
 					],
+					exclude: ['packages/react-select/tests/upstream-original.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,

@@ -47,7 +47,7 @@ The paired fixtures in `typetests/` compile the same consumer-shaped public type
 
 ## Upstream test disposition
 
-The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. They are React-renderer tests and are not executed directly against Octane. Their observable contracts are adapted into the registered `react-select` Vitest project:
+The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The `react-select-pristine` project executes them unchanged against the vendored React source with the pinned upstream React, Jest, Testing Library, and Emotion stack. It verifies 255 passing Jest identities and five snapshots; the three skips are present in the upstream suite itself. The separate Octane lanes provide selected adapted, differential, SSR, and browser evidence:
 
 | Retained suite | Executable Octane evidence |
 | --- | --- |
@@ -57,4 +57,4 @@ The five canonical Jest suites and their snapshots are retained verbatim under `
 | `Creatable.test.tsx` | Creation metadata, delegated creation, option placement, and suppression differentials |
 | `AsyncCreatable.test.tsx` | Composed async/creatable public contract and export coverage |
 
-The registered inventory in `audit/adapted-runtime.json` is generated from every collected test identity. Run `pnpm --filter @octanejs/react-select test` to verify the vendored pin, fail-closed export crosswalk, and all runtime lanes; run `pnpm --filter @octanejs/react-select typecheck` for paired type evidence.
+The mixed inventory in `audit/adapted-runtime.json` records the current Octane runtime evidence; it is not a one-for-one adaptation of the upstream Jest inventory. Run `pnpm --filter @octanejs/react-select test` to verify the vendored pin, fail-closed export crosswalk, pristine upstream suite, and Octane runtime lanes; run `pnpm --filter @octanejs/react-select typecheck` for paired type evidence.
