@@ -733,6 +733,110 @@ export default defineConfig({
 				},
 			},
 			{
+				// Octane-only unpaired conformance for @octanejs/inertia.
+				// Parity-owned adapted / differential projects are separate
+				// (see packages/inertia/audit/react-parity.json).
+				test: {
+					name: 'inertia',
+					include: ['packages/inertia/tests/**/*.test.ts'],
+					exclude: [
+						'packages/inertia/tests/ssr/**/*.test.ts',
+						'packages/inertia/tests/adapted/**/*.test.ts',
+						'packages/inertia/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/inertia\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'inertia-adapted',
+					include: ['packages/inertia/tests/adapted/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/inertia\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'inertia-differential',
+					include: ['packages/inertia/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/inertia/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/inertia\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+						{
+							find: /^inertia-page-context$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/PageContext.ts'),
+						},
+					],
+				},
+			},
+			{
+				// Octane-only unpaired SSR framework contracts; ordinary shards only.
+				test: {
+					name: 'inertia-ssr',
+					include: ['packages/inertia/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
 				test: {
 					name: 'i18next',
 					include: ['packages/i18next/tests/**/*.test.ts'],
@@ -918,6 +1022,63 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/tanstack-store/src/index.ts'),
 						},
 					],
+				},
+			},
+			{
+				test: {
+					name: 'solana-react',
+					include: ['packages/solana-react/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/solana-react/tests/upstream/**/*.test.ts',
+						'packages/solana-react/tests/upstream-original.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/solana-react$/,
+							replacement: resolve(import.meta.dirname, 'packages/solana-react/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/solana-react\/query$/,
+							replacement: resolve(import.meta.dirname, 'packages/solana-react/src/query.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'solana-react-adapted',
+					include: ['packages/solana-react/tests/upstream/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/solana-react$/,
+							replacement: resolve(import.meta.dirname, 'packages/solana-react/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/solana-react\/query$/,
+							replacement: resolve(import.meta.dirname, 'packages/solana-react/src/query.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'solana-react-pristine',
+					include: ['packages/solana-react/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
 				},
 			},
 			{
@@ -3517,6 +3678,46 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'gsap',
+					include: [
+						'packages/gsap/tests/**/*.test.ts',
+						'!packages/gsap/tests/ssr/**/*.test.ts',
+						'!packages/gsap/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/gsap$/,
+							replacement: resolve(import.meta.dirname, 'packages/gsap/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'gsap-differential',
+					include: ['packages/gsap/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/gsap/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/gsap$/,
+							replacement: resolve(import.meta.dirname, 'packages/gsap/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
 					name: 'mantine-hooks',
 					include: ['packages/mantine-hooks/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
@@ -3552,6 +3753,27 @@ export default defineConfig({
 								import.meta.dirname,
 								'packages/react-error-boundary/src/server.tsrx',
 							),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'gsap-ssr',
+					include: ['packages/gsap/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/gsap$/,
+							replacement: resolve(import.meta.dirname, 'packages/gsap/src/index.ts'),
 						},
 					],
 				},
