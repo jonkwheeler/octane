@@ -22,7 +22,7 @@ test('should warn if not running in test env', function shouldWarnIfNotRunningIn
 	mockAllIsIntersecting(true);
 	expect(console.error)
 		.toHaveBeenCalledWith(`@octanejs/intersection-observer was not configured to handle mocking.
-Outside Jest and Vitest, you might need to manually configure it by calling setupIntersectionMocking() and resetIntersectionMocking() in your test setup file.
+Unlike upstream react-intersection-observer, this binding does not auto-register Vitest/Jest beforeEach/afterEach. Call setupIntersectionMocking() and resetIntersectionMocking() in your test setup file (including under Vitest and Jest).
 
 // test-setup.js
 import { resetIntersectionMocking, setupIntersectionMocking } from '@octanejs/intersection-observer/test-utils';
