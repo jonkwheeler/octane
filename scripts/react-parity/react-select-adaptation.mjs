@@ -8,29 +8,7 @@ const pristinePath = resolve(root, 'packages/react-select/audit/pristine-runtime
 const adaptedPath = resolve(root, 'packages/react-select/audit/adapted-runtime.json');
 const destination = resolve(root, 'packages/react-select/audit/adaptation.json');
 const expectedPristineCases = 255;
-const expectedAdaptedCases = 248;
-const blockedReasons = new Map([
-	[
-		'accessibility > aria-activedescendant for basic options test-input-name',
-		'Blocked by the Octane binding focusing the first option instead of the controlled selected option when the menu opens.',
-	],
-	[
-		'accessibility > aria-activedescendant for grouped options test-input-name',
-		'Blocked by the Octane binding focusing the first grouped option instead of the controlled selected option when the menu opens.',
-	],
-	[
-		'accessibility > aria-activedescendant should not exist if hideSelectedOptions=true',
-		'Blocked by the Octane binding assigning the first visible option instead of an empty aria-activedescendant when the selected option is hidden.',
-	],
-	[
-		'should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false',
-		'Blocked by the Octane binding suppressing the clear callback for an empty single-select value.',
-	],
-	[
-		'to not clear value when hitting escape if escapeClearsValue is true and isClearable is false',
-		'Blocked by the Octane binding clearing on Escape even when isClearable is false.',
-	],
-]);
+const expectedAdaptedCases = 255;
 
 function upstreamFileFor(adaptedFile) {
 	const adaptedBasename = basename(adaptedFile);
@@ -115,17 +93,7 @@ export function buildAdaptationInventory(pristine, adapted) {
 				adaptedFile,
 			};
 		}
-		const reason = blockedReasons.get(test.fullName);
-		if (!reason) {
-			throw new Error(`Pending case has no blocker rationale: ${test.file} ${test.fullName}`);
-		}
-		return {
-			id: test.id,
-			upstreamFile: test.file,
-			fullName: test.fullName,
-			disposition: 'pending',
-			reason,
-		};
+		throw new Error(`Pristine case has no adaptation: ${test.file} ${test.fullName}`);
 	});
 
 	return {

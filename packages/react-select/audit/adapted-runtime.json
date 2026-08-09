@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "react-select",
-  "roots": ["packages/react-select/tests/upstream"],
+  "roots": [
+    "packages/react-select/tests/upstream"
+  ],
   "files": [
     "packages/react-select/tests/upstream/Async.test.ts",
     "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
@@ -229,6 +231,31 @@
       "id": "runtime:974c45ade0149c94",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "accessibility announces cleared values"
+    },
+    {
+      "id": "runtime:8e997668e9b7af9f",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility aria-activedescendant for basic options test-input-name"
+    },
+    {
+      "id": "runtime:8e997668e9b7af9f:2",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility aria-activedescendant for basic options test-input-name"
+    },
+    {
+      "id": "runtime:113d993481b50c67",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility aria-activedescendant for grouped options test-input-name"
+    },
+    {
+      "id": "runtime:113d993481b50c67:2",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility aria-activedescendant for grouped options test-input-name"
+    },
+    {
+      "id": "runtime:eb3a7b51aafaed31",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility aria-activedescendant should not exist if hideSelectedOptions=true"
     },
     {
       "id": "runtime:b1a562cf236d5097",
@@ -936,6 +963,11 @@
       "fullName": "should call not call onChange on hitting backspace when backspaceRemovesValue is true and isMulti is true and there are no values"
     },
     {
+      "id": "runtime:28908724f5fbdbb5",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false"
+    },
+    {
       "id": "runtime:d3b9357fe36a1068",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "should call onChange with an array on hitting backspace when backspaceRemovesValue is true and isMulti is true"
@@ -974,6 +1006,11 @@
       "id": "runtime:0e6fcf39394d5afb",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "to not clear value when hitting escape if escapeClearsValue is false (default) and isClearable is true"
+    },
+    {
+      "id": "runtime:e0649a4b88e42e3c",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "to not clear value when hitting escape if escapeClearsValue is true and isClearable is false"
     },
     {
       "id": "runtime:e20664d36ccbe77d",

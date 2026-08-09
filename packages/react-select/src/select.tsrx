@@ -379,6 +379,20 @@ export function buildCategorizedOptions<
 	return result;
 }
 
+function buildFocusableOptionsFromCategorized<Option, Group extends GroupBase<Option>>(
+	categorized: readonly CategorizedGroupOrOption<Option, Group>[],
+): Option[] {
+	const options: Option[] = [];
+	for (const item of categorized) {
+		if (item.type === 'option') {
+			options.push(item.data);
+			continue;
+		}
+		for (const option of item.options) options.push(option.data);
+	}
+	return options;
+}
+
 let nextInstanceId = 1;
 
 const a11yTextStyle = {
@@ -625,18 +639,27 @@ export function Select<
 	Group extends GroupBase<Option> = GroupBase<Option>,
 >(inputProps: SelectProps<Option, IsMulti, Group>) @{
 	const props = { ...defaultProps, ...inputProps } as RequiredSelectProps<Option, IsMulti, Group>;
+	const selectValue = cleanValue(props.value ?? null);
+	const categorized = buildCategorizedOptions(props, selectValue);
+	const focusableOptions = buildFocusableOptionsFromCategorized(categorized);
+	function initialFocusedOption(): Option | null {
+		if (!props.menuIsOpen) return null;
+		if (!selectValue.length) return null;
+		return focusableOptions.includes(selectValue[0]) ? selectValue[0] : null;
+	}
 	const [instancePrefix] = useState(() => `react-select-${props.instanceId ?? nextInstanceId++}`);
 	const [isFocused, setIsFocused] = useState(false);
 	const [isComposing, setIsComposing] = useState(false);
 	const [inputIsHidden, setInputIsHidden] = useState(false);
 	const [appleDevice] = useState(isAppleDevice);
-	const [focusedOption, setFocusedOption] = useState<Option | null>(null);
+	const [focusedOption, setFocusedOption] = useState<Option | null>(initialFocusedOption);
 	const [focusedValue, setFocusedValue] = useState<Option | null>(null);
 	const [ariaSelection, setAriaSelection] = useState<AriaSelection<Option, IsMulti> | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const controlRef = useRef<HTMLDivElement | null>(null);
 	const initialTouch = useRef({ x: 0, y: 0 });
 	const userIsDragging = useRef(false);
+	const initialFocusPass = useRef(selectValue.length > 0);
 	const menuRef = useRef<HTMLDivElement | null>(null);
 	const menuListRef = useRef<HTMLDivElement | null>(null);
 	const focusedOptionRef = useRef<HTMLDivElement | null>(null);
@@ -644,7 +667,6 @@ export function Select<
 		props.menuPlacement === 'top' ? 'top' : 'bottom',
 	);
 	const [menuMaxHeight, setMenuMaxHeight] = useState(props.maxMenuHeight);
-	const selectValue = cleanValue(props.value ?? null);
 	const theme: Theme = useMemo(() => {
 		if (!props.theme) return defaultTheme;
 		if (typeof props.theme === 'function') return props.theme(defaultTheme);
@@ -683,11 +705,11 @@ export function Select<
 	useEffect(() => {
 		if (props.autoFocus) inputRef.current?.focus();
 	}, []);
-	const categorized = buildCategorizedOptions(props, selectValue);
-	const focusableOptions = categorized.flatMap(
-		(item) => item.type === 'group' ? item.options.map((option) => option.data) : [item.data],
-	);
 	useEffect(() => {
+		if (initialFocusPass.current) {
+			initialFocusPass.current = false;
+			return;
+		}
 		if (!props.menuIsOpen) {
 			if (focusedOption !== null) setFocusedOption(null);
 			return;
@@ -1024,14 +1046,14 @@ export function Select<
 				break;
 			case 'Escape':
 				if (props.menuIsOpen) closeMenu();
-				else if (props.escapeClearsValue && selectValue.length) clearValue();
+				else if (props.isClearable && props.escapeClearsValue && selectValue.length) clearValue();
 				else return;
 				break;
 			case 'Backspace':
 			case 'Delete':
 				if (props.inputValue) return;
 				if (focusedValue) removeValue(focusedValue);
-				else if (props.backspaceRemovesValue && selectValue.length) {
+				else if (props.backspaceRemovesValue) {
 					if (props.isMulti) popValue();
 					else if (props.isClearable) clearValue();
 				}
@@ -1173,6 +1195,23 @@ export function Select<
 				? elementId('live-region')
 				: undefined
 			: elementId('placeholder');
+	function focusedOptionId(): string {
+		if (!focusedOption) return '';
+		for (const item of categorized) {
+			if (item.type === 'option') {
+				if (item.data === focusedOption) return elementId(`option-${item.index}`);
+				continue;
+			}
+			for (const option of item.options) {
+				if (option.data === focusedOption) {
+					return elementId(`option-${item.index}-${option.index}`);
+				}
+			}
+		}
+		return '';
+	}
+	const ariaActiveDescendant =
+		appleDevice ? undefined : focusedOptionId();
 	const commonInputAttributes = {
 		id: inputId,
 		disabled: props.isDisabled,
@@ -1189,11 +1228,7 @@ export function Select<
 		'aria-labelledby': props['aria-labelledby'],
 		'aria-required': props.required,
 		role: 'combobox',
-		'aria-activedescendant': appleDevice
-			? undefined
-			: focusedOption
-				? elementId(`option-${focusableOptions.indexOf(focusedOption)}`)
-				: '',
+		'aria-activedescendant': ariaActiveDescendant,
 		'aria-controls': props.menuIsOpen ? elementId('listbox') : undefined,
 		'aria-describedby': ariaDescribedBy,
 	};
@@ -1244,11 +1279,7 @@ export function Select<
 					aria-labelledby={props['aria-labelledby']}
 					aria-required={props.required}
 					role="combobox"
-					aria-activedescendant={appleDevice
-						? undefined
-						: focusedOption
-							? elementId(`option-${focusableOptions.indexOf(focusedOption)}`)
-							: ''}
+					aria-activedescendant={ariaActiveDescendant}
 					aria-controls={props.menuIsOpen ? elementId('listbox') : undefined}
 					aria-describedby={ariaDescribedBy}
 				/>;

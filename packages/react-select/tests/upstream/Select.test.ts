@@ -31,6 +31,29 @@ const BOOLEAN_OPTIONS: readonly BooleanOption[] = [
 	{ label: 'false', value: false },
 ];
 
+const GROUPED_OPTIONS = [
+	{
+		label: 'Numbers',
+		options: [
+			{ label: '0', value: 0 },
+			{ label: '1', value: 1 },
+			{ label: '2', value: 2 },
+			{ label: '3', value: 3 },
+			{ label: '4', value: 4 },
+			{ label: '5', value: 5 },
+			{ label: '6', value: 6 },
+			{ label: '7', value: 7 },
+			{ label: '8', value: 8 },
+			{ label: '9', value: 9 },
+			{ label: '10', value: 10 },
+		],
+	},
+	{
+		label: 'Booleans',
+		options: BOOLEAN_OPTIONS,
+	},
+] as const;
+
 const ACCENTED_OPTIONS: readonly Option[] = [
 	{ label: 'school', value: 'en' },
 	{ label: 'école', value: 'fr' },
@@ -747,6 +770,13 @@ upstreamTest(
 );
 
 upstreamTest(
+	'to not clear value when hitting escape if escapeClearsValue is true and isClearable is false',
+	function keepsNonClearableEscapeValue() {
+		assertEscapeDoesNotClear(true, false);
+	},
+);
+
+upstreamTest(
 	'hitting spacebar should not select option if isSearchable is true (default)',
 	function ignoresSearchableSpace() {
 		const onChange = vi.fn();
@@ -1109,6 +1139,25 @@ upstreamTest(
 );
 
 upstreamTest(
+	'should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false',
+	function clearsEmptySingleValueOnBackspace() {
+		const onChange = vi.fn();
+		const result = renderSelect({
+			backspaceRemovesValue: true,
+			isClearable: true,
+			isMulti: false,
+			onChange,
+		});
+		fireEvent.keyDown(selectControl(result.container), { keyCode: 8, key: 'Backspace' });
+		expect(onChange).toHaveBeenCalledWith(null, {
+			action: 'clear',
+			name: 'test-input-name',
+			removedValues: [],
+		});
+	},
+);
+
+upstreamTest(
 	'should call onChange with an array on hitting backspace when backspaceRemovesValue is true and isMulti is true',
 	function popsMultiValueOnBackspace() {
 		const onChange = vi.fn();
@@ -1140,6 +1189,120 @@ upstreamTest(
 		});
 		fireEvent.keyDown(selectControl(result.container), { keyCode: 8, key: 'Backspace' });
 		expect(onChange).not.toHaveBeenCalled();
+	},
+);
+
+function activeDescendant(container: HTMLElement): string | null {
+	return inputFor(container).getAttribute('aria-activedescendant');
+}
+
+function selectMenu(container: HTMLElement): Element {
+	const selectMenu = menu(container);
+	if (!selectMenu) throw new Error('Expected select menu');
+	return selectMenu;
+}
+
+function assertBasicActiveDescendant(isMulti: boolean): void {
+	const renderProps = {
+		instanceId: 1000,
+		value: OPTIONS[2],
+		menuIsOpen: true,
+		hideSelectedOptions: false,
+		isMulti,
+	};
+	const result = renderSelect(renderProps);
+
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-2');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 40, key: 'ArrowDown' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-3');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 38, key: 'ArrowUp' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-2');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 36, key: 'Home' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 35, key: 'End' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-16');
+
+	result.rerender({ props: basicProps({ ...renderProps, menuIsOpen: false }) });
+	expect(activeDescendant(result.container)).toBe('');
+
+	result.rerender({ props: basicProps({ ...renderProps, autoFocus: true, inputValue: 'four' }) });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-4');
+	result.rerender({ props: basicProps({ ...renderProps, autoFocus: true, inputValue: 'fourt' }) });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-14');
+	result.rerender({ props: basicProps({ ...renderProps, autoFocus: true, inputValue: 'fourt1' }) });
+	expect(activeDescendant(result.container)).toBe('');
+}
+
+upstreamTest(
+	'accessibility > aria-activedescendant for basic options test-input-name',
+	function tracksSingleBasicOption() {
+		assertBasicActiveDescendant(false);
+	},
+);
+
+upstreamTest(
+	'accessibility > aria-activedescendant for basic options test-input-name',
+	function tracksMultiBasicOption() {
+		assertBasicActiveDescendant(true);
+	},
+);
+
+function assertGroupedActiveDescendant(isMulti: boolean): void {
+	const renderProps = {
+		instanceId: 1000,
+		options: GROUPED_OPTIONS,
+		value: GROUPED_OPTIONS[0].options[2],
+		menuIsOpen: true,
+		hideSelectedOptions: false,
+		isMulti,
+	};
+	const result = renderSelect(renderProps);
+
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0-2');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 40, key: 'ArrowDown' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0-3');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 38, key: 'ArrowUp' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0-2');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 36, key: 'Home' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0-0');
+	fireEvent.keyDown(selectMenu(result.container), { keyCode: 35, key: 'End' });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-1-1');
+
+	result.rerender({ props: basicProps({ ...renderProps, menuIsOpen: false }) });
+	expect(activeDescendant(result.container)).toBe('');
+
+	result.rerender({ props: basicProps({ ...renderProps, autoFocus: true, inputValue: '1' }) });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0-1');
+	result.rerender({ props: basicProps({ ...renderProps, autoFocus: true, inputValue: '10' }) });
+	expect(activeDescendant(result.container)).toBe('react-select-1000-option-0-10');
+	result.rerender({ props: basicProps({ ...renderProps, autoFocus: true, inputValue: '102' }) });
+	expect(activeDescendant(result.container)).toBe('');
+}
+
+upstreamTest(
+	'accessibility > aria-activedescendant for grouped options test-input-name',
+	function tracksSingleGroupedOption() {
+		assertGroupedActiveDescendant(false);
+	},
+);
+
+upstreamTest(
+	'accessibility > aria-activedescendant for grouped options test-input-name',
+	function tracksMultiGroupedOption() {
+		assertGroupedActiveDescendant(true);
+	},
+);
+
+upstreamTest(
+	'accessibility > aria-activedescendant should not exist if hideSelectedOptions=true',
+	function omitsHiddenSelectedActiveDescendant() {
+		const result = renderSelect({
+			instanceId: '1000',
+			value: OPTIONS[2],
+			isMulti: true,
+			menuIsOpen: true,
+		});
+		expect(activeDescendant(result.container)).toBe('');
 	},
 );
 
@@ -1242,6 +1405,7 @@ function focusedOption(container: HTMLElement): HTMLElement {
 function focusOptionAt(container: HTMLElement, index: number): void {
 	const menuElement = menu(container);
 	if (!menuElement) throw new Error('Expected select menu');
+	fireEvent.keyDown(menuElement, { key: 'Home', keyCode: 36 });
 	for (let current = 0; current < index; current += 1) {
 		fireEvent.keyDown(menuElement, { key: 'ArrowDown', keyCode: 40 });
 	}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "upstreamCases": 255,
-  "adaptedCases": 248,
+  "adaptedCases": 255,
   "notApplicableCases": 0,
-  "pendingCases": 7,
+  "pendingCases": 0,
   "permittedTransforms": [
     "import React APIs from Octane equivalents",
     "re-author JSX component fixtures as compiled .tsrx components",
@@ -325,36 +325,36 @@
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for basic options test-input-name",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for basic options test-input-name",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding focusing the first option instead of the controlled selected option when the menu opens."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for basic options test-input-name\u00002",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for basic options test-input-name",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding focusing the first option instead of the controlled selected option when the menu opens."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for grouped options test-input-name",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for grouped options test-input-name",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding focusing the first grouped option instead of the controlled selected option when the menu opens."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for grouped options test-input-name\u00002",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for grouped options test-input-name",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding focusing the first grouped option instead of the controlled selected option when the menu opens."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant should not exist if hideSelectedOptions=true",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant should not exist if hideSelectedOptions=true",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding assigning the first visible option instead of an empty aria-activedescendant when the selected option is hidden."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > interacting with disabled options shows correct A11yText",
@@ -1347,8 +1347,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding suppressing the clear callback for an empty single-select value."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000should call onChange with an array on hitting backspace when backspaceRemovesValue is true and isMulti is true",
@@ -1410,8 +1410,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000to not clear value when hitting escape if escapeClearsValue is true and isClearable is false",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "to not clear value when hitting escape if escapeClearsValue is true and isClearable is false",
-      "disposition": "pending",
-      "reason": "Blocked by the Octane binding clearing on Escape even when isClearable is false."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000to only render groups with at least one match when filtering",
