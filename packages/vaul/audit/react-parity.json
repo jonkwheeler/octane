@@ -8,7 +8,7 @@
     "testRoot": "test",
     "license": "MIT",
     "integrity": "sha256:a95445810caa946472b2693d52b59281e2e6350f45a06067d7c42b277b257813",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
