@@ -16,6 +16,7 @@ import {
 	runPristineUpstreamSuite,
 } from './intersection-observer-pristine-runtime.mjs';
 import { renderTypeInventories } from './intersection-observer-types-lib.mjs';
+import { verifyIntersectionObserverRuntimeCrosswalk } from './intersection-observer-upstream-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -169,4 +170,8 @@ const { inventory: typeInventory } = renderTypeInventories(root);
 writeInventory('packages/intersection-observer/audit/pristine-types.json', typeInventory.upstream);
 writeInventory('packages/intersection-observer/audit/adapted-types.json', typeInventory.adapted);
 
+const crosswalk = verifyIntersectionObserverRuntimeCrosswalk(root);
 console.log('adapted runtime summary', summarizeRuntimeInventories([adapted, adaptedBrowser]));
+console.log(
+	`pristine/adapted crosswalk ok (unit=${crosswalk.unitCases}, browser=${crosswalk.browserCases})`,
+);

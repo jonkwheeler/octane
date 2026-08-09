@@ -13,7 +13,9 @@ import {
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyIntersectionObserverTestClassifications } from './intersection-observer-classifications-lib.mjs';
 import { verifyIntersectionObserverTypes } from './intersection-observer-types-lib.mjs';
+import { verifyIntersectionObserverUpstream } from './intersection-observer-upstream-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
@@ -57,9 +59,19 @@ try {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);
 }
 try {
+	verifyIntersectionObserverUpstream(REPO);
+} catch (error) {
+	errors.push(`react-intersection-observer upstream evidence is invalid: ${error.message}`);
+}
+try {
 	verifyIntersectionObserverTypes(REPO);
 } catch (error) {
 	errors.push(`intersection-observer type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyIntersectionObserverTestClassifications(REPO);
+} catch (error) {
+	errors.push(`intersection-observer test classifications are invalid: ${error.message}`);
 }
 try {
 	verifySolanaReactTypes(REPO);

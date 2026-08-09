@@ -6,7 +6,7 @@
 - Tag: `v10.1.0`
 - Tag commit: `5f82a7328fb63a2e54729f2205278209c14e30e8`
 - License: MIT
-- React oracle: `react-intersection-observer@10.1.0` with React `19.2.3`
+- React oracle: `react-intersection-observer@10.1.0` with React `19.2.7` / ReactDOM `19.2.7` (`catalog:default`; keep immutable for this pin)
 
 The npm package publishes compiled output and declarations rather than its
 authored source and tests. `upstream/` therefore contains the byte-exact `src/`
@@ -49,3 +49,19 @@ outside `testExecution`. Parity evidence is owned by the
 `intersection-observer-pristine-browser`, and
 `intersection-observer-adapted-browser` projects and
 `packages/intersection-observer/audit/react-parity.json`.
+
+## Intentional divergences
+
+- `intersection-observer-initial-false-onchange` (runtime): When Intersection
+  Observer is unsupported and the fallback is `false`, upstream's class `InView`
+  often observes twice under React, so the initial-false skip can still let an
+  `onChange(false)` through. Octane observes once, so that notification is
+  suppressed. Treat unsupported false as the default hidden state rather than
+  waiting for `onChange(false)`. Recorded in
+  `packages/intersection-observer/audit/react-parity.json` and `status.json`.
+- `intersection-observer-unsupported-mount-error-surface` (runtime): Upstream
+  class/`useInView` mount throws synchronously when IntersectionObserver is
+  missing and no fallback is set. Octane observes inside a passive effect, so
+  the same `IntersectionObserver is not a constructor` error is reported via
+  `console.error` / `tryBlock` rather than a try/catch around `render`. Prefer
+  `fallbackInView` / `defaultFallbackInView`, or an error boundary.

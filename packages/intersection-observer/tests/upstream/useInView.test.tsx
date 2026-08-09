@@ -1,9 +1,9 @@
 /** @jsxImportSource octane */
 // Adapted from react-intersection-observer@10.1.0 src/__tests__/useInView.test.tsx
 import { beforeEach, expect, test, vi } from 'vitest';
-import { cleanup, render, screen } from '@octanejs/testing-library';
+import { act, cleanup, render, screen } from '@octanejs/testing-library';
 import { useCallback, useEffect, useState } from 'octane';
-import { defaultFallbackInView, observe, type IntersectionOptions } from '../../src/index';
+import { defaultFallbackInView, type IntersectionOptions } from '../../src/index';
 import {
 	destroyIntersectionMocking,
 	intersectionMockInstance,
@@ -366,7 +366,7 @@ test('should set intersection ratio as the largest threshold smaller than trigge
 });
 
 // Per upstream/src/__tests__/useInView.test.tsx:358.
-test('should handle fallback if unsupported', () => {
+test('should handle fallback if unsupported', async function shouldHandleFallbackIfUnsupported() {
 	destroyIntersectionMocking();
 	// @ts-expect-error
 	window.IntersectionObserver = undefined;
@@ -376,13 +376,23 @@ test('should handle fallback if unsupported', () => {
 	rerender(<HookComponent options={{ fallbackInView: false }} />);
 	screen.getByText('false');
 
-	expect(function unsupportedObserve() {
-		observe(document.createElement('div'), function noop() {}, {}, undefined);
-	}).toThrow(/IntersectionObserver is not a constructor/);
+	const seen: unknown[] = [];
+	const spy = vi.spyOn(console, 'error').mockImplementation(function capture(arg) {
+		seen.push(arg);
+	});
+	try {
+		// OCTANE DIVERGENCE[intersection-observer-unsupported-mount-error-surface][runtime:4ded56f226061c62]: Upstream rerender throws synchronously; Octane observes in a passive effect and reports via console.error.
+		await act(function remountUnsupported() {
+			rerender(<HookComponent options={{ fallbackInView: undefined }} />);
+		});
+		expect(String(seen[0])).toMatch(/IntersectionObserver is not a constructor/);
+	} finally {
+		spy.mockRestore();
+	}
 });
 
 // Per upstream/src/__tests__/useInView.test.tsx:380.
-test('should handle defaultFallbackInView if unsupported', () => {
+test('should handle defaultFallbackInView if unsupported', async function shouldHandleDefaultFallbackIfUnsupported() {
 	destroyIntersectionMocking();
 	// @ts-expect-error
 	window.IntersectionObserver = undefined;
@@ -390,16 +400,24 @@ test('should handle defaultFallbackInView if unsupported', () => {
 	const { rerender } = render(<HookComponent key="true" />);
 	screen.getByText('true');
 
-	cleanup();
 	defaultFallbackInView(false);
-	render(<HookComponent key="false" />);
+	rerender(<HookComponent key="false" />);
 	screen.getByText('false');
 
-	cleanup();
 	defaultFallbackInView(undefined);
-	expect(function unsupportedObserve() {
-		observe(document.createElement('div'), function noop() {}, {}, undefined);
-	}).toThrow(/IntersectionObserver is not a constructor/);
+	const seen: unknown[] = [];
+	const spy = vi.spyOn(console, 'error').mockImplementation(function capture(arg) {
+		seen.push(arg);
+	});
+	try {
+		// OCTANE DIVERGENCE[intersection-observer-unsupported-mount-error-surface][runtime:c0bb0181b9e6cedf]: Same effect-phase console.error surface as the options fallback case.
+		await act(function remountUnsupportedDefault() {
+			rerender(<HookComponent key="undefined" />);
+		});
+		expect(String(seen[0])).toMatch(/IntersectionObserver is not a constructor/);
+	} finally {
+		spy.mockRestore();
+	}
 });
 
 // Per upstream/src/__tests__/useInView.test.tsx:403.

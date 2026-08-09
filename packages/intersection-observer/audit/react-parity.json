@@ -109,6 +109,26 @@
           "path": "packages/intersection-observer/upstream/SHA256SUMS",
           "role": "support",
           "sha256": "24ccd051d0e1945d76d7b005c1a90829e07a15303618b704e01fc918f59d22c9"
+        },
+        {
+          "path": "packages/intersection-observer/audit/upstream-adapted.SHA256SUMS",
+          "role": "support",
+          "sha256": "ca508ba5f8ac484e03bd2d39fefb34f4f09a677a0f4a631ca4f7be28ff34abb1"
+        },
+        {
+          "path": "packages/intersection-observer/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "899ad9a6a89128169dca55f564f88b1308c71e925385e6a4e7b1d526390e90c9"
+        },
+        {
+          "path": "scripts/react-parity/intersection-observer-upstream-lib.mjs",
+          "role": "support",
+          "sha256": "6a0d09a1bfe208bdf23e0292c4ec83c50b5b868eb313e805f30f34a39195cc63"
+        },
+        {
+          "path": "scripts/react-parity/intersection-observer-classifications-lib.mjs",
+          "role": "support",
+          "sha256": "c6ab1d2a1be11adcd0ee458b9f1a8ffce5ef9352fdfc35ef38627bf486340366"
         }
       ]
     },
@@ -133,7 +153,17 @@
         {
           "path": "scripts/react-parity/intersection-observer-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "29aa24037991bd0d1a742386aee54b511a4b5b4e5972f9aafc116b38cb165aa9"
+          "sha256": "405e1507c5b693e7c18bc647c0530520d00a07d2e0d54ea2416dd38db6b9116c"
+        },
+        {
+          "path": "packages/intersection-observer/audit/upstream-adapted.SHA256SUMS",
+          "role": "support",
+          "sha256": "ca508ba5f8ac484e03bd2d39fefb34f4f09a677a0f4a631ca4f7be28ff34abb1"
+        },
+        {
+          "path": "scripts/react-parity/intersection-observer-upstream-lib.mjs",
+          "role": "support",
+          "sha256": "6a0d09a1bfe208bdf23e0292c4ec83c50b5b868eb313e805f30f34a39195cc63"
         }
       ]
     },
@@ -213,7 +243,7 @@
         {
           "path": "scripts/react-parity/intersection-observer-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "29aa24037991bd0d1a742386aee54b511a4b5b4e5972f9aafc116b38cb165aa9"
+          "sha256": "405e1507c5b693e7c18bc647c0530520d00a07d2e0d54ea2416dd38db6b9116c"
         }
       ]
     },
@@ -308,7 +338,8 @@
     {
       "id": "intersection-observer-initial-false-onchange",
       "caseIds": [
-        "runtime:87f04d520e6196ac"
+        "runtime:87f04d520e6196ac",
+        "runtime:96c5c288913a844e"
       ],
       "upstreamResult": "React class InView often observes twice, so an unsupported false fallback can still reach onChange after the initial-false gate.",
       "octaneResult": "Octane observes once, so the documented initial-false skip suppresses onChange for unsupported false fallback.",
@@ -318,6 +349,21 @@
       "migrationGuidance": "Treat unsupported false as the default hidden state rather than waiting for an onChange(false).",
       "owner": "@octanejs/intersection-observer",
       "reviewCondition": "Review if Octane InView gains a class-component-equivalent observe lifecycle."
+    },
+    {
+      "id": "intersection-observer-unsupported-mount-error-surface",
+      "caseIds": [
+        "runtime:4ded56f226061c62",
+        "runtime:c0bb0181b9e6cedf"
+      ],
+      "upstreamResult": "Mounting InView/useInView without a fallback throws synchronously when IntersectionObserver is missing.",
+      "octaneResult": "Observation runs in a passive effect, so the same constructor error is reported via console.error/tryBlock after commit. The adapted InView fallback cases exercise the same public-API surface alongside intersection-observer-initial-false-onchange.",
+      "rationale": "Octane has no class-component componentDidMount observe path; useInView always observes from useEffect.",
+      "classification": "framework-runtime",
+      "consumerImpact": "try/catch around render does not catch unsupported IntersectionObserver errors under Octane.",
+      "migrationGuidance": "Supply fallbackInView/defaultFallbackInView, or catch with tryBlock/an error boundary around the observing tree.",
+      "owner": "@octanejs/intersection-observer",
+      "reviewCondition": "Review if Octane gains a synchronous observe-on-mount path for unsupported environments."
     }
   ]
 }

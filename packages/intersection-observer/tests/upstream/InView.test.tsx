@@ -1,9 +1,9 @@
 /** @jsxImportSource octane */
 // Adapted from react-intersection-observer@10.1.0 src/__tests__/InView.test.tsx
 import { beforeEach, expect, test, vi } from 'vitest';
-import { cleanup, render, screen } from '@octanejs/testing-library';
+import { act, cleanup, render, screen } from '@octanejs/testing-library';
 import { InView } from '../../src/InView.tsrx';
-import { defaultFallbackInView, observe } from '../../src/observe';
+import { defaultFallbackInView } from '../../src/observe';
 import {
 	intersectionMockInstance,
 	mockAllIsIntersecting,
@@ -234,7 +234,7 @@ test('plain children should not catch bubbling onChange event', async () => {
 });
 
 // Per upstream/src/__tests__/InView.test.tsx:173.
-test('should render with fallback', () => {
+test('should render with fallback', async function shouldRenderWithFallback() {
 	const cb = vi.fn();
 	// @ts-expect-error
 	window.IntersectionObserver = undefined;
@@ -256,20 +256,29 @@ test('should render with fallback', () => {
 	);
 	// OCTANE DIVERGENCE[intersection-observer-initial-false-onchange][runtime:87f04d520e6196ac]: Upstream class InView often observes twice under React, so the skipped initial-false gate then lets a second false notification reach onChange. Octane observes once, so the documented initial-false skip applies.
 	expect(cb).not.toHaveBeenCalled();
-	expect(observe(document.createElement('div'), function noop() {}, {}, false)).toEqual(
-		expect.any(Function),
-	);
 
 	cleanup();
 	// @ts-expect-error
 	window.IntersectionObserver = undefined;
-	expect(function unsupportedObserve() {
-		observe(document.createElement('div'), function noop() {}, {}, undefined);
-	}).toThrow(/IntersectionObserver is not a constructor/);
+	const seen: unknown[] = [];
+	const spy = vi.spyOn(console, 'error').mockImplementation(function capture(arg) {
+		seen.push(arg);
+	});
+	try {
+		// Public InView path (not observe()): Octane reports unsupported IO via effect console.error.
+		// Documented with intersection-observer-unsupported-mount-error-surface; this case id is
+		// already bound to intersection-observer-initial-false-onchange above.
+		await act(function mountUnsupported() {
+			render(<InView onChange={cb}>Inner</InView>);
+		});
+		expect(String(seen[0])).toMatch(/IntersectionObserver is not a constructor/);
+	} finally {
+		spy.mockRestore();
+	}
 });
 
 // Per upstream/src/__tests__/InView.test.tsx:205.
-test('should render with global fallback', () => {
+test('should render with global fallback', async function shouldRenderWithGlobalFallback() {
 	const cb = vi.fn();
 	// @ts-expect-error
 	window.IntersectionObserver = undefined;
@@ -283,16 +292,24 @@ test('should render with global fallback', () => {
 	window.IntersectionObserver = undefined;
 	defaultFallbackInView(false);
 	render(<InView onChange={cb}>Inner</InView>);
+	// OCTANE DIVERGENCE[intersection-observer-initial-false-onchange][runtime:87f04d520e6196ac]: Same initial-false skip as the prop fallback case.
 	expect(cb).not.toHaveBeenCalled();
-	expect(observe(document.createElement('div'), function noop() {}, {}, false)).toEqual(
-		expect.any(Function),
-	);
 
 	cleanup();
 	// @ts-expect-error
 	window.IntersectionObserver = undefined;
 	defaultFallbackInView(undefined);
-	expect(function unsupportedObserve() {
-		observe(document.createElement('div'), function noop() {}, {}, undefined);
-	}).toThrow(/IntersectionObserver is not a constructor/);
+	const seen: unknown[] = [];
+	const spy = vi.spyOn(console, 'error').mockImplementation(function capture(arg) {
+		seen.push(arg);
+	});
+	try {
+		// Public InView path: same effect-phase console.error surface as the prop fallback case.
+		await act(function mountUnsupportedGlobal() {
+			render(<InView onChange={cb}>Inner</InView>);
+		});
+		expect(String(seen[0])).toMatch(/IntersectionObserver is not a constructor/);
+	} finally {
+		spy.mockRestore();
+	}
 });
