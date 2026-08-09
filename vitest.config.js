@@ -259,7 +259,12 @@ export default defineConfig({
 		silent: true,
 		projects: [
 			{
-				testExecution: { group: 'react-parity' },
+				// Adapted upstream suite is parity-owned; feasibility, races, hydration,
+				// and negative controls remain ordinary Octane conformance coverage.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-syntax-highlighter/tests/adapted/**/*.test.ts'],
+				},
 				test: {
 					name: 'react-syntax-highlighter',
 					fileParallelism: false,
@@ -298,7 +303,7 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Octane-only SSR assertions (no React/upstream oracle) stay ordinary.
 				test: {
 					name: 'react-syntax-highlighter-ssr',
 					include: ['packages/react-syntax-highlighter/tests/ssr/**/*.test.ts'],

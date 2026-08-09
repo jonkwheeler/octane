@@ -166,8 +166,6 @@ await writeJson(
 );
 
 const allProjectTests = {
-	'react-syntax-highlighter': listProject('react-syntax-highlighter'),
-	'react-syntax-highlighter-ssr': listProject('react-syntax-highlighter-ssr'),
 	'react-syntax-highlighter-differential': listProject('react-syntax-highlighter-differential'),
 	'react-syntax-highlighter-browser': listProject('react-syntax-highlighter-browser'),
 };
@@ -179,57 +177,6 @@ async function manifestFile(path, role = 'support', cases) {
 }
 
 const selectedCases = {
-	'packages/react-syntax-highlighter/tests/feasibility.test.ts': [
-		['conformance:entrypoint-families', 'resolves representative pinned ESM and CJS path families'],
-		['conformance:root-static-contract', 'preserves the root export and static-member contract'],
-		['conformance:dynamic-native-tags', 'renders highlighted HAST through dynamic native tags'],
-		[
-			'conformance:custom-components-renderer',
-			'supports component-valued tags and a custom renderer',
-		],
-		[
-			'conformance:async-unmount',
-			'does not update an unmounted async highlighter when loading settles',
-		],
-	],
-	'packages/react-syntax-highlighter/tests/async-races.test.ts': [
-		[
-			'conformance:async-registration-queue',
-			'queues registration before the AST generator settles',
-		],
-		[
-			'conformance:async-stale-language',
-			'ignores an older language completion after switching languages',
-		],
-		[
-			'conformance:async-rejection-fallback',
-			'keeps deterministic plain output when a language loader rejects',
-		],
-		['conformance:async-ast-retry', 'retries a rejected AST loader without an unhandled rejection'],
-		[
-			'conformance:async-language-retry',
-			'retries a rejected language after a same-language update',
-		],
-	],
-	'packages/react-syntax-highlighter/tests/hydration.test.ts': [
-		[
-			'conformance:hydration-adoption',
-			'adopts highlighted nodes and selected code before supporting a live update',
-		],
-	],
-	'packages/react-syntax-highlighter/tests/negative-controls.test.ts': [
-		[
-			'conformance:negative-controls',
-			'fails closed for missing, extra, renamed, collided, stale, and removed-lane evidence',
-		],
-	],
-	'packages/react-syntax-highlighter/tests/ssr/server.test.ts': [
-		[
-			'ssr:sync-variants',
-			'renders synchronous Highlight.js and Prism variants without DOM globals',
-		],
-		['ssr:async-fallback', 'renders the deterministic plain fallback for async variants'],
-	],
 	'packages/react-syntax-highlighter/tests/differential/parity.test.ts': [
 		[
 			'differential:render-and-update',
@@ -279,13 +226,6 @@ async function selectedLane({ id, type, project, files, notes }) {
 	};
 }
 
-const conformanceFiles = [
-	'packages/react-syntax-highlighter/tests/feasibility.test.ts',
-	'packages/react-syntax-highlighter/tests/async-races.test.ts',
-	'packages/react-syntax-highlighter/tests/hydration.test.ts',
-	'packages/react-syntax-highlighter/tests/negative-controls.test.ts',
-];
-const ssrFiles = ['packages/react-syntax-highlighter/tests/ssr/server.test.ts'];
 const differentialFiles = ['packages/react-syntax-highlighter/tests/differential/parity.test.ts'];
 const browserFiles = ['packages/react-syntax-highlighter/tests/browser/rendering.browser.test.ts'];
 
@@ -338,21 +278,6 @@ const lanes = [
 			...adaptedEvidenceFiles.map((path) => manifestFile(path)),
 		]),
 	},
-	await selectedLane({
-		id: 'react-syntax-highlighter-conformance',
-		type: 'adapted-octane',
-		project: 'react-syntax-highlighter',
-		files: conformanceFiles,
-		notes:
-			'Covers public/static APIs, async queues and races, failure fallback, hydration identity, selection, and live updates.',
-	}),
-	await selectedLane({
-		id: 'react-syntax-highlighter-ssr',
-		type: 'adapted-octane',
-		project: 'react-syntax-highlighter-ssr',
-		files: ssrFiles,
-		notes: 'Covers synchronous variants and deterministic async fallback without DOM globals.',
-	}),
 	{
 		...(await selectedLane({
 			id: 'react-syntax-highlighter-differential',
@@ -525,8 +450,6 @@ verifyRequiredLaneIds(
 	[
 		'react-syntax-highlighter-pristine-runtime',
 		'react-syntax-highlighter-adapted-runtime',
-		'react-syntax-highlighter-conformance',
-		'react-syntax-highlighter-ssr',
 		'react-syntax-highlighter-differential',
 		'react-syntax-highlighter-browser',
 		'react-syntax-highlighter-pristine-types',
