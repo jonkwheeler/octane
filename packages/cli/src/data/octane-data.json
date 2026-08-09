@@ -793,6 +793,18 @@
       "verified": "2026-07-29"
     },
     {
+      "name": "@octanejs/xyflow",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "@xyflow/react", "version": "12.11.2" },
+      "surface": "ReactFlow, ReactFlowProvider, Handle, hooks (useReactFlow, useNodes, useEdges, …), change helpers, and node/edge utilities from @xyflow/react@12.11.2.",
+      "divergences": [
+        "Octane components are functions rather than forwardRef objects (ReactFlow, ReactFlowProvider, Handle)."
+      ],
+      "ssr": "Store/provider render on server; canvas interactions are client-driven like upstream.",
+      "verified": "2026-08-07"
+    },
+    {
       "name": "@octanejs/zustand",
       "version": "0.1.30",
       "category": "Shared state",
