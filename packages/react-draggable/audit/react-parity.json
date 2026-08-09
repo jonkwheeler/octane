@@ -69,7 +69,7 @@
         {
           "path": "packages/react-draggable/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "51cef8fdd4b446a9512ffe930dfb2d8e32d76511be34c6ed6b760c373b33e7ba"
+          "sha256": "7ec408204026705fcbeb2616c216929fd9feea2e9a7d31493d7f9c7b428f547d"
         },
         {
           "path": "scripts/react-parity/react-draggable-runtime-inventory.mjs",

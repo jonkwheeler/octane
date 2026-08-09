@@ -97,9 +97,19 @@
       "fullName": "Draggable visual contract clips object bounds and consumes slack before moving back inside"
     },
     {
+      "id": "runtime:43a394c161c62a3b",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract does not churn child callback-ref cleanups across drag re-renders"
+    },
+    {
       "id": "runtime:4de89f9ec367c3ca",
       "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
       "fullName": "Draggable visual contract exports the pinned root values and clones one child without a wrapper"
+    },
+    {
+      "id": "runtime:47a11d85c53a0c9b",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract forwards array child refs and callback-ref cleanups through the clone"
     },
     {
       "id": "runtime:2624e1d895280e0b",
@@ -110,6 +120,11 @@
       "id": "runtime:4e8426e2c550fa14",
       "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
       "fullName": "Draggable visual contract moves uncontrolled, emits data, applies axis, and retains dragged class"
+    },
+    {
+      "id": "runtime:a05bd0945cda6ed0",
+      "file": "packages/react-draggable/tests/runtime/draggable.test.ts",
+      "fullName": "Draggable visual contract retargets nodeRef.current when the nodeRef identity changes"
     },
     {
       "id": "runtime:6c70c0e87cc3a843",

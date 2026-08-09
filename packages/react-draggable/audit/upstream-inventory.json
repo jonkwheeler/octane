@@ -1926,6 +1926,18 @@
         "path": "tests/runtime/draggable.test.ts"
       },
       {
+        "id": "adapted:draggable-child-ref-forms",
+        "path": "tests/runtime/draggable.test.ts"
+      },
+      {
+        "id": "adapted:draggable-noderef-swap",
+        "path": "tests/runtime/draggable.test.ts"
+      },
+      {
+        "id": "adapted:draggable-stable-child-ref",
+        "path": "tests/runtime/draggable.test.ts"
+      },
+      {
         "id": "adapted:core-callback-data",
         "path": "tests/runtime/core.test.ts"
       },
