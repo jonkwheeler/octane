@@ -1,7 +1,10 @@
 /**
- * Adapter cases derived from Inertia at
- * 68b13b662d7a6ecdd504026ee18733192b0c7d73:
- * packages/react/src/{usePage,useRemember,usePoll,usePrefetch}.ts.
+ * Octane-only unpaired conformance for page, remember, poll, and prefetch hooks.
+ *
+ * Not React-parity evidence: these cases are not cited against a pinned
+ * upstream registration and are intentionally outside react-parity ownership
+ * (see packages/inertia/UPSTREAM.md). Inspired by Inertia 3.6.1 adapter
+ * behavior at 68b13b662d7a6ecdd504026ee18733192b0c7d73, not a case-by-case port.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, renderHook } from '@octanejs/testing-library';

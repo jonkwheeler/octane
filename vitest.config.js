@@ -733,6 +733,9 @@ export default defineConfig({
 				},
 			},
 			{
+				// Octane-only unpaired conformance for @octanejs/inertia. No
+				// testExecution / react-parity ownership until a later PR ports
+				// and registers pinned upstream cases (see packages/inertia/UPSTREAM.md).
 				test: {
 					name: 'inertia',
 					include: ['packages/inertia/tests/**/*.test.ts'],
@@ -755,6 +758,7 @@ export default defineConfig({
 				},
 			},
 			{
+				// Octane-only unpaired SSR framework contracts; ordinary shards only.
 				test: {
 					name: 'inertia-ssr',
 					include: ['packages/inertia/tests/ssr/**/*.test.ts'],

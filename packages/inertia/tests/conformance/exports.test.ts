@@ -1,3 +1,7 @@
+/**
+ * Octane-only unpaired framework-contract tests for the public adapter surface.
+ * Outside react-parity ownership — see packages/inertia/UPSTREAM.md.
+ */
 import { describe, expect, it } from 'vitest';
 import * as core from '@inertiajs/core';
 import * as binding from '@octanejs/inertia';

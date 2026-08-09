@@ -1,3 +1,7 @@
+/**
+ * Octane-only unpaired SSR framework-contract test. Outside react-parity
+ * ownership — see packages/inertia/UPSTREAM.md.
+ */
 import { describe, expect, it } from 'vitest';
 import { renderToString } from 'octane/server';
 import { ServerHooks } from '../_fixtures/server-hooks.tsrx';
