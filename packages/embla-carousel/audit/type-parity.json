@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "pristine": "packages/embla-carousel/typetests/pristine.test-d.ts",
   "adapted": "packages/embla-carousel/typetests/public.test-d.ts",
+  "projects": {
+    "pristine": "packages/embla-carousel/typetests/pristine.tsconfig.json",
+    "adapted": "packages/embla-carousel/typetests/tsconfig.json"
+  },
   "assertions": ["positive:tuple", "positive:global-options", "negative:unknown-option"],
   "assertionGroups": [
     "d9694bfd9d54e7ce1ccd40d077792b6ced259c9bdb2787d68b10c25d4f2ddd21",
