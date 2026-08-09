@@ -284,9 +284,12 @@ describe('CI workflow aggregation', () => {
 
 		// The manifest runner owns all required lanes in one process. Execution
 		// reports prove exact identities, so only explicit validation collects.
+		// recorded-unverified manifests still run-required when they declare
+		// required lanes (parity-owned differentials must not become no-ops).
+		assert.match(reactParityCheck, /requiredExecutableLanes\(manifest\)\.length > 0/);
 		assert.match(
 			reactParityCheck,
-			/manifest\.provenance\.verification === 'verified' \? 'run-required' : 'validate'/,
+			/requiredExecutableLanes\(manifest\)\.length > 0 \? 'run-required' : 'validate'/,
 		);
 		assert.match(
 			reactParityCheck,
