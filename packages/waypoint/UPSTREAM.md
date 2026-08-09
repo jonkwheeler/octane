@@ -34,7 +34,7 @@ geometry used by the component; they are not upstream entry-point exports.
 | Upstream artifact | Disposition |
 | --- | --- |
 | `test/node/onNextTick.test.js` | Gap: the behavior is exercised indirectly by the component suite, but the original case has not yet been adapted one-for-one. |
-| `test/node/resolveScrollableAncestorProp.test.js` | Gap: ancestor selection is covered by Octane-authored cases, but the upstream case inventory is not yet adapted one-for-one. |
+| `test/node/resolveScrollableAncestorProp.test.js` | Partially adapted in `tests/waypoint.test.ts` (`resolveScrollableAncestorProp` and `scrollableAncestor="window"`); remaining upstream case inventory still required before parity can be claimed. |
 | `test/node/waypoint.test.jsx` | Partially adapted in `tests/waypoint.test.ts`; a case-level inventory and remaining cases are still required before parity can be claimed. |
 | `test/browser/waypoint_test.jsx` | Gap: requires browser geometry/scroll execution in the playground or browser CI lane. |
 | `test/performance-test.*` | Not a conformance test; retained as upstream benchmark/demo evidence. |

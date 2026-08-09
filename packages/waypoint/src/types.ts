@@ -25,7 +25,7 @@ export interface WaypointProps {
 	bottomOffset?: string | number;
 	horizontal?: boolean;
 	fireOnRapidScroll?: boolean;
-	scrollableAncestor?: Window | Element;
+	scrollableAncestor?: Window | Element | 'window';
 	children?: OctaneNode;
 	debug?: boolean;
 }

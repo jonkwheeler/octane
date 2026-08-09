@@ -8,7 +8,12 @@ import {
 	useRef,
 	useState,
 } from 'octane';
-import { findScrollableAncestor, getBounds, getCurrentPosition } from './geometry.js';
+import {
+	findScrollableAncestor,
+	getBounds,
+	getCurrentPosition,
+	resolveScrollableAncestorProp,
+} from './geometry.js';
 import {
 	ABOVE,
 	BELOW,
@@ -29,9 +34,12 @@ function WaypointComponent(props: WaypointProps) {
 			? (props.children as any).props?.ref
 			: undefined;
 	const mergedRef = useMemo(() => [childRef, setNode], [childRef]);
-	const ancestor = node
-		? props.scrollableAncestor ?? findScrollableAncestor(node, props.horizontal)
-		: null;
+	const ancestor =
+		node
+			? props.scrollableAncestor != null
+				? resolveScrollableAncestorProp(props.scrollableAncestor)
+				: findScrollableAncestor(node, props.horizontal)
+			: null;
 	const measure = useCallback((event: Event | null) => {
 		if (!node || !ancestor) return;
 		const bounds = getBounds(node, ancestor, latest.current);

@@ -10,6 +10,7 @@ import {
 	getBounds,
 	getCurrentPosition,
 	parseOffset,
+	resolveScrollableAncestorProp,
 } from '../src';
 import { ChildProbe, WaypointProbe } from './_fixtures/probes.tsrx';
 
@@ -89,6 +90,13 @@ describe('geometry', () => {
 		expect(findScrollableAncestor(node)).toBe(window);
 		document.body.style.overflowY = '';
 	});
+
+	it('resolves the string window ancestor prop to window', () => {
+		expect(resolveScrollableAncestorProp('window')).toBe(window);
+		expect(resolveScrollableAncestorProp(window)).toBe(window);
+		const element = document.createElement('div');
+		expect(resolveScrollableAncestorProp(element)).toBe(element);
+	});
 });
 
 describe('Waypoint', () => {
@@ -120,6 +128,28 @@ describe('Waypoint', () => {
 		window.dispatchEvent(new Event('scroll'));
 		expect(onLeave).toHaveBeenCalledWith(expect.objectContaining({ currentPosition: ABOVE }));
 		expect(onPositionChange).toHaveBeenCalledTimes(2);
+		result.unmount();
+	});
+
+	it('accepts scrollableAncestor="window" for SSR-safe window targeting', () => {
+		const onEnter = vi.fn();
+		const onLeave = vi.fn();
+		const result = mount(WaypointProbe, {
+			onEnter,
+			onLeave,
+			onPositionChange: vi.fn(),
+			scrollableAncestor: 'window',
+		});
+		flushEffects();
+		const marker = result.find('span');
+		let markerRect = rect(20, 40);
+		marker.getBoundingClientRect = () => markerRect;
+		vi.runAllTimers();
+		expect(onEnter).toHaveBeenCalledOnce();
+
+		markerRect = rect(-40, -20);
+		window.dispatchEvent(new Event('scroll'));
+		expect(onLeave).toHaveBeenCalledWith(expect.objectContaining({ currentPosition: ABOVE }));
 		result.unmount();
 	});
 

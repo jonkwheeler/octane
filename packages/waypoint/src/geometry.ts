@@ -8,6 +8,17 @@ export function parseOffset(value: string | number | undefined, contextSize: num
 	return value.trim().endsWith('%') ? (parsed / 100) * contextSize : parsed;
 }
 
+export function resolveScrollableAncestorProp(
+	scrollableAncestor: Window | Element | 'window',
+): Window | Element {
+	// Upstream accepts the string form so SSR can force the window without
+	// referencing `window` during render.
+	if (scrollableAncestor === 'window') {
+		return window;
+	}
+	return scrollableAncestor;
+}
+
 export function findScrollableAncestor(node: Element, horizontal = false): Element | Window {
 	let ancestor = node.parentElement;
 	const overflowProperty = horizontal ? 'overflowX' : 'overflowY';

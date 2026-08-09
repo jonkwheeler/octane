@@ -7,6 +7,7 @@ export function WaypointProbe(props: {
 	topOffset?: string | number;
 	bottomOffset?: string | number;
 	fireOnRapidScroll?: boolean;
+	scrollableAncestor?: Window | Element | 'window';
 }) @{
 	<Waypoint {...props} />
 }
