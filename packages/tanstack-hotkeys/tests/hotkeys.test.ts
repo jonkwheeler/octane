@@ -144,6 +144,7 @@ describe('@octanejs/tanstack-hotkeys', () => {
 		expect(result.container.querySelector('#held-codes')).not.toBeNull();
 		expect(result.container.querySelector('#shift-held')?.textContent).toBe('false');
 		result.unmount();
+		flushEffects();
 	});
 
 	it('records shortcuts through useHotkeyRecorder and useHotkeySequenceRecorder', function () {
@@ -163,6 +164,7 @@ describe('@octanejs/tanstack-hotkeys', () => {
 		expect(result.container.textContent).toContain('recording:true');
 		expect(result.container.textContent).toContain('sequenceRecording:true');
 		result.unmount();
+		flushEffects();
 	});
 
 	it('surfaces HotkeysProvider defaults through useHotkeysContext and useDefaultHotkeysOptions', function () {

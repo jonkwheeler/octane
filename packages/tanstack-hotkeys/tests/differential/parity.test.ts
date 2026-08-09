@@ -32,9 +32,10 @@ describe('differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys', 
 	// @parity-case differential:tanstack-hotkeys-keyboard-lifecycle
 	it('matches registration, shortcuts, sequences, enabled updates, and cleanup', async function () {
 		const differential = await mountDifferential(fixture, 'HotkeysParity', undefined, cache);
-		await differential.step('mount', function () {
-			expect(HotkeyManager.getInstance().registrations.state.size).toBeGreaterThan(0);
-		});
+		// Assert after step settle(): mountDifferential drains Octane passive
+		// effects only after the step callback returns.
+		await differential.step('mount', function () {});
+		expect(HotkeyManager.getInstance().registrations.state.size).toBeGreaterThan(0);
 		await differential.step('single shortcut', async function (octane, react) {
 			await pressBoth(octane, react, 'k', { code: 'KeyK', ctrlKey: true });
 			expectHotkeyProgress(octane, { single: 1 });
