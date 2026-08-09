@@ -20,7 +20,7 @@
     {
       "path": "packages/tanstack-hotkeys/tests/upstream-original.test.ts",
       "disposition": "pristine-upstream-suite",
-      "oracle": "Spawns the pinned upstream Vitest suite unchanged and requires 41 passing cases."
+      "oracle": "Spawns the pinned upstream Vitest suite unchanged, captures the child JSON report, and requires the exact 41 declared identities to pass once."
     },
     {
       "path": "packages/tanstack-hotkeys/tests/upstream/useHotkey.test.ts",

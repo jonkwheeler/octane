@@ -1,477 +1,479 @@
 {
-	"$schema": "../../hook-form/audit/react-parity.schema.json",
-	"schemaVersion": 1,
-	"provenance": {
-		"repo": "https://github.com/TanStack/hotkeys.git",
-		"version": "0.10.0",
-		"commit": "c73a3a167c979d500e1008341ecad096a6c4e635",
-		"sourceRoot": "packages/react-hotkeys/src",
-		"testRoot": "packages/react-hotkeys/tests",
-		"license": "MIT",
-		"integrity": "sha256:1ac05739e0b649ffbc5fb7954fcd7106456de9c337660ca5db3242ae14b9758d",
-		"verification": "recorded-unverified"
-	},
-	"upstreamSuites": {
-		"runtime": "present",
-		"types": "present"
-	},
-	"adaptedRoots": {
-		"source": {
-			"roots": [
-				"packages/tanstack-hotkeys/src"
-			],
-			"include": [
-				"\\.(?:ts|tsx|tsrx)$"
-			],
-			"exclude": []
-		},
-		"tests": {
-			"roots": [
-				"packages/tanstack-hotkeys/tests/upstream",
-				"packages/tanstack-hotkeys/tests/differential"
-			],
-			"include": [
-				"\\.test\\.ts$"
-			],
-			"exclude": []
-		}
-	},
-	"adaptedRuntimeSummary": {
-		"inventoryEntries": 0,
-		"uniqueIdentities": 0,
-		"duplicateEntriesWithinLanes": 0,
-		"identitiesSharedAcrossLanes": 0
-	},
-	"environments": {
-		"workspace-node": {
-			"node": ">=22",
-			"platform": "any",
-			"arch": "any",
-			"packageManager": "pnpm@11.15.1",
-			"lockfile": "pnpm-lock.yaml",
-			"lockfileSha256": "24f69dea1fa6c2593f6fddd6a404dbc429aacfe2b9cb3f24eaeed2540233347c"
-		}
-	},
-	"lanes": [
-		{
-			"id": "tanstack-hotkeys-pristine",
-			"type": "pristine-upstream",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "tanstack-hotkeys-pristine",
-			"notes": "Spawns the pinned upstream Vitest suite unchanged and requires all 41 cases to pass.",
-			"files": [
-				{
-					"path": "packages/tanstack-hotkeys/tests/upstream-original.test.ts",
-					"role": "test",
-					"sha256": "37b608de7b34c6e5b3a2057389c10e93742ab8f13221c26489a7b0e6c05f45f8",
-					"cases": [
-						{
-							"id": "pristine:tanstack-react-hotkeys-original-suite",
-							"testName": "runs all 41 pinned @tanstack/react-hotkeys tests unchanged",
-							"fullName": "runs all 41 pinned @tanstack/react-hotkeys tests unchanged"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/upstream-pristine.vitest.config.ts",
-					"role": "support",
-					"sha256": "4ff7a9c63e85bd9abc53cb5ea8861b479b72ead23abac97dd1774ce4bad82d7f"
-				},
-				{
-					"path": "packages/tanstack-hotkeys/upstream/SHA256SUMS",
-					"role": "support",
-					"sha256": "15d18ca1d85011855185b8f37d13958a01a4fe04e0cd586585554e5aa1741b7a"
-				},
-				{
-					"path": "packages/tanstack-hotkeys/scripts/check-upstream-ledger.mjs",
-					"role": "support",
-					"sha256": "1036c0324def0e6522fd8c8050c390edd6aabe8339e1fd34f64b3011490d20af"
-				}
-			]
-		},
-		{
-			"id": "tanstack-hotkeys-adapted",
-			"type": "adapted-octane",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "tanstack-hotkeys",
-			"notes": "Adapted Octane port of the 41-case upstream runtime suite.",
-			"files": [
-				{
-					"path": "packages/tanstack-hotkeys/tests/upstream/useHotkey.test.ts",
-					"role": "test",
-					"sha256": "1fa114f205861618e495192525c9c90e14ef0678d8ecab8d1394c6494ea602ac",
-					"cases": [
-						{
-							"id": "adapted:upstream-usehotkey:should-register-a-hotkey-handler",
-							"testName": "should register a hotkey handler",
-							"fullName": "useHotkey should register a hotkey handler"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-remove-handler-on-unmount",
-							"testName": "should remove handler on unmount",
-							"fullName": "useHotkey should remove handler on unmount"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-call-callback-when-hotkey-matches",
-							"testName": "should call callback when hotkey matches",
-							"fullName": "useHotkey should call callback when hotkey matches"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-not-call-callback-when-hotkey-does-not-match",
-							"testName": "should not call callback when hotkey does not match",
-							"fullName": "useHotkey should not call callback when hotkey does not match"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-use-keyup-event-when-specified",
-							"testName": "should use keyup event when specified",
-							"fullName": "useHotkey should use keyup event when specified"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-have-access-to-latest-state-values-in-callback",
-							"testName": "should have access to latest state values in callback",
-							"fullName": "useHotkey stale closure prevention should have access to latest state values in callback"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-sync-enabled-option-on-every-render",
-							"testName": "should sync enabled option on every render",
-							"fullName": "useHotkey stale closure prevention should sync enabled option on every render"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-preserve-registration-id-when-toggling-enabled",
-							"testName": "should preserve registration id when toggling enabled",
-							"fullName": "useHotkey stale closure prevention should preserve registration id when toggling enabled"
-						},
-						{
-							"id": "adapted:upstream-usehotkey:should-wait-for-ref-to-be-attached",
-							"testName": "should wait for ref to be attached",
-							"fullName": "useHotkey target handling should wait for ref to be attached"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/upstream/useHotkeyRegistrations.test.ts",
-					"role": "test",
-					"sha256": "ddfcd370a4bafb867b63c3fa329bb2348a56a14d3664e485e98243c62ed6b35a",
-					"cases": [
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-return-empty-arrays-when-no-registrations-exist",
-							"testName": "should return empty arrays when no registrations exist",
-							"fullName": "useHotkeyRegistrations should return empty arrays when no registrations exist"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-return-hotkey-registrations-after-registering-hotkeys",
-							"testName": "should return hotkey registrations after registering hotkeys",
-							"fullName": "useHotkeyRegistrations should return hotkey registrations after registering hotkeys"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-return-sequence-registrations-after-registering-sequences",
-							"testName": "should return sequence registrations after registering sequences",
-							"fullName": "useHotkeyRegistrations should return sequence registrations after registering sequences"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-return-both-hotkeys-and-sequences",
-							"testName": "should return both hotkeys and sequences",
-							"fullName": "useHotkeyRegistrations should return both hotkeys and sequences"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-not-expose-callback-on-hotkey-registrations",
-							"testName": "should not expose callback on hotkey registrations",
-							"fullName": "useHotkeyRegistrations should not expose callback on hotkey registrations"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-update-reactively-when-hotkey-registrations-are-added",
-							"testName": "should update reactively when hotkey registrations are added",
-							"fullName": "useHotkeyRegistrations should update reactively when hotkey registrations are added"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-update-reactively-when-hotkey-registrations-are-removed",
-							"testName": "should update reactively when hotkey registrations are removed",
-							"fullName": "useHotkeyRegistrations should update reactively when hotkey registrations are removed"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-update-reactively-when-sequence-registrations-are-added",
-							"testName": "should update reactively when sequence registrations are added",
-							"fullName": "useHotkeyRegistrations should update reactively when sequence registrations are added"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-work-without-hotkeysprovider-standalone-",
-							"testName": "should work without HotkeysProvider (standalone)",
-							"fullName": "useHotkeyRegistrations should work without HotkeysProvider (standalone)"
-						},
-						{
-							"id": "adapted:upstream-usehotkeyregistrations:should-include-meta-accessible-via-options-meta",
-							"testName": "should include meta accessible via options.meta",
-							"fullName": "useHotkeyRegistrations should include meta accessible via options.meta"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/upstream/useHotkeySequences.test.ts",
-					"role": "test",
-					"sha256": "916e8bbf4c748cbe45b686cd9d47978a82ba0dc47c3c0208c8c3bfb8b5e2e92e",
-					"cases": [
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-register-multiple-sequence-handlers",
-							"testName": "should register multiple sequence handlers",
-							"fullName": "useHotkeySequences should register multiple sequence handlers"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-call-the-correct-callback-for-each-sequence",
-							"testName": "should call the correct callback for each sequence",
-							"fullName": "useHotkeySequences should call the correct callback for each sequence"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-unregister-all-sequences-on-unmount",
-							"testName": "should unregister all sequences on unmount",
-							"fullName": "useHotkeySequences should unregister all sequences on unmount"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-handle-an-empty-array-as-a-no-op",
-							"testName": "should handle an empty array as a no-op",
-							"fullName": "useHotkeySequences should handle an empty array as a no-op"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-skip-definitions-with-an-empty-sequence",
-							"testName": "should skip definitions with an empty sequence",
-							"fullName": "useHotkeySequences should skip definitions with an empty sequence"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-register-disabled-sequences-and-keep-them-in-the-manager",
-							"testName": "should register disabled sequences and keep them in the manager",
-							"fullName": "useHotkeySequences should register disabled sequences and keep them in the manager"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-handle-dynamic-array-changes-add-sequence-",
-							"testName": "should handle dynamic array changes (add sequence)",
-							"fullName": "useHotkeySequences should handle dynamic array changes (add sequence)"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-move-a-sequence-registration-when-only-the-target-changes",
-							"testName": "should move a sequence registration when only the target changes",
-							"fullName": "useHotkeySequences should move a sequence registration when only the target changes"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-have-access-to-latest-state-values-in-callbacks",
-							"testName": "should have access to latest state values in callbacks",
-							"fullName": "useHotkeySequences stale closure prevention should have access to latest state values in callbacks"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-sync-enabled-option-on-every-render",
-							"testName": "should sync enabled option on every render",
-							"fullName": "useHotkeySequences stale closure prevention should sync enabled option on every render"
-						},
-						{
-							"id": "adapted:upstream-usehotkeysequences:should-preserve-registration-id-when-toggling-enabled",
-							"testName": "should preserve registration id when toggling enabled",
-							"fullName": "useHotkeySequences stale closure prevention should preserve registration id when toggling enabled"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/upstream/useHotkeys.test.ts",
-					"role": "test",
-					"sha256": "b79e573ab5d5d86477bbdcb5c85ed1d3ed9ddda7011169554a3a047f88e1fafb",
-					"cases": [
-						{
-							"id": "adapted:upstream-usehotkeys:should-register-multiple-hotkey-handlers",
-							"testName": "should register multiple hotkey handlers",
-							"fullName": "useHotkeys should register multiple hotkey handlers"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-call-the-correct-callback-for-each-hotkey",
-							"testName": "should call the correct callback for each hotkey",
-							"fullName": "useHotkeys should call the correct callback for each hotkey"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-unregister-all-hotkeys-on-unmount",
-							"testName": "should unregister all hotkeys on unmount",
-							"fullName": "useHotkeys should unregister all hotkeys on unmount"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-handle-an-empty-array-as-a-no-op",
-							"testName": "should handle an empty array as a no-op",
-							"fullName": "useHotkeys should handle an empty array as a no-op"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-handle-dynamic-array-changes-add-hotkey-",
-							"testName": "should handle dynamic array changes (add hotkey)",
-							"fullName": "useHotkeys should handle dynamic array changes (add hotkey)"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-handle-dynamic-array-changes-remove-hotkey-",
-							"testName": "should handle dynamic array changes (remove hotkey)",
-							"fullName": "useHotkeys should handle dynamic array changes (remove hotkey)"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-merge-commonoptions-with-per-definition-options",
-							"testName": "should merge commonOptions with per-definition options",
-							"fullName": "useHotkeys should merge commonOptions with per-definition options"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-move-a-registration-when-only-the-target-changes",
-							"testName": "should move a registration when only the target changes",
-							"fullName": "useHotkeys should move a registration when only the target changes"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-have-access-to-latest-state-values-in-callbacks",
-							"testName": "should have access to latest state values in callbacks",
-							"fullName": "useHotkeys stale closure prevention should have access to latest state values in callbacks"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-sync-enabled-option-on-every-render",
-							"testName": "should sync enabled option on every render",
-							"fullName": "useHotkeys stale closure prevention should sync enabled option on every render"
-						},
-						{
-							"id": "adapted:upstream-usehotkeys:should-preserve-registration-id-when-toggling-enabled",
-							"testName": "should preserve registration id when toggling enabled",
-							"fullName": "useHotkeys stale closure prevention should preserve registration id when toggling enabled"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/_setup.ts",
-					"role": "support",
-					"sha256": "e7ca508e3d549c61e0604d208ce8b2472183cc1d2553cbd76b8cd373177136e4"
-				},
-				{
-					"path": "packages/tanstack-hotkeys/audit/upstream-crosswalk.json",
-					"role": "support",
-					"sha256": "90383436a4db958f63969f3e1ed55e9a5d700ec8fb29bd6205c5805da2e9e83a"
-				}
-			]
-		},
-		{
-			"id": "tanstack-hotkeys-pristine-types",
-			"type": "pristine-types",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "tanstack-hotkeys-pristine-types",
-			"evidenceOrigin": "upstream-suite",
-			"notes": "Runs the pinned upstream test:types command (tsc over package source) unchanged.",
-			"execution": {
-				"kind": "typescript",
-				"compiler": "tsc",
-				"project": "packages/tanstack-hotkeys/typetests/pristine/tsconfig.json"
-			},
-			"files": [
-				{
-					"path": "packages/tanstack-hotkeys/audit/pristine-types.json",
-					"role": "test",
-					"sha256": "765eb6a11a1f847ed0398b0b45c232121d0de31f5a5b219ffb5b328a9ebceac8",
-					"cases": [
-						{
-							"id": "types:pristine-upstream",
-							"testName": "pinned upstream type suite",
-							"fullName": "pinned upstream type suite"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/typetests/pristine/tsconfig.json",
-					"role": "support",
-					"sha256": "2908cf0ddfa89aaf55a111bd842c981054fc4d10e72c59fc958ae8dfb831cc41"
-				}
-			]
-		},
-		{
-			"id": "tanstack-hotkeys-adapted-types",
-			"type": "adapted-types",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "tanstack-hotkeys-adapted-types",
-			"evidenceOrigin": "upstream-suite",
-			"notes": "Compiles the Octane adapter surface and explicit plain target-ref type assertions with tsrx-tsc.",
-			"execution": {
-				"kind": "typescript",
-				"compiler": "tsrx-tsc",
-				"project": "packages/tanstack-hotkeys/typetests/tsconfig.json"
-			},
-			"files": [
-				{
-					"path": "packages/tanstack-hotkeys/audit/adapted-types.json",
-					"role": "test",
-					"sha256": "d0b9ff883bb702d79695860ea04c320c68cab85c2773ea11117c887890be0fc5",
-					"cases": [
-						{
-							"id": "types:adapted-octane",
-							"testName": "adapted Octane type suite",
-							"fullName": "adapted Octane type suite"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/typetests/tsconfig.json",
-					"role": "support",
-					"sha256": "c54176a2262da23f745f65d0b556b5172741a1869be2f48203664024081d1ffe"
-				},
-				{
-					"path": "packages/tanstack-hotkeys/typetests/exports.test-d.ts",
-					"role": "support",
-					"sha256": "000ee3bdfee1c56394b4907db02a28cee8ce77d07ffea3838faa23eb39833343"
-				}
-			]
-		},
-		{
-			"id": "tanstack-hotkeys-differential",
-			"type": "differential",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "tanstack-hotkeys-differential",
-			"evidenceOrigin": "repo-authored",
-			"notes": "Runs one representative same-fixture keyboard lifecycle against @octanejs/tanstack-hotkeys and the pinned React adapter.",
-			"files": [
-				{
-					"path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
-					"role": "test",
-					"sha256": "ee914f27e247c63c26c7518d39188ef0f5595fe6b61c500cee7fd3dd0c2bd5a5",
-					"cases": [
-						{
-							"id": "differential:tanstack-hotkeys-keyboard-lifecycle",
-							"testName": "matches registration, shortcuts, sequences, enabled updates, and cleanup",
-							"fullName": "differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys matches registration, shortcuts, sequences, enabled updates, and cleanup"
-						}
-					]
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/differential/_setup.ts",
-					"role": "support",
-					"sha256": "b733e56b93029b54d9e5ae7cece02abd98a67f14cefa24a459a997def4cfddff"
-				},
-				{
-					"path": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys-diff.tsrx",
-					"role": "support",
-					"sha256": "d9ba292af73fe953be23fcea122942a8c3e48adfb1a02c00d3fe8f4518d5afbc"
-				},
-				{
-					"path": "packages/octane/tests/differential/_rig.ts",
-					"role": "support",
-					"sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-				},
-				{
-					"path": "vitest.config.js",
-					"role": "support",
-					"sha256": "fe85c54bc8219b47b4bc9076ce3a3f79b8fbd66cd7f7b0d84402017900c6dc4a"
-				}
-			]
-		}
-	],
-	"divergences": [
-		{
-			"id": "plain-ref-target",
-			"caseIds": [
-				"types:adapted-octane"
-			],
-			"upstreamResult": "Target options use React.RefObject<EventTarget | null>.",
-			"octaneResult": "Target options use a plain { current: EventTarget | null } object.",
-			"rationale": "Octane has no React.RefObject type, while the runtime ref shape is framework-neutral.",
-			"classification": "types",
-			"consumerImpact": "Consumers type target refs as plain current-bearing objects.",
-			"migrationGuidance": "Pass the same current-bearing ref object without importing React ref types.",
-			"owner": "@octanejs/tanstack-hotkeys",
-			"reviewCondition": "Review if Octane introduces a canonical RefObject type."
-		}
-	]
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/TanStack/hotkeys.git",
+    "version": "0.10.0",
+    "commit": "c73a3a167c979d500e1008341ecad096a6c4e635",
+    "sourceRoot": "packages/react-hotkeys/src",
+    "testRoot": "packages/react-hotkeys/tests",
+    "license": "MIT",
+    "integrity": "sha256:1ac05739e0b649ffbc5fb7954fcd7106456de9c337660ca5db3242ae14b9758d",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/tanstack-hotkeys/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/tanstack-hotkeys/tests/upstream",
+        "packages/tanstack-hotkeys/tests/differential"
+      ],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "a7a60d471611d4947581ca1b1f7156bbce2983d312db3c44fb0575e71a90716e"
+    }
+  },
+  "lanes": [
+    {
+      "id": "tanstack-hotkeys-pristine",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys-pristine",
+      "notes": "Spawns the pinned upstream Vitest suite unchanged, captures the child JSON report, and requires the exact 41 declared identities to pass once.",
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/tests/upstream-original.test.ts",
+          "role": "test",
+          "sha256": "e02bfba644d9be83df2fa541c74051079f3394ae8bd328bc19882f2db31a9a28",
+          "cases": [
+            {
+              "id": "pristine:tanstack-react-hotkeys-original-suite",
+              "testName": "runs all 41 pinned @tanstack/react-hotkeys tests unchanged",
+              "fullName": "runs all 41 pinned @tanstack/react-hotkeys tests unchanged"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/upstream-pristine.vitest.config.ts",
+          "role": "support",
+          "sha256": "4ff7a9c63e85bd9abc53cb5ea8861b479b72ead23abac97dd1774ce4bad82d7f"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "2f5291f93573b9866d30de1d6a09ace6c6a10a38c04db137283611584317f6ab"
+        },
+        {
+          "path": "scripts/react-parity/tanstack-hotkeys-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "623a226552b2f19ffd20be00f5e53036fd71f52d8eaa95494b274188f0dcb421"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "15d18ca1d85011855185b8f37d13958a01a4fe04e0cd586585554e5aa1741b7a"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/scripts/check-upstream-ledger.mjs",
+          "role": "support",
+          "sha256": "1036c0324def0e6522fd8c8050c390edd6aabe8339e1fd34f64b3011490d20af"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-hotkeys-adapted",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys",
+      "notes": "Adapted Octane port of the 41-case upstream runtime suite.",
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/tests/upstream/useHotkey.test.ts",
+          "role": "test",
+          "sha256": "1fa114f205861618e495192525c9c90e14ef0678d8ecab8d1394c6494ea602ac",
+          "cases": [
+            {
+              "id": "adapted:upstream-usehotkey:should-register-a-hotkey-handler",
+              "testName": "should register a hotkey handler",
+              "fullName": "useHotkey should register a hotkey handler"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-remove-handler-on-unmount",
+              "testName": "should remove handler on unmount",
+              "fullName": "useHotkey should remove handler on unmount"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-call-callback-when-hotkey-matches",
+              "testName": "should call callback when hotkey matches",
+              "fullName": "useHotkey should call callback when hotkey matches"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-not-call-callback-when-hotkey-does-not-match",
+              "testName": "should not call callback when hotkey does not match",
+              "fullName": "useHotkey should not call callback when hotkey does not match"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-use-keyup-event-when-specified",
+              "testName": "should use keyup event when specified",
+              "fullName": "useHotkey should use keyup event when specified"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-have-access-to-latest-state-values-in-callback",
+              "testName": "should have access to latest state values in callback",
+              "fullName": "useHotkey stale closure prevention should have access to latest state values in callback"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-sync-enabled-option-on-every-render",
+              "testName": "should sync enabled option on every render",
+              "fullName": "useHotkey stale closure prevention should sync enabled option on every render"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-preserve-registration-id-when-toggling-enabled",
+              "testName": "should preserve registration id when toggling enabled",
+              "fullName": "useHotkey stale closure prevention should preserve registration id when toggling enabled"
+            },
+            {
+              "id": "adapted:upstream-usehotkey:should-wait-for-ref-to-be-attached",
+              "testName": "should wait for ref to be attached",
+              "fullName": "useHotkey target handling should wait for ref to be attached"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/upstream/useHotkeyRegistrations.test.ts",
+          "role": "test",
+          "sha256": "ddfcd370a4bafb867b63c3fa329bb2348a56a14d3664e485e98243c62ed6b35a",
+          "cases": [
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-return-empty-arrays-when-no-registrations-exist",
+              "testName": "should return empty arrays when no registrations exist",
+              "fullName": "useHotkeyRegistrations should return empty arrays when no registrations exist"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-return-hotkey-registrations-after-registering-hotkeys",
+              "testName": "should return hotkey registrations after registering hotkeys",
+              "fullName": "useHotkeyRegistrations should return hotkey registrations after registering hotkeys"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-return-sequence-registrations-after-registering-sequences",
+              "testName": "should return sequence registrations after registering sequences",
+              "fullName": "useHotkeyRegistrations should return sequence registrations after registering sequences"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-return-both-hotkeys-and-sequences",
+              "testName": "should return both hotkeys and sequences",
+              "fullName": "useHotkeyRegistrations should return both hotkeys and sequences"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-not-expose-callback-on-hotkey-registrations",
+              "testName": "should not expose callback on hotkey registrations",
+              "fullName": "useHotkeyRegistrations should not expose callback on hotkey registrations"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-update-reactively-when-hotkey-registrations-are-added",
+              "testName": "should update reactively when hotkey registrations are added",
+              "fullName": "useHotkeyRegistrations should update reactively when hotkey registrations are added"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-update-reactively-when-hotkey-registrations-are-removed",
+              "testName": "should update reactively when hotkey registrations are removed",
+              "fullName": "useHotkeyRegistrations should update reactively when hotkey registrations are removed"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-update-reactively-when-sequence-registrations-are-added",
+              "testName": "should update reactively when sequence registrations are added",
+              "fullName": "useHotkeyRegistrations should update reactively when sequence registrations are added"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-work-without-hotkeysprovider-standalone-",
+              "testName": "should work without HotkeysProvider (standalone)",
+              "fullName": "useHotkeyRegistrations should work without HotkeysProvider (standalone)"
+            },
+            {
+              "id": "adapted:upstream-usehotkeyregistrations:should-include-meta-accessible-via-options-meta",
+              "testName": "should include meta accessible via options.meta",
+              "fullName": "useHotkeyRegistrations should include meta accessible via options.meta"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/upstream/useHotkeySequences.test.ts",
+          "role": "test",
+          "sha256": "916e8bbf4c748cbe45b686cd9d47978a82ba0dc47c3c0208c8c3bfb8b5e2e92e",
+          "cases": [
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-register-multiple-sequence-handlers",
+              "testName": "should register multiple sequence handlers",
+              "fullName": "useHotkeySequences should register multiple sequence handlers"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-call-the-correct-callback-for-each-sequence",
+              "testName": "should call the correct callback for each sequence",
+              "fullName": "useHotkeySequences should call the correct callback for each sequence"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-unregister-all-sequences-on-unmount",
+              "testName": "should unregister all sequences on unmount",
+              "fullName": "useHotkeySequences should unregister all sequences on unmount"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-handle-an-empty-array-as-a-no-op",
+              "testName": "should handle an empty array as a no-op",
+              "fullName": "useHotkeySequences should handle an empty array as a no-op"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-skip-definitions-with-an-empty-sequence",
+              "testName": "should skip definitions with an empty sequence",
+              "fullName": "useHotkeySequences should skip definitions with an empty sequence"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-register-disabled-sequences-and-keep-them-in-the-manager",
+              "testName": "should register disabled sequences and keep them in the manager",
+              "fullName": "useHotkeySequences should register disabled sequences and keep them in the manager"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-handle-dynamic-array-changes-add-sequence-",
+              "testName": "should handle dynamic array changes (add sequence)",
+              "fullName": "useHotkeySequences should handle dynamic array changes (add sequence)"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-move-a-sequence-registration-when-only-the-target-changes",
+              "testName": "should move a sequence registration when only the target changes",
+              "fullName": "useHotkeySequences should move a sequence registration when only the target changes"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-have-access-to-latest-state-values-in-callbacks",
+              "testName": "should have access to latest state values in callbacks",
+              "fullName": "useHotkeySequences stale closure prevention should have access to latest state values in callbacks"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-sync-enabled-option-on-every-render",
+              "testName": "should sync enabled option on every render",
+              "fullName": "useHotkeySequences stale closure prevention should sync enabled option on every render"
+            },
+            {
+              "id": "adapted:upstream-usehotkeysequences:should-preserve-registration-id-when-toggling-enabled",
+              "testName": "should preserve registration id when toggling enabled",
+              "fullName": "useHotkeySequences stale closure prevention should preserve registration id when toggling enabled"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/upstream/useHotkeys.test.ts",
+          "role": "test",
+          "sha256": "b79e573ab5d5d86477bbdcb5c85ed1d3ed9ddda7011169554a3a047f88e1fafb",
+          "cases": [
+            {
+              "id": "adapted:upstream-usehotkeys:should-register-multiple-hotkey-handlers",
+              "testName": "should register multiple hotkey handlers",
+              "fullName": "useHotkeys should register multiple hotkey handlers"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-call-the-correct-callback-for-each-hotkey",
+              "testName": "should call the correct callback for each hotkey",
+              "fullName": "useHotkeys should call the correct callback for each hotkey"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-unregister-all-hotkeys-on-unmount",
+              "testName": "should unregister all hotkeys on unmount",
+              "fullName": "useHotkeys should unregister all hotkeys on unmount"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-handle-an-empty-array-as-a-no-op",
+              "testName": "should handle an empty array as a no-op",
+              "fullName": "useHotkeys should handle an empty array as a no-op"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-handle-dynamic-array-changes-add-hotkey-",
+              "testName": "should handle dynamic array changes (add hotkey)",
+              "fullName": "useHotkeys should handle dynamic array changes (add hotkey)"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-handle-dynamic-array-changes-remove-hotkey-",
+              "testName": "should handle dynamic array changes (remove hotkey)",
+              "fullName": "useHotkeys should handle dynamic array changes (remove hotkey)"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-merge-commonoptions-with-per-definition-options",
+              "testName": "should merge commonOptions with per-definition options",
+              "fullName": "useHotkeys should merge commonOptions with per-definition options"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-move-a-registration-when-only-the-target-changes",
+              "testName": "should move a registration when only the target changes",
+              "fullName": "useHotkeys should move a registration when only the target changes"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-have-access-to-latest-state-values-in-callbacks",
+              "testName": "should have access to latest state values in callbacks",
+              "fullName": "useHotkeys stale closure prevention should have access to latest state values in callbacks"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-sync-enabled-option-on-every-render",
+              "testName": "should sync enabled option on every render",
+              "fullName": "useHotkeys stale closure prevention should sync enabled option on every render"
+            },
+            {
+              "id": "adapted:upstream-usehotkeys:should-preserve-registration-id-when-toggling-enabled",
+              "testName": "should preserve registration id when toggling enabled",
+              "fullName": "useHotkeys stale closure prevention should preserve registration id when toggling enabled"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/_setup.ts",
+          "role": "support",
+          "sha256": "e7ca508e3d549c61e0604d208ce8b2472183cc1d2553cbd76b8cd373177136e4"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/audit/upstream-crosswalk.json",
+          "role": "support",
+          "sha256": "90383436a4db958f63969f3e1ed55e9a5d700ec8fb29bd6205c5805da2e9e83a"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-hotkeys-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys-pristine-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the pinned upstream test:types command (tsc over package source) unchanged.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/tanstack-hotkeys/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "765eb6a11a1f847ed0398b0b45c232121d0de31f5a5b219ffb5b328a9ebceac8",
+          "cases": [
+            {
+              "id": "types:pristine-upstream",
+              "testName": "pinned upstream type suite",
+              "fullName": "pinned upstream type suite"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "2908cf0ddfa89aaf55a111bd842c981054fc4d10e72c59fc958ae8dfb831cc41"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-hotkeys-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys-adapted-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Compiles the Octane adapter surface and explicit plain target-ref type assertions with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-hotkeys/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "d0b9ff883bb702d79695860ea04c320c68cab85c2773ea11117c887890be0fc5",
+          "cases": [
+            {
+              "id": "types:adapted-octane",
+              "testName": "adapted Octane type suite",
+              "fullName": "adapted Octane type suite"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "c54176a2262da23f745f65d0b556b5172741a1869be2f48203664024081d1ffe"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/typetests/exports.test-d.ts",
+          "role": "support",
+          "sha256": "000ee3bdfee1c56394b4907db02a28cee8ce77d07ffea3838faa23eb39833343"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-hotkeys-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-hotkeys-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs one representative same-fixture keyboard lifecycle against @octanejs/tanstack-hotkeys and the pinned React adapter.",
+      "files": [
+        {
+          "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "ee914f27e247c63c26c7518d39188ef0f5595fe6b61c500cee7fd3dd0c2bd5a5",
+          "cases": [
+            {
+              "id": "differential:tanstack-hotkeys-keyboard-lifecycle",
+              "testName": "matches registration, shortcuts, sequences, enabled updates, and cleanup",
+              "fullName": "differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys matches registration, shortcuts, sequences, enabled updates, and cleanup"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "b733e56b93029b54d9e5ae7cece02abd98a67f14cefa24a459a997def4cfddff"
+        },
+        {
+          "path": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys-diff.tsrx",
+          "role": "support",
+          "sha256": "d9ba292af73fe953be23fcea122942a8c3e48adfb1a02c00d3fe8f4518d5afbc"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "57712391e221f3424b951a16c4ab88406d4e96667cbcc403cb0fabcf2db55fde"
+        }
+      ]
+    }
+  ],
+  "divergences": [
+    {
+      "id": "plain-ref-target",
+      "caseIds": ["types:adapted-octane"],
+      "upstreamResult": "Target options use React.RefObject<EventTarget | null>.",
+      "octaneResult": "Target options use a plain { current: EventTarget | null } object.",
+      "rationale": "Octane has no React.RefObject type, while the runtime ref shape is framework-neutral.",
+      "classification": "types",
+      "consumerImpact": "Consumers type target refs as plain current-bearing objects.",
+      "migrationGuidance": "Pass the same current-bearing ref object without importing React ref types.",
+      "owner": "@octanejs/tanstack-hotkeys",
+      "reviewCondition": "Review if Octane introduces a canonical RefObject type."
+    }
+  ]
 }
