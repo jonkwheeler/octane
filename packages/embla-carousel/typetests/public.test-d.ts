@@ -17,5 +17,5 @@ const options: EmblaOptionsType | undefined = useEmblaCarousel.globalOptions;
 useEmblaCarousel.globalOptions = options;
 
 // @type-parity negative:unknown-option
-// @ts-expect-error The upstream hook does not accept an arbitrary option.
+// @ts-expect-error The pinned React hook does not accept an arbitrary option.
 useEmblaCarousel({ imaginaryOption: true });

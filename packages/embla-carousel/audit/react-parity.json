@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "804fc645aaa8a36053526ead46915ae1c52eccf8eaf1e243d7a11f551b0da54b"
+      "lockfileSha256": "53e3175fd6a70596c4f9c687d4b67ba61f8be7c6fa40bd028b54e2b314e5e0a3"
     }
   },
   "lanes": [
@@ -76,7 +76,7 @@
       "environment": "workspace-node",
       "project": "embla-carousel",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the complete repo-authored adapter lifecycle suite because the pinned React adapter publishes no runtime tests.",
+      "notes": "Runs the complete repo-authored adapter lifecycle suite because the pinned React adapter publishes no runtime tests. Each inventory case has a matching differential scenario against the pinned React adapter.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/embla-carousel/audit/adapted-runtime.json"
@@ -106,12 +106,27 @@
         {
           "path": "packages/embla-carousel/tests/differential/react-adapter.test.ts",
           "role": "test",
-          "sha256": "d5e77bfcf7584a498d0917b963b0acb3aacf6277c5eb56c62152254f686356c0",
+          "sha256": "8aa73fe38ae59b9906fb44780918982b7a4968b499869ddc072c154bf81a8c42",
           "cases": [
             {
               "id": "embla:differential:lifecycle",
               "testName": "matches the pinned React adapter lifecycle across attachment, updates, and cleanup",
               "fullName": "@octanejs/embla-carousel React differential matches the pinned React adapter lifecycle across attachment, updates, and cleanup"
+            },
+            {
+              "id": "embla:differential:plugins",
+              "testName": "matches plugin bail-out and reinitialization against the pinned React adapter",
+              "fullName": "@octanejs/embla-carousel React differential matches plugin bail-out and reinitialization against the pinned React adapter"
+            },
+            {
+              "id": "embla:differential:detach-replace",
+              "testName": "matches detach and replacement viewport construction against the pinned React adapter",
+              "fullName": "@octanejs/embla-carousel React differential matches detach and replacement viewport construction against the pinned React adapter"
+            },
+            {
+              "id": "embla:differential:globals",
+              "testName": "matches global option application against the pinned React adapter",
+              "fullName": "@octanejs/embla-carousel React differential matches global option application against the pinned React adapter"
             }
           ]
         }
@@ -167,7 +182,7 @@
         {
           "path": "packages/embla-carousel/typetests/public.test-d.ts",
           "role": "test",
-          "sha256": "282f5432e493f5b1be6bc592e1df4c582fcbd3cee6e47f2ef27280a937c61ac3",
+          "sha256": "896f6f9547b2d82e30161c0d52e4f3f51bbe1652409c92bf14f7fccc3c36130f",
           "cases": [
             {
               "id": "embla:types:adapted",

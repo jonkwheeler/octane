@@ -35,9 +35,17 @@ describe('@octanejs/embla-carousel parity negative controls', () => {
 		const adapted = await readFile(resolve(root, ledger.adapted), 'utf8');
 		expect(() =>
 			verifyTypeParity(ledger, pristine, adapted.replace('// @type-parity positive:tuple', '')),
-		).toThrow('missing type parity assertion');
+		).toThrow(/differs from pristine|assertion group/);
 		expect(() =>
 			verifyTypeParity(ledger, pristine, adapted.replace(/^\/\/ @ts-expect-error .*$/m, '')),
-		).toThrow('lost an @ts-expect-error');
+		).toThrow(/differs from pristine|lost an @ts-expect-error/);
+	});
+
+	it('rejects a mutated assertion body that keeps the marker', async () => {
+		const pristine = await readFile(resolve(root, ledger.pristine), 'utf8');
+		const adapted = await readFile(resolve(root, ledger.adapted), 'utf8');
+		expect(() =>
+			verifyTypeParity(ledger, pristine, adapted.replace('{ loop: true }', '{ loop: false }')),
+		).toThrow(/differs from pristine|hashes differ|assertion group hashes drifted/);
 	});
 });

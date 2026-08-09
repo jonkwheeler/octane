@@ -3500,6 +3500,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'embla-carousel-audit',
 					include: ['packages/embla-carousel/tests/audit/**/*.test.ts'],
