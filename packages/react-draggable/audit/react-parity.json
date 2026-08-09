@@ -9,7 +9,7 @@
     "testRoot": "test",
     "license": "MIT",
     "integrity": "sha256:f96cf6ee39150b9ac5477ee05e4b8a69fbc766c20697fcbdca23773c8fc5261d",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3adb35a4fd845f7ee843c2be9867bf02785c2d420b15d16ea5b6b014c6c7dedc"
+      "lockfileSha256": "2c7d0189c7424ea4de5e35324cd44baca10e4ccc5b7361d17d450f3777807d3e"
     }
   },
   "lanes": [
