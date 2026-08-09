@@ -114,3 +114,14 @@ export function ConstraintsFixture() @{
 		components={{ DayButton: CustomDayButton }}
 	/>
 }
+
+/** Default DayButton path for differential oracle comparison (no custom components). */
+export function DefaultConstraintsFixture() @{
+	<DayPicker
+		mode="single"
+		month={new Date(2026, 7, 1)}
+		disabled={new Date(2026, 7, 10)}
+		hidden={new Date(2026, 7, 11)}
+		showOutsideDays
+	/>
+}
