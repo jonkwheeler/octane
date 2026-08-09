@@ -236,6 +236,27 @@ describe('Draggable visual contract', () => {
 		container.remove();
 	});
 
+	// @parity-case adapted:draggable-noderef-swap
+	it('retargets nodeRef.current when the nodeRef identity changes', () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const firstRef = { current: null as HTMLDivElement | null };
+		const secondRef = { current: null as HTMLDivElement | null };
+		root.render(DraggableHarness, { nodeRef: firstRef, enableUserSelectHack: false });
+		flushSync(() => {});
+		flushEffects();
+		const node = firstRef.current;
+		expect(node).toBeInstanceOf(HTMLDivElement);
+		root.render(DraggableHarness, { nodeRef: secondRef, enableUserSelectHack: false });
+		flushSync(() => {});
+		flushEffects();
+		expect(firstRef.current).toBeNull();
+		expect(secondRef.current).toBe(node);
+		root.unmount();
+		container.remove();
+	});
+
 	// @parity-case adapted:draggable-stable-child-ref
 	it('does not churn child callback-ref cleanups across drag re-renders', () => {
 		const container = document.createElement('div');

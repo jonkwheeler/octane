@@ -172,7 +172,13 @@ function DraggableImpl(inputProps: Partial<DraggableProps>): ElementDescriptor {
 		};
 	} else {
 		const bag = forwardRefBag.current;
-		bag.nodeRef = nodeRef;
+		if (nodeRef !== bag.nodeRef) {
+			if (bag.nodeRef) bag.nodeRef.current = null;
+			if (nodeRef && bag.attached != null) {
+				nodeRef.current = bag.attached as HTMLElement | null;
+			}
+			bag.nodeRef = nodeRef;
+		}
 		const nextChildRef = child.props.ref as ChildRef;
 		if (nextChildRef !== bag.childRef) {
 			if (bag.attached != null) {
