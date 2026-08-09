@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/measuredco/puck.git",
+    "version": "0.20.2",
+    "commit": "2009b88272ee0a2008bb277393c83fdf1c3c43b8",
+    "sourceRoot": "packages/core",
+    "testRoot": "packages/core",
+    "license": "MIT",
+    "integrity": "sha256:633020766cfe900d7081d20c7841a306086e964fad09ed434b8fe77dd7c80b24",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "insufficient",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/puck/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/puck/tests/differential"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "21071368007d1eb943d15ca9a185b1b577a39e6a4adce3041ef9cada3adf148f"
+    }
+  },
+  "lanes": [
+    {
+      "id": "puck-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "puck-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same Render fixture runs through @octanejs/puck and published @measured/puck@0.20.2 via the shared differential rig.",
+      "files": [
+        {
+          "path": "packages/puck/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "ccde9cf7be39f25ed27022af9be609e10528935f824cce4cd1db77b8a514a364",
+          "cases": [
+            {
+              "id": "differential:render",
+              "testName": "Render: configured content is byte-identical",
+              "fullName": "differential: @octanejs/puck vs @measured/puck@0.20.2 Render: configured content is byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/puck/tests/_fixtures/differential/render-diff.tsrx",
+          "role": "support",
+          "sha256": "3af8c7afcc89a9f3b03b164e42d9dbb636460c436f5887eefddbcc54fed5d395"
+        },
+        {
+          "path": "packages/puck/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "ce3322df33cec9f8286c6af0bdfcbdfe12ab77c2dee4eee408faa36ee49f519c"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "f6418e04a6ef41bb195544650d690b6a0b2db5d9a87918a9109e6da67aeda829"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

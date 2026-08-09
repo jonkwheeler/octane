@@ -1,17 +1,28 @@
 /**
- * Precompile puck differential fixtures for React.
+ * Precompile puck differential fixtures for React. The same `.tsrx` source is
+ * loaded by Octane in the test project and rewritten to use published
+ * `@measured/puck@0.20.2` on the React side.
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	statSync,
+	unlinkSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const FIXTURE_DIR = join(__dirname, '../_fixtures');
+const FIXTURE_DIR = join(__dirname, '../_fixtures/differential');
 const CACHE_DIR = join(__dirname, '.react-cache');
 
+// Must match packages/octane/tests/differential/_rig.ts.
 function hashString(value: string): string {
 	let hash = 5381;
 	for (let index = 0; index < value.length; index++) {
@@ -20,15 +31,26 @@ function hashString(value: string): string {
 	return Math.abs(hash).toString(36);
 }
 
+function clearStaleOutput(outFile: string): void {
+	if (existsSync(outFile)) unlinkSync(outFile);
+}
+
 function compileOne(sourcePath: string): void {
+	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
+	const outFile = join(CACHE_DIR, `${slug}-${hashString(sourcePath)}.js`);
 	const source = readFileSync(sourcePath, 'utf8');
+
 	let compiled;
 	try {
 		compiled = compileToReact(source, sourcePath);
-	} catch {
-		return;
+	} catch (error) {
+		clearStaleOutput(outFile);
+		throw error;
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
+	if (compiled.errors && compiled.errors.length > 0) {
+		clearStaleOutput(outFile);
+		throw new Error(`React compile failed for ${sourcePath}: ${JSON.stringify(compiled.errors)}`);
+	}
 
 	let transformed;
 	try {
@@ -40,15 +62,15 @@ function compileOne(sourcePath: string): void {
 			format: 'esm',
 			sourcefile: sourcePath,
 		});
-	} catch {
-		return;
+	} catch (error) {
+		clearStaleOutput(outFile);
+		throw error;
 	}
 
 	const rewritten = transformed.code
 		.replace(/from\s+["']@octanejs\/puck["']/g, 'from "@measured/puck"')
 		.replace(/from\s+["']octane["']/g, 'from "react"');
-	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
-	writeFileSync(join(CACHE_DIR, `${slug}-${hashString(sourcePath)}.js`), rewritten);
+	writeFileSync(outFile, rewritten);
 }
 
 function walk(directory: string): string[] {
@@ -67,4 +89,6 @@ export async function setup(): Promise<void> {
 	for (const sourcePath of walk(FIXTURE_DIR)) compileOne(sourcePath);
 }
 
-export async function teardown(): Promise<void> {}
+export async function teardown(): Promise<void> {
+	// The cache is regenerated on every test run.
+}

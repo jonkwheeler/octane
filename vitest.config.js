@@ -2875,19 +2875,12 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
-			},,
+			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/puck/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'puck',
 					include: ['packages/puck/tests/**/*.test.ts'],
-					exclude: [
-						...configDefaults.exclude,
-						'packages/puck/tests/differential/**/*.test.ts',
-					],
+					exclude: [...configDefaults.exclude, 'packages/puck/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					testTimeout: 30_000,
 					setupFiles: ['packages/puck/tests/_setup.ts'],
@@ -2960,6 +2953,7 @@ export default defineConfig({
 					environment: 'jsdom',
 					testTimeout: 30_000,
 					globalSetup: ['packages/puck/tests/differential/_setup.ts'],
+					setupFiles: ['packages/puck/tests/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],

@@ -35,6 +35,7 @@ import { getDeepDir } from "../../lib/get-deep-dir";
 import { useSensors } from "../../lib/dnd/use-sensors";
 import { useSafeId } from "../../lib/use-safe-id";
 import { getFrame } from "../../lib/get-frame";
+import { withoutSlot } from "../../lib/without-slot.js";
 import { effect } from "@dnd-kit/state";
 
 const DEBUG = false;
