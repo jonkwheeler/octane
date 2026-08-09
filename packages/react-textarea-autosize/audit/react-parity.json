@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-textarea-autosize/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/react-textarea-autosize/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-textarea-autosize/tests/upstream"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/react-textarea-autosize/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
@@ -197,22 +189,17 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-textarea-autosize-ssr",
-      "notes": "Proves browser-global safety and the React-visible server contract.",
+      "notes": "Proves the React-visible server contract. Octane-only browser-global/server assertions stay in the ordinary shards.",
       "files": [
         {
-          "path": "packages/react-textarea-autosize/tests/ssr/server.test.ts",
+          "path": "packages/react-textarea-autosize/tests/ssr/react-contract.test.ts",
           "role": "test",
-          "sha256": "143e1ca60862124f5cf73dd9c68711ddd0b8ede6e734e21e162a697f00f78936",
+          "sha256": "a4884b622ea909965b825efc303c9b5a76f90737458dd738b0c5e29fe4694d70",
           "cases": [
-            {
-              "id": "ssr:plain-textarea",
-              "testName": "renders textarea attributes and the caller-owned initial style without browser globals",
-              "fullName": "@octanejs/react-textarea-autosize SSR renders textarea attributes and the caller-owned initial style without browser globals"
-            },
             {
               "id": "ssr:react-contract",
               "testName": "matches the pristine React server-visible contract",
-              "fullName": "@octanejs/react-textarea-autosize SSR matches the pristine React server-visible contract"
+              "fullName": "@octanejs/react-textarea-autosize SSR React contract matches the pristine React server-visible contract"
             }
           ]
         }
@@ -249,9 +236,7 @@
   "divergences": [
     {
       "id": "native-input-event",
-      "caseIds": [
-        "differential:input"
-      ],
+      "caseIds": ["differential:input"],
       "upstreamResult": "onChange receives a React SyntheticEvent produced by React's change plugin.",
       "octaneResult": "onChange receives the native bubbling InputEvent with textarea target/currentTarget during dispatch.",
       "rationale": "Octane exposes native DOM events and does not ship React's synthetic event system.",

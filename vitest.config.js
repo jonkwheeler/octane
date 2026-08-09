@@ -3632,7 +3632,12 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// The React server-visible contract is parity evidence; the
+				// Octane-only browser-global/server assertion stays ordinary.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-textarea-autosize/tests/ssr/react-contract.test.ts'],
+				},
 				test: {
 					name: 'react-textarea-autosize-ssr',
 					include: ['packages/react-textarea-autosize/tests/ssr/**/*.test.ts'],
