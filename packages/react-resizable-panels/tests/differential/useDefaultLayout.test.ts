@@ -76,7 +76,10 @@ describe('react-resizable-panels useDefaultLayout differential', () => {
 			}),
 		);
 
-		// Checkpoint 1: effects have restored the same persisted layout and read key.
+		// Checkpoint 1: effects have restored the seeded layout and read key.
+		const restoredLayout = { navigation: 30, content: 70 };
+		expect(octane.result.current.defaultLayout).toEqual(restoredLayout);
+		expect(reactCurrent.defaultLayout).toEqual(restoredLayout);
 		expect(octane.result.current.defaultLayout).toEqual(reactCurrent.defaultLayout);
 		expect(octaneStorage.trace.some((entry) => entry[0] === 'get' && entry[1] === key)).toBe(true);
 		expect(reactStorage.trace.some((entry) => entry[0] === 'get' && entry[1] === key)).toBe(true);
@@ -111,6 +114,9 @@ describe('react-resizable-panels useDefaultLayout differential', () => {
 
 	test('identical deprecated debounce checkpoints and cancellation', () => {
 		vi.useFakeTimers();
+		const key = 'react-resizable-panels:workspace';
+		const pendingLayout = { navigation: 20, content: 80 };
+		const expectedWrite: ['set', string, string] = ['set', key, JSON.stringify(pendingLayout)];
 		const reactStorage = createStorage();
 		const octaneStorage = createStorage();
 		let reactCurrent!: ReturnType<typeof useReactDefaultLayout>;
@@ -133,18 +139,24 @@ describe('react-resizable-panels useDefaultLayout differential', () => {
 			}),
 		);
 
-		reactAct(() => reactCurrent.onLayoutChange({ navigation: 20, content: 80 }));
-		octaneAct(() => octane.result.current.onLayoutChange({ navigation: 20, content: 80 }));
+		reactAct(() => reactCurrent.onLayoutChange(pendingLayout));
+		octaneAct(() => octane.result.current.onLayoutChange(pendingLayout));
 
 		// Checkpoint 1: neither implementation writes synchronously.
+		expect(writes(octaneStorage.trace)).toEqual([]);
+		expect(writes(reactStorage.trace)).toEqual([]);
 		expect(writes(octaneStorage.trace)).toEqual(writes(reactStorage.trace));
 
 		reactAct(() => vi.advanceTimersByTime(19));
 		// Checkpoint 2: both remain pending before the debounce boundary.
+		expect(writes(octaneStorage.trace)).toEqual([]);
+		expect(writes(reactStorage.trace)).toEqual([]);
 		expect(writes(octaneStorage.trace)).toEqual(writes(reactStorage.trace));
 
 		reactAct(() => vi.advanceTimersByTime(1));
 		// Checkpoint 3: both commit the same payload at the boundary.
+		expect(writes(octaneStorage.trace)).toEqual([expectedWrite]);
+		expect(writes(reactStorage.trace)).toEqual([expectedWrite]);
 		expect(writes(octaneStorage.trace)).toEqual(writes(reactStorage.trace));
 
 		reactAct(() => reactCurrent.onLayoutChange({ navigation: 25, content: 75 }));
@@ -153,7 +165,9 @@ describe('react-resizable-panels useDefaultLayout differential', () => {
 		octane.unmount();
 		reactAct(() => vi.runAllTimers());
 
-		// Checkpoint 4: unmount cancels both pending commits.
+		// Checkpoint 4: unmount cancels both pending commits; boundary write remains.
+		expect(writes(octaneStorage.trace)).toEqual([expectedWrite]);
+		expect(writes(reactStorage.trace)).toEqual([expectedWrite]);
 		expect(writes(octaneStorage.trace)).toEqual(writes(reactStorage.trace));
 	});
 });

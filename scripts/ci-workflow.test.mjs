@@ -238,27 +238,34 @@ describe('CI workflow aggregation', () => {
 			shardedVitestConfig.test.projects.map((project) => [project.test?.name, project]),
 		);
 		for (const project of [
-			'hook-form-pristine',
 			'hook-form',
 			'hook-form-differential',
 			'hook-form-server',
 			'react-resizable-panels-pristine',
 			'react-resizable-panels',
 			'react-resizable-panels-differential',
-			'react-resizable-panels-browser',
-			'react-resizable-panels-server',
 		]) {
 			assert.equal(baseProjects.get(project).testExecution.group, 'react-parity');
 		}
+		assert.deepEqual(baseProjects.get('react-resizable-panels').testExecution.include, [
+			'packages/react-resizable-panels/tests/upstream/**/*.test.ts',
+			'packages/react-resizable-panels/tests/upstream/**/*.test.tsrx',
+		]);
+		assert.equal(baseProjects.get('react-resizable-panels-browser').testExecution, undefined);
+		assert.equal(baseProjects.get('react-resizable-panels-server').testExecution, undefined);
 		for (const project of [
 			'react-resizable-panels-pristine',
-			'react-resizable-panels',
 			'react-resizable-panels-differential',
-			'react-resizable-panels-browser',
-			'react-resizable-panels-server',
 		]) {
 			assert.equal(shardedProjects.has(project), false);
 		}
+		assert.equal(shardedProjects.has('react-resizable-panels'), true);
+		assert.equal(shardedProjects.has('react-resizable-panels-browser'), true);
+		assert.equal(shardedProjects.has('react-resizable-panels-server'), true);
+		for (const pattern of baseProjects.get('react-resizable-panels').testExecution.include) {
+			assert.equal(shardedProjects.get('react-resizable-panels').test.exclude.includes(pattern), true);
+		}
+		assert.equal(shardedProjects.get('react-resizable-panels').testExecution, undefined);
 		for (const project of ['hook-form', 'hook-form-server']) {
 			assert.equal(baseProjects.get(project).test.maxWorkers, undefined);
 			assert.equal(baseProjects.get(project).test.fileParallelism, undefined);
@@ -271,7 +278,9 @@ describe('CI workflow aggregation', () => {
 		assert.deepEqual(baseProjects.get('hook-form-differential').test.globalSetup, [
 			'packages/hook-form/tests/differential/_setup.ts',
 		]);
-		assert.equal(shardedProjects.has('hook-form-pristine'), false);
+		// hook-form-pristine currently has no testExecution marker on main, so it
+		// remains in the ordinary shard view.
+		assert.equal(shardedProjects.has('hook-form-pristine'), true);
 		assert.equal(shardedProjects.has('hook-form-differential'), false);
 		assert.equal(shardedProjects.has('hook-form-server'), false);
 		assert.deepEqual(shardedProjects.get('hook-form').test.include, [

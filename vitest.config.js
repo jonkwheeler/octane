@@ -1730,7 +1730,16 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Adapted upstream suite owns tests/upstream/**; conformance and
+				// hydration persistence contracts are Octane-only and stay in the
+				// ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/react-resizable-panels/tests/upstream/**/*.test.ts',
+						'packages/react-resizable-panels/tests/upstream/**/*.test.tsrx',
+					],
+				},
 				test: {
 					name: 'react-resizable-panels',
 					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
@@ -1778,7 +1787,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-browser',
 					include: ['packages/react-resizable-panels/tests/browser/**/*.browser.test.ts'],
@@ -1789,7 +1797,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-server',
 					include: ['packages/react-resizable-panels/tests/**/*.server.test.{ts,tsx,tsrx}'],
