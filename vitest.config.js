@@ -1095,13 +1095,15 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/tanstack-ai/tests/conformance/parity/**/*.test.ts'],
+				},
 				test: {
 					name: 'tanstack-ai',
 					include: [
 						'packages/tanstack-ai/tests/conformance/**/*.test.ts',
 						'packages/tanstack-ai/tests/conformance/**/*.test.tsx',
-						'packages/tanstack-ai/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					setupFiles: ['packages/tanstack-ai/tests/conformance/test-setup.ts'],

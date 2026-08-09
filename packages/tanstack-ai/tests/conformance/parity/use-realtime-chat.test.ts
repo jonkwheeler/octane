@@ -1,14 +1,12 @@
 import { act, renderHook } from '@octanejs/testing-library';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { RealtimeEvent, RealtimeEventPayloads, RealtimeToken, UsageInfo } from '@tanstack/ai';
+import type { RealtimeEvent, RealtimeToken } from '@tanstack/ai';
 import type { RealtimeAdapter, RealtimeConnection } from '@tanstack/ai-client';
-import { useRealtimeChat } from '../../src/use-realtime-chat.tsrx';
-import type { UseRealtimeChatOptions } from '../../src/realtime-types';
+import { useRealtimeChat } from '../../../src/use-realtime-chat.tsrx';
+import type { UseRealtimeChatOptions } from '../../../src/realtime-types';
 
 interface TestConnection {
 	connection: RealtimeConnection;
-	updateSession: ReturnType<typeof vi.fn<RealtimeConnection['updateSession']>>;
-	emit<TEvent extends RealtimeEvent>(event: TEvent, payload: RealtimeEventPayloads[TEvent]): void;
 }
 
 function createConnection(): TestConnection {
@@ -24,12 +22,6 @@ function createConnection(): TestConnection {
 		eventListeners.add(listener);
 		return () => eventListeners.delete(listener);
 	};
-	function emit<TEvent extends RealtimeEvent>(
-		event: TEvent,
-		payload: RealtimeEventPayloads[TEvent],
-	): void {
-		for (const listener of listeners.get(event) ?? []) listener(payload);
-	}
 	const connection: RealtimeConnection = {
 		disconnect: vi.fn(async () => {}),
 		startAudioCapture: vi.fn(async () => {}),
@@ -51,7 +43,7 @@ function createConnection(): TestConnection {
 			outputSampleRate: 48_000,
 		}),
 	};
-	return { connection, updateSession, emit };
+	return { connection };
 }
 
 function createAdapter(provider: string, connections: Array<RealtimeConnection>) {
@@ -95,36 +87,37 @@ afterEach(() => {
 });
 
 describe('useRealtimeChat', () => {
-	it('uses updated authentication when refreshing an active session', async () => {
-		vi.useFakeTimers();
-		vi.setSystemTime(new Date('2026-07-16T12:00:00Z'));
-
-		const testConnection = createConnection();
-		const testAdapter = createAdapter('test', [testConnection.connection]);
-		const initialToken = createToken('test', 'initial', Date.now() + 60_100);
-		const staleRefreshToken = createToken('test', 'stale-refresh');
-		const currentRefreshToken = createToken('test', 'current-refresh');
-		const firstGetToken = vi
-			.fn<UseRealtimeChatOptions['getToken']>()
-			.mockResolvedValueOnce(initialToken)
-			.mockResolvedValue(staleRefreshToken);
-		const secondGetToken = vi.fn(async () => currentRefreshToken);
+	// OCTANE DIVERGENCE[tanstack-ai-live-realtime-options][adapted:tanstack-ai-live-realtime-options]
+	// @parity-case adapted:tanstack-ai-live-realtime-options
+	it('uses updated authentication and provider on the next connection', async () => {
+		const firstConnection = createConnection();
+		const secondConnection = createConnection();
+		const firstAdapter = createAdapter('first', [firstConnection.connection]);
+		const secondAdapter = createAdapter('second', [secondConnection.connection]);
+		const firstToken = createToken('first', 'first-token');
+		const secondToken = createToken('second', 'second-token');
+		const firstGetToken = vi.fn(async () => firstToken);
+		const secondGetToken = vi.fn(async () => secondToken);
 
 		const { result, rerender, unmount } = renderHook(
 			(options: UseRealtimeChatOptions) => useRealtimeChat(options),
-			{ initialProps: createOptions(testAdapter.adapter, firstGetToken) },
+			{ initialProps: createOptions(firstAdapter.adapter, firstGetToken) },
 		);
+
 		await act(async () => {
 			await result.current.connect();
+			await result.current.disconnect();
 		});
 
-		rerender(createOptions(testAdapter.adapter, secondGetToken));
+		rerender(createOptions(secondAdapter.adapter, secondGetToken));
 		await act(async () => {
-			await vi.advanceTimersByTimeAsync(101);
+			await result.current.connect();
 		});
 
 		expect(firstGetToken).toHaveBeenCalledTimes(1);
+		expect(firstAdapter.connect).toHaveBeenCalledTimes(1);
 		expect(secondGetToken).toHaveBeenCalledTimes(1);
+		expect(secondAdapter.connect).toHaveBeenCalledWith(secondToken, undefined);
 
 		await act(async () => {
 			await result.current.disconnect();
@@ -132,92 +125,35 @@ describe('useRealtimeChat', () => {
 		unmount();
 	});
 
-	it('updates the active session and preserves changes across reconnects', async () => {
-		const firstConnection = createConnection();
-		const secondConnection = createConnection();
-		const testAdapter = createAdapter('test', [
-			firstConnection.connection,
-			secondConnection.connection,
-		]);
-		const getToken = vi.fn(async () => createToken('test', 'token'));
-		const { result, unmount } = renderHook(() =>
-			useRealtimeChat(createOptions(testAdapter.adapter, getToken)),
-		);
-
-		await act(async () => {
-			await result.current.connect();
-		});
-		firstConnection.updateSession.mockClear();
-
-		act(() => {
-			result.current.updateSession({ vadMode: 'manual' });
-		});
-		expect(firstConnection.updateSession).toHaveBeenCalledWith(
-			expect.objectContaining({ vadMode: 'manual' }),
-		);
-
-		await act(async () => {
-			await result.current.disconnect();
-		});
-		act(() => {
-			result.current.updateSession({ vadMode: 'semantic' });
-		});
-		await act(async () => {
-			await result.current.connect();
-		});
-
-		expect(secondConnection.updateSession).toHaveBeenCalledWith(
-			expect.objectContaining({ vadMode: 'semantic' }),
-		);
-
-		await act(async () => {
-			await result.current.disconnect();
-		});
-		unmount();
-	});
-
-	it('forwards usage and go-away events to the latest callbacks', async () => {
+	// OCTANE DIVERGENCE[tanstack-ai-realtime-status-callback][adapted:tanstack-ai-realtime-status-callback]
+	// @parity-case adapted:tanstack-ai-realtime-status-callback
+	it('forwards connection status to the latest callback', async () => {
 		const testConnection = createConnection();
 		const testAdapter = createAdapter('test', [testConnection.connection]);
 		const getToken = vi.fn(async () => createToken('test', 'token'));
-		const firstOnUsage = vi.fn();
-		const firstOnGoAway = vi.fn();
-		const secondOnUsage = vi.fn();
-		const secondOnGoAway = vi.fn();
+		const firstOnStatusChange = vi.fn();
+		const secondOnStatusChange = vi.fn();
 		const { result, rerender, unmount } = renderHook(
 			(options: UseRealtimeChatOptions) => useRealtimeChat(options),
 			{
 				initialProps: createOptions(testAdapter.adapter, getToken, {
-					onUsage: firstOnUsage,
-					onGoAway: firstOnGoAway,
+					onStatusChange: firstOnStatusChange,
 				}),
 			},
 		);
 
 		rerender(
 			createOptions(testAdapter.adapter, getToken, {
-				onUsage: secondOnUsage,
-				onGoAway: secondOnGoAway,
+				onStatusChange: secondOnStatusChange,
 			}),
 		);
 		await act(async () => {
 			await result.current.connect();
 		});
 
-		const usage: UsageInfo = {
-			promptTokens: 3,
-			completionTokens: 5,
-			totalTokens: 8,
-		};
-		act(() => {
-			testConnection.emit('usage', usage);
-			testConnection.emit('go_away', { timeLeft: '12s' });
-		});
-
-		expect(firstOnUsage).not.toHaveBeenCalled();
-		expect(firstOnGoAway).not.toHaveBeenCalled();
-		expect(secondOnUsage).toHaveBeenCalledWith(usage);
-		expect(secondOnGoAway).toHaveBeenCalledWith('12s');
+		expect(firstOnStatusChange).not.toHaveBeenCalled();
+		expect(secondOnStatusChange).toHaveBeenCalledWith('connecting');
+		expect(secondOnStatusChange).toHaveBeenCalledWith('connected');
 
 		await act(async () => {
 			await result.current.disconnect();

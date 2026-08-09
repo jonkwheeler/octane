@@ -13,9 +13,8 @@
     },
     {
       "path": "packages/tanstack-ai/tests/conformance/use-chat-fetcher.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-ai-live-chat-transport",
-      "reason": "Authenticates transport replacement while retaining conversation state."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks ordinary fetcher transport behavior; parity cases live under conformance/parity/."
     },
     {
       "path": "packages/tanstack-ai/tests/conformance/use-chat-options-probe.test.ts",
@@ -29,15 +28,13 @@
     },
     {
       "path": "packages/tanstack-ai/tests/conformance/use-chat.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-ai-octane-id-lifecycle",
-      "reason": "Contains the exact Octane identifier and effect-lifecycle contract."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks ordinary useChat conformance; parity cases live under conformance/parity/."
     },
     {
       "path": "packages/tanstack-ai/tests/conformance/use-generation.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-ai-devtools-framework",
-      "reason": "Executes the client initialization path that identifies the Octane framework."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks ordinary generation conformance; parity cases live under conformance/parity/."
     },
     {
       "path": "packages/tanstack-ai/tests/conformance/use-mcp-app-bridge.test.ts",
@@ -46,6 +43,29 @@
     },
     {
       "path": "packages/tanstack-ai/tests/conformance/use-realtime-chat.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks ordinary realtime conformance; parity cases live under conformance/parity/."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/parity/use-chat-fetcher.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-live-chat-transport",
+      "reason": "Authenticates transport replacement while retaining conversation state."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/parity/use-chat.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-octane-id-lifecycle",
+      "reason": "Contains the exact Octane identifier and effect-lifecycle contract."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/parity/use-generation.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-ai-devtools-framework",
+      "reason": "Executes the client initialization path that identifies the Octane framework."
+    },
+    {
+      "path": "packages/tanstack-ai/tests/conformance/parity/use-realtime-chat.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tanstack-ai-live-realtime-options",
       "reason": "Authenticates current realtime callbacks, authentication, and adapters."
@@ -56,7 +76,7 @@
       "oracle": "Runs one exact same-fixture streamed-chat scenario against @tanstack/ai-react@0.17.0."
     },
     {
-      "path": "packages/tanstack-ai/tests/conformance/divergences.test.ts",
+      "path": "packages/tanstack-ai/tests/conformance/parity/divergences.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tanstack-ai-no-mcp-app-resource",
       "reason": "Authenticates the omitted React-only MCP renderer and unavailable auto-resume API."

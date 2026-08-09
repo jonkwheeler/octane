@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-ai/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-ai/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-ai/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-ai/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -88,7 +78,7 @@
         {
           "path": "packages/tanstack-ai/audit/test-classifications.json",
           "role": "support",
-          "sha256": "90064525a32860e5502cad1812fff64bc57cc6cac41f68f5302a96feadc4fa0e"
+          "sha256": "6731eb6a5a2ec847f4b411e8c48052fce8cc63d920835fa2aa02275ca7036851"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -98,7 +88,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d60860e2f0160b6b204d0d706a49c3e49df00db7d52e3001e8ecc67fbad66153"
+          "sha256": "a3399b6f2c7c23b2cb404fd6d3db1dd630892d3b8ed49be4194a6e4d4bc3d6f5"
         }
       ]
     },
@@ -111,9 +101,9 @@
       "notes": "Runs exact public contracts for TanStack AI adaptations and corrections.",
       "files": [
         {
-          "path": "packages/tanstack-ai/tests/conformance/use-realtime-chat.test.ts",
+          "path": "packages/tanstack-ai/tests/conformance/parity/use-realtime-chat.test.ts",
           "role": "test",
-          "sha256": "93bc69778e622be0d8d8710f4398c96d9fe57dfac7296181afb4fcd64802cd41",
+          "sha256": "71b2d70e6edf1a8ba94114275ac2c18a6a941488bf9b0aafabf1b20ee88f5a5f",
           "cases": [
             {
               "id": "adapted:tanstack-ai-live-realtime-options",
@@ -128,9 +118,9 @@
           ]
         },
         {
-          "path": "packages/tanstack-ai/tests/conformance/use-chat-fetcher.test.ts",
+          "path": "packages/tanstack-ai/tests/conformance/parity/use-chat-fetcher.test.ts",
           "role": "test",
-          "sha256": "002cd76107c3e85fbbc8778c760ab1a3fb792065dc774ba1fde3c4ebe8e77357",
+          "sha256": "403f925269e54103dd54cb77b96f8fe6e7b9c3e9e9b0a6ff103229dd2d78c64a",
           "cases": [
             {
               "id": "adapted:tanstack-ai-live-chat-transport",
@@ -140,9 +130,9 @@
           ]
         },
         {
-          "path": "packages/tanstack-ai/tests/conformance/use-chat.test.ts",
+          "path": "packages/tanstack-ai/tests/conformance/parity/use-chat.test.ts",
           "role": "test",
-          "sha256": "7669248c8f3df70bc0b17f67da27ce4bcc755bb10378b19b6cc022af92bf3bce",
+          "sha256": "8eea8270c53f76ef092894b402ea63f8659166ebb3a2f502c6a3701b28982270",
           "cases": [
             {
               "id": "adapted:tanstack-ai-octane-id-lifecycle",
@@ -152,9 +142,9 @@
           ]
         },
         {
-          "path": "packages/tanstack-ai/tests/conformance/use-generation.test.ts",
+          "path": "packages/tanstack-ai/tests/conformance/parity/use-generation.test.ts",
           "role": "test",
-          "sha256": "70b72fda5bd39981f842331b9d8ef75fcaec51bd5c971b774c679fb0f34ff426",
+          "sha256": "ca5da6f49f27508f5924d5ca71562122854137319434cdced49363ed0a0143fb",
           "cases": [
             {
               "id": "adapted:tanstack-ai-devtools-framework",
@@ -164,9 +154,9 @@
           ]
         },
         {
-          "path": "packages/tanstack-ai/tests/conformance/divergences.test.ts",
+          "path": "packages/tanstack-ai/tests/conformance/parity/divergences.test.ts",
           "role": "test",
-          "sha256": "239fe41527b9c1713f3dc1953f3829f8b37a715887f8db845624a3d7157aea18",
+          "sha256": "08184b3ef9256029a9ef1d9e57e9d7682ab742f58238c84501934354f3db1e06",
           "cases": [
             {
               "id": "adapted:tanstack-ai-no-mcp-app-resource",
@@ -183,7 +173,7 @@
         {
           "path": "packages/tanstack-ai/audit/test-classifications.json",
           "role": "support",
-          "sha256": "90064525a32860e5502cad1812fff64bc57cc6cac41f68f5302a96feadc4fa0e"
+          "sha256": "6731eb6a5a2ec847f4b411e8c48052fce8cc63d920835fa2aa02275ca7036851"
         },
         {
           "path": "packages/octane/tests/_helpers.ts",
@@ -193,7 +183,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d60860e2f0160b6b204d0d706a49c3e49df00db7d52e3001e8ecc67fbad66153"
+          "sha256": "a3399b6f2c7c23b2cb404fd6d3db1dd630892d3b8ed49be4194a6e4d4bc3d6f5"
         }
       ]
     },
@@ -225,12 +215,12 @@
         {
           "path": "packages/tanstack-ai/audit/test-classifications.json",
           "role": "support",
-          "sha256": "90064525a32860e5502cad1812fff64bc57cc6cac41f68f5302a96feadc4fa0e"
+          "sha256": "6731eb6a5a2ec847f4b411e8c48052fce8cc63d920835fa2aa02275ca7036851"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d60860e2f0160b6b204d0d706a49c3e49df00db7d52e3001e8ecc67fbad66153"
+          "sha256": "a3399b6f2c7c23b2cb404fd6d3db1dd630892d3b8ed49be4194a6e4d4bc3d6f5"
         }
       ]
     },
@@ -286,9 +276,7 @@
   "divergences": [
     {
       "id": "tanstack-ai-no-mcp-app-resource",
-      "caseIds": [
-        "adapted:tanstack-ai-no-mcp-app-resource"
-      ],
+      "caseIds": ["adapted:tanstack-ai-no-mcp-app-resource"],
       "upstreamResult": "The React package publishes ./mcp-apps and MCPAppResource backed by @mcp-ui/client.",
       "octaneResult": "The Octane package publishes only the portable bridge hook on its root entry.",
       "rationale": "The renderer dependency is React-only and has no Octane equivalent.",
@@ -300,9 +288,7 @@
     },
     {
       "id": "tanstack-ai-native-events",
-      "caseIds": [
-        "types:tanstack-ai-native-events"
-      ],
+      "caseIds": ["types:tanstack-ai-native-events"],
       "upstreamResult": "React examples and host props use synthetic onChange events.",
       "octaneResult": "Octane consumers use native onInput events.",
       "rationale": "Octane exposes native DOM event semantics.",
@@ -314,9 +300,7 @@
     },
     {
       "id": "tanstack-ai-octane-id-lifecycle",
-      "caseIds": [
-        "adapted:tanstack-ai-octane-id-lifecycle"
-      ],
+      "caseIds": ["adapted:tanstack-ai-octane-id-lifecycle"],
       "upstreamResult": "React supports StrictMode effect replay and includes a random identifier fallback.",
       "octaneResult": "Octane provides useId and does not double-invoke effects.",
       "rationale": "The host lifecycle and identifier facilities differ.",
@@ -328,9 +312,7 @@
     },
     {
       "id": "tanstack-ai-devtools-framework",
-      "caseIds": [
-        "adapted:tanstack-ai-devtools-framework"
-      ],
+      "caseIds": ["adapted:tanstack-ai-devtools-framework"],
       "upstreamResult": "Devtools clients identify their framework as react.",
       "octaneResult": "Devtools clients identify their framework as octane.",
       "rationale": "Tooling must report the active renderer truthfully.",
@@ -342,9 +324,7 @@
     },
     {
       "id": "tanstack-ai-live-realtime-options",
-      "caseIds": [
-        "adapted:tanstack-ai-live-realtime-options"
-      ],
+      "caseIds": ["adapted:tanstack-ai-live-realtime-options"],
       "upstreamResult": "Version 0.17.0 captures the first realtime token getter and adapter.",
       "octaneResult": "Reconnects and refreshes use the latest options.",
       "rationale": "Long-lived realtime clients must observe rerendered credentials and adapters.",
@@ -356,9 +336,7 @@
     },
     {
       "id": "tanstack-ai-realtime-status-callback",
-      "caseIds": [
-        "adapted:tanstack-ai-realtime-status-callback"
-      ],
+      "caseIds": ["adapted:tanstack-ai-realtime-status-callback"],
       "upstreamResult": "Version 0.17.0 drops the declared external onStatusChange callback.",
       "octaneResult": "Status changes update hook state and invoke the latest external callback.",
       "rationale": "The declared callback is part of the public options contract.",
@@ -370,9 +348,7 @@
     },
     {
       "id": "tanstack-ai-live-chat-transport",
-      "caseIds": [
-        "adapted:tanstack-ai-live-chat-transport"
-      ],
+      "caseIds": ["adapted:tanstack-ai-live-chat-transport"],
       "upstreamResult": "Version 0.17.0 captures the initial chat transport.",
       "octaneResult": "Changing connection or fetcher updates the client while retaining conversation state.",
       "rationale": "Transport rotation should not discard a live conversation.",
@@ -384,9 +360,7 @@
     },
     {
       "id": "tanstack-ai-no-auto-resume",
-      "caseIds": [
-        "adapted:tanstack-ai-no-auto-resume"
-      ],
+      "caseIds": ["adapted:tanstack-ai-no-auto-resume"],
       "upstreamResult": "The tagged upstream test source references ChatClient.maybeAutoResume.",
       "octaneResult": "The pinned published client exposes no such method and the hook exposes no auto-resume contract.",
       "rationale": "The referenced API is absent from the pinned and latest published dependency.",
