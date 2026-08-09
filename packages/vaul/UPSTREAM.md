@@ -8,3 +8,56 @@ The exact source, Playwright tests, package metadata, README, stylesheet, and
 MIT license used for the port are retained under `upstream/`. The npm tarball
 SHA-256 is `d062e21bae0c864c3559707c0451edabc0aac32a22eda239064a3faa7c9f1b21`.
 Run `pnpm --dir packages/vaul upstream:check` to verify the vendored evidence.
+
+## Source boundary
+
+Upstream's React drawer implementation under `upstream/src` is re-authored in
+`packages/vaul/src/index.tsrx` against `@octanejs/radix` Dialog primitives and
+Octane hooks. The published stylesheet is reused as `src/style.css`.
+
+## Test-suite disposition
+
+Upstream ships a Playwright suite (`package.json` script `test`: `playwright test`)
+whose specs live under `test/tests/`. Those specs are vendored at
+`upstream/test/tests/`. The suite is not runnable as a pristine lane here: it
+depends on the Next.js demo app, Playwright config, and page routes under
+`test/` that are not present in the npm tarball and are not vendored in this
+tree. A pristine-upstream lane is therefore not registered. Executable evidence
+is the adapted Vitest / real-browser lanes in `audit/react-parity.json`.
+
+| Upstream artifact | Disposition |
+| --- | --- |
+| `test/tests/base.spec.ts` | **Adapted.** Open/close through trigger and `Drawer.Close`, plus controlled close: `tests/drawer.test.ts` (`// Per …:10`, `:27`, `:35`). Open-state semantic snapshot vs published React Vaul: `tests/react-oracle.test.ts` (`// Per …:10`). Drag-down close / drag-up stay-open and background dismiss: `tests/browser/vaul.browser.test.ts`. `defaultOpen` and context-menu-cancel drag remain gaps. |
+| `test/tests/controlled.spec.ts` | **Adapted (partial).** Overlay dismiss with `open` + `onOpenChange` is covered by the controlled fixture path in `tests/drawer.test.ts` and browser close. Overlay non-dismiss when only `open` is passed remains a gap. |
+| `test/tests/initial-snap.spec.ts` | **Adapted (partial).** Initial open snap height and handle-driven snap cycling: `tests/browser/vaul.browser.test.ts` (also cites `with-handle`). Upstream's commented drag-snap cases stay unported. |
+| `test/tests/with-handle.spec.ts` | **Adapted.** Handle click cycles snap points: `tests/browser/vaul.browser.test.ts` (`// Per …:9`). |
+| `test/tests/nested.spec.ts` | **Out of scope for current lanes.** Nested drawer open/close is not yet re-authored; tracked as a surface gap, not counted as parity evidence. |
+| `test/tests/non-dismissible.spec.ts` | **Out of scope for current lanes.** `dismissible={false}` overlay/drag refusal is not yet re-authored; tracked as a surface gap. |
+| `test/tests/with-redirect.spec.ts` | **Out of scope.** Asserts body scroll-lock restore across a Next.js client navigation that this package does not vendor or host. |
+| `test/tests/with-scaled-background.spec.ts` | **Out of scope for current lanes.** Scaled-background CSS transform under drag is not yet re-authored. |
+| `test/tests/without-scaled-background.spec.ts` | **Out of scope for current lanes.** Negative scaled-background assert is not yet re-authored. |
+| `test/tests/helpers.ts`, `test/tests/constants.ts` | Support only; not executable cases. |
+
+## Port-authored test classification
+
+| File | Classification | Pairing |
+| --- | --- | --- |
+| `tests/drawer.test.ts` | adapted upstream | cites `upstream/test/tests/base.spec.ts` open/close cases |
+| `tests/react-oracle.test.ts` | React/Octane differential | same open-drawer scenario against published `vaul@1.1.2` on React and `@octanejs/vaul`; also cites `base.spec.ts:10` |
+| `tests/exports.test.ts` | package surface | root/`Drawer` export keys match pinned `vaul@1.1.2` |
+| `tests/ssr/server.test.ts` | Octane-only framework contract | unpaired — upstream ships no SSR suite; closed trigger must render without browser globals |
+| `tests/browser/vaul.browser.test.ts` | adapted upstream (real browser) | cites base / with-handle / snap scenarios; executes in the `vaul-real-browser` lane |
+| `tests/types/public-api.ts` | adapted types | accept/reject matrix for public props; no upstream type suite at the pin |
+
+## Registered parity lanes
+
+| Lane id | Kind | Project | Notes |
+| --- | --- | --- | --- |
+| `vaul-adapted-types` | adapted-types | `vaul-types` | `tsrx-tsc` public API matrix |
+| `vaul-adapted-full-suite` | adapted-octane | `vaul` | DOM / export / React-oracle inventory |
+| `vaul-adapted-full-suite-server` | adapted-octane | `vaul-ssr` | server-render inventory |
+| `vaul-real-browser` | adapted-octane (real browser) | `vaul-browser` | headless Chromium inventory |
+
+No pristine-upstream or pristine-types lane is registered: the Playwright demo app
+is absent from the vendored tree, and upstream ships no type-test suite at
+`v1.1.2`.

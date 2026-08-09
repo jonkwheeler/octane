@@ -3386,6 +3386,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'vaul',
 					include: [
@@ -3407,6 +3408,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'vaul-ssr',
 					include: ['packages/vaul/tests/ssr/**/*.test.ts'],
@@ -3428,6 +3430,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'vaul-browser',
 					include: ['packages/vaul/tests/browser/**/*.test.ts'],

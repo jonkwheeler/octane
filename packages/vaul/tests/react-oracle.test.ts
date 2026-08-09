@@ -20,6 +20,8 @@ function semanticSnapshot(content: Element | null) {
 }
 
 describe('vaul v1.1.2 React oracle', () => {
+	// Per upstream/test/tests/base.spec.ts:10 (should open drawer).
+	// Same open-drawer scenario against published vaul@1.1.2 on React and @octanejs/vaul.
 	it('matches React drawer semantics after opening', async () => {
 		const reactHost = document.createElement('div');
 		document.body.appendChild(reactHost);

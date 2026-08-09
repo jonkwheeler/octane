@@ -455,7 +455,6 @@ jobs:
           --exclude "packages/vite-plugin-octane/tests/production.test.ts"
           --exclude "packages/octane/tests/browser/**/*.test.ts"
           --exclude "packages/dexie/tests/browser/**/*.test.ts"
-          --exclude "packages/vaul/tests/browser/**/*.test.ts"
           --exclude "packages/tiptap/tests/browser/**/*.test.ts"
           --exclude "packages/three/tests/browser/**/*.test.ts"
           --exclude "$ASTRO_E2E_SPEC"
@@ -484,6 +483,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
+
+      # Browser-backed parity lanes launch Chromium through Playwright. Keep the
+      # install package-agnostic: manifests discover those lanes; this step only
+      # provisions the shared browser binary.
+      - name: Install Playwright Chromium
+        run: pnpm --filter website exec playwright install --with-deps chromium
 
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
@@ -602,7 +607,6 @@ jobs:
             specs: >-
               packages/octane/tests/browser
               packages/dexie/tests/browser
-              packages/vaul/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
           - lane: astro
