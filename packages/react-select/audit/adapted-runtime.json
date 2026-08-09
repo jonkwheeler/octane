@@ -1,11 +1,14 @@
 {
   "schemaVersion": 1,
   "project": "react-select",
-  "roots": ["packages/react-select/tests/upstream"],
+  "roots": [
+    "packages/react-select/tests/upstream"
+  ],
   "files": [
     "packages/react-select/tests/upstream/Async.test.ts",
     "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
     "packages/react-select/tests/upstream/Creatable.test.ts",
+    "packages/react-select/tests/upstream/Select.test.ts",
     "packages/react-select/tests/upstream/StateManaged.test.ts"
   ],
   "tests": [
@@ -138,6 +141,516 @@
       "id": "runtime:0fba1a4631c09dc5",
       "file": "packages/react-select/tests/upstream/Creatable.test.ts",
       "fullName": "isValidNewOption() prop single select should show \"create...\" prompt only if isValidNewOption returns thruthy value"
+    },
+    {
+      "id": "runtime:58b5d9f1a581d870",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "Clicking dropdown indicator on select with closed menu with primary button on mouse multi select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
+    },
+    {
+      "id": "runtime:53be7a21121e6c21",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "Clicking dropdown indicator on select with closed menu with primary button on mouse single select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
+    },
+    {
+      "id": "runtime:20e4f382de75876d",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "Clicking dropdown indicator on select with open menu with primary button on mouse multi select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
+    },
+    {
+      "id": "runtime:c0480dbdc4eaf281",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "Clicking dropdown indicator on select with open menu with primary button on mouse single select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
+    },
+    {
+      "id": "runtime:49f85ba60225bc46",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-errormessage prop multi select should pass aria-errormessage prop down to input"
+    },
+    {
+      "id": "runtime:dace047aa71b4730",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-errormessage prop single select should pass aria-errormessage prop down to input"
+    },
+    {
+      "id": "runtime:7a233ebdb34db68e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-invalid prop multi select should pass aria-invalid prop down to input"
+    },
+    {
+      "id": "runtime:205a7519b9859982",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-invalid prop single select should pass aria-invalid prop down to input"
+    },
+    {
+      "id": "runtime:170a16e0de419883",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-label prop multi select should pass aria-labelledby prop down to input"
+    },
+    {
+      "id": "runtime:9f750ed251579162",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-label prop single select should pass aria-labelledby prop down to input"
+    },
+    {
+      "id": "runtime:49e09766938c7540",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-labelledby prop multi select should pass aria-labelledby prop down to input"
+    },
+    {
+      "id": "runtime:d219e4d7f7b6d66d",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility passes through aria-labelledby prop single select should pass aria-labelledby prop down to input"
+    },
+    {
+      "id": "runtime:7ede48f2299b4935",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "autoFocus multi select should focus select on mount"
+    },
+    {
+      "id": "runtime:de7c721011a93770",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "autoFocus single select should focus select on mount"
+    },
+    {
+      "id": "runtime:be7f63266327bd6b",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on de-selecting an option in multi select option is clicked should call onChange() prop with correct selected options and meta"
+    },
+    {
+      "id": "runtime:dc74c42f5db1e0a5",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on de-selecting an option in multi select option with boolean value option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:9676928967540257",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on de-selecting an option in multi select option with number value option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:cfda617a3e7956cc",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on selecting an option multi select option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:56cfae29d1aeda8c",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on selecting an option multi select option with boolean value option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:ba656d7024136682",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on selecting an option multi select option with number value option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:0650dd922fa7907d",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on selecting an option single select option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:12180458b060ad9f",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on selecting an option single select option with boolean value option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:b890faaeff4cb6b0",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "calls onChange on selecting an option single select option with number value option is clicked should call onChange() prop with selected option"
+    },
+    {
+      "id": "runtime:19abec63f49ecf61",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "clicking on disabled option multi select should not select the disabled option"
+    },
+    {
+      "id": "runtime:844aa33fce6aa554",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "clicking on disabled option single select should not select the disabled option"
+    },
+    {
+      "id": "runtime:5f0d67c69c0577a5",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "closeMenuOnSelect prop when passed as false it should not call onMenuClose on selecting option"
+    },
+    {
+      "id": "runtime:24a11cd0b1b8f948",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "display placeholder once value is removed multi select should display placeholder once the value is removed from select"
+    },
+    {
+      "id": "runtime:47ccf59a64e43169",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "display placeholder once value is removed single select should display placeholder once the value is removed from select"
+    },
+    {
+      "id": "runtime:7cb8956c359280b2",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "filterOption prop is null multi select should show all the options other than selected options"
+    },
+    {
+      "id": "runtime:4b2f47e47d0bd341",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "filterOption prop is null single select should show all the options"
+    },
+    {
+      "id": "runtime:3c1c0dcdff7818cc",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "filterOption() prop - default filter behavior single select should ignore accented char in query"
+    },
+    {
+      "id": "runtime:67a6b6828a3148b3",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "filterOption() prop - default filter behavior single select should match accented char"
+    },
+    {
+      "id": "runtime:144db690bd22aa68",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "filterOption() prop - should filter only if function returns truthy for value multi select should filter all options other that options in value of select"
+    },
+    {
+      "id": "runtime:20c3d407e9bf79bb",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "filterOption() prop - should filter only if function returns truthy for value single select should filter all options as per searchString"
+    },
+    {
+      "id": "runtime:40134b564546a021",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "formatGroupLabel function prop to format Group label"
+    },
+    {
+      "id": "runtime:4c01e7f09dcec2dd",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "formatOptionLabel multi select should format label of options according to text returned by formatOptionLabel"
+    },
+    {
+      "id": "runtime:f6c22d656b3e4b95",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "formatOptionLabel single select should format label of options according to text returned by formatOptionLabel"
+    },
+    {
+      "id": "runtime:d9bf4f0a80f04006",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "getOptionLabel() prop to format the option label"
+    },
+    {
+      "id": "runtime:3f49783012230464",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "hidden input field is not present if name is not passes"
+    },
+    {
+      "id": "runtime:3896368993f62942",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "hidden input field is present if name passes"
+    },
+    {
+      "id": "runtime:e698c9cd904355bd",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "hitting ArrowUp key on closed select should focus last element"
+    },
+    {
+      "id": "runtime:910e1a9c37e27e65",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "hitting spacebar should not select option if isSearchable is true (default)"
+    },
+    {
+      "id": "runtime:eace4668cc2ad46b",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "instanceId prop to have instanceId as id prefix for the select components"
+    },
+    {
+      "id": "runtime:a8cc16e60348e79e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isClearable is false single select should not show the X (clear) button"
+    },
+    {
+      "id": "runtime:23a7be4b5d3b5255",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isClearable is false test-input-name"
+    },
+    {
+      "id": "runtime:4d7304ab90fb58b6",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isDisabled prop multi select should add isDisabled prop to select components"
+    },
+    {
+      "id": "runtime:e05427ae40587ba0",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isDisabled prop single select should add isDisabled prop to select components"
+    },
+    {
+      "id": "runtime:ac0a180ad5ef396e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isOptionDisabled() prop multi select should add isDisabled as true prop only to options that are disabled"
+    },
+    {
+      "id": "runtime:e2fe4b8cbe09f5f8",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isOptionDisabled() prop single select should add isDisabled as true prop only to options that are disabled"
+    },
+    {
+      "id": "runtime:0f6450b796116da4",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isOptionSelected() prop multi select to not show the selected options in Menu for multiSelect"
+    },
+    {
+      "id": "runtime:056cc8a5b64f3f66",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isOptionSelected() prop single select mark value as isSelected if isOptionSelected returns true for the option"
+    },
+    {
+      "id": "runtime:8fac8c42247168a1",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "isRtl boolean prop sets direction: rtl on container"
+    },
+    {
+      "id": "runtime:2b2a2d6bda1a0d2f",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "menuIsOpen prop multi select should show menu if menuIsOpen is true and hide menu if menuIsOpen prop is false"
+    },
+    {
+      "id": "runtime:2b779e772b3b78d9",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "menuIsOpen prop single select should show menu if menuIsOpen is true and hide menu if menuIsOpen prop is false"
+    },
+    {
+      "id": "runtime:29696f67627aaf44",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "multi select call onChange with all values but last selected value and remove event on hitting backspace"
+    },
+    {
+      "id": "runtime:2c0a26e7080efd48",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "multi select have default value delimiter seperated"
+    },
+    {
+      "id": "runtime:e33d6106cb2f5421",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "multi select removes the selected option from the menu options when isSearchable is false"
+    },
+    {
+      "id": "runtime:28d7254c67745396",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "multi select to not hide the selected options from the menu if hideSelectedOptions is false"
+    },
+    {
+      "id": "runtime:ceb22d7931e48cc5",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "multi select to not show selected value in options"
+    },
+    {
+      "id": "runtime:d574cc32d0d9144d",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "multi select with multi character delimiter"
+    },
+    {
+      "id": "runtime:fda480ef0c574431",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "name prop multi select should assign the given name"
+    },
+    {
+      "id": "runtime:57de4327e415174e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "name prop single select should assign the given name"
+    },
+    {
+      "id": "runtime:cfa85fe467d20f4e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "no option found on search based on filterOption prop multi select should show NoOptionsMessage"
+    },
+    {
+      "id": "runtime:1b034de0a46f1d84",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "no option found on search based on filterOption prop single Select should show NoOptionsMessage"
+    },
+    {
+      "id": "runtime:b8241d8c0eefaed6",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "noOptionsMessage() function prop multi select should show NoOptionsMessage returned from noOptionsMessage function prop"
+    },
+    {
+      "id": "runtime:e11a29dda62a5e0c",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "noOptionsMessage() function prop single Select should show NoOptionsMessage returned from noOptionsMessage function prop"
+    },
+    {
+      "id": "runtime:c1eea40e77ac45c0",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "not render any groups when there is not a single match when filtering"
+    },
+    {
+      "id": "runtime:0728bdf45c036ee0",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onBlur prop multi select should call onBlur handler on blur on input"
+    },
+    {
+      "id": "runtime:acbd32a7cdf4e291",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onBlur prop single select should call onBlur handler on blur on input"
+    },
+    {
+      "id": "runtime:8fcc4fa2ada4baff",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onFocus prop is called on on focus of input multi select should call onFocus handler on focus on input"
+    },
+    {
+      "id": "runtime:bc63c6fc861d0d07",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onFocus prop is called on on focus of input single select should call onFocus handler on focus on input"
+    },
+    {
+      "id": "runtime:46314a560ea36448",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onFocus prop with autoFocus multi select should call auto focus only once when select is autoFocus"
+    },
+    {
+      "id": "runtime:38f97c66e096ee2e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onFocus prop with autoFocus single select should call auto focus only once when select is autoFocus"
+    },
+    {
+      "id": "runtime:e453ffd4940c893a",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onInputChange() function prop to be called on blur"
+    },
+    {
+      "id": "runtime:2503d266e873a8ac",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "onMenuClose() function prop to be called on blur"
+    },
+    {
+      "id": "runtime:291e92d435e0503e",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "placeholder multi select should display default placeholder \"Select...\""
+    },
+    {
+      "id": "runtime:505291ae4b0fd74f",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "placeholder multi select should display provided placeholder"
+    },
+    {
+      "id": "runtime:b08f58548c9603fc",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "placeholder single select should display default placeholder \"Select...\""
+    },
+    {
+      "id": "runtime:f524616c35aa3c7b",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "placeholder single select should display provided node placeholder"
+    },
+    {
+      "id": "runtime:298c2ecd85aba963",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "placeholder single select should display provided string placeholder"
+    },
+    {
+      "id": "runtime:dcfe055bef346254",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "sets inputMode=\"none\" when isSearchable is false"
+    },
+    {
+      "id": "runtime:e65295d7cf6ec97f",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "should call not call onChange on hitting backspace when backspaceRemovesValue is true and isMulti is true and there are no values"
+    },
+    {
+      "id": "runtime:d3b9357fe36a1068",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "should call onChange with an array on hitting backspace when backspaceRemovesValue is true and isMulti is true"
+    },
+    {
+      "id": "runtime:f152dba594cf74d1",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "should not call onChange on hitting backspace even when backspaceRemovesValue is true if isClearable is false"
+    },
+    {
+      "id": "runtime:1cfb3eea1243710b",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "should not call onChange on hitting backspace when backspaceRemovesValue is false"
+    },
+    {
+      "id": "runtime:9eaf4ec850d1eb34",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "single select passing multiple values should select the first value"
+    },
+    {
+      "id": "runtime:1bce102eefe03d5a",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "to not clear value when hitting escape if escapeClearsValue is false (default) and isClearable is false"
+    },
+    {
+      "id": "runtime:0e6fcf39394d5afb",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "to not clear value when hitting escape if escapeClearsValue is false (default) and isClearable is true"
+    },
+    {
+      "id": "runtime:e20664d36ccbe77d",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "to only render groups with at least one match when filtering"
+    },
+    {
+      "id": "runtime:185f18792099506a",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "update the value prop multi select should update the value when prop is updated"
+    },
+    {
+      "id": "runtime:3af70a223ccfaa2f",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "update the value prop multi select value of options is number should update the value when prop is updated"
+    },
+    {
+      "id": "runtime:78c293faf24971c0",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "update the value prop single select should update the value when prop is updated"
+    },
+    {
+      "id": "runtime:b7f726c7d32cbcf2",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "update the value prop single select value of options is number should update the value when prop is updated"
+    },
+    {
+      "id": "runtime:3ac237fc0add9bf2",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control multi select options with boolean values should set value of input as value prop"
+    },
+    {
+      "id": "runtime:8f73138915446d02",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control multi select options with number values should set value of input as value prop"
+    },
+    {
+      "id": "runtime:3a79e056ee1fc4e9",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control multi select should set value of input as value prop"
+    },
+    {
+      "id": "runtime:ac7a25947bfdaa98",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control multi select with delimiter prop options with boolean values should set value of input as value prop"
+    },
+    {
+      "id": "runtime:c702c5729e0449d6",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control multi select with delimiter prop options with number values should set value of input as value prop"
+    },
+    {
+      "id": "runtime:3e44fb2bf8e6d7d2",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control multi select with delimiter prop should set value of input as value prop"
+    },
+    {
+      "id": "runtime:46b7ae88a4e78b99",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control single select options with boolean values should set value of input as value prop"
+    },
+    {
+      "id": "runtime:89af3a2a451f6eda",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control single select options with number values should set value of input as value prop"
+    },
+    {
+      "id": "runtime:d45b6243ad538936",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "value of hidden input control single select should set value of input as value prop"
     },
     {
       "id": "runtime:06e03f9844952261",

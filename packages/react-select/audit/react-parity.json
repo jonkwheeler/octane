@@ -27,8 +27,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 38,
-    "uniqueIdentities": 38,
+    "inventoryEntries": 140,
+    "uniqueIdentities": 140,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -122,7 +122,7 @@
       "environment": "workspace-node",
       "project": "react-select",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the started one-for-one Octane adaptation lane. Thirty-eight cases from the four smaller upstream suites are ported; the exhaustive disposition ledger accounts for all 217 remaining pristine identities.",
+      "notes": "Runs the one-for-one Octane adaptation lane. All 38 cases from the four smaller upstream suites and 102 Select cases are ported; the exhaustive disposition ledger accounts for all 115 remaining pristine identities.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-select/audit/adapted-runtime.json"
@@ -131,12 +131,12 @@
         {
           "path": "packages/react-select/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "71ae169c5a4ad111e2e80b66ee5403fbde1dbdadc054e97e6e4ce2233cbe98a8"
+          "sha256": "fdea4413b2067140d9ba9374c80557f651f823f389be1af810aedc01e03da8fd"
         },
         {
           "path": "packages/react-select/audit/adaptation.json",
           "role": "support",
-          "sha256": "8150f2ab4a704caaeb88ae4a1e164999c006745832e52b2a47a18a1bb02defbf"
+          "sha256": "da08a235da161b8cc4b7736c7ba1144744acebf4473e065da9bdc9962f8143ca"
         },
         {
           "path": "packages/react-select/audit/test-classifications.json",
@@ -151,12 +151,12 @@
         {
           "path": "scripts/react-parity/react-select-adaptation.mjs",
           "role": "support",
-          "sha256": "b430ef33db2caa59f23677fd7fab8939d6dd84d68474adafa24b9962aca9a065"
+          "sha256": "e0191b205b3afcdc8af3a4edd1691856d77a4a89a47202508e517c85375c7965"
         },
         {
           "path": "scripts/react-parity/react-select-adaptation.test.mjs",
           "role": "support",
-          "sha256": "a94e386c63b78d2f6c978e7db9f0ca5e101565c1699dc978ac684c8100c06a2a"
+          "sha256": "9c8d9c36875da9e6111240ddb8c546c853c7e86dbdd27c640ddd728a557bf583"
         }
       ]
     },
