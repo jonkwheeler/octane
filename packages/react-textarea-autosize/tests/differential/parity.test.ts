@@ -80,7 +80,7 @@ async function dispatchInput(node: HTMLTextAreaElement, value: string): Promise<
 }
 
 describe('react-textarea-autosize pristine differential', () => {
-	// @parity-case runtime:differential:initial
+	// @parity-case differential:initial
 	it('matches initial measurement, row metadata, attributes, and important height', async () => {
 		const reactHeights: Array<[number, number]> = [];
 		const octaneHeights: Array<[number, number]> = [];
@@ -112,7 +112,7 @@ describe('react-textarea-autosize pristine differential', () => {
 		octane.app.unmount();
 	});
 
-	// @parity-case runtime:differential:input
+	// @parity-case differential:input
 	it('matches uncontrolled input sizing and callback ordering', async () => {
 		const reactCalls: string[] = [];
 		const octaneCalls: string[] = [];
@@ -142,12 +142,12 @@ describe('react-textarea-autosize pristine differential', () => {
 		octane.app.unmount();
 	});
 
-	// @parity-case runtime:differential:stop-propagation-input
+	// @parity-case differential:stop-propagation-input
 	it('matches same-target callbacks when onInput stops propagation', async () => {
 		await expectStopPropagationParity('onInput');
 	});
 
-	// @parity-case runtime:differential:stop-propagation-capture
+	// @parity-case differential:stop-propagation-capture
 	it('matches same-target callbacks when onChangeCapture stops propagation', async () => {
 		await expectStopPropagationParity('onChangeCapture');
 	});

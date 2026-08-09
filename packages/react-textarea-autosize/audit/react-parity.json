@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7cec27a0b73545e16aed1dcb07f82739c70d53ba076ff8f3db22a1ab3ec25992"
+      "lockfileSha256": "56fca1673488e551751e3caccd4a62935c26d4049fcb3b217f255d0200359a5e"
     }
   },
   "lanes": [
@@ -111,25 +111,25 @@
         {
           "path": "packages/react-textarea-autosize/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "bf0070b04cf0ee3d8cd990ea7f0a5e45a34e8a5888c2d14a05057ff822a782ac",
+          "sha256": "86728398452504e6dff22e06e18a4c2731b39c8f22acf6adaeda24865e4c62f8",
           "cases": [
             {
-              "id": "runtime:differential:initial",
+              "id": "differential:initial",
               "testName": "matches initial measurement, row metadata, attributes, and important height",
               "fullName": "react-textarea-autosize pristine differential matches initial measurement, row metadata, attributes, and important height"
             },
             {
-              "id": "runtime:differential:input",
+              "id": "differential:input",
               "testName": "matches uncontrolled input sizing and callback ordering",
               "fullName": "react-textarea-autosize pristine differential matches uncontrolled input sizing and callback ordering"
             },
             {
-              "id": "runtime:differential:stop-propagation-input",
+              "id": "differential:stop-propagation-input",
               "testName": "matches same-target callbacks when onInput stops propagation",
               "fullName": "react-textarea-autosize pristine differential matches same-target callbacks when onInput stops propagation"
             },
             {
-              "id": "runtime:differential:stop-propagation-capture",
+              "id": "differential:stop-propagation-capture",
               "testName": "matches same-target callbacks when onChangeCapture stops propagation",
               "fullName": "react-textarea-autosize pristine differential matches same-target callbacks when onChangeCapture stops propagation"
             }
@@ -250,7 +250,7 @@
     {
       "id": "native-input-event",
       "caseIds": [
-        "runtime:differential:input"
+        "differential:input"
       ],
       "upstreamResult": "onChange receives a React SyntheticEvent produced by React's change plugin.",
       "octaneResult": "onChange receives the native bubbling InputEvent with textarea target/currentTarget during dispatch.",

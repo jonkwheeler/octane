@@ -19,7 +19,7 @@ type TextareaStyle =
 	};
 type TextareaRef =
 	((value: HTMLTextAreaElement | null) => void) | { current: HTMLTextAreaElement | null } | null;
-// OCTANE DIVERGENCE[native-input-event][runtime:differential:input]
+// OCTANE DIVERGENCE[native-input-event][differential:input]
 type TextareaAutosizeChangeEvent =
 	InputEvent & {
 		currentTarget: HTMLTextAreaElement;

@@ -1,4 +1,5 @@
 import { realpathSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configDefaults, defineConfig } from 'vitest/config';
@@ -9,6 +10,23 @@ import { stylex } from './packages/stylex/src/vite.js';
 import { lynxRspeedyRenderers } from './packages/lynx/src/config.runtime.js';
 import { threeRenderers as THREE_RENDERERS } from './packages/three/src/config.ts';
 import { websiteMdxOptions } from './website/mdx-options.ts';
+
+const requireReactTextareaAutosize = createRequire(
+	resolve(import.meta.dirname, 'packages/react-textarea-autosize/package.json'),
+);
+const requireFromUseLatest = createRequire(requireReactTextareaAutosize.resolve('use-latest'));
+function reactTextareaAutosizeEsm(resolvedCjs) {
+	return resolvedCjs.replace(/\.cjs\.js$/, '.esm.js');
+}
+const REACT_TEXTAREA_AUTOSIZE_USE_COMPOSED_REF = reactTextareaAutosizeEsm(
+	requireReactTextareaAutosize.resolve('use-composed-ref'),
+);
+const REACT_TEXTAREA_AUTOSIZE_USE_LATEST = reactTextareaAutosizeEsm(
+	requireReactTextareaAutosize.resolve('use-latest'),
+);
+const REACT_TEXTAREA_AUTOSIZE_USE_ISOMORPHIC_LAYOUT_EFFECT = reactTextareaAutosizeEsm(
+	requireFromUseLatest.resolve('use-isomorphic-layout-effect'),
+);
 
 // Parser-AST immutability enforcement (see adoptParserAst in compile.js):
 // every vitest invocation — including ad-hoc single-file and IDE runs — deep-
@@ -826,6 +844,50 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/usehooks-ts$/,
 							replacement: resolve(import.meta.dirname, 'packages/usehooks-ts/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'animejs',
+					include: ['packages/animejs/tests/**/*.test.ts'],
+					exclude: ['packages/animejs/tests/ssr.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane({ renderers: THREE_RENDERERS })],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/animejs$/,
+							replacement: resolve(import.meta.dirname, 'packages/animejs/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/animejs\/adapters\/three$/,
+							replacement: resolve(import.meta.dirname, 'packages/animejs/src/adapters/three.ts'),
+						},
+					],
+					dedupe: ['three'],
+				},
+			},
+			{
+				test: {
+					name: 'animejs-ssr',
+					include: ['packages/animejs/tests/ssr.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/animejs$/,
+							replacement: resolve(import.meta.dirname, 'packages/animejs/src/index.ts'),
 						},
 					],
 				},
@@ -3520,24 +3582,15 @@ export default defineConfig({
 						},
 						{
 							find: /^use-composed-ref$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-composed-ref/dist/use-composed-ref.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_COMPOSED_REF,
 						},
 						{
 							find: /^use-isomorphic-layout-effect$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-isomorphic-layout-effect/dist/use-isomorphic-layout-effect.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_ISOMORPHIC_LAYOUT_EFFECT,
 						},
 						{
 							find: /^use-latest$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-latest/dist/use-latest.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_LATEST,
 						},
 					],
 				},
@@ -3565,24 +3618,15 @@ export default defineConfig({
 						},
 						{
 							find: /^use-composed-ref$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-composed-ref/dist/use-composed-ref.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_COMPOSED_REF,
 						},
 						{
 							find: /^use-isomorphic-layout-effect$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-isomorphic-layout-effect/dist/use-isomorphic-layout-effect.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_ISOMORPHIC_LAYOUT_EFFECT,
 						},
 						{
 							find: /^use-latest$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-latest/dist/use-latest.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_LATEST,
 						},
 					],
 				},
@@ -3610,24 +3654,15 @@ export default defineConfig({
 						},
 						{
 							find: /^use-composed-ref$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-composed-ref/dist/use-composed-ref.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_COMPOSED_REF,
 						},
 						{
 							find: /^use-isomorphic-layout-effect$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-isomorphic-layout-effect/dist/use-isomorphic-layout-effect.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_ISOMORPHIC_LAYOUT_EFFECT,
 						},
 						{
 							find: /^use-latest$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'node_modules/use-latest/dist/use-latest.esm.js',
-							),
+							replacement: REACT_TEXTAREA_AUTOSIZE_USE_LATEST,
 						},
 					],
 				},
