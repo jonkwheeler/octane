@@ -1,4 +1,5 @@
 // React-free behavioral port of react-spring v10.1.2 packages/core/src/Controller.ts.
+import { inferTo } from '../upstream-compat';
 import {
 	type AnimationResult,
 	getCancelledResult,
@@ -37,6 +38,7 @@ export class Controller<State extends StateRecord = StateRecord> {
 	private paused = false;
 	private defaults: Partial<ControllerUpdate<State>> = {};
 	constructor(props: ControllerUpdate<State> = {}) {
+		props = normalizeUpdate(props);
 		if (props.default === true) this.defaults = withoutTargets(props);
 		else if (typeof props.default === 'object') this.defaults = props.default;
 		const initial = {
@@ -56,10 +58,11 @@ export class Controller<State extends StateRecord = StateRecord> {
 		return this;
 	}
 	start(update: ControllerUpdate<State> = {}): Promise<AnimationResult<State>> {
+		update = normalizeUpdate(update);
 		if (update.default === true) this.defaults = { ...this.defaults, ...withoutTargets(update) };
 		else if (typeof update.default === 'object')
 			this.defaults = { ...this.defaults, ...update.default };
-		update = { ...this.defaults, ...update };
+		update = normalizeUpdate({ ...this.defaults, ...update });
 		const runId = ++this.runId;
 		return this.run(update, runId);
 	}
@@ -132,7 +135,6 @@ export class Controller<State extends StateRecord = StateRecord> {
 			);
 			const props: SpringUpdate<State[typeof typedKey]> = {
 				to: target[typedKey]!,
-				from: from[typedKey],
 				reset: update.reset,
 				delay: update.delay,
 				config: typeof update.config === 'function' ? update.config(typedKey) : update.config,
@@ -146,6 +148,8 @@ export class Controller<State extends StateRecord = StateRecord> {
 				},
 				onChange: () => update.onChange?.(getFinishedResult(this.get(), false), this),
 			};
+			// Upstream ignores `from` except on reset; initial values come from construction.
+			if (update.reset && from[typedKey] !== undefined) props.from = from[typedKey];
 			return spring.start(props);
 		});
 		const results = await Promise.all(promises);
@@ -174,6 +178,12 @@ export class Controller<State extends StateRecord = StateRecord> {
 	}
 }
 
+function normalizeUpdate<State extends StateRecord>(
+	update: ControllerUpdate<State> | Partial<State>,
+): ControllerUpdate<State> {
+	return inferTo(update as object) as ControllerUpdate<State>;
+}
+
 function withoutTargets<State extends StateRecord>(
 	update: ControllerUpdate<State>,
 ): Partial<ControllerUpdate<State>> {
@@ -184,9 +194,10 @@ function withoutTargets<State extends StateRecord>(
 function isControllerUpdate<State extends StateRecord>(
 	value: ControllerUpdate<State> | Partial<State>,
 ): value is ControllerUpdate<State> {
+	const normalized = normalizeUpdate(value);
 	return (
-		'to' in value ||
-		'from' in value ||
+		'to' in normalized ||
+		'from' in normalized ||
 		'config' in value ||
 		'immediate' in value ||
 		'delay' in value

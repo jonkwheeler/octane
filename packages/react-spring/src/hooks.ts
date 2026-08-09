@@ -1,5 +1,5 @@
 // Octane hook adapter for react-spring/packages/core/src/hooks at v10.1.2.
-import { useLayoutEffect, useState } from 'octane';
+import { useLayoutEffect, useRef, useState } from 'octane';
 import {
 	Controller,
 	type ControllerUpdate,
@@ -7,6 +7,7 @@ import {
 	SpringValue,
 	type SpringUpdate,
 } from './engine';
+import { inferTo } from './upstream-compat';
 import { type SpringContextValue, useSpringContext } from './context';
 
 export type TransitionPhase = 'mount' | 'enter' | 'update' | 'leave';
@@ -95,6 +96,46 @@ function withContext<State extends Record<string, any>>(
 	return { ...update, ...context } as ControllerUpdate<State>;
 }
 
+function sameLookup(left: unknown, right: unknown): boolean {
+	if (Object.is(left, right)) return true;
+	if (
+		left === null ||
+		right === null ||
+		typeof left !== 'object' ||
+		typeof right !== 'object' ||
+		typeof left === 'function' ||
+		typeof right === 'function'
+	) {
+		return false;
+	}
+	const leftKeys = Object.keys(left as object);
+	const rightKeys = Object.keys(right as object);
+	if (leftKeys.length !== rightKeys.length) return false;
+	return leftKeys.every(function sameKey(key) {
+		return Object.is(
+			(left as Record<string, unknown>)[key],
+			(right as Record<string, unknown>)[key],
+		);
+	});
+}
+
+function sameSpringUpdate(
+	left: ControllerUpdate<Record<string, any>>,
+	right: ControllerUpdate<Record<string, any>>,
+): boolean {
+	return (
+		sameLookup(left.to, right.to) &&
+		sameLookup(left.from, right.from) &&
+		sameLookup(left.config, right.config) &&
+		Object.is(left.immediate, right.immediate) &&
+		Object.is(left.delay, right.delay) &&
+		Object.is(left.pause, right.pause) &&
+		Object.is(left.cancel, right.cancel) &&
+		Object.is(left.reset, right.reset) &&
+		Object.is(left.loop, right.loop)
+	);
+}
+
 export function useSpring<State extends Record<string, any>>(
 	props: ControllerUpdate<State>,
 ): { [Key in keyof State]: SpringValue<State[Key]> };
@@ -113,14 +154,27 @@ export function useSpring<State extends Record<string, any>>(
 	| [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>] {
 	const slot = trailingSlot(args);
 	const context = useSpringContext();
-	const update = withContext(updateFrom(props), context);
+	const update = withContext(
+		inferTo(updateFrom(props) as object) as ControllerUpdate<State>,
+		context,
+	);
 	const [controller] = useState(() => new Controller<State>(update), sub(slot, 'controller'));
 	const deps = args.find(Array.isArray) as any[] | undefined;
+	const functionProps = typeof props === 'function';
+	const cached = useRef(update, sub(slot, 'cached'));
+	if (functionProps || deps !== undefined || !sameSpringUpdate(cached.current, update)) {
+		cached.current = update;
+	}
+	const effectUpdate = cached.current;
 	useLayoutEffect(
 		() => {
-			void controller.start(update);
+			void controller.start(effectUpdate);
 		},
-		deps === undefined ? [update, context] : [...deps, context],
+		deps === undefined
+			? functionProps
+				? [update, context]
+				: [effectUpdate, context]
+			: [...deps, context],
 		sub(slot, 'effect'),
 	);
 	useLayoutEffect(
@@ -130,7 +184,7 @@ export function useSpring<State extends Record<string, any>>(
 		[],
 		sub(slot, 'cleanup'),
 	);
-	return typeof props === 'function' || deps !== undefined
+	return functionProps || deps !== undefined
 		? [controller.springs, controller]
 		: controller.springs;
 }

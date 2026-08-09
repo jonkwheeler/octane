@@ -28,8 +28,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 58,
-    "uniqueIdentities": 58,
+    "inventoryEntries": 60,
+    "uniqueIdentities": 60,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -60,7 +60,7 @@
         {
           "path": "packages/react-spring/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "8952d00f37717d8971e5a7de22ffebc05ba0058201c677863ebe414cb3af38fe"
+          "sha256": "cbb4bed09f63fb29971b19d5998819a42ec39db84dea6b05abed92f7f1e61a8d"
         }
       ]
     },

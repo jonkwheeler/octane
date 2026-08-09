@@ -79,6 +79,31 @@ describe('React Spring engine', () => {
 		expect(controller.get()).toEqual({ x: 0 });
 	});
 
+	// Per packages/core/src/helpers.test.ts:5
+	it('infers shorthand spring props into a to payload', async () => {
+		raf.frameLoop = 'demand';
+		const controller = new Controller({ from: { opacity: 0, x: 0 } });
+		const resultPromise = controller.start({ opacity: 1, x: 10, immediate: true } as any);
+		advanceUntilIdle();
+		expect(await resultPromise).toMatchObject({ finished: true });
+		expect(controller.get()).toEqual({ opacity: 1, x: 10 });
+	});
+
+	// Per packages/core/src/SpringValue.test.ts:1
+	it('does not reapply from on a same-goal restart without reset', async () => {
+		raf.frameLoop = 'demand';
+		const value = new SpringValue(0);
+		const first = value.start({ from: 0, to: 100, config: { duration: 100 } });
+		advanceUntilIdle(3);
+		expect(value.get()).not.toBe(0);
+		const mid = value.get();
+		const second = value.start({ from: 0, to: 100, config: { duration: 100 } });
+		expect(value.get()).toBe(mid);
+		advanceUntilIdle();
+		await Promise.all([first, second]);
+		expect(value.get()).toBe(100);
+	});
+
 	// Per packages/core/src/Interpolation.test.ts:6
 	it('derives interpolated values from fluid parents', () => {
 		const x = new SpringValue(0);

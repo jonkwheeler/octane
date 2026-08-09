@@ -70,6 +70,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 	private velocity = 0;
 	private active?: Active<T>;
 	private paused = false;
+	private hasAnimated = false;
 
 	constructor(value: T) {
 		super();
@@ -89,18 +90,36 @@ export class SpringValue<T = number> extends FrameValue<T> {
 			this.stop(true);
 			return Promise.resolve(getCancelledResult(this.value));
 		}
+		const nextGoal = goal(props.to);
+		const active = this.active;
+		if (
+			active &&
+			!active.settled &&
+			!props.reset &&
+			props.from === undefined &&
+			Object.is(goal(active.props.to), nextGoal)
+		) {
+			const previousResolve = active.resolve;
+			active.props = { ...active.props, ...props, to: active.props.to };
+			return new Promise(function waitForActive(resolve) {
+				active.resolve = function resolveBoth(result) {
+					previousResolve(result);
+					resolve(result);
+				};
+			});
+		}
 		this.stop(true);
 		this.paused = props.pause === true;
 		return new Promise((resolve) => {
-			const active: Active<T> = { props, resolve, started: false, settled: false };
-			this.active = active;
+			const next: Active<T> = { props, resolve, started: false, settled: false };
+			this.active = next;
 			this.idle = false;
 			const begin = () => {
-				active.timer = undefined;
-				if (this.active !== active || active.settled) return;
-				this.run(active);
+				next.timer = undefined;
+				if (this.active !== next || next.settled) return;
+				this.run(next);
 			};
-			if ((props.delay ?? 0) > 0) active.timer = setTimeout(begin, props.delay);
+			if ((props.delay ?? 0) > 0) next.timer = setTimeout(begin, props.delay);
 			else begin();
 		});
 	}
@@ -132,7 +151,11 @@ export class SpringValue<T = number> extends FrameValue<T> {
 
 	private run(active: Active<T>): void {
 		const props = active.props;
-		if (props.from !== undefined) this.setValue(props.from);
+		// Upstream applies `from` only before the first animation or when `reset` is set.
+		if (props.from !== undefined && (props.reset || !this.hasAnimated)) {
+			this.setValue(props.from);
+		}
+		this.hasAnimated = true;
 		active.started = true;
 		this.velocity = props.config?.velocity ?? 0;
 		const target = goal(props.to);

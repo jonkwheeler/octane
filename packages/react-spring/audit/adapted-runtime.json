@@ -126,6 +126,16 @@
       "fullName": "React Spring engine derives interpolated values from fluid parents"
     },
     {
+      "id": "runtime:b2760c96ec32e49f",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine does not reapply from on a same-goal restart without reset"
+    },
+    {
+      "id": "runtime:8e337f5cbc0b6001",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine infers shorthand spring props into a to payload"
+    },
+    {
       "id": "runtime:7b326fbb1597d0be",
       "file": "packages/react-spring/tests/conformance/engine.test.ts",
       "fullName": "React Spring engine settles a loop without a usable from value instead of recursing"
