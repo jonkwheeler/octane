@@ -1127,6 +1127,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'formisch-pristine-core',
 					include: ['packages/formisch/upstream/packages/core/src/**/*.test.ts'],
@@ -1136,6 +1137,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'formisch-pristine-methods',
 					include: ['packages/formisch/upstream/packages/methods/src/**/*.test.ts'],
@@ -1162,6 +1164,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'formisch-pristine-react',
 					include: ['packages/formisch/upstream/frameworks/react/src/**/*.test.tsx'],
@@ -1195,6 +1198,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'formisch-adapted-core-methods',
 					include: [
@@ -1216,6 +1220,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/formisch/tests/upstream/**/*.test.tsrx'],
+				},
 				test: {
 					name: 'formisch',
 					include: [
