@@ -3539,6 +3539,7 @@ export default defineConfig({
 					testTimeout: 60_000,
 					hookTimeout: 60_000,
 				},
+				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {
@@ -3547,6 +3548,7 @@ export default defineConfig({
 					environment: 'jsdom',
 					globals: false,
 				},
+				testExecution: { group: 'react-parity' },
 				plugins: [octane()],
 				resolve: {
 					alias: [
@@ -3567,6 +3569,7 @@ export default defineConfig({
 					environment: 'jsdom',
 					globals: false,
 				},
+				testExecution: { group: 'react-parity' },
 				plugins: [octane()],
 				resolve: {
 					alias: [
@@ -3584,6 +3587,7 @@ export default defineConfig({
 					environment: 'node',
 					globals: false,
 				},
+				testExecution: { group: 'react-parity' },
 				plugins: [octane({ ssr: true })],
 				resolve: {
 					alias: [
@@ -3611,6 +3615,7 @@ export default defineConfig({
 					testTimeout: 60_000,
 					hookTimeout: 60_000,
 				},
+				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {

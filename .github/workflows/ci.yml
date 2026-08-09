@@ -454,8 +454,6 @@ jobs:
           --exclude "packages/rsbuild-plugin-octane/tests/rsbuild.integration.test.ts"
           --exclude "packages/vite-plugin-octane/tests/production.test.ts"
           --exclude "packages/octane/tests/browser/**/*.test.ts"
-          --exclude "packages/input-otp/tests/browser/**/*"
-          --exclude "packages/input-otp/tests/pristine/upstream.browser.test.ts"
           --exclude "packages/dexie/tests/browser/**/*.test.ts"
           --exclude "packages/tiptap/tests/browser/**/*.test.ts"
           --exclude "packages/three/tests/browser/**/*.test.ts"
@@ -602,8 +600,6 @@ jobs:
             chromium: true
             specs: >-
               packages/octane/tests/browser
-              packages/input-otp/tests/browser
-              packages/input-otp/tests/pristine/upstream.browser.test.ts
               packages/dexie/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
