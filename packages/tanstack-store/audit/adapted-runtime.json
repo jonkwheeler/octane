@@ -5,16 +5,6 @@
   "files": ["packages/tanstack-store/tests/conformance/upstream-index.test.ts"],
   "tests": [
     {
-      "id": "runtime:70e0662c775ba7a6",
-      "file": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
-      "fullName": "_useStore returns selected state and actions for stores with actions"
-    },
-    {
-      "id": "runtime:ef803bd57bf097a5",
-      "file": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
-      "fullName": "_useStore returns selected state and setState for plain stores"
-    },
-    {
       "id": "runtime:1c5e1d74bfd91ad6",
       "file": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
       "fullName": "atom hooks useAtom returns the current value and setter"

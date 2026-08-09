@@ -14,7 +14,6 @@ import {
 	useSelector,
 	useStore,
 } from '@octanejs/tanstack-store';
-import * as bindingExports from '@octanejs/tanstack-store';
 
 const user = userEvent.setup();
 
@@ -598,62 +597,10 @@ describe('useStore', () => {
 	});
 });
 
-describe('_useStore', () => {
-	// OCTANE DIVERGENCE[tanstack-store-experimental-use-store][runtime:70e0662c775ba7a6]
-	// Per packages/react-store/tests/index.test.tsx _useStore actions case.
-	it('returns selected state and actions for stores with actions', async () => {
-		expect('_useStore' in bindingExports).toBe(false);
-		const store = createStore(
-			{ count: 0 },
-			({ setState }) => ({
-				inc: () => setState((prev) => ({ count: prev.count + 1 })),
-			}),
-		);
-
-		function Comp() {
-			const count = useSelector(store, (state) => state.count);
-
-			return <div>
-				<p>{'Value: ' + count}</p>
-				<button type="button" onClick={() => store.actions.inc()}>
-					Inc
-				</button>
-			</div>;
-		}
-
-		const { getByText } = render(<Comp />);
-		expect(getByText('Value: 0')).toBeInTheDocument();
-
-		await user.click(getByText('Inc'));
-
-		await waitFor(() => expect(getByText('Value: 1')).toBeInTheDocument());
-	});
-
-	// OCTANE DIVERGENCE[tanstack-store-experimental-use-store][runtime:ef803bd57bf097a5]
-	// Per packages/react-store/tests/index.test.tsx _useStore setState case.
-	it('returns selected state and setState for plain stores', async () => {
-		expect('_useStore' in bindingExports).toBe(false);
-		const store = createStore(0);
-
-		function Comp() {
-			const value = useSelector(store, (state) => state);
-
-			return <div>
-				<p>{'Value: ' + value}</p>
-				<button type="button" onClick={() => store.setState((prev) => prev + 1)}>
-					Inc
-				</button>
-			</div>;
-		}
-
-		const { getByText } = render(<Comp />);
-		expect(getByText('Value: 0')).toBeInTheDocument();
-
-		await user.click(getByText('Inc'));
-
-		await waitFor(() => expect(getByText('Value: 1')).toBeInTheDocument());
-	});
-});
+// Upstream `_useStore` cases are not applicable in this adapted suite: the
+// experimental export is intentionally omitted. Omission evidence lives outside
+// adapted parity ownership in experimental-use-store.parity.test.ts (see
+// OCTANE DIVERGENCE markers on upstream-index.test.ts).
 
 describe('shallow', () => {
 	test('should return true for shallowly equal objects', () => {

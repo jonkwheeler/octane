@@ -38,8 +38,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 32,
-    "uniqueIdentities": 32,
+    "inventoryEntries": 30,
+    "uniqueIdentities": 30,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -114,7 +114,7 @@
       "environment": "workspace-node",
       "project": "tanstack-store",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the one-for-one adapted packages/react-store/tests/index.test.tsx suite fetched from the pinned repository, including OCTANE DIVERGENCE cases for the omitted experimental _useStore export.",
+      "notes": "Runs the one-for-one adapted packages/react-store/tests/index.test.tsx suite fetched from the pinned repository. Upstream _useStore cases are classified not-applicable outside this adapted evidence; omission is recorded by experimental-use-store.parity.test.ts.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/tanstack-store/audit/adapted-runtime.json"
@@ -123,17 +123,17 @@
         {
           "path": "packages/tanstack-store/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "2c8b00a3455fd85287fd4c59df9b892dc1bca9aa6db9c1c7fcf5ee11c2507525"
+          "sha256": "e25cbd446e9231d1de9fd02573c71339cf90d240ab32a38e8992d25164e5fd7d"
         },
         {
           "path": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
           "role": "support",
-          "sha256": "3a3bfa1f6758c900a3704db911e9fcf03254a8f8fc4c76cb338c77519da1987d"
+          "sha256": "73abf79cc02a832f64765be13d18beafe25e2d51dbac87e2193dc856e03f5f80"
         },
         {
           "path": "packages/tanstack-store/tests/_fixtures/upstream/index.tsrx",
           "role": "support",
-          "sha256": "bcb8af47b7bec7a37df580e61d795042188e38b96df5c840c035cee9613ee2ec"
+          "sha256": "1f432dac06f6668c94f85b209a6731667b79373c091aee777b2d8e7a719c4ce0"
         },
         {
           "path": "packages/tanstack-store/tests/conformance/test-setup.ts",
@@ -200,8 +200,7 @@
     {
       "id": "tanstack-store-experimental-use-store",
       "caseIds": [
-        "runtime:70e0662c775ba7a6",
-        "runtime:ef803bd57bf097a5"
+        "types:tanstack-store-public-api"
       ],
       "upstreamResult": "@tanstack/react-store exports the experimental _useStore hook.",
       "octaneResult": "@octanejs/tanstack-store intentionally omits _useStore while retaining the stable useSelector and useStore APIs.",

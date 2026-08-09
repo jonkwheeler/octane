@@ -27,5 +27,11 @@ This bounded harness currently executes:
 - one exact shared React/Octane differential interaction fixture;
 - the repository-authored adapted type contract.
 
+The upstream `_useStore` describe block (actions + setState cases) is not
+applicable in the adapted suite: `@octanejs/tanstack-store` intentionally omits
+that experimental export. Those identities are classified outside adapted parity
+evidence; `tests/conformance/experimental-use-store.parity.test.ts` records the
+omission as an ordinary package divergence test.
+
 Documented Octane-only divergences and SSR stay ordinary package tests outside
 React-parity ownership until pristine upstream suites land.

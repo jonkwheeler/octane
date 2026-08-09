@@ -1,4 +1,6 @@
 // The renderer-bearing upstream suite lives in a TSRX fixture module.
-// OCTANE DIVERGENCE[tanstack-store-experimental-use-store][runtime:70e0662c775ba7a6]
-// OCTANE DIVERGENCE[tanstack-store-experimental-use-store][runtime:ef803bd57bf097a5]
+// Upstream `_useStore` cases are not applicable here; omission evidence is
+// outside adapted parity ownership in experimental-use-store.parity.test.ts
+// and the adapted types contract.
+// OCTANE DIVERGENCE[tanstack-store-experimental-use-store][types:tanstack-store-public-api]
 import '../_fixtures/upstream/index.tsrx';
