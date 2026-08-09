@@ -35,7 +35,11 @@
       "TextMarkedContent",
       "ThumbnailProps"
     ],
-    "subpaths": [".", "./dist/Page/AnnotationLayer.css", "./dist/Page/TextLayer.css"]
+    "subpaths": [
+      ".",
+      "./dist/Page/AnnotationLayer.css",
+      "./dist/Page/TextLayer.css"
+    ]
   },
   "artifacts": [
     {
@@ -507,6 +511,71 @@
       "path": "npm/src/shared/utils.ts",
       "bytes": 4956,
       "sha256": "87e7811b18eb367fb5581cb118694d5e5403976854cdea502acf3ab954817f6f"
+    },
+    {
+      "path": "support/__mocks__/_failing_page.js",
+      "bytes": 46,
+      "sha256": "2a89b5dfe4242465c9cdb304ff54994663559f449174660c2635ee3a3689b9a6"
+    },
+    {
+      "path": "support/__mocks__/_failing_page.ts",
+      "bytes": 767,
+      "sha256": "948139b5160d54e32bcf309c895fdd74c4f30a1d7631bded8b193a6744584863"
+    },
+    {
+      "path": "support/__mocks__/_failing_pdf.js",
+      "bytes": 45,
+      "sha256": "8ffd5c71ec9c4738e97f75362e321a8efec8cd5b15409a71b8c0efa09d4aa196"
+    },
+    {
+      "path": "support/__mocks__/_failing_pdf.ts",
+      "bytes": 437,
+      "sha256": "f42bd88f023f9cc1a4fbd867b82a2ebbe201a4789fc3161fcd3ceadcc598de3c"
+    },
+    {
+      "path": "support/__mocks__/_pdf.pdf",
+      "bytes": 342905,
+      "sha256": "8bb8af102facb29574fba3530a7843f6a2c718b619acc5ef57aa1a986195c51c"
+    },
+    {
+      "path": "support/__mocks__/_pdf2.pdf",
+      "bytes": 42432,
+      "sha256": "3cd508e3ba9071ee00e7a420f567c0ad2e4eba28e68e6751711e95412f294c2e"
+    },
+    {
+      "path": "support/__mocks__/_pdf3.pdf",
+      "bytes": 18116,
+      "sha256": "f49744e42a50987f4ce2eac0da4feba06d26f17d7a0111c530103a9cecdba7a5"
+    },
+    {
+      "path": "support/__mocks__/_pdf4.pdf",
+      "bytes": 76057,
+      "sha256": "6ff448a84af707671672e06e321c3e7fb1b4d01c32806d70c9fec04c2d74ec42"
+    },
+    {
+      "path": "support/__mocks__/_pdf5.pdf",
+      "bytes": 35385,
+      "sha256": "3857435e22b2e8bc9be1b3d51f85f45f5f645a89e2eb841b72553bbd942436d1"
+    },
+    {
+      "path": "support/__mocks__/_silently_failing_pdf.js",
+      "bytes": 54,
+      "sha256": "db7c2af90a91acbcf2b6de8574c3ef4d60bfc097c9e26451cab4ddfb2ca2a4af"
+    },
+    {
+      "path": "support/__mocks__/_silently_failing_pdf.ts",
+      "bytes": 607,
+      "sha256": "7643a53a29d610f7af4975256152ad5e5f068d50106238c3b57f7ebb425b93d8"
+    },
+    {
+      "path": "support/__mocks__/_untagged.pdf",
+      "bytes": 77123,
+      "sha256": "64272d491eb2b7922aef97e0db4fee07c348c59db42b9c862f249b0818b81309"
+    },
+    {
+      "path": "support/test-utils.ts",
+      "bytes": 2669,
+      "sha256": "5067a04350acefaa99f177c4dd8d22ec8bbee274003f49986f8cfad521959c4d"
     },
     {
       "path": "tag/LICENSE",
@@ -2038,638 +2107,638 @@
   "crosswalk": [
     {
       "upstream": "tag/src/Document.spec.tsx:64::loads a file and calls onSourceSuccess and onLoadSuccess callbacks via data URI properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:81::loads a file and calls onSourceSuccess and onLoadSuccess callbacks via data URI properly (param object)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:99::loads a file and calls onSourceSuccess and onLoadSuccess callbacks via ArrayBuffer properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:117::loads a file and calls onSourceSuccess and onLoadSuccess callbacks via Blob properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:135::loads a file and calls onSourceSuccess and onLoadSuccess callbacks via File properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:153::fails to load a file and calls onSourceError given invalid file source",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:170::replaces a file properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:205::applies className to its wrapper when given a string",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:214::passes container element to inputRef properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:222::renders \"No PDF file specified.\" when given nothing",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:231::renders custom no data message when given nothing and noData prop is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:240::renders custom no data message when given nothing and noData prop is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:249::renders \"Loading PDF…\" when loading a file",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:258::renders custom loading message when loading a file and loading prop is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:267::renders custom loading message when loading a file and loading prop is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/parity/shells.test.ts::matches Document no-data and loading server markup"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:278::renders \"Failed to load PDF file.\" when failed to load a document",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:300::renders custom error message when failed to load a document and error prop is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:325::renders custom error message when failed to load a document and error prop is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:350::passes renderMode prop to its children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:373::passes rotate prop to its children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:391::passes scale prop to its children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:409::does not overwrite renderMode prop in its children when given renderMode prop to both Document and its children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:432::does not overwrite rotate prop in its children when given rotate prop to both Document and its children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:450::does not overwrite scale prop in its children when given scale prop to both Document and its children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:468::supports function as children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:489::calls onItemClick if defined",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::preserves LinkService navigation and external link policy"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:530::attempts to find a page and scroll it into view if onItemClick is not given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::preserves LinkService navigation and external link policy"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:576::returns externalLinkTarget = $target given externalLinkTarget prop = $externalLinkTarget",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:610::returns externalLinkRel = $rel given externalLinkRel prop = $externalLinkRel",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:645::calls onClick callback when clicked a document (sample of mouse events family)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:660::calls onTouchStart callback when touched a document (sample of touch events family)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:671::does not warn if file prop was memoized",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:687::warns if file prop was not memoized",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:701::does not warn if file prop was not memoized, but was changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:715::does not warn if options prop was memoized",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:731::warns if options prop was not memoized",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:745::does not warn if options prop was not memoized, but was changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Document.spec.tsx:759::does not throw an error on unmount",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:61::loads an outline and calls onLoadSuccess callback properly when placed inside Document",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:70::loads an outline and calls onLoadSuccess callback properly when pdf prop is passed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:80::calls onLoadError when failed to load an outline",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:94::replaces an outline properly when pdf is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:113::throws an error when placed outside Document without pdf prop passed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:126::applies className to its wrapper when given a string",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:144::passes container element to inputRef properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Outline.spec.tsx:160::renders OutlineItem components properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/OutlineItem.spec.tsx:65::renders an item properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/OutlineItem.spec.tsx:74::renders item's subitems properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/OutlineItem.spec.tsx:85::calls onItemClick with proper arguments when clicked a link",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/OutlineItem.spec.tsx:99::calls onItemClick with proper arguments multiple times when clicked a link multiple times",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:89::loads a page and calls onLoadSuccess callback properly when placed inside Document",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:101::loads a page and calls onLoadSuccess callback properly when pdf prop is passed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:118::returns all desired parameters in onLoadSuccess callback",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:139::calls onLoadError when failed to load a page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:156::loads page when given pageIndex",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:171::loads page when given pageNumber",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:186::loads page of a given number when given conflicting pageNumber and pageIndex",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:201::calls registerPage when loaded a page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:215::calls unregisterPage on unmount",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:231::replaces a page properly when pdf is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:256::replaces a page properly when pageNumber is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:281::throws an error when placed outside Document without pdf prop passed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:294::applies className to its wrapper when given a string",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:306::passes container element to inputRef properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:317::passes canvas element to Canvas properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:339::renders \"No page specified.\" when given neither pageIndex nor pageNumber",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:355::renders custom no data message when given nothing and noData is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:371::renders custom no data message when given nothing and noData is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:387::renders \"Loading page…\" when loading a page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:398::renders custom loading message when loading a page and loading prop is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:409::renders custom loading message when loading a page and loading prop is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:420::ignores pageIndex when given pageIndex and pageNumber",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:435::requests page to be rendered with default rotation when given nothing",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:460::requests page to be rendered with given rotation when given rotate prop",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:486::requests page to be rendered in canvas mode by default",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:506::requests page not to be rendered when given renderMode = \"none\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:526::requests page to be rendered in canvas mode when given renderMode = \"canvas\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:546::requests page to be rendered in custom mode when given renderMode = \"custom\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:575::requests text content to be rendered by default",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:595::requests text content to be rendered when given renderTextLayer = true",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:615::does not request text content to be rendered when given renderTextLayer = false",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:635::renders TextLayer when given renderMode = \"canvas\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:655::renders TextLayer when given renderMode = \"custom\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:685::requests annotations to be rendered by default",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:705::requests annotations to be rendered when given renderAnnotationLayer = true",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:725::does not request annotations to be rendered when given renderAnnotationLayer = false",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:745::supports function as children",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:768::requests page to be rendered without forms by default",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:793::requests page to be rendered with forms given renderForms = true",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:819::requests page to be rendered at its original size given nothing",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:835::requests page to be rendered with a proper scale when given scale",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:852::requests page to be rendered with a proper scale when given width",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:869::requests page to be rendered with a proper scale when given width and scale (multiplies)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:890::requests page to be rendered with a proper scale when given height",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:907::requests page to be rendered with a proper scale when given height and scale (multiplies)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:928::requests page to be rendered with a proper scale when given width and height (ignores height)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:951::requests page to be rendered with a proper scale when given width, height and scale (ignores height, multiplies)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:981::calls onClick callback when clicked a page (sample of mouse events family)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:999::calls onTouchStart callback when touched a page (sample of touch events family)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page.spec.tsx:1013::handles rotated page dimensions correctly in onLoadPage callback",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:76::loads annotations and calls onGetAnnotationsSuccess callback properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:96::calls onGetAnnotationsError when failed to load annotations",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:121::replaces annotations properly when page is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:159::throws an error when placed outside Page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:172::renders annotations properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:199::renders all links with target $target given externalLinkTarget = $externalLinkTarget",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:246::renders all links with rel $rel given externalLinkRel = $externalLinkRel",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:290::renders annotations with the default imageResourcesPath given no imageResourcesPath",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/AnnotationLayer.spec.tsx:324::renders annotations with the specified imageResourcesPath given imageResourcesPath",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/Canvas.spec.tsx:57::renders a page and calls onRenderSuccess callback properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/Canvas.spec.tsx:74::calls onRenderError when failed to render canvas",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/Canvas.spec.tsx:95::passes canvas element to canvasRef properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/Canvas.spec.tsx:106::does not request structure tree to be rendered when renderTextLayer = false",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/Canvas.spec.tsx:122::renders StructTree when given renderTextLayer = true",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:66::loads text content and calls onGetTextSuccess callback properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:78::calls onGetTextError when failed to load text content",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:95::replaces text content properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:125::throws an error when placed outside Page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:138::renders text content properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:155::renders text content properly given customTextRenderer",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:176::maps textContent items to actual TextLayer children properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:209::calls customTextRenderer with necessary arguments",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:238::renders text content properly given customTextRenderer",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:257::renders text content properly given customTextRenderer and untagged document",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:279::renders HTML formatting from customTextRenderer output",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:302::does not render blocked tags from customTextRenderer output",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Page/TextLayer.spec.tsx:331::does not execute scripts from customTextRenderer output",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Ref.spec.ts:6::returns proper reference for given num and gen",
@@ -2678,248 +2747,248 @@
     },
     {
       "upstream": "tag/src/Ref.spec.ts:12::returns proper reference for given num and gen when gen = 0",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::preserves Ref number and generation values"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:57::loads structure tree and calls onGetStructTreeSuccess callback properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:70::calls onGetStructTreeError when failed to load annotations",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:88::replaces structure tree properly when page is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:112::throws an error when placed outside Page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:125::renders structure tree properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:74::loads a page and calls onLoadSuccess callback properly when placed inside Document",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:83::loads a page and calls onLoadSuccess callback properly when pdf prop is passed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:93::returns all desired parameters in onLoadSuccess callback",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:111::calls onLoadError when failed to load a page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:127::loads page when given pageIndex",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:139::loads page when given pageNumber",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:151::loads page of a given number when given conflicting pageNumber and pageIndex",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:168::replaces a page properly when pdf is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:189::replaces a page properly when pageNumber is changed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:210::throws an error when placed outside Document without pdf prop passed",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:223::applies className to its wrapper when given a string",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:237::passes container element to inputRef properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:247::passes canvas element to ThumbnailCanvas properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:266::renders \"No page specified.\" when given neither pageIndex nor pageNumber",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:279::renders custom no data message when given nothing and noData is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:292::renders custom no data message when given nothing and noData is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:307::renders \"Loading page…\" when loading a page",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:315::renders custom loading message when loading a page and loading prop is given",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:323::renders custom loading message when loading a page and loading prop is given as a function",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:331::ignores pageIndex when given pageIndex and pageNumber",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:348::requests page to be rendered with default rotation when given nothing",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:372::requests page to be rendered with given rotation when given rotate prop",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:397::requests page to be rendered in canvas mode by default",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:414::requests page not to be rendered when given renderMode = \"none\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:431::requests page to be rendered in canvas mode when given renderMode = \"canvas\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:448::requests page to be rendered in custom mode when given renderMode = \"custom\"",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:475::requests page to be rendered at its original size given nothing",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:488::requests page to be rendered with a proper scale when given scale",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:507::requests page to be rendered with a proper scale when given width",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:526::requests page to be rendered with a proper scale when given width and scale (multiplies)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:546::requests page to be rendered with a proper scale when given height",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:565::requests page to be rendered with a proper scale when given height and scale (multiplies)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:585::requests page to be rendered with a proper scale when given width and height (ignores height)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:607::requests page to be rendered with a proper scale when given width, height and scale (ignores height, multiplies)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:634::calls onClick callback when clicked a page (sample of mouse events family)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/Thumbnail.spec.tsx:652::calls onTouchStart callback when touched a page (sample of touch events family)",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/binding.browser.test.ts::renders the binding in Chromium"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/index.spec.ts:7::has pdfjs.version exported properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/feasibility/public-surface.test.ts::pins the root runtime exports and package export map"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/index.spec.ts:10::has GlobalWorkerOptions exported properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/feasibility/public-surface.test.ts::pins the root runtime exports and package export map"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/index.spec.ts:15::has Document exported properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/feasibility/public-surface.test.ts::pins the root runtime exports and package export map"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/index.spec.ts:19::has Outline exported properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/feasibility/public-surface.test.ts::pins the root runtime exports and package export map"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/index.spec.ts:23::has Page exported properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/feasibility/public-surface.test.ts::pins the root runtime exports and package export map"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/index.spec.ts:27::has Thumbnail exported properly",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/feasibility/public-surface.test.ts::pins the root runtime exports and package export map"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:6::returns $expectedResult given $input",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:19::throws given invalid data URI",
@@ -2928,23 +2997,23 @@
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:22::returns a byte string given plain text data URI",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:28::returns a byte string given base64 data URI",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:34::returns a byte string given base64 PDF data URI",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:42::returns a byte string given base64 PDF data URI with filename",
-      "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities"
+      "disposition": "pending-adaptation",
+      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
     }
   ]
 }

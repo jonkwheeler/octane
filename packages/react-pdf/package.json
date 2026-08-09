@@ -46,8 +46,9 @@
     "test:feasibility": "vitest run --root ../.. --project react-pdf-feasibility --project react-pdf-feasibility-ssr --project react-pdf-feasibility-hydration",
     "test:parity": "vitest run --root ../.. --project react-pdf-parity",
     "test:ssr": "vitest run --root ../.. --project react-pdf-ssr",
-    "test:types": "tsc --noEmit -p typetests/tsconfig.pristine.json && tsrx-tsc --noEmit -p typetests/tsconfig.adapted.json",
-    "upstream:verify": "node --test tests/audit/upstream-inventory.test.mjs && node audit/upstream-inventory.mjs"
+    "test:types": "tsc --noEmit -p upstream/tag/tsconfig.json && tsrx-tsc --noEmit -p tsconfig.json",
+    "upstream:verify": "node --test tests/audit/upstream-inventory.test.mjs && node audit/upstream-inventory.mjs",
+    "test:pristine": "node ../../scripts/react-parity/react-pdf-pristine-runtime.mjs"
   },
   "dependencies": {
     "make-event-props": "2.0.0",
@@ -59,12 +60,21 @@
   "devDependencies": {
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
+    "@types/warning": "^3.0.4",
+    "@vitest/browser-playwright": "4.1.10",
+    "clsx": "catalog:",
+    "dequal": "^2.0.3",
+    "make-cancellable-promise": "^2.0.0",
+    "merge-refs": "^2.0.0",
     "octane": "workspace:*",
     "playwright": "catalog:default",
     "react": "catalog:default",
     "react-dom": "catalog:default",
     "react-pdf": "10.4.1",
+    "tiny-invariant": "catalog:",
     "vite": "catalog:default",
-    "vitest": "catalog:default"
+    "vitest": "catalog:default",
+    "vitest-browser-react": "2.0.0",
+    "warning": "^4.0.3"
   }
 }

@@ -9,8 +9,11 @@
 
 The pinned tag source, all 13 source test authorities, package metadata,
 README, TypeScript programs, and license are vendored under `upstream/tag`.
-The complete 94-file published npm artifact is vendored under `upstream/npm`.
-`audit/upstream-inventory.json` records SHA-256 hashes for both authorities,
-and `audit/case-map.json` maps all 182 line-addressed upstream test identities
-to executable Octane evidence. The audit fails closed when either authority,
-the public-surface ledger, or the case map changes.
+The complete published npm artifact is vendored under `upstream/npm`.
+Monorepo-root test fixtures (`test-utils.ts`, `__mocks__/`) are vendored under
+`upstream/support` and linked into the package root for relative imports.
+
+`audit/upstream-inventory.json` records SHA-256 hashes for both authorities.
+`audit/case-map.json` accounts for every upstream runtime identity with either a
+one-for-one adapted counterpart or an explicit `pending-adaptation` disposition.
+`audit/pristine-runtime.json` records the executed pristine Vitest identities.

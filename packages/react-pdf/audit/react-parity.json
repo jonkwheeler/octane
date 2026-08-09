@@ -26,20 +26,17 @@
     },
     "tests": {
       "roots": [
-        "packages/react-pdf/tests",
-        "packages/react-pdf/typetests"
+        "packages/react-pdf/tests/runtime"
       ],
       "include": [
-        "\\.test\\.(?:ts|tsx|tsrx)$"
+        "\\.test\\.ts$"
       ],
-      "exclude": [
-        "/audit/"
-      ]
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 4,
+    "uniqueIdentities": 4,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -50,43 +47,77 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "ab8952a6688fdaa5daf4d5f1be7b201e1ecc98b416119adf0c5094e19f9d924e"
+      "lockfileSha256": "30a8090099a7db2f3d45143dddda3829c14d34ef0ea656e55a5064316c613b5a"
     }
   },
   "lanes": [
     {
-      "id": "react-pdf-runtime",
+      "id": "react-pdf-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-pdf-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-pdf 10.4.1 Vitest browser suite against the vendored React binding and checks every passed identity against the committed inventory.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-pdf/audit/pristine-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-pdf/audit/pristine-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "5af434abab2859d986c633eddf17b42e6949769797a6dab2b2d069da2a9d601b"
+        },
+        {
+          "path": "packages/react-pdf/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "67a9cdb9aff85d9d06fc0b604d45220ba020ba29fcfa87179c15dc59ebbaa424"
+        },
+        {
+          "path": "packages/react-pdf/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "37db43e50c7c73a2b8f592f6a709a8d21ad1ad86d5537b902cb50d5ee717d8d4"
+        },
+        {
+          "path": "scripts/react-parity/react-pdf-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "6dfe7efe12c697003a4d040a335392c6573a396e256d6762062c44c1de514cf5"
+        },
+        {
+          "path": "packages/react-pdf/tests/upstream-vitest.config.ts",
+          "role": "support",
+          "sha256": "97c24be391088e3281fecb4f1ba871a3a5cf37b2aa666901a7d8137c948c9c0c"
+        },
+        {
+          "path": "packages/react-pdf/upstream/support/test-utils.ts",
+          "role": "support",
+          "sha256": "5067a04350acefaa99f177c4dd8d22ec8bbee274003f49986f8cfad521959c4d"
+        }
+      ]
+    },
+    {
+      "id": "react-pdf-adapted-runtime",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-pdf",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the one-for-one adapted private upstream helpers; remaining upstream identities are explicit pending-adaptation dispositions in audit/case-map.json.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-pdf/audit/adapted-runtime.json"
+      },
       "files": [
         {
+          "path": "packages/react-pdf/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "b786f812b3f492e4e42d12a0b3f78e68c4e2ffa17c9907ec8caacf84c8549b7d"
+        },
+        {
           "path": "packages/react-pdf/tests/runtime/private-evidence.test.ts",
-          "role": "test",
-          "sha256": "fee5efcbccb6f61571967e968b853e5972b49b1163ed487161d7a6f846deb922",
-          "cases": [
-            {
-              "id": "adapted:react-pdf-utils",
-              "testName": "matches upstream data URI and source utilities",
-              "fullName": "@octanejs/react-pdf private upstream evidence matches upstream data URI and source utilities"
-            },
-            {
-              "id": "adapted:react-pdf-refs",
-              "testName": "sets callback, object, and nested refs",
-              "fullName": "@octanejs/react-pdf private upstream evidence sets callback, object, and nested refs"
-            },
-            {
-              "id": "adapted:react-pdf-ref",
-              "testName": "preserves Ref number and generation values",
-              "fullName": "@octanejs/react-pdf private upstream evidence preserves Ref number and generation values"
-            },
-            {
-              "id": "adapted:react-pdf-link-service",
-              "testName": "preserves LinkService navigation and external link policy",
-              "fullName": "@octanejs/react-pdf private upstream evidence preserves LinkService navigation and external link policy"
-            }
-          ]
+          "role": "support",
+          "sha256": "fee5efcbccb6f61571967e968b853e5972b49b1163ed487161d7a6f846deb922"
         }
       ]
     },
@@ -113,222 +144,28 @@
       ]
     },
     {
-      "id": "react-pdf-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-pdf-ssr",
-      "files": [
-        {
-          "path": "packages/react-pdf/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "e02c63b9a0ae62734cf1fa49a9f32e24c4dc2a947a5cee4b887a5fd5abab91f0",
-          "cases": [
-            {
-              "id": "adapted:react-pdf-ssr-loading",
-              "testName": "renders deterministic loading markup without evaluating browser APIs",
-              "fullName": "@octanejs/react-pdf server contract renders deterministic loading markup without evaluating browser APIs"
-            },
-            {
-              "id": "adapted:react-pdf-ssr-no-data",
-              "testName": "preserves the upstream no-data shell and composed class",
-              "fullName": "@octanejs/react-pdf server contract preserves the upstream no-data shell and composed class"
-            },
-            {
-              "id": "adapted:react-pdf-ssr-streaming",
-              "testName": "streams the same browser-safe loading shell",
-              "fullName": "@octanejs/react-pdf server contract streams the same browser-safe loading shell"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-pdf-feasibility",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-pdf-feasibility",
-      "files": [
-        {
-          "path": "packages/react-pdf/tests/feasibility/public-surface.test.ts",
-          "role": "test",
-          "sha256": "a552ab4833d7d20db7a9265afa5edb0e448252262f0c8780bc00c107e7122e7e",
-          "cases": [
-            {
-              "id": "adapted:react-pdf-runtime-surface",
-              "testName": "pins the root runtime exports and package export map",
-              "fullName": "react-pdf U1 \u2014 published public-surface ledger pins the root runtime exports and package export map"
-            },
-            {
-              "id": "adapted:react-pdf-type-surface",
-              "testName": "pins every root type export named by the published declaration",
-              "fullName": "react-pdf U1 \u2014 published public-surface ledger pins every root type export named by the published declaration"
-            },
-            {
-              "id": "adapted:react-pdf-wildcard",
-              "testName": "classifies all 94 published artifacts without silently narrowing the wildcard",
-              "fullName": "react-pdf U1 \u2014 published public-surface ledger classifies all 94 published artifacts without silently narrowing the wildcard"
-            },
-            {
-              "id": "adapted:react-pdf-documentation",
-              "testName": "keeps every documented CSS and worker import in the migration contract",
-              "fullName": "react-pdf U1 \u2014 published public-surface ledger keeps every documented CSS and worker import in the migration contract"
-            },
-            {
-              "id": "adapted:react-pdf-css",
-              "testName": "ships the two documented styles byte-for-byte with their license notices",
-              "fullName": "react-pdf U1 \u2014 published public-surface ledger ships the two documented styles byte-for-byte with their license notices"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-pdf/tests/feasibility/pdfjs.browser.test.ts",
-          "role": "test",
-          "sha256": "d12c69795e5b35bff979a39cea421ccdcd0b5c1d912a23e55b4eeb2d589903f2",
-          "cases": [
-            {
-              "id": "browser:react-pdf-feasibility-chromium",
-              "testName": "Chromium loads a worker and renders canvas, text, annotations, outline, and cleanup",
-              "fullName": "react-pdf U1 \u2014 real PDF.js browser feasibility Chromium loads a worker and renders canvas, text, annotations, outline, and cleanup"
-            },
-            {
-              "id": "browser:react-pdf-feasibility-firefox",
-              "testName": "Firefox loads a worker and renders canvas, text, annotations, outline, and cleanup",
-              "fullName": "react-pdf U1 \u2014 real PDF.js browser feasibility Firefox loads a worker and renders canvas, text, annotations, outline, and cleanup"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-pdf-feasibility-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-pdf-feasibility-ssr",
-      "files": [
-        {
-          "path": "packages/react-pdf/tests/feasibility/pdf-shell.server.test.ts",
-          "role": "test",
-          "sha256": "1edbfa42524f64fe075e0bccfd3dbd5811de0b0ac6940d2ebef26dbdde6b13f7",
-          "cases": [
-            {
-              "id": "adapted:react-pdf-feasibility-ssr",
-              "testName": "renders deterministic loading, error, and page shells without browser globals",
-              "fullName": "react-pdf U1 \u2014 SSR-safe shell renders deterministic loading, error, and page shells without browser globals"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-pdf/tests/feasibility/pdfjs.server.test.ts",
-          "role": "test",
-          "sha256": "662b184b8be1c3945502de05f498dfd6d075abcef07cdfb8e9db5feec38b489b",
-          "cases": [
-            {
-              "id": "adapted:react-pdf-legacy-node",
-              "testName": "imports the pinned legacy PDF.js build in a pristine Node process",
-              "fullName": "react-pdf U1 \u2014 PDF.js server feasibility imports the pinned legacy PDF.js build in a pristine Node process"
-            },
-            {
-              "id": "adapted:react-pdf-modern-node-boundary",
-              "testName": "proves the modern PDF.js entry is not directly safe in pristine Node",
-              "fullName": "react-pdf U1 \u2014 PDF.js server feasibility proves the modern PDF.js entry is not directly safe in pristine Node"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-pdf-feasibility-hydration",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-pdf-feasibility-hydration",
-      "files": [
-        {
-          "path": "packages/react-pdf/tests/feasibility/pdf-shell.hydration.test.ts",
-          "role": "test",
-          "sha256": "27eb8a537820c5aace05ae5f4bad6835fcbf62fb8d5ba6b8e513d66e2b336d16",
-          "cases": [
-            {
-              "id": "adapted:react-pdf-hydration",
-              "testName": "adopts the deterministic server shell and activates client effects",
-              "fullName": "react-pdf U1 \u2014 shell hydration adopts the deterministic server shell and activates client effects"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-pdf-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-pdf-browser",
-      "files": [
-        {
-          "path": "packages/react-pdf/tests/browser/binding.browser.test.ts",
-          "role": "test",
-          "sha256": "3de067d94478cb8363c0d992ed84188a4aabffecc07857379146699dc49d795b",
-          "cases": [
-            {
-              "id": "browser:react-pdf-chromium",
-              "testName": "renders the binding in Chromium",
-              "fullName": "@octanejs/react-pdf browser contract renders the binding in Chromium"
-            },
-            {
-              "id": "browser:react-pdf-firefox",
-              "testName": "renders the binding in Firefox",
-              "fullName": "@octanejs/react-pdf browser contract renders the binding in Firefox"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-pdf-packed-consumer",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-pdf-packed",
-      "files": [
-        {
-          "path": "packages/react-pdf/tests/packed/consumer.test.ts",
-          "role": "test",
-          "sha256": "661690d12794e846aca44adfe7a5d94df2ca2cc8ed746c5b1b3bd35b7fb0981e",
-          "cases": [
-            {
-              "id": "packed:react-pdf-consumer",
-              "testName": "builds client/server imports and executes SSR without React",
-              "fullName": "@octanejs/react-pdf packed consumer builds client/server imports and executes SSR without React"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "react-pdf-pristine-types",
       "type": "pristine-types",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-pdf-pristine-types",
       "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the pinned upstream type suite unchanged: tsc over packages/react-pdf/upstream/tag source.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/react-pdf/typetests/tsconfig.pristine.json"
+        "project": "packages/react-pdf/upstream/tag/tsconfig.json"
       },
       "files": [
         {
-          "path": "packages/react-pdf/typetests/pristine.test.tsx",
+          "path": "packages/react-pdf/upstream/tag/tsconfig.json",
           "role": "test",
-          "sha256": "486a5247fb1681e23250faff8f893342283e84d5922ccf4ebc24239fb8ec6510",
+          "sha256": "f8d5b1e1fdc2d9c4eca638093a41fb67efab19293b9b7330ca8f9c3fcbc4e42f",
           "cases": [
             {
               "id": "types:react-pdf-pristine",
-              "testName": "published declaration consumer",
-              "fullName": "react-pdf 10.4.1 published declaration consumer"
+              "testName": "pinned upstream package tsc program",
+              "fullName": "react-pdf 10.4.1 upstream package tsc program"
             }
           ]
         }
@@ -340,22 +177,23 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-pdf-adapted-types",
-      "evidenceOrigin": "repo-authored",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one Octane adaptation of the upstream package compile program: tsrx-tsc over packages/react-pdf/src.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/react-pdf/typetests/tsconfig.adapted.json"
+        "project": "packages/react-pdf/tsconfig.json"
       },
       "files": [
         {
-          "path": "packages/react-pdf/typetests/adapted.test.tsrx",
+          "path": "packages/react-pdf/tsconfig.json",
           "role": "test",
-          "sha256": "8efcde632cdaee6d0eab48af1e894d9025b7dc14c35297e033af5dbf53734687",
+          "sha256": "17b315645e0be0d24db2944dd953d8ae867f3f4da2684f8d650cfb3562fd9674",
           "cases": [
             {
               "id": "types:react-pdf-adapted",
-              "testName": "complete Octane public type contract",
-              "fullName": "@octanejs/react-pdf complete Octane public type contract"
+              "testName": "adapted Octane package tsrx-tsc program",
+              "fullName": "@octanejs/react-pdf package tsrx-tsc program"
             }
           ]
         }

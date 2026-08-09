@@ -8,8 +8,20 @@ const clone = (value) => structuredClone(value);
 test('the pinned React PDF authorities and case crosswalk validate', async () => {
 	const inventory = await buildInventory();
 	compareInventories(inventory, clone(inventory));
-	assert.equal(inventory.artifacts.length, 144);
+	assert.equal(inventory.artifacts.length, 157);
 	assert.equal(inventory.upstreamCases.length, 182);
+	assert.equal(
+		inventory.crosswalk.filter(function isPending(entry) {
+			return entry.disposition === 'pending-adaptation';
+		}).length,
+		180,
+	);
+	assert.equal(
+		inventory.crosswalk.filter(function isAdapted(entry) {
+			return entry.disposition === 'adapted-and-executable';
+		}).length,
+		2,
+	);
 });
 
 test('fails closed when an upstream artifact is missing', async () => {
@@ -36,7 +48,11 @@ test('fails closed when an upstream case is renamed or omitted', async () => {
 test('fails closed when an executable mapping changes', async () => {
 	const actual = await buildInventory();
 	const expected = clone(actual);
-	expected.crosswalk[0].evidence = 'tests/runtime/missing.test.ts::missing';
+	const adapted = expected.crosswalk.find(function hasEvidence(entry) {
+		return entry.disposition === 'adapted-and-executable';
+	});
+	assert.ok(adapted);
+	adapted.evidence = 'tests/runtime/missing.test.ts::missing';
 	assert.throws(() => compareInventories(actual, expected), /crosswalk/);
 });
 

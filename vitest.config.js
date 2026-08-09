@@ -316,6 +316,10 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-pdf/tests/runtime/**/*.test.ts'],
+				},
 				test: {
 					name: 'react-pdf',
 					include: ['packages/react-pdf/tests/runtime/**/*.test.ts'],
@@ -323,6 +327,18 @@ export default defineConfig({
 					globals: false,
 				},
 				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-pdf-pristine',
+					include: ['packages/react-pdf/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+					testTimeout: 180_000,
+					hookTimeout: 180_000,
+				},
 			},
 			{
 				test: {
@@ -337,6 +353,7 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-pdf-parity',
 					include: ['packages/react-pdf/tests/parity/**/*.test.ts'],

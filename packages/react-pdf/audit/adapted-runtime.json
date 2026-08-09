@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "project": "react-pdf",
+  "roots": [
+    "packages/react-pdf/tests/runtime"
+  ],
+  "files": [
+    "packages/react-pdf/tests/runtime/private-evidence.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:cb86bc0bf778edb6",
+      "file": "packages/react-pdf/tests/runtime/private-evidence.test.ts",
+      "fullName": "@octanejs/react-pdf private upstream evidence matches upstream data URI and source utilities"
+    },
+    {
+      "id": "runtime:9e46f92fea75f8b9",
+      "file": "packages/react-pdf/tests/runtime/private-evidence.test.ts",
+      "fullName": "@octanejs/react-pdf private upstream evidence preserves LinkService navigation and external link policy"
+    },
+    {
+      "id": "runtime:f6103334e3bc598d",
+      "file": "packages/react-pdf/tests/runtime/private-evidence.test.ts",
+      "fullName": "@octanejs/react-pdf private upstream evidence preserves Ref number and generation values"
+    },
+    {
+      "id": "runtime:7bb6e91741bcdc62",
+      "file": "packages/react-pdf/tests/runtime/private-evidence.test.ts",
+      "fullName": "@octanejs/react-pdf private upstream evidence sets callback, object, and nested refs"
+    }
+  ]
+}
