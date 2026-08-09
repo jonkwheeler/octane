@@ -6,6 +6,7 @@ import {
 } from "@blocknote/core";
 import { useStore } from "@octanejs/tanstack-store";
 import { useBlockNoteEditor } from "./useBlockNoteEditor.js";
+import { withoutSlot } from "./without-slot.js";
 
 type Store<T> = ReturnType<typeof createStore<T>>;
 
@@ -16,7 +17,8 @@ export function useExtension<
   const T extends ExtensionFactory | Extension | string,
 >(
   plugin: T,
-  ctx?: { editor?: BlockNoteEditor<any, any, any> },
+  ctx?: { editor?: BlockNoteEditor<any, any, any> } | symbol,
+  ...rest: [slot?: symbol]
 ): T extends ExtensionFactory
   ? NonNullable<ReturnType<ReturnType<T>>>
   : T extends string
@@ -24,6 +26,7 @@ export function useExtension<
     : T extends Extension
       ? T
       : never {
+  ctx = withoutSlot(ctx);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const editor = ctx?.editor ?? useBlockNoteEditor();
 
@@ -53,8 +56,10 @@ export function useExtensionState<
   ctx?: {
     editor?: BlockNoteEditor<any, any, any>;
     selector?: (state: NoInfer<ExtractStore<TStore>>) => TSelected;
-  },
+  } | symbol,
+  ...rest: [slot?: symbol]
 ): TSelected {
+  ctx = withoutSlot(ctx);
   const extension = useExtension(
     plugin as ExtensionFactory | Extension | string,
     ctx,
