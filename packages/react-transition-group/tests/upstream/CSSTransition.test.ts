@@ -14,7 +14,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 		vi.useRealTimers();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:8-36
+	// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:8-38
 	it('should flush new props to the DOM before initiating a transition', async function flushProps() {
 		let done = false;
 		const view = mount(CSSTransitionProbe, {
@@ -43,7 +43,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 	});
 
 	describe('entering', function entering() {
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:39-74
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:39-75
 		it('should apply classes at each transition state', async function enterClasses() {
 			let count = 0;
 			let done = false;
@@ -81,7 +81,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:76-116
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:76-119
 		it('should apply custom classNames names', async function customEnterNames() {
 			let count = 0;
 			const view = mount(CSSTransitionProbe, {
@@ -126,7 +126,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 	});
 
 	describe('appearing', function appearing() {
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:120-156
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:120-157
 		it('should apply appear classes at each transition state', async function appearClasses() {
 			let count = 0;
 			function node() {
@@ -160,7 +160,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:158-204
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:158-205
 		it('should lose the "*-appear-done" class after leaving and entering again', async function loseAppearDone() {
 			let entered = false;
 			let exited = false;
@@ -213,7 +213,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:206-233
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:206-234
 		it('should not add undefined when appearDone is not defined', async function noUndefinedAppearDone() {
 			let done = false;
 			function node() {
@@ -241,7 +241,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:235-275
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:235-276
 		it('should not be appearing in normal enter mode', async function notAppearing() {
 			let count = 0;
 			const view = mount(CSSTransitionProbe, {
@@ -285,7 +285,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:277-299
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:277-302
 		it('should not enter the transition states when appear=false', function appearFalse() {
 			const view = mount(CSSTransitionProbe, {
 				shown: true,
@@ -307,7 +307,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 	});
 
 	describe('exiting', function exiting() {
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:303-335
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:303-336
 		it('should apply classes at each transition state', async function exitClasses() {
 			let count = 0;
 			const view = mount(CSSTransitionProbe, {
@@ -342,7 +342,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:337-378
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:337-379
 		it('should apply custom classNames names', async function customExitNames() {
 			let count = 0;
 			const view = mount(CSSTransitionProbe, {
@@ -385,7 +385,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:380-411
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:380-414
 		it('should support empty prefix', async function emptyPrefix() {
 			let count = 0;
 			const view = mount(CSSTransitionProbe, { shown: true, timeout: 10 });
@@ -415,7 +415,7 @@ describe('CSSTransition', function cssTransitionSuite() {
 	});
 
 	describe('reentering', function reentering() {
-		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:415-493
+		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:415-455
 		it('should remove dynamically applied classes', async function dynamicClasses() {
 			let count = 0;
 			const nodeRef = {

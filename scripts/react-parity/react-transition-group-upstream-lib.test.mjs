@@ -195,3 +195,48 @@ test('rejects omitting the findDOMNode not-applicable crosswalk entry', async fu
 		verifyReactTransitionGroupUpstream(root);
 	}, /cover every upstream case|must match the upstream case inventory/);
 });
+
+test('rejects a citation range that targets a neighboring case', async function rejectsNeighborCitation(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const path = join(root, 'packages/react-transition-group/audit/case-crosswalk.json');
+	const crosswalk = JSON.parse(await readFile(path, 'utf8'));
+	const entry = crosswalk.cases.find(function findMount(item) {
+		return item.upstreamTitle === 'should not transition on mount';
+	});
+	entry.citation = 'packages/react-transition-group/upstream/test/Transition-test.js:48-75';
+	await writeFile(path, `${JSON.stringify(crosswalk)}\n`);
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/upstream/Transition.test.ts',
+	);
+	const adapted = await readFile(adaptedPath, 'utf8');
+	await writeFile(
+		adaptedPath,
+		adapted.replace(
+			'// Per path: packages/react-transition-group/upstream/test/Transition-test.js:30-47',
+			'// Per path: packages/react-transition-group/upstream/test/Transition-test.js:48-75',
+		),
+	);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /does not cover upstreamLine|does not target upstreamLine/);
+});
+
+test('rejects duplicate adapted titles sharing one inventory identity', async function rejectsSharedInventory(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const path = join(root, 'packages/react-transition-group/audit/adapted-runtime.json');
+	const inventory = JSON.parse(await readFile(path, 'utf8'));
+	inventory.tests = inventory.tests.filter(function dropOne(entry) {
+		return entry.fullName !== 'Transition exiting should fire callbacks';
+	});
+	await writeFile(path, `${JSON.stringify(inventory)}\n`);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /adapted inventory is missing identity for "should fire callbacks"|missing identity for should fire callbacks/);
+});

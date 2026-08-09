@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "d1dcc8c4d243b922c3bc55e188e1ccca323e950960865cebb310594eb471359c"
+      "lockfileSha256": "886071f96b9a019d50f2b3fcf4282bef70dbb3e12b7d7c198d8d4677dc3f7a83"
     }
   },
   "lanes": [
@@ -82,7 +82,7 @@
         {
           "path": "packages/react-transition-group/audit/case-crosswalk.json",
           "role": "support",
-          "sha256": "2eb08fbd23ddd7e4752f3cacf52c64b7e2dcd1e68770f262f5d64fbcaf25561c"
+          "sha256": "8512ae96cd7a3301b2eff0035780e0fe374ffd747fac505e30e207d9006ea910"
         },
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
@@ -122,7 +122,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.mjs",
           "role": "support",
-          "sha256": "8d293757d4f7908811f604ae0e683045cfa2a03d82c7d48a45a8ad4efbf3ab59"
+          "sha256": "7dfc92c0188c50f4dd873f7da45421901333f3dfb17472d027571a81d5cd23b3"
         },
         {
           "path": "scripts/react-parity/react-transition-group-upstream.mjs",
@@ -132,7 +132,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.test.mjs",
           "role": "support",
-          "sha256": "627e9dab039d86c471bbaa155400bad0456516d42b3bd7164314b8de76886969"
+          "sha256": "89179479aadb329ace3a6d7c43256cfbe261c5b62f6939560bd492966272d928"
         },
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",

@@ -131,24 +131,27 @@ function collectAdaptedCases(repoRoot) {
 	return cases;
 }
 
-function loadAdaptedInventoryTitles(repoRoot) {
-	const titlesByFile = new Map();
+function loadAdaptedInventoryFullNames(repoRoot) {
+	const fullNamesByFile = new Map();
 	for (const inventoryPath of ADAPTED_INVENTORIES) {
 		const inventory = JSON.parse(readFileSync(resolve(repoRoot, inventoryPath), 'utf8'));
 		for (const test of inventory.tests ?? []) {
-			const list = titlesByFile.get(test.file) ?? [];
+			const list = fullNamesByFile.get(test.file) ?? [];
 			list.push(test.fullName);
-			titlesByFile.set(test.file, list);
+			fullNamesByFile.set(test.file, list);
 		}
 	}
-	return titlesByFile;
+	return fullNamesByFile;
 }
 
-function inventoryMentionsTitle(titlesByFile, file, title) {
-	const fullNames = titlesByFile.get(file) ?? [];
-	return fullNames.some(function includesTitle(fullName) {
-		return fullName === title || fullName.endsWith(` ${title}`) || fullName.endsWith(title);
+function consumeInventoryTitle(fullNamesByFile, file, title) {
+	const fullNames = fullNamesByFile.get(file) ?? [];
+	const index = fullNames.findIndex(function matchesTitle(fullName) {
+		return fullName === title || fullName.endsWith(` ${title}`);
 	});
+	if (index === -1) return false;
+	fullNames.splice(index, 1);
+	return true;
 }
 
 function verifyCaseCrosswalk(repoRoot, upstreamCases) {
@@ -173,7 +176,7 @@ function verifyCaseCrosswalk(repoRoot, upstreamCases) {
 		}),
 	);
 	const usedAdapted = new Set();
-	const titlesByFile = loadAdaptedInventoryTitles(repoRoot);
+	const fullNamesByFile = loadAdaptedInventoryFullNames(repoRoot);
 	const upstreamKeys = upstreamCases.map(function keyOf(entry) {
 		return `${entry.file}\0${entry.title}\0${entry.line}`;
 	});
@@ -235,11 +238,9 @@ function verifyCaseCrosswalk(repoRoot, upstreamCases) {
 				`${entry.upstreamFile}::${entry.upstreamTitle}: citation path does not target the upstream suite`,
 			);
 		}
-		// Citations usually span the case body, so the range may start a few lines
-		// after the `it(` declaration. Reject only clearly unrelated ranges.
-		if (parsed.start > entry.upstreamLine + 20 || parsed.end < entry.upstreamLine - 5) {
+		if (entry.upstreamLine < parsed.start || entry.upstreamLine > parsed.end) {
 			throw new Error(
-				`${entry.upstreamFile}::${entry.upstreamTitle}: citation range ${parsed.start}-${parsed.end} does not target upstreamLine ${entry.upstreamLine}`,
+				`${entry.upstreamFile}::${entry.upstreamTitle}: citation range ${parsed.start}-${parsed.end} does not cover upstreamLine ${entry.upstreamLine}`,
 			);
 		}
 
@@ -273,7 +274,7 @@ function verifyCaseCrosswalk(repoRoot, upstreamCases) {
 		}
 		usedAdapted.add(adaptedKey);
 
-		if (!inventoryMentionsTitle(titlesByFile, entry.adaptedFile, entry.adaptedTitle)) {
+		if (!consumeInventoryTitle(fullNamesByFile, entry.adaptedFile, entry.adaptedTitle)) {
 			throw new Error(
 				`${entry.adaptedFile}: adapted inventory is missing identity for ${entry.adaptedTitle}`,
 			);

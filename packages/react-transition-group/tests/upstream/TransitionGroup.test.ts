@@ -19,7 +19,7 @@ describe('TransitionGroup', function transitionGroupSuite() {
 		vi.useRealTimers();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:45-57
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:43-55
 	it('should allow null components', function nullComponents() {
 		function FirstChild(props: { children?: any }) {
 			const childrenArray = Children.toArray(props.children);
@@ -32,7 +32,7 @@ describe('TransitionGroup', function transitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:59-72
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:56-73
 	// Upstream uses a class-component callback ref. Octane has no class
 	// components; assert a plain-prop callback ref on a child/host instead.
 	it('should allow callback refs', function callbackRefs() {
@@ -43,13 +43,13 @@ describe('TransitionGroup', function transitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:74-76
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:74-77
 	it('should work with no children', function noChildren() {
 		const view = mount(CSSTransitionGroupProbe, { items: [] });
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-120
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-118
 	// Upstream StrictMode double-appear is not applicable (Octane has no
 	// StrictMode double-invoke). Assert single appear/enter/exit sequencing.
 	it('should handle transitioning correctly', async function transitioning() {
@@ -87,7 +87,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		vi.useRealTimers();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:52-82
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:49-83
 	it('should clean-up silently after the timeout elapses', async function cleanupSilently() {
 		const warn = vi.spyOn(console, 'error').mockImplementation(function noop() {});
 		const view = mount(CSSTransitionGroupProbe, { items: ['one'], enter: false });
@@ -106,7 +106,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:84-106
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:84-107
 	it('should keep both sets of DOM nodes around', async function keepBoth() {
 		const view = mount(CSSTransitionGroupProbe, { items: ['one'] });
 		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
@@ -119,7 +119,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:108-143
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:108-144
 	it('should switch transitionLeave from false to true', async function switchLeave() {
 		const view = mount(CSSTransitionGroupProbe, {
 			items: ['one'],
@@ -152,13 +152,13 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:145-147
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:145-148
 	it('should work with a null child', function nullChild() {
 		const view = mount(CSSTransitionGroupProbe, { items: [null] });
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:149-163
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:149-164
 	it('should work with a child which renders as null', async function nullRenderChild() {
 		const view = mount(NullRenderGroupProbe, { active: false });
 		await act(function add() {
@@ -170,7 +170,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:165-183
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:165-184
 	it('should transition from one to null', async function oneToNull() {
 		const view = mount(CSSTransitionGroupProbe, { items: ['one'] });
 		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
@@ -182,7 +182,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:185-201
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:185-202
 	it('should transition from false to one', async function falseToOne() {
 		const view = mount(CSSTransitionGroupProbe, { items: [] });
 		expect(view.container.querySelectorAll('[id]')).toHaveLength(0);
@@ -194,7 +194,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:203-224
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:203-225
 	it('should clear transition timeouts when unmounted', async function clearTimeouts() {
 		const view = mount(CSSTransitionGroupProbe, { items: [] });
 		await act(function add() {
@@ -206,7 +206,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		});
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:226-256
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:226-257
 	it('should handle unmounted elements properly', async function unmountedElements() {
 		const view = mount(CSSTransitionGroupProbe, { items: ['child'], appear: true });
 		await act(function hide() {

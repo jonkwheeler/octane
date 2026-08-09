@@ -14,7 +14,7 @@ describe('Transition', function transitionSuite() {
 		vi.useRealTimers();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:42-60
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:30-47
 	it('should not transition on mount', function noTransitionOnMount() {
 		const view = mount(TransitionStatusProbe, {
 			shown: true,
@@ -27,7 +27,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:62-90
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:48-75
 	it('should transition on mount with `appear`', async function appearOnMount() {
 		let entered = false;
 		const view = mount(TransitionStatusProbe, {
@@ -45,7 +45,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:92-112
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:76-113
 	it('should pass filtered props to children', function filteredProps() {
 		const view = mount(TransitionChildPropsProbe, {
 			shown: true,
@@ -62,7 +62,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:114-137
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:114-138
 	it('should allow addEndListener instead of timeouts', async function addEndListenerOnly() {
 		const listener = vi.fn(function listen(done: () => void) {
 			setTimeout(done, 0);
@@ -89,7 +89,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:139-168
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:139-169
 	it('should fallback to timeouts with addEndListener', async function timeoutBeatsListener() {
 		let calledEnd = false;
 		let done = false;
@@ -122,7 +122,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:170-198
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:170-199
 	it('should mount/unmount immediately if not have enter/exit timeout', async function emptyTimeout() {
 		let done = false;
 		const view = mount(TransitionStatusProbe, {
@@ -147,7 +147,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:215-227
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:215-229
 	// Upstream asserts findDOMNode is unused when nodeRef is set. Octane has no
 	// findDOMNode; this case proves nodeRef-driven lifecycle still completes.
 	it('should not use `React.findDOMNode` when `nodeRef` is provided', async function nodeRefPath() {
@@ -163,7 +163,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:229-261
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:230-262
 	it('should use enter timeout if appear not set', async function appearUsesEnter() {
 		let calledBeforeEntered = false;
 		let done = false;
@@ -186,7 +186,7 @@ describe('Transition', function transitionSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:263-295
+	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:263-298
 	it('should use appear timeout if appear is set', async function appearTimeout() {
 		let done = false;
 		let isCausedLate = false;
@@ -210,7 +210,7 @@ describe('Transition', function transitionSuite() {
 	});
 
 	describe('entering', function entering() {
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:299-331
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:299-332
 		it('should fire callbacks', async function fireEnterCallbacks() {
 			const callOrder: string[] = [];
 			let done = false;
@@ -239,7 +239,7 @@ describe('Transition', function transitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:333-365
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:333-368
 		it('should move to each transition state', async function enterStates() {
 			let count = 0;
 			const view = mount(TransitionStatusProbe, { shown: false, timeout: 10 });
@@ -269,7 +269,7 @@ describe('Transition', function transitionSuite() {
 	});
 
 	describe('exiting', function exiting() {
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:369-401
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:369-402
 		it('should fire callbacks', async function fireExitCallbacks() {
 			const callOrder: string[] = [];
 			let done = false;
@@ -298,7 +298,7 @@ describe('Transition', function transitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:403-438
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:403-469
 		it('should move to each transition state', async function exitStates() {
 			let count = 0;
 			let done = false;
@@ -332,7 +332,7 @@ describe('Transition', function transitionSuite() {
 	});
 
 	describe('mountOnEnter', function mountOnEnter() {
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:470-484
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:470-485
 		it('should mount when entering', async function mountWhenEntering() {
 			let done = false;
 			const view = mount(TransitionStatusProbe, {
@@ -356,7 +356,7 @@ describe('Transition', function transitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:486-515
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:486-546
 		it('should stay mounted after exiting', async function stayMounted() {
 			let entered = false;
 			let exited = false;
@@ -401,7 +401,7 @@ describe('Transition', function transitionSuite() {
 	});
 
 	describe('unmountOnExit', function unmountOnExit() {
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:547-571
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:547-572
 		it('should mount when entering', async function mountWhenEntering() {
 			let done = false;
 			const view = mount(TransitionStatusProbe, {
@@ -425,7 +425,7 @@ describe('Transition', function transitionSuite() {
 			view.unmount();
 		});
 
-		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:573-599
+		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:573-613
 		it('should unmount after exiting', async function unmountAfterExit() {
 			let exited = false;
 			const view = mount(TransitionStatusProbe, {

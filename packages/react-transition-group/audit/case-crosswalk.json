@@ -8,7 +8,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should flush new props to the DOM before initiating a transition",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:8-36"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:8-38"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -17,7 +17,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should apply classes at each transition state",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:39-74"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:39-75"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -26,7 +26,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should apply custom classNames names",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:76-116"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:76-119"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -35,7 +35,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should apply appear classes at each transition state",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:120-156"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:120-157"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -44,7 +44,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should lose the \"*-appear-done\" class after leaving and entering again",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:158-204"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:158-205"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -53,7 +53,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should not add undefined when appearDone is not defined",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:206-233"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:206-234"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -62,7 +62,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should not be appearing in normal enter mode",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:235-275"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:235-276"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -71,7 +71,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should not enter the transition states when appear=false",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:277-299"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:277-302"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -80,7 +80,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should apply classes at each transition state",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:303-335"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:303-336"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -89,7 +89,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should apply custom classNames names",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:337-378"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:337-379"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -98,7 +98,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should support empty prefix",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:380-411"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:380-414"
     },
     {
       "upstreamFile": "test/CSSTransition-test.js",
@@ -107,7 +107,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
       "adaptedTitle": "should remove dynamically applied classes",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:415-493"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransition-test.js:415-455"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -116,7 +116,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should clean-up silently after the timeout elapses",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:52-82"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:49-83"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -125,7 +125,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should keep both sets of DOM nodes around",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:84-106"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:84-107"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -134,7 +134,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should switch transitionLeave from false to true",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:108-143"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:108-144"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -143,7 +143,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should work with a null child",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:145-147"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:145-148"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -152,7 +152,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should work with a child which renders as null",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:149-163"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:149-164"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -161,7 +161,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should transition from one to null",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:165-183"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:165-184"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -170,7 +170,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should transition from false to one",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:185-201"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:185-202"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -179,7 +179,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should clear transition timeouts when unmounted",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:203-224"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:203-225"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -188,7 +188,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should handle unmounted elements properly",
-      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:226-256"
+      "citation": "packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:226-257"
     },
     {
       "upstreamFile": "test/CSSTransitionGroup-test.js",
@@ -206,7 +206,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/ChildMapping.test.ts",
       "adaptedTitle": "should support getChildMapping",
-      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:10-31"
+      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:10-32"
     },
     {
       "upstreamFile": "test/ChildMapping-test.js",
@@ -215,7 +215,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/ChildMapping.test.ts",
       "adaptedTitle": "should support mergeChildMappings for adding keys",
-      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:33-48"
+      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:33-49"
     },
     {
       "upstreamFile": "test/ChildMapping-test.js",
@@ -242,7 +242,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/ChildMapping.test.ts",
       "adaptedTitle": "should reconcile overlapping insertions and deletions",
-      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:86-105"
+      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:86-107"
     },
     {
       "upstreamFile": "test/ChildMapping-test.js",
@@ -251,7 +251,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/ChildMapping.test.ts",
       "adaptedTitle": "should support mergeChildMappings with undefined input",
-      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:107-132"
+      "citation": "packages/react-transition-group/upstream/test/ChildMapping-test.js:108-148"
     },
     {
       "upstreamFile": "test/SSR-test.js",
@@ -260,7 +260,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/ssr/upstream-import.test.ts",
       "adaptedTitle": "should import react-transition-group in node env",
-      "citation": "packages/react-transition-group/upstream/test/SSR-test.js:8-10"
+      "citation": "packages/react-transition-group/upstream/test/SSR-test.js:9-49"
     },
     {
       "upstreamFile": "test/SwitchTransition-test.js",
@@ -269,7 +269,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
       "adaptedTitle": "should have default status ENTERED",
-      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:47-61"
+      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:46-60"
     },
     {
       "upstreamFile": "test/SwitchTransition-test.js",
@@ -278,7 +278,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
       "adaptedTitle": "should have default mode: out-in",
-      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:63-87"
+      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:61-86"
     },
     {
       "upstreamFile": "test/SwitchTransition-test.js",
@@ -287,7 +287,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
       "adaptedTitle": "should work without childs",
-      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:89-101"
+      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:87-99"
     },
     {
       "upstreamFile": "test/SwitchTransition-test.js",
@@ -296,7 +296,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
       "adaptedTitle": "should switch between components on change state",
-      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:103-124"
+      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:100-122"
     },
     {
       "upstreamFile": "test/SwitchTransition-test.js",
@@ -305,7 +305,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
       "adaptedTitle": "should switch between null and component",
-      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:126-160"
+      "citation": "packages/react-transition-group/upstream/test/SwitchTransition-test.js:123-163"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -314,7 +314,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should not transition on mount",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:42-60"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:30-47"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -323,7 +323,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should transition on mount with `appear`",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:62-90"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:48-75"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -332,7 +332,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should pass filtered props to children",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:92-112"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:76-113"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -341,7 +341,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should allow addEndListener instead of timeouts",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:114-137"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:114-138"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -350,7 +350,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should fallback to timeouts with addEndListener",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:139-168"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:139-169"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -359,7 +359,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should mount/unmount immediately if not have enter/exit timeout",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:170-198"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:170-199"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -375,7 +375,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should not use `React.findDOMNode` when `nodeRef` is provided",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:215-227"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:215-229"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -384,7 +384,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should use enter timeout if appear not set",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:229-261"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:230-262"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -393,7 +393,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should use appear timeout if appear is set",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:263-295"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:263-298"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -402,7 +402,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should fire callbacks",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:299-331"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:299-332"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -411,7 +411,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should move to each transition state",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:333-365"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:333-368"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -420,7 +420,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should fire callbacks",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:369-401"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:369-402"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -429,7 +429,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should move to each transition state",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:403-438"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:403-469"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -438,7 +438,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should mount when entering",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:470-484"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:470-485"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -447,7 +447,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should stay mounted after exiting",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:486-515"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:486-546"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -456,7 +456,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should mount when entering",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:547-571"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:547-572"
     },
     {
       "upstreamFile": "test/Transition-test.js",
@@ -465,7 +465,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "adaptedTitle": "should unmount after exiting",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:573-599"
+      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:573-613"
     },
     {
       "upstreamFile": "test/TransitionGroup-test.js",
@@ -474,7 +474,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should allow null components",
-      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:45-57"
+      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:43-55"
     },
     {
       "upstreamFile": "test/TransitionGroup-test.js",
@@ -483,7 +483,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should allow callback refs",
-      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:59-72"
+      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:56-73"
     },
     {
       "upstreamFile": "test/TransitionGroup-test.js",
@@ -492,7 +492,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should work with no children",
-      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:74-76"
+      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:74-77"
     },
     {
       "upstreamFile": "test/TransitionGroup-test.js",
@@ -501,7 +501,7 @@
       "disposition": "adapted",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should handle transitioning correctly",
-      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-120"
+      "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-118"
     }
   ]
 }
