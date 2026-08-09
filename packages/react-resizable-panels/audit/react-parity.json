@@ -34,7 +34,7 @@
   },
   "environments": {
     "workspace-node": {
-      "node": ">=22",
+      "node": ">=22.22.2",
       "platform": "any",
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
