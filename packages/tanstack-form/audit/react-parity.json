@@ -29,17 +29,17 @@
     },
     "tests": {
       "roots": [
-        "packages/tanstack-form/tests"
+        "packages/tanstack-form/tests/conformance"
       ],
       "include": [
-        "\\.test\\.(?:ts|tsrx)$"
+        "(?:createFormHook|onChangeListenTo\\.adapter|useField|useForm|useFormGroup)\\.test\\.ts$"
       ],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 78,
+    "uniqueIdentities": 78,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -88,7 +88,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "e36cc6c93175ccaa255c0a4dc77245b64bb372547a7f78a49f44fc4f8ea5225d"
+          "sha256": "68fd15664543eafa721ea848f7e18bb6add3007f474726df986eb78fca488357"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -98,91 +98,62 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "83074e15198ab3d04fda4d59f6f636f5b43048a193d019dccfb8e7d254b52048"
+          "sha256": "6583f7b33a92e1e2fe97372bfebcb78bce7db35288bea24b156ca51f4af74d4a"
         }
       ]
     },
     {
-      "id": "tanstack-form-adapted-divergences",
+      "id": "tanstack-form-adapted-upstream",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "tanstack-form",
-      "notes": "Runs exact Octane identity, callable component registration, and native-event contracts.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the one-for-one adapted createFormHook, onChangeListenTo, useField, useForm, and useFormGroup wrappers against the Octane renderer.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/tanstack-form/audit/adapted-runtime.json"
+      },
       "files": [
         {
-          "path": "packages/tanstack-form/tests/conformance/divergences.test.ts",
-          "role": "test",
-          "sha256": "102b9dd5fcf8cb19c7e1876d3455b1449912a732b7b4113c8e8c76f7cb06c25d",
-          "cases": [
-            {
-              "id": "adapted:tanstack-form-id-lifecycle",
-              "testName": "keeps the generated form identity stable across rerenders",
-              "fullName": "@octanejs/tanstack-form documented divergences keeps the generated form identity stable across rerenders"
-            },
-            {
-              "id": "adapted:tanstack-form-function-components",
-              "testName": "registers and renders callable Octane field components",
-              "fullName": "@octanejs/tanstack-form documented divergences registers and renders callable Octane field components"
-            },
-            {
-              "id": "adapted:tanstack-form-native-event",
-              "testName": "receives the native input event while updating field state",
-              "fullName": "@octanejs/tanstack-form documented divergences receives the native input event while updating field state"
-            }
-          ]
+          "path": "packages/tanstack-form/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "7bd0f9237f492f8898cf7fdd61801000d82f90be920fdae2c4945c519b89d006"
         },
         {
-          "path": "packages/tanstack-form/tests/_fixtures/divergences.tsrx",
+          "path": "packages/tanstack-form/tests/conformance/createFormHook.test.ts",
           "role": "support",
-          "sha256": "01c858b02d89b1201001d168c36fb726fa52eafe68f4b01eb8c4db31a75c2cb6"
+          "sha256": "758c069e6e554ab82102464110343f0424517b98177384eb55a4e5859f6c9e5e"
+        },
+        {
+          "path": "packages/tanstack-form/tests/conformance/onChangeListenTo.adapter.test.ts",
+          "role": "support",
+          "sha256": "3a342a581f6a79eab093f24550f3fdd09f34b14888931a260c8afc1932c03c85"
+        },
+        {
+          "path": "packages/tanstack-form/tests/conformance/useField.test.ts",
+          "role": "support",
+          "sha256": "ca73b7635d02b0eb8227838cba30a96e9da4cca81adc8afd95e3c8b3527706f8"
+        },
+        {
+          "path": "packages/tanstack-form/tests/conformance/useForm.test.ts",
+          "role": "support",
+          "sha256": "d79bc692669b66448580f46e8f4eb56f9f64ac9ed2d6e561ef3e9116202095c4"
+        },
+        {
+          "path": "packages/tanstack-form/tests/conformance/useFormGroup.test.ts",
+          "role": "support",
+          "sha256": "29d2147dd0457ef5c599d936741275002fb7f326e4542a33deb1b1282b2babdb"
         },
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "e36cc6c93175ccaa255c0a4dc77245b64bb372547a7f78a49f44fc4f8ea5225d"
+          "sha256": "68fd15664543eafa721ea848f7e18bb6add3007f474726df986eb78fca488357"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "83074e15198ab3d04fda4d59f6f636f5b43048a193d019dccfb8e7d254b52048"
-        }
-      ]
-    },
-    {
-      "id": "tanstack-form-adapted-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-form-ssr",
-      "notes": "Authenticates the Octane server-rendering contract.",
-      "files": [
-        {
-          "path": "packages/tanstack-form/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "b8c8d05f8cb40c957558adc80acec9438b9359efcdf480b3561ecb1ecc4dd79e",
-          "cases": [
-            {
-              "id": "adapted:tanstack-form-ssr",
-              "testName": "renders field and form snapshots without a DOM",
-              "fullName": "@octanejs/tanstack-form SSR renders field and form snapshots without a DOM"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-form/tests/_fixtures/server.tsrx",
-          "role": "support",
-          "sha256": "e9530b11642725bad38fe8c4680105a5e79f1b516bd58bb58129b7926f11eb4e"
-        },
-        {
-          "path": "packages/tanstack-form/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "e36cc6c93175ccaa255c0a4dc77245b64bb372547a7f78a49f44fc4f8ea5225d"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "83074e15198ab3d04fda4d59f6f636f5b43048a193d019dccfb8e7d254b52048"
+          "sha256": "6583f7b33a92e1e2fe97372bfebcb78bce7db35288bea24b156ca51f4af74d4a"
         }
       ]
     },
@@ -240,48 +211,5 @@
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "tanstack-form-native-events",
-      "caseIds": [
-        "adapted:tanstack-form-native-event"
-      ],
-      "upstreamResult": "React text controls conventionally adapt synthetic onChange events into field values.",
-      "octaneResult": "Octane text controls use native onInput events and pass values to field.handleChange.",
-      "rationale": "Octane exposes native DOM events rather than React's synthetic event layer.",
-      "classification": "event-model",
-      "consumerImpact": "Form input handlers observe native event identity and lifecycle semantics.",
-      "migrationGuidance": "Use onInput for native text controls; validator option names such as onChange remain unchanged.",
-      "owner": "@octanejs/tanstack-form",
-      "reviewCondition": "Review if Octane introduces React-compatible synthetic events."
-    },
-    {
-      "id": "tanstack-form-id-lifecycle",
-      "caseIds": [
-        "adapted:tanstack-form-id-lifecycle"
-      ],
-      "upstreamResult": "The React adapter supports StrictMode effect replay and retains a legacy random-UUID fallback.",
-      "octaneResult": "Octane always provides a stable useId value and does not double-invoke effects.",
-      "rationale": "The host lifecycle and identifier facilities differ.",
-      "classification": "component-model",
-      "consumerImpact": "Forms keep one stable generated identity without StrictMode replay.",
-      "migrationGuidance": "Do not rely on React StrictMode double invocation or random UUID fallback behavior.",
-      "owner": "@octanejs/tanstack-form",
-      "reviewCondition": "Review if Octane adopts StrictMode replay or removes guaranteed useId support."
-    },
-    {
-      "id": "tanstack-form-function-components",
-      "caseIds": [
-        "adapted:tanstack-form-function-components"
-      ],
-      "upstreamResult": "React adapter component registration accepts React function and class component types.",
-      "octaneResult": "Octane adapter registration accepts callable Octane function components only.",
-      "rationale": "Octane does not implement the React class-component model.",
-      "classification": "component-model",
-      "consumerImpact": "Registered field and form components must be functions.",
-      "migrationGuidance": "Convert registered class components to Octane function components.",
-      "owner": "@octanejs/tanstack-form",
-      "reviewCondition": "Review if Octane adds class-component compatibility."
-    }
-  ]
+  "divergences": []
 }

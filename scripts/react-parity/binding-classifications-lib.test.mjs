@@ -74,8 +74,12 @@ test('verifies an arbitrary binding classification ledger', async (t) => {
 	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-form'), { tests: 10 });
 	const classificationPath = join(root, 'packages/tanstack-form/audit/test-classifications.json');
 	const classifications = JSON.parse(await readFile(classificationPath, 'utf8'));
-	classifications.tests.find((entry) => entry.divergenceIds).divergenceIds[1] =
-		'missing-divergence';
+	const divergenceEntry = classifications.tests.find(
+		(entry) => entry.path === 'packages/tanstack-form/tests/conformance/divergences.test.ts',
+	);
+	divergenceEntry.disposition = 'octane-only-divergence';
+	divergenceEntry.divergenceIds = ['missing-divergence'];
+	divergenceEntry.reason = 'documents an Octane-only divergence contract';
 	await writeFile(classificationPath, `${JSON.stringify(classifications)}\n`);
 	assert.throws(
 		() => verifyPortTestClassifications(root, 'tanstack-form'),

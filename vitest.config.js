@@ -1088,11 +1088,17 @@ export default defineConfig({
 				},
 			},
 			{
-				// Manifest lane owns only divergences.test.ts; remaining conformance
-				// files stay in the ordinary shards.
+				// Adapted upstream wrappers are parity-owned; divergences and other
+				// Octane-only conformance stay in the ordinary shards.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/tanstack-form/tests/conformance/divergences.test.ts'],
+					include: [
+						'packages/tanstack-form/tests/conformance/createFormHook.test.ts',
+						'packages/tanstack-form/tests/conformance/onChangeListenTo.adapter.test.ts',
+						'packages/tanstack-form/tests/conformance/useField.test.ts',
+						'packages/tanstack-form/tests/conformance/useForm.test.ts',
+						'packages/tanstack-form/tests/conformance/useFormGroup.test.ts',
+					],
 				},
 				test: {
 					name: 'tanstack-form',
@@ -1151,7 +1157,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-form-ssr',
 					include: ['packages/tanstack-form/tests/ssr/**/*.test.ts'],

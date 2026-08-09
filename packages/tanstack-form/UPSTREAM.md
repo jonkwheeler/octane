@@ -11,7 +11,18 @@
 
 The canonical tagged repository contains runtime and compile-time suites. The
 published npm artifact contains source and declarations but omits those tests,
-so provenance remains recorded-unverified. Required evidence executes the
-adapted upstream behavioral suite through the package project, an exact shared
-React/Octane interaction fixture, documented Octane adaptation contracts, SSR,
-and the repository-authored type suite.
+so provenance remains `recorded-unverified`. `upstreamSuites.runtime` and
+`upstreamSuites.types` remain `present` because the repository pin has those
+suites; promoting them into pristine runtime/type lanes with complete
+dispositions is open follow-up work before provenance can move to `verified`.
+
+This bounded harness currently executes:
+
+- the one-for-one adapted `createFormHook`, `onChangeListenTo`, `useField`,
+  `useForm`, and `useFormGroup` wrappers through the `tanstack-form` Vitest
+  project (`testExecution.include` lists only those files);
+- one exact shared React/Octane differential interaction fixture;
+- the repository-authored adapted type contract.
+
+Documented Octane-only divergences and SSR stay ordinary package tests outside
+React-parity ownership until pristine upstream suites land.

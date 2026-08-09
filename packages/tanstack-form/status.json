@@ -14,7 +14,7 @@
     "Renderer-bearing adapter modules are authored as TSRX and ship checked declaration emits with inline renderer aliases, Octane-prefixed public adapter types, and source-owned recursive contracts.",
     "The complete package suite has 87 executable behavioral tests with no skipped, todo, or expected-failure cases; upstream compile-time tests cover hook, field, group, and component-composition inference.",
     "Differential coverage compiles one shared form through this adapter and real @tanstack/react-form@1.33.2, comparing values, validation, array mutations, and reset output after every interaction.",
-    "The bounded React parity manifest pins the official release tag and commit, classifies every local runtime test, and executes required differential, adaptation, SSR, and type lanes. Provenance remains recorded-unverified because the npm artifact omits the canonical upstream test suite."
+    "The bounded React parity manifest pins the official release tag and commit, classifies every local runtime test, and executes required adapted-upstream, differential, and adapted-type lanes. Provenance remains recorded-unverified because pristine repository-suite lanes are still open follow-up work."
   ],
-  "verified": "2026-08-02"
+  "verified": "2026-08-09"
 }

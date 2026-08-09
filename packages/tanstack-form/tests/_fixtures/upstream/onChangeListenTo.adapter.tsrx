@@ -103,7 +103,6 @@ describe('Octane adapter - onChangeListenTo race', () => {
 			);
 		}
 
-		// OCTANE DIVERGENCE[tanstack-form-id-lifecycle][adapted:tanstack-form-id-lifecycle]
 		const { getByTestId } = render(<Comp />);
 
 		const street = getByTestId('street') as HTMLInputElement;
