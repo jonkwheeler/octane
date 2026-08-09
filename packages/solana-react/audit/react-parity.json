@@ -159,7 +159,7 @@
 				{
 					"path": "packages/solana-react/audit/pristine-types.json",
 					"role": "test",
-					"sha256": "14b16b7a45f61dda039ee6ffdf9f9158de3e5c56caec367d8d55eaddbe98b6d7",
+					"sha256": "8b892b03887bb454d3da56454e0620fa0ca5d47941072f8ca2e45a392dec21a7",
 					"cases": [
 						{
 							"id": "types:solana-react-pristine",
@@ -186,7 +186,7 @@
 				{
 					"path": "scripts/react-parity/solana-react-types-lib.mjs",
 					"role": "support",
-					"sha256": "f87d4d8e061e2baf0ab91036670cfd921e481f6a32869774624baf1626dca7f1"
+					"sha256": "c3dcb4f37950b14aefb896c066ded46c75c2c49a28e5f3c7bd4887eb9a4831a6"
 				}
 			]
 		},
@@ -229,12 +229,12 @@
 				{
 					"path": "scripts/react-parity/solana-react-types-lib.mjs",
 					"role": "support",
-					"sha256": "f87d4d8e061e2baf0ab91036670cfd921e481f6a32869774624baf1626dca7f1"
+					"sha256": "c3dcb4f37950b14aefb896c066ded46c75c2c49a28e5f3c7bd4887eb9a4831a6"
 				},
 				{
 					"path": "scripts/react-parity/solana-react-types-lib.test.mjs",
 					"role": "support",
-					"sha256": "21f192599ab97cb8041c4e8ddc7ca127a3cef77fbd7d4d1470c0e1734357fced"
+					"sha256": "248061ac62cb92a54276035a036951f5b5978d562d6b4894c94c42dc3a4584a0"
 				},
 				{
 					"path": "scripts/react-parity/solana-react-types.mjs",

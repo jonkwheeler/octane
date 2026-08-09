@@ -119,3 +119,37 @@ test('omitting a type disposition fails coverage validation', () => {
 	};
 	assert.throws(() => assertDispositionsCoverVendored(REPO, truncated), /missing type disposition/);
 });
+
+test('pristine inventory pins every pristine-only typetest', () => {
+	const config = readTypeParityConfig(REPO, 'packages/solana-react/audit/type-parity.json');
+	const inventory = buildTypeInventory(REPO, config);
+	const pristineOnly = config.fileDispositions
+		.filter(function keep(entry) {
+			return entry.disposition === 'pristine-only';
+		})
+		.map(function path(entry) {
+			return entry.path;
+		});
+	assert.ok(pristineOnly.length > 0);
+	const pinned = new Set(
+		inventory.upstream.map(function path(entry) {
+			return entry.path;
+		}),
+	);
+	for (const file of pristineOnly) {
+		assert.ok(pinned.has(file), `pristine inventory missing pin for ${file}`);
+	}
+	assert.ok(inventory.upstream.length > inventory.adapted.length);
+});
+
+test('mutating a pristine-only typetest changes the pristine inventory pin', async (t) => {
+	const value = await fixture();
+	t.after(() => rm(value.root, { recursive: true, force: true }));
+	const baseline = buildTypeInventory(value.root, value.config);
+	const file = join(value.upstreamRoot, '__typetests__/useSignIn-typetest.ts');
+	const source = await readFile(file, 'utf8');
+	assert.match(source, /@ts-expect-error/);
+	await writeFile(file, source.replace(/\s*\/\/\s*@ts-expect-error[^\n]*\n/, '\n'));
+	const mutated = buildTypeInventory(value.root, value.config);
+	assert.notDeepEqual(mutated.upstream, baseline.upstream);
+});

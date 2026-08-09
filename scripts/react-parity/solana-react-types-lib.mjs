@@ -224,13 +224,23 @@ function listAdaptedPresent(adaptedRoot, suiteFiles) {
 
 export function buildTypeInventory(root, config) {
 	assertDispositionsCoverVendored(root, config);
-	const suiteFiles = adaptedTypeSuiteFiles(config);
+	const adaptedFiles = adaptedTypeSuiteFiles(config);
+	const pristineFiles = pristineTypeSuiteFiles(config);
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
-	listAdaptedPresent(adaptedRoot, suiteFiles);
+	listAdaptedPresent(adaptedRoot, adaptedFiles);
 	const upstream = [];
 	const adapted = [];
-	for (const file of suiteFiles) {
+	for (const file of pristineFiles) {
+		const upstreamSource = readFileSync(resolve(upstreamRoot, file), 'utf8');
+		const upstreamGroups = assertionGroups(upstreamSource, file);
+		upstream.push({
+			path: file,
+			sha256: sha256(upstreamSource),
+			assertionGroups: upstreamGroups.map(sha256),
+		});
+	}
+	for (const file of adaptedFiles) {
 		const upstreamSource = readFileSync(resolve(upstreamRoot, file), 'utf8');
 		const adaptedSource = readFileSync(resolve(adaptedRoot, file), 'utf8');
 		const upstreamGroups = assertionGroups(upstreamSource, file);
@@ -243,18 +253,13 @@ export function buildTypeInventory(root, config) {
 				`${file}: adapted type test contains a change outside the permitted transformations`,
 			);
 		}
-		upstream.push({
-			path: file,
-			sha256: sha256(upstreamSource),
-			assertionGroups: upstreamGroups.map(sha256),
-		});
 		adapted.push({
 			path: file,
 			sha256: sha256(adaptedSource),
 			assertionGroups: adaptedGroups.map(sha256),
 		});
 	}
-	return { upstream, adapted, pristineSuite: pristineTypeSuiteFiles(config) };
+	return { upstream, adapted, pristineSuite: pristineFiles };
 }
 
 export function verifySolanaReactTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) {
