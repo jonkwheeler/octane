@@ -53,6 +53,9 @@
   "devDependencies": {
     "@inertiajs/react": "catalog:default",
     "@octanejs/testing-library": "workspace:*",
+    "@tsrx/react": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default",

@@ -733,13 +733,17 @@ export default defineConfig({
 				},
 			},
 			{
-				// Octane-only unpaired conformance for @octanejs/inertia. No
-				// testExecution / react-parity ownership until a later PR ports
-				// and registers pinned upstream cases (see packages/inertia/UPSTREAM.md).
+				// Octane-only unpaired conformance for @octanejs/inertia.
+				// Parity-owned adapted / differential projects are separate
+				// (see packages/inertia/audit/react-parity.json).
 				test: {
 					name: 'inertia',
 					include: ['packages/inertia/tests/**/*.test.ts'],
-					exclude: ['packages/inertia/tests/ssr/**/*.test.ts'],
+					exclude: [
+						'packages/inertia/tests/ssr/**/*.test.ts',
+						'packages/inertia/tests/adapted/**/*.test.ts',
+						'packages/inertia/tests/differential/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -753,6 +757,59 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/inertia\/server$/,
 							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'inertia-adapted',
+					include: ['packages/inertia/tests/adapted/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/inertia\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'inertia-differential',
+					include: ['packages/inertia/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globalSetup: ['packages/inertia/tests/differential/_setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/inertia$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/inertia\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/server.ts'),
+						},
+						{
+							find: /^inertia-page-context$/,
+							replacement: resolve(import.meta.dirname, 'packages/inertia/src/PageContext.ts'),
 						},
 					],
 				},
