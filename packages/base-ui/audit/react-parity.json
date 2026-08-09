@@ -76,7 +76,7 @@
       "environment": "workspace-node",
       "project": "base-ui-upstream-adapted",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs every collected adapted Accordion, Collapsible, and Tabs test and rejects inventory drift.",
+      "notes": "Runs every collected adapted Accordion, Collapsible, and Tabs identity (currently 49 selected cases) and rejects inventory drift. This is not the full pinned upstream suite.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/base-ui/audit/adapted-runtime.json"
@@ -205,68 +205,6 @@
           ]
         }
       ]
-    },
-    {
-      "id": "base-ui-audit-contracts",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "base-ui-parity-audit",
-      "notes": "Makes the recorded-unverified upstream inventory and explicit gaps executable.",
-      "files": [
-        {
-          "path": "packages/base-ui/tests/parity/contracts.test.ts",
-          "role": "test",
-          "sha256": "84510a2ca57b21d50ca26fa29640f2177316a2020ed38383c65fdfc219cc424d",
-          "cases": [
-            {
-              "id": "adapted:base-ui-upstream-crosswalk",
-              "testName": "accounts for all 43 public subpaths and 348 upstream test artifacts",
-              "fullName": "@octanejs/base-ui parity audit contracts accounts for all 43 public subpaths and 348 upstream test artifacts"
-            },
-            {
-              "id": "adapted:base-ui-number-field-gaps",
-              "testName": "keeps the unported NumberField interaction surface explicit",
-              "fullName": "@octanejs/base-ui parity audit contracts keeps the unported NumberField interaction surface explicit"
-            }
-          ]
-        },
-        {
-          "path": "packages/base-ui/audit/upstream-crosswalk.json",
-          "role": "support",
-          "sha256": "0470a1d4da4d49f0eb41b073424ef6214449bd10ea8797f6011f95a9a23efb79"
-        },
-        {
-          "path": "packages/base-ui/scripts/build-upstream-crosswalk.mjs",
-          "role": "support",
-          "sha256": "e13db14c6f91c6efff136874a724f991977ae0019759ca5fb80b75171ec46150"
-        },
-        {
-          "path": "packages/base-ui/scripts/check-upstream-crosswalk.mjs",
-          "role": "support",
-          "sha256": "6bf4a86d0b954815f050c44344d54221fcf32e79e486dc35e6f3a1fd05ed90c6"
-        },
-        {
-          "path": "packages/base-ui/scripts/upstream-crosswalk-lib.mjs",
-          "role": "support",
-          "sha256": "72b5918fd7af585b61d6f6b650e904d9f770d7c3aeaae8e3a6323273bcecf74c"
-        },
-        {
-          "path": "packages/base-ui/scripts/build-vendor-checksums.mjs",
-          "role": "support",
-          "sha256": "b2a3e6f9300bca7a5c369617663b206fb1088d7c623c0992f69c7d1d277b6d8d"
-        },
-        {
-          "path": "packages/base-ui/upstream/SHA256SUMS",
-          "role": "support",
-          "sha256": "531555a5977c6da24b34f96572137aa4201c184b5a0300f5597b718aa637baf4"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "a02c3398de7455cd462ba11c1c0728e7d22b63c258c01c2edfafc8e24f1f8e16"
-        }
-      ]
     }
   ],
   "divergences": [
@@ -296,7 +234,7 @@
     },
     {
       "id": "unported-internal-hover",
-      "caseIds": ["adapted:base-ui-upstream-crosswalk"],
+      "caseIds": ["differential:base-ui-tooltip-open"],
       "upstreamResult": "Base UI includes private hover infrastructure used by upstream components.",
       "octaneResult": "The private hover helper is not exposed or independently ported; public supported components use Octane-native behavior.",
       "rationale": "Private upstream internals are not a public compatibility surface.",
@@ -308,7 +246,7 @@
     },
     {
       "id": "number-field-interaction-gaps",
-      "caseIds": ["adapted:base-ui-number-field-gaps"],
+      "caseIds": ["differential:base-ui-number-field"],
       "upstreamResult": "Base UI NumberField includes ScrubArea and additional pointer and keyboard interaction behavior.",
       "octaneResult": "The current Octane NumberField supports formatting and step controls but not ScrubArea or the complete interaction matrix.",
       "rationale": "Those interaction surfaces have not yet been ported and must remain explicit gaps.",

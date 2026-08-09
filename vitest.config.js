@@ -2610,7 +2610,6 @@ export default defineConfig({
 						'packages/base-ui/tests/**/*.test.tsx',
 						'!packages/base-ui/tests/ssr/**/*.test.ts',
 						'!packages/base-ui/tests/differential/**/*.test.ts',
-						'!packages/base-ui/tests/parity/**/*.test.ts',
 						'!packages/base-ui/tests/upstream/**/*.test.ts',
 					],
 					environment: 'jsdom',
@@ -2668,28 +2667,6 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/floating-ui$/,
 							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
-						},
-					],
-				},
-			},
-			{
-				testExecution: { group: 'react-parity' },
-				test: {
-					name: 'base-ui-parity-audit',
-					include: ['packages/base-ui/tests/parity/**/*.test.ts'],
-					environment: 'jsdom',
-					globals: false,
-				},
-				plugins: [octane()],
-				resolve: {
-					alias: [
-						{
-							find: /^@octanejs\/base-ui$/,
-							replacement: resolve(import.meta.dirname, 'packages/base-ui/src/index.ts'),
-						},
-						{
-							find: /^@octanejs\/base-ui\/(.*)$/,
-							replacement: resolve(import.meta.dirname, 'packages/base-ui/src') + '/$1.ts',
 						},
 					],
 				},

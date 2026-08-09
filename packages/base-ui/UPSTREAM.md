@@ -47,10 +47,12 @@ registry boundary is not evidence that the repository suite is absent.
 
 The differential lane runs all 98 authored same-fixture scenarios against both Octane and the
 pinned `@base-ui/react` package and verifies their exact inventory. A separate adapted lane runs
-all 49 collected Accordion, Collapsible, and Tabs cases, including selected cases transcribed from the
-pinned suites, and verifies that inventory. Focused lanes bind representative cases to structured
-divergences. The remaining package tests are Octane framework contracts and are not counted as
-React parity evidence.
+the 49 currently collected Accordion, Collapsible, and Tabs cases (selected transcriptions from
+the pin, not the full 273-file upstream runtime suite) and verifies that inventory. Focused lanes
+bind representative cases to structured divergences. Local crosswalk/gap contract tests run in the
+ordinary `base-ui` Vitest project and are not react-parity evidence. Pristine upstream runtime,
+pristine type, and one-for-one adapted type lanes are still required before this binding can leave
+`recorded-unverified`.
 
 ## Intentional divergences and known gaps
 
