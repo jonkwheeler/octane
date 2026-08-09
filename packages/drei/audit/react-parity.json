@@ -16,13 +16,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/drei/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/drei/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/drei/tests"],
-      "include": ["\\.test\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/drei/tests"
+      ],
+      "include": [
+        "\\.test\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": [
         "tests/config\\.test\\.ts$",
         "tests/crosswalk-guard\\.test\\.ts$",
@@ -44,7 +52,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "a04cd70aa70659bae2b9340edd1223a786787d7012e98ee9a56b8f646fc343bf"
+      "lockfileSha256": "b621e5cb0ebc74fffdad32e28aafd743a78ae35f3d0d3c8a3024b3257c0ca887"
     }
   },
   "lanes": [
@@ -221,7 +229,9 @@
   "divergences": [
     {
       "id": "view-renderer-boundary",
-      "caseIds": ["differential:view-renderer-boundary"],
+      "caseIds": [
+        "differential:view-renderer-boundary"
+      ],
       "upstreamResult": "React Drei can move View children between DOM and Three roots through tunnel-rat.",
       "octaneResult": "Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
       "rationale": "Octane components are statically owned by one renderer.",
