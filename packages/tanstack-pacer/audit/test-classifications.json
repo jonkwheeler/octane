@@ -1,21 +1,26 @@
 {
-  "schemaVersion": 1,
-  "tests": [
-    {
-      "path": "packages/tanstack-pacer/tests/differential/parity.test.ts",
-      "disposition": "react-octane-differential",
-      "oracle": "Runs the same authored scheduler fixture and interactions against @octanejs/tanstack-pacer and pinned @tanstack/react-pacer."
-    },
-    {
-      "path": "packages/tanstack-pacer/tests/pacer.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Exercises Octane hooks and scheduler integration and is not counted as React parity."
-    },
-    {
-      "path": "packages/tanstack-pacer/tests/parity/contracts.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Authenticates upstream evidence and the structured setter-type adaptation without claiming React behavior parity.",
-      "divergenceIds": ["structural-state-setter-types"]
-    }
-  ]
+	"schemaVersion": 1,
+	"tests": [
+		{
+			"path": "packages/tanstack-pacer/tests/adapted/scheduler.test.ts",
+			"disposition": "react-octane-differential",
+			"oracle": "Repo-authored Octane scheduler lifecycle suite paired by packages/tanstack-pacer/tests/differential/parity.test.ts against pinned @tanstack/react-pacer."
+		},
+		{
+			"path": "packages/tanstack-pacer/tests/differential/parity.test.ts",
+			"disposition": "react-octane-differential",
+			"oracle": "Runs the same authored scheduler fixture and interactions against @octanejs/tanstack-pacer and pinned @tanstack/react-pacer."
+		},
+		{
+			"path": "packages/tanstack-pacer/tests/pacer.test.ts",
+			"disposition": "octane-only-framework-contract",
+			"reason": "Checks framework-neutral core re-exports and is not counted as React parity."
+		},
+		{
+			"path": "packages/tanstack-pacer/tests/parity/contracts.test.ts",
+			"disposition": "octane-only-divergence",
+			"reason": "Authenticates upstream evidence and the structured setter-type adaptation without claiming React behavior parity.",
+			"divergenceIds": ["structural-state-setter-types"]
+		}
+	]
 }

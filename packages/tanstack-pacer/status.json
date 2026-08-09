@@ -3,7 +3,7 @@
     "package": "@tanstack/react-pacer",
     "version": "0.22.1"
   },
-  "surface": "Surface-present for all 15 runtime/type entrypoints from `@tanstack/react-pacer@0.22.1`, plus the byte-identical `@tanstack/pacer@0.21.1` core re-export. One representative differential covers debounce, throttle, batching, and teardown; upstream has no runtime suite and insufficient type evidence, so verification remains recorded-unverified.",
+  "surface": "Surface-present for all 15 runtime/type entrypoints from `@tanstack/react-pacer@0.22.1`, plus the byte-identical `@tanstack/pacer@0.21.1` core re-export. Repo-authored adapted-octane and differential lanes cover debounce, throttle, batching, and teardown; upstream has no runtime suite and insufficient type evidence, with provenance verified against those required lanes.",
   "divergences": [
     "Upstream types spelled with `React.Dispatch<React.SetStateAction<T>>` use structurally identical local aliases (Octane state setters have the same shape)."
   ],

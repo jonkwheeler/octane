@@ -1,5 +1,6 @@
 import { useSelector } from '@octanejs/tanstack-store';
 
+// OCTANE DIVERGENCE[structural-state-setter-types][types:adapted-setters]
 // React type aliases used by upstream signatures (`React.Dispatch<React.SetStateAction<T>>`).
 // Octane's `useState` setter is structurally identical.
 export type SetStateAction<S> = S | ((prev: S) => S);

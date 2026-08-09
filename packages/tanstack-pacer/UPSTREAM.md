@@ -24,8 +24,8 @@ compile lanes still run.
 
 `audit/upstream-crosswalk.json` accounts for all 16 published entrypoints and every adapter
 value/type export plus each core `export *` re-export, with a disposition and evidence pointer per
-row. The binding reuses the exact framework-neutral core. Missing paired runtime coverage keeps the
-binding `recorded-unverified`.
+row. The binding reuses the exact framework-neutral core. With absent upstream runtime tests,
+provenance is `verified` via a repo-authored adapted-octane suite plus a React/Octane differential.
 
 ## Type lanes
 
@@ -37,12 +37,12 @@ binding `recorded-unverified`.
 
 ## Executable evidence
 
-One repo-authored differential runs the same compiled fixture against the Octane and React
-adapters under Vitest fake timers. It advances the exact debounce/throttle waits, asserts
-intermediate observable DOM for leading vs trailing branches, size-triggered batching, and
-cancellation of pending debounced work during teardown. Existing local tests and
+A repo-authored adapted-octane Vitest suite covers the Octane scheduler lifecycle (debounce,
+throttle, batching, and teardown cancellation). A paired differential runs the same compiled
+fixture against the Octane and React adapters under Vitest fake timers, advancing the exact waits
+and asserting intermediate observable DOM. `tests/pacer.test.ts` and
 `tests/parity/contracts.test.ts` remain Octane-only contracts and are not counted as React parity.
 
 This representative scheduler lifecycle does not exhaustively prove every sync/async hook family,
-provider, render-prop subscription, state/value helper, or option combination. The binding remains
-`recorded-unverified`.
+provider, render-prop subscription, state/value helper, or option combination; those remain
+surface-present via the crosswalk without additional runtime cases.
