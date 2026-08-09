@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/testing-library/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
+      "roots": ["packages/testing-library/src"],
+      "include": ["\\.ts$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/testing-library/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/testing-library/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -89,9 +81,9 @@
       "notes": "Authenticates native event semantics that intentionally differ from React synthetic event remapping.",
       "files": [
         {
-          "path": "packages/testing-library/tests/events.test.ts",
+          "path": "packages/testing-library/tests/events-native-parity.test.ts",
           "role": "test",
-          "sha256": "fc802d18ee94cfde407346015ce65dd9e4cc39db34eb1dc2afb74f0e94a76ab8",
+          "sha256": "290d803f3304b5b3746fc15adb169364436554c205067ba2f4b3812885e3281d",
           "cases": [
             {
               "id": "adapted:testing-library-native-change",

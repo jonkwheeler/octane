@@ -2991,12 +2991,21 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Only the adapted native-event cases are parity-owned; ordinary
+				// package tests (including fireEvent commit timing) stay in the
+				// Node-version shards via complete test.include.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/testing-library/tests/events-native-parity.test.ts'],
+				},
 				test: {
 					name: 'testing-library',
 					include: ['packages/testing-library/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: ['packages/testing-library/tests/differential/**/*.test.ts', 'packages/testing-library/tests/differential.test.ts'],
+					exclude: [
+						'packages/testing-library/tests/differential/**/*.test.ts',
+						'packages/testing-library/tests/differential.test.ts',
+					],
 					// hydrate.test.ts renders its server markup through the shared
 					// hydration harness, which boots a real Vite SSR server in beforeAll —
 					// the same reason the other harness-using projects lift the 5s default.

@@ -21,7 +21,7 @@ The package reuses DOM Testing Library unchanged and ports React Testing Library
 | `cleanup` | Ported | `cleanup.test.ts` |
 | `renderHook` | Ported | `renderHook.test.ts` |
 | `act` and test-runner act environment | Ported | `act.test.ts` and async tests |
-| `fireEvent` | Ported with native-event divergence | `events.test.ts` |
+| `fireEvent` | Ported with native-event divergence | `events.test.ts`, `events-native-parity.test.ts` |
 | hydration option | Ported onto `hydrateRoot` | `hydrate.test.ts` |
 | `ReactStrictMode`, `legacyRoot`, `onCaughtError`, `onRecoverableError` options | Not ported | explicit status gap |
 
