@@ -20,8 +20,10 @@ node scripts/react-parity/waypoint-browser-cite.mjs --refresh-lock
 - File-level and case-level `// Per …` provenance citations.
 - `// OCTANE DIVERGENCE: …` comments explaining intentional behavior changes.
 - Tabs / Prettier formatting; named functions where the adapted harness prefers them.
-- Class child components rewritten as function components with `ref` as a prop
-  (`innerRef={…}`) — Octane has no `forwardRef` / class component surface.
+- Class child components rewritten as function components that forward
+  Waypoint’s injected `ref` prop (`props.ref`) — Octane has no `forwardRef` /
+  class component surface, and Waypoint clones children with `ref` (not
+  `innerRef`).
 - Horizontal window scroll parent: set `parentStyle.display = 'inline-block'` so
   layout matches the adapted harness viewport.
 
@@ -29,6 +31,8 @@ node scripts/react-parity/waypoint-browser-cite.mjs --refresh-lock
 
 | it() title | upstream expects | adapted expects | reason |
 | --- | --- | --- | --- |
+| does not throw with a Stateful Component as a child | `.not.toThrow` | `.not.toThrow`, `.toHaveBeenCalled` | Assert `onPositionChange` so the child must forward Waypoint’s injected `ref` into a measurable host. |
+| does not throw with a Stateless Component as a child | `.not.toThrow` | `.not.toThrow`, `.toHaveBeenCalled` | Same ref-forward measurement assert. |
 | errors when a Stateful Component does not provide ref to Waypoint | `.toThrowError` | `.not.toThrow` | Octane refs-as-props; missing child ref does not throw `ensureRefIsUsedByChild`. |
 | errors when a Stateless Component does not provide ref to Waypoint | `.toThrowError` | `.not.toThrow` | Same ref-contract divergence. |
 

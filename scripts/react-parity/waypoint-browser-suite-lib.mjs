@@ -17,6 +17,14 @@ export const UPSTREAM_CITATION_PREFIX =
  */
 export const ALLOWED_EXPECT_TRANSFORMS = new Map([
 	[
+		'does not throw with a Stateful Component as a child',
+		{ from: ['.not.toThrow'], to: ['.not.toThrow', '.toHaveBeenCalled'] },
+	],
+	[
+		'does not throw with a Stateless Component as a child',
+		{ from: ['.not.toThrow'], to: ['.not.toThrow', '.toHaveBeenCalled'] },
+	],
+	[
 		'errors when a Stateful Component does not provide ref to Waypoint',
 		{ from: ['.toThrowError'], to: ['.not.toThrow'] },
 	],

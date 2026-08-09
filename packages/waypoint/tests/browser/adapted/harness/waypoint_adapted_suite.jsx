@@ -938,17 +938,13 @@ describe('<Waypoint>', () => {
 		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:891
 		it('does not throw with a Stateful Component as a child', () => {
 			function StatefulComponent(props) {
-				return <div ref={props.innerRef} />;
+				return <div ref={props.ref} />;
 			}
 
-			props.children = (
-				<StatefulComponent
-					innerRef={function usedRef(_node) {
-						/* ref used */
-					}}
-				/>
-			);
+			props.children = <StatefulComponent />;
 			expect(subject).not.toThrow();
+			// OCTANE DIVERGENCE[waypoint-ref-child-forward]: Waypoint injects ref (not innerRef); assert measurement so a non-forwarding child cannot pass.
+			expect(props.onPositionChange).toHaveBeenCalled();
 		});
 
 		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:903
@@ -965,17 +961,13 @@ describe('<Waypoint>', () => {
 		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:915
 		it('does not throw with a Stateless Component as a child', () => {
 			function StatelessComponent(props) {
-				return <div ref={props.innerRef} />;
+				return <div ref={props.ref} />;
 			}
 
-			props.children = (
-				<StatelessComponent
-					innerRef={function usedRef(_node) {
-						/* ref used */
-					}}
-				/>
-			);
+			props.children = <StatelessComponent />;
 			expect(subject).not.toThrow();
+			// OCTANE DIVERGENCE[waypoint-ref-child-forward]: Waypoint injects ref (not innerRef); assert measurement so a non-forwarding child cannot pass.
+			expect(props.onPositionChange).toHaveBeenCalled();
 		});
 
 		// Per packages/waypoint/upstream/test/browser/waypoint_test.jsx:922
