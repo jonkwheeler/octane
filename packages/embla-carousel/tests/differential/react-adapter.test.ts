@@ -15,72 +15,110 @@ type ReactHarnessProps = {
 	replacement?: boolean;
 };
 
+type RenderResult = {
+	observation: Observation;
+	apiDefined: boolean[];
+};
+
+type ApiProbe = { current: boolean };
+
 function ReactCarousel({
 	options,
 	plugins = [],
 	attached = true,
 	replacement = false,
-}: ReactHarnessProps) {
-	const [viewportRef] = useEmblaCarouselReact(options, plugins);
-	if (!attached) return React.createElement('section', null);
+	apiProbe,
+}: ReactHarnessProps & {
+	apiProbe: ApiProbe;
+}) {
+	const [viewportRef, emblaApi] = useEmblaCarouselReact(options, plugins);
+	apiProbe.current = emblaApi !== undefined;
 	const slides = React.createElement(
 		'div',
 		null,
 		React.createElement('div', null, 'One'),
 		React.createElement('div', null, 'Two'),
 	);
-	if (replacement) {
-		return React.createElement(
-			'article',
-			{ ref: viewportRef, 'data-viewport': 'replacement' },
-			slides,
-		);
-	}
-	return React.createElement('div', { ref: viewportRef, 'data-viewport': 'initial' }, slides);
+	const viewport = !attached
+		? null
+		: replacement
+			? React.createElement('article', { ref: viewportRef, 'data-viewport': 'replacement' }, slides)
+			: React.createElement('div', { ref: viewportRef, 'data-viewport': 'initial' }, slides);
+	return React.createElement('section', { 'data-api': emblaApi ? 'ready' : 'pending' }, viewport);
 }
 
-async function renderReact(sequence: ReactHarnessProps[]): Promise<Observation> {
+async function renderReact(sequence: ReactHarnessProps[]): Promise<RenderResult> {
 	const observation = beginObservation();
+	const apiDefined: boolean[] = [];
+	const apiProbe: ApiProbe = { current: false };
 	const container = document.createElement('div');
 	document.body.append(container);
 	const root = createRoot(container);
 	for (const props of sequence) {
 		await act(function renderStep() {
-			root.render(React.createElement(ReactCarousel, props));
+			root.render(React.createElement(ReactCarousel, { ...props, apiProbe }));
 		});
+		apiDefined.push(apiProbe.current);
 	}
 	await act(function unmountStep() {
 		root.unmount();
 	});
 	container.remove();
-	return observation;
+	return { observation, apiDefined };
 }
 
-function renderOctane(sequence: ReactHarnessProps[]): Observation {
+function settleEffects(): void {
+	flushEffects();
+	flushEffects();
+}
+
+function harnessProps(
+	props: ReactHarnessProps,
+	onApi: (api: EmblaCarouselType | undefined) => void,
+) {
+	return {
+		options: props.options,
+		plugins: props.plugins ?? [],
+		onApi,
+		attached: props.attached ?? true,
+		replacement: props.replacement ?? false,
+	};
+}
+
+function readOctaneApiDefined(result: ReturnType<typeof mount>): boolean {
+	return result.find('[data-api]').getAttribute('data-api') === 'ready';
+}
+
+function applyOctaneStep(
+	result: ReturnType<typeof mount>,
+	props: ReactHarnessProps,
+	onApi: (api: EmblaCarouselType | undefined) => void,
+): boolean {
+	const next = harnessProps(props, onApi);
+	result.update(CarouselHarness, next);
+	settleEffects();
+	// Same-props re-apply matches the adapted conformance harness: construction
+	// commits in an effect, and the published tuple member is observed on the
+	// following render.
+	result.update(CarouselHarness, next);
+	settleEffects();
+	return readOctaneApiDefined(result);
+}
+
+function renderOctane(sequence: ReactHarnessProps[]): RenderResult {
 	const observation = beginObservation();
+	const apiDefined: boolean[] = [];
 	const onApi = function onApi(_api: EmblaCarouselType | undefined) {};
 	const first = sequence[0];
-	const result = mount(CarouselHarness, {
-		options: first.options,
-		plugins: first.plugins ?? [],
-		onApi,
-		attached: first.attached ?? true,
-		replacement: first.replacement ?? false,
-	});
-	flushEffects();
+	const result = mount(CarouselHarness, harnessProps(first, onApi));
+	settleEffects();
+	apiDefined.push(applyOctaneStep(result, first, onApi));
 	for (const props of sequence.slice(1)) {
-		result.update(CarouselHarness, {
-			options: props.options,
-			plugins: props.plugins ?? [],
-			onApi,
-			attached: props.attached ?? true,
-			replacement: props.replacement ?? false,
-		});
-		flushEffects();
+		apiDefined.push(applyOctaneStep(result, props, onApi));
 	}
 	result.unmount();
-	flushEffects();
-	return observation;
+	settleEffects();
+	return { observation, apiDefined };
 }
 
 function plugin(delay: number): EmblaPluginType {
@@ -108,8 +146,14 @@ describe('@octanejs/embla-carousel React differential', () => {
 		const react = await renderReact(sequence);
 		const octane = renderOctane(sequence);
 
-		expect(octane).toEqual(react);
-		expect(octane).toEqual({
+		expect(octane.observation).toEqual(react.observation);
+		expect(octane.apiDefined).toEqual(react.apiDefined);
+		expect(
+			octane.apiDefined.every(function isDefined(value) {
+				return value;
+			}),
+		).toBe(true);
+		expect(octane.observation).toEqual({
 			constructs: 1,
 			destroys: 1,
 			reinitializations: [[{ loop: true }, []]],
@@ -131,11 +175,12 @@ describe('@octanejs/embla-carousel React differential', () => {
 		const react = await renderReact(sequence);
 		const octane = renderOctane(sequence);
 
-		expect(octane).toEqual(react);
-		expect(octane.constructs).toBe(1);
-		expect(octane.destroys).toBe(1);
-		expect(octane.reinitializations).toEqual([[{}, [changed]]]);
-		expect(octane.pluginsAtConstruct).toEqual([[first]]);
+		expect(octane.observation).toEqual(react.observation);
+		expect(octane.apiDefined).toEqual(react.apiDefined);
+		expect(octane.observation.constructs).toBe(1);
+		expect(octane.observation.destroys).toBe(1);
+		expect(octane.observation.reinitializations).toEqual([[{}, [changed]]]);
+		expect(octane.observation.pluginsAtConstruct).toEqual([[first]]);
 	});
 
 	// @parity-case embla:differential:detach-replace
@@ -148,8 +193,10 @@ describe('@octanejs/embla-carousel React differential', () => {
 		const react = await renderReact(sequence);
 		const octane = renderOctane(sequence);
 
-		expect(octane).toEqual(react);
-		expect(octane).toEqual({
+		expect(octane.observation).toEqual(react.observation);
+		expect(octane.apiDefined).toEqual(react.apiDefined);
+		expect(octane.apiDefined).toEqual([true, false, true]);
+		expect(octane.observation).toEqual({
 			constructs: 2,
 			destroys: 2,
 			reinitializations: [],
@@ -166,8 +213,10 @@ describe('@octanejs/embla-carousel React differential', () => {
 		const react = await renderReact(sequence);
 		const octane = renderOctane(sequence);
 
-		expect(octane).toEqual(react);
-		expect(octane).toEqual({
+		expect(octane.observation).toEqual(react.observation);
+		expect(octane.apiDefined).toEqual(react.apiDefined);
+		expect(octane.apiDefined).toEqual([true]);
+		expect(octane.observation).toEqual({
 			constructs: 1,
 			destroys: 1,
 			reinitializations: [],

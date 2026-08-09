@@ -10,17 +10,6 @@ export type Observation = {
 
 let current: Observation | undefined;
 
-export function beginObservation(): Observation {
-	current = {
-		constructs: 0,
-		destroys: 0,
-		reinitializations: [],
-		pluginsAtConstruct: [],
-		globalOptionsAtConstruct: [],
-	};
-	return current;
-}
-
 const EmblaCarousel = Object.assign(
 	function EmblaCarousel(
 		_viewport: HTMLElement,
@@ -43,5 +32,17 @@ const EmblaCarousel = Object.assign(
 	},
 	{ globalOptions: undefined as EmblaOptionsType | undefined },
 );
+
+export function beginObservation(): Observation {
+	EmblaCarousel.globalOptions = undefined;
+	current = {
+		constructs: 0,
+		destroys: 0,
+		reinitializations: [],
+		pluginsAtConstruct: [],
+		globalOptionsAtConstruct: [],
+	};
+	return current;
+}
 
 export default EmblaCarousel;

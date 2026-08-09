@@ -13,12 +13,14 @@ import { verifyTypeParity } from '../../audit/type-parity.mjs';
 const root = resolve(import.meta.dirname, '../../../..');
 
 describe('@octanejs/embla-carousel parity negative controls', () => {
+	// @parity-case embla:audit:stale-hash
 	it('rejects a stale evidence hash', async () => {
 		const changed = structuredClone(manifest);
 		changed.lanes[0].files[0].sha256 = '0'.repeat(64);
 		await expect(verifyManifestFiles(changed, root)).rejects.toThrow('integrity mismatch');
 	});
 
+	// @parity-case embla:audit:removed-runtime-case
 	it('rejects a removed runtime inventory case', () => {
 		const changed = structuredClone(inventory);
 		changed.tests.pop();
@@ -30,6 +32,7 @@ describe('@octanejs/embla-carousel parity negative controls', () => {
 		}).toThrow('adapted runtime inventory summary drifted');
 	});
 
+	// @parity-case embla:audit:deleted-type-assertion
 	it('rejects a deleted type assertion and removed expect-error directive', async () => {
 		const pristine = await readFile(resolve(root, ledger.pristine), 'utf8');
 		const adapted = await readFile(resolve(root, ledger.adapted), 'utf8');
@@ -41,6 +44,7 @@ describe('@octanejs/embla-carousel parity negative controls', () => {
 		).toThrow(/differs from pristine|lost an @ts-expect-error/);
 	});
 
+	// @parity-case embla:audit:mutated-assertion-body
 	it('rejects a mutated assertion body that keeps the marker', async () => {
 		const pristine = await readFile(resolve(root, ledger.pristine), 'utf8');
 		const adapted = await readFile(resolve(root, ledger.adapted), 'utf8');

@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/embla-carousel/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/embla-carousel/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/embla-carousel/tests/conformance"],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/embla-carousel/tests/conformance"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -106,7 +114,7 @@
         {
           "path": "packages/embla-carousel/tests/differential/react-adapter.test.ts",
           "role": "test",
-          "sha256": "8aa73fe38ae59b9906fb44780918982b7a4968b499869ddc072c154bf81a8c42",
+          "sha256": "60c7287255beba88240d2d4740a2ebf4c0ec896f2d8b8e7b2ea13d3bc8b5a174",
           "cases": [
             {
               "id": "embla:differential:lifecycle",
@@ -127,6 +135,43 @@
               "id": "embla:differential:globals",
               "testName": "matches global option application against the pinned React adapter",
               "fullName": "@octanejs/embla-carousel React differential matches global option application against the pinned React adapter"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "embla-parity-audit",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "embla-carousel-audit",
+      "notes": "Executes the package-specific type-parity verifier and mutation negative controls through the React-parity harness.",
+      "files": [
+        {
+          "path": "packages/embla-carousel/tests/audit/parity-negative-controls.test.ts",
+          "role": "test",
+          "sha256": "fae144cfddddda3cfe88ee0f6ea4133fa2688df3ba35c7cff8cd8d4124beeab6",
+          "cases": [
+            {
+              "id": "embla:audit:stale-hash",
+              "testName": "rejects a stale evidence hash",
+              "fullName": "@octanejs/embla-carousel parity negative controls rejects a stale evidence hash"
+            },
+            {
+              "id": "embla:audit:removed-runtime-case",
+              "testName": "rejects a removed runtime inventory case",
+              "fullName": "@octanejs/embla-carousel parity negative controls rejects a removed runtime inventory case"
+            },
+            {
+              "id": "embla:audit:deleted-type-assertion",
+              "testName": "rejects a deleted type assertion and removed expect-error directive",
+              "fullName": "@octanejs/embla-carousel parity negative controls rejects a deleted type assertion and removed expect-error directive"
+            },
+            {
+              "id": "embla:audit:mutated-assertion-body",
+              "testName": "rejects a mutated assertion body that keeps the marker",
+              "fullName": "@octanejs/embla-carousel parity negative controls rejects a mutated assertion body that keeps the marker"
             }
           ]
         }
