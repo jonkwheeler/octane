@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/alien-signals/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/alien-signals/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/alien-signals/tests"],
-      "include": ["upstream-adapted\\.test\\.ts$"],
+      "roots": [
+        "packages/alien-signals/tests"
+      ],
+      "include": [
+        "upstream-adapted\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f3930f94ffb947f890e710ccb1a03afaf1ffc17903da91cabf889dda47172ef6"
+      "lockfileSha256": "3cf09bba58719eb5aead463ac13b9949ff29736cfae69bd38f61ca649d069773"
     }
   },
   "lanes": [
