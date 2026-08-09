@@ -36,7 +36,7 @@
     "./chains": "./src/chains.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project wagmi"
+    "test": "vitest run --root ../.. --project wagmi --project wagmi-differential"
   },
   "dependencies": {
     "@octanejs/tanstack-query": "workspace:*",
