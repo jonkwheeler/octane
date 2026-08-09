@@ -1,13 +1,138 @@
 {
   "schemaVersion": 1,
   "project": "react-transition-group-adapted",
-  "roots": ["packages/react-transition-group/tests/adapted"],
-  "files": ["packages/react-transition-group/tests/adapted/ChildMapping.test.ts"],
+  "roots": [
+    "packages/react-transition-group/tests/adapted"
+  ],
+  "files": [
+    "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+    "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+    "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
+    "packages/react-transition-group/tests/adapted/SSR.test.ts",
+    "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+    "packages/react-transition-group/tests/adapted/Transition.test.ts",
+    "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts"
+  ],
   "tests": [
+    {
+      "id": "runtime:87e69b2f57300771",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition appearing should apply appear classes at each transition state"
+    },
+    {
+      "id": "runtime:581bc053c94a9a6d",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition appearing should lose the \"*-appear-done\" class after leaving and entering again"
+    },
+    {
+      "id": "runtime:a4d6bd538d13c2f1",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition appearing should not add undefined when appearDone is not defined"
+    },
+    {
+      "id": "runtime:6eb0c6c312a8b7da",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition appearing should not be appearing in normal enter mode"
+    },
+    {
+      "id": "runtime:e3a118d7b36e260e",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition appearing should not enter the transition states when appear=false"
+    },
+    {
+      "id": "runtime:997fcbbfd13cc762",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition entering should apply classes at each transition state"
+    },
+    {
+      "id": "runtime:ab91936ffa5ea3f2",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition entering should apply custom classNames names"
+    },
+    {
+      "id": "runtime:91d7552edba36d37",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition exiting should apply classes at each transition state"
+    },
+    {
+      "id": "runtime:c7666eabfaf41200",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition exiting should apply custom classNames names"
+    },
+    {
+      "id": "runtime:7c212128f8f64534",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition exiting should support empty prefix"
+    },
+    {
+      "id": "runtime:9a156d0c06ef848e",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition reentering should remove dynamically applied classes"
+    },
+    {
+      "id": "runtime:49046b0113f47138",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "fullName": "CSSTransition should flush new props to the DOM before initiating a transition"
+    },
+    {
+      "id": "runtime:ab5c891981a8d494",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should clean-up silently after the timeout elapses"
+    },
+    {
+      "id": "runtime:fbf2703692cce817",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should clear transition timeouts when unmounted"
+    },
+    {
+      "id": "runtime:b180b3a4eea513b0",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should handle unmounted elements properly"
+    },
+    {
+      "id": "runtime:eee1c2b08692a3c9",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should keep both sets of DOM nodes around"
+    },
+    {
+      "id": "runtime:d635696e53f92980",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should switch transitionLeave from false to true"
+    },
+    {
+      "id": "runtime:95a6dee72afd8961",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should transition from false to one"
+    },
+    {
+      "id": "runtime:a59458b9d8afb617",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should transition from one to null"
+    },
+    {
+      "id": "runtime:0de2953e955fb159",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should work with a child which renders as null"
+    },
+    {
+      "id": "runtime:4103366d5527ac35",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should work with a null child"
+    },
+    {
+      "id": "runtime:4249020603c0b42a",
+      "file": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "fullName": "CSSTransitionGroup should work with custom component wrapper cloning children"
+    },
     {
       "id": "runtime:28f7119d9c46f2e8",
       "file": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
       "fullName": "ChildMapping should reconcile overlapping insertions and deletions"
+    },
+    {
+      "id": "runtime:0cbecef8e3f16ab0",
+      "file": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
+      "fullName": "ChildMapping should support getChildMapping"
     },
     {
       "id": "runtime:e965d790f4a96816",
@@ -28,6 +153,141 @@
       "id": "runtime:69cfbc98e289804f",
       "file": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
       "fullName": "ChildMapping should support mergeChildMappings with undefined input"
+    },
+    {
+      "id": "runtime:6546083fa3c470e6",
+      "file": "packages/react-transition-group/tests/adapted/SSR.test.ts",
+      "fullName": "SSR should import react-transition-group in node env"
+    },
+    {
+      "id": "runtime:a50ee5f624209836",
+      "file": "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+      "fullName": "SwitchTransition should have default mode: out-in"
+    },
+    {
+      "id": "runtime:ed3b218a80b7a14b",
+      "file": "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+      "fullName": "SwitchTransition should have default status ENTERED"
+    },
+    {
+      "id": "runtime:2d53edf7086fbd43",
+      "file": "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+      "fullName": "SwitchTransition should switch between components on change state"
+    },
+    {
+      "id": "runtime:5f65e961b7f17ad4",
+      "file": "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+      "fullName": "SwitchTransition should switch between null and component"
+    },
+    {
+      "id": "runtime:c1efdfce8e5b8369",
+      "file": "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+      "fullName": "SwitchTransition should work without childs"
+    },
+    {
+      "id": "runtime:6bb81eaf76adba16",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition appearing timeout should use appear timeout if appear is set"
+    },
+    {
+      "id": "runtime:9adaa4cd8587b6a7",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition appearing timeout should use enter timeout if appear not set"
+    },
+    {
+      "id": "runtime:6bd10513805bc633",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition entering should fire callbacks"
+    },
+    {
+      "id": "runtime:0d1b38a64da3498e",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition entering should move to each transition state"
+    },
+    {
+      "id": "runtime:f95e310637297ffa",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition exiting should fire callbacks"
+    },
+    {
+      "id": "runtime:abdeef04ae64a43b",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition exiting should move to each transition state"
+    },
+    {
+      "id": "runtime:a5300da2eda1dd1f",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition mountOnEnter should mount when entering"
+    },
+    {
+      "id": "runtime:c13392cbe634f03f",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition mountOnEnter should stay mounted after exiting"
+    },
+    {
+      "id": "runtime:06b408b85f47c931",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should allow addEndListener instead of timeouts"
+    },
+    {
+      "id": "runtime:97b1184bb0a83ee1",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should fallback to timeouts with addEndListener"
+    },
+    {
+      "id": "runtime:16016d6fa5c579bd",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should mount/unmount immediately if not have enter/exit timeout"
+    },
+    {
+      "id": "runtime:8ffdf507cc4f2f9e",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should not transition on mount"
+    },
+    {
+      "id": "runtime:8dd25d8dbde6dc66",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should not use `React.findDOMNode` when `nodeRef` is provided"
+    },
+    {
+      "id": "runtime:f926173f23bdafe7",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should pass filtered props to children"
+    },
+    {
+      "id": "runtime:2efb2e9f85815b5d",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition should transition on mount with `appear`"
+    },
+    {
+      "id": "runtime:b639cfda83a6b0ba",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition unmountOnExit should mount when entering"
+    },
+    {
+      "id": "runtime:6482d712a84244f3",
+      "file": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "fullName": "Transition unmountOnExit should unmount after exiting"
+    },
+    {
+      "id": "runtime:3d6392045e28d122",
+      "file": "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts",
+      "fullName": "TransitionGroup should allow callback refs"
+    },
+    {
+      "id": "runtime:c423ffe18351e8cd",
+      "file": "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts",
+      "fullName": "TransitionGroup should allow null components"
+    },
+    {
+      "id": "runtime:b0d28120ae176581",
+      "file": "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts",
+      "fullName": "TransitionGroup should handle transitioning correctly"
+    },
+    {
+      "id": "runtime:d166e9278ce27a10",
+      "file": "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts",
+      "fullName": "TransitionGroup should work with no children"
     }
   ]
 }

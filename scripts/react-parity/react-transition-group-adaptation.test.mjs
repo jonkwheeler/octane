@@ -15,7 +15,10 @@ function pristineFixture() {
 	for (let index = 0; index < 56; index += 1) {
 		tests.push({
 			file: `test/suite-${index % 7}.js`,
-			fullName: names[index] ?? `Suite case ${index}`,
+			fullName:
+				index === 55
+					? 'Transition should use `React.findDOMNode` when `nodeRef` is not provided'
+					: (names[index] ?? `Suite case ${index}`),
 			status: 'passed',
 		});
 	}
@@ -23,7 +26,13 @@ function pristineFixture() {
 }
 
 function adaptedFixture() {
-	return { tests: pristineFixture().tests.slice(0, 5) };
+	return {
+		tests: pristineFixture().tests.filter(function applicable(test) {
+			return (
+				test.fullName !== 'Transition should use `React.findDOMNode` when `nodeRef` is not provided'
+			);
+		}),
+	};
 }
 
 test('rejects a removed pristine case', function rejectRemovedCase() {

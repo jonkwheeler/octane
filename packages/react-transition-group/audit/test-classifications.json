@@ -4,7 +4,37 @@
     {
       "path": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
       "disposition": "adapted-upstream-suite",
-      "oracle": "Ports five cases one-for-one from upstream/test/ChildMapping-test.js with unchanged titles."
+      "oracle": "Part of the exhaustive 55-case one-for-one adaptation of the pinned upstream runtime suite."
+    },
+    {
+      "path": "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports every upstream CSSTransition case one-for-one with unchanged titles."
+    },
+    {
+      "path": "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports every upstream CSSTransitionGroup case one-for-one with unchanged titles."
+    },
+    {
+      "path": "packages/react-transition-group/tests/adapted/SSR.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports the upstream import-safety case one-for-one with its unchanged title."
+    },
+    {
+      "path": "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports every upstream SwitchTransition case one-for-one with unchanged titles."
+    },
+    {
+      "path": "packages/react-transition-group/tests/adapted/Transition.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports every applicable upstream Transition case one-for-one with unchanged titles; findDOMNode is separately classified not applicable."
+    },
+    {
+      "path": "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports every upstream TransitionGroup case one-for-one with unchanged titles."
     },
     {
       "path": "packages/react-transition-group/tests/exports.test.ts",

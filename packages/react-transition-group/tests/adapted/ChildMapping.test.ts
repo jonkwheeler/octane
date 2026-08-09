@@ -1,11 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { mergeChildMappings, type ChildMapping } from '../../src/utils/ChildMapping.ts';
+import {
+	getChildMapping,
+	mergeChildMappings,
+	type ChildMapping,
+} from '../../src/utils/ChildMapping.ts';
+import { mappingChildren } from './_fixtures.tsrx';
 
 function mapping(values: Record<string, boolean>): ChildMapping {
 	return values as unknown as ChildMapping;
 }
 
 describe('ChildMapping', function childMappingSuite() {
+	// Per upstream/test/ChildMapping-test.js:10.
+	it('should support getChildMapping', function childMapping() {
+		const children = mappingChildren();
+		const result = getChildMapping(children);
+		const mapped = Object.values(result);
+		expect(mapped).toHaveLength(2);
+		expect(mapped[0].props.children).toBeDefined();
+		expect(mapped[1].props.children).toBe('foo');
+	});
+
 	// Per upstream/test/ChildMapping-test.js:33.
 	it('should support mergeChildMappings for adding keys', function addKeys() {
 		const previous = mapping({ one: true, two: true });

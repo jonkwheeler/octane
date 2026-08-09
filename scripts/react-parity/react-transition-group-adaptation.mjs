@@ -7,13 +7,7 @@ const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const pristinePath = resolve(root, 'packages/react-transition-group/audit/pristine-runtime.json');
 const adaptedPath = resolve(root, 'packages/react-transition-group/audit/adapted-runtime.json');
 const destination = resolve(root, 'packages/react-transition-group/audit/adaptation.json');
-const expectedAdaptedNames = [
-	'ChildMapping should support mergeChildMappings for adding keys',
-	'ChildMapping should support mergeChildMappings for removing keys',
-	'ChildMapping should support mergeChildMappings for adding and removing',
-	'ChildMapping should reconcile overlapping insertions and deletions',
-	'ChildMapping should support mergeChildMappings with undefined input',
-];
+const findDOMNodeCase = 'Transition should use `React.findDOMNode` when `nodeRef` is not provided';
 
 function identity(test) {
 	return `${test.file}\0${test.fullName}`;
@@ -49,8 +43,10 @@ export function buildAdaptationInventory(pristine, adapted) {
 		if (adaptedNames.has(name)) throw new Error(`Duplicate adapted identity: ${name}`);
 		adaptedNames.add(name);
 	}
-	for (const name of expectedAdaptedNames) {
-		if (!adaptedNames.has(name)) throw new Error(`Missing required adapted identity: ${name}`);
+	for (const name of pristineByName.keys()) {
+		if (name !== findDOMNodeCase && !adaptedNames.has(name)) {
+			throw new Error(`Missing required adapted identity: ${name}`);
+		}
 	}
 
 	const cases = pristine.tests.map(function classify(test) {
@@ -66,9 +62,7 @@ export function buildAdaptationInventory(pristine, adapted) {
 				adaptedFile: 'packages/react-transition-group/tests/adapted/ChildMapping.test.ts',
 			};
 		}
-		if (
-			test.fullName === 'Transition should use `React.findDOMNode` when `nodeRef` is not provided'
-		) {
+		if (test.fullName === findDOMNodeCase) {
 			return {
 				...base,
 				disposition: 'not-applicable',

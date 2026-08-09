@@ -28,8 +28,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 5,
-    "uniqueIdentities": 5,
+    "inventoryEntries": 55,
+    "uniqueIdentities": 55,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -98,7 +98,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-adapted",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the started one-for-one Octane adaptation lane. Five ChildMapping cases are ported; the exhaustive disposition ledger accounts for the remaining 51 cases.",
+      "notes": "Runs the complete one-for-one Octane adaptation lane: 55 applicable cases are ported and the sole legacy findDOMNode case is explicitly not applicable.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-transition-group/audit/adapted-runtime.json"
@@ -107,7 +107,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "42ea740925e37c216ace57729c451e3bbcef7aad9a9248a9a1b833de37de3a07"
+          "sha256": "16c322b7f188268af4fcee39d542fc29105c5daf795c24ff97bb951a48129669"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
@@ -117,17 +117,17 @@
         {
           "path": "packages/react-transition-group/audit/adaptation.json",
           "role": "support",
-          "sha256": "a748d5ea6eb07e4a2d2a359d1ab69dfa42bcaeb015af70ec9ce928829c47aab5"
+          "sha256": "3bb93a15210e72ffe3ccf8f43e12a818608bf88f5337c1e11887250bf635cf4e"
         },
         {
           "path": "scripts/react-parity/react-transition-group-adaptation.mjs",
           "role": "support",
-          "sha256": "0af4151f6e43ccfa289e3d9afbe485f6d97f7a70055805498611ea4ada414273"
+          "sha256": "c35911fcdd261ccb9d3d5b69ba1382ba811640775e88e111b1cd3f0d6930eef0"
         },
         {
           "path": "scripts/react-parity/react-transition-group-adaptation.test.mjs",
           "role": "support",
-          "sha256": "430d2a38b8d23d4892afc28d60662675fe2d64d7fa8e4f5d995fbc090192dee9"
+          "sha256": "67f4804cacc346ed8cc4071d3f29575ac29d79a3a516a0619b9f603cada311af"
         }
       ]
     }
