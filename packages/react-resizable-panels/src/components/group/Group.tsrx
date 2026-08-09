@@ -8,7 +8,6 @@ import {
 	updateMountedGroup,
 } from '../../global/mutable-state/groups';
 import { getInteractionState } from '../../global/mutable-state/interactions';
-import { getImperativeGroupMethods } from '../../global/utils/getImperativeGroupMethods';
 import { layoutNumbersEqual } from '../../global/utils/layoutNumbersEqual';
 import { layoutsEqual } from '../../global/utils/layoutsEqual';
 import { useForceUpdate } from '../../hooks/useForceUpdate';
@@ -145,8 +144,6 @@ export function Group(props: GroupProps) @{
 	);
 
 	const registeredGroupRef = useRef<RegisteredGroup | null>(null);
-	const previousDefaultLayout = useRef(defaultLayout);
-	const layoutChangedAfterMount = useRef(false);
 	useIsomorphicLayoutEffect(() => {
 		const element = elementRef.current;
 		if (element === null) return;
@@ -200,8 +197,6 @@ export function Group(props: GroupProps) @{
 						previousLayout[constraints.panelId];
 				}
 			}
-			if (event.prev && !layoutsEqual(event.prev.layout, layout)) layoutChangedAfterMount.current =
-				true;
 			onLayoutChange(layout);
 			if (getInteractionState().state !== 'active') onLayoutChanged(
 				layout,
@@ -215,21 +210,14 @@ export function Group(props: GroupProps) @{
 		};
 	}, [disabled, id, onLayoutChange, onLayoutChanged, orientation, panelOrSeparatorChangeSigil, stableProps]);
 
+	// Match upstream: prop updates only refresh mutable state; they do not reapply
+	// defaultLayout via setLayout (React leaves the live layout alone).
 	useEffect(() => {
 		const group = registeredGroupRef.current;
 		if (!group) return;
 		group.mutableState.defaultLayout = defaultLayout;
 		group.mutableState.disableCursor = !!disableCursor;
-		const previous = previousDefaultLayout.current;
-		previousDefaultLayout.current = defaultLayout;
-		if (
-			defaultLayout !== undefined &&
-				(previous === undefined || !layoutsEqual(previous, defaultLayout)) &&
-				!layoutChangedAfterMount.current
-		) {
-			getImperativeGroupMethods({ groupId: id }).setLayout(defaultLayout);
-		}
-	}, [defaultLayout, disableCursor, id]);
+	}, [defaultLayout, disableCursor]);
 
 	return <GroupContext.Provider value={context}>
 		<div
