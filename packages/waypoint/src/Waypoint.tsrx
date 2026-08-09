@@ -2,7 +2,6 @@ import {
 	cloneElement,
 	createElement,
 	isValidElement,
-	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
@@ -30,20 +29,24 @@ function WaypointComponent(props: WaypointProps) {
 	const previousPosition = useRef<WaypointPosition | undefined>(undefined);
 	const latest = useRef(props);
 	latest.current = props;
+	const nodeRef = useRef<Element | null>(null);
+	nodeRef.current = node;
+	const ancestorRef = useRef<Element | Window | null>(null);
+	const cancelOnNextTick = useRef<(() => void) | null>(null);
+	const scrollUnsubscribe = useRef<(() => void) | null>(null);
 	const childRef =
 		props.children && isValidElement(props.children)
-			? (props.children as any).props?.ref
+			? (props.children as { props?: { ref?: unknown } }).props?.ref
 			: undefined;
-	const mergedRef = useMemo(() => [childRef, setNode], [childRef]);
-	const ancestor =
-		node
-			? props.scrollableAncestor != null
-				? resolveScrollableAncestorProp(props.scrollableAncestor)
-				: findScrollableAncestor(node, props.horizontal)
-			: null;
-	const measure = useCallback((event: Event | null) => {
-		if (!node || !ancestor) return;
-		const bounds = getBounds(node, ancestor, latest.current);
+	const mergedRef = useMemo(function mergeRefs() {
+		return [childRef, setNode];
+	}, [childRef]);
+
+	function measureWaypoint(event: Event | null) {
+		const currentNode = nodeRef.current;
+		const ancestor = ancestorRef.current;
+		if (!currentNode || !ancestor) return;
+		const bounds = getBounds(currentNode, ancestor, latest.current);
 		const currentPosition = getCurrentPosition(bounds);
 		const previous = previousPosition.current;
 		if (currentPosition === previous) return;
@@ -70,25 +73,67 @@ function WaypointComponent(props: WaypointProps) {
 		if (latest.current.debug) {
 			console.log('[Waypoint]', previous, '->', currentPosition, bounds);
 		}
-	}, [node, ancestor]);
+	}
 
-	useEffect(() => {
-		if (typeof window === 'undefined' || !node || !ancestor) return;
-		const onScroll = (event: Event) => measure(event);
+	function ensureScrollListeners() {
+		const ancestor = ancestorRef.current;
+		if (typeof window === 'undefined' || !ancestor || scrollUnsubscribe.current) return;
+		function onScroll(event: Event) {
+			measureWaypoint(event);
+		}
 		ancestor.addEventListener('scroll', onScroll, { passive: true });
 		window.addEventListener('resize', onScroll, { passive: true });
-		return () => {
+		scrollUnsubscribe.current = function unsubscribeScroll() {
 			ancestor.removeEventListener('scroll', onScroll);
 			window.removeEventListener('resize', onScroll);
+			scrollUnsubscribe.current = null;
 		};
-	}, [node, ancestor, measure]);
+	}
 
-	useEffect(() => {
+	function clearScrollListeners() {
+		if (scrollUnsubscribe.current) {
+			scrollUnsubscribe.current();
+		}
+	}
+
+	// Match upstream componentDidMount/DidUpdate: resolve the scroll parent,
+	// attach listeners, and remeasure on a coalesced next tick so layout is
+	// never forced during render. `null` deps run every render; skip when a
+	// tick is already queued (upstream keeps the pending tick).
+	useEffect(function scheduleRemeasure() {
 		if (typeof window === 'undefined' || !node) return;
-		return onNextTick(function measureOnNextTick() {
-			measure(null);
+		if (cancelOnNextTick.current) return;
+		cancelOnNextTick.current = onNextTick(function measureOnNextTick() {
+			cancelOnNextTick.current = null;
+			const currentNode = nodeRef.current;
+			if (!currentNode) return;
+			const nextAncestor =
+				latest.current.scrollableAncestor != null
+					? resolveScrollableAncestorProp(latest.current.scrollableAncestor)
+					: findScrollableAncestor(currentNode, latest.current.horizontal);
+			if (ancestorRef.current !== nextAncestor) {
+				clearScrollListeners();
+				ancestorRef.current = nextAncestor;
+			}
+			ensureScrollListeners();
+			measureWaypoint(null);
 		});
 	}, null);
+
+	useEffect(function cleanupOnUnmountOrNodeClear() {
+		if (!node) {
+			clearScrollListeners();
+			ancestorRef.current = null;
+			previousPosition.current = undefined;
+		}
+		return function cleanup() {
+			if (cancelOnNextTick.current) {
+				cancelOnNextTick.current();
+				cancelOnNextTick.current = null;
+			}
+			clearScrollListeners();
+		};
+	}, [node]);
 
 	if (props.children && isValidElement(props.children)) {
 		return cloneElement(props.children, {
