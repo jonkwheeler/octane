@@ -47,3 +47,9 @@ test('rejects skipped adapted registrations', function rejectsSkippedRegistratio
 		assertAdaptedSourceExecutable("it.skip('suite case a', function () {});\n");
 	}, /skip, or todo markers/);
 });
+
+test('rejects Vitest it.fails adapted registrations', function rejectsFailsRegistration() {
+	assert.throws(function run() {
+		assertAdaptedSourceExecutable("it.fails('suite case a', function () {});\n");
+	}, /failing\/fails, skip, or todo markers/);
+});

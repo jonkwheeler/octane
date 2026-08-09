@@ -120,7 +120,7 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "11adebd1182eddc13bb0069a55623f163ed17fa0c154d2ea6f1a3298bac0ff2d"
+          "sha256": "a2652974576933802b0f197617057d631343c6fd861962af59f230d3bd47eb41"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",

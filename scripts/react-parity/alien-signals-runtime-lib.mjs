@@ -3,7 +3,7 @@
  */
 
 const DISABLED_REGISTRATION =
-	/\b(?:fdescribe|fit|xdescribe|xit|xtest)(?:\s*\(|\.each\s*\()|\b(?:describe|it|test)\.(?:failing|only|skip|todo)(?:\s*\(|\.each\s*\()/;
+	/\b(?:fdescribe|fit|xdescribe|xit|xtest)(?:\s*\(|\.each\s*\()|\b(?:describe|it|test)\.(?:failing|fails|only|skip|todo)(?:\s*\(|\.each\s*\()/;
 
 export function titlesFromInventory(inventory) {
 	return (inventory?.tests ?? [])
@@ -47,7 +47,7 @@ export function assertRuntimeCrosswalk(pristineInventory, adaptedInventory) {
 export function assertAdaptedSourceExecutable(source, label = 'adapted suite') {
 	if (DISABLED_REGISTRATION.test(source)) {
 		throw new Error(
-			`${label}: adapted upstream tests must execute without focused, failing, skip, or todo markers`,
+			`${label}: adapted upstream tests must execute without focused, failing/fails, skip, or todo markers`,
 		);
 	}
 }
