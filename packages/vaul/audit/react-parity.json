@@ -7,7 +7,7 @@
     "sourceRoot": "src",
     "testRoot": "test",
     "license": "MIT",
-    "integrity": "sha256:e952dcf5e2acd1870f767aa2fa6e015d00825da90f433cf446d170d212ca213e",
+    "integrity": "sha256:a95445810caa946472b2693d52b59281e2e6350f45a06067d7c42b277b257813",
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
@@ -16,14 +16,26 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/vaul/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/vaul/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/vaul/tests"],
-      "include": ["\\.test\\.ts$"],
-      "exclude": ["packages/vaul/tests/ssr/", "packages/vaul/tests/browser-conformance/"]
+      "roots": [
+        "packages/vaul/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": [
+        "packages/vaul/tests/ssr/",
+        "packages/vaul/tests/browser-conformance/",
+        "packages/vaul/tests/upstream-original\\.test\\.ts$"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -43,6 +55,56 @@
     }
   },
   "lanes": [
+    {
+      "id": "vaul-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact vendored vaul@1.1.2 Playwright suite (Next demo app + specs) against published React vaul@1.1.2 and checks every passed identity against the committed inventory.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/vaul/audit/pristine-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/audit/pristine-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "ea758bd5ee220cbaee2d7f082d99d84397e684a88f91cd4dd1a9d4473f33850d"
+        },
+        {
+          "path": "packages/vaul/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "e15335e9ca2ef8b3f6ce403ef070a9e92cd47078ded744f001a1d58a9ab8ec4b"
+        },
+        {
+          "path": "packages/vaul/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "21e31723b05cab7a8f285e49e302b820851819889e9a16dfdab3e53048145160"
+        },
+        {
+          "path": "scripts/react-parity/vaul-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "1937462c0414c6725925858885c6cb4814286607701d4e5b39c2b942902f064e"
+        },
+        {
+          "path": "packages/vaul/scripts/run-pristine-upstream.mjs",
+          "role": "support",
+          "sha256": "3de1bf0a2eb2394f52d894908996af40fe419c122b408a7ef0a1ef6e17732d1e"
+        },
+        {
+          "path": "packages/vaul/scripts/verify-upstream.mjs",
+          "role": "support",
+          "sha256": "498bb78691d55687bb6afb6d79b2a5ce6cf376aa9b6689c2daa71aab2ec116fe"
+        },
+        {
+          "path": "packages/vaul/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "a95445810caa946472b2693d52b59281e2e6350f45a06067d7c42b277b257813"
+        }
+      ]
+    },
     {
       "id": "vaul-adapted-types",
       "type": "adapted-types",
@@ -82,7 +144,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "vaul",
-      "evidenceOrigin": "repo-authored",
+      "evidenceOrigin": "upstream-suite",
       "notes": "Runs the adapted DOM, export, interaction, and React-oracle suite with exact test identities.",
       "execution": {
         "kind": "vitest-full",
@@ -92,7 +154,7 @@
         {
           "path": "packages/vaul/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "031d431b948307a29ae40461b3d75bbfb940dad56d72f59ad689bfd174d19f96"
+          "sha256": "72610d6a4052460929cae3b5a9627b6a1411cf9444d5b371b9733bc3fd6b69e9"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
@@ -100,9 +162,9 @@
           "sha256": "d501afd6ed1c33f784154cfae42fdb00173fb5671946a5329790977833598e87"
         },
         {
-          "path": "packages/vaul/audit/upstream-integrity.json",
+          "path": "packages/vaul/upstream/SHA256SUMS",
           "role": "support",
-          "sha256": "9141868b120f498705d5becdc8102dd8e1b1f47fa298a7711881f314aed2e691"
+          "sha256": "a95445810caa946472b2693d52b59281e2e6350f45a06067d7c42b277b257813"
         }
       ]
     },
@@ -112,8 +174,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "vaul-browser",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Adapted real-browser lane for the vendored Playwright scenarios that can run without the upstream Next.js demo app. Covers dialog semantics, styles, initial-open snap height, handle-driven snap cycling, close behavior, and portal cleanup. Unpaired snap-point mid-drag stays in ordinary vaul-browser-conformance. No pristine Playwright lane: the demo app is not vendored.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Adapted real-browser lane for the vendored Playwright scenarios that can run without the upstream Next.js demo app. Covers dialog semantics, styles, initial-open snap height, handle-driven snap cycling, close behavior, and portal cleanup. Unpaired snap-point mid-drag stays in ordinary vaul-browser-conformance. Pristine Playwright evidence is registered separately as vaul-pristine-upstream.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/vaul/audit/adapted-runtime-browser.json"

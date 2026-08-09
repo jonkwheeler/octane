@@ -3593,12 +3593,25 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
+					name: 'vaul-pristine',
+					include: ['packages/vaul/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+					testTimeout: 600_000,
+					hookTimeout: 600_000,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
 					name: 'vaul',
 					include: [
 						'packages/vaul/tests/**/*.test.ts',
 						'!packages/vaul/tests/ssr/**/*.test.ts',
 						'!packages/vaul/tests/browser/**/*.test.ts',
 						'!packages/vaul/tests/browser-conformance/**/*.test.ts',
+						'!packages/vaul/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,

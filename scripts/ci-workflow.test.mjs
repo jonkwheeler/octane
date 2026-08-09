@@ -298,6 +298,26 @@ describe('CI workflow aggregation', () => {
 		assert.doesNotMatch(executionBranch, /verifyManifestTestSelections/);
 	});
 
+	test('routes unpaired Vaul browser conformance through the generic Chromium browser lane', () => {
+		const browserGlob = 'packages/vaul/tests/browser-conformance/**/*.test.ts';
+		assert.ok(jobSource('test_shard').includes(`--exclude "${browserGlob}"`));
+
+		const heavyIntegration = jobSource('heavy_integration');
+		const browserStart = heavyIntegration.indexOf('- lane: browser');
+		const nextLane = heavyIntegration.indexOf('- lane: astro', browserStart);
+		assert.notEqual(browserStart, -1);
+		assert.notEqual(nextLane, -1);
+		const browserLane = heavyIntegration.slice(browserStart, nextLane);
+		assert.match(browserLane, /chromium: true/);
+		assert.ok(browserLane.includes('packages/vaul/tests/browser-conformance'));
+
+		const projects = new Map(
+			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
+		);
+		assert.equal(projects.get('vaul-browser').testExecution?.group, 'react-parity');
+		assert.equal(projects.get('vaul-browser-conformance').testExecution, undefined);
+	});
+
 	test('routes the Lynx Web host smoke through the existing Chromium build lane', () => {
 		const browserGlob = 'packages/rspeedy-plugin-octane/tests/browser/**/*.test.ts';
 		const browserSpec = 'packages/rspeedy-plugin-octane/tests/browser/web-host.test.ts';
