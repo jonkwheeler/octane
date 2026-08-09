@@ -1516,6 +1516,15 @@ export default defineConfig({
 				},
 			},
 			{
+				// Adapted upstream wrappers are owned by react-parity; conformance and
+				// hydration stay in ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/apollo-client/tests/conformance/upstream-ApolloProvider.test.ts',
+						'packages/apollo-client/tests/conformance/upstream-useApolloClient.test.ts',
+					],
+				},
 				test: {
 					name: 'apollo-client',
 					include: [
@@ -1524,6 +1533,7 @@ export default defineConfig({
 					],
 					exclude: ['packages/apollo-client/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
+					setupFiles: ['packages/apollo-client/tests/conformance/test-setup.ts'],
 					// hydration.test.ts boots a real Vite server and SSR-compiles its fixture
 					// inside the test body (same helper as base-ui/aria); keep the same 30s
 					// headroom so a loaded CI shard doesn't overrun the 5s vitest default.
@@ -1572,6 +1582,14 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/apollo-client$/,
 							replacement: resolve(import.meta.dirname, 'packages/apollo-client/src/index.js'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
 						},
 					],
 				},

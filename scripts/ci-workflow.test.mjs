@@ -284,10 +284,7 @@ describe('CI workflow aggregation', () => {
 
 		// The manifest runner owns all required lanes in one process. Execution
 		// reports prove exact identities, so only explicit validation collects.
-		assert.match(
-			reactParityCheck,
-			/manifest\.provenance\.verification === 'verified' \? 'run-required' : 'validate'/,
-		);
+		assert.match(reactParityCheck, /selectHarnessAction\(manifest\)/);
 		assert.match(
 			reactParityCheck,
 			/if \(!validateOnly\) \{\s+const action =[^;]+;\s+execFileSync\(process\.execPath, \[HARNESS_PATH, action, '--manifest', relativeFile\]/,

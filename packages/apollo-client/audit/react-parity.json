@@ -1,138 +1,213 @@
 {
-  "$schema": "../../hook-form/audit/react-parity.schema.json",
-  "schemaVersion": 1,
-  "provenance": {
-    "repo": "https://github.com/apollographql/apollo-client.git",
-    "version": "@apollo/client@4.2.6",
-    "commit": "f934b60720fc828a61e04b00988eeefb83d273bc",
-    "sourceRoot": "src/react and src/testing/react",
-    "testRoot": "src/react/**/__tests__ and src/testing/react/__tests__",
-    "license": "MIT",
-    "integrity": "sha256:d2f17af8384c1f572cb3133153fe292546f4bb2768afcf30cc02091990ee057f",
-    "verification": "recorded-unverified"
-  },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "present"
-  },
-  "adaptedRoots": {
-    "source": {
-      "roots": [
-        "packages/apollo-client/src"
-      ],
-      "include": [
-        "\\.(?:js|d\\.ts)$"
-      ],
-      "exclude": []
-    },
-    "tests": {
-      "roots": [
-        "packages/apollo-client/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
-      "exclude": []
-    }
-  },
-  "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
-    "duplicateEntriesWithinLanes": 0,
-    "identitiesSharedAcrossLanes": 0
-  },
-  "environments": {
-    "workspace-node": {
-      "node": ">=22",
-      "platform": "any",
-      "arch": "any",
-      "packageManager": "pnpm@11.15.1",
-      "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
-    }
-  },
-  "lanes": [
-    {
-      "id": "apollo-client-runtime-differential",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "apollo-client-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs an exact cache-only provider/query scenario against the pinned React adapter.",
-      "files": [
-        {
-          "path": "packages/apollo-client/tests/differential/parity.test.ts",
-          "role": "test",
-          "sha256": "153f615515d90afd98396d55f5d546bd09d6ea4d41a8c70def621fedd56bfe80",
-          "cases": [
-            {
-              "id": "differential:apollo-cache-query",
-              "testName": "ApolloProvider and cache-only useQuery render byte-identical data",
-              "fullName": "differential: @octanejs/apollo-client vs @apollo/client/react ApolloProvider and cache-only useQuery render byte-identical data"
-            }
-          ]
-        },
-        {
-          "path": "packages/apollo-client/tests/differential/fixture-compiler.mjs",
-          "role": "support",
-          "sha256": "8c320a85aac7b8ccb8c3475ca767130aafefe64c2ed80727e67ac901a840cacd"
-        },
-        {
-          "path": "packages/apollo-client/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "4f64f05bc8658282791d96c37418d92ca2374cea2e66aa93d8b1bb14e5581608"
-        },
-        {
-          "path": "packages/apollo-client/tests/_fixtures/query-diff.tsrx",
-          "role": "support",
-          "sha256": "fff34e5eb3af24d7141efe4a04e3507c2ca17303f162a1479ff27befb6cbec6e"
-        }
-      ]
-    },
-    {
-      "id": "apollo-client-adapted-types",
-      "type": "adapted-types",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "apollo-client-adapted-types",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the complete supported public declaration surface and rejects React type leakage.",
-      "execution": {
-        "kind": "typescript",
-        "compiler": "tsrx-tsc",
-        "project": "packages/apollo-client/typetests/tsconfig.json"
-      },
-      "files": [
-        {
-          "path": "packages/apollo-client/audit/adapted-types.json",
-          "role": "test",
-          "sha256": "105f55a1da9f5d99dcf1097956217c7ca792f8cd6aa436b48f0ddb8b598ab67b",
-          "cases": [
-            {
-              "id": "types:apollo-client-public-api",
-              "testName": "Apollo Client public adapter declarations",
-              "fullName": "Apollo Client public adapter declarations"
-            }
-          ]
-        },
-        {
-          "path": "packages/apollo-client/typetests/public-api.test-d.ts",
-          "role": "support",
-          "sha256": "5de0d24928da2ddb261c10aaae92cad1c58e1d5447910b5ad037ecfe684a7e96"
-        },
-        {
-          "path": "packages/apollo-client/typetests/react-types-must-not-be-imported.d.ts",
-          "role": "support",
-          "sha256": "6d9b2a38662c8b7ad5dbcdc84373d4de8b888fb501a6afe6cced29ee115740b1"
-        },
-        {
-          "path": "packages/apollo-client/typetests/tsconfig.json",
-          "role": "support",
-          "sha256": "6b5908080ce3c16de60f9688236d1570d3b66c88c3946ed16084ead57aa039fd"
-        }
-      ]
-    }
-  ],
-  "divergences": []
+	"$schema": "../../hook-form/audit/react-parity.schema.json",
+	"schemaVersion": 1,
+	"provenance": {
+		"repo": "https://github.com/apollographql/apollo-client.git",
+		"version": "@apollo/client@4.2.6",
+		"commit": "f934b60720fc828a61e04b00988eeefb83d273bc",
+		"sourceRoot": "src/react and src/testing/react",
+		"testRoot": "src/react/**/__tests__ and src/testing/react/__tests__",
+		"license": "MIT",
+		"integrity": "sha256:042025ab55bc5221b761cadd9d264c9d519390bffa6cd3f4f5b451a43b0a6649",
+		"verification": "recorded-unverified"
+	},
+	"upstreamSuites": {
+		"runtime": "present",
+		"types": "present"
+	},
+	"adaptedRoots": {
+		"source": {
+			"roots": [
+				"packages/apollo-client/src"
+			],
+			"include": [
+				"\\.(?:js|d\\.ts)$"
+			],
+			"exclude": []
+		},
+		"tests": {
+			"roots": [
+				"packages/apollo-client/tests/conformance"
+			],
+			"include": [
+				"upstream-(?:ApolloProvider|useApolloClient)\\.test\\.ts$"
+			],
+			"exclude": []
+		}
+	},
+	"adaptedRuntimeSummary": {
+		"inventoryEntries": 10,
+		"uniqueIdentities": 10,
+		"duplicateEntriesWithinLanes": 0,
+		"identitiesSharedAcrossLanes": 0
+	},
+	"environments": {
+		"workspace-node": {
+			"node": ">=22",
+			"platform": "any",
+			"arch": "any",
+			"packageManager": "pnpm@11.15.1",
+			"lockfile": "pnpm-lock.yaml",
+			"lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
+		}
+	},
+	"lanes": [
+		{
+			"id": "apollo-client-adapted-upstream",
+			"type": "adapted-octane",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "apollo-client",
+			"evidenceOrigin": "upstream-suite",
+			"notes": "Runs the one-for-one adapted ApolloProvider and useApolloClient suites vendored from the pinned repository, including context stability cases.",
+			"execution": {
+				"kind": "vitest-full",
+				"inventory": "packages/apollo-client/audit/adapted-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/apollo-client/audit/adapted-runtime.json",
+					"role": "support",
+					"sha256": "33b85edd03a543ea6fb13a8c2fb05025686fbebee9ececb153766fc1c5aef5e4"
+				},
+				{
+					"path": "packages/apollo-client/tests/conformance/upstream-ApolloProvider.test.ts",
+					"role": "support",
+					"sha256": "6710371a7af2a633b194a399453d80800d675b3cf409d949e85de0bdba87cc94"
+				},
+				{
+					"path": "packages/apollo-client/tests/conformance/upstream-useApolloClient.test.ts",
+					"role": "support",
+					"sha256": "17f85fb2ddaae4969dcf6cdd087121111e5c9c0364b96609417f10c4f1f42d0a"
+				},
+				{
+					"path": "packages/apollo-client/tests/_fixtures/upstream/ApolloProvider.tsrx",
+					"role": "support",
+					"sha256": "a4d7e2daf3f5cdffa7fbf42d1df80709c4f233d5fbd3e271a7dea1252fdc44ce"
+				},
+				{
+					"path": "packages/apollo-client/tests/_fixtures/upstream/useApolloClient.tsrx",
+					"role": "support",
+					"sha256": "524f284dc1b5ada7231aef0670871a70ba0787b2950e81749f00944002ba9f6f"
+				},
+				{
+					"path": "packages/apollo-client/tests/conformance/test-setup.ts",
+					"role": "support",
+					"sha256": "b68f4c69e528c4659a7111b07d1ee021116fa27e0a37a5a7164dcbd4f958e327"
+				},
+				{
+					"path": "packages/apollo-client/upstream/SHA256SUMS",
+					"role": "support",
+					"sha256": "042025ab55bc5221b761cadd9d264c9d519390bffa6cd3f4f5b451a43b0a6649"
+				},
+				{
+					"path": "packages/apollo-client/upstream/LICENSE",
+					"role": "support",
+					"sha256": "6d4568f2adac9fd90e85a2802a1e8ae25f707af9243cd5a8843402399b92b3c4"
+				},
+				{
+					"path": "packages/apollo-client/upstream/src/react/context/__tests__/ApolloProvider.test.tsx",
+					"role": "support",
+					"sha256": "3b8d94654d9dae4d6e4818f9f5e88cfcad326dcbaad183b6442fefad9fd510e5"
+				},
+				{
+					"path": "packages/apollo-client/upstream/src/react/hooks/__tests__/useApolloClient.test.tsx",
+					"role": "support",
+					"sha256": "1f551a680b6cc19b91ecc2fc01ad561ac5ffe3db5663f6a93d32e1f57bb749b8"
+				},
+				{
+					"path": "vitest.config.js",
+					"role": "support",
+					"sha256": "cb71a68e52755a47eff5446866b725fce5811c94d243c34c00087c697446f46c"
+				},
+				{
+					"path": "packages/apollo-client/audit/test-classifications.json",
+					"role": "support",
+					"sha256": "e920d23c3f87fbdcf47384bde808f6dd53d87dfad16efd995f3eb1803b8dc2dc"
+				}
+			]
+		},
+		{
+			"id": "apollo-client-runtime-differential",
+			"type": "differential",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "apollo-client-differential",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Runs an exact cache-only provider/query scenario against the pinned React adapter.",
+			"files": [
+				{
+					"path": "packages/apollo-client/tests/differential/parity.test.ts",
+					"role": "test",
+					"sha256": "c1f455b03831c8749d3fe071494f6ef3ed58175888cb2ccea80aa6eccbae49ab",
+					"cases": [
+						{
+							"id": "differential:apollo-cache-query",
+							"testName": "ApolloProvider and cache-only useQuery render byte-identical data",
+							"fullName": "differential: @octanejs/apollo-client vs @apollo/client/react ApolloProvider and cache-only useQuery render byte-identical data"
+						}
+					]
+				},
+				{
+					"path": "packages/apollo-client/tests/differential/fixture-compiler.mjs",
+					"role": "support",
+					"sha256": "8c320a85aac7b8ccb8c3475ca767130aafefe64c2ed80727e67ac901a840cacd"
+				},
+				{
+					"path": "packages/apollo-client/tests/differential/_setup.ts",
+					"role": "support",
+					"sha256": "cefc152033427439699dbde8b5ecd2c8035e7643d1705302d04eb9dcca580e07"
+				},
+				{
+					"path": "packages/apollo-client/tests/_fixtures/query-diff.tsrx",
+					"role": "support",
+					"sha256": "37d21e19d5bd666cde6280402ad44ea1d43df5f56345dc91dc0863558c6d66b4"
+				}
+			]
+		},
+		{
+			"id": "apollo-client-adapted-types",
+			"type": "adapted-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "apollo-client-adapted-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Compiles the complete supported public declaration surface and rejects React type leakage.",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsrx-tsc",
+				"project": "packages/apollo-client/typetests/tsconfig.json"
+			},
+			"files": [
+				{
+					"path": "packages/apollo-client/audit/adapted-types.json",
+					"role": "test",
+					"sha256": "105f55a1da9f5d99dcf1097956217c7ca792f8cd6aa436b48f0ddb8b598ab67b",
+					"cases": [
+						{
+							"id": "types:apollo-client-public-api",
+							"testName": "Apollo Client public adapter declarations",
+							"fullName": "Apollo Client public adapter declarations"
+						}
+					]
+				},
+				{
+					"path": "packages/apollo-client/typetests/public-api.test-d.ts",
+					"role": "support",
+					"sha256": "5de0d24928da2ddb261c10aaae92cad1c58e1d5447910b5ad037ecfe684a7e96"
+				},
+				{
+					"path": "packages/apollo-client/typetests/react-types-must-not-be-imported.d.ts",
+					"role": "support",
+					"sha256": "6d9b2a38662c8b7ad5dbcdc84373d4de8b888fb501a6afe6cced29ee115740b1"
+				},
+				{
+					"path": "packages/apollo-client/typetests/tsconfig.json",
+					"role": "support",
+					"sha256": "6b5908080ce3c16de60f9688236d1570d3b66c88c3946ed16084ead57aa039fd"
+				}
+			]
+		}
+	],
+	"divergences": []
 }
