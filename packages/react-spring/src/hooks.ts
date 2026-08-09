@@ -458,21 +458,29 @@ export function useTransition<Item, State extends Record<string, any>>(
 		);
 }
 
-export function useChain(refs: SpringRef<any>[], timeSteps?: number[], timeFrame = 1000): void {
-	useLayoutEffect(() => {
-		let active = true;
-		if (timeSteps === undefined) {
-			void refs.reduce(
-				(sequence, ref) => sequence.then(() => (active ? ref.start() : undefined)),
-				Promise.resolve<unknown>(undefined),
+export function useChain(refs: SpringRef<any>[], ...args: any[]): void {
+	const slot = trailingSlot(args);
+	const rest = slot !== undefined ? args.slice(0, -1) : args;
+	const timeSteps = Array.isArray(rest[0]) ? (rest[0] as number[]) : undefined;
+	const timeFrame = typeof rest[1] === 'number' ? (rest[1] as number) : 1000;
+	useLayoutEffect(
+		() => {
+			let active = true;
+			if (timeSteps === undefined) {
+				void refs.reduce(
+					(sequence, ref) => sequence.then(() => (active ? ref.start() : undefined)),
+					Promise.resolve<unknown>(undefined),
+				);
+				return () => {
+					active = false;
+				};
+			}
+			const timers = refs.map((ref, index) =>
+				setTimeout(() => void ref.start(), (timeSteps[index] ?? 0) * timeFrame),
 			);
-			return () => {
-				active = false;
-			};
-		}
-		const timers = refs.map((ref, index) =>
-			setTimeout(() => void ref.start(), (timeSteps[index] ?? 0) * timeFrame),
-		);
-		return () => timers.forEach(clearTimeout);
-	}, [refs, timeSteps, timeFrame]);
+			return () => timers.forEach(clearTimeout);
+		},
+		[refs, timeSteps, timeFrame],
+		sub(slot, 'chain'),
+	);
 }
