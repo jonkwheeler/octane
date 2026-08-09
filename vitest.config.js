@@ -2466,7 +2466,15 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					// Manifest lane `project: "shadcn"` owns only these two files; the rest of
+					// the local suite stays on ordinary shards as Octane framework contracts.
+					include: [
+						'packages/shadcn/tests/divergences.test.ts',
+						'packages/shadcn/tests/sonner.test.ts',
+					],
+				},
 				test: {
 					name: 'shadcn',
 					include: [
@@ -2526,7 +2534,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// No react-parity lane owns `project: "shadcn-ssr"`, so leave this on ordinary
+				// shards rather than marking the package-authored SSR suite as parity-owned.
 				test: {
 					name: 'shadcn-ssr',
 					include: ['packages/shadcn/tests/ssr/**/*.test.ts'],
