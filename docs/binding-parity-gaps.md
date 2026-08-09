@@ -25,6 +25,7 @@ surface and evidence.
 | `@octanejs/dnd-kit` | 0 |
 | `@octanejs/electron` | 0 |
 | `@octanejs/floating-ui` | 0 |
+| `@octanejs/gsap` | 0 |
 | `@octanejs/hook-form` | 0 |
 | `@octanejs/i18next` | 0 |
 | `@octanejs/inertia` | 0 |
