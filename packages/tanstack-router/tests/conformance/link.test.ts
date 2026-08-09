@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
 import { RouterProvider } from '@octanejs/tanstack-router';
-import { getLinkEvidence, makeLinkRouter, resetLinkEvidence } from '../_fixtures/link.tsrx';
+import { makeLinkRouter } from '../_fixtures/link.tsrx';
 
 async function flush() {
 	for (let i = 0; i < 6; i++) {
@@ -15,33 +15,6 @@ async function flush() {
 // pass-through, dangerous-protocol blocking, disabled semantics, render-prop
 // children, route masking, intent preloading, and createLink.
 describe('@octanejs/tanstack-router — Link', () => {
-	// OCTANE DIVERGENCE[tanstack-router-ref-prop][adapted:tanstack-router-ref-prop]
-	// @parity-case adapted:tanstack-router-ref-prop
-	it('passes the custom createLink anchor through the plain ref prop', async () => {
-		resetLinkEvidence();
-		const router = makeLinkRouter('/cl');
-		await router.load();
-		const r = mount(RouterProvider as any, { router });
-		await flush();
-		expect(getLinkEvidence().ref).toBe(r.find('.l-fancy'));
-		r.unmount();
-	});
-
-	// OCTANE DIVERGENCE[tanstack-router-native-events][adapted:tanstack-router-native-events]
-	// @parity-case adapted:tanstack-router-native-events
-	it('passes a native MouseEvent to Link callbacks', async () => {
-		resetLinkEvidence();
-		const router = makeLinkRouter('/');
-		await router.load();
-		const r = mount(RouterProvider as any, { router });
-		await flush();
-		(r.find('.l-evidence') as HTMLElement).click();
-		await flush();
-		const event = getLinkEvidence().event;
-		expect(event).toBeInstanceOf(MouseEvent);
-		expect(event?.target).toBe(r.find('.l-evidence'));
-		r.unmount();
-	});
 	it('fuzzy active matching does NOT light up /about for /about-us (segment-aware prefix)', async () => {
 		const router = makeLinkRouter('/about-us');
 		await router.load();

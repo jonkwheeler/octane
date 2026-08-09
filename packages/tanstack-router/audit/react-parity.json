@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-router/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-router/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-router/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-router/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -111,9 +101,9 @@
       "notes": "Authenticates plain ref props, native anchor callback events, and separate devtools distribution.",
       "files": [
         {
-          "path": "packages/tanstack-router/tests/conformance/link.test.ts",
+          "path": "packages/tanstack-router/tests/conformance/parity-link-divergences.test.ts",
           "role": "test",
-          "sha256": "5db6c2447d354b5a50498c0ca9da794e8dd87a2bc1fc4e999d253010f33248f9",
+          "sha256": "69fd0d9bf277d2b34b485649dee7d31cefdd693a3256e44797365795cf80a177",
           "cases": [
             {
               "id": "adapted:tanstack-router-ref-prop",
@@ -151,18 +141,33 @@
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "tanstack-router",
+      "project": "tanstack-router-ssr",
       "notes": "Authenticates the retained full-document server-render contract in a Node environment.",
       "files": [
         {
-          "path": "packages/tanstack-router/tests/conformance/ssr.test.ts",
+          "path": "packages/tanstack-router/tests/ssr/ssr.test.ts",
           "role": "test",
-          "sha256": "0d50a18ff01706bc0bcf3ab585cc718dfbf225d05a1e7b319196ed4858b32744",
+          "sha256": "17e3b7a5edb14b3da6b42334d75bf00b525a1eed58bdb812e62ab298679a935d",
           "cases": [
             {
               "id": "adapted:tanstack-router-ssr",
               "testName": "renders the route-owned document and app mount boundary",
               "fullName": "@octanejs/tanstack-router SSR renders the route-owned document and app mount boundary"
+            },
+            {
+              "id": "adapted:tanstack-router-ssr-scroll",
+              "testName": "emits the pre-hydration scroll restoration script when enabled",
+              "fullName": "@octanejs/tanstack-router SSR emits the pre-hydration scroll restoration script when enabled"
+            },
+            {
+              "id": "adapted:tanstack-router-ssr-disabled-false",
+              "testName": "does not render route UI when ssr is false",
+              "fullName": "@octanejs/tanstack-router SSR does not render route UI when ssr is false"
+            },
+            {
+              "id": "adapted:tanstack-router-ssr-disabled-data-only",
+              "testName": "does not render route UI when ssr is data-only",
+              "fullName": "@octanejs/tanstack-router SSR does not render route UI when ssr is data-only"
             },
             {
               "id": "adapted:tanstack-router-ssr-stream",
@@ -220,9 +225,7 @@
   "divergences": [
     {
       "id": "tanstack-router-ref-prop",
-      "caseIds": [
-        "adapted:tanstack-router-ref-prop"
-      ],
+      "caseIds": ["adapted:tanstack-router-ref-prop"],
       "upstreamResult": "React createLink composes the anchor ref through forwardRef.",
       "octaneResult": "Octane components receive and compose ref as a normal prop.",
       "rationale": "Octane has no forwardRef wrapper because refs are ordinary props.",
@@ -234,9 +237,7 @@
     },
     {
       "id": "tanstack-router-native-events",
-      "caseIds": [
-        "adapted:tanstack-router-native-events"
-      ],
+      "caseIds": ["adapted:tanstack-router-native-events"],
       "upstreamResult": "React Link callbacks receive React synthetic mouse events.",
       "octaneResult": "Octane Link callbacks receive native MouseEvent objects.",
       "rationale": "Octane exposes native DOM event semantics.",
@@ -248,9 +249,7 @@
     },
     {
       "id": "tanstack-router-separate-devtools",
-      "caseIds": [
-        "adapted:tanstack-router-separate-devtools"
-      ],
+      "caseIds": ["adapted:tanstack-router-separate-devtools"],
       "upstreamResult": "React Router devtools are available through React-specific packages and integrations.",
       "octaneResult": "The router binding does not publish React devtools; Octane tooling is distributed separately.",
       "rationale": "The React devtools renderer cannot run as an Octane component.",

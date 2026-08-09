@@ -2060,15 +2060,23 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Mixed ownership: only the dedicated adapted-octane divergence files
+				// are parity-owned. Framework-contract conformance stays ordinary.
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/tanstack-router/tests/conformance/parity-link-divergences.test.ts',
+						'packages/tanstack-router/tests/conformance/divergences.test.ts',
+					],
+				},
 				test: {
 					name: 'tanstack-router',
 					include: ['packages/tanstack-router/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: ['packages/tanstack-router/tests/differential/**/*.test.ts'],
-					// Differential precompile for router fixtures: rewrites
-					// `@octanejs/tanstack-router` → `@tanstack/react-router` so the React side
-					// runs real react-router.
+					exclude: [
+						'packages/tanstack-router/tests/differential/**/*.test.ts',
+						'packages/tanstack-router/tests/ssr/**/*.test.ts',
+					],
 					globals: false,
 				},
 				plugins: [octane()],
@@ -2100,6 +2108,34 @@ export default defineConfig({
 				plugins: [octane()],
 				resolve: {
 					alias: [
+						{
+							find: /^@octanejs\/tanstack-router$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-router/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-router\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-router/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				// Node-environment SSR contract; kept out of the jsdom project so the
+				// adapted-ssr lane proves rendering without browser globals.
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-router-ssr',
+					include: ['packages/tanstack-router/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
 						{
 							find: /^@octanejs\/tanstack-router$/,
 							replacement: resolve(import.meta.dirname, 'packages/tanstack-router/src/index.ts'),
