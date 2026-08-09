@@ -272,9 +272,12 @@ export async function mountStyledDifferential(
 		});
 	}
 
+	let previousReactCss: string | null = null;
+
 	async function step(
 		name: string,
 		fn: (i: DiffMount, r: DiffMount) => void | Promise<void>,
+		options?: { expectSheetChange?: boolean },
 	): Promise<void> {
 		await fn(octane, react);
 		await settle();
@@ -291,6 +294,14 @@ export async function mountStyledDifferential(
 
 		const octaneCss = readSheetCSS(octaneSheet);
 		const reactCss = readSheetCSS(reactSheet);
+		// Empty sheets compare equal; require the React oracle to have inserted
+		// consumer-visible rules for this scenario before treating parity as evidence.
+		if (!reactCss.includes('{')) {
+			throw new Error(
+				`Differential stylesheet empty on React at step "${name}" ` +
+					`(stylesheet oracle captured no rules)`,
+			);
+		}
 		if (octaneCss !== reactCss) {
 			throw new Error(
 				`Differential stylesheet divergence at step "${name}":\n` +
@@ -299,6 +310,22 @@ export async function mountStyledDifferential(
 			);
 		}
 		expect(octaneCss).toBe(reactCss);
+		// Negative control: altering one side must fail the equality check.
+		expect(octaneCss).not.toBe(`${reactCss}/*parity-probe*/`);
+		if (options?.expectSheetChange) {
+			if (previousReactCss === null) {
+				throw new Error(
+					`Differential step "${name}" requested expectSheetChange without a prior sheet capture`,
+				);
+			}
+			if (reactCss === previousReactCss) {
+				throw new Error(
+					`Differential stylesheet did not change at update step "${name}" ` +
+						`(React sheet still ${JSON.stringify(reactCss)})`,
+				);
+			}
+		}
+		previousReactCss = reactCss;
 	}
 
 	async function observe(

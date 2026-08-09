@@ -95,6 +95,11 @@
       "path": "packages/styled-components/tests/ssr/server.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks Octane SSR isolation and streaming order; it is not a React oracle."
+    },
+    {
+      "path": "packages/styled-components/typetests/styled.test-d.ts",
+      "disposition": "octane-only-type-conformance",
+      "reason": "Port-authored Octane public type-conformance probes for the styled factory surface; not a React oracle or adapted upstream type suite."
     }
   ]
 }

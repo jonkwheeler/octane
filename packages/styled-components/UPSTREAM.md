@@ -1,10 +1,15 @@
 # Upstream
 
-- Repository: https://github.com/styled-components/styled-components
-- Commit: `e0663410f631e0ce82681947edf03bfabd6aef9c`
-- Package: `styled-components@6.4.3`
-- License: MIT
-- npm tarball SHA-256: `cfc845f944613860155a65afb548b0ac0d234af56ac332e14f99ed150ab38549`
+| Field | Value |
+|---|---|
+| Repository | https://github.com/styled-components/styled-components |
+| Commit | `e0663410f631e0ce82681947edf03bfabd6aef9c` |
+| Package | `styled-components@6.4.3` |
+| Supported upstream range | exactly `6.4.3` |
+| React oracle | `19.2.7` |
+| ReactDOM oracle | `19.2.7` |
+| License | MIT |
+| npm tarball SHA-256 | `cfc845f944613860155a65afb548b0ac0d234af56ac332e14f99ed150ab38549` |
 
 The implementation is ported from the pinned upstream package. React component,
 forward-ref, hook, JSX, and server-sheet boundaries are adapted to Octane.

@@ -32,10 +32,14 @@ describe('differential: @octanejs/styled-components vs styled-components', funct
 	it('basic styling with a transient-prop toggle', async function () {
 		const d = await mountStyledDifferential(fixture('basic-smoke'), 'SmokeApp', undefined, CACHE);
 		await d.step('initial render', function () {});
-		await d.step('toggle variant', async function (octane, react) {
-			await octane.click('#btn');
-			await react.click('#btn');
-		});
+		await d.step(
+			'toggle variant',
+			async function (octane, react) {
+				await octane.click('#btn');
+				await react.click('#btn');
+			},
+			{ expectSheetChange: true },
+		);
 		d.unmount();
 	});
 
@@ -43,10 +47,14 @@ describe('differential: @octanejs/styled-components vs styled-components', funct
 	it('nested theme providers with a function theme and a theme toggle', async function () {
 		const d = await mountStyledDifferential(fixture('themed-card'), 'ThemedCard', undefined, CACHE);
 		await d.step('initial themed render', function () {});
-		await d.step('toggle dark theme', async function (octane, react) {
-			await octane.click('#toggle-theme');
-			await react.click('#toggle-theme');
-		});
+		await d.step(
+			'toggle dark theme',
+			async function (octane, react) {
+				await octane.click('#toggle-theme');
+				await react.click('#toggle-theme');
+			},
+			{ expectSheetChange: true },
+		);
 		d.unmount();
 	});
 
@@ -54,10 +62,14 @@ describe('differential: @octanejs/styled-components vs styled-components', funct
 	it('attrs resolution and shouldForwardProp filtering', async function () {
 		const d = await mountStyledDifferential(fixture('attrs-input'), 'AttrsInput', undefined, CACHE);
 		await d.step('initial attrs', function () {});
-		await d.step('escalate tone', async function (octane, react) {
-			await octane.click('#filter-btn');
-			await react.click('#filter-btn');
-		});
+		await d.step(
+			'escalate tone',
+			async function (octane, react) {
+				await octane.click('#filter-btn');
+				await react.click('#filter-btn');
+			},
+			{ expectSheetChange: true },
+		);
 		d.unmount();
 	});
 
@@ -87,10 +99,14 @@ describe('differential: @octanejs/styled-components vs styled-components', funct
 			CACHE,
 		);
 		await d.step('initial keyframed styles', function () {});
-		await d.step('widen', async function (octane, react) {
-			await octane.click('#widen');
-			await react.click('#widen');
-		});
+		await d.step(
+			'widen',
+			async function (octane, react) {
+				await octane.click('#widen');
+				await react.click('#widen');
+			},
+			{ expectSheetChange: true },
+		);
 		d.unmount();
 	});
 
@@ -98,10 +114,14 @@ describe('differential: @octanejs/styled-components vs styled-components', funct
 	it('styled(Styled) folding with a component selector', async function () {
 		const d = await mountStyledDifferential(fixture('compose'), 'Compose', undefined, CACHE);
 		await d.step('mild tone', function () {});
-		await d.step('hot tone', async function (octane, react) {
-			await octane.click('#fancy');
-			await react.click('#fancy');
-		});
+		await d.step(
+			'hot tone',
+			async function (octane, react) {
+				await octane.click('#fancy');
+				await react.click('#fancy');
+			},
+			{ expectSheetChange: true },
+		);
 		d.unmount();
 	});
 });
