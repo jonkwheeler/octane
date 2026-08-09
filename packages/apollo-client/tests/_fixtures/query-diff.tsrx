@@ -1,11 +1,17 @@
-import { gql } from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, gql } from '@apollo/client';
 import { ApolloProvider, useQuery } from '@octanejs/apollo-client/react';
 
-export const QUERY = gql`
+// Each differential side (octane / react) loads this fixture as its own module,
+// so each gets an independent ApolloClient + cache — same shape as
+// tanstack-query's cached-diff fixture.
+const QUERY = gql`
 	query DifferentialValue {
 		value
 	}
 `;
+
+const client = new ApolloClient({ cache: new InMemoryCache(), link: ApolloLink.empty() });
+client.writeQuery({ query: QUERY, data: { value: 'cached' } });
 
 function QueryPanel() @{
 	const result = useQuery(QUERY, { fetchPolicy: 'cache-only' });
@@ -14,8 +20,8 @@ function QueryPanel() @{
 	</output>
 }
 
-export function QueryDiff(props: { client: any }) @{
-	<ApolloProvider client={props.client}>
+export function QueryDiff() @{
+	<ApolloProvider client={client}>
 		<QueryPanel />
 	</ApolloProvider>
 }
