@@ -17,7 +17,7 @@ describe('@octanejs/tanstack-hotkeys parity audit contracts', () => {
 		expect(manifest.provenance).toMatchObject({
 			version: '0.10.0',
 			commit: 'c73a3a167c979d500e1008341ecad096a6c4e635',
-			verification: 'recorded-unverified',
+			verification: 'verified',
 		});
 		expect(manifest.upstreamSuites).toEqual({ runtime: 'present', types: 'present' });
 		expect(() =>

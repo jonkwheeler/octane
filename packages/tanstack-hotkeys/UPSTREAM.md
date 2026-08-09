@@ -22,8 +22,7 @@ nine package/build/documentation files. The runtime suite has 41 cases. Upstream
 Octane `tsrx-tsc` typetest lane covers the adapted surface including the plain target-ref divergence.
 
 `audit/upstream-crosswalk.json` accounts for both published entrypoints, all 22 adapter exports,
-the byte-identical core wildcard re-export, and all four canonical runtime test files. The runtime suite runs pristine and adapted in full; the binding remains `recorded-unverified` until a
-verified provenance pass.
+the byte-identical core wildcard re-export, and all four canonical runtime test files. The runtime suite runs pristine and adapted in full under `provenance.verification: verified`.
 
 ## Executable evidence
 
