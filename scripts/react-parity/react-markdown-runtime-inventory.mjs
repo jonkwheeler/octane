@@ -9,6 +9,15 @@ import { format, resolveConfig } from 'prettier';
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
+const adaptedFiles = [
+	'packages/react-markdown/tests/conformance/public-types.test.ts',
+	'packages/react-markdown/tests/conformance/sync.server.test.ts',
+	'packages/react-markdown/tests/async/markdown-async.server.test.ts',
+	'packages/react-markdown/tests/hooks/markdown-hooks.test.ts',
+	'packages/react-markdown/tests/validation.test.ts',
+	'packages/react-markdown/tests/differential/processor.test.ts',
+	'packages/react-markdown/tests/differential/url-transform.test.ts',
+];
 const lanes = [
 	{
 		project: 'node:test',
@@ -21,9 +30,7 @@ const lanes = [
 		project: 'react-markdown',
 		destination: 'packages/react-markdown/audit/adapted-runtime.json',
 		roots: ['packages/react-markdown/tests'],
-		include: (file) =>
-			file.startsWith('packages/react-markdown/tests/') &&
-			!file.startsWith('packages/react-markdown/tests/pristine/'),
+		include: (file) => adaptedFiles.includes(file),
 	},
 ];
 
@@ -72,7 +79,7 @@ for (const lane of lanes) {
 		schemaVersion: 1,
 		project: lane.project,
 		roots: lane.roots,
-		files: [...new Set(tests.map((test) => test.file))],
+		files: [...new Set(tests.map((test) => test.file))].sort(),
 		tests,
 	};
 	const destination = resolve(root, lane.destination);

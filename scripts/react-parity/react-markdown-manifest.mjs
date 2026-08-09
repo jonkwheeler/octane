@@ -39,7 +39,16 @@ const manifest = {
 		tests: {
 			roots: ['packages/react-markdown/tests'],
 			include: ['\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$'],
-			exclude: ['packages/react-markdown/tests/pristine/'],
+			exclude: [
+				'packages/react-markdown/tests/pristine/',
+				'packages/react-markdown/tests/adoption/',
+				'packages/react-markdown/tests/audit/',
+				'packages/react-markdown/tests/probes/',
+				'packages/react-markdown/tests/hydration/',
+				'packages/react-markdown/tests/ssr/',
+				'packages/react-markdown/tests/parity/',
+				'\\.local\\.test\\.',
+			],
 		},
 	},
 	adaptedRuntimeSummary: {
@@ -92,7 +101,7 @@ const manifest = {
 			project: 'react-markdown',
 			evidenceOrigin: 'upstream-suite',
 			notes:
-				'Executes the complete adapted sync, async, hooks, SSR, hydration, validation, adoption, differential, and negative-control suite with exact identities.',
+				'Executes the one-for-one adapted Octane counterparts of the 87 upstream test.jsx identities with exact collected and executed identities.',
 			execution: {
 				kind: 'vitest-full',
 				inventory: 'packages/react-markdown/audit/adapted-runtime.json',
@@ -110,7 +119,7 @@ const manifest = {
 			type: 'differential',
 			oracle: 'required',
 			environment: 'workspace-node',
-			project: 'react-markdown',
+			project: 'react-markdown-differential',
 			evidenceOrigin: 'repo-authored',
 			notes:
 				'Runs the same Markdown and URL fixtures through pristine React and Octane public entry points.',

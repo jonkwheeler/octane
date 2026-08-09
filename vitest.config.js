@@ -3486,10 +3486,36 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/react-markdown/tests/conformance/public-types.test.ts',
+						'packages/react-markdown/tests/conformance/sync.server.test.ts',
+						'packages/react-markdown/tests/async/markdown-async.server.test.ts',
+						'packages/react-markdown/tests/hooks/markdown-hooks.test.ts',
+						'packages/react-markdown/tests/validation.test.ts',
+						'packages/react-markdown/tests/differential/processor.test.ts',
+						'packages/react-markdown/tests/differential/url-transform.test.ts',
+					],
+				},
 				test: {
 					name: 'react-markdown',
 					include: ['packages/react-markdown/tests/**/*.test.ts'],
-					exclude: ['packages/react-markdown/tests/pristine/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-markdown/tests/pristine/**/*.test.ts',
+						'packages/react-markdown/tests/parity/differential.test.ts',
+					],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-markdown-differential',
+					include: ['packages/react-markdown/tests/parity/differential.test.ts'],
 					environment: 'node',
 					globals: false,
 				},

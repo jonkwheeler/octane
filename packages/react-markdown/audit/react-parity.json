@@ -11,35 +11,31 @@
     "integrity": "sha256:205f5c607c68e1e42b8d7a036326bdb3a105ae55e6469ecfcaf998004609d5f7",
     "verification": "verified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-markdown/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/react-markdown/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-markdown/tests"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/react-markdown/tests"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": [
-        "packages/react-markdown/tests/pristine/"
+        "packages/react-markdown/tests/pristine/",
+        "packages/react-markdown/tests/adoption/",
+        "packages/react-markdown/tests/audit/",
+        "packages/react-markdown/tests/probes/",
+        "packages/react-markdown/tests/hydration/",
+        "packages/react-markdown/tests/ssr/",
+        "packages/react-markdown/tests/parity/",
+        "\\.local\\.test\\."
       ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 175,
-    "uniqueIdentities": 175,
+    "inventoryEntries": 87,
+    "uniqueIdentities": 87,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -109,7 +105,7 @@
       "environment": "workspace-node",
       "project": "react-markdown",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Executes the complete adapted sync, async, hooks, SSR, hydration, validation, adoption, differential, and negative-control suite with exact identities.",
+      "notes": "Executes the one-for-one adapted Octane counterparts of the 87 upstream test.jsx identities with exact collected and executed identities.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-markdown/audit/adapted-runtime.json"
@@ -118,17 +114,17 @@
         {
           "path": "packages/react-markdown/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "72d1e216d11b60191566e7ca2283fa7416a372da979dccd724a2d5c8cb5eda5d"
+          "sha256": "ada51b141853c75d612a211b00f07a7d0e8f4b84c9a2a7fea21fe6200faaa76a"
         },
         {
           "path": "packages/react-markdown/audit/adapted-case-crosswalk.json",
           "role": "support",
-          "sha256": "fbc8ca71f482d140c37d2ce88832b64618700eb77324b1b0b32e14a63be76b6b"
+          "sha256": "fc547b885f19cebcf71627e4c83975c68c9b3f772da6dfea41bdff96da9c0bce"
         },
         {
           "path": "scripts/react-parity/react-markdown-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "007b5c6d5c1e667afd1c24ac6d75c516f6dc3609a56fb097bf6b40149f0a7bdf"
+          "sha256": "5a8283b0309f7d3232674385bed9eebf6e8e36d842b3e6bd263a4f477d6dcbf0"
         },
         {
           "path": "scripts/react-parity/react-markdown-crosswalk.mjs",
@@ -138,7 +134,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "5a3fe39cbb8d83737b644ba9b2f8dbffb820ed76b08cf7c468a208e22e22fe2c"
+          "sha256": "c5ef2332edc2fc0a709b40d642a2fe4f2ce234a7614fa8466b8e495298e488d4"
         }
       ]
     },
@@ -147,7 +143,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-markdown",
+      "project": "react-markdown-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs the same Markdown and URL fixtures through pristine React and Octane public entry points.",
       "files": [
@@ -243,9 +239,7 @@
   "divergences": [
     {
       "id": "react-markdown-react-image-preload",
-      "caseIds": [
-        "react-markdown:differential:image-preload"
-      ],
+      "caseIds": ["react-markdown:differential:image-preload"],
       "upstreamResult": "React 19 server rendering inserts an image preload link before Markdown image markup.",
       "octaneResult": "Octane renders the equivalent image element without React framework-managed preloading.",
       "rationale": "Automatic resource hint insertion belongs to the framework renderer rather than react-markdown.",

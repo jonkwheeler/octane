@@ -261,12 +261,12 @@
   },
   "runtime:e820231d50268321": {
     "template": "rejects removed prop %s",
-    "rowIndex": 1,
+    "rowIndex": 0,
     "rowSha256": "0b53a0fb0107aa9570e146fcb523e2630f69d8ce0b7be00c5e0267ea27e7964c"
   },
   "runtime:8ebf28c5aad28f21": {
     "template": "rejects removed prop %s",
-    "rowIndex": 13,
+    "rowIndex": 1,
     "rowSha256": "2bb62a8dc0e4e0e6a85046a39bebf5ca158cf7741b6dfed22ebf257ad23797be"
   }
 }

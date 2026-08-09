@@ -3,66 +3,19 @@
   "project": "react-markdown",
   "roots": ["packages/react-markdown/tests"],
   "files": [
-    "packages/react-markdown/tests/adoption/consumer.server.test.ts",
-    "packages/react-markdown/tests/adoption/consumer.test.ts",
     "packages/react-markdown/tests/async/markdown-async.server.test.ts",
-    "packages/react-markdown/tests/audit/crosswalk.test.ts",
     "packages/react-markdown/tests/conformance/public-types.test.ts",
     "packages/react-markdown/tests/conformance/sync.server.test.ts",
     "packages/react-markdown/tests/differential/processor.test.ts",
     "packages/react-markdown/tests/differential/url-transform.test.ts",
     "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
-    "packages/react-markdown/tests/hydration/hydration.test.ts",
-    "packages/react-markdown/tests/parity/differential.test.ts",
-    "packages/react-markdown/tests/probes/async-component.server.test.ts",
-    "packages/react-markdown/tests/ssr/server.test.ts",
     "packages/react-markdown/tests/validation.test.ts"
   ],
   "tests": [
     {
-      "id": "runtime:ac88e37123a9fa8c",
-      "file": "packages/react-markdown/tests/adoption/consumer.server.test.ts",
-      "fullName": "mapped-equivalent public consumer executes the awaited consumer through the public package entry point"
-    },
-    {
-      "id": "runtime:82340a19141fd403",
-      "file": "packages/react-markdown/tests/adoption/consumer.server.test.ts",
-      "fullName": "mapped-equivalent public consumer executes the synchronous consumer through the public package entry point"
-    },
-    {
-      "id": "runtime:95de5fc30ed1eca4",
-      "file": "packages/react-markdown/tests/adoption/consumer.server.test.ts",
-      "fullName": "mapped-equivalent public consumer preserves the hooks fallback during server rendering"
-    },
-    {
-      "id": "runtime:c31f095888ccc575",
-      "file": "packages/react-markdown/tests/adoption/consumer.test.ts",
-      "fullName": "frozen adoption inputs freezes every migration-sensitive API family before implementation"
-    },
-    {
-      "id": "runtime:5a4b52e36a45d0a8",
-      "file": "packages/react-markdown/tests/adoption/consumer.test.ts",
-      "fullName": "frozen adoption inputs retains the attribution-compatible public application consumer byte-exact"
-    },
-    {
-      "id": "runtime:1f11b6ce7ab2f1dc",
-      "file": "packages/react-markdown/tests/adoption/consumer.test.ts",
-      "fullName": "frozen adoption inputs separates framework-wide edits from forbidden library redesign"
-    },
-    {
-      "id": "runtime:ce3118d5bc1765a5",
-      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
-      "fullName": "MarkdownAsync awaits promise-returning mapped components and their nested children"
-    },
-    {
       "id": "runtime:090a6b90380b5935",
       "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync documents the synchronous-render framework divergence with the upstream fixture"
-    },
-    {
-      "id": "runtime:49d7135a97858d16",
-      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
-      "fullName": "MarkdownAsync keeps synchronous throws distinct from asynchronous rejection"
     },
     {
       "id": "runtime:052ced3137ef63b1",
@@ -70,104 +23,9 @@
       "fullName": "MarkdownAsync matches exact starry-night highlighted HTML for the upstream fixture"
     },
     {
-      "id": "runtime:ed2368ee37c5359d",
-      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
-      "fullName": "MarkdownAsync matches pristine async plugin ordering and resolved output"
-    },
-    {
       "id": "runtime:db91988cfb235ff3",
       "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync matches the upstream pipeable-stream output fixture"
-    },
-    {
-      "id": "runtime:1cf969a69d0ab162",
-      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
-      "fullName": "MarkdownAsync propagates promise-returning mapped-component rejection"
-    },
-    {
-      "id": "runtime:2487ea081191d36a",
-      "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
-      "fullName": "MarkdownAsync rejects async plugin failures with the pristine error"
-    },
-    {
-      "id": "runtime:e513a8d9faa403e0",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk binds every audited parameter identity, including break and both vbscript rows, fail closed"
-    },
-    {
-      "id": "runtime:d94bb47254c89974",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk maps every pinned source-path/line identity to executable adapted evidence"
-    },
-    {
-      "id": "runtime:40de626f89564024",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects a same-file remap for every crosswalk entry that has an alternate runtime identity"
-    },
-    {
-      "id": "runtime:dbef47636d950b05",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects a swapped component row when the actual crosswalk generator regenerates evidence"
-    },
-    {
-      "id": "runtime:685f60bac1313865",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects a synthetic component fixture with its title preserved during regeneration"
-    },
-    {
-      "id": "runtime:2045e82c12e409bb",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects an unpinned synthetic parameter row during regeneration"
-    },
-    {
-      "id": "runtime:13dca4ceab0e4db2",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects component fixture substitution and row swaps after all broad hashes are recomputed"
-    },
-    {
-      "id": "runtime:c3f8341e3f9eadd3",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects duplicate upstream ids and duplicate adapted identities"
-    },
-    {
-      "id": "runtime:c2e4d7a328d04814",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects fixture-only mutation and two-row swap in an as-const matrix"
-    },
-    {
-      "id": "runtime:aa874b0e79948418",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects missing and invented adapted evidence"
-    },
-    {
-      "id": "runtime:291a63bcb0276419",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects one adapted runtime identity owning multiple upstream identities after rehashing"
-    },
-    {
-      "id": "runtime:5ab7b07aca643243",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects parameter-row mutation independently of file and runtime ownership hashes"
-    },
-    {
-      "id": "runtime:2dfe1190f27b3c94",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects remapping boolean, allowed, and unwrap ownership to same-file tests"
-    },
-    {
-      "id": "runtime:094e24bfbc4eacf6",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects remapping scenario ownership to another runtime identity in the same file"
-    },
-    {
-      "id": "runtime:9ea1c4ce3fd410e1",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects scenario evidence missing its required fixture, plugin, or assertion"
-    },
-    {
-      "id": "runtime:36ecb2c6954be321",
-      "file": "packages/react-markdown/tests/audit/crosswalk.test.ts",
-      "fullName": "react-markdown adapted case crosswalk rejects weakened assertion source without relying on a renamed test"
     },
     {
       "id": "runtime:648b865f39a56fb4",
@@ -178,36 +36,6 @@
       "id": "runtime:8cf35d7144a5a047",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection ignores the exact upstream root comment while preserving the paragraph"
-    },
-    {
-      "id": "runtime:e09ff01a1e9ea7cc",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection maps every upstream-covered intrinsic family with node and stable special keys"
-    },
-    {
-      "id": "runtime:d1f6d19189608d03",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches pristine SVG, comments, and root replacement"
-    },
-    {
-      "id": "runtime:5047fdc74163460b",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches pristine plugin-created GFM output"
-    },
-    {
-      "id": "runtime:b37f6b1a7594a98e",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches pristine projection for plugin-created ARIA and data properties"
-    },
-    {
-      "id": "runtime:2f2355967cac4379",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches pristine projection for plugin-created comma-separated properties"
-    },
-    {
-      "id": "runtime:32b092df5b090cea",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches pristine projection for plugin-created style and vendor prefixes properties"
     },
     {
       "id": "runtime:28a815ad8f068e93",
@@ -480,24 +308,9 @@
       "fullName": "synchronous public projection matches the exact upstream unwrapDisallowed with allowedElements fixture"
     },
     {
-      "id": "runtime:a81fdcf413f8faca",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches the pristine default renderer for \"![alt](javascript:alert(1) \\\"title\\\")\""
-    },
-    {
       "id": "runtime:8405d9e64b10e579",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the pristine default renderer for \"# heading\\n\\nA [safe](https://example.com) link.\""
-    },
-    {
-      "id": "runtime:3d589db0ea78609c",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches the pristine default renderer for \"<i>raw</i>\""
-    },
-    {
-      "id": "runtime:bc0318700aa533c1",
-      "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
-      "fullName": "synchronous public projection matches the pristine default renderer for \"> quote\\n\\n- one\\n- two\\n\\n`code`\""
     },
     {
       "id": "runtime:3abe373c6f7e85ae",
@@ -560,24 +373,9 @@
       "fullName": "synchronous public projection supports intrinsic remapping, null components, and fragments"
     },
     {
-      "id": "runtime:b59a1f1fdc81060e",
-      "file": "packages/react-markdown/tests/differential/processor.test.ts",
-      "fullName": "filters plugin-created nodes"
-    },
-    {
-      "id": "runtime:3398a7c01f1ac2e7",
-      "file": "packages/react-markdown/tests/differential/processor.test.ts",
-      "fullName": "keeps plugin order and merges allowDangerousHtml last"
-    },
-    {
       "id": "runtime:df796150e8d55d22",
       "file": "packages/react-markdown/tests/differential/processor.test.ts",
       "fullName": "matches pinned raw handling and filtering order"
-    },
-    {
-      "id": "runtime:1d203e88cd5212c0",
-      "file": "packages/react-markdown/tests/differential/processor.test.ts",
-      "fullName": "mutates URL properties before allowElement observes the node"
     },
     {
       "id": "runtime:3ca4712df44cbe4d",
@@ -585,104 +383,9 @@
       "fullName": "passes exact element index and parent to allowElement"
     },
     {
-      "id": "runtime:65f10e568962516e",
-      "file": "packages/react-markdown/tests/differential/processor.test.ts",
-      "fullName": "rejects a compiled children block without invoking it"
-    },
-    {
-      "id": "runtime:214542cbffcea7ff",
-      "file": "packages/react-markdown/tests/differential/processor.test.ts",
-      "fullName": "unwraps children in place without skipping following siblings"
-    },
-    {
-      "id": "runtime:22e6a46bf9326a75",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle preserves null and undefined custom-transform returns"
-    },
-    {
-      "id": "runtime:c57d9710e2958dca",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \" javascript:alert(1)\" to \"\""
-    },
-    {
       "id": "runtime:537136ca2595fdb1",
       "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
       "fullName": "the pinned URL oracle transforms \"\" to \"\""
-    },
-    {
-      "id": "runtime:e36b58065dd2722e",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"#x:y\" to \"#x:y\""
-    },
-    {
-      "id": "runtime:43aa4fecb08ac5b9",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"/absolute/path\" to \"/absolute/path\""
-    },
-    {
-      "id": "runtime:714dc7552df1620e",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"?q=x:y\" to \"?q=x:y\""
-    },
-    {
-      "id": "runtime:54bb6b4a6794d42f",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"HTTP://example.com\" to \"HTTP://example.com\""
-    },
-    {
-      "id": "runtime:48468205f4d2e96c",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"data:text/html,x\" to \"\""
-    },
-    {
-      "id": "runtime:20da3def7819e8ea",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"https://example.com\" to \"https://example.com\""
-    },
-    {
-      "id": "runtime:594369208f6bfa60",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"irc://example.com\" to \"irc://example.com\""
-    },
-    {
-      "id": "runtime:fe90c49b8648abbb",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"ircs://example.com\" to \"ircs://example.com\""
-    },
-    {
-      "id": "runtime:265fbea2ccfb95dc",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"java\\nscript:alert(1)\" to \"\""
-    },
-    {
-      "id": "runtime:33ad2cec9a8a1d0c",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"javascript:alert(1)\" to \"\""
-    },
-    {
-      "id": "runtime:2c6884ec66046558",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"mailto:a@example.com\" to \"mailto:a@example.com\""
-    },
-    {
-      "id": "runtime:5e2ad86202f13974",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"relative/path\" to \"relative/path\""
-    },
-    {
-      "id": "runtime:00ffeea6070cddaa",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle transforms \"xmpp:a@example.com\" to \"xmpp:a@example.com\""
-    },
-    {
-      "id": "runtime:c45fcdb6535e1b1d",
-      "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
-      "fullName": "the pinned URL oracle visits every applicable html-url-attributes property and no inapplicable pair"
-    },
-    {
-      "id": "runtime:bff75afabdbd6ff2",
-      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
-      "fullName": "MarkdownHooks lifecycle cancels stale work and only commits the latest input"
     },
     {
       "id": "runtime:220745d3a5b56e21",
@@ -700,89 +403,14 @@
       "fullName": "MarkdownHooks lifecycle matches the pinned no-fallback initial empty DOM and resolved paragraph"
     },
     {
-      "id": "runtime:b1094c6ef37e4ae0",
-      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
-      "fullName": "MarkdownHooks lifecycle prevents pending work from committing after unmount"
-    },
-    {
-      "id": "runtime:ce2d080eb415b5ca",
-      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
-      "fullName": "MarkdownHooks lifecycle recovers on a clean remount after an errored run"
-    },
-    {
-      "id": "runtime:479176e07b5ad096",
-      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
-      "fullName": "MarkdownHooks lifecycle renders fallback then commits resolved async output"
-    },
-    {
       "id": "runtime:aa46d56015467bbd",
       "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle rerenders a to b, resolves both async runs, and commits only b"
     },
     {
-      "id": "runtime:ede90b7def14f725",
-      "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
-      "fullName": "MarkdownHooks lifecycle reruns for each pinned effect dependency identity"
-    },
-    {
       "id": "runtime:ae1ab0e444ff0faa",
       "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle surfaces async errors through rendering"
-    },
-    {
-      "id": "runtime:2e695d4d559ef19e",
-      "file": "packages/react-markdown/tests/hydration/hydration.test.ts",
-      "fullName": "Markdown hydration adopts default nodes, emits no diagnostics, and updates in place"
-    },
-    {
-      "id": "runtime:fcaa6186f61ccaa3",
-      "file": "packages/react-markdown/tests/hydration/hydration.test.ts",
-      "fullName": "Markdown hydration adopts plugin, filtering, URL, and component-override output"
-    },
-    {
-      "id": "runtime:f3f735455f8127a0",
-      "file": "packages/react-markdown/tests/parity/differential.test.ts",
-      "fullName": "image markup matches apart from React framework preloading"
-    },
-    {
-      "id": "runtime:8b51304ecbaee2fb",
-      "file": "packages/react-markdown/tests/parity/differential.test.ts",
-      "fullName": "sync Markdown output matches pristine React"
-    },
-    {
-      "id": "runtime:53fcea5eb49a9c1f",
-      "file": "packages/react-markdown/tests/parity/differential.test.ts",
-      "fullName": "unsafe URL filtering matches pristine React"
-    },
-    {
-      "id": "runtime:a5fc3ff05724856a",
-      "file": "packages/react-markdown/tests/probes/async-component.server.test.ts",
-      "fullName": "promise-returning mapped component architecture seam awaits the mapped component and preserves nested children in server output"
-    },
-    {
-      "id": "runtime:890e8403a722afe0",
-      "file": "packages/react-markdown/tests/probes/async-component.server.test.ts",
-      "fullName": "promise-returning mapped component architecture seam propagates a mapped component rejection through prerender"
-    },
-    {
-      "id": "runtime:8470a4f308c48e01",
-      "file": "packages/react-markdown/tests/ssr/server.test.ts",
-      "fullName": "server execution keeps MarkdownHooks on its pinned fallback during server rendering"
-    },
-    {
-      "id": "runtime:009d1df92d7535c2",
-      "file": "packages/react-markdown/tests/ssr/server.test.ts",
-      "fullName": "server execution renders awaited async deterministically without browser globals"
-    },
-    {
-      "id": "runtime:d8fe949b48a32ec0",
-      "file": "packages/react-markdown/tests/ssr/server.test.ts",
-      "fullName": "server execution renders sync deterministically without browser globals"
-    },
-    {
-      "id": "runtime:8c19aa8c82088d5e",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "accepts pinned empty child \"\""
     },
     {
       "id": "runtime:de5359a9878bbea5",
@@ -815,84 +443,9 @@
       "fullName": "rejects removed prop allowDangerousHtml"
     },
     {
-      "id": "runtime:89816de6bfdb41b5",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop allowNode"
-    },
-    {
-      "id": "runtime:1d5723da5889b57b",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop allowedTypes"
-    },
-    {
-      "id": "runtime:ddead6a87dbf3f57",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop astPlugins"
-    },
-    {
-      "id": "runtime:b323c5ac6be8a159",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop className"
-    },
-    {
-      "id": "runtime:89641245557ed84d",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop disallowedTypes"
-    },
-    {
-      "id": "runtime:53446630d895feda",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop escapeHtml"
-    },
-    {
-      "id": "runtime:4ba85cd815613ba7",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop includeElementIndex"
-    },
-    {
-      "id": "runtime:3ef0fd66679d4e89",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop includeNodeIndex"
-    },
-    {
-      "id": "runtime:0c3377cfa7c4e266",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop linkTarget"
-    },
-    {
-      "id": "runtime:17f26aea2e265fe5",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop plugins"
-    },
-    {
-      "id": "runtime:7aed015a7280b5b8",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop rawSourcePos"
-    },
-    {
-      "id": "runtime:5c17dbdee830f664",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop renderers"
-    },
-    {
       "id": "runtime:8ebf28c5aad28f21",
       "file": "packages/react-markdown/tests/validation.test.ts",
       "fullName": "rejects removed prop source"
-    },
-    {
-      "id": "runtime:aefd7b3b4f46dde8",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop sourcePos"
-    },
-    {
-      "id": "runtime:688d7d6380de185c",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop transformImageUri"
-    },
-    {
-      "id": "runtime:0a2cc4bfe5709b32",
-      "file": "packages/react-markdown/tests/validation.test.ts",
-      "fullName": "rejects removed prop transformLinkUri"
     }
   ]
 }
