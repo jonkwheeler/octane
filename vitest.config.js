@@ -2555,6 +2555,7 @@ export default defineConfig({
 					include: ['packages/tiptap/upstream/src/**/*.spec.ts'],
 					environment: 'jsdom',
 					globals: false,
+					setupFiles: ['packages/tiptap/tests/_harness/verify-upstream.ts'],
 				},
 				oxc: {
 					jsx: {

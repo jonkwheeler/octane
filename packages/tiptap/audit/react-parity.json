@@ -61,7 +61,7 @@
 			"environment": "workspace-node",
 			"project": "tiptap-pristine",
 			"evidenceOrigin": "upstream-suite",
-			"notes": "Runs the byte-exact @tiptap/react@3.28.0 Vitest suite from the vendored npm pin against upstream's own React binding.",
+			"notes": "Runs the byte-exact @tiptap/react@3.28.0 Vitest suite from the vendored npm pin against upstream's own React binding after verifyTiptapUpstream checks SHA256SUMS.",
 			"execution": {
 				"kind": "vitest-full",
 				"inventory": "packages/tiptap/audit/pristine-runtime.json"
@@ -81,6 +81,11 @@
 					"path": "packages/tiptap/scripts/verify-upstream.mjs",
 					"role": "support",
 					"sha256": "cabf860a8921ce538d2786e0a457dc3f56f31c9351db4602c747c844e06513e5"
+				},
+				{
+					"path": "packages/tiptap/tests/_harness/verify-upstream.ts",
+					"role": "support",
+					"sha256": "640b2a24d7ec40b4f72a82ed720c2fb76ad54c65cd0bb232c20f97ab21d98337"
 				},
 				{
 					"path": "packages/tiptap/upstream/LICENSE.md",
