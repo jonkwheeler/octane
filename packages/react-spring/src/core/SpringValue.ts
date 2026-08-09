@@ -78,18 +78,21 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		super();
 		const propsObject =
 			typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1) && arg2 === undefined;
-		if (propsObject || arg2 !== undefined) {
-			const props = propsObject
-				? { ...(arg1 as SpringUpdate<T>) }
-				: { ...(arg2 as SpringUpdate<T>), from: (arg2 as SpringUpdate<T>).from ?? (arg1 as T) };
+		if (propsObject) {
+			const props = { ...(arg1 as SpringUpdate<T>) };
 			this.value = (props.from ?? goal(props.to, undefined as T)) as T;
-			if ((props as SpringUpdate<T> & { default?: boolean }).default === undefined) {
-				(props as SpringUpdate<T> & { default?: boolean }).default = true;
-			}
-			void this.start(props);
+			// Only start when there is a goal; event/config-only props must not set hasAnimated.
+			if (props.to !== undefined) void this.start(props);
 			return;
 		}
-		// Scalar seed only — do not start, so later `from` updates still apply before first animation.
+		if (arg2 !== undefined) {
+			// Upstream: spread props then assign positional `from` last.
+			const props = { ...(arg2 as SpringUpdate<T>), from: arg1 as T };
+			this.value = (props.from ?? goal(props.to, undefined as T)) as T;
+			if (props.to !== undefined) void this.start(props);
+			return;
+		}
+		// Scalar seed only — leave hasAnimated false so later `from` updates still apply.
 		this.value = arg1 as T;
 	}
 	get(): T {
@@ -171,7 +174,8 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		if (props.from !== undefined && (props.reset || !this.hasAnimated)) {
 			this.setValue(props.from);
 		}
-		this.hasAnimated = true;
+		// From-only / noop starts must not poison later `from` updates.
+		if (props.to !== undefined || props.reset) this.hasAnimated = true;
 		active.started = true;
 		this.velocity = props.config?.velocity ?? 0;
 		const target = goal(props.to, this.value);
