@@ -50,19 +50,16 @@ export function ThinkingOrb({
 	...rest
 }: ThinkingOrbProps) {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
-	const consumerRefRef = useRef(consumerRef);
-	consumerRefRef.current = consumerRef;
 	// Stable identity so theme/reduced-motion updates do not detach the canvas.
-	// consumerRefRef always holds the latest consumer for attach/detach.
+	// Consumer refs are owned only by syncConsumerRef below (single attach/detach).
 	const assignCanvasRef = useRef(function assignCanvasRef(node: HTMLCanvasElement | null): void {
 		canvasRef.current = node;
-		assignConsumerRef(consumerRefRef.current, node);
 	}).current;
 	const dark = useResolvedDark(theme, canvasRef);
 	const reduced = useReducedMotion();
 
-	// Ref prop swaps do not re-run the stable canvas callback; sync the consumer
-	// here so the previous holder is cleared and the new one receives the node.
+	// Publish the consumer `ref` from effects so prop swaps clear the previous
+	// holder without changing the stable canvas callback identity.
 	useEffect(function syncConsumerRef() {
 		const node = canvasRef.current;
 		assignConsumerRef(consumerRef, node);
