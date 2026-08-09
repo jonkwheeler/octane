@@ -207,7 +207,7 @@ export function DoomDemo() @{
 				document.pointerLockElement !== aimRef.current || phaseRef.current !== 'playing' ||
 					pausedRef.current
 			) return;
-			stateRef.current = turnPlayer(stateRef.current, -event.movementX * 0.0022);
+			stateRef.current = turnPlayer(stateRef.current, event.movementX * 0.0022);
 		};
 		window.addEventListener('keydown', keydown);
 		window.addEventListener('keyup', keyup);

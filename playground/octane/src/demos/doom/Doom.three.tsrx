@@ -8,7 +8,8 @@ export function DoomScene({ state }: { state: GameState }) @{
 	useFrame(({ camera }) => {
 		camera.position.set(state.player.x, state.player.y, state.player.z);
 		camera.rotation.order = 'YXZ';
-		// Player yaw is the locomotion/projectile heading; Three.js camera yaw is opposite.
+		// Player yaw is locomotion/projectile heading; Three camera yaw is opposite (`-yaw`).
+		// Pointer-lock mouse look applies +movementX into player yaw under that contract.
 		camera.rotation.set(0, -state.player.yaw, 0);
 	});
 
