@@ -1,180 +1,192 @@
 {
-	"$schema": "../../hook-form/audit/react-parity.schema.json",
-	"schemaVersion": 1,
-	"provenance": {
-		"repo": "https://github.com/chakra-ui/zag.git",
-		"version": "1.42.0",
-		"commit": "df65e4c87c75a1c84eb6eb08a8e30dac0e1bb77f",
-		"sourceRoot": "packages/frameworks/react",
-		"testRoot": "packages/frameworks/react/tests",
-		"license": "MIT",
-		"integrity": "sha256:037f857d00462559b9790acc2214c818678eb9d61970d6c394dc26dcfcd1516d",
-		"verification": "recorded-unverified"
-	},
-	"upstreamSuites": {
-		"runtime": "present",
-		"types": "absent"
-	},
-	"adaptedRoots": {
-		"source": {
-			"roots": [
-				"packages/zag/src"
-			],
-			"include": [
-				"\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-			],
-			"exclude": []
-		},
-		"tests": {
-			"roots": [
-				"packages/zag/tests/upstream"
-			],
-			"include": [
-				"\\.test\\.ts$"
-			],
-			"exclude": []
-		}
-	},
-	"adaptedRuntimeSummary": {
-		"inventoryEntries": 36,
-		"uniqueIdentities": 36,
-		"duplicateEntriesWithinLanes": 0,
-		"identitiesSharedAcrossLanes": 0
-	},
-	"environments": {
-		"workspace-node": {
-			"node": ">=22",
-			"platform": "any",
-			"arch": "any",
-			"packageManager": "pnpm@11.15.1",
-			"lockfile": "pnpm-lock.yaml",
-			"lockfileSha256": "441c717552daac8018eac0bfcc2c03747cdc6a6a0986ef0c87eb0b83d19a17ae"
-		}
-	},
-	"lanes": [
-		{
-			"id": "zag-pristine-upstream",
-			"type": "pristine-upstream",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "zag-pristine",
-			"evidenceOrigin": "upstream-suite",
-			"notes": "Runs the byte-exact @zag-js/react 1.42.0 Vitest suite against the vendored React binding and checks every passed identity against the committed inventory. Adapted counterpart titles are required for every portable case except StrictMode-only evidence.",
-			"execution": {
-				"kind": "vitest-full",
-				"inventory": "packages/zag/audit/pristine-wrapper-runtime.json"
-			},
-			"files": [
-				{
-					"path": "packages/zag/audit/pristine-wrapper-runtime.json",
-					"role": "support",
-					"sha256": "df840493712aa51f45442aca139aa5d9253babff884dd66c42bde0bad753e64c"
-				},
-				{
-					"path": "packages/zag/audit/pristine-runtime.json",
-					"role": "support",
-					"sha256": "c431e33a0b6fadff9b1abe284ba90336716bdd19f1debf92cda44291e7e82ae8"
-				},
-				{
-					"path": "packages/zag/tests/upstream-original.test.ts",
-					"role": "support",
-					"sha256": "805e50fe18c28669928817509934730df1d9767a9d0fe3e35df20b5622ac5bc7"
-				},
-				{
-					"path": "scripts/react-parity/zag-pristine-runtime.mjs",
-					"role": "support",
-					"sha256": "9fcb626a447149790233037c99d54cb9a79d4894af6c22f82d29f85fd7fd24ae"
-				},
-				{
-					"path": "packages/zag/scripts/run-pristine-upstream.mjs",
-					"role": "support",
-					"sha256": "4e22fbbefcf556622558f582e01a0536272c748265eebe8a847c9902877797a1"
-				},
-				{
-					"path": "packages/zag/tests/upstream-vitest.config.ts",
-					"role": "support",
-					"sha256": "15d603d0095c5e417ee548c517cbe012a5a5c942536b3ee006abdb3d7ee0d4dc"
-				},
-				{
-					"path": "packages/zag/scripts/verify-upstream.mjs",
-					"role": "support",
-					"sha256": "6f0ff6e0d610a04f9c1ca29eed4f43fda8b80b96ebd5e0f0f53f602900c23e55"
-				},
-				{
-					"path": "packages/zag/upstream/SHA256SUMS",
-					"role": "support",
-					"sha256": "037f857d00462559b9790acc2214c818678eb9d61970d6c394dc26dcfcd1516d"
-				}
-			]
-		},
-		{
-			"id": "zag-adapted-full-suite",
-			"type": "adapted-octane",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "zag",
-			"evidenceOrigin": "upstream-suite",
-			"notes": "One-for-one adapted @zag-js/react 1.42.0 machine and nested-states suite identities against @octanejs/zag. StrictMode-only upstream cases remain pristine-only.",
-			"execution": {
-				"kind": "vitest-full",
-				"inventory": "packages/zag/audit/adapted-runtime.json"
-			},
-			"files": [
-				{
-					"path": "packages/zag/audit/adapted-runtime.json",
-					"role": "support",
-					"sha256": "1032d03dc2d2bdf81f44f65dd137a19f596ca7e16ad1fc65e2910358791fc1ef"
-				},
-				{
-					"path": "scripts/react-parity/zag-runtime-inventory.mjs",
-					"role": "support",
-					"sha256": "928673fbe6408002e0d31b2429e09d53820b170ce5e75df10f6dfd0435f1891f"
-				},
-				{
-					"path": "packages/zag/audit/test-classifications.json",
-					"role": "support",
-					"sha256": "93abeae86788e444c342d286161de0d74e8bb65915534f1bab346a6d5c22dab2"
-				}
-			]
-		},
-		{
-			"id": "zag-differential",
-			"type": "differential",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "zag-differential",
-			"evidenceOrigin": "repo-authored",
-			"notes": "Supplementary differential oracle: one machine fixture through Octane and published @zag-js/react@1.42.0 on React 19.2.7, comparing transition and bindable-context traces.",
-			"files": [
-				{
-					"path": "packages/zag/tests/differential/machine.test.ts",
-					"role": "test",
-					"sha256": "e9acb76d86048ec4a6f2c62dd6d9a2b5806e6e228e5024dfb6dee8da43a17e4d",
-					"cases": [
-						{
-							"id": "differential:machine-trace",
-							"testName": "matches @zag-js/react@1.42.0 for transitions and bindable context",
-							"fullName": "upstream differential parity matches @zag-js/react@1.42.0 for transitions and bindable context"
-						}
-					]
-				},
-				{
-					"path": "packages/zag/tests/_fixtures/machine.tsrx",
-					"role": "support",
-					"sha256": "527d366e4b10fc04b01ad6f1bd5b5efef5372e3b847f27123cada96e8cfbea80"
-				},
-				{
-					"path": "packages/zag/tests/_helpers.ts",
-					"role": "support",
-					"sha256": "c31c081a87ea93dc1bd951d371059f32a38246fdee8df7cc29e59f48080b79a5"
-				},
-				{
-					"path": "vitest.config.js",
-					"role": "support",
-					"sha256": "6bc78f67f2b45e1dc9f2f4de22bd10f64571093e762029dbebd8fdd6020bf827"
-				}
-			]
-		}
-	],
-	"divergences": []
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/chakra-ui/zag.git",
+    "version": "1.42.0",
+    "commit": "df65e4c87c75a1c84eb6eb08a8e30dac0e1bb77f",
+    "sourceRoot": "packages/frameworks/react",
+    "testRoot": "packages/frameworks/react/tests",
+    "license": "MIT",
+    "integrity": "sha256:037f857d00462559b9790acc2214c818678eb9d61970d6c394dc26dcfcd1516d",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/zag/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/zag/tests/upstream"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 36,
+    "uniqueIdentities": 36,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "441c717552daac8018eac0bfcc2c03747cdc6a6a0986ef0c87eb0b83d19a17ae"
+    }
+  },
+  "lanes": [
+    {
+      "id": "zag-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zag-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact @zag-js/react 1.42.0 Vitest suite against the vendored React binding and checks every passed identity against the committed inventory. Portable identities must have one-for-one adapted counterparts; the four StrictMode cases are dispositioned pristine-only in audit/runtime-case-dispositions.json.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/zag/audit/pristine-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/zag/audit/pristine-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "df840493712aa51f45442aca139aa5d9253babff884dd66c42bde0bad753e64c"
+        },
+        {
+          "path": "packages/zag/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "c431e33a0b6fadff9b1abe284ba90336716bdd19f1debf92cda44291e7e82ae8"
+        },
+        {
+          "path": "packages/zag/audit/runtime-case-dispositions.json",
+          "role": "support",
+          "sha256": "8ca7a9fb8ddafc13d3fb8e3d9e21944d1ba5c482539091646eea1981bdf6c40f"
+        },
+        {
+          "path": "packages/zag/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "805e50fe18c28669928817509934730df1d9767a9d0fe3e35df20b5622ac5bc7"
+        },
+        {
+          "path": "scripts/react-parity/zag-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "9fcb626a447149790233037c99d54cb9a79d4894af6c22f82d29f85fd7fd24ae"
+        },
+        {
+          "path": "scripts/react-parity/zag-runtime-crosswalk.mjs",
+          "role": "support",
+          "sha256": "3fc205291d23f2d867643f55ee88a3c6856c18fc4c8232232e33b91435700794"
+        },
+        {
+          "path": "packages/zag/scripts/run-pristine-upstream.mjs",
+          "role": "support",
+          "sha256": "4e22fbbefcf556622558f582e01a0536272c748265eebe8a847c9902877797a1"
+        },
+        {
+          "path": "packages/zag/tests/upstream-vitest.config.ts",
+          "role": "support",
+          "sha256": "15d603d0095c5e417ee548c517cbe012a5a5c942536b3ee006abdb3d7ee0d4dc"
+        },
+        {
+          "path": "packages/zag/scripts/verify-upstream.mjs",
+          "role": "support",
+          "sha256": "6f0ff6e0d610a04f9c1ca29eed4f43fda8b80b96ebd5e0f0f53f602900c23e55"
+        },
+        {
+          "path": "packages/zag/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "037f857d00462559b9790acc2214c818678eb9d61970d6c394dc26dcfcd1516d"
+        }
+      ]
+    },
+    {
+      "id": "zag-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zag",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one adapted @zag-js/react 1.42.0 machine and nested-states suite identities against @octanejs/zag. The inventory generator and react-parity:validate enforce the normalized pristine→adapted crosswalk; StrictMode identities stay pristine-only via audit/runtime-case-dispositions.json.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/zag/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/zag/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "1032d03dc2d2bdf81f44f65dd137a19f596ca7e16ad1fc65e2910358791fc1ef"
+        },
+        {
+          "path": "scripts/react-parity/zag-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "473f4b8879da52dfc1180a607ed0421e05759ed3fa1af07173aeaa0438ef8319"
+        },
+        {
+          "path": "scripts/react-parity/zag-runtime-crosswalk.mjs",
+          "role": "support",
+          "sha256": "3fc205291d23f2d867643f55ee88a3c6856c18fc4c8232232e33b91435700794"
+        },
+        {
+          "path": "packages/zag/audit/runtime-case-dispositions.json",
+          "role": "support",
+          "sha256": "8ca7a9fb8ddafc13d3fb8e3d9e21944d1ba5c482539091646eea1981bdf6c40f"
+        },
+        {
+          "path": "packages/zag/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "93abeae86788e444c342d286161de0d74e8bb65915534f1bab346a6d5c22dab2"
+        }
+      ]
+    },
+    {
+      "id": "zag-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zag-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Supplementary differential oracle: one machine fixture through Octane and published @zag-js/react@1.42.0 on React 19.2.7, comparing transition and bindable-context traces.",
+      "files": [
+        {
+          "path": "packages/zag/tests/differential/machine.test.ts",
+          "role": "test",
+          "sha256": "e9acb76d86048ec4a6f2c62dd6d9a2b5806e6e228e5024dfb6dee8da43a17e4d",
+          "cases": [
+            {
+              "id": "differential:machine-trace",
+              "testName": "matches @zag-js/react@1.42.0 for transitions and bindable context",
+              "fullName": "upstream differential parity matches @zag-js/react@1.42.0 for transitions and bindable context"
+            }
+          ]
+        },
+        {
+          "path": "packages/zag/tests/_fixtures/machine.tsrx",
+          "role": "support",
+          "sha256": "527d366e4b10fc04b01ad6f1bd5b5efef5372e3b847f27123cada96e8cfbea80"
+        },
+        {
+          "path": "packages/zag/tests/_helpers.ts",
+          "role": "support",
+          "sha256": "c31c081a87ea93dc1bd951d371059f32a38246fdee8df7cc29e59f48080b79a5"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "6bc78f67f2b45e1dc9f2f4de22bd10f64571093e762029dbebd8fdd6020bf827"
+        }
+      ]
+    }
+  ],
+  "divergences": []
 }

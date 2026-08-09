@@ -17,6 +17,7 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifyZagTestClassifications } from './zag-classifications-lib.mjs';
 import { verifyZagUpstream } from '../../packages/zag/scripts/verify-upstream.mjs';
+import { verifyZagRuntimeCrosswalk } from './zag-runtime-crosswalk.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -70,6 +71,11 @@ try {
 	verifyZagTestClassifications(REPO);
 } catch (error) {
 	errors.push(`zag test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyZagRuntimeCrosswalk(REPO);
+} catch (error) {
+	errors.push(`zag runtime inventory crosswalk is invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components

@@ -11,6 +11,10 @@ import {
 	toPortablePath,
 } from './harness-lib.mjs';
 import { inventoryFromIdentities, runPristineUpstreamSuite } from './zag-pristine-runtime.mjs';
+import {
+	assertPristineAdaptedCrosswalk,
+	loadZagRuntimeCaseDispositions,
+} from './zag-runtime-crosswalk.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -30,10 +34,8 @@ if (pristine.status !== 0) {
 	process.stderr.write(pristine.stderr);
 	throw new Error('Zag pristine upstream suite failed while generating inventory');
 }
-writeInventory(
-	'packages/zag/audit/pristine-runtime.json',
-	inventoryFromIdentities(pristine.identities),
-);
+const pristineInventory = inventoryFromIdentities(pristine.identities);
+writeInventory('packages/zag/audit/pristine-runtime.json', pristineInventory);
 
 const adaptedFiles = [
 	'packages/zag/tests/upstream/machine.test.ts',
@@ -123,6 +125,13 @@ writeInventory('packages/zag/audit/pristine-wrapper-runtime.json', {
 	tests: wrapperTests,
 });
 
+const dispositions = loadZagRuntimeCaseDispositions(root);
+const crosswalk = assertPristineAdaptedCrosswalk({
+	pristine: pristineInventory,
+	adapted: adaptedInventory,
+	dispositions,
+});
+console.log('runtimeCrosswalk', JSON.stringify(crosswalk, null, 2));
 console.log(
 	'adaptedRuntimeSummary',
 	JSON.stringify(summarizeRuntimeInventories([adaptedInventory]), null, 2),
