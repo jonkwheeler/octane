@@ -9,10 +9,13 @@ export function HotkeysParity() {
 	const [enabled, setEnabled] = useState(true);
 
 	useHotkey('Control+K', () => setSingle((value: number) => value + 1), { enabled });
-	useHotkeys([
-		{ hotkey: 'Control+L', callback: () => setFirst((value: number) => value + 1) },
-		{ hotkey: 'Alt+X', callback: () => setSecond((value: number) => value + 1) },
-	], {});
+	useHotkeys(
+		[
+			{ hotkey: 'Control+L', callback: () => setFirst((value: number) => value + 1) },
+			{ hotkey: 'Alt+X', callback: () => setSecond((value: number) => value + 1) },
+		],
+		{},
+	);
 	useHotkeySequence(['G', 'G'], () => setSequence((value: number) => value + 1), {});
 
 	return <main id="hotkeys-parity">

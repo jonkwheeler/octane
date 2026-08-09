@@ -16,6 +16,31 @@
       "disposition": "octane-only-divergence",
       "reason": "Authenticates upstream evidence and the structured target-ref adaptation without claiming React behavior parity.",
       "divergenceIds": ["plain-ref-target"]
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/upstream-original.test.ts",
+      "disposition": "pristine-upstream-suite",
+      "oracle": "Spawns the pinned upstream Vitest suite unchanged and requires 41 passing cases."
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/upstream/useHotkey.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted port of packages/react-hotkeys/tests/useHotkey.test.tsx."
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/upstream/useHotkeyRegistrations.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted port of packages/react-hotkeys/tests/useHotkeyRegistrations.test.tsx."
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/upstream/useHotkeySequences.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted port of packages/react-hotkeys/tests/useHotkeySequences.test.tsx."
+    },
+    {
+      "path": "packages/tanstack-hotkeys/tests/upstream/useHotkeys.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted port of packages/react-hotkeys/tests/useHotkeys.test.tsx."
     }
   ]
 }

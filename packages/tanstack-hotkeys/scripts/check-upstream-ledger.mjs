@@ -64,14 +64,53 @@ if (sourceFiles.length !== 13 || testFiles.length !== 4 || caseCount !== 41)
 const crosswalk = JSON.parse(
 	readFileSync(resolve(packageRoot, 'audit/upstream-crosswalk.json'), 'utf8'),
 );
+const expectedNames = [
+	'HotkeysProvider',
+	'HotkeysProviderOptions',
+	'HotkeysProviderProps',
+	'HotkeyRegistrationsResult',
+	'ReactHotkeyRecorder',
+	'ReactHotkeySequenceRecorder',
+	'UseHotkeyDefinition',
+	'UseHotkeyOptions',
+	'UseHotkeySequenceDefinition',
+	'UseHotkeySequenceOptions',
+	'useDefaultHotkeysOptions',
+	'useHeldKeyCodes',
+	'useHeldKeys',
+	'useHotkey',
+	'useHotkeyRecorder',
+	'useHotkeyRegistrations',
+	'useHotkeySequence',
+	'useHotkeySequenceRecorder',
+	'useHotkeySequences',
+	'useHotkeys',
+	'useHotkeysContext',
+	'useKeyHold',
+];
+const exportNames = crosswalk.adapterExports.map((entry) => entry.name);
 if (
 	crosswalk.publicEntrypoints.length !== 2 ||
-	crosswalk.adapterExports.length !== 22 ||
+	!Array.isArray(crosswalk.adapterExports) ||
+	exportNames.length !== 22 ||
+	JSON.stringify([...exportNames].sort()) !== JSON.stringify([...expectedNames].sort()) ||
+	crosswalk.adapterExports.some(
+		(entry) =>
+			typeof entry !== 'object' ||
+			!entry.name ||
+			!entry.kind ||
+			!entry.classification ||
+			!entry.reason ||
+			!entry.evidenceTarget ||
+			!entry.source?.path,
+	) ||
 	crosswalk.upstreamTests.length !== 4 ||
-	crosswalk.upstreamTests.reduce((sum, entry) => sum + entry.cases, 0) !== 41
+	crosswalk.upstreamTests.reduce((sum, entry) => sum + entry.cases, 0) !== 41 ||
+	crosswalk.upstreamTests.some((entry) => entry.disposition !== 'adapted') ||
+	crosswalk.typeSuite?.disposition !== 'present'
 )
 	throw new Error('upstream crosswalk drifted');
 
 console.log(
-	'TanStack React Hotkeys upstream ledger is current (26 files, 13 source files, 4 runtime test files, 41 cases).',
+	'TanStack React Hotkeys upstream ledger is current (26 files, 13 source files, 4 runtime test files, 41 cases, 22 named exports).',
 );
