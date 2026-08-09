@@ -22,10 +22,7 @@
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-router-ssr-query/tests/differential",
-        "packages/tanstack-router-ssr-query/tests/parity"
-      ],
+      "roots": ["packages/tanstack-router-ssr-query/tests/differential"],
       "include": ["\\.test\\.ts$"],
       "exclude": []
     }
@@ -59,7 +56,7 @@
         {
           "path": "packages/tanstack-router-ssr-query/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "d778e8913949df9d034b7d88ba626b8c58e6bd143db963806328a6826033aa65",
+          "sha256": "6ae3e69fe62023f30c330f742177db04176f99a22a060a30e09d9c1f2c8f9974",
           "cases": [
             {
               "id": "differential:tanstack-router-ssr-query-provider-ssr",

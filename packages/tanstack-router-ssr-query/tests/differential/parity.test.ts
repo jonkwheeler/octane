@@ -66,17 +66,18 @@ describe('differential: @octanejs/tanstack-router-ssr-query vs @tanstack/react-r
 	});
 
 	// @parity-case differential:tanstack-router-ssr-query-wrap-control
-	it('matches the disabled query-client wrapper control', () => {
-		const octaneRouter = makeRouter(octaneFixture.ExistingWrapper);
-		const reactRouter = makeRouter(() => null);
-		const octaneWrap = octaneRouter.options.Wrap;
-		const reactWrap = reactRouter.options.Wrap;
+	it('matches the disabled query-client wrapper control', async () => {
+		const reactFixture = await loadReactFixture();
+		const octaneExisting = octaneFixture.ExistingWrapper;
+		const reactExisting = reactFixture.ExistingWrapper;
+		const octaneRouter = makeRouter(octaneExisting);
+		const reactRouter = makeRouter(reactExisting);
 		const octaneClient = new OctaneQueryClient();
 		const reactClient = new ReactQueryClient();
 		setupOctane({ router: octaneRouter, queryClient: octaneClient, wrapQueryClient: false } as any);
 		setupReact({ router: reactRouter, queryClient: reactClient, wrapQueryClient: false } as any);
-		expect(octaneRouter.options.Wrap).toBe(octaneWrap);
-		expect(reactRouter.options.Wrap).toBe(reactWrap);
+		expect(octaneRouter.options.Wrap).toBe(octaneExisting);
+		expect(reactRouter.options.Wrap).toBe(reactExisting);
 		expect(typeof octaneRouter.options.dehydrate).toBe(typeof reactRouter.options.dehydrate);
 		octaneClient.clear();
 		reactClient.clear();
