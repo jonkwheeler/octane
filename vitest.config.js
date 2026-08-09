@@ -1939,7 +1939,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'lucide',
 					include: [
@@ -1989,7 +1988,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'lucide-ssr',
 					include: ['packages/lucide/tests/ssr/**/*.test.ts'],
