@@ -1,7 +1,7 @@
 /**
  * Conformance for the surface beyond the core binding: `useShallow` (`/shallow`),
  * middleware (`/middleware`), and store-swap re-subscription. The unstable-selector
- * divergence lives in `unstable-selectors.test.ts` (parity-owned).
+ * divergence lives in `unstable-selectors.test.ts` (ordinary shards).
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createStore } from '@octanejs/zustand';

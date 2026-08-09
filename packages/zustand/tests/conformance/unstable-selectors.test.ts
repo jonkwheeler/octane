@@ -1,7 +1,7 @@
 /**
  * Bounded-divergence case for unstable fresh-reference selectors.
- * Owned by the React parity job via testExecution.include; other extras stay
- * in ordinary CI.
+ * Stays in ordinary shards (octane-only-divergence); not adapted React parity
+ * evidence.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
@@ -12,8 +12,7 @@ beforeEach(() => {
 });
 
 describe('unstable selector — divergence from React', () => {
-	// OCTANE DIVERGENCE[zustand-unstable-selectors][adapted:zustand-unstable-selectors]
-	// @parity-case adapted:zustand-unstable-selectors
+	// OCTANE DIVERGENCE[zustand-unstable-selectors]
 	it('a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)', async () => {
 		let renders = 0;
 		const r = mount(RawObject, { onRender: () => renders++ });

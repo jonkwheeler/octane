@@ -88,48 +88,6 @@
       ]
     },
     {
-      "id": "zustand-adapted-divergence",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "zustand",
-      "notes": "Authenticates bounded stabilization for unstable fresh-reference selectors.",
-      "files": [
-        {
-          "path": "packages/zustand/tests/conformance/unstable-selectors.test.ts",
-          "role": "test",
-          "sha256": "64ab52e93e8b36e52fddeb71178b413e6f4420c8d08f6ed70b44965bf392c149",
-          "cases": [
-            {
-              "id": "adapted:zustand-unstable-selectors",
-              "testName": "a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)",
-              "fullName": "unstable selector \u2014 divergence from React a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)"
-            }
-          ]
-        },
-        {
-          "path": "packages/zustand/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "2d96f5402fe1dcb23c2f9076f28f4f9540b2c0cc436c6006a09526094e501cdf"
-        },
-        {
-          "path": "packages/zustand/tests/differential/fixture-compiler.ts",
-          "role": "support",
-          "sha256": "23506f473c0622e0ff55d54511516a208f32651422afd25e6151bb80aa34bf12"
-        },
-        {
-          "path": "packages/zustand/tests/_fixtures/counter-diff.tsrx",
-          "role": "support",
-          "sha256": "d5d24fd73bcf6479cfccd4c80b0afa4ea164f1b4961adf626965ca5b58b6751e"
-        },
-        {
-          "path": "packages/zustand/tests/_fixtures/multistore-diff.tsrx",
-          "role": "support",
-          "sha256": "d280e294dc8475c70b7c99ddf0ba520a80ee5b14e38257942a197561e27b58ca"
-        }
-      ]
-    },
-    {
       "id": "zustand-adapted-types",
       "type": "adapted-types",
       "oracle": "required",
@@ -171,7 +129,7 @@
   "divergences": [
     {
       "id": "zustand-unstable-selectors",
-      "caseIds": ["adapted:zustand-unstable-selectors"],
+      "caseIds": ["runtime:zustand-unstable-selectors"],
       "upstreamResult": "A selector returning a fresh reference on every read enters React useSyncExternalStore's warning/update loop.",
       "octaneResult": "Octane settles the unstable selection after a bounded number of renders.",
       "rationale": "Octane's external-store scheduling prevents an unbounded render loop while preserving the latest value.",

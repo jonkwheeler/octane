@@ -449,12 +449,9 @@ export default defineConfig({
 				plugins: [octane({ hmr: false, profile: true })],
 			},
 			{
-				// Only the dedicated unstable-selector divergence is parity-owned;
-				// remaining conformance files stay in ordinary shards.
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/zustand/tests/conformance/unstable-selectors.test.ts'],
-				},
+				// All zustand conformance (including the unstable-selector divergence)
+				// stays in ordinary shards; only differential parity.test.ts is
+				// react-parity-owned.
 				test: {
 					name: 'zustand',
 					include: ['packages/zustand/tests/**/*.test.ts'],
