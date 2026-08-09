@@ -11,10 +11,29 @@
     "integrity": "sha256:0bc97caee264afe677503af0d692b97e9bedbbf58e5bfc80b3446f687b165f30",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/dexie/src"], "include": ["\\.ts$"], "exclude": [] },
-    "tests": { "roots": ["packages/dexie/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+    "source": {
+      "roots": [
+        "packages/dexie/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/dexie/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -29,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b15d435c782fc2341f66e1969fa10aee4751e227f793128b7857053f4cf5550d"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -45,7 +64,7 @@
         {
           "path": "packages/dexie/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "243d7735755c062fc6700a206079d365b3c35d9ed1fe4a7f297bdf67ff6c7e82",
+          "sha256": "f18c2d1ef3da130b46cb067ce9a9bc2baf1adadc64499e5646d2b893e14f69c2",
           "cases": [
             {
               "id": "differential:dexie-live-query",
