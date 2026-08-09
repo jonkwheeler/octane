@@ -44,7 +44,7 @@ const manifest = {
 		testRoot: 'test',
 		license: 'MIT',
 		integrity: 'sha256:948ad899c51e73ca9555e8182946978f367410406fe6c2acb4d1012c509c9982',
-		verification: 'recorded-unverified',
+		verification: 'verified',
 	},
 	upstreamSuites: { runtime: 'present', types: 'present' },
 	adaptedRoots: {
