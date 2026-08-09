@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "fea26eb2ce98633fa59c0a5c7239c5d862f034bc74ef12c93831bff0374fc1e8"
+      "lockfileSha256": "7c740656cca087d76f29647eb1c2e791bd1b8d571760e9057dc3e3e7d7ad8a32"
     }
   },
   "lanes": [
@@ -108,7 +108,7 @@
         {
           "path": "packages/valtio/tests/conformance/exports.test.ts",
           "role": "test",
-          "sha256": "eb2f8dcdde12d473c54aa3a3ea5a5ea9beb72067648c8caef418ccbba52af3fe",
+          "sha256": "58f1193e2b7729b8b5ef59d9a4f16c93d15dc62750e424c6356b66a2de498813",
           "cases": [
             {
               "id": "adapted:valtio-debug-labels",
