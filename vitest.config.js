@@ -702,7 +702,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Mixed Octane-only conformance/divergence suite — keep out of the
+				// react-parity group so ordinary shards still own these files.
+				// Parity-owned evidence lives in `nuqs-differential` only.
 				test: {
 					name: 'nuqs',
 					include: ['packages/nuqs/tests/**/*.test.ts'],
@@ -773,7 +775,7 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Octane-only Node server probes — not react-parity group-owned.
 				test: {
 					name: 'nuqs-ssr',
 					include: ['packages/nuqs/tests/ssr/**/*.test.ts'],

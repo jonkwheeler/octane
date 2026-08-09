@@ -12,8 +12,8 @@
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "present",
-    "types": "present"
+    "runtime": "absent",
+    "types": "absent"
   },
   "adaptedRoots": {
     "source": {
@@ -96,7 +96,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "nuqs",
-      "notes": "Authenticates the four documented framework-integration divergences.",
+      "notes": "Repo-authored Octane-only divergence/framework-contract probes (not a one-for-one upstream suite adaptation).",
       "files": [
         {
           "path": "packages/nuqs/tests/conformance/core.test.ts",
@@ -147,7 +147,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "nuqs-ssr",
-      "notes": "Runs the React-free server entry in Node.",
+      "notes": "Repo-authored Octane-only Node server probe (not a one-for-one upstream suite adaptation).",
       "files": [
         {
           "path": "packages/nuqs/tests/ssr/server.test.ts",
@@ -170,7 +170,7 @@
       "environment": "workspace-node",
       "project": "nuqs-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles parser inference, hooks, loader, and serializer declarations.",
+      "notes": "Repo-authored adapted public-API typetests (upstream type suite not vendored; upstreamSuites.types is absent).",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
