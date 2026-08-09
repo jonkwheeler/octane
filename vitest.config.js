@@ -2793,7 +2793,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/sonner/tests/parity/**/*.test.ts'],
+				},
 				test: {
 					name: 'sonner',
 					include: [
@@ -2846,7 +2849,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/sonner/tests/ssr/visibility-guard.test.ts'],
+				},
 				test: {
 					name: 'sonner-ssr',
 					include: ['packages/sonner/tests/ssr/**/*.test.ts'],

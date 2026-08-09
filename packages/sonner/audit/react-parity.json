@@ -12,18 +12,26 @@
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
+    "runtime": "present",
     "types": "absent"
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/sonner/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/sonner/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/sonner/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/sonner/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -78,7 +86,7 @@
         {
           "path": "packages/sonner/audit/test-classifications.json",
           "role": "support",
-          "sha256": "3804456011eb302c3cfc039a29169d5109d87751a4e76d660db7a780e3b43cb6"
+          "sha256": "6109233c6cf3095bc68477c7007d428c49417a8ff4cf68553cb08e5360bc01ee"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -88,7 +96,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "fa1bd97047bddcf8b4797371ef70bd1e3f03211218fb94768bb0c3f4d4ca82bb"
+          "sha256": "daeb29d690a5440e5f4a0dcd2f5e3573c7025f427ecfbe9237fbba2d320f281b"
         }
       ]
     },
@@ -101,21 +109,26 @@
       "notes": "Runs exact Octane DOM cases authenticating native action events and the normal ref prop.",
       "files": [
         {
-          "path": "packages/sonner/tests/toaster.test.ts",
+          "path": "packages/sonner/tests/parity/divergence-contracts.test.ts",
           "role": "test",
-          "sha256": "dc4a4c90b091fbd5b35ea1ee05722a78103cfc0eac2df9a03b95a5be320715e5",
+          "sha256": "9dd811a03dbb27509052f0e81c089a98fcd0659130b6326ce9d5365634a31240",
           "cases": [
             {
               "id": "adapted:sonner-native-action-events",
               "testName": "supports native action/cancel semantics and custom Octane elements",
-              "fullName": "@octanejs/sonner \u2014 Toaster supports native action/cancel semantics and custom Octane elements"
+              "fullName": "@octanejs/sonner — Toaster supports native action/cancel semantics and custom Octane elements"
             },
             {
               "id": "adapted:sonner-normal-ref-prop",
               "testName": "accepts the Toaster host ref as an ordinary prop",
-              "fullName": "@octanejs/sonner \u2014 Toaster accepts the Toaster host ref as an ordinary prop"
+              "fullName": "@octanejs/sonner — Toaster accepts the Toaster host ref as an ordinary prop"
             }
           ]
+        },
+        {
+          "path": "packages/sonner/tests/_helpers.ts",
+          "role": "support",
+          "sha256": "d75b48bc3ca3f6fd4a384a9ee58344d6d06aad46cef388d047fa579ffd84d9fc"
         },
         {
           "path": "packages/sonner/tests/_fixtures/app.tsrx",
@@ -130,12 +143,12 @@
         {
           "path": "packages/sonner/audit/test-classifications.json",
           "role": "support",
-          "sha256": "3804456011eb302c3cfc039a29169d5109d87751a4e76d660db7a780e3b43cb6"
+          "sha256": "6109233c6cf3095bc68477c7007d428c49417a8ff4cf68553cb08e5360bc01ee"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "fa1bd97047bddcf8b4797371ef70bd1e3f03211218fb94768bb0c3f4d4ca82bb"
+          "sha256": "daeb29d690a5440e5f4a0dcd2f5e3573c7025f427ecfbe9237fbba2d320f281b"
         }
       ]
     },
@@ -148,14 +161,14 @@
       "notes": "Runs the server-rendering case that mounts useIsDocumentHidden and authenticates the document visibility guard.",
       "files": [
         {
-          "path": "packages/sonner/tests/ssr/server.test.ts",
+          "path": "packages/sonner/tests/ssr/visibility-guard.test.ts",
           "role": "test",
-          "sha256": "efa586b1aa6fce43d1bc9b074c6a6381b59fd549692328d3147b649243ec194d",
+          "sha256": "a044e407e715087f600f9da78e40d30a943b0b79eee02d2bbce7fff8b65a29e0",
           "cases": [
             {
               "id": "adapted:sonner-ssr-visibility-guard",
               "testName": "guards document.hidden when toast visibility state initializes on the server",
-              "fullName": "@octanejs/sonner \u2014 server rendering guards document.hidden when toast visibility state initializes on the server"
+              "fullName": "@octanejs/sonner — server rendering guards document.hidden when toast visibility state initializes on the server"
             }
           ]
         },
@@ -177,12 +190,12 @@
         {
           "path": "packages/sonner/audit/test-classifications.json",
           "role": "support",
-          "sha256": "3804456011eb302c3cfc039a29169d5109d87751a4e76d660db7a780e3b43cb6"
+          "sha256": "6109233c6cf3095bc68477c7007d428c49417a8ff4cf68553cb08e5360bc01ee"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "fa1bd97047bddcf8b4797371ef70bd1e3f03211218fb94768bb0c3f4d4ca82bb"
+          "sha256": "daeb29d690a5440e5f4a0dcd2f5e3573c7025f427ecfbe9237fbba2d320f281b"
         }
       ]
     }
@@ -190,7 +203,9 @@
   "divergences": [
     {
       "id": "sonner-native-action-events",
-      "caseIds": ["adapted:sonner-native-action-events"],
+      "caseIds": [
+        "adapted:sonner-native-action-events"
+      ],
       "upstreamResult": "Action callbacks receive React synthetic mouse events.",
       "octaneResult": "Action callbacks receive native DOM MouseEvent objects.",
       "rationale": "Octane uses delegated native DOM events rather than React's synthetic event layer.",
@@ -202,7 +217,9 @@
     },
     {
       "id": "sonner-normal-ref-prop",
-      "caseIds": ["adapted:sonner-normal-ref-prop"],
+      "caseIds": [
+        "adapted:sonner-normal-ref-prop"
+      ],
       "upstreamResult": "React exposes the Toaster ref through forwardRef.",
       "octaneResult": "Toaster accepts ref as an ordinary component prop and forwards it to the host section.",
       "rationale": "Octane components do not require React's forwardRef wrapper.",
@@ -214,7 +231,9 @@
     },
     {
       "id": "sonner-ssr-visibility-guard",
-      "caseIds": ["adapted:sonner-ssr-visibility-guard"],
+      "caseIds": [
+        "adapted:sonner-ssr-visibility-guard"
+      ],
       "upstreamResult": "Version 2.0.7 reads document.hidden during render behind its client boundary.",
       "octaneResult": "The initial visibility read is guarded when document is unavailable during server rendering.",
       "rationale": "Octane executes the Toaster component in its server runtime without an RSC client boundary.",

@@ -278,8 +278,8 @@
           "cases": [
             {
               "id": "differential:register",
-              "testName": "register: typing \u2192 per-keystroke validation \u2192 submit \u2192 reset renders byte-identical",
-              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing \u2192 per-keystroke validation \u2192 submit \u2192 reset renders byte-identical"
+              "testName": "register: typing → per-keystroke validation → submit → reset renders byte-identical",
+              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing → per-keystroke validation → submit → reset renders byte-identical"
             },
             {
               "id": "differential:controller",
@@ -311,7 +311,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "fa1bd97047bddcf8b4797371ef70bd1e3f03211218fb94768bb0c3f4d4ca82bb"
+          "sha256": "daeb29d690a5440e5f4a0dcd2f5e3573c7025f427ecfbe9237fbba2d320f281b"
         }
       ]
     }

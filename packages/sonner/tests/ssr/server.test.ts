@@ -2,16 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'octane/server';
 import { toast } from '@octanejs/sonner';
 import { ServerToaster } from './_fixtures/server.tsrx';
-import { VisibilityProbe } from './_fixtures/visibility-probe.tsrx';
 
 describe('@octanejs/sonner — server rendering', () => {
-	// @parity-case adapted:sonner-ssr-visibility-guard
-	it('guards document.hidden when toast visibility state initializes on the server', () => {
-		const { html } = renderToString(VisibilityProbe);
-		expect(html).toContain('data-document-hidden="false"');
-		expect(html).toContain('visibility probe');
-	});
-
 	it('renders the accessible empty host without reading browser globals', () => {
 		const { html } = renderToString(ServerToaster);
 		expect(html).toContain('<h1>Toast host</h1>');

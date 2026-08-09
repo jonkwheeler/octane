@@ -1,57 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { flushSync } from 'octane';
 import { toast } from '@octanejs/sonner';
-import { flushEffects, mount } from '../../octane/tests/_helpers';
 import { ToastState } from '../src/state';
-import { DualToasterApp, showCustom, SonnerStateProbe, ToasterApp } from './_fixtures/app.tsrx';
-
-async function settle(): Promise<void> {
-	flushEffects();
-	flushSync(() => {});
-	await new Promise((resolve) => setTimeout(resolve, 0));
-	flushEffects();
-	flushSync(() => {});
-}
-
-async function wait(ms: number): Promise<void> {
-	await new Promise((resolve) => setTimeout(resolve, ms));
-	await settle();
-}
-
-// A toast leaves the DOM one `TIME_BEFORE_UNMOUNT` timer after it is dismissed,
-// so sleeping for that exact budget makes every such assertion a race the test
-// loses whenever the machine is loaded. Poll for the state being asserted
-// instead; the caller still makes the real assertion afterwards.
-async function waitFor(condition: () => boolean, timeout = 2000): Promise<void> {
-	const deadline = Date.now() + timeout;
-	for (;;) {
-		await settle();
-		if (condition() || Date.now() >= deadline) return;
-		await new Promise((resolve) => setTimeout(resolve, 10));
-	}
-}
-
-// Toasts are delivered to every mounted Toaster, so a root left behind by a
-// failed assertion keeps rendering the next tests' toasts: it doubles
-// `onAutoClose` counts and strands the listeners its Toast children registered.
-// Unmounting only on the success path therefore turns one failure into several,
-// which hides the test that actually broke.
-const mountedRoots = new Set<{ unmount: () => void }>();
-
-function mountApp<P>(...args: Parameters<typeof mount<P>>): ReturnType<typeof mount<P>> {
-	const root = mount<P>(...args);
-	mountedRoots.add(root);
-	return root;
-}
-
-function unmountApp(root: { unmount: () => void }): void {
-	if (mountedRoots.delete(root)) root.unmount();
-}
+import { DualToasterApp, SonnerStateProbe, ToasterApp } from './_fixtures/app.tsrx';
+import { cleanupToasters, mountApp, settle, unmountApp, waitFor } from './_helpers';
 
 afterEach(async () => {
-	toast.dismiss();
-	await wait(220);
-	for (const root of [...mountedRoots]) unmountApp(root);
+	await cleanupToasters();
 	vi.restoreAllMocks();
 	vi.unstubAllGlobals();
 });
@@ -124,71 +79,6 @@ describe('@octanejs/sonner — Toaster', () => {
 		expect(root.container.querySelector('[data-sonner-toast]')?.getAttribute('data-type')).toBe(
 			'success',
 		);
-		unmountApp(root);
-	});
-
-	// @parity-case adapted:sonner-native-action-events
-	it('supports native action/cancel semantics and custom Octane elements', async () => {
-		const root = mountApp(ToasterApp);
-		await settle();
-		let actionTarget: EventTarget | null = null;
-		let cancelEvent: MouseEvent | null = null;
-		let cancelTarget: EventTarget | null = null;
-		const action = vi.fn((event: MouseEvent) => {
-			actionTarget = event.currentTarget;
-			event.preventDefault();
-		});
-		toast('Action toast', {
-			id: 'action',
-			duration: Infinity,
-			action: { label: 'Keep', onClick: action },
-			cancel: {
-				label: 'Cancel',
-				onClick: (event) => {
-					cancelEvent = event;
-					cancelTarget = event.currentTarget;
-				},
-			},
-		});
-		await settle();
-
-		flushSync(() => (root.container.querySelector('[data-action]') as HTMLButtonElement).click());
-		await settle();
-		expect(action).toHaveBeenCalledTimes(1);
-		expect(action.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
-		expect(actionTarget).toBeInstanceOf(HTMLButtonElement);
-		expect(root.container.querySelector('[data-sonner-toast]')).not.toBeNull();
-
-		flushSync(() => (root.container.querySelector('[data-cancel]') as HTMLButtonElement).click());
-		expect(cancelEvent).toBeInstanceOf(MouseEvent);
-		expect(cancelTarget).toBeInstanceOf(HTMLButtonElement);
-		await waitFor(() => root.container.querySelector('[data-sonner-toast]') === null);
-		expect(root.container.querySelector('[data-sonner-toast]')).toBeNull();
-
-		showCustom('custom');
-		await settle();
-		expect(root.container.querySelector('[data-testid="custom-content"]')?.textContent).toContain(
-			'Custom content',
-		);
-		expect(
-			root.container
-				.querySelector('[data-testid="custom-content"]')
-				?.closest('[data-sonner-toast]')
-				?.getAttribute('data-styled'),
-		).toBe('false');
-		unmountApp(root);
-	});
-
-	// @parity-case adapted:sonner-normal-ref-prop
-	it('accepts the Toaster host ref as an ordinary prop', async () => {
-		let host: HTMLElement | null = null;
-		const root = mountApp(ToasterApp, { ref: (node: HTMLElement | null) => (host = node) });
-		await settle();
-		toast('Ref contract', { id: 'ref-contract', duration: Infinity });
-		await settle();
-		expect(host).toBeInstanceOf(HTMLElement);
-		expect(host?.tagName).toBe('SECTION');
-		expect(host?.getAttribute('aria-live')).toBe('polite');
 		unmountApp(root);
 	});
 

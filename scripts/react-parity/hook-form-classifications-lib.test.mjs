@@ -73,7 +73,7 @@ test('verifies an arbitrary binding classification ledger', async (t) => {
 			{ recursive: true },
 		);
 	}
-	assert.deepEqual(verifyPortTestClassifications(root, 'sonner'), { tests: 5 });
+	assert.deepEqual(verifyPortTestClassifications(root, 'sonner'), { tests: 7 });
 	await writeFile(join(root, 'packages/sonner/tests/unclassified.test.ts'), 'export {};\n');
 	assert.throws(
 		() => verifyPortTestClassifications(root, 'sonner'),
