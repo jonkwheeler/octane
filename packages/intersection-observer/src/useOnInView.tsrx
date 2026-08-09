@@ -9,23 +9,40 @@ export function useOnInView(
 	options = typeof options === 'symbol' ? {} : options;
 	const callback = useRef(onChange);
 	callback.current = onChange;
-	const unobserve = useRef<void | (() => void)>(undefined);
+	const observedElement = useRef<Element | null>(null);
+	const observerCleanup = useRef<void | (() => void)>(undefined);
 	const lastInView = useRef<boolean | undefined>(undefined);
 
 	return useCallback((node: Element | null) => {
-		unobserve.current?.();
-		unobserve.current = undefined;
-		lastInView.current = undefined;
-		if (!node || options.skip) return;
-		unobserve.current = observe(node, (inView, entry) => {
+		function cleanupExisting() {
+			if (!observerCleanup.current) return;
+			const cleanup = observerCleanup.current;
+			observerCleanup.current = undefined;
+			cleanup();
+		}
+
+		if (node === observedElement.current) {
+			return observerCleanup.current;
+		}
+
+		if (!node || options.skip) {
+			cleanupExisting();
+			observedElement.current = null;
+			lastInView.current = undefined;
+			return;
+		}
+
+		cleanupExisting();
+		observedElement.current = node;
+		let destroyed = false;
+
+		const destroyObserver = observe(node, (inView, entry) => {
 			const previousInView = lastInView.current;
 			lastInView.current = inView;
 			if (previousInView === undefined && !inView) return;
 			callback.current(inView, entry);
 			if (inView && options.triggerOnce) {
-				unobserve.current?.();
-				unobserve.current = undefined;
-				lastInView.current = undefined;
+				stopObserving();
 			}
 		}, {
 			root: options.root,
@@ -35,10 +52,17 @@ export function useOnInView(
 			delay: options.delay,
 			scrollMargin: options.scrollMargin,
 		});
-		return () => {
-			unobserve.current?.();
-			unobserve.current = undefined;
+
+		function stopObserving() {
+			if (destroyed) return;
+			destroyed = true;
+			destroyObserver();
+			observedElement.current = null;
+			observerCleanup.current = undefined;
 			lastInView.current = undefined;
-		};
+		}
+
+		observerCleanup.current = stopObserving;
+		return stopObserving;
 	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.delay, options.scrollMargin]);
 }

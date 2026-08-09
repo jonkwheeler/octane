@@ -12,6 +12,7 @@ import {
 	ComponentProbe,
 	EffectPoolProbe,
 	EffectProbe,
+	EffectStaleCleanupProbe,
 	EffectSwapProbe,
 	HookProbe,
 	HookSwapProbe,
@@ -238,6 +239,51 @@ describe('Octane binding', () => {
 				return call[0] == null;
 			}),
 		).toHaveLength(0);
+		result.unmount();
+	});
+
+	it('keeps useOnInView observation when a stale cleanup runs after re-attach', () => {
+		const onChange = vi.fn();
+		let attach: ((node: Element | null) => void | (() => void)) | undefined;
+		const result = mount(EffectStaleCleanupProbe, {
+			onChange,
+			onReady(next) {
+				attach = next;
+			},
+		});
+		expect(attach).toBeTypeOf('function');
+		const first = document.createElement('div');
+		const second = document.createElement('div');
+		const staleCleanup = attach!(first);
+		const activeCleanup = attach!(second);
+		expect(staleCleanup).not.toBe(activeCleanup);
+		staleCleanup?.();
+		mockIsIntersecting(second, true);
+		expect(onChange).toHaveBeenCalledOnce();
+		activeCleanup?.();
+		result.unmount();
+	});
+
+	it('does not re-arm useOnInView initial-false skip on same-target reattach', () => {
+		const onChange = vi.fn();
+		let attach: ((node: Element | null) => void | (() => void)) | undefined;
+		const result = mount(EffectStaleCleanupProbe, {
+			onChange,
+			onReady(next) {
+				attach = next;
+			},
+		});
+		const target = document.createElement('div');
+		const cleanup = attach!(target);
+		mockIsIntersecting(target, false);
+		expect(onChange).not.toHaveBeenCalled();
+		mockIsIntersecting(target, false);
+		expect(onChange).toHaveBeenCalledWith(false, expect.objectContaining({ target }));
+		onChange.mockClear();
+		attach!(target);
+		mockIsIntersecting(target, false);
+		expect(onChange).toHaveBeenCalledWith(false, expect.objectContaining({ target }));
+		cleanup?.();
 		result.unmount();
 	});
 });

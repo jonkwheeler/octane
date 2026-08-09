@@ -25,6 +25,15 @@ export function EffectProbe(props: {
 	<div ref={ref} data-testid="effect">effect</div>
 }
 
+export function EffectStaleCleanupProbe(props: {
+	onChange(inView: boolean, entry: IntersectionObserverEntry): void;
+	onReady?(attach: (node: Element | null) => void | (() => void)): void;
+}) {
+	const ref = useOnInView(props.onChange);
+	props.onReady?.(ref);
+	return <div data-testid="effect-stale">effect</div>;
+}
+
 export function EffectSwapProbe(props: {
 	alternate: boolean;
 	onChange(inView: boolean, entry: IntersectionObserverEntry): void;
