@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/rxjs/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/rxjs/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/rxjs/tests/differential"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/rxjs/tests/differential"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
+      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
     }
   },
   "lanes": [
@@ -59,7 +51,7 @@
       "environment": "workspace-node",
       "project": "rxjs-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "One shared fixture compares bind snapshots and later emissions with real @react-rxjs/core.",
+      "notes": "One shared fixture compares bind snapshots and later emissions with real @react-rxjs/core. Outside testExecution until provenance is verified so ordinary CI executes the lane.",
       "files": [
         {
           "path": "packages/rxjs/tests/differential/parity.test.ts",
@@ -81,7 +73,7 @@
         {
           "path": "packages/rxjs/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "190e0be6dd01e18c8bae58a187c7e30159549b7c5ae2a587a548c108e11db1d0"
+          "sha256": "58fc1278cdd3f4fed985c036509a0078e662dbd8e26dd5aedfed9673188b214c"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -91,7 +83,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "55a9a843142489edc65732a0ba4398ca22a4cc4c3e5b8eac5238788e3c7c90b5"
+          "sha256": "d5a988cd4d48598b0de106871259a32e4a77b2c2a970e7c9a87405d05f4b9b46"
         }
       ]
     }

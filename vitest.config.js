@@ -500,7 +500,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Keep outside react-parity testExecution while provenance is
+				// recorded-unverified: the dedicated parity job only validates
+				// that manifest, so ordinary sharded CI must still execute this lane.
 				test: {
 					name: 'rxjs-differential',
 					include: ['packages/rxjs/tests/differential/**/*.test.ts'],
