@@ -1,0 +1,15 @@
+[
+  {
+    "path": "compile.test-d.ts",
+    "sha256": "50a18a6468aa505362d7fa2b68cd93848e892c29fe293af17b9079d1d45aaf0c",
+    "assertionGroups": ["967381b0561f2cba2ad04ec4aa2a43c081f2917abb3aae743fc780eb9160cacd"]
+  },
+  {
+    "path": "setter-types.test-d.ts",
+    "sha256": "9ab4578bfef73edc21d86c24f483d59ce6587318dcf89c615528b083f72fd42f",
+    "assertionGroups": [
+      "27ad51736e405e1cedf64bd95aeb5f6efb983a7500eb26e4e3fa9db355c50e78",
+      "967381b0561f2cba2ad04ec4aa2a43c081f2917abb3aae743fc780eb9160cacd"
+    ]
+  }
+]

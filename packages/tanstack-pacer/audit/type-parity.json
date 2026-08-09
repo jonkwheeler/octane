@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "permittedTransforms": [
+    "import-root: @tanstack/react-pacer -> @octanejs/tanstack-pacer",
+    "setter-types: React.Dispatch/React.SetStateAction -> local Dispatch/SetStateAction",
+    "jsxImportSource: react -> octane"
+  ],
+  "inventories": {
+    "pristine": "packages/tanstack-pacer/audit/upstream-types.json",
+    "adapted": "packages/tanstack-pacer/audit/adapted-types.json"
+  }
+}

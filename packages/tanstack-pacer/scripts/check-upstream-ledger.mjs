@@ -43,6 +43,23 @@ for (const path of files) {
 	if (digest !== checksums.get(path)) throw new Error(`vendored upstream bytes drifted: ${path}`);
 }
 
+const upstreamTypes = JSON.parse(
+	readFileSync(resolve(packageRoot, 'audit/upstream-types.json'), 'utf8'),
+);
+const sourceRelPaths = files
+	.filter((path) => path.startsWith('package/src/'))
+	.map((path) => path.slice('package/src/'.length))
+	.sort();
+const inventoryPaths = upstreamTypes.map((entry) => entry.path).sort();
+if (JSON.stringify(sourceRelPaths) !== JSON.stringify(inventoryPaths))
+	throw new Error('upstream-types inventory drifted from vendored source files');
+for (const entry of upstreamTypes) {
+	const digest = createHash('sha256')
+		.update(readFileSync(resolve(upstreamRoot, 'package/src', entry.path)))
+		.digest('hex');
+	if (digest !== entry.sha256) throw new Error(`upstream-types hash drifted: ${entry.path}`);
+}
+
 const metadata = JSON.parse(readFileSync(resolve(upstreamRoot, 'package/package.json'), 'utf8'));
 if (
 	metadata.name !== '@tanstack/react-pacer' ||
@@ -70,6 +87,27 @@ if (
 )
 	throw new Error('Octane entrypoint surface drifted');
 
+if (!Array.isArray(crosswalk.exports) || crosswalk.exports.length === 0)
+	throw new Error('upstream export crosswalk must enumerate symbols');
+const expectedTotals = crosswalk.expectedTotals;
+if (
+	!expectedTotals ||
+	expectedTotals.exports !== crosswalk.exports.length ||
+	expectedTotals.adapterValues !==
+		crosswalk.exports.filter((entry) => entry.kind === 'value').length ||
+	expectedTotals.adapterTypes !==
+		crosswalk.exports.filter((entry) => entry.kind === 'type').length ||
+	expectedTotals.coreStarReexports !==
+		crosswalk.exports.filter((entry) => entry.kind === 'star-reexport').length
+)
+	throw new Error('upstream export crosswalk totals drifted');
+for (const entry of crosswalk.exports) {
+	if (!entry.name || !entry.kind || !entry.entrypoint || !entry.disposition || !entry.evidence)
+		throw new Error(`export crosswalk row incomplete: ${JSON.stringify(entry)}`);
+}
+if (crosswalk.typeSuite?.disposition !== 'compile-only')
+	throw new Error('typeSuite must record compile-only pristine/adapted lanes');
+
 console.log(
-	'TanStack React Pacer upstream ledger is current (52 files, 43 source files, 16 entrypoints, no runtime test suite).',
+	`TanStack React Pacer upstream ledger is current (52 files, 43 source files, 16 entrypoints, ${crosswalk.exports.length} export rows, compile-only type suite, no runtime test suite).`,
 );

@@ -19,18 +19,29 @@
 The byte-exact tagged adapter directory and root license are vendored under `upstream/`.
 `SHA256SUMS` authenticates all 52 files, including 43 source files. The tagged package contains no
 runtime test, fixture, or snapshot artifacts. Upstream's `test:types` script compiles package source
-but has no dedicated type assertions, so type evidence is `insufficient`.
+with `tsc` and has no dedicated type-assertion files, so suite presence is `insufficient` while
+compile lanes still run.
 
-`audit/upstream-crosswalk.json` accounts for all 16 published entrypoints. The 15 runtime/type
-entrypoints have corresponding Octane subpaths; `./package.json` is metadata-only. The binding
-reuses the exact framework-neutral core, but the absent adapter suite prevents verified status.
+`audit/upstream-crosswalk.json` accounts for all 16 published entrypoints and every adapter
+value/type export plus each core `export *` re-export, with a disposition and evidence pointer per
+row. The binding reuses the exact framework-neutral core. Missing paired runtime coverage keeps the
+binding `recorded-unverified`.
+
+## Type lanes
+
+- Pristine: `typetests/pristine` runs `tsc` over the vendored React adapter source (upstream
+  `test:types`) with pinned React types. Inventory: `audit/upstream-types.json`.
+- Adapted: `typetests/adapted` runs `tsrx-tsc` compile-accept coverage plus
+  `setter-types.test-d.ts` accept/reject evidence for `structural-state-setter-types`.
+  Inventory: `audit/adapted-types.json`. Permitted transforms: `typetests/assertions.md`.
 
 ## Executable evidence
 
 One repo-authored differential runs the same compiled fixture against the Octane and React
-adapters. It observes debounce expiry, leading/trailing throttle behavior, size-triggered batching,
-and cancellation of pending debounced work during teardown. Existing local tests remain Octane
-framework contracts and are not counted as React parity.
+adapters under Vitest fake timers. It advances the exact debounce/throttle waits, asserts
+intermediate observable DOM for leading vs trailing branches, size-triggered batching, and
+cancellation of pending debounced work during teardown. Existing local tests and
+`tests/parity/contracts.test.ts` remain Octane-only contracts and are not counted as React parity.
 
 This representative scheduler lifecycle does not exhaustively prove every sync/async hook family,
 provider, render-prop subscription, state/value helper, or option combination. The binding remains

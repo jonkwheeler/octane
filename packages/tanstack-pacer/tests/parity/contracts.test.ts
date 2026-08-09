@@ -31,8 +31,6 @@ describe('@octanejs/tanstack-pacer parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	// OCTANE DIVERGENCE[structural-state-setter-types][adapted:tanstack-pacer-state-setters]
-	// @parity-case adapted:tanstack-pacer-state-setters
 	it('keeps the structural state-setter type adaptation explicit', () => {
 		expect(status.divergences.join(' ')).toContain('structurally identical local aliases');
 	});
