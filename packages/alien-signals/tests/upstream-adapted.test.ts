@@ -412,25 +412,36 @@ describe('Alien React Library', () => {
 	it('should handle concurrent updates correctly', async function shouldHandleConcurrentUpdatesCorrectly() {
 		const signal = createSignal(0);
 		const effectFn = vi.fn();
+		const setters: Array<(value: number | ((previous: number) => number)) => void> = [];
+		const record = function recordSetter(
+			setter: (value: number | ((previous: number) => number)) => void,
+		) {
+			setters.push(setter);
+		};
+		// Upstream schedules result.current[1] (the useSignal setter). Capture that
+		// setter via the SetterProbe-style record callback so a no-op setter fails.
 		const result = mount(EffectAndSignal, {
 			source: signal,
 			onEffect: effectFn,
+			record,
 		});
 		await nextPaint();
+		const setValue = setters.at(-1);
+		expect(setValue).toBeTypeOf('function');
 		// Same microtask-stratum concurrent writes as upstream's
 		// Promise.all([Promise.resolve().then(setter)...]) inside async act.
 		await Promise.all([
 			Promise.resolve().then(function setOne() {
-				signal(1);
+				setValue?.(1);
 			}),
 			Promise.resolve().then(function setTwo() {
-				signal(2);
+				setValue?.(2);
 			}),
 			Promise.resolve().then(function setThree() {
-				signal(3);
+				setValue?.(3);
 			}),
 			Promise.resolve().then(function setFour() {
-				signal(4);
+				setValue?.(4);
 			}),
 		]);
 		await nextPaint();

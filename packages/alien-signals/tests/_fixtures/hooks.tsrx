@@ -207,12 +207,14 @@ export function EffectCounter(props: {
 export function EffectAndSignal(props: {
 	source: WritableSignal<number>;
 	onEffect: () => void;
+	record: (setter: (value: number | ((previous: number) => number)) => void) => void;
 }) @{
 	useSignalEffect(() => {
 		props.source();
 		props.onEffect();
 	});
 	const [value, setValue] = useSignal(props.source);
+	props.record(setValue);
 	<div>
 		<p id="value">{value as string}</p>
 		<button id="set1" onClick={() => setValue(1)}>set1</button>
