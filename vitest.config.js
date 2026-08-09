@@ -1598,6 +1598,11 @@ export default defineConfig({
 					name: 'wagmi-differential',
 					include: ['packages/wagmi/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
+					// Dual-runtime mount + async mock connect can exceed Vitest's 5s
+					// default under full-suite shard contention (same headroom as
+					// dnd-kit-differential).
+					testTimeout: 30_000,
+					hookTimeout: 30_000,
 					globalSetup: ['packages/wagmi/tests/differential/_setup.ts'],
 					globals: false,
 				},
