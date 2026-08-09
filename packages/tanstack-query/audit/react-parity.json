@@ -111,9 +111,9 @@
       "notes": "Authenticates the documented Octane pending-boundary adaptation and its consumer-visible loading-to-data lifecycle.",
       "files": [
         {
-          "path": "packages/tanstack-query/tests/conformance/suspense.test.ts",
+          "path": "packages/tanstack-query/tests/conformance/adapted-suspense.test.ts",
           "role": "test",
-          "sha256": "e6d61a427964a529c4549bdf6e87a1ae31d18288f54f49352d9541119faa5153",
+          "sha256": "f68e440467e56d7916eb23aee6233bb4e134bf47f217f75869d726e1925acc01",
           "cases": [
             {
               "id": "adapted:tanstack-query-suspense",

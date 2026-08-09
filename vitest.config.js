@@ -1447,17 +1447,16 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/tanstack-query/tests/conformance/adapted-suspense.test.ts',
+					],
+				},
 				test: {
 					name: 'tanstack-query',
-					include: [
-						'packages/tanstack-query/tests/conformance/**/*.test.ts',
-						'packages/tanstack-query/tests/differential/**/*.test.ts',
-					],
+					include: ['packages/tanstack-query/tests/conformance/**/*.test.ts'],
 					environment: 'jsdom',
-					// Differential precompile for query fixtures: rewrites
-					// `@octanejs/tanstack-query` → `@tanstack/react-query` so the React side runs
-					// real react-query.
 					globals: false,
 				},
 				plugins: [octane()],

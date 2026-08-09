@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "tests": [
     {
+      "path": "packages/tanstack-query/tests/conformance/adapted-suspense.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-query-octane-suspense",
+      "reason": "Authenticates Octane pending-boundary integration while preserving the upstream observable loading and data lifecycle."
+    },
+    {
       "path": "packages/tanstack-query/tests/conformance/boundaries.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks Octane error-boundary lifecycle behavior; it is not a React runtime oracle."
@@ -33,9 +39,8 @@
     },
     {
       "path": "packages/tanstack-query/tests/conformance/suspense.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-query-octane-suspense",
-      "reason": "Authenticates Octane pending-boundary integration while preserving the upstream observable loading and data lifecycle."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks additional Octane suspense and error-boundary cases; it is not same-scenario React execution."
     },
     {
       "path": "packages/tanstack-query/tests/conformance/transition-suspense.test.ts",
