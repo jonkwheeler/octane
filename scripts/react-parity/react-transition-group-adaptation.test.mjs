@@ -67,3 +67,20 @@ test('rejects a removed required adapted case', function rejectRemovedAdaptation
 		buildAdaptationInventory(pristineFixture(), adapted);
 	}, /Missing required adapted identity/);
 });
+
+test('records each adapted case source file', function recordAdaptedFiles() {
+	const pristine = pristineFixture();
+	const adapted = adaptedFixture();
+	adapted.tests[0] = {
+		...adapted.tests[0],
+		file: 'packages/react-transition-group/tests/adapted/First.test.ts',
+	};
+	adapted.tests[1] = {
+		...adapted.tests[1],
+		file: 'packages/react-transition-group/tests/adapted/Second.test.ts',
+	};
+
+	const inventory = buildAdaptationInventory(pristine, adapted);
+	assert.equal(inventory.cases[0].adaptedFile, adapted.tests[0].file);
+	assert.equal(inventory.cases[1].adaptedFile, adapted.tests[1].file);
+});

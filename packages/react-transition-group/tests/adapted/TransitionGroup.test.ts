@@ -44,13 +44,21 @@ describe('TransitionGroup', function transitionGroupSuite() {
 			vi.runAllTimers();
 		});
 		expect(result.container.querySelectorAll('[data-group-item]')).toHaveLength(2);
+		expect(trace).toEqual(['enter:two', 'entering:two', 'entered:two']);
+		trace.length = 0;
 		await act(function clear() {
 			click(result.container, '#group-clear');
 			vi.runAllTimers();
 		});
 		expect(result.container.querySelectorAll('[data-group-item]')).toHaveLength(0);
-		expect(trace).toContain('exited:one');
-		expect(trace).toContain('exited:two');
+		expect(trace).toEqual([
+			'exit:one',
+			'exiting:one',
+			'exit:two',
+			'exiting:two',
+			'exited:one',
+			'exited:two',
+		]);
 		result.unmount();
 	});
 });

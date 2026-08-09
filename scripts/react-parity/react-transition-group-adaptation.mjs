@@ -35,16 +35,16 @@ export function buildAdaptationInventory(pristine, adapted) {
 		pristineByName.set(name, test);
 	}
 
-	const adaptedNames = new Set();
+	const adaptedByName = new Map();
 	for (const test of adapted.tests) {
 		const name = upstreamName(test);
 		if (!pristineByName.has(name))
 			throw new Error(`Adapted case has no upstream identity: ${name}`);
-		if (adaptedNames.has(name)) throw new Error(`Duplicate adapted identity: ${name}`);
-		adaptedNames.add(name);
+		if (adaptedByName.has(name)) throw new Error(`Duplicate adapted identity: ${name}`);
+		adaptedByName.set(name, test);
 	}
 	for (const name of pristineByName.keys()) {
-		if (name !== findDOMNodeCase && !adaptedNames.has(name)) {
+		if (name !== findDOMNodeCase && !adaptedByName.has(name)) {
 			throw new Error(`Missing required adapted identity: ${name}`);
 		}
 	}
@@ -55,11 +55,12 @@ export function buildAdaptationInventory(pristine, adapted) {
 			upstreamFile: test.file,
 			fullName: test.fullName,
 		};
-		if (adaptedNames.has(test.fullName)) {
+		const adaptedTest = adaptedByName.get(test.fullName);
+		if (adaptedTest) {
 			return {
 				...base,
 				disposition: 'adapted',
-				adaptedFile: 'packages/react-transition-group/tests/adapted/ChildMapping.test.ts',
+				adaptedFile: adaptedTest.file,
 			};
 		}
 		if (test.fullName === findDOMNodeCase) {
@@ -80,7 +81,7 @@ export function buildAdaptationInventory(pristine, adapted) {
 	return {
 		schemaVersion: 1,
 		upstreamCases: pristine.tests.length,
-		adaptedCases: adaptedNames.size,
+		adaptedCases: adaptedByName.size,
 		notApplicableCases: cases.filter(function notApplicable(entry) {
 			return entry.disposition === 'not-applicable';
 		}).length,

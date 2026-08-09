@@ -117,17 +117,17 @@
         {
           "path": "packages/react-transition-group/audit/adaptation.json",
           "role": "support",
-          "sha256": "3bb93a15210e72ffe3ccf8f43e12a818608bf88f5337c1e11887250bf635cf4e"
+          "sha256": "3bd1935b936493ad4656075c1bbdd0f0fefec76a4343d61ae47f20674670e21f"
         },
         {
           "path": "scripts/react-parity/react-transition-group-adaptation.mjs",
           "role": "support",
-          "sha256": "c35911fcdd261ccb9d3d5b69ba1382ba811640775e88e111b1cd3f0d6930eef0"
+          "sha256": "178939aa03947ba96fe19685b9276edaedb018b4b721072f3e681a51466e6271"
         },
         {
           "path": "scripts/react-parity/react-transition-group-adaptation.test.mjs",
           "role": "support",
-          "sha256": "67f4804cacc346ed8cc4071d3f29575ac29d79a3a516a0619b9f603cada311af"
+          "sha256": "bebad24ecf99b00c424f133a4d8c63f0d4054eb781f545d3e390de844aa79383"
         }
       ]
     }

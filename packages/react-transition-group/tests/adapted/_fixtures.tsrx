@@ -23,6 +23,7 @@ export interface TransitionHarnessProps {
 export function TransitionHarness(props: TransitionHarnessProps) @{
 	const [shown, setShown] = useState(props.initial === true);
 	const nodeRef = useRef<HTMLDivElement | null>(null);
+	const timeout = Object.prototype.hasOwnProperty.call(props, 'timeout') ? props.timeout : 10;
 	function toggle() {
 		setShown(function invert(value) {
 			return !value;
@@ -69,7 +70,7 @@ export function TransitionHarness(props: TransitionHarnessProps) @{
 			unmountOnExit={props.unmountOnExit}
 			enter={props.enter}
 			exit={props.exit}
-			timeout={props.timeout ?? 10}
+			timeout={timeout}
 			addEndListener={props.addEndListener}
 			nodeRef={nodeRef}
 			onEnter={onEnter}
@@ -148,25 +149,67 @@ export function CSSHarness(props: CSSHarnessProps) @{
 	</main>
 }
 
-export function GroupHarness(props: { trace: string[] }) @{
-	const [items, setItems] = useState(['one']);
+export interface GroupHarnessProps {
+	trace: string[];
+	initialItems?: string[];
+	initialExit?: boolean;
+	enter?: boolean;
+}
+
+export function GroupHarness(props: GroupHarnessProps) @{
+	const [items, setItems] = useState(props.initialItems ?? ['one']);
+	const [exitEnabled, setExitEnabled] = useState(props.initialExit ?? true);
 	function replace() {
-		setItems(['two']);
+		setItems(function nextItem(current) {
+			return current[0] === 'one' ? ['two'] : ['three'];
+		});
 	}
 	function add() {
 		setItems(['one', 'two']);
 	}
+	function showOne() {
+		setItems(['one']);
+	}
 	function clear() {
 		setItems([]);
+	}
+	function enableExit() {
+		setExitEnabled(true);
 	}
 	const children: ElementDescriptor[] = [];
 	for (const id of items) {
 		const nodeRef = { current: null } as { current: HTMLSpanElement | null };
+		function entered() {
+			props.trace.push('entered:' + id);
+		}
+		function entering() {
+			props.trace.push('entering:' + id);
+		}
+		function enter() {
+			props.trace.push('enter:' + id);
+		}
+		function exiting() {
+			props.trace.push('exiting:' + id);
+		}
+		function exit() {
+			props.trace.push('exit:' + id);
+		}
 		function exited() {
 			props.trace.push('exited:' + id);
 		}
 		children.push(
-			<CSSTransition key={id} nodeRef={nodeRef} timeout={10} classNames="yolo" onExited={exited}>
+			<CSSTransition
+				key={id}
+				nodeRef={nodeRef}
+				timeout={10}
+				classNames="yolo"
+				onEnter={enter}
+				onEntering={entering}
+				onEntered={entered}
+				onExit={exit}
+				onExiting={exiting}
+				onExited={exited}
+			>
 				<span ref={nodeRef} data-group-item={id}>{id}</span>
 			</CSSTransition>,
 		);
@@ -174,7 +217,42 @@ export function GroupHarness(props: { trace: string[] }) @{
 	<main>
 		<button id="group-replace" onClick={replace}>{'replace'}</button>
 		<button id="group-add" onClick={add}>{'add'}</button>
+		<button id="group-one" onClick={showOne}>{'one'}</button>
 		<button id="group-clear" onClick={clear}>{'clear'}</button>
+		<button id="group-enable-exit" onClick={enableExit}>{'enable exit'}</button>
+		<TransitionGroup enter={props.enter} exit={exitEnabled} children={children} />
+	</main>
+}
+
+function NullChild() {
+	return null;
+}
+
+export function NullRenderingGroupHarness(props: { trace: string[] }) @{
+	const [shown, setShown] = useState(false);
+	function show() {
+		setShown(true);
+	}
+	function hide() {
+		setShown(false);
+	}
+	function entered() {
+		props.trace.push('entered');
+	}
+	function exited() {
+		props.trace.push('exited');
+	}
+	const children: ElementDescriptor[] = [];
+	if (shown) {
+		children.push(
+			<CSSTransition key="null" classNames="yolo" timeout={0} onEntered={entered} onExited={exited}>
+				<NullChild />
+			</CSSTransition>,
+		);
+	}
+	<main>
+		<button id="null-group-show" onClick={show}>{'show'}</button>
+		<button id="null-group-hide" onClick={hide}>{'hide'}</button>
 		<TransitionGroup children={children} />
 	</main>
 }

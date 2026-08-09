@@ -2,6 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, mount } from '../../../octane/tests/_helpers.ts';
 import { TransitionHarness, type TransitionHarnessProps } from './_fixtures.tsrx';
 
+interface Done {
+	(): void;
+}
+
 function click(container: HTMLElement) {
 	(container.querySelector('#transition-toggle') as HTMLButtonElement).click();
 }
@@ -52,18 +56,21 @@ describe('Transition', function transitionSuite() {
 
 	it('should allow addEndListener instead of timeouts', async function endListener() {
 		const calls: string[] = [];
+		let finishTransition: Done | undefined;
 		function listener(done: () => void) {
 			calls.push('listener');
-			setTimeout(done, 0);
+			finishTransition = done;
 		}
 		const result = createHarness({ addEndListener: listener, timeout: undefined });
 		await act(function start() {
 			click(result.view.container);
 		});
-		await act(function finish() {
-			vi.runAllTimers();
-		});
 		expect(calls).toEqual(['listener']);
+		expect(vi.getTimerCount()).toBe(0);
+		expect(status(result.view.container)).toBe('entering');
+		await act(function finishFromListener() {
+			finishTransition?.();
+		});
 		expect(status(result.view.container)).toBe('entered');
 		result.view.unmount();
 	});

@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, mount } from '../../../octane/tests/_helpers.ts';
-import { CustomWrapperHarness, GroupHarness, GroupShapeHarness } from './_fixtures.tsrx';
+import {
+	CustomWrapperHarness,
+	GroupHarness,
+	GroupShapeHarness,
+	NullRenderingGroupHarness,
+} from './_fixtures.tsrx';
 
 function items(container: HTMLElement) {
 	return Array.from(container.querySelectorAll('[data-group-item]'));
@@ -46,15 +51,27 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 	});
 
 	it('should switch transitionLeave from false to true', async function enableExit() {
-		const result = mount(GroupHarness, { trace: [] });
-		await act(function add() {
-			click(result.container, '#group-add');
+		const result = mount(GroupHarness, { trace: [], initialExit: false, enter: false });
+		await act(function replaceWithoutExit() {
+			click(result.container, '#group-replace');
+			vi.runAllTimers();
 		});
-		expect(items(result.container)).toHaveLength(2);
-		await act(function clear() {
-			click(result.container, '#group-clear');
+		expect(
+			items(result.container).map(function id(element) {
+				return element.getAttribute('data-group-item');
+			}),
+		).toEqual(['two']);
+		await act(function enableExit() {
+			click(result.container, '#group-enable-exit');
 		});
-		expect(items(result.container)).toHaveLength(2);
+		await act(function replaceWithExit() {
+			click(result.container, '#group-replace');
+		});
+		expect(
+			items(result.container).map(function id(element) {
+				return element.getAttribute('data-group-item');
+			}),
+		).toEqual(['three', 'two']);
 		result.unmount();
 	});
 
@@ -66,12 +83,18 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 	});
 
 	it('should work with a child which renders as null', async function nullRenderingChild() {
-		const result = mount(GroupHarness, { trace: [] });
-		await act(function clear() {
-			click(result.container, '#group-clear');
+		const trace: string[] = [];
+		const result = mount(NullRenderingGroupHarness, { trace });
+		await act(function enterNullChild() {
+			click(result.container, '#null-group-show');
 			vi.runAllTimers();
 		});
-		expect(items(result.container)).toHaveLength(0);
+		expect(trace).toEqual(['entered']);
+		await act(function exitNullChild() {
+			click(result.container, '#null-group-hide');
+			vi.runAllTimers();
+		});
+		expect(trace).toEqual(['entered', 'exited']);
 		result.unmount();
 	});
 
@@ -85,8 +108,12 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		result.unmount();
 	});
 
-	it('should transition from false to one', function falseToOne() {
-		const result = mount(GroupHarness, { trace: [] });
+	it('should transition from false to one', async function falseToOne() {
+		const result = mount(GroupHarness, { trace: [], initialItems: [] });
+		expect(items(result.container)).toHaveLength(0);
+		await act(function showOne() {
+			click(result.container, '#group-one');
+		});
 		expect(items(result.container)).toHaveLength(1);
 		expect(items(result.container)[0].getAttribute('data-group-item')).toBe('one');
 		result.unmount();
