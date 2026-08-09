@@ -17,20 +17,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-form/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-form/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-form/tests/conformance"
-      ],
+      "roots": ["packages/tanstack-form/tests/conformance"],
       "include": [
         "(?:createFormHook|onChangeListenTo\\.adapter|useField|useForm|useFormGroup)\\.test\\.ts$"
       ],
@@ -98,7 +90,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6583f7b33a92e1e2fe97372bfebcb78bce7db35288bea24b156ca51f4af74d4a"
+          "sha256": "6ec3ef511c292580b9fdee0043d5fea591f0b4be1436a58c2be3d24e80c3e7ba"
         }
       ]
     },
@@ -153,7 +145,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6583f7b33a92e1e2fe97372bfebcb78bce7db35288bea24b156ca51f4af74d4a"
+          "sha256": "6ec3ef511c292580b9fdee0043d5fea591f0b4be1436a58c2be3d24e80c3e7ba"
         }
       ]
     },
