@@ -126,18 +126,5 @@
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "zustand-unstable-selectors",
-      "caseIds": ["runtime:zustand-unstable-selectors"],
-      "upstreamResult": "A selector returning a fresh reference on every read enters React useSyncExternalStore's warning/update loop.",
-      "octaneResult": "Octane settles the unstable selection after a bounded number of renders.",
-      "rationale": "Octane's external-store scheduling prevents an unbounded render loop while preserving the latest value.",
-      "classification": "framework-integration",
-      "consumerImpact": "Misconfigured selectors do not loop indefinitely, but may still cause avoidable rerenders.",
-      "migrationGuidance": "Return stable selector values or wrap object/array selectors with useShallow.",
-      "owner": "@octanejs/zustand",
-      "reviewCondition": "Review if React or Zustand changes unstable snapshot handling."
-    }
-  ]
+  "divergences": []
 }

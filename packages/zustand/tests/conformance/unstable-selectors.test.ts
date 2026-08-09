@@ -12,7 +12,8 @@ beforeEach(() => {
 });
 
 describe('unstable selector — divergence from React', () => {
-	// OCTANE DIVERGENCE[zustand-unstable-selectors]
+	// Framework-contract pin for Octane's bounded settle on unstable selectors.
+	// Not harness-linked adapted parity evidence until verified upstream suites land.
 	it('a fresh-object selector does NOT infinite-loop (octane settles; React would loop + warn)', async () => {
 		let renders = 0;
 		const r = mount(RawObject, { onRender: () => renders++ });
