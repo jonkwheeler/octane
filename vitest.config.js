@@ -1723,15 +1723,10 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-pristine',
-					include: ['packages/react-resizable-panels/upstream/source/lib/**/*.test.{ts,tsx}'],
-					setupFiles: ['packages/react-resizable-panels/upstream/source/vitest.setup.ts'],
-					environment: 'jsdom',
+					include: ['packages/react-resizable-panels/tests/upstream-original.test.ts'],
+					environment: 'node',
 					globals: false,
-					server: { deps: { inline: ['vitest-fail-on-console'] } },
 					sequence: { groupOrder: 1 },
-				},
-				resolve: {
-					dedupe: ['vitest'],
 				},
 			},
 			{
@@ -1743,6 +1738,7 @@ export default defineConfig({
 						'packages/react-resizable-panels/tests/browser/**',
 						'packages/react-resizable-panels/tests/differential/**',
 						'packages/react-resizable-panels/tests/ssr/**',
+						'packages/react-resizable-panels/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -1800,7 +1796,7 @@ export default defineConfig({
 					environment: 'node',
 					globals: false,
 				},
-				plugins: [octane()],
+				plugins: [octane({ ssr: true })],
 				resolve: {
 					alias: [
 						{

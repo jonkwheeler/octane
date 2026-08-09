@@ -32,16 +32,14 @@ describe('react-resizable-panels runtime parity evidence', () => {
 		assert.deepEqual(actual, expected);
 	});
 
-	test('all upstream and port-authored registrations have a terminal classification', () => {
-		const upstream = JSON.parse(
-			readFileSync(path.join(packageRoot, 'audit/test-inventory.json'), 'utf8'),
+	test('port tests use the documented disposition taxonomy', () => {
+		const classifications = JSON.parse(
+			readFileSync(path.join(packageRoot, 'audit/test-classifications.json'), 'utf8'),
 		);
-		const port = JSON.parse(
-			readFileSync(path.join(packageRoot, 'audit/port-test-inventory.json'), 'utf8'),
-		);
-		assert.equal(upstream.registrationCount, 329);
-		assert.equal(port.registrationCount, 16);
-		assert.ok(upstream.artifacts.every((artifact) => artifact.disposition === 'adapted'));
-		assert.ok(port.artifacts.every((artifact) => artifact.classification === 'port-authored'));
+		const dispositions = new Set(classifications.tests.map((entry) => entry.disposition));
+		assert.equal(dispositions.has('port-authored'), false);
+		assert.ok(dispositions.has('react-octane-differential'));
+		assert.ok(dispositions.has('octane-only-framework-contract'));
+		assert.ok(dispositions.has('unmodified-upstream-suite-wrapper'));
 	});
 });

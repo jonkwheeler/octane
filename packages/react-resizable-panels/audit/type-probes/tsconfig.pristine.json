@@ -1,6 +1,15 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "jsx": "react-jsx", "types": ["node", "react", "react-dom"] },
-  "include": ["./pristine.ts"],
-  "exclude": ["../../src", "../../tests", "./expressibility.ts", "./proposed-public-types.ts"]
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["node", "react", "react-dom"]
+  },
+  "include": ["./public-api.test-d.ts"],
+  "exclude": [
+    "../../src",
+    "../../tests",
+    "./expressibility.ts",
+    "./proposed-public-types.ts",
+    "./pristine.ts"
+  ]
 }

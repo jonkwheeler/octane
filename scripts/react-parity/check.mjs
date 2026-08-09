@@ -15,6 +15,9 @@ import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+import { verifyReactResizablePanelsUpstream } from './react-resizable-panels-upstream-lib.mjs';
+import { verifyReactResizablePanelsTypes } from './react-resizable-panels-types-lib.mjs';
+import { verifyReactResizablePanelsTestClassifications } from './react-resizable-panels-classifications-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -58,6 +61,21 @@ try {
 	verifyLivestoreTestClassifications(REPO);
 } catch (error) {
 	errors.push(`livestore test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyReactResizablePanelsUpstream(REPO);
+} catch (error) {
+	errors.push(`react-resizable-panels upstream evidence is invalid: ${error.message}`);
+}
+try {
+	verifyReactResizablePanelsTypes(REPO);
+} catch (error) {
+	errors.push(`react-resizable-panels type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyReactResizablePanelsTestClassifications(REPO);
+} catch (error) {
+	errors.push(`react-resizable-panels test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
