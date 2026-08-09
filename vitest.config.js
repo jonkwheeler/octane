@@ -1865,7 +1865,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'three',
 					include: ['packages/three/tests/**/*.test.ts'],
@@ -1875,14 +1874,13 @@ export default defineConfig({
 					// pinned bundle contract. Enforced HERE because the compat script's
 					// CLI --exclude flags proved unreliable once `pnpm add
 					// --lockfile=false` re-keys the workspace's vitest instances.
+					// Differential files are always owned by `three-differential`.
 					exclude: [
 						'packages/three/tests/browser/**/*.test.ts',
-						...(process.env.OCTANE_THREE_COMPAT_VERSION !== undefined
-							? ['packages/three/tests/**/*differential.test.ts']
-							: []),
+						'packages/three/tests/**/*differential.test.ts',
 					],
 					environment: 'jsdom',
-										globals: false,
+					globals: false,
 					server: { deps: { inline: ['@react-three/fiber'] } },
 				},
 				plugins: [octane({ renderers: THREE_RENDERERS })],
@@ -1902,7 +1900,10 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/three/tests/browser/xr.test.ts'],
+				},
 				test: {
 					name: 'three-browser',
 					include:

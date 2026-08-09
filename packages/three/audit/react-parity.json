@@ -38,7 +38,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "three",
+      "project": "three-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs scene, events, capture, portal, and Suspense behavior against the pinned R3F oracle.",
       "files": [

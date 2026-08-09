@@ -355,14 +355,15 @@ describe('CI workflow aggregation', () => {
 		assert.equal(projects[1].testExecution, undefined);
 	});
 
-	test('runs Three browser parity only in Chromium-capable jobs', () => {
+	test('runs Three browser suites only in Chromium-capable jobs', () => {
 		assert.match(
 			jobSource('test_shard'),
 			/--exclude "packages\/three\/tests\/browser\/\*\*\/\*\.test\.ts"/,
 		);
 		assert.match(jobSource('heavy_integration'), /packages\/three\/tests\/browser/);
 		assert.match(jobSource('heavy_integration'), /playwright install --with-deps chromium/);
-		assert.match(jobSource('lint_checks'), /playwright install --with-deps chromium/);
+		assert.doesNotMatch(jobSource('lint_checks'), /@octanejs\/three.*playwright install/);
+		assert.doesNotMatch(jobSource('react_parity_checks'), /@octanejs\/three/);
 	});
 });
 
