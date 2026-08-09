@@ -1,4 +1,4 @@
-// OCTANE DIVERGENCE[styled-components-dynamic-creation-heuristic][adapted:styled-components-dynamic-creation-heuristic]:
+// Package contract (ordinary test evidence, not parity-counted):
 // Octane adaptation: upstream detects styled() calls made during render by
 // probing the React hook dispatcher (monkey-patching console.error around a
 // throwaway useState call). Octane has no equivalent probe, so this uses a

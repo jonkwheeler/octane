@@ -731,6 +731,8 @@ SSR / hydration: Supported and tested: zero-config collection into `RenderResult
 
 Scope/evidence last checked: 2026-08-02.
 
+- Bounded React parity records the pinned repository runtime and type suites as present, runs six exact same-fixture differential scenarios under the react-parity job, and keeps factory/SSR/distribution/type-contract adaptations as ordinary package tests until pristine and one-for-one adapted lanes land.
+
 ## @octanejs/stylex
 
 [`packages/stylex`](../packages/stylex) `0.1.30` — ports `@stylexjs/stylex@0.19.0`. Status data: [`packages/stylex/status.json`](../packages/stylex/status.json).

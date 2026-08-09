@@ -2,12 +2,12 @@
 //
 // On octane, SSR style collection is AUTOMATIC: every server-side style insert
 // forwards to octane's per-request css channel, so `renderToString` returns
-// OCTANE DIVERGENCE[styled-components-automatic-ssr][adapted:styled-components-automatic-ssr]:
 // `{ html, css }` and streaming interleaves styles without any setup. This
 // class is a compatibility shim for upstream-style code: its capture sheet
 // additionally accumulates rules in-memory so `getStyleTags()` /
 // `getStyleElement()` keep working. `interleaveWithNodeStream` is not
 // supported — octane's `renderToPipeableStream` already streams styles.
+// Package contract (ordinary test evidence, not parity-counted).
 import { createElement } from 'octane';
 
 import { SC_ATTR, SC_ATTR_VERSION, SC_VERSION } from '../constants';
@@ -82,7 +82,7 @@ export default class ServerStyleSheet {
 	};
 
 	interleaveWithNodeStream(_input: unknown): never {
-		// OCTANE DIVERGENCE[styled-components-automatic-ssr][adapted:styled-components-no-node-stream-interleave]:
+		// Package contract (ordinary test evidence, not parity-counted):
 		// Octane's renderToPipeableStream already emits each
 		// pass's style chunks ahead of its html, so there is nothing to interleave.
 		throw styledError(3);

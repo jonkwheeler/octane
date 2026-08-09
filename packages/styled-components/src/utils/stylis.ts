@@ -366,8 +366,8 @@ export default function createStylisInstance(
 	for (let i = 0; i < plugins.length; i++) {
 		// Upstream 6.4.3 calls the error factory here without `throw`ing its
 		// result, so unnamed plugins silently collide. The octane port enforces
-		// OCTANE DIVERGENCE[styled-components-unnamed-stylis-plugin][adapted:styled-components-unnamed-stylis-plugin]:
 		// the documented error-15 contract.
+		// Package contract (ordinary test evidence, not parity-counted).
 		if (!plugins[i].name) throw throwStyledError(15);
 		h = phash(h, plugins[i].name);
 	}

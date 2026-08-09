@@ -6,7 +6,6 @@ import styled, { isStyledComponent, withTheme } from '@octanejs/styled-component
 import { getRenderedCSS, mount } from '../_helpers';
 
 describe('factory API', () => {
-	// @parity-case adapted:styled-components-brand-symbol
 	it('isStyledComponent identifies styled components but not wrappers or plain fns', () => {
 		const S = styled.div``;
 		expect(isStyledComponent(S)).toBe(true);
@@ -16,7 +15,6 @@ describe('factory API', () => {
 		expect(isStyledComponent(withTheme(S as any))).toBe(false);
 	});
 
-	// @parity-case adapted:styled-components-default-props
 	it('folds defaultProps through styled(Styled) with deep merge, driving the theme', () => {
 		const Base = styled.h2`
 			color: ${(p: any) => p.theme.color};

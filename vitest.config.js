@@ -2973,13 +2973,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: [
-						'packages/styled-components/tests/adapted/**/*.test.ts',
-						'packages/styled-components/tests/divergences.test.ts',
-					],
-				},
+				// Package-authored Styled Components contracts stay ordinary. Parity
+				// owns only the dedicated differential project below.
 				test: {
 					name: 'styled-components',
 					include: [
@@ -3003,7 +2998,6 @@ export default defineConfig({
 			},
 			{
 				testExecution: { group: 'react-parity' },
-
 				test: {
 					name: 'styled-components-differential',
 					include: ['packages/styled-components/tests/differential/**/*.test.ts'],
@@ -3025,10 +3019,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/styled-components/tests/ssr/adapted-divergences.test.ts'],
-				},
 				test: {
 					name: 'styled-components-ssr',
 					include: ['packages/styled-components/tests/ssr/**/*.test.ts'],

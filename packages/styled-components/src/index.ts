@@ -21,7 +21,7 @@ import ThemeProvider, { ThemeConsumer, ThemeContext, useTheme } from './models/T
 import styled from './constructors/styled';
 import isStyledComponent from './utils/isStyledComponent';
 
-// OCTANE DIVERGENCE[styled-components-no-css-prop-transform][adapted:styled-components-no-css-prop-transform]:
+// Package contract (ordinary test evidence, not parity-counted):
 // This runtime package intentionally exposes no Babel css-prop transform.
 
 export * from './secretInternals';

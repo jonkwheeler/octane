@@ -6,7 +6,6 @@ import styled from '@octanejs/styled-components';
 import { mount } from '../_helpers';
 
 describe('transient props and shouldForwardProp', () => {
-	// @parity-case adapted:styled-components-ref-prop
 	it('always attaches ref even when shouldForwardProp rejects it', () => {
 		let attached: Element | null = null;
 		const Filtered = styled.div.withConfig({

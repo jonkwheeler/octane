@@ -71,8 +71,11 @@ test('verifies an arbitrary binding classification ledger', async (t) => {
 			{ recursive: true },
 		);
 	}
-	assert.deepEqual(verifyPortTestClassifications(root, 'styled-components'), { tests: 15 });
-	await writeFile(join(root, 'packages/styled-components/tests/unclassified.test.ts'), 'export {};\n');
+	assert.deepEqual(verifyPortTestClassifications(root, 'styled-components'), { tests: 19 });
+	await writeFile(
+		join(root, 'packages/styled-components/tests/unclassified.test.ts'),
+		'export {};\n',
+	);
 	assert.throws(
 		() => verifyPortTestClassifications(root, 'styled-components'),
 		/every port-authored styled-components test must have exactly one classification/,

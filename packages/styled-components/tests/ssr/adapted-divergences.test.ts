@@ -11,7 +11,6 @@ function chunkIds(css: string): string[] {
 }
 
 describe('@octanejs/styled-components — server rendering', () => {
-	// @parity-case adapted:styled-components-automatic-ssr
 	it('collects styled/keyframes/global css into RenderResult.css with zero config', () => {
 		const { html, css } = renderToString(ServerApp);
 
@@ -34,7 +33,6 @@ describe('@octanejs/styled-components — server rendering', () => {
 		expect(heroChunk).toBeTruthy();
 	});
 
-	// @parity-case adapted:styled-components-server-sheet-compat
 	it('ServerStyleSheet compat: collectStyles + getStyleTags/getStyleElement still work', () => {
 		const sheet = new ServerStyleSheet();
 		const { html, css } = renderToString(() =>
@@ -56,7 +54,6 @@ describe('@octanejs/styled-components — server rendering', () => {
 		expect((elements[0] as any).props.dangerouslySetInnerHTML.__html).toContain('color:tomato');
 	});
 
-	// @parity-case adapted:styled-components-no-node-stream-interleave
 	it('throws the documented seal/stream errors', () => {
 		const sheet = new ServerStyleSheet();
 		sheet.seal();

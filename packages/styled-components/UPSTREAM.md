@@ -12,8 +12,14 @@ forward-ref, hook, JSX, and server-sheet boundaries are adapted to Octane.
 The canonical pinned repository contains runtime and type suites, but the
 published npm artifact does not contain them. This repository therefore records
 the source provenance as unverified rather than claiming a pristine-upstream
-run. Required lanes execute six exact differential fixtures against the pinned
-React package, eight documented adaptation contracts, and the Octane type
-contract. Every remaining local test is classified as an Octane framework
-contract. A future verified provenance lane must vendor and authenticate the
-canonical upstream suites before it can claim their execution.
+run. `upstreamSuites.runtime` and `upstreamSuites.types` remain `present`
+because the repository pin has those suites; promoting them into pristine /
+one-for-one adapted lanes with complete dispositions is open follow-up work
+before provenance can move to `verified`.
+
+This bounded harness currently executes six exact same-fixture differential
+cases against the pinned published React package through the
+`styled-components-differential` Vitest project
+(`testExecution: { group: 'react-parity' }`). Factory, SSR, distribution, and
+type-contract adaptations stay ordinary package tests outside React-parity
+evidence.

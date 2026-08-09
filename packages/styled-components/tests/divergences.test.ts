@@ -5,7 +5,6 @@ import { describe, expect, it, vi } from 'vitest';
 import styled from '@octanejs/styled-components';
 
 describe('@octanejs/styled-components documented divergences', () => {
-	// @parity-case adapted:styled-components-no-css-prop-transform
 	it('publishes no Babel css-prop transform entry point', () => {
 		const packageJson = JSON.parse(
 			readFileSync(resolve(process.cwd(), 'packages/styled-components/package.json'), 'utf8'),
@@ -13,7 +12,6 @@ describe('@octanejs/styled-components documented divergences', () => {
 		expect(Object.keys(packageJson.exports)).toEqual(['.']);
 	});
 
-	// @parity-case adapted:styled-components-dynamic-creation-heuristic
 	it('warns once after 200 creations sharing one displayName', () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		try {

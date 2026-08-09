@@ -21,8 +21,11 @@
   },
   "parityHarness": {
     "manifest": "audit/react-parity.json",
-    "requiredLanes": 4,
+    "requiredLanes": 1,
     "differentialCases": 6,
-    "documentedDivergences": 8
-  }
+    "documentedDivergences": 0
+  },
+  "notes": [
+    "Bounded React parity records the pinned repository runtime and type suites as present, runs six exact same-fixture differential scenarios under the react-parity job, and keeps factory/SSR/distribution/type-contract adaptations as ordinary package tests until pristine and one-for-one adapted lanes land."
+  ]
 }
