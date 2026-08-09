@@ -119,4 +119,45 @@ test('renaming an inventoried pristine identity fails exact-match validation', (
 	);
 });
 
+test('adapted inventory preserves every selected pristine identity one-for-one', () => {
+	const pristine = JSON.parse(read('packages/solana-react/audit/pristine-runtime.json'));
+	const adapted = JSON.parse(read('packages/solana-react/audit/adapted-runtime.json'));
+	assert.equal(pristine.tests.length, 31, 'selected pristine suite must stay at 31 identities');
+	const adaptedNames = new Set(
+		adapted.tests.map(function name(testCase) {
+			return testCase.fullName;
+		}),
+	);
+	const missing = pristine.tests
+		.map(function name(testCase) {
+			return testCase.fullName;
+		})
+		.filter(function absent(fullName) {
+			return !adaptedNames.has(fullName);
+		});
+	assert.deepEqual(
+		missing,
+		[],
+		`adapted suite omitted pristine identities:\n${missing.join('\n')}`,
+	);
+});
+
+test('omitting a selected pristine identity from adapted inventory is rejected', () => {
+	const pristine = JSON.parse(read('packages/solana-react/audit/pristine-runtime.json'));
+	const adapted = JSON.parse(read('packages/solana-react/audit/adapted-runtime.json'));
+	const truncated = {
+		...adapted,
+		tests: adapted.tests.slice(1),
+	};
+	const adaptedNames = new Set(
+		truncated.tests.map(function name(testCase) {
+			return testCase.fullName;
+		}),
+	);
+	const missing = pristine.tests.filter(function absent(testCase) {
+		return !adaptedNames.has(testCase.fullName);
+	});
+	assert.ok(missing.length > 0, 'truncation must surface at least one omitted identity');
+});
+
 void PACKAGE;

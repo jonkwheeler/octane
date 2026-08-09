@@ -18,6 +18,7 @@
   },
   "include": [
     "./public-api.test-d.ts",
+    "./wallet-transaction-typetest.ts",
     "./__typetests__/**/*-typetest.ts",
     "./query/__typetests__/**/*-typetest.ts"
   ]

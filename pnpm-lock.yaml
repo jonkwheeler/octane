@@ -5517,6 +5517,9 @@ importers:
       '@solana/react':
         specifier: 7.0.0
         version: 7.0.0(@solana/kit@7.0.0(typescript@5.9.3))(@tanstack/react-query@5.101.3(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+      '@solana/wallet-standard-features':
+        specifier: 1.4.0
+        version: 1.4.0
       '@tanstack/react-query':
         specifier: catalog:default
         version: 5.101.3(react@19.2.3)
@@ -5529,9 +5532,21 @@ importers:
       '@types/react-dom':
         specifier: catalog:livestore-react-oracle
         version: 19.2.3(@types/react@19.2.7)
+      '@wallet-standard/base':
+        specifier: 1.1.1
+        version: 1.1.1
+      '@wallet-standard/errors':
+        specifier: 0.1.2
+        version: 0.1.2
       '@wallet-standard/react':
         specifier: 1.0.3
         version: 1.0.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@wallet-standard/ui':
+        specifier: 1.0.3
+        version: 1.0.3
+      '@wallet-standard/ui-registry':
+        specifier: 1.1.1
+        version: 1.1.1
       octane:
         specifier: workspace:*
         version: link:../octane

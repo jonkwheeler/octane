@@ -5,11 +5,7 @@ import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/solana-react/audit/type-parity.json';
 
-export const TYPE_SUITE_FILES = [
-	'__typetests__/useClient-typetest.ts',
-	'__typetests__/useClientCapability-typetest.ts',
-	'query/__typetests__/useRequestQuery-typetest.ts',
-];
+const DISPOSITIONS = new Set(['adapted', 'pristine-only', 'out-of-scope']);
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
@@ -19,23 +15,93 @@ function posix(value) {
 	return value.split(sep).join('/');
 }
 
-function listFiles(root) {
-	const present = new Set(
-		readdirSync(root, { recursive: true, withFileTypes: true })
-			.filter(function keepFiles(entry) {
-				return entry.isFile();
-			})
-			.map(function toRelative(entry) {
-				return posix(relative(root, resolve(entry.parentPath ?? entry.path, entry.name)));
-			}),
-	);
-	const missing = TYPE_SUITE_FILES.filter(function absent(file) {
-		return !present.has(file);
-	});
-	if (missing.length) {
-		throw new Error(`type-test file inventories differ; missing: ${missing.join(', ')}`);
+export function listVendoredTypetestFiles(upstreamRoot) {
+	return readdirSync(upstreamRoot, { recursive: true, withFileTypes: true })
+		.filter(function keepTypetests(entry) {
+			if (!entry.isFile()) return false;
+			const relativePath = posix(
+				relative(upstreamRoot, resolve(entry.parentPath ?? entry.path, entry.name)),
+			);
+			return /__typetests__\//.test(relativePath) && /-typetest\.ts$/.test(relativePath);
+		})
+		.map(function toRelative(entry) {
+			return posix(relative(upstreamRoot, resolve(entry.parentPath ?? entry.path, entry.name)));
+		})
+		.sort();
+}
+
+export function readTypeParityConfig(root, configPath = TYPE_PARITY_CONFIG) {
+	const absoluteConfig = resolve(root, configPath);
+	if (!existsSync(absoluteConfig)) throw new Error(`missing type parity config: ${configPath}`);
+	const config = JSON.parse(readFileSync(absoluteConfig, 'utf8'));
+	if (!Array.isArray(config.fileDispositions) || config.fileDispositions.length === 0) {
+		throw new Error('type-parity.json must list fileDispositions for every vendored typetest');
 	}
-	return [...TYPE_SUITE_FILES];
+	const seen = new Set();
+	for (const entry of config.fileDispositions) {
+		if (!entry || typeof entry.path !== 'string' || !DISPOSITIONS.has(entry.disposition)) {
+			throw new Error(`invalid type file disposition: ${JSON.stringify(entry)}`);
+		}
+		if (typeof entry.rationale !== 'string' || entry.rationale.trim().length < 20) {
+			throw new Error(`${entry.path}: disposition rationale must be concrete`);
+		}
+		if (seen.has(entry.path)) throw new Error(`duplicate type disposition for ${entry.path}`);
+		seen.add(entry.path);
+		if (entry.disposition === 'pristine-only' && !Array.isArray(entry.adaptedEvidence)) {
+			throw new Error(`${entry.path}: pristine-only dispositions require adaptedEvidence array`);
+		}
+		if (entry.disposition === 'pristine-only') {
+			for (const evidence of entry.adaptedEvidence) {
+				if (!existsSync(resolve(root, evidence))) {
+					throw new Error(`${entry.path}: missing adaptedEvidence ${evidence}`);
+				}
+			}
+		}
+	}
+	return config;
+}
+
+export function assertDispositionsCoverVendored(root, config) {
+	const upstreamRoot = resolve(root, config.upstreamRoot);
+	const vendored = listVendoredTypetestFiles(upstreamRoot);
+	const disposed = new Set(
+		config.fileDispositions.map(function path(entry) {
+			return entry.path;
+		}),
+	);
+	for (const file of vendored) {
+		if (!disposed.has(file)) {
+			throw new Error(`missing type disposition for vendored typetest ${file}`);
+		}
+	}
+	for (const entry of config.fileDispositions) {
+		if (!vendored.includes(entry.path)) {
+			throw new Error(`type disposition references missing vendored file ${entry.path}`);
+		}
+	}
+	return vendored;
+}
+
+export function adaptedTypeSuiteFiles(config) {
+	return config.fileDispositions
+		.filter(function keepAdapted(entry) {
+			return entry.disposition === 'adapted';
+		})
+		.map(function path(entry) {
+			return entry.path;
+		})
+		.sort();
+}
+
+export function pristineTypeSuiteFiles(config) {
+	return config.fileDispositions
+		.filter(function keepRunnable(entry) {
+			return entry.disposition === 'adapted' || entry.disposition === 'pristine-only';
+		})
+		.map(function path(entry) {
+			return entry.path;
+		})
+		.sort();
 }
 
 function normalizeComment(comment) {
@@ -137,19 +203,34 @@ function structuralSource(source, fileName) {
 		.trim();
 }
 
+function listAdaptedPresent(adaptedRoot, suiteFiles) {
+	const present = new Set(
+		readdirSync(adaptedRoot, { recursive: true, withFileTypes: true })
+			.filter(function keepFiles(entry) {
+				return entry.isFile();
+			})
+			.map(function toRelative(entry) {
+				return posix(relative(adaptedRoot, resolve(entry.parentPath ?? entry.path, entry.name)));
+			}),
+	);
+	const missing = suiteFiles.filter(function absent(file) {
+		return !present.has(file);
+	});
+	if (missing.length) {
+		throw new Error(`type-test file inventories differ; missing: ${missing.join(', ')}`);
+	}
+	return suiteFiles;
+}
+
 export function buildTypeInventory(root, config) {
+	assertDispositionsCoverVendored(root, config);
+	const suiteFiles = adaptedTypeSuiteFiles(config);
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
-	const upstreamFiles = listFiles(upstreamRoot);
-	const adaptedFiles = listFiles(adaptedRoot);
-	if (JSON.stringify(upstreamFiles) !== JSON.stringify(adaptedFiles)) {
-		throw new Error(
-			'type-test file inventories differ; every upstream type artifact needs one adapted counterpart',
-		);
-	}
+	listAdaptedPresent(adaptedRoot, suiteFiles);
 	const upstream = [];
 	const adapted = [];
-	for (const file of upstreamFiles) {
+	for (const file of suiteFiles) {
 		const upstreamSource = readFileSync(resolve(upstreamRoot, file), 'utf8');
 		const adaptedSource = readFileSync(resolve(adaptedRoot, file), 'utf8');
 		const upstreamGroups = assertionGroups(upstreamSource, file);
@@ -173,13 +254,11 @@ export function buildTypeInventory(root, config) {
 			assertionGroups: adaptedGroups.map(sha256),
 		});
 	}
-	return { upstream, adapted };
+	return { upstream, adapted, pristineSuite: pristineTypeSuiteFiles(config) };
 }
 
 export function verifySolanaReactTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) {
-	const absoluteConfig = resolve(root, configPath);
-	if (!existsSync(absoluteConfig)) throw new Error(`missing type parity config: ${configPath}`);
-	const config = JSON.parse(readFileSync(absoluteConfig, 'utf8'));
+	const config = readTypeParityConfig(root, configPath);
 	const inventory = buildTypeInventory(root, config);
 	for (const side of ['upstream', 'adapted']) {
 		const inventoryPath = resolve(root, config.inventories[side]);
@@ -194,6 +273,7 @@ export function verifySolanaReactTypes(root, { configPath = TYPE_PARITY_CONFIG }
 	}
 	return {
 		files: inventory.upstream.length,
+		pristineFiles: inventory.pristineSuite.length,
 		assertions: inventory.upstream.reduce(function sumAssertions(sum, file) {
 			return sum + file.assertionGroups.length;
 		}, 0),
@@ -201,7 +281,7 @@ export function verifySolanaReactTypes(root, { configPath = TYPE_PARITY_CONFIG }
 }
 
 export function renderTypeInventories(root, configPath = TYPE_PARITY_CONFIG) {
-	const config = JSON.parse(readFileSync(resolve(root, configPath), 'utf8'));
+	const config = readTypeParityConfig(root, configPath);
 	const inventory = buildTypeInventory(root, config);
 	return { config, inventory };
 }

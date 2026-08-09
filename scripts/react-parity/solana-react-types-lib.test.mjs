@@ -1,25 +1,51 @@
 import assert from 'node:assert/strict';
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { buildTypeInventory } from './solana-react-types-lib.mjs';
+import {
+	adaptedTypeSuiteFiles,
+	assertDispositionsCoverVendored,
+	buildTypeInventory,
+	pristineTypeSuiteFiles,
+	readTypeParityConfig,
+} from './solana-react-types-lib.mjs';
+
+const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'solana-react-types-'));
 	const upstreamRoot = join(root, 'upstream');
 	const adaptedRoot = join(root, 'adapted');
-	await cp(new URL('../../packages/solana-react/upstream/src', import.meta.url), upstreamRoot, {
+	await cp(join(REPO, 'packages/solana-react/upstream/src'), upstreamRoot, {
 		recursive: true,
 	});
-	await cp(new URL('../../packages/solana-react/typetests', import.meta.url), adaptedRoot, {
+	await cp(join(REPO, 'packages/solana-react/typetests'), adaptedRoot, {
 		recursive: true,
 	});
+	const config = readTypeParityConfig(REPO, 'packages/solana-react/audit/type-parity.json');
 	return {
 		root,
 		upstreamRoot,
 		adaptedRoot,
-		config: { upstreamRoot: 'upstream', adaptedRoot: 'adapted' },
+		config: {
+			...config,
+			upstreamRoot: 'upstream',
+			adaptedRoot: 'adapted',
+			fileDispositions: config.fileDispositions.map(function remapEvidence(entry) {
+				if (!Array.isArray(entry.adaptedEvidence)) return entry;
+				return {
+					...entry,
+					adaptedEvidence: entry.adaptedEvidence.map(function toFixture(path) {
+						if (path.startsWith('packages/solana-react/typetests/')) {
+							return path.replace('packages/solana-react/typetests/', 'adapted/');
+						}
+						return path;
+					}),
+				};
+			}),
+		},
 	};
 }
 
@@ -65,4 +91,31 @@ test('rejects retargeting an adapted relative import', async (t) => {
 		() => buildTypeInventory(value.root, value.config),
 		/change outside the permitted transformations/,
 	);
+});
+
+test('dispositions cover every vendored typetest and expand pristine beyond adapted', () => {
+	const config = readTypeParityConfig(REPO, 'packages/solana-react/audit/type-parity.json');
+	const vendored = assertDispositionsCoverVendored(REPO, config);
+	assert.equal(vendored.length, 16);
+	const adapted = adaptedTypeSuiteFiles(config);
+	const pristine = pristineTypeSuiteFiles(config);
+	assert.deepEqual(adapted, [
+		'__typetests__/useClient-typetest.ts',
+		'__typetests__/useClientCapability-typetest.ts',
+		'query/__typetests__/useRequestQuery-typetest.ts',
+	]);
+	assert.ok(pristine.length >= 12, `expected expanded pristine lane, got ${pristine.length}`);
+	assert.ok(pristine.includes('__typetests__/useSignIn-typetest.ts'));
+	assert.ok(pristine.includes('__typetests__/useSignAndSendTransaction-typetest.ts'));
+	assert.ok(pristine.includes('__typetests__/selectedWalletAccountContextProvider-typetest.ts'));
+	assert.ok(pristine.includes('query/__typetests__/useSubscriptionQuery-typetest.ts'));
+});
+
+test('omitting a type disposition fails coverage validation', () => {
+	const config = readTypeParityConfig(REPO, 'packages/solana-react/audit/type-parity.json');
+	const truncated = {
+		...config,
+		fileDispositions: config.fileDispositions.slice(1),
+	};
+	assert.throws(() => assertDispositionsCoverVendored(REPO, truncated), /missing type disposition/);
 });
