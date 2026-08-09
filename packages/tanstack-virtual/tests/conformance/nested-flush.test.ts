@@ -1,8 +1,7 @@
 /**
- * Octane-adapted divergence: nested sync scroll notification inside a
- * discrete-event flush (flushSync degradation). Owned by the
- * tanstack-virtual-adapted-divergence parity lane as a dedicated file so the
- * broader conformance suite stays in ordinary shards.
+ * Octane-only framework contract: nested sync scroll notification inside a
+ * discrete-event flush (flushSync degradation). Unpaired with a React-side
+ * scenario, so it stays in ordinary shards outside react-parity ownership.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
@@ -26,8 +25,6 @@ beforeEach(() => {
 });
 
 describe('state wiring + scrolling', () => {
-	// OCTANE DIVERGENCE[tanstack-virtual-nested-flush][adapted:tanstack-virtual-nested-flush]
-	// @parity-case adapted:tanstack-virtual-nested-flush
 	it('sync scroll update inside a discrete-event flush still lands (flushSync degradation)', async () => {
 		// #scroll-500's onClick dispatches the scroll event synchronously INSIDE
 		// octane's click flush → core notifies sync=true → the adapter's

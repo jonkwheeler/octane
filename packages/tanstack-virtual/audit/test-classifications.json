@@ -13,9 +13,8 @@
     },
     {
       "path": "packages/tanstack-virtual/tests/conformance/nested-flush.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-virtual-nested-flush",
-      "reason": "Authenticates the nested flushSync adaptation at an Octane discrete-event flush boundary."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins Octane flushSync re-entrancy degradation for nested sync scroll notifications; unpaired with a React-side scenario, so it stays outside react-parity ownership."
     },
     {
       "path": "packages/tanstack-virtual/tests/conformance/parity.test.ts",
@@ -35,7 +34,7 @@
     {
       "path": "packages/tanstack-virtual/tests/differential/setup.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
+      "reason": "Checks fail-closed React fixture compilation for the parity harness itself; not an Octane/React scenario."
     },
     {
       "path": "packages/tanstack-virtual/tests/ssr/server.test.ts",

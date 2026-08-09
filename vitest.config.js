@@ -1373,12 +1373,9 @@ export default defineConfig({
 				},
 			},
 			{
-				// Mixed project: only the dedicated nested-flush divergence file is
-				// parity-owned; the rest of conformance/window/dynamic stays ordinary.
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/tanstack-virtual/tests/conformance/nested-flush.test.ts'],
-				},
+				// Ordinary package suite: nested-flush and other Octane-only contracts
+				// stay here. Provenance is recorded-unverified, so nothing is
+				// react-parity-owned until a verified harness can execute it.
 				test: {
 					name: 'tanstack-virtual',
 					include: ['packages/tanstack-virtual/tests/**/*.test.ts'],
@@ -1411,7 +1408,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Octane-only SSR contract — no React SSR counterpart, so it stays in
+				// ordinary shards rather than react-parity ownership.
 				test: {
 					name: 'tanstack-virtual-ssr',
 					include: ['packages/tanstack-virtual/tests/ssr/**/*.test.ts'],
@@ -1437,10 +1435,22 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Compiler-control unit tests for the differential harness. Ordinary
+				// project: not differential React/Octane evidence.
+				test: {
+					name: 'tanstack-virtual-differential-setup',
+					include: ['packages/tanstack-virtual/tests/differential/setup.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				// Same-fixture React/Octane scenarios. Left ordinary while provenance
+				// stays recorded-unverified so CI still executes them (react-parity:check
+				// validates metadata only until verification).
 				test: {
 					name: 'tanstack-virtual-differential',
-					include: ['packages/tanstack-virtual/tests/differential/**/*.test.ts'],
+					include: ['packages/tanstack-virtual/tests/differential/parity.test.ts'],
 					environment: 'jsdom',
 					// Same differential precompile, but for virtualizer fixtures: also
 					// rewrites `@octanejs/tanstack-virtual` → `@tanstack/react-virtual` so
