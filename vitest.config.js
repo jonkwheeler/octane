@@ -1944,10 +1944,6 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/three/tests/browser/xr.test.ts'],
-				},
 				test: {
 					name: 'three-browser',
 					include:

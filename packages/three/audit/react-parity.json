@@ -11,10 +11,29 @@
     "integrity": "sha256:01177da508a5551b38908e3da7ce51601f140fd35497e3b3daf73af58f75e67c",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "insufficient",
+    "types": "absent"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/three/src"], "include": ["\\.(?:ts|tsrx)$"], "exclude": [] },
-    "tests": { "roots": ["packages/three/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
+    "source": {
+      "roots": [
+        "packages/three/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/three/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": []
+    }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -262,7 +281,7 @@
       "environment": "workspace-node",
       "project": "three-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the loader, public API, renderer-local, and subpath type matrices.",
+      "notes": "Repo-authored public/loader/renderer/subpath type matrix. Not a pristine upstream type suite.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -307,7 +326,9 @@
   "divergences": [
     {
       "id": "octane-renderer-ownership",
-      "caseIds": ["adapted:three-renderer-ownership"],
+      "caseIds": [
+        "adapted:three-renderer-ownership"
+      ],
       "upstreamResult": "R3F embeds React Reconciler for component execution and scheduling.",
       "octaneResult": "Octane owns execution, hooks, context, scheduling, Suspense, refs, and effects.",
       "rationale": "The binding targets Octane's universal renderer contract.",
@@ -319,7 +340,9 @@
     },
     {
       "id": "component-props-root-api",
-      "caseIds": ["adapted:three-root-component-props"],
+      "caseIds": [
+        "adapted:three-root-component-props"
+      ],
       "upstreamResult": "R3F roots render a React element descriptor.",
       "octaneResult": "Roots render an Octane component plus props.",
       "rationale": "Octane's root API is component-oriented.",
@@ -331,7 +354,9 @@
     },
     {
       "id": "order-based-callable-selector",
-      "caseIds": ["adapted:three-store-selector"],
+      "caseIds": [
+        "adapted:three-store-selector"
+      ],
       "upstreamResult": "React callable store selectors inherit React hook identity.",
       "octaneResult": "Dynamic callable selectors are order-based; compiler-visible hooks retain conditional identity.",
       "rationale": "Dynamic calls cannot receive compiler slots.",
@@ -343,7 +368,9 @@
     },
     {
       "id": "build-graph-named-only",
-      "caseIds": ["adapted:three-build-graph"],
+      "caseIds": [
+        "adapted:three-build-graph"
+      ],
       "upstreamResult": "R3F can publish empty or undefined graph keys.",
       "octaneResult": "buildGraph omits unnamed and array-valued material entries.",
       "rationale": "Only stable named identities are useful graph keys.",
@@ -355,7 +382,9 @@
     },
     {
       "id": "pierced-prop-reset-target",
-      "caseIds": ["adapted:three-pierced-reset"],
+      "caseIds": [
+        "adapted:three-pierced-reset"
+      ],
       "upstreamResult": "R3F 9.6.1 writes the default to a root leaf key when removing a pierced prop.",
       "octaneResult": "Octane restores the original nested target.",
       "rationale": "The upstream behavior targets the wrong object.",
@@ -382,7 +411,9 @@
     },
     {
       "id": "hidden-activity-raycast",
-      "caseIds": ["adapted:three-hidden-activity-raycast"],
+      "caseIds": [
+        "adapted:three-hidden-activity-raycast"
+      ],
       "upstreamResult": "R3F can raycast hidden retained descendants through visible ancestors.",
       "octaneResult": "Hidden Activity subtrees are excluded from recursive raycasts.",
       "rationale": "Three r172 raycasting does not honor Object3D.visible recursively.",
@@ -394,7 +425,9 @@
     },
     {
       "id": "root-scoped-portal-targets",
-      "caseIds": ["adapted:three-root-scoped-portal-targets"],
+      "caseIds": [
+        "adapted:three-root-scoped-portal-targets"
+      ],
       "upstreamResult": "R3F portal target lifetime is tied to reconciler ownership.",
       "octaneResult": "Target handles are root-scoped and cross-root placement is rejected before mutation.",
       "rationale": "Universal target ownership must be explicit.",
@@ -406,7 +439,9 @@
     },
     {
       "id": "synchronous-root-teardown",
-      "caseIds": ["adapted:three-synchronous-teardown"],
+      "caseIds": [
+        "adapted:three-synchronous-teardown"
+      ],
       "upstreamResult": "R3F defers registry teardown and callback delivery by 500ms.",
       "octaneResult": "Octane teardown and callback delivery are synchronous.",
       "rationale": "Octane commits teardown atomically.",
@@ -418,7 +453,9 @@
     },
     {
       "id": "octane-dom-region",
-      "caseIds": ["adapted:three-dom-region"],
+      "caseIds": [
+        "adapted:three-dom-region"
+      ],
       "upstreamResult": "R3F has no equivalent explicit-target low-level DOMRegion primitive.",
       "octaneResult": "Octane exposes DOMRegion without positioning, occlusion, styling, or layout semantics.",
       "rationale": "It proves the universal Three-to-DOM boundary without claiming Drei Html parity.",
