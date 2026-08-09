@@ -202,7 +202,7 @@
       "environment": "workspace-node",
       "project": "tanstack-hotkeys-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs one representative same-fixture keyboard lifecycle against @octanejs/tanstack-hotkeys and the pinned React adapter.",
+      "notes": "Runs one representative same-fixture keyboard lifecycle against @octanejs/tanstack-hotkeys and the pinned React adapter with target-local registrations and independent per-runtime keydown drives.",
       "files": [
         {
           "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
