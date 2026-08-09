@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-router-ssr-query/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/tanstack-router-ssr-query/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-router-ssr-query/tests/differential"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-router-ssr-query/tests/differential"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -193,6 +185,11 @@
           "path": "packages/tanstack-router-ssr-query/tsconfig.json",
           "role": "support",
           "sha256": "54593830c286058e815a124ba3d0b2fe0c598879531786e055d7ddb54ac25aed"
+        },
+        {
+          "path": "packages/tanstack-router-ssr-query/tsconfig.octane.json",
+          "role": "support",
+          "sha256": "0397e587688e9b4131084ce70c06d0ae6268682fb3cf674c331fcb81a358ce36"
         }
       ]
     },
