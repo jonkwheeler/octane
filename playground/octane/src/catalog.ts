@@ -10,6 +10,7 @@ import { Conditional } from './demos/Conditional.tsrx';
 import { Counter } from './demos/Counter.tsrx';
 import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
+import { GSAPDemo } from './demos/GSAP.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { LiveStoreDemo } from './demos/LiveStore.tsrx';
@@ -20,6 +21,7 @@ import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
 import { RxJSDemo } from './demos/RxJS.tsrx';
 import { RainbowKitDemo } from './demos/RainbowKit.tsrx';
 import { ShadcnBasesDemo } from './demos/ShadcnBases.tsrx';
+import { SolanaDemo } from './demos/Solana.tsrx';
 import { SuspenseDemo } from './demos/Suspense.tsrx';
 import { WagmiDemo } from './demos/Wagmi.tsrx';
 import { UseHooksTsDemo } from './demos/UseHooksTs.tsrx';
@@ -30,6 +32,7 @@ import conditionalSource from './demos/Conditional.tsrx?raw';
 import counterSource from './demos/Counter.tsrx?raw';
 import dynamicSource from './demos/Dynamic.tsrx?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
+import gsapSource from './demos/GSAP.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import liveStoreSource from './demos/LiveStore.tsrx?raw';
@@ -40,6 +43,7 @@ import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
 import rxjsSource from './demos/RxJS.tsrx?raw';
 import rainbowKitSource from './demos/RainbowKit.tsrx?raw';
 import shadcnSource from './demos/ShadcnBases.tsrx?raw';
+import solanaSource from './demos/Solana.tsrx?raw';
 import suspenseSource from './demos/Suspense.tsrx?raw';
 import wagmiSource from './demos/Wagmi.tsrx?raw';
 import useHooksTsSource from './demos/UseHooksTs.tsrx?raw';
@@ -112,6 +116,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				source: animeJsSource,
 			},
 			{
+				id: 'gsap',
+				title: 'GSAP',
+				Component: GSAPDemo,
+				source: gsapSource,
+			},
+			{
 				id: 'cmdk',
 				title: 'Command menu',
 				Component: CommandMenu,
@@ -134,6 +144,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'Phosphor Icons',
 				Component: PhosphorIconsDemo,
 				source: phosphorIconsSource,
+			},
+			{
+				id: 'solana',
+				title: 'Solana',
+				Component: SolanaDemo,
+				source: solanaSource,
 			},
 			{
 				id: 'rxjs',
