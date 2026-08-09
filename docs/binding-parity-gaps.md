@@ -48,6 +48,7 @@ surface and evidence.
 | `@octanejs/remix-router` | 0 |
 | `@octanejs/rxjs` | 0 |
 | `@octanejs/shadcn` | 0 |
+| `@octanejs/solana-react` | 0 |
 | `@octanejs/sonner` | 0 |
 | `@octanejs/streamdown` | 0 |
 | `@octanejs/styled-components` | 0 |
