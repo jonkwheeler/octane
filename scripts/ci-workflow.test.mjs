@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -357,12 +358,6 @@ describe('CI workflow aggregation', () => {
 
 	test('runs the same serialized browser selection in Chromium and Firefox only', () => {
 		const heavyIntegration = jobSource('heavy_integration');
-		const browserSpecs = [
-			'packages/octane/tests/browser',
-			'packages/dexie/tests/browser',
-			'packages/tiptap/tests/browser',
-			'packages/three/tests/browser',
-		];
 
 		for (const engine of ['chromium', 'firefox']) {
 			assert.match(
@@ -382,10 +377,21 @@ describe('CI workflow aggregation', () => {
 			/run: pnpm exec playwright install --with-deps \$\{\{ matrix\.playwright_browser \}\}/,
 		);
 		assert.match(heavyIntegration, /PLAYWRIGHT_BROWSER: \$\{\{ matrix\.playwright_browser \}\}/);
-		for (const spec of browserSpecs) {
-			assert.equal((heavyIntegration.match(new RegExp(spec, 'g')) ?? []).length, 2);
-		}
-		assert.match(heavyIntegration, /run: pnpm vitest run \$\{\{ matrix\.specs \}\} --maxWorkers=1/);
+		assert.match(heavyIntegration, /specs: discovered/);
+		assert.match(heavyIntegration, /SPECS="\$\(node scripts\/discover-heavy-browser-specs\.mjs\)"/);
+		assert.equal(
+			(heavyIntegration.match(/packages\/react-draggable\/tests\/browser/g) ?? []).length,
+			0,
+		);
+		const discovered = execFileSync('node', ['scripts/discover-heavy-browser-specs.mjs'], {
+			encoding: 'utf8',
+			cwd: REPO,
+		})
+			.trim()
+			.split(/\s+/);
+		assert.ok(discovered.includes('packages/react-draggable/tests/browser'));
+		assert.ok(discovered.includes('packages/octane/tests/browser'));
+		assert.equal(discovered.includes('packages/rspeedy-plugin-octane/tests/browser'), false);
 
 		const baseProjects = new Map(
 			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),

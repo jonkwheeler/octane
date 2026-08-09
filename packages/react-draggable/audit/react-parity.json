@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-draggable/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/react-draggable/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-draggable/tests/upstream"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/react-draggable/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
@@ -151,7 +143,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-draggable-browser",
-      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Executed through react-parity discovery rather than a package-specific ci.yml path.",
+      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Heavy-integration discovers packages/*/tests/browser generically (no package-specific ci.yml path); PLAYWRIGHT_BROWSER selects the engine.",
       "files": [
         {
           "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",
