@@ -130,6 +130,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 			enter: false,
 			exit: false,
 		});
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
 		await act(function toTwo() {
 			view.update(CSSTransitionGroupProbe, {
 				items: ['two'],

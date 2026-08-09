@@ -286,6 +286,127 @@ test('rejects deleting assertions from an adapted case', async function rejectsD
 	}, /do not cover normalized upstream assertions|adapted observations/);
 });
 
+test('rejects deleting a required callback spy expectation', async function rejectsDeletedCallbackSpy(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/upstream/Transition.test.ts',
+	);
+	const source = await readFile(adaptedPath, 'utf8');
+	await writeFile(
+		adaptedPath,
+		source.replace(/expect\(listener\)\.toHaveBeenCalledTimes\(1\);\n\s*/, ''),
+	);
+	const evidencePath = join(
+		root,
+		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+	);
+	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
+	await writeFile(
+		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		renderAdaptedCaseContracts(root),
+	);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /do not cover normalized upstream assertions.*callbackSpy/);
+});
+
+test('rejects deleting an adapted absence observation', async function rejectsDeletedAbsence(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/upstream/SwitchTransition.test.ts',
+	);
+	const source = await readFile(adaptedPath, 'utf8');
+	await writeFile(
+		adaptedPath,
+		source.replace(
+			/expect\(view\.container\.textContent\)\.not\.toContain\('second'\);\n\s*/,
+			'',
+		),
+	);
+	const evidencePath = join(
+		root,
+		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+	);
+	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
+	await writeFile(
+		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		renderAdaptedCaseContracts(root),
+	);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /do not cover normalized upstream assertions.*emptyText/);
+});
+
+test('rejects deleting a repeated post-timeout cleanup observation', async function rejectsDeletedCleanupPhase(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/upstream/TransitionGroup.test.ts',
+	);
+	const source = await readFile(adaptedPath, 'utf8');
+	await writeFile(
+		adaptedPath,
+		source.replace(
+			/expect\(warn\)\.not\.toHaveBeenCalled\(\);\n\s*expect\(view\.container\.querySelectorAll\('\[id\]'\)\)\.toHaveLength\(1\);\n\s*expect\(view\.container\.querySelector\('#two'\)\)\.not\.toBeNull\(\);\n\s*warn\.mockRestore\(\);/,
+			'expect(warn).not.toHaveBeenCalled();\n\t\twarn.mockRestore();',
+		),
+	);
+	const evidencePath = join(
+		root,
+		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+	);
+	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
+	await writeFile(
+		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		renderAdaptedCaseContracts(root),
+	);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /do not cover normalized upstream assertions/);
+});
+
+test('rejects deleting a non-divergent exit sequence under a divergence marker', async function rejectsDeletedExitUnderDivergence(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/upstream/TransitionGroup.test.ts',
+	);
+	const source = await readFile(adaptedPath, 'utf8');
+	await writeFile(
+		adaptedPath,
+		source.replace(
+			/expect\(log\)\.toEqual\(\['exit', 'exiting', 'exited'\]\);/,
+			'void 0;',
+		),
+	);
+	const evidencePath = join(
+		root,
+		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+	);
+	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
+	await writeFile(
+		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		renderAdaptedCaseContracts(root),
+	);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /do not cover normalized upstream assertions.*exit/);
+});
+
 test('rejects fixture drift in adapted upstream probes', async function rejectsFixtureDrift(t) {
 	const root = await fixture();
 	t.after(function cleanup() {

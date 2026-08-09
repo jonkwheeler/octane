@@ -18,8 +18,12 @@
 			"rule": "CSSTransition \"-entering\" class tokens alias to \"-enter-active\" when comparing classContains observations."
 		},
 		{
-			"kind": "optional-spy",
-			"rule": "console/spy call assertions are optional on the adapted side when the scenario still covers the behavioral observations."
+			"kind": "optional-console-spy",
+			"rule": "console/warning spy call assertions are optional on the adapted side when the scenario still covers the behavioral observations."
+		},
+		{
+			"kind": "callback-spy",
+			"rule": "Transition callback / listener / ref spy assertions are required. An adapted callOrder/log array observation may cover upstream callback spy assertions for the same lifecycle."
 		},
 		{
 			"kind": "text-containment",
@@ -27,7 +31,7 @@
 		},
 		{
 			"kind": "presence",
-			"rule": "Upstream presence/null checks and empty textContent map to adapted id presence/absence or childCount observations."
+			"rule": "Upstream presence/null checks and empty textContent map to adapted emptyText, presence (absence), or status unmounted observations."
 		}
 	],
 	"fixtures": [
@@ -1123,7 +1127,7 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should clean-up silently after the timeout elapses",
 			"divergenceId": null,
-			"upstreamBodySha256": "e976298c13b3b16f3512fde934069abcc0943ec2bf8bafd8b7a65ba60a1c5e7c",
+			"upstreamBodySha256": "1cf2d895498d56f933335818a0a3fa815d2ad225232fbe00010a95e2a1d1d509",
 			"upstreamAssertions": [
 				"bf9f604a6c49c6b5f9125f383fdd010280304673e5554da8ead26453dd277397",
 				"e09561d29a51616b7bc0e97573c9d1abb0c8cbc196bfb85ff4510f1278d00050",
@@ -1151,7 +1155,7 @@
 					"one"
 				],
 				[
-					"spyOrConsole"
+					"consoleSpy"
 				],
 				[
 					"childCount",
@@ -1190,7 +1194,7 @@
 					"one"
 				],
 				[
-					"spyOrConsole"
+					"consoleSpy"
 				],
 				[
 					"childCount",
@@ -1305,8 +1309,9 @@
 					"two"
 				]
 			],
-			"adaptedBodySha256": "50e66ae54960746a63f79e3353eef58855b0bbb13cffa4c5b634e8aa4e3a3cff",
+			"adaptedBodySha256": "aa90eae46467b7a2a8cd6f9c19fa9ca0e6786300c9c0825ded0c5bd7204627c2",
 			"adaptedAssertions": [
+				"12d42e90d8cb113360498a25045c9abe8bb3e46f0a24f1a140a12cfbc68ea26e",
 				"12d42e90d8cb113360498a25045c9abe8bb3e46f0a24f1a140a12cfbc68ea26e",
 				"7b4feeeafd5eb990b14a36f3ae21d40fa01d2d9ce00e6becc84fd8fd491fcdbc",
 				"29d61b604d0259221c0ae3305c5d880e0c7d404047cac11344e3fde8c6a1080e",
@@ -1314,6 +1319,10 @@
 				"7b4feeeafd5eb990b14a36f3ae21d40fa01d2d9ce00e6becc84fd8fd491fcdbc"
 			],
 			"adaptedObservations": [
+				[
+					"childCount",
+					"1"
+				],
 				[
 					"childCount",
 					"1"
@@ -1365,7 +1374,7 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should work with a child which renders as null",
 			"divergenceId": null,
-			"upstreamBodySha256": "f9875e1ec7874d736eb1c1095d9a5b6a38029718ad92bb2353429a8eaabb7b3d",
+			"upstreamBodySha256": "5c9e9c6d3a5fe80630be069c0fd26be89441d2a4475ff9eadcdbe7b416ceab84",
 			"upstreamAssertions": [],
 			"upstreamObservations": [],
 			"adaptedBodySha256": "b3a02575475522a3afa5f2b7760a90d8ac297a9b04dff2aa8530c3ca279b22c7",
@@ -1383,7 +1392,7 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should transition from one to null",
 			"divergenceId": null,
-			"upstreamBodySha256": "68b0b15f107d0c7a7015aef81260c9a2a0442d278129a39ac34e20e567505213",
+			"upstreamBodySha256": "c0747e6812cfe21cdc5085fd7115672159db27559879665c89c8437c28303675",
 			"upstreamAssertions": [
 				"bf9f604a6c49c6b5f9125f383fdd010280304673e5554da8ead26453dd277397",
 				"bf9f604a6c49c6b5f9125f383fdd010280304673e5554da8ead26453dd277397",
@@ -1487,7 +1496,7 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should clear transition timeouts when unmounted",
 			"divergenceId": null,
-			"upstreamBodySha256": "0765bc2ed1b61b93561f9f471489e592778ac6eeae7e40bff4fb2db6eb84087b",
+			"upstreamBodySha256": "5e7d58020b6d9d3230f9d92cd6dc48115973d8b5366fefd8fafecfd3c967864b",
 			"upstreamAssertions": [],
 			"upstreamObservations": [],
 			"adaptedBodySha256": "b8aec0c210541d6f3572788713456fc1d1f9096732b504a5879583cf0ab439a8",
@@ -1505,7 +1514,7 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should handle unmounted elements properly",
 			"divergenceId": null,
-			"upstreamBodySha256": "388bf3bce47f56a220717d7d9f3dc0e3b9c79d8c1eb9c935b1fe779a8f26ae2c",
+			"upstreamBodySha256": "3a5c53d574959b7cbd80b032385c3aee632b265cca454acd3d6cb629f0562ac6",
 			"upstreamAssertions": [],
 			"upstreamObservations": [],
 			"adaptedBodySha256": "bc6da81c3ef7dadec20b1630413bad3f6590bf382f90f3fbccb8db7c173c4ab0",
@@ -1523,7 +1532,7 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should work with custom component wrapper cloning children",
 			"divergenceId": null,
-			"upstreamBodySha256": "d9a271ac13883502a2eaed29d77275996e52d58204e3626fc8e30ed212cad765",
+			"upstreamBodySha256": "60c6ec4d14996ff63e54a8418d18547737b071052158448e8d9258394578058d",
 			"upstreamAssertions": [
 				"88eaf7f6a8497906b6dadc73e7a55f71910f3218e983a98eab4c28a1cd28d0e7"
 			],
@@ -1935,7 +1944,7 @@
 			],
 			"upstreamObservations": [
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
 					"value",
@@ -1950,7 +1959,7 @@
 			],
 			"adaptedObservations": [
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
 					"value",
@@ -2169,10 +2178,10 @@
 					"status: exited"
 				],
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
 					"array",
@@ -2307,10 +2316,10 @@
 					"status: entered"
 				],
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
 					"array",
@@ -2728,7 +2737,7 @@
 			],
 			"upstreamObservations": [
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				]
 			],
 			"adaptedBodySha256": "2c03d6b20056a569d0d96b671349843e268b91e4723f7ef5c18b8299c281f478",
@@ -2738,7 +2747,7 @@
 			],
 			"adaptedObservations": [
 				[
-					"spyOrConsole"
+					"callbackSpy"
 				],
 				[
 					"id",
@@ -2775,20 +2784,22 @@
 			"adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
 			"adaptedTitle": "should handle transitioning correctly",
 			"divergenceId": "react-transition-group-no-strict-double-appear",
-			"upstreamBodySha256": "a1d218af876f0703b97eb9814e7db8e8817a2a5217206936b88192e016a1e160",
+			"upstreamBodySha256": "0276cc295f23e257a9813248d1d9ec9143bccc466342f867160c3ab18b74c27c",
 			"upstreamAssertions": [
-				"19197373f50ee0cd2aeb848bc3335367f8348f2722552ef157376e95ad6a3016",
-				"e9ea055914f7fcea3133c5a29108eff8e0bab3b2b03c39e5bfffae41d945731f",
+				"940a7e13315e640bf86723e7885492989bddd48bf9e9c5e4e72deb3b4d3bff78",
+				"e5a80e88a2198661ae1abc418a751f64dca6c7c49e369d6e264949df35177d29",
 				"558bcbb91cb178a51ad58263b72fefb46a4ec210d094ffbd9d5f7b9abaa89d11"
 			],
 			"upstreamObservations": [
 				[
-					"raw",
-					"expect(log).toBe("
+					"array",
+					"log",
+					"['appear','appearing','appeared']"
 				],
 				[
-					"raw",
-					"expect(log).toBe("
+					"array",
+					"log",
+					"['enter','entering','entered']"
 				],
 				[
 					"array",

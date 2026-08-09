@@ -181,8 +181,12 @@ export const PERMITTED_ASSERTION_TRANSFORMATIONS = [
 		rule: 'CSSTransition "-entering" class tokens alias to "-enter-active" when comparing classContains observations.',
 	},
 	{
-		kind: 'optional-spy',
-		rule: 'console/spy call assertions are optional on the adapted side when the scenario still covers the behavioral observations.',
+		kind: 'optional-console-spy',
+		rule: 'console/warning spy call assertions are optional on the adapted side when the scenario still covers the behavioral observations.',
+	},
+	{
+		kind: 'callback-spy',
+		rule: 'Transition callback / listener / ref spy assertions are required. An adapted callOrder/log array observation may cover upstream callback spy assertions for the same lifecycle.',
 	},
 	{
 		kind: 'text-containment',
@@ -190,15 +194,56 @@ export const PERMITTED_ASSERTION_TRANSFORMATIONS = [
 	},
 	{
 		kind: 'presence',
-		rule: 'Upstream presence/null checks and empty textContent map to adapted id presence/absence or childCount observations.',
+		rule: 'Upstream presence/null checks and empty textContent map to adapted emptyText, presence (absence), or status unmounted observations.',
 	},
 ];
 
 function collapseStrictModeBranch(body) {
-	return body.replace(
+	// Strip line comments so the StrictMode ternary matcher can see the branches.
+	const withoutLineComments = body.replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+	return withoutLineComments.replace(
 		/React\.useTransition\s*!==\s*undefined\s*\?\s*(\[[^\]]+\])\s*:\s*(\[[^\]]+\])/gs,
 		'$2',
 	);
+}
+
+function isConsoleSpyAssertion(folded, assertion) {
+	return (
+		folded.includes('consoleError') ||
+		folded.includes('console.error') ||
+		/\bexpect\(\s*warn\s*\)/.test(folded) ||
+		/\bconsoleErrorSpy\b/.test(assertion) ||
+		/spyOn\(\s*console\b/.test(assertion)
+	);
+}
+
+function isLifecycleArrayObservation(observation) {
+	return (
+		observation[0] === 'array' &&
+		(observation[1] === 'callOrder' || observation[1] === 'log')
+	);
+}
+
+function isAbsenceObservation(observation) {
+	return (
+		observation[0] === 'emptyText' ||
+		(observation[0] === 'status' && observation[1] === 'unmounted')
+	);
+}
+
+function pushRequiredObservation(required, observation) {
+	if (observation[0] === 'consoleSpy') return;
+	if (isAbsenceObservation(observation)) {
+		const existing = required.findIndex(isAbsenceObservation);
+		if (existing >= 0) {
+			// Prefer emptyText as the canonical absence observation.
+			if (observation[0] === 'emptyText') {
+				required[existing] = observation;
+			}
+			return;
+		}
+	}
+	required.push(observation);
 }
 
 function foldAssertionSource(source) {
@@ -284,7 +329,10 @@ function observationFromAssertion(assertion) {
 		folded.includes('consoleError') ||
 		/\bexpect\(\s*warn\s*\)/.test(folded)
 	) {
-		return [['spyOrConsole']];
+		if (isConsoleSpyAssertion(folded, assertion)) {
+			return [['consoleSpy']];
+		}
+		return [['callbackSpy']];
 	}
 	match = folded.match(/expect\((\w+)\)\.toBe\(\s*(\[[^\]]*\])\s*\)/);
 	if (match) {
@@ -340,11 +388,11 @@ function observationKey(observation) {
 function missingRequiredObservations(upstreamObservations, adaptedObservations) {
 	const required = [];
 	for (const observation of upstreamObservations) {
-		if (observation[0] === 'spyOrConsole') continue;
-		if (observation[0] === 'emptyText') continue;
-		required.push(observation);
+		// Console/warning spies stay optional; transition callback spies do not.
+		pushRequiredObservation(required, observation);
 	}
 	const available = adaptedObservations.map(observationKey);
+	const hasLifecycleArray = adaptedObservations.some(isLifecycleArrayObservation);
 	const missing = [];
 	for (const observation of required) {
 		if (observation[0] === 'text') {
@@ -369,6 +417,38 @@ function missingRequiredObservations(upstreamObservations, adaptedObservations) 
 			});
 			if (index >= 0) {
 				available.splice(index, 1);
+				continue;
+			}
+			missing.push(observation);
+			continue;
+		}
+		if (observation[0] === 'emptyText') {
+			const index = available.findIndex(function matchesAbsence(key) {
+				const candidate = JSON.parse(key);
+				return (
+					candidate[0] === 'emptyText' ||
+					candidate[0] === 'presence' ||
+					(candidate[0] === 'status' && candidate[1] === 'unmounted')
+				);
+			});
+			if (index >= 0) {
+				available.splice(index, 1);
+				continue;
+			}
+			missing.push(observation);
+			continue;
+		}
+		if (observation[0] === 'callbackSpy') {
+			const index = available.findIndex(function matchesCallbackSpy(key) {
+				const candidate = JSON.parse(key);
+				return candidate[0] === 'callbackSpy';
+			});
+			if (index >= 0) {
+				available.splice(index, 1);
+				continue;
+			}
+			// callOrder/log arrays already encode the lifecycle callback sequence.
+			if (hasLifecycleArray) {
 				continue;
 			}
 			missing.push(observation);
@@ -400,35 +480,17 @@ function missingRequiredObservations(upstreamObservations, adaptedObservations) 
 			available.splice(index, 1);
 			continue;
 		}
-		// Allow unique (set) coverage for repeated childCount/id observations.
-		if (observation[0] === 'childCount' || observation[0] === 'id') {
-			const uniqueIndex = available.findIndex(function sameKind(key) {
-				return key === exact;
-			});
-			if (uniqueIndex >= 0) {
-				available.splice(uniqueIndex, 1);
-				continue;
-			}
-			if (
-				required.filter(function same(item) {
-					return observationKey(item) === exact;
-				}).length > 1 &&
-				adaptedObservations.some(function has(item) {
-					return observationKey(item) === exact;
-				})
-			) {
-				continue;
-			}
-		}
 		missing.push(observation);
 	}
 	return missing;
 }
 
 function assertSemanticCoverage(entry, upstreamObservations, adaptedObservations) {
-	if (entry.divergenceId) {
-		return;
-	}
+	// Divergence markers document known Octane/React differences; they do not
+	// disable semantic comparison for the rest of the case. StrictMode appear/
+	// enter ternaries are collapsed to the non-strict branch before observation
+	// extraction, so the shared exit (and collapsed appear/enter) sequences stay
+	// required.
 	const missing = missingRequiredObservations(upstreamObservations, adaptedObservations);
 	if (missing.length > 0) {
 		throw new Error(
