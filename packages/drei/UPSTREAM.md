@@ -58,7 +58,7 @@ are Octane-only and execute in the ordinary `drei-guards` project outside
 `audit/runtime-evidence.json` hashes every test file and every collected assertion
 inventory. `audit/upstream-test-artifacts.json` records the out-of-scope Playwright
 gallery and an empty transformation ledger. The audit guard includes negative
-controls for a skipped test file, deleted assertion, removed upstream
+controls for a dropped adapted inventory file, deleted assertion, removed upstream
 `@ts-expect-error` inventory entry, and fabricated upstream type suite.
 
 ## Completeness contract
