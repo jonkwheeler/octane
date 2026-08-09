@@ -12,7 +12,7 @@
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "present",
+    "runtime": "insufficient",
     "types": "absent"
   },
   "adaptedRoots": {
@@ -59,7 +59,7 @@
       "environment": "workspace-node",
       "project": "cmdk-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs identical authored fixtures against cmdk 1.1.1 on React and @octanejs/cmdk on Octane. This bounded lane does not substitute for the vendored but unadapted upstream Playwright suite.",
+      "notes": "Runs identical authored fixtures against cmdk 1.1.1 on React and @octanejs/cmdk on Octane. This bounded lane does not substitute for required pristine-upstream and adapted-octane suite-level lanes over the vendored Playwright suite.",
       "files": [
         {
           "path": "packages/cmdk/tests/differential/parity.test.ts",
@@ -116,34 +116,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3d117770cd5de96ad3134231310928bca9086a82ad07b77d3c00a4b76cf48bcc"
-        }
-      ]
-    },
-    {
-      "id": "cmdk-parity-audit-contracts",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "cmdk-parity-audit",
-      "notes": "Executes evidence-integrity and claim-boundary contracts; these cases authenticate the harness and do not count as behavioral React parity.",
-      "files": [
-        {
-          "path": "packages/cmdk/tests/parity/contracts.test.ts",
-          "role": "test",
-          "sha256": "f39333d981f691f7970713d41e08b6d3b428528687d3f41ec070f70f1a56779e",
-          "cases": [
-            {
-              "id": "adapted:cmdk-upstream-ledger",
-              "testName": "authenticates the pinned upstream source and complete Playwright inventory",
-              "fullName": "@octanejs/cmdk parity audit contracts authenticates the pinned upstream source and complete Playwright inventory"
-            },
-            {
-              "id": "adapted:cmdk-unadapted-upstream-suite",
-              "testName": "keeps the canonical upstream suite outside the bounded parity claim",
-              "fullName": "@octanejs/cmdk parity audit contracts keeps the canonical upstream suite outside the bounded parity claim"
-            }
-          ]
+          "sha256": "ea9fb8ceaeb63c184fc845ea8bb035e1cad98139e4d2e985fd5dd1ae3cde9038"
         }
       ]
     }

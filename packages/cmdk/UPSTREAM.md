@@ -40,10 +40,12 @@ Surface presence is not a full parity claim. The manifest remains `recorded-unve
 ## Upstream suite disposition
 
 The tagged repository has seven Playwright spec files and eleven page/fixture files. They are
-vendored byte-for-byte but not runnable unchanged inside the repository because they require the
-upstream Next.js test application. None has been claimed as adapted. The existing differential
-lane is repo-authored evidence that runs the same `.tsrx` scenarios against both runtimes; it does
-not replace the unadapted upstream suite. The release has no dedicated type assertion suite.
+vendored byte-for-byte, including the Next.js pages/fixtures, but are not yet wired as required
+`pristine-upstream` / `adapted-octane` suite-level lanes. Until those lanes run the pinned suite
+unchanged in its native environment and adapt every applicable case (or record an individual
+disposition), `upstreamSuites.runtime` stays `insufficient`. The existing differential lane is
+repo-authored evidence that runs the same `.tsrx` scenarios against both runtimes; it does not
+replace the suite-level lanes. The release has no dedicated type assertion suite.
 
 | Upstream spec | Current disposition |
 | --- | --- |

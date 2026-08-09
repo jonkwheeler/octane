@@ -9,7 +9,6 @@ const manifest = JSON.parse(
 );
 
 describe('@octanejs/cmdk parity audit contracts', () => {
-	// @parity-case adapted:cmdk-upstream-ledger
 	it('authenticates the pinned upstream source and complete Playwright inventory', () => {
 		expect(manifest.provenance).toMatchObject({
 			version: '1.1.1',
@@ -24,13 +23,16 @@ describe('@octanejs/cmdk parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	// @parity-case adapted:cmdk-unadapted-upstream-suite
 	it('keeps the canonical upstream suite outside the bounded parity claim', () => {
-		expect(manifest.upstreamSuites.runtime).toBe('present');
+		expect(manifest.upstreamSuites.runtime).toBe('insufficient');
 		expect(
 			manifest.lanes.some(
-				(lane: { evidenceOrigin?: string }) => lane.evidenceOrigin === 'upstream-suite',
+				(lane: { type?: string; evidenceOrigin?: string }) =>
+					lane.type === 'pristine-upstream' || lane.evidenceOrigin === 'upstream-suite',
 			),
 		).toBe(false);
+		expect(manifest.lanes.every((lane: { type?: string }) => lane.type === 'differential')).toBe(
+			true,
+		);
 	});
 });
