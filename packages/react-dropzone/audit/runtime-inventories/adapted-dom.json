@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-dropzone",
-  "roots": ["packages/react-dropzone/tests/adapted", "packages/react-dropzone/tests/probes"],
+  "roots": ["packages/react-dropzone/tests/adapted"],
   "files": [
     "packages/react-dropzone/tests/adapted/index-u3.spec.ts",
     "packages/react-dropzone/tests/adapted/index-u4.spec.ts",

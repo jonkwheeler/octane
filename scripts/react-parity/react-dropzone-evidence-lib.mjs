@@ -36,7 +36,7 @@ export function verifyReactDropzoneEvidence(root) {
 	)
 		throw new Error('non-title-matched upstream cases require a rationale');
 
-	const inventories = ['adapted-dom.json', 'adapted-server.json'].map((name) =>
+	const inventories = ['adapted-dom.json'].map((name) =>
 		load(root, `${prefix}/audit/runtime-inventories/${name}`),
 	);
 	const authored = inventories.flatMap(({ files }) => files).sort();

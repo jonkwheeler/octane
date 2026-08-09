@@ -60,7 +60,6 @@ write('packages/react-dropzone/audit/transformation-ledger.json', {
 
 const adaptedInventories = [
 	json('packages/react-dropzone/audit/runtime-inventories/adapted-dom.json'),
-	json('packages/react-dropzone/audit/runtime-inventories/adapted-server.json'),
 ];
 const adaptedTitles = adaptedInventories.flatMap(({ tests }) =>
 	tests.map(({ fullName }) => fullName),
@@ -87,7 +86,7 @@ const upstreamCases = upstream.cases.map((entry) => {
 				disposition: 'pristine-oracle-plus-contract',
 				rationale: entry.file.includes('/utils/')
 					? 'The byte-exact React oracle executes this utility case; the adapted utility table and live differential lanes cover the Octane boundary.'
-					: 'The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary.',
+					: 'The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary.',
 			};
 });
 const authoredFiles = adaptedInventories.flatMap(({ files }) => files).sort();
@@ -96,13 +95,7 @@ write('packages/react-dropzone/audit/test-classifications.json', {
 	upstreamCases,
 	portAuthored: authoredFiles.map((path) => ({
 		path,
-		disposition: path.includes('/differential/')
-			? 'react-octane-differential'
-			: path.includes('/browser/')
-				? 'trusted-browser-contract'
-				: path.includes('server.test') || path.includes('hydration.test')
-					? 'ssr-hydration-contract'
-					: 'adapted-octane-contract',
+		disposition: 'adapted-octane-contract',
 	})),
 });
 

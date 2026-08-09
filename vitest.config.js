@@ -3610,7 +3610,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Octane-only Chromium probe: no React oracle, so it stays in ordinary
+				// shards rather than claiming react-parity ownership.
 				test: {
 					name: 'react-dropzone-browser',
 					include: ['packages/react-dropzone/tests/probes/browser/**/*.test.ts'],
@@ -3621,7 +3622,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Octane-only SSR conformance probe: no React/upstream oracle, so it
+				// stays in ordinary shards rather than claiming adapted-server evidence.
 				test: {
 					name: 'react-dropzone-ssr',
 					include: ['packages/react-dropzone/tests/probes/server.test.ts'],

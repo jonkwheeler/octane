@@ -17,23 +17,27 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-dropzone/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-dropzone/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-dropzone/tests/adapted", "packages/react-dropzone/tests/probes"],
-      "include": ["\\.(?:test|spec)\\.(?:ts|tsx)$"],
-      "exclude": [
-        "packages/react-dropzone/tests/probes/architecture\\.test\\.ts$",
-        "packages/react-dropzone/tests/probes/hydration\\.test\\.ts$",
-        "packages/react-dropzone/tests/probes/browser/"
-      ]
+      "roots": [
+        "packages/react-dropzone/tests/adapted"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:ts|tsx)$"
+      ],
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 96,
-    "uniqueIdentities": 96,
+    "inventoryEntries": 93,
+    "uniqueIdentities": 93,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -44,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
+      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
     }
   },
   "lanes": [
@@ -69,7 +73,7 @@
         {
           "path": "scripts/react-parity/react-dropzone-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "0419e3e09f4de3cee41b5a9300c8f987c19114a4bb8fef151b1798109ab454a5"
+          "sha256": "f4f0de8810cd592888ea7346de22bc5ad29c633eb56f966b6f9d4f72e6e617e7"
         }
       ]
     },
@@ -89,12 +93,12 @@
         {
           "path": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json",
           "role": "support",
-          "sha256": "b6d7c7b69e03db2b414aaf042fcefb96e136edf276d3acca125380f2e7bb62ee"
+          "sha256": "627a7c4b52f3a757601cf81d534da31af2de38d66730811c9a1441b54d612efd"
         },
         {
           "path": "packages/react-dropzone/audit/test-classifications.json",
           "role": "support",
-          "sha256": "2541de84b5f72070c5a78f7f82b75cf75e7f76eb780487c419165da77c7abc8a"
+          "sha256": "d8dc8d88a3d09943fe5ac61d2c9b5711067f8a7a9bf1f5e0ae8b8d6699ef2e71"
         },
         {
           "path": "packages/react-dropzone/audit/transformation-ledger.json",
@@ -104,32 +108,12 @@
         {
           "path": "scripts/react-parity/react-dropzone-evidence.mjs",
           "role": "support",
-          "sha256": "05cce028135cbf5b25a51b260e531f8f0703786b4ffa935ee7a212236ec64d50"
+          "sha256": "e14a2d189fef5ec7351dacd835a5b38e9030c73d09c374d07458194baec01111"
         },
         {
           "path": "scripts/react-parity/react-dropzone-evidence-lib.mjs",
           "role": "support",
-          "sha256": "1ce8849ee09e5bbac465a47abc51c0e0a28d3db98c94087ffdd37718d397f40c"
-        }
-      ]
-    },
-    {
-      "id": "react-dropzone-adapted-server",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-dropzone-ssr",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "Runs global-free deterministic string and stream SSR variants.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-dropzone/audit/runtime-inventories/adapted-server.json"
-      },
-      "files": [
-        {
-          "path": "packages/react-dropzone/audit/runtime-inventories/adapted-server.json",
-          "role": "support",
-          "sha256": "ecb98704ca4dbd183e5db624b4912a5d5af1a58e0b5cb7f469ce52451aea4845"
+          "sha256": "6a8548270fbeced3f57fc4cc47706832991bac4133bb3f8af0cff4319a41ac69"
         }
       ]
     },
@@ -296,33 +280,6 @@
               "id": "differential:acquisition-max-files",
               "testName": "matches drag/drop max-files validation",
               "fullName": "react-dropzone U4 React/Octane differential matches drag/drop max-files validation"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-dropzone-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-dropzone-browser",
-      "notes": "Runs real Chromium chooser, DataTransfer, clipboard, picker, and diagnostics journeys.",
-      "files": [
-        {
-          "path": "packages/react-dropzone/tests/probes/browser/browser.test.ts",
-          "role": "test",
-          "sha256": "5991534d15dea9087d2c4e3aaf07f5aefcb8dbdac99f5749ea62df45a53836fc",
-          "cases": [
-            {
-              "id": "browser:chooser-drop",
-              "testName": "delivers chooser input and browser-created DataTransfer files",
-              "fullName": "react-dropzone trusted Chromium gate delivers chooser input and browser-created DataTransfer files"
-            },
-            {
-              "id": "browser:paste-picker",
-              "testName": "delivers browser-created ClipboardData and File System Access selections",
-              "fullName": "react-dropzone trusted Chromium gate delivers browser-created ClipboardData and File System Access selections"
             }
           ]
         }

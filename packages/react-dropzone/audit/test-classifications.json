@@ -6,1036 +6,1036 @@
       "fullName": "useDropzone() hook {open} can open file dialog programmatically",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook {open} does not throw if <input> is missing",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook {open} does nothing if {disabled} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook {open} sets {isFileDialogActive} state",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook accessibility sets the role attribute to button by default on the root",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook accessibility users can override the default role attribute on the root",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator awaits the validator and splits accepted/rejected files by its resolved result",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator routes a rejected validator to onError, does not call onDrop, and clears {isProcessing}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator sets {isProcessing} while a validator is pending and clears it once resolved, deferring onDrop",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator sets {isProcessing} while an async getFilesFromEvent runs, even without a validator",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator still caps accepted files at {maxFiles} after async validation resolves",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator supersedes a run whose getFilesFromEvent is still pending when a newer drop lands",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook async validator supersedes an in-flight validation when a second drop lands, only committing the latest",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior {aria-disabled} is not set if {disabled} is false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior {aria-disabled} is true if {disabled} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior {rootRef, inputRef} are exposed",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior {tabindex} is 0 if {disabled} is false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior {tabindex} is not set if {disabled} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior {tabindex} is not set if {noKeyboard} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior <Dropzone> doesn't invoke the ref fn if it hasn't changed",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior <Dropzone> exposes and sets the ref if using a ref fn",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior <Dropzone> exposes and sets the ref if using a ref object",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior click events originating from <label> should not trigger file dialog open twice",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior hides the <input> without {position: absolute} (#1413) while keeping it focusable (#1268)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior labels the hidden file input for accessibility",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior refs are set when {refKey} is set to a different value",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior renders the root and input nodes with the necessary props",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior runs no callback handlers if {disabled} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior runs the custom callback handlers provided to the input props getter",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior runs the custom callback handlers provided to the root props getter",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior sets {accept} prop on the <input>",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior sets {isFocused} to false if {disabled} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior sets {multiple} prop on the <input>",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior sets any props passed to the input props getter on the <input>",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior sets any props passed to the root props getter on the root node",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior updates {multiple} prop on the <input> when it changes",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook behavior updates {multiple} prop on the <input> when it changes",
       "occurrence": 2,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection does not prevent stray drops when {preventDropOnDocument} is false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection installs hooks to prevent stray drops from taking over the browser window",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection permits drags and drops on elements inside our dropzone",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection prevents the browser from opening a file dropped on a {disabled} dropzone",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection prevents the browser from opening a file dropped on a {noDrag} dropzone",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection removes document hooks when unmounted",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection still lets an enabled dropzone handle its own drops (no double prevent)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook document drop protection terminates drags and drops on elements outside our dropzone",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook event propagation drag events do not propagate from the inner dropzone to parent dropzone if {noDragEventsBubbling} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook event propagation drag events do not propagate from the inner dropzone to parent dropzone if user invoked stopPropagation() on the events",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook event propagation drag events propagate from the inner dropzone to parents",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook event propagation onDragLeave is not invoked for the parent dropzone if it was invoked for an inner dropzone",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook file dialog open (#1455) ignores files dropped on the dropzone while the file picker dialog is open",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook file dialog open (#1455) resumes accepting drops after the dialog closes",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook file dialog open (#1455) still processes a file selected from the open dialog (input change)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook getErrorMessage also overrides custom validator error messages",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook getErrorMessage overrides built-in rejection messages by code and receives the file",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook getErrorMessage overrides the too-many-files rejection message",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onBlur does not unset focus state if {noKeyboard} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onBlur does not unset focus state if user stopped event propagation",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onBlur restores blur behavior if {noKeyboard} is set back to false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onBlur unsets focus state",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick if showOpenFilePicker() is supported and {useFsAccessApi} is true, and the user cancels it should call onFileDialogCancel",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick if showOpenFilePicker() is supported and {useFsAccessApi} is true, it should work without the <input>",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick passes grouped {accept} to showOpenFilePicker() as separate picker types and flattens it for the <input>",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick restores click behavior if {noClick} is set back to false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should continue event propagation if {noClick} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should not not proxy the click event to the input if {noClick} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should not not proxy the click event to the input if event propagation was stopped",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should not use showOpenFilePicker() if supported and {isSecureContext} is not true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should not use showOpenFilePicker() if supported and {useFsAccessApi} is not true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should proxy the click event to the input",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should schedule input click on next tick in Edge",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should try to use showOpenFilePicker() and fallback to input in case of a not allowed error",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should try to use showOpenFilePicker() and fallback to input in case of a security error",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick should use showOpenFilePicker() if supported and {useFsAccessApi} is true, and not trigger click on input",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick showOpenFilePicker() should call {onError} when a security error occurs and no <input> was provided",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick showOpenFilePicker() should call {onError} when an unexpected error occurs",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick window focus evt is bound if showOpenFilePicker() is supported but errors due to a security error",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onClick window focus evt is not bound if showOpenFilePicker() is supported and {useFsAccessApi} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* accepts files with empty type during dragenter (Chrome .md file issue)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* does not invoke callbacks if {noDrag} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* does not invoke callbacks if no files are detected",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* invokes callbacks for the appropriate events",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* invokes callbacks for the appropriate events even if it cannot access the data",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* keeps {isDragActive} if dragleave is triggered for some arbitrary node",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* resets {isDragActive, isDragAccept, isDragReject} on dragleave",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* restores drag behavior if {noDrag} is set back to false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* sets {isDragActive, isDragAccept, isDragReject} if any files are rejected and {multiple} is false on dragenter",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* sets {isDragActive} and {isDragAccept} if some files are accepted on dragenter",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* sets {isDragActive} and {isDragReject} of some files are not accepted on dragenter",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrag* sets {isDragReject} if some files are too large",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts a dropped image when Firefox provides a bogus file type",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts a single files if {multiple} is false and {accept} criteria is met",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts all files if {multiple} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts multiple files if {multiple} is true and {accept} criteria is met",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts the first file and rejects the surplus if {multiple} is false and {accept} criteria is met",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts up to {maxFiles} and rejects the surplus if {multiple} is true and {accept} criteria is met",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop accepts up to {maxFiles} and rejects the surplus when {maxFiles} is updated to be less than files",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop callback is invoked when <input> change event occurs",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop filters files according to {maxSize}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop filters files according to {minSize}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop gets invoked with both accepted/rejected files",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop isDragReject is false after rejected drop and updates correctly on new drag",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop onDropAccepted callback is invoked if some files are accepted",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop onDropRejected callback is invoked if some files are rejected",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop rejects all files if {multiple} is false and {accept} criteria is not met",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop resets {isDragActive, isDragAccept, isDragReject}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop resets {isFileDialogActive} state once a file is selected",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop sets {acceptedFiles, fileRejections, isDragReject}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop sets {isDragGlobal} to false when drag leaves document",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop sets {isDragGlobal} to false when dragend occurs on document",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop sets {isDragGlobal} to false when drop occurs on document",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop sets {isDragGlobal} to true when drag event is detected on document",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop when more files are dropped than allowed accepts the first {maxFiles} valid files and rejects only the surplus (issue #1355)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop when more files are dropped than allowed accepts the first valid file and rejects the rest when {multiple} is false (issue #1355)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop when more files are dropped than allowed keeps a valid file within the limit and rejects the one failing its own check (issue #1358)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop wildcard MIME type paired with extensions accepts files whose extension matches and rejects the others on drop",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop wildcard MIME type paired with extensions sets only the extensions on the <input> {accept} attribute",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onDrop wildcard MIME type paired with extensions still reacts with {isDragAccept} via the MIME type during a drag",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogCancel does not throw if callback is not provided",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogCancel is not invoked every time window receives focus",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogCancel is not invoked if <input> is not rendered",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogCancel is not invoked if files were selected",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogCancel resets {isFileDialogActive}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogOpen is invoked when opening the file dialog",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFileDialogOpen is invoked when opening the file dialog programmatically",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFocus {autoFocus} sets the focus state on render",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFocus does not set focus state if {noKeyboard} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFocus does not set focus state if user stopped event propagation",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFocus restores focus behavior if {noKeyboard} is set back to false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onFocus sets focus state",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onKeyDown does not trigger the click event on the input for other keys",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onKeyDown does not trigger the click event on the input if {noKeyboard} is true",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onKeyDown does not trigger the click event on the input if event propagation was stopped",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onKeyDown does not trigger the click event on the input if the dropzone is not in focus",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onKeyDown restores the keydown behavior when {noKeyboard} is set back to false",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onKeyDown triggers the click event on the input if the SPACE/ENTER keys are pressed",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) does not handle pastes when {disabled}",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) does not handle pastes when {noPaste} is set",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) ignores a paste that carries no files (e.g. plain text) and does not preventDefault",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) invokes onDrop with the files carried by a paste",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) preventDefault()s a paste that carries files",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) runs pasted files through {accept} validation",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook onPaste (#1210) still calls a user-supplied onPaste passed through getRootProps",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook plugin integration calls {onError} when getFilesFromEvent() rejects",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook plugin integration uses provided getFilesFromEvent()",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook validator keeps {isDragReject} over {isDragUnknown} when a file's MIME type is confidently rejected",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook validator rejects with custom error",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook validator sets {isDragUnknown} during a drag when a validator is set",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/index.spec.tsx",
       "fullName": "useDropzone() hook validator still activates the drag when a validator reads file.name (#1408)",
       "occurrence": 1,
       "disposition": "pristine-oracle-plus-contract",
-      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, differential, SSR/hydration, and Chromium lanes cover its observable Octane boundary."
+      "rationale": "The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary."
     },
     {
       "file": "src/utils/index.spec.ts",
@@ -1638,10 +1638,6 @@
     {
       "path": "packages/react-dropzone/tests/adapted/utils/index.spec.ts",
       "disposition": "adapted-octane-contract"
-    },
-    {
-      "path": "packages/react-dropzone/tests/probes/server.test.ts",
-      "disposition": "ssr-hydration-contract"
     }
   ]
 }

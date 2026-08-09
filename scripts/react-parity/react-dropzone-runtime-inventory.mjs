@@ -6,10 +6,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const adaptedRoots = [
-	'packages/react-dropzone/tests/adapted',
-	'packages/react-dropzone/tests/probes',
-];
+const adaptedRoots = ['packages/react-dropzone/tests/adapted'];
 const lanes = [
 	{
 		project: 'react-dropzone-pristine',
@@ -21,15 +18,9 @@ const lanes = [
 		project: 'react-dropzone',
 		roots: adaptedRoots,
 		// Full-suite DOM inventory is adapted upstream cases only; Octane-only probes
-		// stay in the project for ordinary shards but are not adapted-suite evidence.
+		// stay in ordinary shards and are not adapted-suite evidence.
 		keep: (file) => file.startsWith('packages/react-dropzone/tests/adapted/'),
 		output: 'packages/react-dropzone/audit/runtime-inventories/adapted-dom.json',
-	},
-	{
-		project: 'react-dropzone-ssr',
-		roots: adaptedRoots,
-		keep: (file) => file === 'packages/react-dropzone/tests/probes/server.test.ts',
-		output: 'packages/react-dropzone/audit/runtime-inventories/adapted-server.json',
 	},
 ];
 
