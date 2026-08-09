@@ -5,38 +5,33 @@
 import type { ReactNode } from 'react';
 import { Waypoint } from 'react-waypoint';
 
-// 1. Position statics above / below / inside / invisible are strings.
-const above: string = Waypoint.above;
-const below: string = Waypoint.below;
-const inside: string = Waypoint.inside;
-const invisible: string = Waypoint.invisible;
-void above;
-void below;
-void inside;
-void invisible;
+declare function expectType<T>(value: T): void;
 
-// 2. Waypoint accepts onEnter / onLeave / onPositionChange callbacks.
-const callbackProps: Waypoint.WaypointProps = {
+/** Position statics above / below / inside / invisible are strings. */
+expectType<string>(Waypoint.above);
+expectType<string>(Waypoint.below);
+expectType<string>(Waypoint.inside);
+expectType<string>(Waypoint.invisible);
+
+/** Waypoint accepts onEnter / onLeave / onPositionChange callbacks. */
+expectType<Waypoint.WaypointProps>({
 	onEnter: function onEnter() {},
 	onLeave: function onLeave() {},
 	onPositionChange: function onPositionChange() {},
 	children: null as unknown as ReactNode,
-};
-void callbackProps;
-void Waypoint;
+});
 
-// 3. scrollableAncestor accepts the string "window".
-const windowAncestor: Waypoint.WaypointProps = {
+/** scrollableAncestor accepts the string "window". */
+expectType<Waypoint.WaypointProps>({
 	scrollableAncestor: 'window',
-};
-void windowAncestor;
+});
 
-// 4. Unknown props are rejected.
+/** Unknown props are rejected. */
 // @ts-expect-error unknown prop
 const badProps: Waypoint.WaypointProps = { notAWaypointProp: true };
 void badProps;
 
-// 5. A non-function onEnter is rejected.
+/** A non-function onEnter is rejected. */
 // @ts-expect-error onEnter must be a function
 const badEnter: Waypoint.WaypointProps = { onEnter: 'nope' };
 void badEnter;

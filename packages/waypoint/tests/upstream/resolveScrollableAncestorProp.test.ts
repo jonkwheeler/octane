@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { resolveScrollableAncestorProp } from '../../src/geometry.ts';
 
-// Per packages/waypoint/upstream/test/node/resolveScrollableAncestorProp.test.js
 describe('resolveScrollableAncestorProp()', function resolveScrollableAncestorPropSuite() {
+	// Per packages/waypoint/upstream/test/node/resolveScrollableAncestorProp.test.js:4
 	it('converts "window" into `global.window`', function convertsWindowString() {
 		const previous = globalThis.window;
 		const stub = {} as Window;
@@ -15,6 +15,7 @@ describe('resolveScrollableAncestorProp()', function resolveScrollableAncestorPr
 		}
 	});
 
+	// Per packages/waypoint/upstream/test/node/resolveScrollableAncestorProp.test.js:10
 	it('passes other values through', function passesThrough() {
 		expect(resolveScrollableAncestorProp('foo' as unknown as Window)).toEqual('foo');
 	});

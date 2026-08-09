@@ -13,6 +13,7 @@ import {
 	toPortablePath,
 } from './harness-lib.mjs';
 import { pristineTestIdentities } from './waypoint-pristine-runtime.mjs';
+import { renderTypeInventories } from './waypoint-types-lib.mjs';
 import { verifyWaypointUpstream } from '../../packages/waypoint/scripts/verify-upstream.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
@@ -116,6 +117,12 @@ const adaptedInventory = {
 	tests: adaptedTests,
 };
 writeInventory('packages/waypoint/audit/adapted-runtime.json', adaptedInventory);
+
+const { config: typeConfig, inventory: typeInventory } = renderTypeInventories(root);
+for (const side of ['upstream', 'adapted']) {
+	const destination = typeConfig.inventories[side];
+	writeInventory(destination, typeInventory[side]);
+}
 
 console.log(
 	'adaptedRuntimeSummary',

@@ -5,13 +5,19 @@ both sides of this lane are port-authored. The two files assert the same public
 surface claims: one against the vendored React declarations compiled with
 `tsc`, one against `@octanejs/waypoint` compiled with `tsrx-tsc`.
 
+`react-parity:check` enforces these claims through
+`scripts/react-parity/waypoint-types-lib.mjs`: assertion-group inventories in
+`audit/pristine-types.json` and `audit/adapted-types.json`, structural/transform
+verification, and negative controls for a skipped file, a deleted assertion, and
+a removed `@ts-expect-error`.
+
 Permitted differences between the two files, and nothing else:
 
 | # | Transformation | Why |
 | --- | --- | --- |
-| 1 | import root `react-waypoint` / relative upstream `index.d.ts` → `@octanejs/waypoint` | the package under test |
-| 2 | `React.Component` class shape → function component with attached statics | Octane has no class components |
-| 3 | `React.ReactNode` children → `OctaneNode` children | Octane renderable type |
+| 1 | import root `react-waypoint` → `@octanejs/waypoint` | the package under test |
+| 2 | `Waypoint.WaypointProps` namespace access → named `WaypointProps` export | Octane exports the props type directly |
+| 3 | `ReactNode` children → `OctaneNode` children | Octane renderable type |
 
 Every assertion group below appears in both files under the same heading.
 

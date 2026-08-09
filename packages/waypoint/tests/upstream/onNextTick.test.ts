@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import onNextTick from '../../src/onNextTick.ts';
 
-// Per packages/waypoint/upstream/test/node/onNextTick.test.js
 describe('onNextTick()', function onNextTickSuite() {
 	beforeEach(function useFakeTimers() {
 		vi.useFakeTimers();
@@ -12,6 +11,7 @@ describe('onNextTick()', function onNextTickSuite() {
 		vi.useRealTimers();
 	});
 
+	// Per packages/waypoint/upstream/test/node/onNextTick.test.js:12
 	it('does not call callbacks immediately', function doesNotCallImmediately() {
 		const called: number[] = [];
 
@@ -32,6 +32,7 @@ describe('onNextTick()', function onNextTickSuite() {
 		vi.advanceTimersByTime(1);
 	});
 
+	// Per packages/waypoint/upstream/test/node/onNextTick.test.js:32
 	it('calls callbacks in order', function callsInOrder() {
 		const called: number[] = [];
 
@@ -52,6 +53,7 @@ describe('onNextTick()', function onNextTickSuite() {
 		expect(called).toEqual([0, 1, 2]);
 	});
 
+	// Per packages/waypoint/upstream/test/node/onNextTick.test.js:52
 	it('does not call callbacks that have been unsubscribed', function skipsUnsubscribed() {
 		const called: number[] = [];
 
@@ -74,6 +76,7 @@ describe('onNextTick()', function onNextTickSuite() {
 		expect(called).toEqual([0, 2]);
 	});
 
+	// Per packages/waypoint/upstream/test/node/onNextTick.test.js:74
 	it('does nothing if unsubscribe is called multiple times', function multiUnsub() {
 		const called: number[] = [];
 
@@ -98,6 +101,7 @@ describe('onNextTick()', function onNextTickSuite() {
 		expect(called).toEqual([0, 2]);
 	});
 
+	// Per packages/waypoint/upstream/test/node/onNextTick.test.js:98
 	it('does nothing when unsubscribing a callback that has already been called', function unsubAfterCall() {
 		const called: number[] = [];
 

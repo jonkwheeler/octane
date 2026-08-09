@@ -1,47 +1,47 @@
 {
-  "schemaVersion": 1,
-  "root": "packages/waypoint/upstream",
-  "tests": [
-    {
-      "file": "test/node/onNextTick.test.js",
-      "fullName": "onNextTick() calls callbacks in order",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/onNextTick.test.js",
-      "fullName": "onNextTick() does not call callbacks immediately",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/onNextTick.test.js",
-      "fullName": "onNextTick() does not call callbacks that have been unsubscribed",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/onNextTick.test.js",
-      "fullName": "onNextTick() does nothing if unsubscribe is called multiple times",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/onNextTick.test.js",
-      "fullName": "onNextTick() does nothing when unsubscribing a callback that has already been called",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/resolveScrollableAncestorProp.test.js",
-      "fullName": "resolveScrollableAncestorProp() converts \"window\" into `global.window`",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/resolveScrollableAncestorProp.test.js",
-      "fullName": "resolveScrollableAncestorProp() passes other values through",
-      "status": "passed"
-    },
-    {
-      "file": "test/node/waypoint.test.jsx",
-      "fullName": "<Waypoint> does not throw an error when in an environment without window",
-      "status": "passed"
-    }
-  ],
-  "snapshots": 0
+	"schemaVersion": 1,
+	"root": "packages/waypoint/upstream",
+	"tests": [
+		{
+			"file": "test/node/onNextTick.test.js",
+			"fullName": "onNextTick() calls callbacks in order",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/onNextTick.test.js",
+			"fullName": "onNextTick() does not call callbacks immediately",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/onNextTick.test.js",
+			"fullName": "onNextTick() does not call callbacks that have been unsubscribed",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/onNextTick.test.js",
+			"fullName": "onNextTick() does nothing if unsubscribe is called multiple times",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/onNextTick.test.js",
+			"fullName": "onNextTick() does nothing when unsubscribing a callback that has already been called",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/resolveScrollableAncestorProp.test.js",
+			"fullName": "resolveScrollableAncestorProp() converts \"window\" into `global.window`",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/resolveScrollableAncestorProp.test.js",
+			"fullName": "resolveScrollableAncestorProp() passes other values through",
+			"status": "passed"
+		},
+		{
+			"file": "test/node/waypoint.test.jsx",
+			"fullName": "<Waypoint> does not throw an error when in an environment without window",
+			"status": "passed"
+		}
+	],
+	"snapshots": 0
 }

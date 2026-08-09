@@ -1,52 +1,54 @@
 {
-  "schemaVersion": 1,
-  "project": "waypoint-adapted",
-  "roots": ["packages/waypoint/tests/upstream"],
-  "files": [
-    "packages/waypoint/tests/upstream/onNextTick.test.ts",
-    "packages/waypoint/tests/upstream/resolveScrollableAncestorProp.test.ts",
-    "packages/waypoint/tests/upstream/waypoint.test.ts"
-  ],
-  "tests": [
-    {
-      "id": "runtime:4538ff1248d815fa",
-      "file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
-      "fullName": "onNextTick() calls callbacks in order"
-    },
-    {
-      "id": "runtime:febc8d9b55abc819",
-      "file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
-      "fullName": "onNextTick() does not call callbacks immediately"
-    },
-    {
-      "id": "runtime:f9e51aac38d11f8c",
-      "file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
-      "fullName": "onNextTick() does not call callbacks that have been unsubscribed"
-    },
-    {
-      "id": "runtime:f588a5f3a16e6dc0",
-      "file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
-      "fullName": "onNextTick() does nothing if unsubscribe is called multiple times"
-    },
-    {
-      "id": "runtime:777987d820391b48",
-      "file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
-      "fullName": "onNextTick() does nothing when unsubscribing a callback that has already been called"
-    },
-    {
-      "id": "runtime:174948db3d16dcd7",
-      "file": "packages/waypoint/tests/upstream/resolveScrollableAncestorProp.test.ts",
-      "fullName": "resolveScrollableAncestorProp() converts \"window\" into `global.window`"
-    },
-    {
-      "id": "runtime:5e0d3b9888a4ee7c",
-      "file": "packages/waypoint/tests/upstream/resolveScrollableAncestorProp.test.ts",
-      "fullName": "resolveScrollableAncestorProp() passes other values through"
-    },
-    {
-      "id": "runtime:d7cb812bc4827518",
-      "file": "packages/waypoint/tests/upstream/waypoint.test.ts",
-      "fullName": "<Waypoint> does not throw an error when in an environment without window"
-    }
-  ]
+	"schemaVersion": 1,
+	"project": "waypoint-adapted",
+	"roots": [
+		"packages/waypoint/tests/upstream"
+	],
+	"files": [
+		"packages/waypoint/tests/upstream/onNextTick.test.ts",
+		"packages/waypoint/tests/upstream/resolveScrollableAncestorProp.test.ts",
+		"packages/waypoint/tests/upstream/waypoint.test.ts"
+	],
+	"tests": [
+		{
+			"id": "runtime:4538ff1248d815fa",
+			"file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
+			"fullName": "onNextTick() calls callbacks in order"
+		},
+		{
+			"id": "runtime:febc8d9b55abc819",
+			"file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
+			"fullName": "onNextTick() does not call callbacks immediately"
+		},
+		{
+			"id": "runtime:f9e51aac38d11f8c",
+			"file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
+			"fullName": "onNextTick() does not call callbacks that have been unsubscribed"
+		},
+		{
+			"id": "runtime:f588a5f3a16e6dc0",
+			"file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
+			"fullName": "onNextTick() does nothing if unsubscribe is called multiple times"
+		},
+		{
+			"id": "runtime:777987d820391b48",
+			"file": "packages/waypoint/tests/upstream/onNextTick.test.ts",
+			"fullName": "onNextTick() does nothing when unsubscribing a callback that has already been called"
+		},
+		{
+			"id": "runtime:174948db3d16dcd7",
+			"file": "packages/waypoint/tests/upstream/resolveScrollableAncestorProp.test.ts",
+			"fullName": "resolveScrollableAncestorProp() converts \"window\" into `global.window`"
+		},
+		{
+			"id": "runtime:5e0d3b9888a4ee7c",
+			"file": "packages/waypoint/tests/upstream/resolveScrollableAncestorProp.test.ts",
+			"fullName": "resolveScrollableAncestorProp() passes other values through"
+		},
+		{
+			"id": "runtime:d7cb812bc4827518",
+			"file": "packages/waypoint/tests/upstream/waypoint.test.ts",
+			"fullName": "<Waypoint> does not throw an error when in an environment without window"
+		}
+	]
 }

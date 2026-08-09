@@ -830,15 +830,14 @@ export default defineConfig({
 				},
 			},
 			{
-				// Octane-only framework/contract suite. Pristine/adapted parity evidence
-				// lives in separate wholly-owned projects below — keep this outside
-				// testExecution until those lanes back a React-parity claim.
+				// Octane-only framework/contract suite. Pristine Jest evidence is the
+				// manifest jest-full lane (not a Vitest project); adapted parity evidence
+				// lives in the wholly-owned project below.
 				test: {
 					name: 'waypoint',
 					include: ['packages/waypoint/tests/**/*.test.ts'],
 					exclude: [
 						...configDefaults.exclude,
-						'packages/waypoint/tests/upstream-original.test.ts',
 						'packages/waypoint/tests/upstream/**/*.test.ts',
 					],
 					environment: 'jsdom',
@@ -855,16 +854,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
-				test: {
-					name: 'waypoint-pristine',
-					include: ['packages/waypoint/tests/upstream-original.test.ts'],
-					environment: 'node',
-					sequence: { groupOrder: 1 },
-					globals: false,
-				},
-			},
-			{
+				// Adapted node suite includes the no-window SSR case (renderToStaticMarkup
+				// + .tsrx), so compile under the server contract.
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'waypoint-adapted',
@@ -872,9 +863,13 @@ export default defineConfig({
 					environment: 'node',
 					globals: false,
 				},
-				plugins: [octane()],
+				plugins: [octane({ ssr: true })],
 				resolve: {
 					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
 						{
 							find: /^@octanejs\/waypoint$/,
 							replacement: resolve(import.meta.dirname, 'packages/waypoint/src/index.ts'),

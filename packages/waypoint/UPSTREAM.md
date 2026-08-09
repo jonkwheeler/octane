@@ -42,7 +42,8 @@ public package exports alongside `Waypoint`.
 | `test/performance-test.*` | Not a conformance test; retained as upstream benchmark/demo evidence. |
 
 Executable React-parity evidence for the node suite is registered in
-`audit/react-parity.json` (`waypoint-pristine`, `waypoint-adapted`, and
-repo-authored type probes). `tests/waypoint.test.ts` remains Octane-only
-framework/contract evidence outside `testExecution`. The Karma browser suite is
-still required before scroll-geometry parity can be claimed complete.
+`audit/react-parity.json` (manifest `jest-full` pristine lane, Vitest
+`waypoint-adapted`, and repo-authored type probes with assertion-group
+inventories). `tests/waypoint.test.ts` remains Octane-only framework/contract
+evidence outside `testExecution`. The Karma browser suite is still required
+before scroll-geometry parity can be claimed complete.
