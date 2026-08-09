@@ -3431,7 +3431,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Keep outside react-parity ownership while provenance is
+				// recorded-unverified: check.mjs only validates that lane, and
+				// a wholly-owned testExecution group would omit this project
+				// from ordinary shards with no CI executor left.
 				test: {
 					name: 'react-error-boundary-differential',
 					include: ['packages/react-error-boundary/tests/differential/**/*.test.ts'],

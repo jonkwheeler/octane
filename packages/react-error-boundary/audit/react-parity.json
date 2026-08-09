@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-error-boundary/src"
-      ],
-      "include": [
-        "$a"
-      ],
+      "roots": ["packages/react-error-boundary/src"],
+      "include": ["$a"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-error-boundary/tests/differential"
-      ],
-      "include": [
-        "$a"
-      ],
+      "roots": ["packages/react-error-boundary/tests/differential"],
+      "include": ["$a"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
+      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
     }
   },
   "lanes": [
@@ -91,7 +83,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "e59c2930cc1a95e683a999eb7cb01e7b7bc8c50383591d0e2b7f5b52051fc4ae"
+          "sha256": "51cef03fa21bbbc95d5468dfdf3036183c7bc8e49397e360a44e92795d6541cc"
         }
       ]
     }
