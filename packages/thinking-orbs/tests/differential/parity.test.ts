@@ -9,6 +9,7 @@ const FIXTURE = resolve(__dirname, '../_fixtures/thinking-orbs-diff.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
 
 describe('differential: @octanejs/thinking-orbs vs thinking-orbs@0.2.0', () => {
+	// @parity-case differential:mount-presets
 	it('matches mount markup for avatar and inline presets', async () => {
 		const differential = await mountDifferential(
 			FIXTURE,
