@@ -3035,13 +3035,8 @@ export default defineConfig({
 				},
 			},
 			{
-				// Only the adapted native-event cases are parity-owned; ordinary
-				// package tests (including fireEvent commit timing) stay in the
-				// Node-version shards via complete test.include.
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/testing-library/tests/events-native-parity.test.ts'],
-				},
+				// Ordinary package tests stay in the Node-version shards. Only the
+				// differential project below is react-parity owned.
 				test: {
 					name: 'testing-library',
 					include: ['packages/testing-library/tests/**/*.test.ts'],

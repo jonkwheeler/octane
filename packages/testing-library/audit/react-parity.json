@@ -71,67 +71,7 @@
           "sha256": "ace84a1bb889308d7c3b0797603b757c2f45dba68cee4ef466b057905ac05d19"
         }
       ]
-    },
-    {
-      "id": "testing-library-adapted-native-events",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "testing-library",
-      "notes": "Authenticates native event semantics that intentionally differ from React synthetic event remapping.",
-      "files": [
-        {
-          "path": "packages/testing-library/tests/events-native-parity.test.ts",
-          "role": "test",
-          "sha256": "290d803f3304b5b3746fc15adb169364436554c205067ba2f4b3812885e3281d",
-          "cases": [
-            {
-              "id": "adapted:testing-library-native-change",
-              "testName": "fireEvent.change fires the native change handler",
-              "fullName": "native event semantics (intentional divergence from React) fireEvent.change fires the native change handler"
-            },
-            {
-              "id": "adapted:testing-library-native-input",
-              "testName": "fireEvent.input does NOT trigger onChange (no synthetic remap)",
-              "fullName": "native event semantics (intentional divergence from React) fireEvent.input does NOT trigger onChange (no synthetic remap)"
-            },
-            {
-              "id": "adapted:testing-library-native-checkbox-change",
-              "testName": "fireEvent.change on a checkbox is an explicit change dispatch, not click activation",
-              "fullName": "native event semantics (intentional divergence from React) fireEvent.change on a checkbox is an explicit change dispatch, not click activation"
-            },
-            {
-              "id": "adapted:testing-library-native-mouse-enter",
-              "testName": "fireEvent.mouseEnter triggers onMouseEnter without a mouseover remap",
-              "fullName": "native event semantics (intentional divergence from React) fireEvent.mouseEnter triggers onMouseEnter without a mouseover remap"
-            }
-          ]
-        },
-        {
-          "path": "packages/testing-library/tests/_fixtures/counter.tsrx",
-          "role": "support",
-          "sha256": "ace84a1bb889308d7c3b0797603b757c2f45dba68cee4ef466b057905ac05d19"
-        }
-      ]
     }
   ],
-  "divergences": [
-    {
-      "id": "testing-library-native-events",
-      "caseIds": [
-        "adapted:testing-library-native-change",
-        "adapted:testing-library-native-input",
-        "adapted:testing-library-native-checkbox-change",
-        "adapted:testing-library-native-mouse-enter"
-      ],
-      "upstreamResult": "React Testing Library remaps several convenience events through React's synthetic event system.",
-      "octaneResult": "The Octane binding dispatches the requested native DOM event exactly once without React remapping.",
-      "rationale": "Octane exposes native DOM event semantics and has no React synthetic event plugin layer.",
-      "classification": "event-model",
-      "consumerImpact": "Tests ported from React may need to fire input, change, click, or mouseenter according to the actual native handler contract.",
-      "migrationGuidance": "Fire the native event represented by the Octane handler; use user-event for realistic interaction sequences.",
-      "owner": "@octanejs/testing-library",
-      "reviewCondition": "Review if Octane introduces a synthetic event compatibility layer."
-    }
-  ]
+  "divergences": []
 }

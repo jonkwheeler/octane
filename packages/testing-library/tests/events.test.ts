@@ -7,7 +7,7 @@
  * (RTL gets this from wrapping dispatch in React act()).
  *
  * Native-event divergence cases that authenticate React remapping differences
- * live in `events-native-parity.test.ts` (parity-owned).
+ * live in `events-native-parity.test.ts` as ordinary framework-contract coverage.
  */
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, cleanup, fireEvent, screen } from '@octanejs/testing-library';
