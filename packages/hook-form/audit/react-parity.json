@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/hook-form/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/hook-form/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/hook-form/tests/upstream"],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/hook-form/tests/upstream"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3cf09bba58719eb5aead463ac13b9949ff29736cfae69bd38f61ca649d069773"
+      "lockfileSha256": "ffb50d0957a9064370b812d2b76108e9dd4608db6083a73d7354d05276c2c452"
     }
   },
   "lanes": [
@@ -303,7 +311,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "12a8236abdd0fe12fcc6f702d2da1e95c82be0373fd38e2275b4a2237c933365"
+          "sha256": "bb1689ab1487b25f5d111bc4a2c3247c5f47baf1e26e3d5aec86a087b09a26c3"
         }
       ]
     }
@@ -311,7 +319,9 @@
   "divergences": [
     {
       "id": "hook-form-native-input-handler",
-      "caseIds": ["adapted:controller-on-input"],
+      "caseIds": [
+        "adapted:controller-on-input"
+      ],
       "upstreamResult": "Controller exposes field.onChange for React synthetic change events.",
       "octaneResult": "Controller exposes field.onInput for Octane native input events; mode and option names retain upstream onChange spelling.",
       "rationale": "Octane observes native per-keystroke input events rather than React synthetic change events.",
@@ -323,7 +333,9 @@
     },
     {
       "id": "hook-form-native-noop-input",
-      "caseIds": ["runtime:4ca89a396197cd2e"],
+      "caseIds": [
+        "runtime:4ca89a396197cd2e"
+      ],
       "upstreamResult": "React suppresses an input event when its tracked value is unchanged.",
       "octaneResult": "Octane delivers the native input event and react-hook-form notifies its value subscribers.",
       "rationale": "Octane intentionally uses native DOM events without React's synthetic value tracker.",
@@ -351,7 +363,9 @@
     },
     {
       "id": "hook-form-duplicate-resolver-notification",
-      "caseIds": ["runtime:375cd9f568ef4f2c"],
+      "caseIds": [
+        "runtime:375cd9f568ef4f2c"
+      ],
       "upstreamResult": "React batching exposes two resolver state commits.",
       "octaneResult": "Octane exposes a third content-identical resolver state commit.",
       "rationale": "Separate Octane render passes expose notifications React automatically coalesces.",
@@ -363,7 +377,9 @@
     },
     {
       "id": "hook-form-act-flush-boundary",
-      "caseIds": ["runtime:3b2b7a4e701f007a"],
+      "caseIds": [
+        "runtime:3b2b7a4e701f007a"
+      ],
       "upstreamResult": "React act drains the in-flight validation microtask chain before returning.",
       "octaneResult": "Octane act returns before a fire-and-forget validation notification schedules its final render.",
       "rationale": "Octane act has a narrower async flush boundary than React act.",
@@ -375,7 +391,9 @@
     },
     {
       "id": "hook-form-reset-extra-render",
-      "caseIds": ["runtime:9874a97bb66b95e4"],
+      "caseIds": [
+        "runtime:9874a97bb66b95e4"
+      ],
       "upstreamResult": "React batches mount validity and reset notifications into two observed renders.",
       "octaneResult": "Octane exposes an additional intermediate render while preserving the same final state.",
       "rationale": "Octane commits notification passes that React batches.",
@@ -387,7 +405,9 @@
     },
     {
       "id": "hook-form-eager-equal-bailout",
-      "caseIds": ["runtime:c01c86279535b2d5"],
+      "caseIds": [
+        "runtime:c01c86279535b2d5"
+      ],
       "upstreamResult": "React re-enters render once before bailing out on an Object.is-equal computed watch value.",
       "octaneResult": "Octane eagerly skips the equal-value parent render.",
       "rationale": "Octane's eager bailout avoids React fiber's probe render.",

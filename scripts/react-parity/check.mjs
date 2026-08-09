@@ -19,6 +19,7 @@ import { verifyAlienSignalsTypes } from './alien-signals-types-lib.mjs';
 import { verifyAlienSignalsTestClassifications } from './alien-signals-classifications-lib.mjs';
 import { verifyAlienSignalsRuntimeStructure } from './alien-signals-runtime-lib.mjs';
 import { assertPristineOracleEnvironment } from './alien-signals-pristine-runtime.mjs';
+import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -83,6 +84,11 @@ try {
 	verifyAlienSignalsTestClassifications(REPO);
 } catch (error) {
 	errors.push(`alien-signals test classifications are invalid: ${error.message}`);
+}
+try {
+	verifySolanaReactTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/solana-react type evidence is invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);
