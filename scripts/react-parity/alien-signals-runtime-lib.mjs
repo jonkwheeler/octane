@@ -373,31 +373,224 @@ function firstParameterName(fn) {
 }
 
 /**
+ * Normalize `.tsrx` fixture source so TypeScript can parse the component bodies
+ * as TSX (`function f() @{ … }` → `function f() { … }`).
+ */
+function parseFixtureSource(fixtureSource, fileName = 'hooks.tsx') {
+	const normalized = fixtureSource.replace(/@\{/g, '{');
+	return ts.createSourceFile(fileName, normalized, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+}
+
+function collectUseSignalSetterNames(fnBody) {
+	const setters = new Set();
+	function visit(node) {
+		if (
+			ts.isVariableDeclaration(node) &&
+			node.initializer &&
+			ts.isCallExpression(node.initializer) &&
+			ts.isIdentifier(node.initializer.expression) &&
+			node.initializer.expression.text === 'useSignal' &&
+			ts.isArrayBindingPattern(node.name) &&
+			node.name.elements.length >= 2
+		) {
+			const setterElement = node.name.elements[1];
+			if (
+				setterElement &&
+				!ts.isOmittedExpression(setterElement) &&
+				ts.isBindingElement(setterElement) &&
+				ts.isIdentifier(setterElement.name)
+			) {
+				setters.add(setterElement.name.text);
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(fnBody);
+	return setters;
+}
+
+function collectHookReturnedSetterNames(fnBody) {
+	const setters = collectUseSignalSetterNames(fnBody);
+	function visit(node) {
+		if (
+			ts.isVariableDeclaration(node) &&
+			node.initializer &&
+			ts.isCallExpression(node.initializer) &&
+			ts.isIdentifier(node.initializer.expression) &&
+			node.initializer.expression.text === 'useSetSignal' &&
+			ts.isIdentifier(node.name)
+		) {
+			setters.add(node.name.text);
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(fnBody);
+	return setters;
+}
+
+function expressionCallsNamedCallee(expression, names) {
+	let found = false;
+	function visit(node) {
+		if (found) return;
+		const call = callExpressionOf(node);
+		if (call !== null) {
+			const root = calleeRootIdentifier(call.expression);
+			if (root !== null && names.has(root)) {
+				found = true;
+				return;
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(expression);
+	return found;
+}
+
+function jsxAttributeInitializer(attribute) {
+	if (attribute.initializer === undefined) return null;
+	if (
+		ts.isStringLiteral(attribute.initializer) ||
+		ts.isNoSubstitutionTemplateLiteral(attribute.initializer)
+	) {
+		return attribute.initializer;
+	}
+	if (ts.isJsxExpression(attribute.initializer)) {
+		return attribute.initializer.expression ?? null;
+	}
+	return null;
+}
+
+function elementIdFromJsxAttributes(attributes) {
+	for (const attribute of attributes.properties) {
+		if (
+			!ts.isJsxAttribute(attribute) ||
+			!ts.isIdentifier(attribute.name) ||
+			attribute.name.text !== 'id'
+		) {
+			continue;
+		}
+		const value = jsxAttributeInitializer(attribute);
+		if (
+			value !== null &&
+			(ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value))
+		) {
+			return value.text;
+		}
+	}
+	return null;
+}
+
+function onClickExpressionFromJsxAttributes(attributes) {
+	for (const attribute of attributes.properties) {
+		if (
+			!ts.isJsxAttribute(attribute) ||
+			!ts.isIdentifier(attribute.name) ||
+			attribute.name.text !== 'onClick'
+		) {
+			continue;
+		}
+		return jsxAttributeInitializer(attribute);
+	}
+	return null;
+}
+
+/**
  * Fixtures that call `props.record(<useSignal setter>)` — the SetterProbe /
  * EffectAndSignal handler path. Only these may authenticate recorded setters.
+ * Derived from the parsed fixture AST so comments and decoy text cannot qualify.
  */
 export function extractFixturesThatRecordHookSetters(fixtureSource) {
 	const names = new Set();
-	const parts = fixtureSource.split(/^export\s+function\s+/m);
-	for (const part of parts.slice(1)) {
-		const nameMatch = /^([A-Za-z0-9_]+)/.exec(part);
-		if (nameMatch === null) continue;
-		const setters = new Set();
-		for (const match of part.matchAll(/const\s*\[([^\]]+)\]\s*=\s*useSignal\b/g)) {
-			const elements = match[1].split(',').map(function trimElement(element) {
-				return element.trim();
-			});
-			if (elements[1]) setters.add(elements[1]);
+	if (!fixtureSource) return names;
+	const sourceFile = parseFixtureSource(fixtureSource);
+	for (const statement of sourceFile.statements) {
+		if (
+			!ts.isFunctionDeclaration(statement) ||
+			statement.name === undefined ||
+			statement.body === undefined
+		) {
+			continue;
 		}
+		const setters = collectUseSignalSetterNames(statement.body);
 		if (setters.size === 0) continue;
-		for (const match of part.matchAll(/props\.record\(\s*([A-Za-z0-9_]+)\s*\)/g)) {
-			if (setters.has(match[1])) {
-				names.add(nameMatch[1]);
-				break;
+		let recordsHookSetter = false;
+		function visit(node) {
+			if (recordsHookSetter) return;
+			const call = callExpressionOf(node);
+			if (
+				call !== null &&
+				ts.isPropertyAccessExpression(call.expression) &&
+				ts.isIdentifier(call.expression.expression) &&
+				call.expression.expression.text === 'props' &&
+				ts.isIdentifier(call.expression.name) &&
+				call.expression.name.text === 'record' &&
+				call.arguments.length > 0 &&
+				ts.isIdentifier(call.arguments[0]) &&
+				setters.has(call.arguments[0].text)
+			) {
+				recordsHookSetter = true;
+				return;
 			}
+			ts.forEachChild(node, visit);
 		}
+		visit(statement.body);
+		if (recordsHookSetter) names.add(statement.name.text);
 	}
 	return names;
+}
+
+/**
+ * Per-fixture element ids whose onClick handlers invoke a hook-returned setter
+ * (`useSignal` / `useSetSignal`). Clicks on other ids do not count as hook-path
+ * transitions.
+ */
+export function extractFixtureHookSetterClickIds(fixtureSource) {
+	const byFixture = new Map();
+	if (!fixtureSource) return byFixture;
+	const sourceFile = parseFixtureSource(fixtureSource);
+	for (const statement of sourceFile.statements) {
+		if (
+			!ts.isFunctionDeclaration(statement) ||
+			statement.name === undefined ||
+			statement.body === undefined
+		) {
+			continue;
+		}
+		const setters = collectHookReturnedSetterNames(statement.body);
+		const ids = new Set();
+		if (setters.size > 0) {
+			function visit(node) {
+				if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+					const id = elementIdFromJsxAttributes(node.attributes);
+					const onClick = onClickExpressionFromJsxAttributes(node.attributes);
+					if (id !== null && onClick !== null) {
+						if (ts.isIdentifier(onClick) && setters.has(onClick.text)) {
+							ids.add(id);
+						} else if (expressionCallsNamedCallee(onClick, setters)) {
+							ids.add(id);
+						}
+					}
+				}
+				ts.forEachChild(node, visit);
+			}
+			visit(statement.body);
+		}
+		byFixture.set(statement.name.text, ids);
+	}
+	return byFixture;
+}
+
+function clickSelectorId(call) {
+	if (call.arguments.length === 0) return null;
+	const arg = call.arguments[0];
+	if (!ts.isStringLiteral(arg) && !ts.isNoSubstitutionTemplateLiteral(arg)) return null;
+	const text = arg.text;
+	return text.startsWith('#') ? text.slice(1) : text;
+}
+
+function mountFixtureName(call) {
+	if (call.arguments.length === 0 || !ts.isIdentifier(call.arguments[0])) return null;
+	return call.arguments[0].text;
 }
 
 function collectFunctionBindings(body) {
@@ -541,17 +734,20 @@ function calleeRootIdentifier(expression) {
 /**
  * Per-case transition shape for the harness/fixture ledger rule:
  * pristine hook-surface setter writes (result.current / aliases) must remain
- * hook-path transitions in adapted (result.click or recorded setter calls),
- * not silent direct createSignal writes.
+ * hook-path transitions in adapted (authenticated fixture clicks or recorded
+ * setter calls), not silent direct createSignal writes.
  *
  * When `recordSetterFixtures` is provided, recorded-setter aliases count only
  * for arrays that received `.push(<record-callback-param>)` from a `record`
  * handler mounted on one of those fixtures.
+ *
+ * When `fixtureHookSetterClicks` is provided, `mountResult.click('#id')` counts
+ * only when the mounted fixture's `#id` onClick invokes a hook-returned setter.
  */
 export function extractCaseTransitionStructure(
 	source,
 	fileName = 'suite.ts',
-	{ recordSetterFixtures = null } = {},
+	{ recordSetterFixtures = null, fixtureHookSetterClicks = null } = {},
 ) {
 	const sourceFile = ts.createSourceFile(
 		fileName,
@@ -566,6 +762,7 @@ export function extractCaseTransitionStructure(
 		if (titled !== null && titled.body) {
 			const signalBindings = new Set();
 			const hookAliases = new Set();
+			const mountBindings = new Map();
 			const pushedArrays =
 				recordSetterFixtures === null
 					? new Set()
@@ -591,6 +788,16 @@ export function extractCaseTransitionStructure(
 					if (isRecordedSetterLookup(bodyNode.initializer, pushedArrays)) {
 						collectBindingNames(bodyNode.name, recordedSetterAliases);
 					}
+					const mountCall = callExpressionOf(bodyNode.initializer);
+					if (
+						mountCall !== null &&
+						ts.isIdentifier(mountCall.expression) &&
+						mountCall.expression.text === 'mount' &&
+						ts.isIdentifier(bodyNode.name)
+					) {
+						const fixtureName = mountFixtureName(mountCall);
+						if (fixtureName !== null) mountBindings.set(bodyNode.name.text, fixtureName);
+					}
 				}
 
 				const call = callExpressionOf(bodyNode);
@@ -599,11 +806,21 @@ export function extractCaseTransitionStructure(
 					if (
 						ts.isPropertyAccessExpression(expression) &&
 						ts.isIdentifier(expression.expression) &&
-						expression.expression.text === 'result' &&
 						ts.isIdentifier(expression.name) &&
 						expression.name.text === 'click'
 					) {
-						fixtureClicks += 1;
+						const fixtureName = mountBindings.get(expression.expression.text);
+						const selectorId = clickSelectorId(call);
+						if (
+							fixtureName !== undefined &&
+							selectorId !== null &&
+							fixtureHookSetterClicks !== null
+						) {
+							const authenticated = fixtureHookSetterClicks.get(fixtureName);
+							if (authenticated !== undefined && authenticated.has(selectorId)) {
+								fixtureClicks += 1;
+							}
+						}
 					} else if (isResultCurrentAccess(expression) && call.arguments.length > 0) {
 						hookSurfaceWrites += 1;
 					} else {
@@ -640,9 +857,11 @@ export function extractCaseTransitionStructure(
 
 export function assertPerCaseTransitionStructure(pristineSource, adaptedSource, fixtureSource) {
 	const recordSetterFixtures = extractFixturesThatRecordHookSetters(fixtureSource ?? '');
+	const fixtureHookSetterClicks = extractFixtureHookSetterClickIds(fixtureSource ?? '');
 	const pristineCases = extractCaseTransitionStructure(pristineSource, 'pristine.ts');
 	const adaptedCases = extractCaseTransitionStructure(adaptedSource, 'adapted.ts', {
 		recordSetterFixtures,
+		fixtureHookSetterClicks,
 	});
 	const adaptedByTitle = new Map(
 		adaptedCases.map(function entryOf(caseEntry) {

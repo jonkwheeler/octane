@@ -71,13 +71,6 @@ function normalizeSpecifier(specifier) {
 	return specifier;
 }
 
-function normalizeReadableSignalCall(source) {
-	// permittedTransformations.readable-signal: adapted probes may read a computed.
-	return source
-		.replace(/useSignalValue\(\s*count\s*\)/g, 'useSignalValue(#readable#)')
-		.replace(/useSignalValue\(\s*doubled\s*\)/g, 'useSignalValue(#readable#)');
-}
-
 function structuralSource(source, fileName) {
 	const sourceFile = ts.createSourceFile(
 		fileName,
@@ -105,7 +98,6 @@ function structuralSource(source, fileName) {
 	})) {
 		transformed = `${transformed.slice(0, replacement.start)}${replacement.value}${transformed.slice(replacement.end)}`;
 	}
-	transformed = normalizeReadableSignalCall(transformed);
 	const normalizedFile = ts.createSourceFile(
 		fileName,
 		transformed,
@@ -124,11 +116,13 @@ export function buildTypeInventory(root, config) {
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
 	const upstreamFiles = listFiles(upstreamRoot);
-	const adaptedFiles = listFiles(adaptedRoot);
-	if (JSON.stringify(upstreamFiles) !== JSON.stringify(adaptedFiles)) {
-		throw new Error(
-			'type-test file inventories differ; every upstream type artifact needs one adapted counterpart',
-		);
+	const adaptedFiles = new Set(listFiles(adaptedRoot));
+	for (const file of upstreamFiles) {
+		if (!adaptedFiles.has(file)) {
+			throw new Error(
+				`type-test file inventories differ; every upstream type artifact needs one adapted counterpart (missing ${file})`,
+			);
+		}
 	}
 	const upstream = [];
 	const adapted = [];

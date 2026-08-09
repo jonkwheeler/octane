@@ -37,6 +37,12 @@
       "oracle": "Adapted Octane public type probes paired with the pristine type-probes lane (alien-signals-adapted-types)."
     },
     {
+      "path": "packages/alien-signals/typetests/readable-computed.test-d.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "alien-signals-readable-computed",
+      "reason": "Octane useSignalValue accepts ReadableSignal/computed signals; the pinned React declaration narrows to WritableSignal, so this acceptance is unpaired from the pristine type oracle."
+    },
+    {
       "path": "playground/octane/src/demos/AlienSignals.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Central playground registration and demo journey for @octanejs/alien-signals; unpaired against the upstream bun React suite."

@@ -24,14 +24,15 @@
       "rule": "React probes import vendored upstream/src; Octane probes import @octanejs/alien-signals"
     },
     {
-      "kind": "readable-signal",
-      "rule": "Adapted probes may exercise useSignalValue on readable computed signals, matching the documented Octane surface"
-    },
-    {
       "kind": "negative-control",
       "rule": "Matching @ts-expect-error and expectType groups must reject or accept the same shapes on both sides"
     }
   ],
-  "notes": "Upstream ships no dedicated typetest suite; both lanes are repo-authored probes over the pinned runtime surface. Assertion groups are compared one-for-one.",
-  "divergences": []
+  "notes": "Upstream ships no dedicated typetest suite; both lanes are repo-authored probes over the pinned runtime surface. Assertion groups are compared one-for-one. Computed-signal acceptance for useSignalValue is an Octane-only divergence (alien-signals-readable-computed), not a paired-probe transformation.",
+  "divergences": [
+    {
+      "id": "alien-signals-readable-computed",
+      "rule": "Paired probes keep useSignalValue(count); readable computed acceptance lives in typetests/readable-computed.test-d.ts"
+    }
+  ]
 }

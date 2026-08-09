@@ -33,7 +33,7 @@ createSignalScope(function scoped() {
 });
 
 const tuple: [number, (value: number | ((previous: number) => number)) => void] = useSignal(count);
-const value: number = useSignalValue(doubled);
+const value: number = useSignalValue(count);
 const setValue = useSetSignal(count);
 setValue(3);
 setValue(function increment(previous) {

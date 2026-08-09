@@ -331,6 +331,62 @@ test('rejects discard-and-substitute record pushes of the source signal', functi
 	}, /bypasses .* hook-surface transition/);
 });
 
+test('rejects fixture clicks whose handlers bypass the hook-returned setter', function rejectsDirectSourceClickHandler() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const mutated = fixtureSource.replace(
+		'<button id="set" onClick={() => setValue(10)}>set</button>\n\t\t<button id="inc" onClick={() => setValue((previous) => previous + 5)}>inc</button>',
+		'<button id="set" onClick={() => props.source(10)}>set</button>\n\t\t<button id="inc" onClick={() => props.source((previous) => previous + 5)}>inc</button>',
+	);
+	assert.notEqual(mutated, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: mutated,
+			expectedFixtureSha256: fixtureFileFingerprint(mutated),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
+test('rejects commented decoy props.record of the useSignal setter', function rejectsCommentedRecordDecoy() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const mutated = fixtureSource.replace(
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(setValue);',
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(props.source);\n\t// props.record(setValue);',
+	);
+	assert.notEqual(mutated, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: mutated,
+			expectedFixtureSha256: fixtureFileFingerprint(mutated),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects record pushes of a no-op in place of the hook setter', function rejectsNoopRecordPush() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),

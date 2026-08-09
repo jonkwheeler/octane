@@ -133,22 +133,22 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "3c4436287f5f0f3f20e4ce329595bdbc36bb841a76cb87194bb3b1e9a6ef536e"
+          "sha256": "0d340f5b09f8b64105ed4e641ab979478444092e455ce81126ae4dcca9916e54"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
           "role": "support",
-          "sha256": "4083ade90ad428f3a3d95194090cbe74fcc645e1c7df862e6dbe20fb936c1e5b"
+          "sha256": "2d48b894d20326fa71b64d057890d5bda6c14089033076d0ac5dbde83729347c"
         },
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "c780821392277cbb8e236c178e32b322d0a43b17b1a3cc3ead6eef32e212eebe"
+          "sha256": "71052d2615f2870c3fdce2539cc0566b97c5eef21761b28d395193eb17bb5b95"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
           "role": "support",
-          "sha256": "2ea484c52500ddea22127bb41d0cf754465ad14d9a538be2f01aa896e16af80c"
+          "sha256": "f1ad6feaa104901ae356b3cc4bf345a77c090abc9332bbe1eae167e361a741bc"
         },
         {
           "path": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
@@ -201,7 +201,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "ec6d04e245ced6e6976a2a2453b374577234dd3534a90d5d4489eb68822ee501"
+          "sha256": "ce0e88ebb7c5a6e17097d8f151d37ad12eef52ade0fbd806b77c69c9398a349a"
         }
       ]
     },
@@ -222,7 +222,7 @@
         {
           "path": "packages/alien-signals/audit/adapted-types.json",
           "role": "test",
-          "sha256": "e15da6cae158eea65cffe9be12a8bff8c5d9f7c1387cfce8cb740ed19d73b131",
+          "sha256": "65376250a77a2e71a2addbf76d7221fab0633f02dc01845f48a824ccf8d9d806",
           "cases": [
             {
               "id": "types:alien-signals-adapted",
@@ -234,7 +234,19 @@
         {
           "path": "packages/alien-signals/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "8a1d31373974c07842eae3cd4347c5dfd0194fecbf858a5a1f41a278cd1fe79a"
+          "sha256": "01fe9ee4df486a82f7f3be99c357d1c18a9afbd1e0748ec9a274da5fb50ea72b"
+        },
+        {
+          "path": "packages/alien-signals/typetests/readable-computed.test-d.ts",
+          "role": "test",
+          "sha256": "ae8ebc77f122daf5507fd6970f042f78cff1528d23272248d902bb874d3ad913",
+          "cases": [
+            {
+              "id": "types:alien-signals-readable-computed",
+              "testName": "useSignalValue accepts readable computed signals",
+              "fullName": "useSignalValue accepts readable computed signals"
+            }
+          ]
         },
         {
           "path": "packages/alien-signals/typetests/tsconfig.json",
@@ -244,10 +256,25 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "ec6d04e245ced6e6976a2a2453b374577234dd3534a90d5d4489eb68822ee501"
+          "sha256": "ce0e88ebb7c5a6e17097d8f151d37ad12eef52ade0fbd806b77c69c9398a349a"
         }
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "alien-signals-readable-computed",
+      "caseIds": [
+        "types:alien-signals-readable-computed"
+      ],
+      "upstreamResult": "Pinned react-alien-signals declarations narrow useSignalValue to WritableSignal, so readable computed probes are rejected.",
+      "octaneResult": "useSignalValue accepts ReadableSignal, including createComputed results, matching the documented Octane surface.",
+      "rationale": "Upstream docs and runtime treat computed signals as readable; the published React declaration is narrower than that contract. Octane corrects the accept surface without weakening the read-only computed negative control.",
+      "classification": "type-surface",
+      "consumerImpact": "Octane callers may pass createComputed results to useSignalValue; React declaration consumers cannot without casts.",
+      "migrationGuidance": "Prefer ReadableSignal-typed values with useSignalValue on Octane. Keep paired type probes on writable count; use the Octane-only readable-computed typetest for computed acceptance.",
+      "owner": "@octanejs/alien-signals",
+      "reviewCondition": "Review if upstream widens useSignalValue to ReadableSignal or Octane reintroduces a writable-only overload."
+    }
+  ]
 }

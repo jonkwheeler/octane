@@ -7,12 +7,13 @@ import {
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'octane';
 import { splitSlot, subSlot } from './internal';
 
-export type ReadableSignal<T> = () => T;
-
-export type WritableSignal<T> = {
+export interface ReadableSignal<T> {
 	(): T;
+}
+
+export interface WritableSignal<T> extends ReadableSignal<T> {
 	(value: T | ((previous: T) => T)): void;
-};
+}
 
 export type DependencyList = readonly unknown[];
 
@@ -51,6 +52,7 @@ export function useSignal<T>(
 	];
 }
 
+// OCTANE DIVERGENCE[alien-signals-readable-computed][types:alien-signals-readable-computed]
 export function useSignalValue<T>(signal: ReadableSignal<T>): T;
 export function useSignalValue<T>(signal: ReadableSignal<T>, ...rest: [slot?: symbol]): T {
 	const [, slot] = splitSlot(rest);

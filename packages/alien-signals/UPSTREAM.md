@@ -99,6 +99,7 @@ Octane-only framework contracts stay outside parity ownership: SSR render safety
 - Effects and scopes begin after the client commit. React's adapter also uses `useEffect`, but the
   Octane port additionally guarantees that a stop controller called before commit remains stopped.
 - `useSignalValue` accepts any readable signal rather than repeating the upstream declaration's
-  writable-only narrowing.
+  writable-only narrowing (`alien-signals-readable-computed`; paired probes stay on writable
+  `count`, with Octane-only coverage in `typetests/readable-computed.test-d.ts`).
 - Octane hooks carry compiler slots internally; this is invisible to consumers and required for
   stable composition outside `.tsrx` modules.
