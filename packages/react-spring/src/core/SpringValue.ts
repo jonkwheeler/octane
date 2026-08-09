@@ -76,19 +76,21 @@ export class SpringValue<T = number> extends FrameValue<T> {
 	constructor(props?: SpringUpdate<T>);
 	constructor(arg1?: any, arg2?: any) {
 		super();
-		if (arg1 === undefined && arg2 === undefined) {
-			this.value = undefined as T;
+		const propsObject =
+			typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1) && arg2 === undefined;
+		if (propsObject || arg2 !== undefined) {
+			const props = propsObject
+				? { ...(arg1 as SpringUpdate<T>) }
+				: { ...(arg2 as SpringUpdate<T>), from: (arg2 as SpringUpdate<T>).from ?? (arg1 as T) };
+			this.value = (props.from ?? goal(props.to, undefined as T)) as T;
+			if ((props as SpringUpdate<T> & { default?: boolean }).default === undefined) {
+				(props as SpringUpdate<T> & { default?: boolean }).default = true;
+			}
+			void this.start(props);
 			return;
 		}
-		const props =
-			typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1)
-				? { ...(arg1 as SpringUpdate<T>) }
-				: { ...(arg2 as SpringUpdate<T> | undefined), from: arg1 as T };
-		this.value = (props.from ?? goal(props.to, undefined as T)) as T;
-		if ((props as SpringUpdate<T> & { default?: boolean }).default === undefined) {
-			(props as SpringUpdate<T> & { default?: boolean }).default = true;
-		}
-		void this.start(props);
+		// Scalar seed only — do not start, so later `from` updates still apply before first animation.
+		this.value = arg1 as T;
 	}
 	get(): T {
 		return this.value;
