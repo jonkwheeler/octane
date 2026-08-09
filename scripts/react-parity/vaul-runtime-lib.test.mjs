@@ -6,6 +6,7 @@ import test from 'node:test';
 import {
 	CROSSWALK_PATH,
 	INVENTORIES,
+	refreshVaulAdaptedCrosswalk,
 	verifyVaulAdaptedRuntimeStructure,
 } from './vaul-runtime-lib.mjs';
 
@@ -22,6 +23,8 @@ async function fixture() {
 		'packages/vaul/upstream/test/tests/base.spec.ts',
 		'packages/vaul/upstream/test/tests/initial-snap.spec.ts',
 		'packages/vaul/upstream/test/tests/with-handle.spec.ts',
+		'packages/vaul/upstream/test/tests/helpers.ts',
+		'packages/vaul/upstream/test/tests/constants.ts',
 	]) {
 		const destination = join(root, relative);
 		await cp(new URL(`../../${relative}`, import.meta.url), destination);
@@ -37,9 +40,10 @@ test('accepts the committed adapted runtime crosswalk', async function acceptsCo
 	const result = verifyVaulAdaptedRuntimeStructure(root);
 	assert.equal(result.cases, 5);
 	assert.deepEqual(result.projects, Object.keys(INVENTORIES));
+	assert.ok(result.observations > 0);
 });
 
-test('deleting an adapted assertion fails verification even if inventories stay', async function rejectsDeletedAssertion(t) {
+test('deleting an adapted assertion fails even after crosswalk refresh', async function rejectsDeletedAssertion(t) {
 	const root = await fixture();
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
@@ -52,9 +56,10 @@ test('deleting an adapted assertion fails verification even if inventories stay'
 	);
 	assert.notEqual(mutated, source);
 	await writeFile(path, mutated);
+	refreshVaulAdaptedCrosswalk(root);
 	assert.throws(function run() {
 		verifyVaulAdaptedRuntimeStructure(root);
-	}, /missing required fragment/);
+	}, /missing semantic evidence|gone:content/);
 });
 
 test('skipping an adapted case fails verification after inventories refresh identity-only', async function rejectsSkippedCase(t) {
@@ -70,12 +75,13 @@ test('skipping an adapted case fails verification after inventories refresh iden
 	);
 	assert.notEqual(mutated, source);
 	await writeFile(path, mutated);
+	refreshVaulAdaptedCrosswalk(root);
 	assert.throws(function run() {
 		verifyVaulAdaptedRuntimeStructure(root);
 	}, /skip\/todo\/only\/failing/);
 });
 
-test('altering an adapted fixture fails verification', async function rejectsAlteredFixture(t) {
+test('altering an adapted fixture fails verification after crosswalk refresh', async function rejectsAlteredFixture(t) {
 	const root = await fixture();
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
@@ -85,12 +91,13 @@ test('altering an adapted fixture fails verification', async function rejectsAlt
 	const mutated = source.replace('data-testid="controlled-close"', 'data-testid="unused-close"');
 	assert.notEqual(mutated, source);
 	await writeFile(path, mutated);
+	refreshVaulAdaptedCrosswalk(root);
 	assert.throws(function run() {
 		verifyVaulAdaptedRuntimeStructure(root);
-	}, /missing required fragment/);
+	}, /missing required fixture fragment/);
 });
 
-test('browser lane is covered by the same structural verifier', async function coversBrowser(t) {
+test('browser lane semantic check covers wait observation after refresh', async function coversBrowser(t) {
 	const root = await fixture();
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
@@ -100,8 +107,9 @@ test('browser lane is covered by the same structural verifier', async function c
 	const mutated = source.replace('await page.waitForTimeout(550);\n', '');
 	assert.notEqual(mutated, source);
 	await writeFile(path, mutated);
+	refreshVaulAdaptedCrosswalk(root);
 	assert.throws(function run() {
 		verifyVaulAdaptedRuntimeStructure(root);
-	}, /missing required fragment/);
+	}, /missing semantic evidence|wait:animation/);
 	void CROSSWALK_PATH;
 });

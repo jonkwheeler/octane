@@ -27,6 +27,13 @@ describe('vaul v1.1.2 adapted drawer behavior', () => {
 
 		await act(() => findButton(document.body, 'Close drawer').click());
 		expect(view.container.querySelector('#drawer-state')?.textContent).toBe('closed');
+		// Upstream waits ANIMATION_DURATION then asserts content is not visible.
+		await act(async function waitForExitAnimation() {
+			await new Promise(function delay(resolve) {
+				setTimeout(resolve, 550);
+			});
+		});
+		expect(document.body.querySelector('[data-vaul-drawer]')).toBeNull();
 		view.unmount();
 	});
 
