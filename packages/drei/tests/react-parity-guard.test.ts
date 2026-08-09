@@ -24,10 +24,12 @@ async function runMutation(file: string, mutate: (value: any) => void) {
 }
 
 describe('Drei React-parity guard', () => {
-	it('rejects a skipped runtime file', async () => {
+	it('rejects an adapted inventory that drops a paired runtime file', async () => {
 		const result = await runMutation('adapted-runtime.json', (value) => value.files.pop());
 		expect(result.status).not.toBe(0);
-		expect(result.stderr).toContain('runtime test file was skipped');
+		expect(result.stderr).toContain(
+			'adapted inventory must cover every paired file and exclude guards/differential',
+		);
 	});
 
 	it('rejects a deleted assertion identity', async () => {
