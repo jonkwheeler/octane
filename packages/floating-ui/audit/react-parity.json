@@ -83,38 +83,6 @@
       ]
     },
     {
-      "id": "floating-ui-browser-layout",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "floating-ui-browser",
-      "notes": "Uses Chromium layout geometry and autoUpdate observers; these claims cannot be established in jsdom.",
-      "files": [
-        {
-          "path": "packages/floating-ui/tests/browser/positioning.browser.test.ts",
-          "role": "test",
-          "sha256": "8e11223b90d66cee4bb3ae15604d0eabf782bd00aa8664c4f683de7ef2ec3e90",
-          "cases": [
-            {
-              "id": "browser:floating-ui-layout",
-              "testName": "uses real layout geometry and auto-updates after the reference moves",
-              "fullName": "@octanejs/floating-ui real-browser positioning uses real layout geometry and auto-updates after the reference moves"
-            }
-          ]
-        },
-        {
-          "path": "packages/floating-ui/tests/browser/harness/main.tsrx",
-          "role": "support",
-          "sha256": "ba8806b309b00a431f17eb43a8161f85eb30ce81bd0a921332f64305b179e5ec"
-        },
-        {
-          "path": "packages/floating-ui/tests/browser/harness/index.html",
-          "role": "support",
-          "sha256": "5c4bf02833285eecda4511cd40dfac3751384941367cf6b124089d4e377dfd0b"
-        }
-      ]
-    },
-    {
       "id": "floating-ui-adapted-types",
       "type": "adapted-types",
       "oracle": "required",

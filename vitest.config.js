@@ -2513,7 +2513,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'floating-ui-browser',
 					include: ['packages/floating-ui/tests/browser/**/*.test.ts'],

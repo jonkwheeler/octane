@@ -52,7 +52,6 @@ afterAll(async () => {
 });
 
 describe('@octanejs/floating-ui real-browser positioning', () => {
-	// @parity-case browser:floating-ui-layout
 	it('uses real layout geometry and auto-updates after the reference moves', async () => {
 		const floating = page.locator('#floating');
 		await expect.poll(() => floating.getAttribute('data-positioned')).toBe('yes');

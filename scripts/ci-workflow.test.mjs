@@ -209,7 +209,9 @@ describe('CI workflow aggregation', () => {
 			'node scripts/react-parity/check.mjs --validate-only',
 		);
 		assert.doesNotMatch(workflow, /hook-form/);
-		assert.doesNotMatch(workflow, /floating-ui/);
+		// Floating UI may appear in ordinary shard excludes / heavy browser lanes.
+		// React parity discovery stays package-agnostic (asserted in the Floating UI test below).
+		assert.doesNotMatch(jobSource('react_parity_checks'), /floating-ui/);
 
 		assert.match(jobSource('release_change'), /"React parity checks"/);
 		assert.match(
@@ -373,11 +375,10 @@ describe('CI workflow aggregation', () => {
 			group: 'react-parity',
 			include: ['packages/floating-ui/tests/differential/parity.test.ts'],
 		});
-		assert.equal(baseProjects.get('floating-ui-browser').testExecution.group, 'react-parity');
-		assert.equal(baseProjects.get('floating-ui-browser').testExecution.include, undefined);
+		assert.equal(baseProjects.get('floating-ui-browser').testExecution, undefined);
 
 		assert.equal(shardedProjects.has('floating-ui'), true);
-		assert.equal(shardedProjects.has('floating-ui-browser'), false);
+		assert.equal(shardedProjects.has('floating-ui-browser'), true);
 		assert.equal(shardedProjects.has('floating-ui-differential'), true);
 		assert.equal(
 			shardedProjects
@@ -386,8 +387,11 @@ describe('CI workflow aggregation', () => {
 			true,
 		);
 
-		assert.doesNotMatch(jobSource('test_shard'), /floating-ui/);
-		assert.doesNotMatch(jobSource('heavy_integration'), /floating-ui/);
+		assert.match(
+			jobSource('test_shard'),
+			/packages\/floating-ui\/tests\/browser\/\*\*\/\*\.test\.ts/,
+		);
+		assert.match(jobSource('heavy_integration'), /packages\/floating-ui\/tests\/browser/);
 		assert.doesNotMatch(jobSource('react_parity_checks'), /floating-ui/);
 		assert.doesNotMatch(jobSource('react_parity_checks'), /playwright install/);
 		assert.match(reactParityHarness, /ensureBrowserLaneRuntimes/);

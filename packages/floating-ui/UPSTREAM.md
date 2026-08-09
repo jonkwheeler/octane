@@ -8,4 +8,4 @@
 - License: MIT
 - Archive SHA-256: `55480b7a99c1bffdc662c4b67492503bd7d7705b82c43e1fcb522e71a07e695b`
 
-The differential lane compiles an existing repository fixture for React and Octane. The browser lane supplies the real layout and observer environment that jsdom cannot provide.
+The differential lane compiles an existing repository fixture for React and Octane. Real Chromium layout and autoUpdate coverage lives in the ordinary `floating-ui-browser` project (heavy-integration browser lane), not in the React parity manifest.
