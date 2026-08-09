@@ -74,6 +74,10 @@ test('verifies an arbitrary binding classification ledger', async (t) => {
 	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-form'), { tests: 12 });
 	const classificationPath = join(root, 'packages/tanstack-form/audit/test-classifications.json');
 	const classifications = JSON.parse(await readFile(classificationPath, 'utf8'));
+	assert.equal(
+		classifications.tests.filter((entry) => entry.disposition === 'adapted-upstream-suite').length,
+		4,
+	);
 	const divergenceEntry = classifications.tests.find(
 		(entry) => entry.path === 'packages/tanstack-form/tests/conformance/divergences.test.ts',
 	);

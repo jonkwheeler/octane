@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-form/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-form/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-form/tests/conformance"
-      ],
-      "include": [
-        "(?:createFormHook|useField|useForm|useFormGroup)\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-form/tests/conformance"],
+      "include": ["(?:createFormHook|useField|useForm|useFormGroup)\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -88,7 +78,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "691e6b3b2e0719e0eb53ddd2da9108e627b446b5c12beeb6d4fa9609e1d2aa3b"
+          "sha256": "a5d4378ef69b3c29e26d40ce774c5ef9149c357318f26de63bfc695f2b616fd4"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -109,7 +99,7 @@
       "environment": "workspace-node",
       "project": "tanstack-form",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the faithful adapted createFormHook, useField, useForm, and useFormGroup wrappers against the Octane renderer.",
+      "notes": "Runs the faithful adapted-upstream-suite createFormHook, useField, useForm, and useFormGroup wrappers against the Octane renderer.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/tanstack-form/audit/adapted-runtime.json"
@@ -143,7 +133,7 @@
         {
           "path": "packages/tanstack-form/audit/test-classifications.json",
           "role": "support",
-          "sha256": "691e6b3b2e0719e0eb53ddd2da9108e627b446b5c12beeb6d4fa9609e1d2aa3b"
+          "sha256": "a5d4378ef69b3c29e26d40ce774c5ef9149c357318f26de63bfc695f2b616fd4"
         },
         {
           "path": "vitest.config.js",
@@ -155,11 +145,11 @@
     {
       "id": "tanstack-form-adapted-types",
       "type": "adapted-types",
-      "oracle": "required",
+      "oracle": "optional",
       "environment": "workspace-node",
       "project": "tanstack-form-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the checked Octane hook, field, group, and component-composition type contract.",
+      "notes": "Optional package type-contract lane only: not paired fail-closed type parity. Kept out of required React-parity evidence until pristine/adapted type inventories land.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",

@@ -3,7 +3,7 @@
   "tests": [
     {
       "path": "packages/tanstack-form/tests/conformance/createFormHook.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
+      "disposition": "adapted-upstream-suite",
       "oracle": "Adapts packages/react-form/tests/createFormHook.test.tsx from the pinned repository into the TSRX fixture."
     },
     {
@@ -38,17 +38,17 @@
     },
     {
       "path": "packages/tanstack-form/tests/conformance/useField.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
+      "disposition": "adapted-upstream-suite",
       "oracle": "Adapts packages/react-form/tests/useField.test.tsx from the pinned repository into the TSRX fixture, excluding StrictMode-named scenarios."
     },
     {
       "path": "packages/tanstack-form/tests/conformance/useForm.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
+      "disposition": "adapted-upstream-suite",
       "oracle": "Adapts packages/react-form/tests/useForm.test.tsx from the pinned repository into the TSRX fixture, excluding repository-only regressions."
     },
     {
       "path": "packages/tanstack-form/tests/conformance/useFormGroup.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
+      "disposition": "adapted-upstream-suite",
       "oracle": "Adapts packages/react-form/tests/useFormGroup.test.tsx from the pinned repository into the TSRX fixture, excluding repository-only regressions."
     },
     {
