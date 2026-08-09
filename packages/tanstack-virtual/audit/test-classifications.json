@@ -3,14 +3,19 @@
   "tests": [
     {
       "path": "packages/tanstack-virtual/tests/conformance/core.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-virtual-nested-flush",
-      "reason": "Authenticates the nested flushSync adaptation alongside broader Octane lifecycle contracts."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks adapted useVirtualizer lifecycle contracts in jsdom; it is not same-scenario React execution."
     },
     {
       "path": "packages/tanstack-virtual/tests/conformance/dynamic.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks Octane measurement and direct-DOM integration with injected jsdom geometry; it is not same-scenario React execution."
+    },
+    {
+      "path": "packages/tanstack-virtual/tests/conformance/nested-flush.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-virtual-nested-flush",
+      "reason": "Authenticates the nested flushSync adaptation at an Octane discrete-event flush boundary."
     },
     {
       "path": "packages/tanstack-virtual/tests/conformance/parity.test.ts",
