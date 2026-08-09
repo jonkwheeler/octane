@@ -4,10 +4,16 @@ import { Drawer } from '../../src/index.tsrx';
 
 export function DrawerFixture() @{
 	const [open, setOpen] = useState(false);
+	function closeControlled() {
+		setOpen(false);
+	}
 	<main>
 		<output id="drawer-state">
 			{open ? 'open' : 'closed'}
 		</output>
+		<button type="button" data-testid="controlled-close" onClick={closeControlled}>
+			Controlled close
+		</button>
 		<Drawer.Root open={open} onOpenChange={setOpen}>
 			<Drawer.Trigger>Open drawer</Drawer.Trigger>
 			<Drawer.Portal>

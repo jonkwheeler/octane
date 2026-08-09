@@ -3603,7 +3603,15 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Mixed project: react-parity owns only adapted/differential evidence.
+				// exports.test.ts stays in ordinary shards as an Octane package contract.
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/vaul/tests/drawer.test.ts',
+						'packages/vaul/tests/react-oracle.test.ts',
+					],
+				},
 				test: {
 					name: 'vaul',
 					include: [

@@ -32,10 +32,10 @@ in `audit/react-parity.json`. Port-authored test classifications live in
 
 | Upstream artifact | Disposition |
 | --- | --- |
-| `test/tests/base.spec.ts` | **Adapted (partial).** Open/close through trigger and `Drawer.Close`, plus controlled close: `tests/drawer.test.ts` (`// Per …:10`, `:27`, `:35`). Open-state semantic snapshot vs published React Vaul: `tests/react-oracle.test.ts` (`// Per …:10`). Browser lane covers open/close focus/styles/cleanup. Upstream drag-down close (`:49`) remains a gap; the unpaired snap-point mid-drag-stays-open contract lives in ordinary `vaul-browser-conformance`, not parity evidence. `defaultOpen` and context-menu-cancel drag remain gaps. |
+| `test/tests/base.spec.ts` | **Adapted (partial).** Open/close through trigger and `Drawer.Close`: `tests/drawer.test.ts` (`// Per …:10`, `:27`). Controlled prop close via external `controlled-close` button: same file (`// Per …:35`). Open-state semantic snapshot vs published React Vaul: `tests/react-oracle.test.ts` (`// Per …:10`). Browser lane covers open/close focus/styles/cleanup. Upstream drag-down close (`:49`) remains a gap; the unpaired snap-point mid-drag-stays-open contract lives in ordinary `vaul-browser-conformance`, not parity evidence. `defaultOpen` and context-menu-cancel drag remain gaps. |
 | `test/tests/controlled.spec.ts` | **Adapted (partial).** Overlay dismiss with `open` + `onOpenChange` is covered by the controlled fixture path in `tests/drawer.test.ts` and browser close. Overlay non-dismiss when only `open` is passed remains a gap. |
-| `test/tests/initial-snap.spec.ts` | **Adapted (partial).** Initially-open snap fixture asserts open + snap height on load: `tests/browser/vaul.browser.test.ts` (`// Per …:24`). Upstream's commented drag-snap cases stay unported. |
-| `test/tests/with-handle.spec.ts` | **Adapted.** Handle click cycles snap points on the initially-open fixture: `tests/browser/vaul.browser.test.ts` (`// Per …:9`). |
+| `test/tests/initial-snap.spec.ts` | **Adapted (partial).** Initially-open fixture uses pinned snap values `[0, '148px', '355px', 1]` at `'148px'` and asserts active snap index `1`: `tests/browser/vaul.browser.test.ts` (`// Per …:24`). Upstream's commented drag-snap cases stay unported. |
+| `test/tests/with-handle.spec.ts` | **Adapted.** Handle click cycles pinned `['148px', '355px']` from index `0` to `1`: `tests/browser/vaul.browser.test.ts` (`// Per …:9`). |
 | `test/tests/nested.spec.ts` | **Out of scope for current lanes.** Nested drawer open/close is not yet re-authored; tracked as a surface gap, not counted as parity evidence. |
 | `test/tests/non-dismissible.spec.ts` | **Out of scope for current lanes.** `dismissible={false}` overlay/drag refusal is not yet re-authored; tracked as a surface gap. |
 | `test/tests/with-redirect.spec.ts` | **Out of scope.** Asserts body scroll-lock restore across a Next.js client navigation that this package does not host in adapted lanes (covered by the pristine Playwright lane). |
@@ -50,22 +50,24 @@ in `audit/react-parity.json`. Port-authored test classifications live in
 | `tests/upstream-original.test.ts` | unmodified-upstream-suite-wrapper | runs vendored Playwright suite against published `vaul@1.1.2` |
 | `tests/drawer.test.ts` | adapted upstream | cites `upstream/test/tests/base.spec.ts` open/close cases |
 | `tests/react-oracle.test.ts` | React/Octane differential | same open-drawer scenario against published `vaul@1.1.2` on React and `@octanejs/vaul`; also cites `base.spec.ts:10` |
-| `tests/exports.test.ts` | package surface | root/`Drawer` export keys match pinned `vaul@1.1.2` |
+| `tests/exports.test.ts` | Octane-only framework contract | root/`Drawer` export keys match pinned `vaul@1.1.2`; ordinary `vaul` shard only — not react-parity ownership |
 | `tests/ssr/server.test.ts` | Octane-only framework contract | unpaired — upstream ships no SSR suite; closed trigger must render without browser globals. Runs in ordinary Vitest shards; not React-parity evidence. |
 | `tests/browser/vaul.browser.test.ts` | adapted upstream (real browser) | cites base open/close, initial-snap load, and with-handle cycle; executes in the `vaul-real-browser` lane |
 | `tests/browser-conformance/snap-drag.browser.test.ts` | Octane-only browser contract | unpaired snap-point mid-drag release stays open; `vaul-browser-conformance` project, not React-parity evidence |
-| `tests/types/public-api.ts` | package conformance (types) | accept/reject matrix for public props; required adapted-types lane paired with `typetests/pristine` |
+| `tests/types/public-api.ts` | Octane-only framework contract | optional package-conformance declaration probes; not required parity evidence (no structural inventories/controls yet) |
 
 ## Registered parity lanes
 
 | Lane id | Kind | Project | Notes |
 | --- | --- | --- | --- |
 | `vaul-pristine-upstream` | pristine-upstream | `vaul-pristine` | vendored Playwright suite vs published React Vaul |
-| `vaul-pristine-types` | pristine-types | `vaul-pristine-types` | repo-authored `tsc` probes against pinned React Vaul declarations |
-| `vaul-adapted-types` | adapted-types | `vaul-types` | corresponding Octane `tsrx-tsc` accept/reject matrix |
-| `vaul-adapted-full-suite` | adapted-octane | `vaul` | DOM / export / React-oracle inventory |
+| `vaul-pristine-types` | pristine-types (optional) | `vaul-pristine-types` | package-conformance `tsc` probes; not required evidence |
+| `vaul-adapted-types` | adapted-types (optional) | `vaul-types` | package-conformance `tsrx-tsc` probes; not required evidence |
+| `vaul-adapted-full-suite` | adapted-octane | `vaul` | drawer + React-oracle inventory (`testExecution.include` mixed ownership) |
 | `vaul-real-browser` | adapted-octane (real browser) | `vaul-browser` | headless Chromium inventory |
 
-Upstream ships no type-test suite at `v1.1.2`, so the required pristine and
-adapted type lanes use paired repo-authored declaration probes. The `vaul-ssr`
-and `vaul-browser-conformance` Vitest projects stay outside parity ownership.
+Upstream ships no type-test suite at `v1.1.2`. The type lanes remain optional
+package-conformance probes until structural inventories and controls exist. The
+`vaul` Vitest project is mixed: react-parity owns only
+`tests/drawer.test.ts` and `tests/react-oracle.test.ts`. The `vaul-ssr` and
+`vaul-browser-conformance` Vitest projects stay outside parity ownership.

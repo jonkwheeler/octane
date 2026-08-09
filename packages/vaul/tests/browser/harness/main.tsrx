@@ -5,22 +5,33 @@ import '../../../src/style.css';
 
 delegateEvents(['click', 'keydown', 'pointercancel', 'pointerdown', 'pointermove', 'pointerup']);
 
-const startOpen = new URLSearchParams(window.location.search).get('fixture') === 'initial-snap';
+const fixture = new URLSearchParams(window.location.search).get('fixture');
+const startOpen = fixture === 'initial-snap' || fixture === 'with-handle';
+const snapPoints =
+	fixture === 'initial-snap'
+		? [0, '148px', '355px', 1]
+		: fixture === 'with-handle'
+			? ['148px', '355px']
+			: [0.25, 0.75];
+const initialSnapPoint =
+	fixture === 'initial-snap' || fixture === 'with-handle' ? '148px' : 0.25;
 
 function BrowserDrawer() @{
 	const [open, setOpen] = useState(startOpen);
-	const [activeSnapPoint, setActiveSnapPoint] = useState<number | string | null>(0.25);
+	const [activeSnapPoint, setActiveSnapPoint] = useState<number | string | null>(initialSnapPoint);
+	const activeSnapPointIndex = snapPoints.indexOf(activeSnapPoint as never);
 
 	<main>
 		<output id="drawer-state">
 			{open ? 'open' : 'closed'}
 		</output>
 		<output id="snap-point">{String(activeSnapPoint)}</output>
+		<output id="active-snap-index">{String(activeSnapPointIndex)}</output>
 		<Drawer.Root
 			open={open}
 			onOpenChange={setOpen}
 			autoFocus
-			snapPoints={[0.25, 0.75]}
+			snapPoints={snapPoints}
 			activeSnapPoint={activeSnapPoint}
 			setActiveSnapPoint={setActiveSnapPoint}
 		>

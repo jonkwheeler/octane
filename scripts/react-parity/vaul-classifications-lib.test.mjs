@@ -19,6 +19,7 @@ async function fixture() {
 			{ recursive: true },
 		);
 	}
+	await cp(new URL('../../vitest.config.js', import.meta.url), join(root, 'vitest.config.js'));
 	return root;
 }
 
@@ -63,4 +64,33 @@ test('rejects an Octane-only classification that claims an oracle', async functi
 	assert.throws(function run() {
 		verifyVaulTestClassifications(root);
 	}, /must not claim React parity/);
+});
+
+test('rejects an unclassified type probe under tests/types', async function rejectsUnclassifiedType(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await writeFile(join(root, 'packages/vaul/tests/types/extra.ts'), 'export {};\n');
+	assert.throws(function run() {
+		verifyVaulTestClassifications(root);
+	}, /exactly one classification/);
+});
+
+test('rejects Octane-only ownership drift into the react-parity include set', async function rejectsOwnershipDrift(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const vitestPath = join(root, 'vitest.config.js');
+	const source = await readFile(vitestPath, 'utf8');
+	const drifted = source.replace(
+		"'packages/vaul/tests/react-oracle.test.ts',",
+		"'packages/vaul/tests/react-oracle.test.ts',\n\t\t\t\t\t\t'packages/vaul/tests/exports.test.ts',",
+	);
+	assert.notEqual(drifted, source);
+	await writeFile(vitestPath, drifted);
+	assert.throws(function run() {
+		verifyVaulTestClassifications(root);
+	}, /must not be owned by a react-parity lane/);
 });

@@ -16,23 +16,32 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/vaul/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/vaul/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/vaul/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/vaul/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": [
         "packages/vaul/tests/ssr/",
         "packages/vaul/tests/browser-conformance/",
+        "packages/vaul/tests/exports\\.test\\.ts$",
         "packages/vaul/tests/upstream-original\\.test\\.ts$"
       ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 5,
-    "uniqueIdentities": 5,
+    "inventoryEntries": 6,
+    "uniqueIdentities": 6,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -100,11 +109,11 @@
     {
       "id": "vaul-pristine-types",
       "type": "pristine-types",
-      "oracle": "required",
+      "oracle": "optional",
       "environment": "workspace-node",
       "project": "vaul-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored declaration probes against pinned published vaul@1.1.2 because upstream ships no type-test suite.",
+      "notes": "Optional package-conformance probes against pinned published vaul@1.1.2. Upstream ships no type suite, and these probes are not yet backed by structural assertion inventories/controls, so they are not required parity evidence.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -138,11 +147,11 @@
     {
       "id": "vaul-adapted-types",
       "type": "adapted-types",
-      "oracle": "required",
+      "oracle": "optional",
       "environment": "workspace-node",
       "project": "vaul-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Octane accept/reject matrix for the corresponding public drawer content and trigger prop contracts.",
+      "notes": "Optional Octane accept/reject matrix for public drawer content/trigger props. Demoted from required parity evidence until structural inventories, permitted-transformation ledgers, and negative controls exist.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -180,7 +189,7 @@
       "environment": "workspace-node",
       "project": "vaul",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the adapted DOM, export, interaction, and React-oracle suite with exact test identities.",
+      "notes": "Runs the adapted DOM and React-oracle suite with exact test identities. Export package-contract coverage stays outside this lane.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/vaul/audit/adapted-runtime.json"
@@ -189,12 +198,12 @@
         {
           "path": "packages/vaul/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "72610d6a4052460929cae3b5a9627b6a1411cf9444d5b371b9733bc3fd6b69e9"
+          "sha256": "fb57bd842916e828743f0a933957463f035dde3fc7b6ecf8e819b0a7c559f1c9"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "d501afd6ed1c33f784154cfae42fdb00173fb5671946a5329790977833598e87"
+          "sha256": "ff4b3a5c0808697c089a8ba0f33d43e29b933b3cc84999b154c18434691f4419"
         },
         {
           "path": "packages/vaul/upstream/SHA256SUMS",
@@ -219,17 +228,17 @@
         {
           "path": "packages/vaul/audit/adapted-runtime-browser.json",
           "role": "support",
-          "sha256": "0e53b496016899086ca3ec6a046eb9d7013f6f955b82d94d291c4d8eac30a953"
+          "sha256": "97fcdca0432065ba9cf72ad18ef48419cdb10fba0562dbfb4c4aa47934d7b43a"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "d501afd6ed1c33f784154cfae42fdb00173fb5671946a5329790977833598e87"
+          "sha256": "ff4b3a5c0808697c089a8ba0f33d43e29b933b3cc84999b154c18434691f4419"
         },
         {
           "path": "packages/vaul/tests/browser/harness/main.tsrx",
           "role": "support",
-          "sha256": "dddcf22ca8fa59218c156edf69c08281663a143b80cdfbd074bd5b61dced6c87"
+          "sha256": "0c1d24f0e67a7b9013389d54bdd80871cf1b63fdd61b6ac0fdb7c058ef644b35"
         },
         {
           "path": "packages/vaul/tests/browser/harness/index.html",

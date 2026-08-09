@@ -32,6 +32,11 @@
       "reason": "SSR/server rendering contract for the Octane binding; unpaired — upstream ships no SSR suite."
     },
     {
+      "path": "packages/vaul/tests/types/public-api.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored declaration probes for the Octane public surface; not required React-parity evidence because upstream ships no type suite and the probes lack structural one-for-one inventories/controls."
+    },
+    {
       "path": "packages/vaul/tests/upstream-original.test.ts",
       "disposition": "unmodified-upstream-suite-wrapper",
       "oracle": "Runs the vendored vaul@1.1.2 Playwright suite unchanged against published React vaul@1.1.2 and checks passed identities against audit/pristine-runtime.json."

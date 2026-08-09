@@ -105,30 +105,44 @@ describe('vaul real-browser evidence', function vaulRealBrowserEvidence() {
 	});
 
 	// Per upstream/test/tests/initial-snap.spec.ts:24 (should be open and snapped on initial load).
-	// Per upstream/test/tests/with-handle.spec.ts:9 (click should cycle to the next snap point).
-	it('is open and snapped on initial load and cycles snap points via handle', async function initialSnapAndHandleCycle() {
+	it('is open and snapped on initial load at the pinned active snap index', async function initialSnapLoad() {
 		await page.goto(`${baseUrl}/?fixture=initial-snap`, { waitUntil: 'networkidle' });
 		const drawer = page.locator('[data-vaul-drawer]');
 		await drawer.waitFor();
-		await page.waitForFunction(function hasInitialSnapHeight() {
-			return document.querySelector('[data-vaul-drawer]')?.getAttribute('style')?.includes('600px');
+		await page.waitForFunction(function hasInitialSnapIndex() {
+			return document.querySelector('#active-snap-index')?.textContent === '1';
 		});
 		expect(await page.locator('#drawer-state').textContent()).toBe('open');
-		expect(await page.locator('#snap-point').textContent()).toBe('0.25');
+		expect(await page.locator('#snap-point').textContent()).toBe('148px');
+		expect(await page.locator('#active-snap-index').textContent()).toBe('1');
 		expect(
 			await drawer.evaluate(function snapHeight(node) {
 				return getComputedStyle(node).getPropertyValue('--snap-point-height');
 			}),
-		).toBe('600px');
+		).toBe('652px');
+	});
+
+	// Per upstream/test/tests/with-handle.spec.ts:9 (click should cycle to the next snap point).
+	it('cycles to the next snap point when the handle is clicked', async function handleCyclesSnap() {
+		await page.goto(`${baseUrl}/?fixture=with-handle`, { waitUntil: 'networkidle' });
+		const drawer = page.locator('[data-vaul-drawer]');
+		await drawer.waitFor();
+		await page.waitForFunction(function hasHandleSnapIndex() {
+			return document.querySelector('#active-snap-index')?.textContent === '0';
+		});
+		expect(await page.locator('#drawer-state').textContent()).toBe('open');
+		expect(await page.locator('#snap-point').textContent()).toBe('148px');
+		expect(await page.locator('#active-snap-index').textContent()).toBe('0');
 
 		await page.locator('[data-vaul-handle]').click();
 		await page.waitForFunction(function advancedSnap() {
-			return document.querySelector('#snap-point')?.textContent === '0.75';
+			return document.querySelector('#active-snap-index')?.textContent === '1';
 		});
+		expect(await page.locator('#snap-point').textContent()).toBe('355px');
 		expect(
 			await drawer.evaluate(function snapHeight(node) {
 				return getComputedStyle(node).getPropertyValue('--snap-point-height');
 			}),
-		).toBe('200px');
+		).toBe('445px');
 	});
 });
