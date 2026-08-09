@@ -75,4 +75,35 @@ describe('@octanejs/thinking-orbs — render contract', () => {
 		expect(calls).toHaveLength(2);
 		expect(calls[1]).toBeNull();
 	});
+
+	it('runs a cleanup returned by a callback consumer ref instead of calling it with null', () => {
+		const calls: Array<HTMLCanvasElement | null | 'cleanup'> = [];
+		function onRef(node: HTMLCanvasElement | null): (() => void) | void {
+			calls.push(node);
+			if (node !== null) {
+				return function cleanupRef(): void {
+					calls.push('cleanup');
+				};
+			}
+		}
+
+		root = mount(ThinkingOrb, {
+			state: 'working',
+			theme: 'dark',
+			ref: onRef,
+		});
+		flushEffects();
+		flushSync(() => {});
+
+		expect(calls).toHaveLength(1);
+		expect(calls[0]).toBeInstanceOf(HTMLCanvasElement);
+
+		root.unmount();
+		root = undefined;
+		flushEffects();
+		flushSync(function flushUnmount(): void {});
+
+		expect(calls).toHaveLength(2);
+		expect(calls[1]).toBe('cleanup');
+	});
 });

@@ -18,6 +18,11 @@
       "id": "runtime:0ea2de0026d82dce",
       "file": "packages/thinking-orbs/tests/conformance/render.test.ts",
       "fullName": "@octanejs/thinking-orbs — render contract renders an accessible canvas for a shipped state preset"
+    },
+    {
+      "id": "runtime:fc388ff4c20f540f",
+      "file": "packages/thinking-orbs/tests/conformance/render.test.ts",
+      "fullName": "@octanejs/thinking-orbs — render contract runs a cleanup returned by a callback consumer ref instead of calling it with null"
     }
   ]
 }

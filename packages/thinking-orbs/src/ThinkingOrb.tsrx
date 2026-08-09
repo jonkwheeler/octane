@@ -1,6 +1,6 @@
 // Ported from thinking-orbs@0.2.0 src/ThinkingOrb.tsx
 // (https://github.com/Jakubantalik/thinking-orbs).
-import { useEffect, useRef } from 'octane';
+import { attachRef, useEffect, useRef } from 'octane';
 import { MODE_DRAWS } from './engine/registry';
 import { resolvePreset } from './presets';
 import { useReducedMotion, useResolvedDark } from './theme';
@@ -17,26 +17,6 @@ const LABELS: Record<string, string> = {
 	breathing: 'Thinking…',
 	shaping: 'Shaping…',
 };
-
-function assignConsumerRef(
-	consumer: ThinkingOrbProps['ref'],
-	node: HTMLCanvasElement | null,
-): void {
-	if (consumer == null) {
-		return;
-	}
-	if (typeof consumer === 'function') {
-		consumer(node);
-		return;
-	}
-	if (Array.isArray(consumer)) {
-		for (let i = 0; i < consumer.length; i++) {
-			assignConsumerRef(consumer[i] as ThinkingOrbProps['ref'], node);
-		}
-		return;
-	}
-	(consumer as { current: HTMLCanvasElement | null }).current = node;
-}
 
 export function ThinkingOrb({
 	state = 'working',
@@ -58,13 +38,13 @@ export function ThinkingOrb({
 	const dark = useResolvedDark(theme, canvasRef);
 	const reduced = useReducedMotion();
 
-	// Publish the consumer `ref` from effects so prop swaps clear the previous
-	// holder without changing the stable canvas callback identity.
+	// Publish the consumer `ref` through Octane's attachRef so callback refs that
+	// return a cleanup run that cleanup on detach instead of a second ref(null).
 	useEffect(function syncConsumerRef() {
 		const node = canvasRef.current;
-		assignConsumerRef(consumerRef, node);
+		attachRef(consumerRef, node);
 		return function cleanupConsumerRef() {
-			assignConsumerRef(consumerRef, null);
+			attachRef(consumerRef, null, node);
 		};
 	}, [consumerRef]);
 
