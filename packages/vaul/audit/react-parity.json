@@ -23,12 +23,12 @@
     "tests": {
       "roots": ["packages/vaul/tests"],
       "include": ["\\.test\\.ts$"],
-      "exclude": ["packages/vaul/tests/ssr/"]
+      "exclude": ["packages/vaul/tests/ssr/", "packages/vaul/tests/browser-conformance/"]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 4,
-    "uniqueIdentities": 4,
+    "inventoryEntries": 5,
+    "uniqueIdentities": 5,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -113,7 +113,7 @@
       "environment": "workspace-node",
       "project": "vaul-browser",
       "evidenceOrigin": "repo-authored",
-      "notes": "Adapted real-browser lane for the vendored Playwright scenarios that can run without the upstream Next.js demo app. Covers dialog semantics, styles, snap points, pointer dragging, close behavior, and portal cleanup. No pristine Playwright lane: the demo app is not vendored.",
+      "notes": "Adapted real-browser lane for the vendored Playwright scenarios that can run without the upstream Next.js demo app. Covers dialog semantics, styles, initial-open snap height, handle-driven snap cycling, close behavior, and portal cleanup. Unpaired snap-point mid-drag stays in ordinary vaul-browser-conformance. No pristine Playwright lane: the demo app is not vendored.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/vaul/audit/adapted-runtime-browser.json"
@@ -122,7 +122,7 @@
         {
           "path": "packages/vaul/audit/adapted-runtime-browser.json",
           "role": "support",
-          "sha256": "19956116615fbf3a754aa8a1cd32a39e15def42e1e4aebbf450dfb9238e46bcd"
+          "sha256": "0e53b496016899086ca3ec6a046eb9d7013f6f955b82d94d291c4d8eac30a953"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
@@ -132,7 +132,7 @@
         {
           "path": "packages/vaul/tests/browser/harness/main.tsrx",
           "role": "support",
-          "sha256": "55809da3b107bc9c866d9fb0e5d2095f0b02df8ca06a5c76a058b6ea6cb76062"
+          "sha256": "dddcf22ca8fa59218c156edf69c08281663a143b80cdfbd074bd5b61dced6c87"
         },
         {
           "path": "packages/vaul/tests/browser/harness/index.html",

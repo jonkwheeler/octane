@@ -3437,6 +3437,7 @@ export default defineConfig({
 						'packages/vaul/tests/**/*.test.ts',
 						'!packages/vaul/tests/ssr/**/*.test.ts',
 						'!packages/vaul/tests/browser/**/*.test.ts',
+						'!packages/vaul/tests/browser-conformance/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -3477,6 +3478,18 @@ export default defineConfig({
 				test: {
 					name: 'vaul-browser',
 					include: ['packages/vaul/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
+			},
+			{
+				// Octane-only real-browser contracts (unpaired snap-point drag).
+				// Kept out of react-parity ownership and the vaul-browser inventory.
+				test: {
+					name: 'vaul-browser-conformance',
+					include: ['packages/vaul/tests/browser-conformance/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 60_000,

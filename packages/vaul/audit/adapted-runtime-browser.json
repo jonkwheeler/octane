@@ -1,17 +1,18 @@
 {
   "schemaVersion": 1,
   "project": "vaul-browser",
-  "roots": [
-    "packages/vaul/tests"
-  ],
-  "files": [
-    "packages/vaul/tests/browser/vaul.browser.test.ts"
-  ],
+  "roots": ["packages/vaul/tests"],
+  "files": ["packages/vaul/tests/browser/vaul.browser.test.ts"],
   "tests": [
     {
-      "id": "runtime:1a948b9b9110d6a4",
+      "id": "runtime:1dd505e84b7cd2bd",
       "file": "packages/vaul/tests/browser/vaul.browser.test.ts",
-      "fullName": "vaul real-browser evidence preserves styling, focus semantics, snap points, dragging, and cleanup"
+      "fullName": "vaul real-browser evidence is open and snapped on initial load and cycles snap points via handle"
+    },
+    {
+      "id": "runtime:1717c6555e691737",
+      "file": "packages/vaul/tests/browser/vaul.browser.test.ts",
+      "fullName": "vaul real-browser evidence preserves open/close, focus semantics, styling, and cleanup"
     }
   ]
 }

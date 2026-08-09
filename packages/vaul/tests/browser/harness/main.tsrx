@@ -5,8 +5,10 @@ import '../../../src/style.css';
 
 delegateEvents(['click', 'keydown', 'pointercancel', 'pointerdown', 'pointermove', 'pointerup']);
 
+const startOpen = new URLSearchParams(window.location.search).get('fixture') === 'initial-snap';
+
 function BrowserDrawer() @{
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(startOpen);
 	const [activeSnapPoint, setActiveSnapPoint] = useState<number | string | null>(0.25);
 
 	<main>

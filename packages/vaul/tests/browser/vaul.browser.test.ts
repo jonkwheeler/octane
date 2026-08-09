@@ -11,12 +11,14 @@ const packageSrc = resolve(testRoot, '../../src/index.tsrx');
 const octaneSrc = resolve(testRoot, '../../../octane/src/index.ts');
 
 function getFreePort(): Promise<number> {
-	return new Promise((resolvePort, reject) => {
+	return new Promise(function resolvePort(resolvePortCb, reject) {
 		const server = createNetServer();
 		server.once('error', reject);
-		server.listen(0, '127.0.0.1', () => {
+		server.listen(0, '127.0.0.1', function onListen() {
 			const { port } = server.address() as import('node:net').AddressInfo;
-			server.close(() => resolvePort(port));
+			server.close(function onClose() {
+				resolvePortCb(port);
+			});
 		});
 	});
 }
@@ -24,11 +26,13 @@ function getFreePort(): Promise<number> {
 let viteServer: ViteDevServer;
 let browser: import('playwright').Browser;
 let page: import('playwright').Page;
+let baseUrl: string;
 
-beforeAll(async () => {
+beforeAll(async function setupBrowserLane() {
 	const { chromium } = await import('playwright');
 	browser = await chromium.launch({ headless: true });
 	const port = await getFreePort();
+	baseUrl = `http://127.0.0.1:${port}`;
 	viteServer = await createServer({
 		root: harnessRoot,
 		logLevel: 'error',
@@ -43,75 +47,88 @@ beforeAll(async () => {
 	});
 	await viteServer.listen();
 	page = await browser.newPage({ viewport: { width: 800, height: 800 } });
-	await page.goto(`http://127.0.0.1:${port}`, { waitUntil: 'networkidle' });
 }, 60_000);
 
-afterAll(async () => {
-	await page?.close().catch(() => {});
-	await browser?.close().catch(() => {});
-	await viteServer?.close().catch(() => {});
+afterAll(async function teardownBrowserLane() {
+	await page?.close().catch(function ignore() {});
+	await browser?.close().catch(function ignore() {});
+	await viteServer?.close().catch(function ignore() {});
 });
 
-describe('vaul real-browser evidence', () => {
+describe('vaul real-browser evidence', function vaulRealBrowserEvidence() {
 	// Per upstream/test/tests/base.spec.ts:10 (should open drawer).
 	// Per upstream/test/tests/base.spec.ts:27 (should close when `Drawer.Close` is clicked).
-	// Per upstream/test/tests/with-handle.spec.ts:9 (click should cycle to the next snap point).
-	// Per upstream/test/tests/initial-snap.spec.ts:24 (should be open and snapped on initial load) — open height asserted after open.
-	// Drag-down close from base.spec.ts:49 is not counted here: this fixture uses
-	// snap points, so a mid-drag release stays open rather than asserting upstream close.
-	it('preserves styling, focus semantics, snap points, dragging, and cleanup', async () => {
+	it('preserves open/close, focus semantics, styling, and cleanup', async function openCloseFocusStylesCleanup() {
+		await page.goto(baseUrl, { waitUntil: 'networkidle' });
 		await page.getByRole('button', { name: 'Open drawer' }).click();
 		const drawer = page.locator('[data-vaul-drawer]');
 		await drawer.waitFor();
 		await expect
-			.poll(() => drawer.evaluate((node) => node.contains(document.activeElement)))
+			.poll(function focusInsideDrawer() {
+				return drawer.evaluate(function containsActive(node) {
+					return node.contains(document.activeElement);
+				});
+			})
 			.toBe(true);
-		await page.waitForFunction(() =>
-			document.querySelector('[data-vaul-drawer]')?.getAttribute('style')?.includes('600px'),
-		);
+		await page.waitForFunction(function hasOpenHeight() {
+			return document.querySelector('[data-vaul-drawer]')?.getAttribute('style')?.includes('600px');
+		});
 		expect(await page.locator('#drawer-state').textContent()).toBe('open');
 		expect(await drawer.getAttribute('data-vaul-drawer-direction')).toBe('bottom');
 		expect(await drawer.getAttribute('data-vaul-snap-points')).toBe('true');
 		expect(await drawer.getAttribute('role')).toBe('dialog');
-		expect(await drawer.evaluate((node) => getComputedStyle(node).position)).toBe('fixed');
 		expect(
-			await drawer.evaluate((node) =>
-				getComputedStyle(node).getPropertyValue('--snap-point-height'),
-			),
+			await drawer.evaluate(function position(node) {
+				return getComputedStyle(node).position;
+			}),
+		).toBe('fixed');
+		expect(
+			await drawer.evaluate(function snapHeight(node) {
+				return getComputedStyle(node).getPropertyValue('--snap-point-height');
+			}),
 		).toBe('600px');
 
-		await page.locator('[data-vaul-handle]').click();
-		await page.waitForFunction(() => document.querySelector('#snap-point')?.textContent === '0.75');
-		expect(
-			await drawer.evaluate((node) =>
-				getComputedStyle(node).getPropertyValue('--snap-point-height'),
-			),
-		).toBe('200px');
-
-		await page.waitForTimeout(550);
-		const box = await drawer.boundingBox();
-		if (!box) throw new Error('drawer has no browser box');
-		await page.mouse.move(box.x + box.width / 2, box.y + 30);
-		await page.mouse.down();
-		await page.mouse.move(box.x + box.width / 2, box.y + 140, { steps: 4 });
-		expect(await drawer.evaluate((node) => node.classList.contains('vaul-dragging'))).toBe(true);
-		await page.mouse.up();
-		await expect.poll(() => page.locator('#drawer-state').textContent()).toBe('open');
-		expect(await page.locator('[data-vaul-drawer]').count()).toBe(1);
-
 		await page.getByRole('button', { name: 'Close drawer' }).click();
-		await page.waitForFunction(
-			() => document.querySelector('#drawer-state')?.textContent === 'closed',
-		);
+		await page.waitForFunction(function isClosed() {
+			return document.querySelector('#drawer-state')?.textContent === 'closed';
+		});
 		expect(await page.locator('[data-vaul-drawer]').count()).toBe(1);
 		await page.waitForTimeout(550);
 		expect(await page.locator('[data-vaul-drawer]').count()).toBe(0);
 		await expect
-			.poll(() =>
-				page
-					.getByRole('button', { name: 'Open drawer' })
-					.evaluate((node) => node === document.activeElement),
-			)
+			.poll(function triggerFocused() {
+				return page.getByRole('button', { name: 'Open drawer' }).evaluate(function isActive(node) {
+					return node === document.activeElement;
+				});
+			})
 			.toBe(true);
+	});
+
+	// Per upstream/test/tests/initial-snap.spec.ts:24 (should be open and snapped on initial load).
+	// Per upstream/test/tests/with-handle.spec.ts:9 (click should cycle to the next snap point).
+	it('is open and snapped on initial load and cycles snap points via handle', async function initialSnapAndHandleCycle() {
+		await page.goto(`${baseUrl}/?fixture=initial-snap`, { waitUntil: 'networkidle' });
+		const drawer = page.locator('[data-vaul-drawer]');
+		await drawer.waitFor();
+		await page.waitForFunction(function hasInitialSnapHeight() {
+			return document.querySelector('[data-vaul-drawer]')?.getAttribute('style')?.includes('600px');
+		});
+		expect(await page.locator('#drawer-state').textContent()).toBe('open');
+		expect(await page.locator('#snap-point').textContent()).toBe('0.25');
+		expect(
+			await drawer.evaluate(function snapHeight(node) {
+				return getComputedStyle(node).getPropertyValue('--snap-point-height');
+			}),
+		).toBe('600px');
+
+		await page.locator('[data-vaul-handle]').click();
+		await page.waitForFunction(function advancedSnap() {
+			return document.querySelector('#snap-point')?.textContent === '0.75';
+		});
+		expect(
+			await drawer.evaluate(function snapHeight(node) {
+				return getComputedStyle(node).getPropertyValue('--snap-point-height');
+			}),
+		).toBe('200px');
 	});
 });
