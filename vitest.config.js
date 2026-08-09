@@ -2036,6 +2036,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'phosphor-icons-differential',
 					include: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
