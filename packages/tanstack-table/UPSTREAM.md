@@ -11,6 +11,7 @@
 
 The tagged React adapter contains no runtime tests and its type script only
 compiles package source; the npm artifact likewise omits tests. Provenance is
-therefore recorded-unverified. Required evidence uses five same-fixture
-React/Octane scenarios, exact checks for both intentional framework omissions,
-and a repository-authored public type contract.
+verified via repo-authored differential scenarios plus paired pristine/adapted
+public type contracts. Ordinary framework-contract checks for the legacy
+subpath omission and plain-function component cells stay outside the parity
+group until they carry same-scenario React observations.

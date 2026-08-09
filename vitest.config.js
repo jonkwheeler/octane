@@ -1269,15 +1269,6 @@ export default defineConfig({
 				},
 			},
 			{
-				// Adapted divergence cases live in dedicated files so file-granular
-				// ordinary exclusion does not hide the rest of conformance.
-				testExecution: {
-					group: 'react-parity',
-					include: [
-						'packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts',
-						'packages/tanstack-table/tests/conformance/flex-render-component-shapes.test.ts',
-					],
-				},
 				test: {
 					name: 'tanstack-table',
 					include: ['packages/tanstack-table/tests/**/*.test.ts'],

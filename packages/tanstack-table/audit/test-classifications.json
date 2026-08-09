@@ -23,9 +23,8 @@
     },
     {
       "path": "packages/tanstack-table/tests/conformance/flex-render-component-shapes.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-table-component-shapes",
-      "reason": "Authenticates Octane's plain-function component model in flexRender."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane plain-function component cells in flexRender without a paired React observation."
     },
     {
       "path": "packages/tanstack-table/tests/conformance/flex-render.test.ts",
@@ -34,9 +33,8 @@
     },
     {
       "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-table-legacy-api",
-      "reason": "Authenticates omission of the React-only legacy migration subpath."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks omission of the React-only legacy migration subpath without a paired React observation."
     },
     {
       "path": "packages/tanstack-table/tests/conformance/parity.test.ts",

@@ -1,0 +1,23 @@
+# Type parity assertions
+
+`@tanstack/react-table@9.0.0-beta.58` ships no dedicated type-test suite (its
+typecheck only compiles package source), so both sides of this lane are
+port-authored. The two files assert the SAME public-surface claims, one against
+the published React binding compiled with `tsc`, one against
+`@octanejs/tanstack-table` compiled with `tsrx-tsc`.
+
+Permitted differences between the two files, and nothing else:
+
+| # | Transformation | Why |
+| --- | --- | --- |
+| 1 | import root `@tanstack/react-table` → `@octanejs/tanstack-table` | the package under test |
+| 2 | omit React-only `./legacy` surface on the Octane side | intentional binding omission |
+
+Every assertion group below appears in both files under the same heading.
+
+1. `useTable` accepts features, data, and columns and returns a typed table.
+2. A selector overload preserves `TableState` inference.
+3. `createColumnHelper` is a callable helper factory.
+4. `flexRender` is a callable render helper.
+5. `createTableHookContexts` exposes `useTableContext`.
+6. `useTable` rejects an unknown option key.

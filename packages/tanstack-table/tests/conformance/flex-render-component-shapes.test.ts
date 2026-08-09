@@ -1,8 +1,7 @@
 /**
- * Adapted divergence: Octane memo()-wrapped cells are plain functions, so
- * flexRender uses the function branch (no React exotic-component sniffing).
- * Dedicated file so mixed-project parity ownership does not hide the rest of
- * flexRender conformance from ordinary shards.
+ * Ordinary framework-contract check: Octane memo()-wrapped cells are plain
+ * functions, so flexRender uses the function branch. Kept outside react-parity
+ * ownership because it has no paired same-scenario React observation.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, nextPaint } from '../_helpers';
@@ -22,8 +21,6 @@ beforeEach(function () {
 });
 
 describe('flexRender through the octane render path', function () {
-	// OCTANE DIVERGENCE[tanstack-table-component-shapes][adapted:tanstack-table-component-shapes]
-	// @parity-case adapted:tanstack-table-component-shapes
 	it('renders an octane memo()-wrapped component cell (plain function, no exotic sniffing)', async function () {
 		const r = mount(FlexTable, {});
 		await flush();

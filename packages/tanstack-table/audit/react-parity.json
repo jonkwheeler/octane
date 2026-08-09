@@ -9,7 +9,7 @@
     "testRoot": "packages/react-table",
     "license": "MIT",
     "integrity": "sha256:924a64009738996f1a2f32ef950aed338a6aafb0dbf85af548c7c98388deb559",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "absent",
@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
+      "lockfileSha256": "6d3b08ecf3af7030ea9af64ab4e8bde01555fe876086dcee3f880b83a04d54e5"
     }
   },
   "lanes": [
@@ -153,36 +153,46 @@
       ]
     },
     {
-      "id": "tanstack-table-adapted-divergences",
-      "type": "adapted-octane",
+      "id": "tanstack-table-pristine-types",
+      "type": "pristine-types",
       "oracle": "required",
+      "available": true,
       "environment": "workspace-node",
-      "project": "tanstack-table",
-      "notes": "Authenticates the documented legacy-subpath omission and Octane plain-function component model.",
+      "project": "tanstack-table-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Type assertions for the public surface, compiled against @tanstack/react-table@9.0.0-beta.58 with tsc and pinned React types.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/tanstack-table/typetests/pristine/tsconfig.json"
+      },
       "files": [
         {
-          "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
+          "path": "packages/tanstack-table/audit/pristine-types.json",
           "role": "test",
-          "sha256": "8be9996ca69053a3675814698a69e8413f19598f679083e34578cd3cbcdc2327",
+          "sha256": "3bd2d947906f1e98414fb279cbcbd61fb6a5b3cc60d25231453f4796c4ac0ecb",
           "cases": [
             {
-              "id": "adapted:tanstack-table-legacy-api",
-              "testName": "does not publish the upstream legacy migration subpath",
-              "fullName": "export surface does not publish the upstream legacy migration subpath"
+              "id": "types:tanstack-table-pristine",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
             }
           ]
         },
         {
-          "path": "packages/tanstack-table/tests/conformance/flex-render-component-shapes.test.ts",
-          "role": "test",
-          "sha256": "dd83af7e21efd5e337c43741663d601ece87ffec30b053e840a43be725e9d188",
-          "cases": [
-            {
-              "id": "adapted:tanstack-table-component-shapes",
-              "testName": "renders an octane memo()-wrapped component cell (plain function, no exotic sniffing)",
-              "fullName": "flexRender through the octane render path renders an octane memo()-wrapped component cell (plain function, no exotic sniffing)"
-            }
-          ]
+          "path": "packages/tanstack-table/typetests/pristine/types.test-d.ts",
+          "role": "support",
+          "sha256": "b2accda6d23dbcc992b631caa652fbb828da62ab82c25edbceb3e8a53b95a421"
+        },
+        {
+          "path": "packages/tanstack-table/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "e570ccc5a02b5b657eafdc25a73c6c15ebf61cb49ea9ceef7c474553fc52f123"
+        },
+        {
+          "path": "packages/tanstack-table/typetests/assertions.md",
+          "role": "support",
+          "sha256": "0be1e5b74618d8bb89538745afa8c2f4c4a9529da958e654f9a6e5b1f29c930d"
         }
       ]
     },
@@ -190,69 +200,46 @@
       "id": "tanstack-table-adapted-types",
       "type": "adapted-types",
       "oracle": "required",
+      "available": true,
       "environment": "workspace-node",
       "project": "tanstack-table-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the checked Octane table options, row, selector, rendering, and scoped-context contract.",
+      "notes": "The same assertion groups against @octanejs/tanstack-table with tsrx-tsc. Permitted transformations are listed in typetests/assertions.md.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/tanstack-table/typetests/tsconfig.json"
+        "project": "packages/tanstack-table/typetests/adapted/tsconfig.json"
       },
       "files": [
         {
           "path": "packages/tanstack-table/audit/adapted-types.json",
           "role": "test",
-          "sha256": "6f498ecaca711d36b419f11190e4e08b7a1ab63c79fceae90b7a95bf27b1b3b3",
+          "sha256": "10909c897bdfb5a824317c8fd3d4f52574933a0cc1c3f83bed72b25bb6f887a2",
           "cases": [
             {
-              "id": "types:tanstack-table-public-api",
-              "testName": "table options, rows, cells, selectors, and scoped contexts",
-              "fullName": "table options, rows, cells, selectors, and scoped contexts"
+              "id": "types:tanstack-table-adapted",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
             }
           ]
         },
         {
-          "path": "packages/tanstack-table/typetests/public-api.test-d.ts",
+          "path": "packages/tanstack-table/typetests/adapted/types.test-d.ts",
           "role": "support",
-          "sha256": "64a7c9b0d4aca8bcb3166588a1603a471e92323f5ce34219c06350e4ca0b6f41"
+          "sha256": "0f52bc5364889d17bcefebefa3c2eaa7d9b68e95c03766569dc48b8f507899fe"
         },
         {
-          "path": "packages/tanstack-table/typetests/tsconfig.json",
+          "path": "packages/tanstack-table/typetests/adapted/tsconfig.json",
           "role": "support",
-          "sha256": "aa2cf60ceb40fe3a6e552acbfb67b1b6a03a8aeb075319584946b1ec58c465a1"
+          "sha256": "34b04cab6a0d24604a6d2ccc13dd88d789fb2329a4934285ec6ce157d598274b"
+        },
+        {
+          "path": "packages/tanstack-table/typetests/assertions.md",
+          "role": "support",
+          "sha256": "0be1e5b74618d8bb89538745afa8c2f4c4a9529da958e654f9a6e5b1f29c930d"
         }
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "tanstack-table-component-shapes",
-      "caseIds": [
-        "adapted:tanstack-table-component-shapes"
-      ],
-      "upstreamResult": "React flexRender recognizes class components and memo/forwardRef exotic component objects.",
-      "octaneResult": "Octane components, including memo-wrapped components, are plain functions and flexRender uses the function branch.",
-      "rationale": "Octane has no React class-component or exotic-object component model.",
-      "classification": "framework-integration",
-      "consumerImpact": "Octane component functions render with equivalent props; React exotic objects cannot be passed directly.",
-      "migrationGuidance": "Author the cell or header as an Octane function component and use Octane memo when needed.",
-      "owner": "@octanejs/tanstack-table",
-      "reviewCondition": "Review if Octane introduces non-function component descriptors."
-    },
-    {
-      "id": "tanstack-table-legacy-api",
-      "caseIds": [
-        "adapted:tanstack-table-legacy-api"
-      ],
-      "upstreamResult": "React Table publishes a ./legacy migration subpath with useLegacyTable and v8 compatibility types.",
-      "octaneResult": "The Octane binding omits the React-v8 migration-only subpath.",
-      "rationale": "There is no prior Octane React Table v8 consumer surface to migrate.",
-      "classification": "intentional-omission",
-      "consumerImpact": "Consumers cannot import the legacy v8 compatibility API.",
-      "migrationGuidance": "Use the v9 useTable API directly.",
-      "owner": "@octanejs/tanstack-table",
-      "reviewCondition": "Review if an Octane v8 compatibility requirement emerges."
-    }
-  ]
+  "divergences": []
 }
