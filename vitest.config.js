@@ -3363,10 +3363,6 @@ export default defineConfig({
 				plugins: [octaneMdx(websiteMdxOptions), octane()],
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/react-error-boundary/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'react-error-boundary',
 					include: [
@@ -3430,7 +3426,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-error-boundary-ssr',
 					include: ['packages/react-error-boundary/tests/ssr/**/*.test.ts'],
