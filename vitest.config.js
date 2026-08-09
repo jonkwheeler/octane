@@ -1598,7 +1598,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux-toolkit',
 					include: ['packages/redux-toolkit/tests/**/*.test.ts'],
@@ -1648,9 +1647,7 @@ export default defineConfig({
 				},
 			},
 			{
-				// Keep this project in ordinary shards while the manifest stays
-				// recorded-unverified: react-parity:check only validates unverified
-				// manifests and would otherwise never execute this required lane.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux-toolkit-differential',
 					include: ['packages/redux-toolkit/tests/differential/**/*.test.ts'],
@@ -1696,7 +1693,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux-toolkit-ssr',
 					include: ['packages/redux-toolkit/tests/ssr/**/*.test.ts'],
