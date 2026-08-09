@@ -44,6 +44,24 @@ test('rejects a parity classification without an oracle', async function rejects
 	}, /requires a React oracle/);
 });
 
+test('rejects octane-only dispositions for required type-lane probes', async function rejectsOctaneOnlyTypeLane(
+	t,
+) {
+	const root = await fixtureRoot(t);
+	const path = join(root, 'packages/embla-carousel/audit/test-classifications.json');
+	const config = JSON.parse(await readFile(path, 'utf8'));
+	const pristine = config.tests.find(function findPristine(entry) {
+		return entry.path === 'packages/embla-carousel/typetests/pristine.test-d.ts';
+	});
+	delete pristine.oracle;
+	pristine.disposition = 'octane-only-framework-contract';
+	pristine.reason = 'misclassified type probe';
+	await writeFile(path, JSON.stringify(config, null, 2) + '\n');
+	assert.throws(function run() {
+		verifyEmblaCarouselTestClassifications(root);
+	}, /required type-lane tests must use repo-authored-type-oracle/);
+});
+
 test('accepts the committed classification ledger', function acceptsCommitted() {
 	const root = join(import.meta.dirname, '../..');
 	const result = verifyEmblaCarouselTestClassifications(root);

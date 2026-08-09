@@ -52,6 +52,7 @@ geometry mocks.
 
 Every port-authored runtime test and repo-authored type probe is classified in
 `audit/test-classifications.json`. Unpaired conformance/browser/hydration/SSR
-cases stay Octane-only and outside React-parity ownership; the required
-differential lane is the React oracle evidence and rejects React/ReactDOM
-version drift from the pins above.
+cases stay Octane-only and outside React-parity ownership. The required
+pristine/adapted type probes are `repo-authored-type-oracle` evidence paired
+with the type-parity lanes; the required differential lane is the React runtime
+oracle and rejects React/ReactDOM version drift from the pins above.

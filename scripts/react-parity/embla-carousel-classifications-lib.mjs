@@ -7,9 +7,12 @@ const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
 	'react-octane-differential',
+	'repo-authored-type-oracle',
 	'octane-only-divergence',
 	'octane-only-framework-contract',
 ]);
+const TYPE_LANE_TYPES = new Set(['pristine-types', 'adapted-types']);
+const TYPE_ORACLE_DISPOSITION = 'repo-authored-type-oracle';
 
 function discoverPortAuthoredTests(root) {
 	const roots = [
@@ -35,6 +38,19 @@ function discoverPortAuthoredTests(root) {
 	return discovered.sort();
 }
 
+function requiredTypeLaneTestPaths(manifest) {
+	const paths = [];
+	for (const lane of manifest.lanes ?? []) {
+		if (!TYPE_LANE_TYPES.has(lane.type)) continue;
+		if (lane.oracle !== 'required') continue;
+		for (const file of lane.files ?? []) {
+			if (file.role !== 'test') continue;
+			paths.push(file.path);
+		}
+	}
+	return paths.sort();
+}
+
 export function verifyEmblaCarouselTestClassifications(root) {
 	const discovered = discoverPortAuthoredTests(root);
 	const configPath = resolve(root, CONFIG);
@@ -44,6 +60,11 @@ export function verifyEmblaCarouselTestClassifications(root) {
 	const divergenceIds = new Set(
 		(manifest.divergences ?? []).map(function idOf(entry) {
 			return entry.id;
+		}),
+	);
+	const byPath = new Map(
+		config.tests.map(function entryOf(entry) {
+			return [entry.path, entry];
 		}),
 	);
 	const declared = config.tests
@@ -72,6 +93,17 @@ export function verifyEmblaCarouselTestClassifications(root) {
 				throw new Error(`${entry.path}: divergence tests require a manifest divergence id`);
 			if (!divergenceIds.has(entry.divergenceId))
 				throw new Error(`${entry.path}: divergence id is not present in the parity manifest`);
+		}
+	}
+	for (const path of requiredTypeLaneTestPaths(manifest)) {
+		const entry = byPath.get(path);
+		if (!entry) {
+			throw new Error(`${path}: required type-lane test is missing a classification`);
+		}
+		if (entry.disposition !== TYPE_ORACLE_DISPOSITION) {
+			throw new Error(
+				`${path}: required type-lane tests must use ${TYPE_ORACLE_DISPOSITION} (not Octane-only)`,
+			);
 		}
 	}
 	return { tests: discovered.length };
