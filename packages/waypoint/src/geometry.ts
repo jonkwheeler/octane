@@ -40,14 +40,17 @@ export function getBounds(
 	const horizontal = Boolean(options.horizontal);
 	const nodeRect = node.getBoundingClientRect();
 	const isWindow = ancestor === window;
-	const ancestorRect = isWindow ? null : (ancestor as Element).getBoundingClientRect();
+	// Upstream sizes a non-window scroll parent with offsetWidth/offsetHeight
+	// (border-box layout size), not getBoundingClientRect width/height.
+	const ancestorElement = isWindow ? null : (ancestor as HTMLElement);
+	const ancestorRect = ancestorElement ? ancestorElement.getBoundingClientRect() : null;
 	const contextSize = isWindow
 		? horizontal
 			? window.innerWidth
 			: window.innerHeight
 		: horizontal
-			? ancestorRect!.width
-			: ancestorRect!.height;
+			? ancestorElement!.offsetWidth
+			: ancestorElement!.offsetHeight;
 	const contextStart = isWindow ? 0 : horizontal ? ancestorRect!.left : ancestorRect!.top;
 	const contextEnd = contextStart + contextSize;
 	const topOffset = parseOffset(options.topOffset, contextSize);

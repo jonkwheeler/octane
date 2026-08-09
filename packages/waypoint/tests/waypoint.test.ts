@@ -94,6 +94,33 @@ describe('geometry', () => {
 		});
 	});
 
+	it('sizes non-window ancestors with offsetWidth/offsetHeight for percentage offsets', () => {
+		const node = document.createElement('div');
+		node.getBoundingClientRect = () => rect(20, 40);
+		const ancestor = document.createElement('div');
+		Object.defineProperty(ancestor, 'offsetHeight', { configurable: true, value: 200 });
+		Object.defineProperty(ancestor, 'offsetWidth', { configurable: true, value: 200 });
+		ancestor.getBoundingClientRect = () => ({
+			top: 50,
+			left: 50,
+			bottom: 150,
+			right: 150,
+			width: 100,
+			height: 100,
+			x: 50,
+			y: 50,
+			toJSON() {
+				return {};
+			},
+		});
+		expect(getBounds(node, ancestor, { topOffset: '10%', bottomOffset: '20%' })).toEqual({
+			waypointTop: 20,
+			waypointBottom: 40,
+			viewportTop: 70,
+			viewportBottom: 210,
+		});
+	});
+
 	it('uses window for body and document scrolling', () => {
 		const node = document.createElement('div');
 		document.body.append(node);
