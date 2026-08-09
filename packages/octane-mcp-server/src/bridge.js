@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path';
 // without registering it in either catalog fails the mcp-server tests.
 export const KNOWN_BINDINGS = {
 	'@gsap/react': '@octanejs/gsap',
+	animejs: '@octanejs/animejs',
 	'usehooks-ts': '@octanejs/usehooks-ts',
 	zustand: '@octanejs/zustand',
 	valtio: '@octanejs/valtio',
