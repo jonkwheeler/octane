@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**69 publishable package(s), including 55 framework binding(s) and 3 framework integration(s).**
+**70 publishable package(s), including 56 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -40,6 +40,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/motion` | [`packages/motion`](../packages/motion) | framework binding | `0.1.30` | 1 |
 | `@octanejs/nuqs` | [`packages/nuqs`](../packages/nuqs) | framework binding | `0.1.20` | 7 |
 | `@octanejs/phosphor-icons` | [`packages/phosphor-icons`](../packages/phosphor-icons) | framework binding | `0.0.11` | 2 |
+| `@octanejs/puck` | [`packages/puck`](../packages/puck) | framework binding | `0.1.0` | 3 |
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.30` | 1 |
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.11` | 2 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.12` | 2 |
