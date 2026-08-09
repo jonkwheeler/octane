@@ -4,6 +4,7 @@ import upstreamMakeAnimated, * as upstreamAnimated from 'react-select/animated';
 import { renderToString } from 'octane/server';
 import { describe, expect, it } from 'vitest';
 
+import { needsInspectableValueChildren } from '../src/animated-registry.ts';
 import makeAnimated, * as animated from '../src/animated/index';
 import {
 	AnimatedInputFixture,
@@ -16,6 +17,11 @@ import {
 describe('animated entry point parity', () => {
 	it('matches the complete public export surface', () => {
 		expect(Object.keys(animated).sort()).toEqual(Object.keys(upstreamAnimated).sort());
+	});
+
+	it('marks animated ValueContainer for inspectable children', () => {
+		const components = makeAnimated();
+		expect(needsInspectableValueChildren(components.ValueContainer)).toBe(true);
 	});
 
 	it('matches upstream memoization and custom-component precedence', () => {

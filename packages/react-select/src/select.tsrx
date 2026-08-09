@@ -46,6 +46,7 @@ import type {
 	Theme,
 } from './types';
 import { classNames, cleanValue, scrollOptionIntoView, valueTernary } from './utils';
+import { needsInspectableValueChildren } from './animated-registry.ts';
 
 export type FormatOptionLabelContext = 'menu' | 'value';
 export interface FormatOptionLabelMeta<Option> {
@@ -702,6 +703,7 @@ export function Select<
 		scrollOptionIntoView(menuListRef.current, focusedOptionRef.current);
 	}, [props.menuIsOpen, focusedOption]);
 	const Components = defaultComponents({ components: props.components });
+	const inspectableValueChildren = needsInspectableValueChildren(Components.ValueContainer);
 	const elementId = (part: string) => `${instancePrefix}-${part}`;
 	const getStyles = (name: string, componentProps: unknown) => {
 		const key = name as StyleKey;
@@ -1449,10 +1451,20 @@ export function Select<
 			isFocused={isFocused}
 			menuIsOpen={props.menuIsOpen}
 		>
-			<Components.ValueContainer {...commonProps} isDisabled={props.isDisabled}>
-				{valueUI}
-				{inputUI}
-			</Components.ValueContainer>
+			@if (inspectableValueChildren) {
+				<>
+					{createElement(Components.ValueContainer, {
+						...commonProps,
+						isDisabled: props.isDisabled,
+						children: [valueUI, inputUI],
+					})}
+				</>
+			} @else {
+				<Components.ValueContainer {...commonProps} isDisabled={props.isDisabled}>
+					{valueUI}
+					{inputUI}
+				</Components.ValueContainer>
+			}
 			<Components.IndicatorsContainer {...commonProps} isDisabled={props.isDisabled}>
 				{(props.isClearable ?? Boolean(props.isMulti)) && selectValue.length && !props.isDisabled &&
 				!props.isLoading
