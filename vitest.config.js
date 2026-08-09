@@ -1691,6 +1691,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels',
 					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
@@ -1716,6 +1717,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-differential',
 					include: ['packages/react-resizable-panels/tests/differential/**/*.test.ts'],
@@ -1736,6 +1738,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-browser',
 					include: ['packages/react-resizable-panels/tests/browser/**/*.browser.test.ts'],
@@ -1746,6 +1749,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-server',
 					include: ['packages/react-resizable-panels/tests/**/*.server.test.{ts,tsx,tsrx}'],

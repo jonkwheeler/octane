@@ -455,16 +455,9 @@ jobs:
           --exclude "packages/vite-plugin-octane/tests/production.test.ts"
           --exclude "packages/octane/tests/browser/**/*.test.ts"
           --exclude "packages/dexie/tests/browser/**/*.test.ts"
-          --exclude "packages/react-resizable-panels/tests/browser/**/*.browser.test.ts"
-          --exclude "packages/react-resizable-panels/upstream/source/lib/**/*.test.ts"
-          --exclude "packages/react-resizable-panels/upstream/source/lib/**/*.test.tsx"
           --exclude "packages/tiptap/tests/browser/**/*.test.ts"
           --exclude "packages/three/tests/browser/**/*.test.ts"
           --exclude "$ASTRO_E2E_SPEC"
-
-      - name: Run react-resizable-panels pristine upstream suite
-        if: ${{ matrix.shard == '1/4' }}
-        run: pnpm --filter @octanejs/react-resizable-panels test:upstream
 
   react_parity_checks:
     name: React parity checks
@@ -490,6 +483,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
+
+      # Browser parity lanes need Chromium. Install through the shared website
+      # Playwright dependency so the workflow stays binding-package-agnostic.
+      - name: Install Playwright Chromium
+        run: pnpm --filter website exec playwright install --with-deps chromium
 
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
@@ -650,13 +648,6 @@ jobs:
 
       - name: Run ${{ matrix.lane }} integration tests
         run: pnpm vitest run ${{ matrix.specs }} --maxWorkers=1
-
-      - name: Run declared React parity browser lanes
-        if: ${{ matrix.lane == 'browser' }}
-        run: >-
-          node scripts/react-parity/harness.mjs run
-          --manifest packages/react-resizable-panels/audit/react-parity.json
-          --lane react-resizable-panels-browser
 
       - name: Run Bun compiler-preload integration test
         if: ${{ matrix.bun }}

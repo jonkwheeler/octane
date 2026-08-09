@@ -96,15 +96,14 @@ function stepScript(workflowSource, stepName) {
 }
 
 describe('CI workflow aggregation', () => {
-	test('defers browser parity execution only to the Chromium-backed heavy lane', () => {
-		assert.match(jobSource('lint_checks'), /pnpm react-parity:validate/);
+	test('keeps React parity browser lanes on the generic parity job', () => {
+		const parity = jobSource('react_parity_checks');
+		assert.match(parity, /pnpm --filter website exec playwright install --with-deps chromium/);
+		assert.match(parity, /pnpm react-parity:check/);
+		assert.doesNotMatch(workflow, /react-resizable-panels/);
 		const heavy = jobSource('heavy_integration');
 		assert.match(heavy, /lane: browser[\s\S]*chromium: true/);
-		assert.match(heavy, /--lane react-resizable-panels-browser/);
-		assert.doesNotMatch(
-			heavy,
-			/specs:[\s\S]*packages\/react-resizable-panels\/tests\/browser[\s\S]*- lane: astro/,
-		);
+		assert.doesNotMatch(heavy, /harness\.mjs run/);
 	});
 
 	test('runs only required-check reporters for draft pull requests', () => {
@@ -243,8 +242,22 @@ describe('CI workflow aggregation', () => {
 			'hook-form',
 			'hook-form-differential',
 			'hook-form-server',
+			'react-resizable-panels-pristine',
+			'react-resizable-panels',
+			'react-resizable-panels-differential',
+			'react-resizable-panels-browser',
+			'react-resizable-panels-server',
 		]) {
 			assert.equal(baseProjects.get(project).testExecution.group, 'react-parity');
+		}
+		for (const project of [
+			'react-resizable-panels-pristine',
+			'react-resizable-panels',
+			'react-resizable-panels-differential',
+			'react-resizable-panels-browser',
+			'react-resizable-panels-server',
+		]) {
+			assert.equal(shardedProjects.has(project), false);
 		}
 		for (const project of ['hook-form', 'hook-form-server']) {
 			assert.equal(baseProjects.get(project).test.maxWorkers, undefined);
