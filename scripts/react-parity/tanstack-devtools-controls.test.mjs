@@ -4,6 +4,7 @@ import { relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { verifyLaneCollectedTests } from './harness-lib.mjs';
+import { verifyTypeInventories } from './tanstack-devtools-types-lib.mjs';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const manifest = JSON.parse(
@@ -50,4 +51,26 @@ test('tanstack-devtools differential lane rejects a renamed declared case', () =
 		() => verifyLaneCollectedTests(lane, collected, root),
 		/fullName must match exactly one collected Vitest test/,
 	);
+});
+
+test('tanstack-devtools records present upstream type evidence with paired lanes', () => {
+	assert.equal(manifest.upstreamSuites.types, 'present');
+	for (const id of ['tanstack-devtools-pristine-types', 'tanstack-devtools-adapted-types']) {
+		const lane = manifest.lanes.find((entry) => entry.id === id);
+		assert.equal(lane?.oracle, 'required');
+		assert.equal(lane?.evidenceOrigin, 'upstream-suite');
+		assert.equal(lane?.execution?.kind, 'typescript');
+	}
+	assert.equal(
+		manifest.lanes.find((entry) => entry.id === 'tanstack-devtools-pristine-types').execution
+			.compiler,
+		'tsc',
+	);
+	assert.equal(
+		manifest.lanes.find((entry) => entry.id === 'tanstack-devtools-adapted-types').execution
+			.compiler,
+		'tsrx-tsc',
+	);
+	const inventories = verifyTypeInventories(root);
+	assert.equal(inventories.pairs, 2);
 });

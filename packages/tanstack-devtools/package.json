@@ -40,9 +40,11 @@
   },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
-    "@testing-library/jest-dom": "catalog:default",
     "@tanstack/react-devtools": "0.10.7",
+    "@testing-library/jest-dom": "catalog:default",
     "@tsrx/react": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",

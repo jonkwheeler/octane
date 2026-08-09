@@ -1,0 +1,12 @@
+[
+  {
+    "path": "index.ts",
+    "sha256": "a2ad511ab5800ba932db010571708a9a7108f9c7faed6427231149a3295841b7",
+    "assertionGroups": []
+  },
+  {
+    "path": "devtools.tsrx",
+    "sha256": "1b6c6874866661a5f0bcdf792d2fe20083a5b0d00c2fdae2b09739e7ec831487",
+    "assertionGroups": []
+  }
+]

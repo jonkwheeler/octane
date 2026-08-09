@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "upstreamRoot": "packages/tanstack-devtools/upstream/package/src",
+  "adaptedRoot": "packages/tanstack-devtools/src",
+  "inventories": {
+    "upstream": "packages/tanstack-devtools/audit/upstream-types.json",
+    "adapted": "packages/tanstack-devtools/audit/adapted-types.json"
+  },
+  "lanes": {
+    "pristine": {
+      "compiler": "tsc",
+      "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json",
+      "sourcePolicy": "byte-exact pinned upstream package source compiled with React types"
+    },
+    "adapted": {
+      "compiler": "tsrx-tsc",
+      "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.adapted.json",
+      "sourcePolicy": "one-for-one adapted adapter source after permitted transformations"
+    }
+  },
+  "permittedTransformations": [
+    {
+      "kind": "file-extension",
+      "rule": "devtools.tsx becomes devtools.tsrx; the Octane declaration companion remains outside the one-for-one inventory"
+    },
+    {
+      "kind": "import-style",
+      "rule": "React JSX/hooks/portal imports become Octane equivalents; createPortal becomes DevtoolsPortal"
+    },
+    {
+      "kind": "type-rename",
+      "rule": "TanStackDevtoolsReactPlugin/Init become TanStackDevtoolsOctanePlugin/Init"
+    }
+  ],
+  "divergences": [
+    {
+      "id": "octane-type-names",
+      "kind": "types",
+      "rule": "Public adapter types keep framework-prefixed names on each side"
+    },
+    {
+      "id": "extra-core-reexports",
+      "kind": "api",
+      "rule": "Octane index.ts additionally re-exports framework-neutral @tanstack/devtools values and types"
+    }
+  ]
+}

@@ -13,8 +13,12 @@
 
 The byte-exact tagged adapter directory and root license are vendored under `upstream/`.
 `SHA256SUMS` authenticates all ten files, including both source files. The tagged package contains
-no runtime tests, fixtures, or snapshots; its `test:lib` command explicitly allows no tests. The
-type command only compiles package source, so type evidence is insufficient.
+no runtime tests, fixtures, or snapshots; its `test:lib` command explicitly allows no tests.
+
+Upstream `test:types` runs `tsc` over the complete React adapter source with the package config.
+There are no dedicated `expectType` fixtures, which limits assertion strength, but the suite is
+still executable type evidence. Required pristine (`tsc` + React types) and one-for-one adapted
+(`tsrx-tsc`) lanes record that evidence in `audit/react-parity.json`.
 
 The package publishes one runtime entrypoint and a metadata-only package entrypoint. The published
 adapter resolves `@tanstack/devtools@0.12.4`; the current Octane catalog resolves `0.12.5`. That

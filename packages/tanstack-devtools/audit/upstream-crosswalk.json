@@ -1,8 +1,15 @@
 {
   "schemaVersion": 1,
   "publicEntrypoints": [
-    { "path": ".", "octanePath": ".", "disposition": "surface-present-unverified" },
-    { "path": "./package.json", "disposition": "metadata-only" }
+    {
+      "path": ".",
+      "octanePath": ".",
+      "disposition": "surface-present-unverified"
+    },
+    {
+      "path": "./package.json",
+      "disposition": "metadata-only"
+    }
   ],
   "exports": [
     {
@@ -56,7 +63,7 @@
   },
   "upstreamTests": [],
   "typeSuite": {
-    "disposition": "insufficient",
-    "reason": "The upstream type script compiles package source without dedicated type assertions."
+    "disposition": "present",
+    "reason": "Upstream test:types runs tsc over the complete React adapter source with the package config; dedicated expectType fixtures are absent, so strength is limited but the suite is executable."
   }
 }
