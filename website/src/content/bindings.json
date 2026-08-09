@@ -40,6 +40,7 @@
     "title": "UI and interaction",
     "description": "Primitives, browser hooks, positioning, motion, drag and drop, toasts, command menus, icons, keyboard shortcuts, and event pacing.",
     "packages": [
+      "@octanejs/animejs",
       "@octanejs/aria",
       "@octanejs/base-ui",
       "@octanejs/cmdk",
