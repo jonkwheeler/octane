@@ -3388,8 +3388,32 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
+					name: 'react-popper-pristine',
+					include: ['packages/react-popper/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+				},
+			},
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/react-popper/tests/upstream/**/*.test.ts',
+						'packages/react-popper/tests/upstream/**/*.test.tsx',
+					],
+				},
+				test: {
 					name: 'react-popper',
-					include: ['packages/react-popper/tests/runtime/**/*.test.ts'],
+					include: [
+						'packages/react-popper/tests/runtime/**/*.test.ts',
+						'packages/react-popper/tests/upstream/**/*.test.ts',
+						'packages/react-popper/tests/upstream/**/*.test.tsx',
+					],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-popper/tests/upstream-original.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -3404,7 +3428,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-popper-hydration',
 					include: ['packages/react-popper/tests/hydration/**/*.test.ts'],
@@ -3441,7 +3464,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-popper-ssr',
 					include: ['packages/react-popper/tests/ssr/**/*.test.ts'],
@@ -3463,7 +3485,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-popper-browser',
 					include: ['packages/react-popper/tests/browser/**/*.test.ts'],

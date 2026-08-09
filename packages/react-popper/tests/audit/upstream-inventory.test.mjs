@@ -7,7 +7,7 @@ const clone = (value) => structuredClone(value);
 test('the pinned upstream inventory validates', async () => {
 	const inventory = await buildInventory();
 	compareInventories(inventory, clone(inventory));
-	assert.equal(inventory.artifacts.length, 52);
+	assert.equal(inventory.artifacts.length, 54);
 	assert.equal(inventory.upstreamCases.length, 20);
 });
 

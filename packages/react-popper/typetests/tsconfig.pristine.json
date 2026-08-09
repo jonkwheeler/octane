@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "strict": true,
+    "target": "es6",
+    "module": "es2015",
+    "jsx": "react",
     "noEmit": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ES2022",
-    "esModuleInterop": true,
-    "skipLibCheck": false,
-    "types": ["react", "react-dom"]
+    "strict": true,
+    "moduleResolution": "node",
+    "typeRoots": ["../node_modules/@types"],
+    "types": ["react"]
   },
-  "include": ["pristine.test.tsx", "../upstream/npm/typings/**/*.d.ts"]
+  "files": [
+    "../upstream/tag/typings/tests/main-test.tsx",
+    "../upstream/tag/typings/tests/svg-test.tsx"
+  ]
 }

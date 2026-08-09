@@ -26,20 +26,19 @@
     },
     "tests": {
       "roots": [
-        "packages/react-popper/tests",
-        "packages/react-popper/typetests"
+        "packages/react-popper/tests/upstream"
       ],
       "include": [
         "\\.test\\.(?:ts|tsx)$"
       ],
       "exclude": [
-        "/audit/"
+        "/tests/upstream-original\\.test\\.ts$"
       ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 18,
+    "uniqueIdentities": 18,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -50,28 +49,69 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "cce7b29f9435b3f2181ee4ba1ec86418c31e0715c2793f27746dc3d8b146f2fe"
+      "lockfileSha256": "ed493ea256ecb9b4f82435e5ce9545cac2cfbe3d002fb93eb7a2fcd6a4835b7e"
     }
   },
   "lanes": [
     {
-      "id": "react-popper-runtime",
+      "id": "react-popper-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-popper-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-popper 2.3.0 Jest suite against the vendored React binding and checks every passed identity and snapshot against the committed inventory.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/react-popper/tests/upstream-jest.config.cjs",
+        "root": "packages/react-popper/upstream/tag",
+        "inventory": "packages/react-popper/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-popper/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "81a887e377b314b2d62fa6b80cbaf16f55b5cc5279421ddf023c517200682fe9"
+        },
+        {
+          "path": "packages/react-popper/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "d9a811cc1ae0bec630b789db6995596e28a5f4a4f59f93e93dda7c9c0755341d"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
+        },
+        {
+          "path": "packages/react-popper/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "53fb512e6821d7c8c2d77242dc5fb86b5e17fb8455e9d8646c8e9930d7421155"
+        },
+        {
+          "path": "packages/react-popper/tests/upstream-jest.setup.cjs",
+          "role": "support",
+          "sha256": "bbfe7c0d222dd12306db3b69b0da9c8e2d618d48bfc27e1b81602a8fa249f602"
+        }
+      ]
+    },
+    {
+      "id": "react-popper-adapted-full-suite",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-popper",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the one-for-one adapted Octane counterparts of the 18 upstream Jest identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-popper/audit/adapted-runtime.json"
+      },
       "files": [
         {
-          "path": "packages/react-popper/tests/runtime/public.test.ts",
-          "role": "test",
-          "sha256": "458acc09cc696c60d5b0746406241cb31d4c7b98c40bb74e61252ce7b4ab0cd0",
-          "cases": [
-            {
-              "id": "adapted:react-popper-runtime",
-              "testName": "exports the exact upstream runtime surface",
-              "fullName": "@octanejs/react-popper public contract exports the exact upstream runtime surface"
-            }
-          ]
+          "path": "packages/react-popper/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "928997cefef92004a08758db111fbd7d82b5b86067ed9e1e77981ff20c61f929"
         }
       ]
     },
@@ -98,80 +138,13 @@
       ]
     },
     {
-      "id": "react-popper-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-popper-ssr",
-      "files": [
-        {
-          "path": "packages/react-popper/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "d53c848fb4f2777379caba17d2cea2a41b4d03cab2c3c2ec9e3cf669e0bae174",
-          "cases": [
-            {
-              "id": "adapted:react-popper-ssr",
-              "testName": "renders deterministic initial placement and styles without browser globals",
-              "fullName": "@octanejs/react-popper server rendering renders deterministic initial placement and styles without browser globals"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-popper-hydration",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-popper-hydration",
-      "files": [
-        {
-          "path": "packages/react-popper/tests/hydration/hydration.test.ts",
-          "role": "test",
-          "sha256": "0d4792064ee62d94ce10944d447097e893ca761c7025bfac847fc74c0d51e4aa",
-          "cases": [
-            {
-              "id": "adapted:react-popper-hydration",
-              "testName": "adopts server nodes and activates Popper/ref wiring after hydration",
-              "fullName": "@octanejs/react-popper hydration adopts server nodes and activates Popper/ref wiring after hydration"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-popper-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-popper-browser",
-      "files": [
-        {
-          "path": "packages/react-popper/tests/browser/parity.browser.test.ts",
-          "role": "test",
-          "sha256": "0805dcee7693bf18457dd2424cb892489d7036627af3203ffbd506ed302756d7",
-          "cases": [
-            {
-              "id": "browser:react-popper-chromium",
-              "testName": "chromium: positions, updates, wires arrows/virtual refs, and cleans up",
-              "fullName": "@octanejs/react-popper real-browser parity chromium: positions, updates, wires arrows/virtual refs, and cleans up"
-            },
-            {
-              "id": "browser:react-popper-firefox",
-              "testName": "firefox: positions, updates, wires arrows/virtual refs, and cleans up",
-              "fullName": "@octanejs/react-popper real-browser parity firefox: positions, updates, wires arrows/virtual refs, and cleans up"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "react-popper-pristine-types",
       "type": "pristine-types",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-popper-pristine-types",
       "evidenceOrigin": "upstream-suite",
+      "notes": "Typechecks the two upstream typings programs unchanged.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -179,16 +152,33 @@
       },
       "files": [
         {
-          "path": "packages/react-popper/typetests/pristine.test.tsx",
+          "path": "packages/react-popper/upstream/tag/typings/tests/main-test.tsx",
           "role": "test",
-          "sha256": "2f13c01666ab0c97276f6c342a78c7f5b7104f244842409d99d37e67215cae98",
+          "sha256": "01a7c18182a94ababe7be342aa4f48dde561d48679e82847186860b1a51ac684",
           "cases": [
             {
-              "id": "types:react-popper-pristine",
-              "testName": "published declaration consumer",
-              "fullName": "react-popper 2.3.0 published declaration consumer"
+              "id": "types:react-popper-pristine-main",
+              "testName": "upstream main-test.tsx",
+              "fullName": "react-popper 2.3.0 typings/tests/main-test.tsx"
             }
           ]
+        },
+        {
+          "path": "packages/react-popper/upstream/tag/typings/tests/svg-test.tsx",
+          "role": "test",
+          "sha256": "0e84b6ac8cd2372d87288d4cebd5fee6c466077e63b6a095e8cad03a3fd0d68e",
+          "cases": [
+            {
+              "id": "types:react-popper-pristine-svg",
+              "testName": "upstream svg-test.tsx",
+              "fullName": "react-popper 2.3.0 typings/tests/svg-test.tsx"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-popper/typetests/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "11f66d3ee6cd77bd17b1f2ec9bb6299d97b9f8e79c9ebe118bb1994e3d73bc21"
         }
       ]
     },
@@ -198,7 +188,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-popper-adapted-types",
-      "evidenceOrigin": "repo-authored",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Typechecks one-for-one Octane adaptations of the upstream typings programs plus the public API contract.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -206,16 +197,45 @@
       },
       "files": [
         {
+          "path": "packages/react-popper/typetests/main-test.tsx",
+          "role": "test",
+          "sha256": "703c86fee41ab5a01c2a788e47546fb1c0fbf8e99c40856be1ef1e6c27b5b781",
+          "cases": [
+            {
+              "id": "types:react-popper-adapted-main",
+              "testName": "adapted main-test.tsx",
+              "fullName": "@octanejs/react-popper typetests/main-test.tsx"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-popper/typetests/svg-test.tsx",
+          "role": "test",
+          "sha256": "894f5b67ff5ac1f7392f22f4c024c40c272878992ddb79aaedde5a2d8dcd7019",
+          "cases": [
+            {
+              "id": "types:react-popper-adapted-svg",
+              "testName": "adapted svg-test.tsx",
+              "fullName": "@octanejs/react-popper typetests/svg-test.tsx"
+            }
+          ]
+        },
+        {
           "path": "packages/react-popper/typetests/public-api.test.ts",
           "role": "test",
           "sha256": "d637cc6762e73d9460b0d1e5c0d7a390cb74cbaed0cb037c55ef85b981fb63e4",
           "cases": [
             {
-              "id": "types:react-popper-adapted",
+              "id": "types:react-popper-adapted-public",
               "testName": "complete Octane public type contract",
               "fullName": "@octanejs/react-popper complete Octane public type contract"
             }
           ]
+        },
+        {
+          "path": "packages/react-popper/typetests/tsconfig.adapted.json",
+          "role": "support",
+          "sha256": "7f222cf7d4efd497aa67aba9a1610e81e5ff25acdaf68583b61f8639c04624c2"
         }
       ]
     }
