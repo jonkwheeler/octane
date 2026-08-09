@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/shadcn/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/shadcn/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/shadcn/tests"],
-      "include": ["\\.test\\.tsx?$"],
+      "roots": [
+        "packages/shadcn/tests"
+      ],
+      "include": [
+        "\\.test\\.tsx?$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "5316200f0e89da100ee313c7c7372eeac2bd44ad60fcfb304b1f7996a07dede1"
+      "lockfileSha256": "681c5a29d990eeaa9cb6439f43ff0d48857d3c304b9fd97f88ff0235183bbf6a"
     }
   },
   "lanes": [
@@ -168,7 +176,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d664c94f27d7224c9e2e2983d2e233dcbcd9e5d0a7223ce716aa6f06b43c1a92"
+          "sha256": "f4a137d1754c99c74eedebedd68d3c7aa8b934fdf6e7ab729807ff2c2aa9d8bc"
         }
       ]
     }
