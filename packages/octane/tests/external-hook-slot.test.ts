@@ -651,6 +651,7 @@ describe('manifest-declared manual hook slots', () => {
 			.sort();
 		expect(declared).toEqual([
 			'alien-signals',
+			'animejs',
 			'aria',
 			'base-ui',
 			'devtools',

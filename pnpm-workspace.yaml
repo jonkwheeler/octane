@@ -156,6 +156,7 @@ catalogs:
     '@opentelemetry/api': 1.9.0
     alien-signals: 1.0.4
     '@apollo/client': 4.2.6
+    animejs: 4.5.0
     dexie: 4.4.4
     fake-indexeddb: 6.2.5
     viem: 2.55.10
