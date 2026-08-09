@@ -1574,9 +1574,8 @@ export default defineConfig({
 				},
 			},
 			{
-				// Octane-only conformance stays in ordinary shards. The parity
-				// manifest is recorded-unverified, so react-parity:check would not
-				// execute these cases if the whole project were react-parity-owned.
+				// Octane-only conformance stays in ordinary shards; differential
+				// parity lives in the react-parity-owned project below.
 				test: {
 					name: 'redux',
 					include: ['packages/redux/tests/**/*.test.ts'],
@@ -1601,9 +1600,10 @@ export default defineConfig({
 				},
 			},
 			{
-				// Keep this project in ordinary shards while the manifest stays
-				// recorded-unverified: react-parity:check only validates unverified
-				// manifests and would otherwise never execute this required lane.
+				// Parity-owned: packages/redux/audit/react-parity.json requires this
+				// project as the redux-runtime-differential lane. Ordinary Octane-only
+				// redux tests stay in the separate `redux` project above.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'redux-differential',
 					include: ['packages/redux/tests/differential/**/*.test.ts'],
