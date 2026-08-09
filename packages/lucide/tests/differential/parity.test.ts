@@ -32,8 +32,16 @@ describe('differential: @octanejs/lucide vs lucide-react@1.24.0', () => {
 			Date.now() < deadline
 		) {
 			await differential.observe('wait for loaded icon', async () => {
-				await new Promise((resolvePromise) => setTimeout(resolvePromise, 10));
+				await new Promise(function (resolvePromise) {
+					setTimeout(resolvePromise, 10);
+				});
 			});
+		}
+		if (
+			differential.octane.findAll('svg').length === 0 ||
+			differential.react.findAll('svg').length === 0
+		) {
+			throw new Error('Timed out waiting for dynamic icon SVG in both runtimes');
 		}
 		await differential.step('loaded', () => {});
 		expect(differential.octane.find('svg').classList.contains('lucide')).toBe(true);
