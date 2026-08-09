@@ -20,8 +20,10 @@ export type OrbSize = 64 | 20;
 
 export type OrbTheme = 'auto' | 'dark' | 'light';
 
-export interface ThinkingOrbProps
-	extends Omit<Octane.JSX.IntrinsicElements['canvas'], 'style' | 'ref'> {
+export interface ThinkingOrbProps extends Omit<
+	Octane.JSX.IntrinsicElements['canvas'],
+	'style' | 'ref'
+> {
 	state?: OrbState;
 	size?: OrbSize;
 	theme?: OrbTheme;

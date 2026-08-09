@@ -17,16 +17,17 @@
     "title": "AI, data, and routing",
     "description": "Streaming AI, GraphQL, server state, live IndexedDB data, type-safe routes, and React Router-style APIs.",
     "packages": [
-      "@octanejs/tanstack-ai",
       "@octanejs/apollo-client",
-      "@octanejs/livestore",
       "@octanejs/dexie",
+      "@octanejs/inertia",
+      "@octanejs/livestore",
+      "@octanejs/nuqs",
+      "@octanejs/remix-router",
+      "@octanejs/tanstack-ai",
       "@octanejs/tanstack-query",
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
-      "@octanejs/remix-router",
-      "@octanejs/inertia",
-      "@octanejs/nuqs"
+      "@octanejs/thinking-orbs"
     ]
   },
   {

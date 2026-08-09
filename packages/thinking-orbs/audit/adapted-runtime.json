@@ -1,27 +1,23 @@
 {
-	"schemaVersion": 1,
-	"project": "thinking-orbs",
-	"roots": [
-		"packages/thinking-orbs/tests/conformance"
-	],
-	"files": [
-		"packages/thinking-orbs/tests/conformance/render.test.ts"
-	],
-	"tests": [
-		{
-			"id": "runtime:b0c57bc83ab7990c",
-			"file": "packages/thinking-orbs/tests/conformance/render.test.ts",
-			"fullName": "@octanejs/thinking-orbs — render contract invokes a callback consumer ref once on mount and once on unmount"
-		},
-		{
-			"id": "runtime:dc66a21cd2f60801",
-			"file": "packages/thinking-orbs/tests/conformance/render.test.ts",
-			"fullName": "@octanejs/thinking-orbs — render contract moves an object consumer ref when the prop swaps after mount"
-		},
-		{
-			"id": "runtime:0ea2de0026d82dce",
-			"file": "packages/thinking-orbs/tests/conformance/render.test.ts",
-			"fullName": "@octanejs/thinking-orbs — render contract renders an accessible canvas for a shipped state preset"
-		}
-	]
+  "schemaVersion": 1,
+  "project": "thinking-orbs",
+  "roots": ["packages/thinking-orbs/tests/conformance"],
+  "files": ["packages/thinking-orbs/tests/conformance/render.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:b0c57bc83ab7990c",
+      "file": "packages/thinking-orbs/tests/conformance/render.test.ts",
+      "fullName": "@octanejs/thinking-orbs — render contract invokes a callback consumer ref once on mount and once on unmount"
+    },
+    {
+      "id": "runtime:dc66a21cd2f60801",
+      "file": "packages/thinking-orbs/tests/conformance/render.test.ts",
+      "fullName": "@octanejs/thinking-orbs — render contract moves an object consumer ref when the prop swaps after mount"
+    },
+    {
+      "id": "runtime:0ea2de0026d82dce",
+      "file": "packages/thinking-orbs/tests/conformance/render.test.ts",
+      "fullName": "@octanejs/thinking-orbs — render contract renders an accessible canvas for a shipped state preset"
+    }
+  ]
 }

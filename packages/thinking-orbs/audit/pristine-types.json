@@ -1,9 +1,7 @@
 [
-	{
-		"path": "public-api.test-d.ts",
-		"sha256": "02a723dc6e84a32f62d2b092e8ac7e31370d98dd367a481eebeb116b19f8c585",
-		"assertionGroups": [
-			"public-api"
-		]
-	}
+  {
+    "path": "public-api.test-d.ts",
+    "sha256": "02a723dc6e84a32f62d2b092e8ac7e31370d98dd367a481eebeb116b19f8c585",
+    "assertionGroups": ["public-api"]
+  }
 ]

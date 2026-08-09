@@ -11,14 +11,14 @@ import { drawRibbon } from './ribbon';
 import { drawWeb } from './web';
 
 export const MODE_DRAWS: Record<ModeKey, ModeDraw> = {
-  orbits: drawOrbits,
-  globe: drawGlobe,
-  rubik: drawRubik,
-  wave: drawWave,
-  web: drawWeb,
-  braid: drawBraid,
-  ribbon: drawRibbon,
-  // ring shares ribbon's painter — the `faceOn` profile flag switches it
-  ring: drawRibbon,
-  morph: drawMorph
+	orbits: drawOrbits,
+	globe: drawGlobe,
+	rubik: drawRubik,
+	wave: drawWave,
+	web: drawWeb,
+	braid: drawBraid,
+	ribbon: drawRibbon,
+	// ring shares ribbon's painter — the `faceOn` profile flag switches it
+	ring: drawRibbon,
+	morph: drawMorph,
 };

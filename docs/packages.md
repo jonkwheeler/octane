@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**73 publishable package(s), including 59 framework binding(s) and 3 framework integration(s).**
+**74 publishable package(s), including 60 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -75,6 +75,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/tanstack-virtual` | [`packages/tanstack-virtual`](../packages/tanstack-virtual) | framework binding | `0.1.29` | 1 |
 | `@octanejs/tauri` | [`packages/tauri`](../packages/tauri) | framework binding | `0.0.15` | 1 |
 | `@octanejs/testing-library` | [`packages/testing-library`](../packages/testing-library) | framework binding | `0.1.29` | 2 |
+| `@octanejs/thinking-orbs` | [`packages/thinking-orbs`](../packages/thinking-orbs) | framework binding | `0.1.0` | 1 |
 | `@octanejs/three` | [`packages/three`](../packages/three) | framework binding | `0.1.25` | 7 |
 | `@octanejs/tiptap` | [`packages/tiptap`](../packages/tiptap) | framework binding | `0.0.26` | 2 |
 | `@octanejs/usehooks-ts` | [`packages/usehooks-ts`](../packages/usehooks-ts) | framework binding | `0.0.13` | 1 |

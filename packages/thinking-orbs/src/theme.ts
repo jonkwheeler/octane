@@ -74,7 +74,9 @@ export function useResolvedDark(theme: OrbTheme, hostRef: RefObject<Element | nu
 }
 
 function initialReducedMotion(): boolean {
-	return typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+	return (
+		typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+	);
 }
 
 export function useReducedMotion(): boolean {

@@ -1,198 +1,198 @@
 {
-	"$schema": "../../hook-form/audit/react-parity.schema.json",
-	"schemaVersion": 1,
-	"provenance": {
-		"repo": "https://github.com/Jakubantalik/thinking-orbs.git",
-		"version": "0.2.0",
-		"commit": "8157b726c35712acba57f5d72149c2d33b5f0fd6",
-		"sourceRoot": "src",
-		"testRoot": "src",
-		"license": "MIT",
-		"integrity": "sha256:017ae281d5a6daa5474d37984541722a4a9b8f37da14ff10c01e47e5cfdaf8bb",
-		"verification": "verified"
-	},
-	"upstreamSuites": {
-		"runtime": "absent",
-		"types": "absent"
-	},
-	"adaptedRoots": {
-		"source": {
-			"roots": ["packages/thinking-orbs/src"],
-			"include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-			"exclude": []
-		},
-		"tests": {
-			"roots": ["packages/thinking-orbs/tests/conformance"],
-			"include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-			"exclude": ["exports\\.test\\.ts$"]
-		}
-	},
-	"adaptedRuntimeSummary": {
-		"inventoryEntries": 3,
-		"uniqueIdentities": 3,
-		"duplicateEntriesWithinLanes": 0,
-		"identitiesSharedAcrossLanes": 0
-	},
-	"environments": {
-		"workspace-node": {
-			"node": ">=22",
-			"platform": "any",
-			"arch": "any",
-			"packageManager": "pnpm@11.15.1",
-			"lockfile": "pnpm-lock.yaml",
-			"lockfileSha256": "70e393671ce25b149a01b8b6ee738adb35bf3de078d79ea6ad9d7bbe50358d2d"
-		}
-	},
-	"lanes": [
-		{
-			"id": "thinking-orbs-adapted-full-suite",
-			"type": "adapted-octane",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "thinking-orbs",
-			"evidenceOrigin": "repo-authored",
-			"notes": "Repo-authored Octane render-contract suite covering accessible canvas mount and consumer ref ownership.",
-			"execution": {
-				"kind": "vitest-full",
-				"inventory": "packages/thinking-orbs/audit/adapted-runtime.json"
-			},
-			"files": [
-				{
-					"path": "packages/thinking-orbs/audit/adapted-runtime.json",
-					"role": "support",
-					"sha256": "deb80b7661c8efeaa11c886bb42d400a730fd0063e4d173cae300cbd9549d7a7"
-				},
-				{
-					"path": "packages/thinking-orbs/tests/conformance/render.test.ts",
-					"role": "support",
-					"sha256": "4846e7e5ca0bd6bdd5b7ab604552c5d443ae30b77af7755232cb00568020bd2a"
-				},
-				{
-					"path": "vitest.config.js",
-					"role": "support",
-					"sha256": "04ca00c22abf91c73fcaad94e17aa751f72dcf8bb6a67181304bd92d136e9e33"
-				}
-			]
-		},
-		{
-			"id": "thinking-orbs-differential",
-			"type": "differential",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "thinking-orbs-differential",
-			"evidenceOrigin": "repo-authored",
-			"notes": "The same fixture runs through @octanejs/thinking-orbs and published thinking-orbs@0.2.0 via the shared differential rig.",
-			"files": [
-				{
-					"path": "packages/thinking-orbs/tests/differential/parity.test.ts",
-					"role": "test",
-					"sha256": "407f571570906701ea8a2aae9f5ed6162f001989a3e119db9cf9184eeec82b2c",
-					"cases": [
-						{
-							"id": "differential:mount-presets",
-							"testName": "matches mount markup for avatar and inline presets",
-							"fullName": "differential: @octanejs/thinking-orbs vs thinking-orbs@0.2.0 matches mount markup for avatar and inline presets"
-						}
-					]
-				},
-				{
-					"path": "packages/thinking-orbs/tests/_fixtures/thinking-orbs-diff.tsrx",
-					"role": "support",
-					"sha256": "729e4b6777143f3b33e64ab3def101ed0591fada8ae4e8a01c5f2dd519cb1fa6"
-				},
-				{
-					"path": "packages/octane/tests/differential/_rig.ts",
-					"role": "support",
-					"sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-				},
-				{
-					"path": "packages/thinking-orbs/tests/differential/_setup.ts",
-					"role": "support",
-					"sha256": "002f8482b1db892bad1f69627f6702077ccf3db4c0a72d67c56469caaafb3652"
-				},
-				{
-					"path": "vitest.config.js",
-					"role": "support",
-					"sha256": "04ca00c22abf91c73fcaad94e17aa751f72dcf8bb6a67181304bd92d136e9e33"
-				}
-			]
-		},
-		{
-			"id": "thinking-orbs-pristine-types",
-			"type": "pristine-types",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "thinking-orbs-pristine-types",
-			"evidenceOrigin": "repo-authored",
-			"notes": "Repo-authored React declaration probes against published thinking-orbs@0.2.0, including negative controls.",
-			"execution": {
-				"kind": "typescript",
-				"compiler": "tsc",
-				"project": "packages/thinking-orbs/audit/type-probes/tsconfig.pristine.json"
-			},
-			"files": [
-				{
-					"path": "packages/thinking-orbs/audit/pristine-types.json",
-					"role": "test",
-					"sha256": "c4266941e80166525a931e89fbc7684dc209d90f950c83a4031dd8b1f5494e76",
-					"cases": [
-						{
-							"id": "types:thinking-orbs-pristine",
-							"testName": "pinned React declaration probes",
-							"fullName": "pinned React declaration probes"
-						}
-					]
-				},
-				{
-					"path": "packages/thinking-orbs/audit/type-probes/public-api.test-d.ts",
-					"role": "support",
-					"sha256": "02a723dc6e84a32f62d2b092e8ac7e31370d98dd367a481eebeb116b19f8c585"
-				},
-				{
-					"path": "packages/thinking-orbs/audit/type-probes/tsconfig.pristine.json",
-					"role": "support",
-					"sha256": "8a24cf10a0ac2e9a8abbd78c7915826cb5a028b2c37dddd374d6abbb5d05b0a2"
-				}
-			]
-		},
-		{
-			"id": "thinking-orbs-adapted-types",
-			"type": "adapted-types",
-			"oracle": "required",
-			"environment": "workspace-node",
-			"project": "thinking-orbs-adapted-types",
-			"evidenceOrigin": "repo-authored",
-			"notes": "Octane public type probes with matching negative controls on the @octanejs/thinking-orbs surface.",
-			"execution": {
-				"kind": "typescript",
-				"compiler": "tsrx-tsc",
-				"project": "packages/thinking-orbs/typetests/tsconfig.json"
-			},
-			"files": [
-				{
-					"path": "packages/thinking-orbs/audit/adapted-types.json",
-					"role": "test",
-					"sha256": "12fc6793494693196cc7a03e3a108b6d47dac329bb1bb6defd2d067ad9839b74",
-					"cases": [
-						{
-							"id": "types:thinking-orbs-adapted",
-							"testName": "adapted Octane declaration probes",
-							"fullName": "adapted Octane declaration probes"
-						}
-					]
-				},
-				{
-					"path": "packages/thinking-orbs/typetests/public-api.test-d.ts",
-					"role": "support",
-					"sha256": "70f1c1720d4dcc9380c123a0ccb61a45d508834accc64f39a0aa6186aba69659"
-				},
-				{
-					"path": "packages/thinking-orbs/typetests/tsconfig.json",
-					"role": "support",
-					"sha256": "a225649dc81f5bbcffc1f4f959b9e6ecb80f451b11bc1fff44bf90d1274eecfe"
-				}
-			]
-		}
-	],
-	"divergences": []
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/Jakubantalik/thinking-orbs.git",
+    "version": "0.2.0",
+    "commit": "8157b726c35712acba57f5d72149c2d33b5f0fd6",
+    "sourceRoot": "src",
+    "testRoot": "src",
+    "license": "MIT",
+    "integrity": "sha256:017ae281d5a6daa5474d37984541722a4a9b8f37da14ff10c01e47e5cfdaf8bb",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/thinking-orbs/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/thinking-orbs/tests/conformance"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": ["exports\\.test\\.ts$"]
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 3,
+    "uniqueIdentities": 3,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "7850356bb6c6b9a0067dc8b8f0065eecf5c2d98e375245bd2b5ad16bde754cf3"
+    }
+  },
+  "lanes": [
+    {
+      "id": "thinking-orbs-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "thinking-orbs",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored Octane render-contract suite covering accessible canvas mount and consumer ref ownership.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/thinking-orbs/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/thinking-orbs/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "073b342cf04719c9d62a35911aa11fc0469cd298189ec0563d480d79e17bbeed"
+        },
+        {
+          "path": "packages/thinking-orbs/tests/conformance/render.test.ts",
+          "role": "support",
+          "sha256": "4846e7e5ca0bd6bdd5b7ab604552c5d443ae30b77af7755232cb00568020bd2a"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "d8ad25405de18b3db1ad4d451c76f1945a17f5b95e50467e770546b551b3b90e"
+        }
+      ]
+    },
+    {
+      "id": "thinking-orbs-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "thinking-orbs-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same fixture runs through @octanejs/thinking-orbs and published thinking-orbs@0.2.0 via the shared differential rig.",
+      "files": [
+        {
+          "path": "packages/thinking-orbs/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "407f571570906701ea8a2aae9f5ed6162f001989a3e119db9cf9184eeec82b2c",
+          "cases": [
+            {
+              "id": "differential:mount-presets",
+              "testName": "matches mount markup for avatar and inline presets",
+              "fullName": "differential: @octanejs/thinking-orbs vs thinking-orbs@0.2.0 matches mount markup for avatar and inline presets"
+            }
+          ]
+        },
+        {
+          "path": "packages/thinking-orbs/tests/_fixtures/thinking-orbs-diff.tsrx",
+          "role": "support",
+          "sha256": "b6aa25bfd93e38aab1cbdf5bd9cf14335cb6bd693a29e73080032c9c28b53c00"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/thinking-orbs/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "002f8482b1db892bad1f69627f6702077ccf3db4c0a72d67c56469caaafb3652"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "d8ad25405de18b3db1ad4d451c76f1945a17f5b95e50467e770546b551b3b90e"
+        }
+      ]
+    },
+    {
+      "id": "thinking-orbs-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "thinking-orbs-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes against published thinking-orbs@0.2.0, including negative controls.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/thinking-orbs/audit/type-probes/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/thinking-orbs/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "cdb3af93f487aac11051caca40997ea5480b9ff3a68bbc0e6e3720f18d117bd5",
+          "cases": [
+            {
+              "id": "types:thinking-orbs-pristine",
+              "testName": "pinned React declaration probes",
+              "fullName": "pinned React declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/thinking-orbs/audit/type-probes/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "02a723dc6e84a32f62d2b092e8ac7e31370d98dd367a481eebeb116b19f8c585"
+        },
+        {
+          "path": "packages/thinking-orbs/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+        }
+      ]
+    },
+    {
+      "id": "thinking-orbs-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "thinking-orbs-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Octane public type probes with matching negative controls on the @octanejs/thinking-orbs surface.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/thinking-orbs/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/thinking-orbs/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "fc0f8d94cc05fdcc66138fa87db9854308ca2fb5c478978b31f6076381170d54",
+          "cases": [
+            {
+              "id": "types:thinking-orbs-adapted",
+              "testName": "adapted Octane declaration probes",
+              "fullName": "adapted Octane declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/thinking-orbs/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "70f1c1720d4dcc9380c123a0ccb61a45d508834accc64f39a0aa6186aba69659"
+        },
+        {
+          "path": "packages/thinking-orbs/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "a56bde2e3b834b63d682204993315e39af37fb15f7e77462850dd1ee341be69f"
+        }
+      ]
+    }
+  ],
+  "divergences": []
 }
