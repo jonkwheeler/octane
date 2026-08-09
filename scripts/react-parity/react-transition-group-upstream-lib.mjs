@@ -114,6 +114,11 @@ function extractExpectAssertions(body) {
 		let end = close + 1;
 		while (body[end] === '.') {
 			const rest = body.slice(end);
+			const notMatch = rest.match(/^\.not\b/);
+			if (notMatch) {
+				end += notMatch[0].length;
+				continue;
+			}
 			const match = rest.match(/^\.[\w$]+\s*\(/);
 			if (!match) break;
 			const chainOpen = end + match[0].length - 1;
@@ -145,6 +150,304 @@ function fixtureExportsUsed(body, exports) {
 	return exports.filter(function used(name) {
 		return new RegExp(`\\b${name}\\b`).test(body);
 	});
+}
+
+const STATUS_CONSTANTS = {
+	ENTERED: 'entered',
+	ENTERING: 'entering',
+	ENTER: 'enter',
+	EXITED: 'exited',
+	EXITING: 'exiting',
+	EXIT: 'exit',
+	UNMOUNTED: 'unmounted',
+	UNMOUNTING: 'unmounting',
+};
+
+export const PERMITTED_ASSERTION_TRANSFORMATIONS = [
+	{
+		kind: 'matcher',
+		rule: 'Jest .toEqual(x) normalizes to Vitest .toBe(x); trailing commas and whitespace inside literals are ignored.',
+	},
+	{
+		kind: 'dom-access',
+		rule: 'nodeRef.current / firstNodeRef.current / querySelector("#id") / node() normalize to a generic NODE subject; childNodes.length and querySelectorAll(...).toHaveLength(n) both mean childCount n.',
+	},
+	{
+		kind: 'status-constants',
+		rule: 'Upstream ENTERED/ENTERING/EXITED/EXITING/UNMOUNTED template literals fold to their lowercase status strings.',
+	},
+	{
+		kind: 'class-alias',
+		rule: 'CSSTransition "-entering" class tokens alias to "-enter-active" when comparing classContains observations.',
+	},
+	{
+		kind: 'optional-spy',
+		rule: 'console/spy call assertions are optional on the adapted side when the scenario still covers the behavioral observations.',
+	},
+	{
+		kind: 'text-containment',
+		rule: 'Adapted textContent observations may contain the upstream text (or vice versa) after status folding.',
+	},
+	{
+		kind: 'presence',
+		rule: 'Upstream presence/null checks and empty textContent map to adapted id presence/absence or childCount observations.',
+	},
+];
+
+function collapseStrictModeBranch(body) {
+	return body.replace(
+		/React\.useTransition\s*!==\s*undefined\s*\?\s*(\[[^\]]+\])\s*:\s*(\[[^\]]+\])/gs,
+		'$2',
+	);
+}
+
+function foldAssertionSource(source) {
+	let value = source.replace(/\.toEqual\(/g, '.toBe(').replace(/"/g, "'");
+	value = value.replace(/\/\/[^\n]*/g, '');
+	value = value.replace(/\/\*[\s\S]*?\*\//g, '');
+	value = value.replace(/ChildMapping\./g, '');
+	value = value.replace(/view\.container/g, 'container');
+	value = value.replace(/nodeRef\.current/g, 'NODE');
+	value = value.replace(/container\.querySelector\('#[^']+'\)\??/g, 'NODE');
+	value = value.replace(/(first|second)NodeRef\.current/g, 'NODE');
+	value = value.replace(/node\(\)\??/g, 'NODE');
+	value = value.replace(/`([^`]*)`/g, function foldTemplate(_match, inner) {
+		let text = inner;
+		for (const [name, folded] of Object.entries(STATUS_CONSTANTS)) {
+			text = text.replaceAll(`\${${name}}`, folded);
+		}
+		return `'${text}'`;
+	});
+	for (const [name, folded] of Object.entries(STATUS_CONSTANTS)) {
+		value = value.replace(new RegExp(`\\b${name}\\b`, 'g'), `'${folded}'`);
+	}
+	value = value.replace(/\s+/g, ' ');
+	value = value.replace(/,\s*([}\]])/g, '$1');
+	value = value.replace(/\.toContain\(/g, '.toBe(');
+	return value.trim();
+}
+
+function observationFromAssertion(assertion) {
+	const folded = foldAssertionSource(assertion);
+	let match = folded.match(/classList\.contains\(\s*'([^']+)'\s*\)\)\.toBe\(\s*(true|false)\s*\)/);
+	if (match) {
+		return [['classContains', match[1].replace(/-entering\b/g, '-enter-active'), match[2]]];
+	}
+	match = folded.match(/hasClass\([^,]+,\s*(?:'([^']+)'|(\w+))\)\)\.toBe\(\s*(true|false)\s*\)/);
+	if (match) {
+		return [['classContains', match[1] ?? 'PROP', match[3]]];
+	}
+	match = folded.match(/className\)\.toBe\(\s*'([^']*)'\s*,?\s*\)/);
+	if (match) {
+		return [['className', match[1].replace(/\s+/g, ' ').trim()]];
+	}
+	match = folded.match(/toHaveLength\(\s*(\d+)\s*\)/);
+	if (match) {
+		return [['childCount', match[1]]];
+	}
+	match = folded.match(/childNodes\.length\)\.toBe\(\s*(\d+)\s*\)/);
+	if (match) {
+		return [['childCount', match[1]]];
+	}
+	match = folded.match(/\.id\)\.toBe\(\s*'([^']+)'\s*\)/);
+	if (match) {
+		return [['id', match[1]]];
+	}
+	if (
+		/\.not\.toBeNull\b/.test(folded) ||
+		(folded.includes('toExist') && !folded.includes('not.toExist'))
+	) {
+		match = assertion.match(/querySelector\(\s*'#([^']+)'\s*\)/);
+		if (match) {
+			return [['id', match[1]]];
+		}
+		return [['presence']];
+	}
+	if (
+		/\.not\.toExist\b/.test(folded) ||
+		/\.toBeNull\b/.test(folded) ||
+		folded.includes('toBe(null)')
+	) {
+		return [['emptyText']];
+	}
+	match = assertion.match(/querySelector\(\s*'#([^']+)'\s*\)/);
+	if (
+		match &&
+		!folded.includes('className') &&
+		!folded.includes('classList') &&
+		!folded.includes('textContent')
+	) {
+		return [['id', match[1]]];
+	}
+	if (
+		folded.includes('toHaveBeenCalled') ||
+		folded.includes('consoleError') ||
+		/\bexpect\(\s*warn\s*\)/.test(folded)
+	) {
+		return [['spyOrConsole']];
+	}
+	match = folded.match(/expect\((\w+)\)\.toBe\(\s*(\[[^\]]*\])\s*\)/);
+	if (match) {
+		return [['array', match[1], match[2].replace(/\s+/g, '')]];
+	}
+	match = folded.match(/textContent\)\.toBe\(\s*'([^']*)'\s*,?\s*\)/);
+	if (match) {
+		const text = match[1].replace(/\s+/g, ' ').trim();
+		if (text === '') return [['emptyText']];
+		return [['text', text]];
+	}
+	if (/\.not\.toContain\(/.test(assertion) || /not\.toContain\(/.test(folded)) {
+		return [['presence']];
+	}
+	match = folded.match(/expect\((\w+)\)\.toBe\(\s*(true|false|\d+)\s*\)/);
+	if (match) {
+		return [['value', match[1], match[2]]];
+	}
+	match = folded.match(/toBeTypeOf\(\s*'([^']+)'\s*\)/);
+	if (match) {
+		return [['typeof', match[1]]];
+	}
+	if (folded.includes('mergeChildMappings')) {
+		match = folded.match(/toBe\(\s*(\{[^}]*\})\s*\)/);
+		if (match) {
+			return [['mergeMap', match[1].replace(/\s+/g, '')]];
+		}
+	}
+	if (/expect\(\s*function/.test(folded) || assertion.includes('expect(()')) {
+		return [['throwsOrCallable']];
+	}
+	match = folded.match(/getStatus\(\)\)\.toBe\(\s*'([^']+)'\s*\)/);
+	if (match) {
+		return [['status', match[1]]];
+	}
+	return [['raw', folded]];
+}
+
+function semanticObservations(body) {
+	const observations = [];
+	for (const assertion of extractExpectAssertions(collapseStrictModeBranch(body))) {
+		for (const observation of observationFromAssertion(assertion)) {
+			observations.push(observation);
+		}
+	}
+	return observations;
+}
+
+function observationKey(observation) {
+	return JSON.stringify(observation);
+}
+
+function missingRequiredObservations(upstreamObservations, adaptedObservations) {
+	const required = [];
+	for (const observation of upstreamObservations) {
+		if (observation[0] === 'spyOrConsole') continue;
+		if (observation[0] === 'emptyText') continue;
+		required.push(observation);
+	}
+	const available = adaptedObservations.map(observationKey);
+	const missing = [];
+	for (const observation of required) {
+		if (observation[0] === 'text') {
+			const index = available.findIndex(function matchesText(key) {
+				const candidate = JSON.parse(key);
+				return (
+					candidate[0] === 'text' &&
+					(candidate[1].includes(observation[1]) || observation[1].includes(candidate[1]))
+				);
+			});
+			if (index >= 0) {
+				available.splice(index, 1);
+				continue;
+			}
+			missing.push(observation);
+			continue;
+		}
+		if (observation[0] === 'classContains' && observation[1] === 'PROP') {
+			const index = available.findIndex(function matchesProp(key) {
+				const candidate = JSON.parse(key);
+				return candidate[0] === 'classContains' && candidate[2] === observation[2];
+			});
+			if (index >= 0) {
+				available.splice(index, 1);
+				continue;
+			}
+			missing.push(observation);
+			continue;
+		}
+		if (observation[0] === 'presence' || observation[0] === 'status') {
+			const index = available.findIndex(function matchesPresence(key) {
+				const candidate = JSON.parse(key);
+				if (observation[0] === 'status') {
+					if (candidate[0] === 'status' && candidate[1] === observation[1]) return true;
+					if (candidate[0] === 'text' && candidate[1].includes(observation[1])) return true;
+					if (observation[1] === 'unmounted' && candidate[0] === 'emptyText') return true;
+					return false;
+				}
+				return (
+					candidate[0] === 'presence' || candidate[0] === 'id' || candidate[0] === 'childCount'
+				);
+			});
+			if (index >= 0) {
+				available.splice(index, 1);
+				continue;
+			}
+			missing.push(observation);
+			continue;
+		}
+		const exact = observationKey(observation);
+		const index = available.indexOf(exact);
+		if (index >= 0) {
+			available.splice(index, 1);
+			continue;
+		}
+		// Allow unique (set) coverage for repeated childCount/id observations.
+		if (observation[0] === 'childCount' || observation[0] === 'id') {
+			const uniqueIndex = available.findIndex(function sameKind(key) {
+				return key === exact;
+			});
+			if (uniqueIndex >= 0) {
+				available.splice(uniqueIndex, 1);
+				continue;
+			}
+			if (
+				required.filter(function same(item) {
+					return observationKey(item) === exact;
+				}).length > 1 &&
+				adaptedObservations.some(function has(item) {
+					return observationKey(item) === exact;
+				})
+			) {
+				continue;
+			}
+		}
+		missing.push(observation);
+	}
+	return missing;
+}
+
+function assertSemanticCoverage(entry, upstreamObservations, adaptedObservations) {
+	if (entry.divergenceId) {
+		return;
+	}
+	const missing = missingRequiredObservations(upstreamObservations, adaptedObservations);
+	if (missing.length > 0) {
+		throw new Error(
+			`${entry.adaptedFile}::${entry.adaptedTitle}: adapted observations do not cover normalized upstream assertions (${missing.map(observationKey).join(', ')})`,
+		);
+	}
+}
+
+function assertDivergenceMarker(adaptedSource, entry, citedLine) {
+	if (!entry.divergenceId) return;
+	const lines = adaptedSource.split('\n');
+	const windowStart = Math.max(0, citedLine - 8);
+	const window = lines.slice(windowStart, citedLine + 2).join('\n');
+	const marker = `// OCTANE DIVERGENCE: ${entry.divergenceId}`;
+	if (!window.includes(marker)) {
+		throw new Error(
+			`${entry.adaptedFile}::${entry.adaptedTitle}: missing ${marker} near the adapted assertion`,
+		);
+	}
 }
 
 export function buildAdaptedCaseContracts(repoRoot) {
@@ -183,6 +486,7 @@ export function buildAdaptedCaseContracts(repoRoot) {
 				`${entry.adaptedFile}: missing cited adapted case ${JSON.stringify(entry.adaptedTitle)}`,
 			);
 		}
+		assertDivergenceMarker(adaptedSource, entry, citedMatch.line);
 		const adaptedBody = caseBodyAtLine(adaptedSource, citedMatch.line);
 		const adaptedAssertions = extractExpectAssertions(adaptedBody);
 		const parsed = parseCitation(entry.citation);
@@ -192,11 +496,10 @@ export function buildAdaptedCaseContracts(repoRoot) {
 			);
 		}
 		const upstreamSource = readFileSync(resolve(repoRoot, parsed.path), 'utf8');
-		const upstreamBody = upstreamSource
-			.split('\n')
-			.slice(parsed.start - 1, parsed.end)
-			.join('\n');
-		const upstreamAssertions = extractExpectAssertions(upstreamBody);
+		const upstreamBody = caseBodyAtLine(upstreamSource, entry.upstreamLine);
+		const upstreamAssertions = extractExpectAssertions(collapseStrictModeBranch(upstreamBody));
+		const upstreamObservations = semanticObservations(upstreamBody);
+		const adaptedObservations = semanticObservations(adaptedBody);
 		cases.push({
 			upstreamFile: entry.upstreamFile,
 			upstreamTitle: entry.upstreamTitle,
@@ -204,10 +507,15 @@ export function buildAdaptedCaseContracts(repoRoot) {
 			citation: entry.citation,
 			adaptedFile: entry.adaptedFile,
 			adaptedTitle: entry.adaptedTitle,
-			upstreamBodySha256: sha256Text(upstreamBody.replace(/\s+/g, ' ').trim()),
+			divergenceId: entry.divergenceId ?? null,
+			upstreamBodySha256: sha256Text(
+				collapseStrictModeBranch(upstreamBody).replace(/\s+/g, ' ').trim(),
+			),
 			upstreamAssertions: upstreamAssertions.map(sha256Text),
+			upstreamObservations,
 			adaptedBodySha256: sha256Text(adaptedBody.replace(/\s+/g, ' ').trim()),
 			adaptedAssertions: adaptedAssertions.map(sha256Text),
+			adaptedObservations,
 			fixtureExports: fixtureExportsUsed(adaptedBody, fixtureExports),
 		});
 	}
@@ -219,7 +527,8 @@ export function buildAdaptedCaseContracts(repoRoot) {
 		);
 	});
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
+		permittedAssertionTransformations: PERMITTED_ASSERTION_TRANSFORMATIONS,
 		fixtures,
 		cases,
 	};
@@ -232,6 +541,29 @@ export function verifyAdaptedCaseContracts(repoRoot) {
 	}
 	const expected = JSON.parse(readFileSync(contractsPath, 'utf8'));
 	const actual = buildAdaptedCaseContracts(repoRoot);
+	const crosswalk = JSON.parse(readFileSync(resolve(repoRoot, CROSSWALK_PATH), 'utf8'));
+	const byKey = new Map(
+		(crosswalk.cases ?? [])
+			.filter(function adaptedOnly(entry) {
+				return entry.disposition === 'adapted';
+			})
+			.map(function entryOf(entry) {
+				return [`${entry.upstreamFile}\0${entry.upstreamTitle}\0${entry.upstreamLine}`, entry];
+			}),
+	);
+	for (const contract of actual.cases) {
+		const entry = byKey.get(
+			`${contract.upstreamFile}\0${contract.upstreamTitle}\0${contract.upstreamLine}`,
+		);
+		if (!entry) {
+			throw new Error(
+				`${contract.upstreamFile}::${contract.upstreamTitle}: missing crosswalk entry for semantic verification`,
+			);
+		}
+		assertSemanticCoverage(entry, contract.upstreamObservations, contract.adaptedObservations);
+	}
+	// Live semantic coverage is checked above against upstream sources. Refreshing
+	// generated metadata cannot satisfy a weakened adapted assertion.
 	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
 		throw new Error(
 			'adapted assertion/fixture contracts drifted against cited upstream scenarios; review and record the change',

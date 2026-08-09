@@ -3,7 +3,10 @@ import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
-import { buildTypeInventory } from './react-transition-group-types-lib.mjs';
+import {
+	buildTypeInventory,
+	verifyReactTransitionGroupTypes,
+} from './react-transition-group-types-lib.mjs';
 
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'rtg-types-'));
@@ -29,6 +32,18 @@ async function fixture() {
 		adaptedRoot,
 		config: { upstreamRoot: 'upstream', adaptedRoot: 'adapted' },
 	};
+}
+
+async function packageFixture() {
+	const root = await mkdtemp(join(tmpdir(), 'rtg-types-pkg-'));
+	for (const dir of ['upstream-types', 'typetests', 'audit']) {
+		await cp(
+			new URL(`../../packages/react-transition-group/${dir}`, import.meta.url),
+			join(root, `packages/react-transition-group/${dir}`),
+			{ recursive: true },
+		);
+	}
+	return root;
 }
 
 test('rejects a skipped adapted type-test file', async function rejectsSkippedFile(t) {
@@ -84,12 +99,35 @@ test('rejects retargeting an adapted public import', async function rejectsRetar
 	const source = await readFile(file, 'utf8');
 	await writeFile(
 		file,
-		source.replace(
-			/from ['"]\.\.\/src\/index\.ts['"]/,
-			"from '../src/not-the-public-entry.ts'",
-		),
+		source.replace(/from ['"]\.\.\/src\/index\.ts['"]/, "from '../src/not-the-public-entry.ts'"),
 	);
 	assert.throws(function run() {
 		buildTypeInventory(value.root, value.config);
 	}, /change outside the permitted transformations/);
+});
+
+test('rejects excluding a probe through tsconfig rather than deleting it', async function rejectsTsconfigExclude(t) {
+	const root = await packageFixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const tsconfigPath = join(root, 'packages/react-transition-group/typetests/tsconfig.json');
+	const decoy = join(root, 'packages/react-transition-group/typetests/decoy.ts');
+	await writeFile(decoy, 'export {};\n');
+	const tsconfig = JSON.parse(await readFile(tsconfigPath, 'utf8'));
+	tsconfig.files = ['decoy.ts'];
+	await writeFile(tsconfigPath, `${JSON.stringify(tsconfig, null, '\t')}\n`);
+	assert.throws(function run() {
+		verifyReactTransitionGroupTypes(root);
+	}, /compiler program probes must match/);
+});
+
+test('accepts committed type inventories and lane programs', async function acceptsCommitted(t) {
+	const root = await packageFixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const summary = verifyReactTransitionGroupTypes(root);
+	assert.equal(summary.files, 1);
+	assert.ok(summary.assertions > 0);
 });

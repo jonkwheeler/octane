@@ -51,8 +51,9 @@ describe('TransitionGroup', function transitionGroupSuite() {
 	});
 
 	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-118
-	// Upstream StrictMode double-appear is not applicable (Octane has no
-	// StrictMode double-invoke). Assert single appear/enter/exit sequencing.
+	// OCTANE DIVERGENCE: react-transition-group-no-strict-double-appear
+	// Upstream StrictMode double-appear is not exact adapted parity (Octane has
+	// no StrictMode double-invoke). Assert single appear/enter/exit sequencing.
 	it('should handle transitioning correctly', async function transitioning() {
 		const log: string[] = [];
 		const view = mount(TransitionGroupCountProbe, { count: 1, log });
@@ -97,6 +98,8 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 			view.update(CSSTransitionGroupProbe, { items: ['two'], enter: false });
 		});
 		expect(view.container.querySelectorAll('[id]')).toHaveLength(2);
+		expect(view.container.querySelector('#two')).not.toBeNull();
+		expect(view.container.querySelector('#one')).not.toBeNull();
 		await act(function flush() {
 			vi.runAllTimers();
 		});

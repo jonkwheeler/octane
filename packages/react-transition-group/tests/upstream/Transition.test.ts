@@ -235,6 +235,7 @@ describe('Transition', function transitionSuite() {
 		it('should move to each transition state', async function enterStates() {
 			let count = 0;
 			const view = mount(TransitionStatusProbe, { shown: false, timeout: 10 });
+			expect(view.container.querySelector('#status')?.textContent).toBe('status: exited');
 			await act(function enter() {
 				view.update(TransitionStatusProbe, {
 					shown: true,
@@ -409,11 +410,13 @@ describe('Transition', function transitionSuite() {
 					timeout: 10,
 					onEnter: function onEnter() {
 						expect(view.container.querySelector('#status')).not.toBeNull();
+						expect(view.container.querySelector('#status')?.textContent).toBe('status: exited');
 						done = true;
 					},
 				});
 			});
 			expect(done).toBe(true);
+			expect(view.container.querySelector('#status')).not.toBeNull();
 			view.unmount();
 		});
 
@@ -426,6 +429,7 @@ describe('Transition', function transitionSuite() {
 				timeout: 10,
 			});
 			expect(view.container.querySelector('#status')).not.toBeNull();
+			expect(view.container.querySelector('#status')?.textContent).toBe('status: entered');
 			await act(function exit() {
 				view.update(TransitionStatusProbe, {
 					shown: false,
@@ -440,6 +444,7 @@ describe('Transition', function transitionSuite() {
 				vi.advanceTimersByTime(10);
 			});
 			expect(exited).toBe(true);
+			expect(view.container.querySelector('#status')).toBeNull();
 			expect(view.container.querySelector('#status')).toBeNull();
 			view.unmount();
 		});

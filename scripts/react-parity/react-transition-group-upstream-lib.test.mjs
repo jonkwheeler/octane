@@ -6,6 +6,7 @@ import test from 'node:test';
 
 import {
 	collectUpstreamCaseInventory,
+	renderAdaptedCaseContracts,
 	renderReactTransitionGroupAdaptedEvidenceInventory,
 	verifyReactTransitionGroupUpstream,
 } from './react-transition-group-upstream-lib.mjs';
@@ -261,18 +262,28 @@ test('rejects deleting assertions from an adapted case', async function rejectsD
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+		'packages/react-transition-group/tests/upstream/TransitionGroup.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
-	await writeFile(adaptedPath, source.replace(/expect\([^;]+;/g, 'void 0;'));
+	await writeFile(
+		adaptedPath,
+		source.replace(
+			/expect\(view\.container\.querySelectorAll\('\[id\]'\)\)\.toHaveLength\(2\);/,
+			'void 0;',
+		),
+	);
 	const evidencePath = join(
 		root,
 		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
+	await writeFile(
+		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		renderAdaptedCaseContracts(root),
+	);
 	assert.throws(function run() {
 		verifyReactTransitionGroupUpstream(root);
-	}, /adapted assertion\/fixture contracts drifted|adaptedAssertions|adaptedBodySha256/);
+	}, /do not cover normalized upstream assertions|adapted observations/);
 });
 
 test('rejects fixture drift in adapted upstream probes', async function rejectsFixtureDrift(t) {
@@ -285,7 +296,7 @@ test('rejects fixture drift in adapted upstream probes', async function rejectsF
 		'packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx',
 	);
 	const source = await readFile(fixturePath, 'utf8');
-	await writeFile(fixturePath, `${source}\n// fixture drift\n`);
+	await writeFile(fixturePath, `${source}\nexport function DriftedFixture() { return null; }\n`);
 	const evidencePath = join(
 		root,
 		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',

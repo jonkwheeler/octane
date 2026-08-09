@@ -22,6 +22,14 @@ async function fixture() {
 		join(root, 'packages/react-transition-group/typetests'),
 		{ recursive: true },
 	);
+	await mkdir(join(root, 'scripts/react-parity'), { recursive: true });
+	for (const file of [
+		'react-transition-group-classifications-lib.test.mjs',
+		'react-transition-group-types-lib.test.mjs',
+		'react-transition-group-upstream-lib.test.mjs',
+	]) {
+		await cp(new URL(`./${file}`, import.meta.url), join(root, `scripts/react-parity/${file}`));
+	}
 	for (const file of ['test-classifications.json', 'react-parity.json']) {
 		await mkdir(join(root, 'packages/react-transition-group/audit'), { recursive: true });
 		await cp(

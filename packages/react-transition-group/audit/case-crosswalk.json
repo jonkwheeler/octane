@@ -497,6 +497,7 @@
       "upstreamTitle": "should handle transitioning correctly",
       "upstreamLine": 78,
       "disposition": "adapted",
+      "divergenceId": "react-transition-group-no-strict-double-appear",
       "adaptedFile": "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
       "adaptedTitle": "should handle transitioning correctly",
       "citation": "packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-118"

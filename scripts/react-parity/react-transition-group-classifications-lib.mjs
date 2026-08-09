@@ -6,6 +6,7 @@ const MANIFEST = 'packages/react-transition-group/audit/react-parity.json';
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
+	'audit-verifier-test',
 	'react-octane-differential',
 	'octane-only-divergence',
 	'octane-only-framework-contract',
@@ -40,14 +41,10 @@ export function verifyReactTransitionGroupTestClassifications(root) {
 		...discoverUnder(root, 'packages/react-transition-group/typetests', function isTypeProbe(name) {
 			return name.endsWith('.test-d.ts') || name.endsWith('-tests.tsx');
 		}),
-	]
-		.filter(function excludeParityOwned(path) {
-			return (
-				!path.includes('/tests/upstream/') &&
-				path !== 'packages/react-transition-group/tests/ssr/upstream-import.test.ts'
-			);
-		})
-		.sort();
+		...discoverUnder(root, 'scripts/react-parity', function isVerifierTest(name) {
+			return name.startsWith('react-transition-group-') && name.endsWith('.test.mjs');
+		}),
+	].sort();
 	const configPath = resolve(root, CONFIG);
 	if (!existsSync(configPath)) throw new Error(`missing port-test classifications: ${CONFIG}`);
 	const config = JSON.parse(readFileSync(configPath, 'utf8'));
@@ -70,6 +67,15 @@ export function verifyReactTransitionGroupTestClassifications(root) {
 	for (const entry of config.tests) {
 		if (!DISPOSITIONS.has(entry.disposition)) {
 			throw new Error(`${entry.path}: unknown test disposition`);
+		}
+		if (entry.disposition === 'audit-verifier-test') {
+			if (!entry.reason) {
+				throw new Error(`${entry.path}: audit verifier tests require an explicit reason`);
+			}
+			if (entry.oracle) {
+				throw new Error(`${entry.path}: audit verifier tests must not claim React parity`);
+			}
+			continue;
 		}
 		if (entry.disposition.startsWith('octane-only-')) {
 			if (!entry.reason) {

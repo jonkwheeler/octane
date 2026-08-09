@@ -25,7 +25,7 @@ The pinned repository contains seven runtime suites plus four support files unde
 | `test/Transition-test.js` | Pristine oracle + adapted in `tests/upstream/Transition.test.ts` (both findDOMNode cases are not applicable) |
 | `test/CSSTransition-test.js` | Pristine oracle + adapted in `tests/upstream/CSSTransition.test.ts` |
 | `test/CSSTransitionGroup-test.js` | Pristine oracle + adapted in `tests/upstream/TransitionGroup.test.ts` |
-| `test/TransitionGroup-test.js` | Pristine oracle + adapted in `tests/upstream/TransitionGroup.test.ts` (StrictMode double-appear is not applicable) |
+| `test/TransitionGroup-test.js` | Pristine oracle + adapted in `tests/upstream/TransitionGroup.test.ts` (StrictMode double-appear is divergence `react-transition-group-no-strict-double-appear`) |
 | `test/SwitchTransition-test.js` | Pristine oracle + adapted in `tests/upstream/SwitchTransition.test.ts` |
 | `test/ChildMapping-test.js` | Pristine oracle + adapted in `tests/upstream/ChildMapping.test.ts` |
 | `test/SSR-test.js` | Pristine oracle + adapted import/server coverage in `tests/ssr/server.test.ts` |
