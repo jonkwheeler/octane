@@ -111,9 +111,9 @@
       "notes": "Authenticates the documented omission of the experimental upstream _useStore export.",
       "files": [
         {
-          "path": "packages/tanstack-store/tests/conformance/parity.test.ts",
+          "path": "packages/tanstack-store/tests/conformance/experimental-use-store.parity.test.ts",
           "role": "test",
-          "sha256": "f3cee47ad3de0a6ff65c4fa029c0f78a545e79b5ff51b24e6b50a83293eb27c6",
+          "sha256": "9943a9ce101d22b8fdc544b92a88976af68c107d00cc88ebe0d3e2b205c21fd3",
           "cases": [
             {
               "id": "adapted:tanstack-store-experimental-use-store",
@@ -124,6 +124,7 @@
         }
       ]
     },
+
     {
       "id": "tanstack-store-adapted-ssr",
       "type": "adapted-octane",
