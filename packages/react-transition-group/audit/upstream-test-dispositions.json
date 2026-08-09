@@ -37,8 +37,8 @@
       "path": "SSR-test.js",
       "disposition": "pristine-oracle-adapted",
       "caseCount": 1,
-      "rationale": "Runs unchanged under the pristine Jest node environment. Octane covers the import-in-node case plus server rendering in tests/ssr/server.test.ts.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/ssr/server.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest node environment. Octane covers the import-in-node case in tests/ssr/upstream-import.test.ts; authored SSR rendering contracts live beside it in tests/ssr/server.test.ts.",
+      "adaptedEvidence": ["packages/react-transition-group/tests/ssr/upstream-import.test.ts"]
     },
     {
       "path": "SwitchTransition-test.js",

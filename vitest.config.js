@@ -3591,7 +3591,13 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// The one-for-one adapted suite owns tests/upstream/**; exports and
+				// transition integration guards are Octane-authored and stay in the
+				// ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-transition-group/tests/upstream/**/*.test.ts'],
+				},
 				test: {
 					name: 'react-transition-group',
 					include: [
@@ -3615,7 +3621,12 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Only the upstream SSR import case is parity-owned; the authored
+				// initial-state / wrapper rendering cases stay in ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-transition-group/tests/ssr/upstream-import.test.ts'],
+				},
 				test: {
 					name: 'react-transition-group-ssr',
 					include: ['packages/react-transition-group/tests/ssr/**/*.test.ts'],

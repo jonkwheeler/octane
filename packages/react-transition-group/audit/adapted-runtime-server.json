@@ -2,25 +2,14 @@
   "schemaVersion": 1,
   "project": "react-transition-group-ssr",
   "roots": [
-    "packages/react-transition-group/tests"
+    "packages/react-transition-group/tests/upstream",
+    "packages/react-transition-group/tests/ssr"
   ],
-  "files": [
-    "packages/react-transition-group/tests/ssr/server.test.ts"
-  ],
+  "files": ["packages/react-transition-group/tests/ssr/upstream-import.test.ts"],
   "tests": [
     {
-      "id": "runtime:c8fcd165f507e8b8",
-      "file": "packages/react-transition-group/tests/ssr/server.test.ts",
-      "fullName": "react-transition-group v4.4.5 server rendering renders TransitionGroup wrapper and children"
-    },
-    {
-      "id": "runtime:d6fd90bdd92512ad",
-      "file": "packages/react-transition-group/tests/ssr/server.test.ts",
-      "fullName": "react-transition-group v4.4.5 server rendering renders the initial transition state without running effects"
-    },
-    {
-      "id": "runtime:083ce14fafee0a8d",
-      "file": "packages/react-transition-group/tests/ssr/server.test.ts",
+      "id": "runtime:18e93b898676dfeb",
+      "file": "packages/react-transition-group/tests/ssr/upstream-import.test.ts",
       "fullName": "react-transition-group v4.4.5 server rendering should import react-transition-group in node env"
     }
   ]

@@ -26,17 +26,20 @@
     },
     "tests": {
       "roots": [
-        "packages/react-transition-group/tests"
+        "packages/react-transition-group/tests/upstream",
+        "packages/react-transition-group/tests/ssr"
       ],
       "include": [
         "\\.test\\.ts$"
       ],
-      "exclude": []
+      "exclude": [
+        "tests/ssr/server\\.test\\.ts$"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 73,
-    "uniqueIdentities": 73,
+    "inventoryEntries": 55,
+    "uniqueIdentities": 55,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -74,7 +77,7 @@
         {
           "path": "packages/react-transition-group/audit/upstream-test-dispositions.json",
           "role": "support",
-          "sha256": "49499a99f8067ce8200293bd9291f67b2fdcfb0dd17d9a1d006a7131c97851b1"
+          "sha256": "e5777376ce3fc92c19507cf883b6bbe1b4037b6cb10a03fa9aaa457372480801"
         },
         {
           "path": "packages/react-transition-group/audit/SHA256SUMS",
@@ -130,7 +133,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the one-for-one adapted DOM/export suite (including tests/upstream) and verifies exact test identities.",
+      "notes": "Runs the one-for-one adapted DOM suite under tests/upstream and verifies exact test identities. Repo-authored exports/transition guards stay outside this inventory.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-transition-group/audit/adapted-runtime.json"
@@ -139,12 +142,12 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7eb4390f6145980ee7f0b276ce16107c631b59c83be806db09e0fb43781296c6"
+          "sha256": "5462b6369303be440d180239e36ddee000e58e68dd98d31a79325f3d35b768d9"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "2460855aa9f6bedba76fa1a45f6f361162f6555cbf3a328d3b7ca9fb4e9525b7"
+          "sha256": "2743c9bfaed36f3d26909e54e9da134f6c3986a269d3b7cdc67f9d2c47966d9f"
         }
       ]
     },
@@ -155,7 +158,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-ssr",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs adapted server-rendering tests including the upstream SSR import case and verifies exact test identities.",
+      "notes": "Runs the adapted upstream SSR import case and verifies its exact test identity. Authored SSR rendering contracts stay outside this inventory.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-transition-group/audit/adapted-runtime-server.json"
@@ -164,12 +167,12 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "2eaa8c39c805366ff87eff4ad5197f29474a67bbdbf2e67ff5886217f0fc4ee6"
+          "sha256": "65e6cc09e2ba2ae48760c896a1f33d0137c51fad49cac751be7bf6a923842e2e"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "2460855aa9f6bedba76fa1a45f6f361162f6555cbf3a328d3b7ca9fb4e9525b7"
+          "sha256": "2743c9bfaed36f3d26909e54e9da134f6c3986a269d3b7cdc67f9d2c47966d9f"
         }
       ]
     },
