@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/styled-components/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/styled-components/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/styled-components/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/styled-components/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -50,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -138,7 +128,7 @@
         {
           "path": "packages/styled-components/audit/test-classifications.json",
           "role": "support",
-          "sha256": "29e1a0d17eb5d9dd4dfae01ad60be44636fedf97c6cbcb2842d20459c14fa1f5"
+          "sha256": "1788fe3aa673ca252310e48a017312764ac485f8b32cc0f9dce1f67610adb0ce"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -148,7 +138,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "e48698ece8ad88ed4ecba4d7d7851601746439a746ad744b1f6952e445d28335"
+          "sha256": "13f55e109fb5270af80446120266a8c53bbb82b7c9b80e929943df8a4ea1c019"
         }
       ]
     },
@@ -161,9 +151,9 @@
       "notes": "Runs exact DOM and distribution contracts for five documented adaptations.",
       "files": [
         {
-          "path": "packages/styled-components/tests/conformance/api.test.ts",
+          "path": "packages/styled-components/tests/adapted/api-divergences.test.ts",
           "role": "test",
-          "sha256": "75714e3ca68e004f776dfdd38401dcd9adbb7a13027b7d65cb1afb7da8cb2d6c",
+          "sha256": "3c352b700ea6d24d6df33fcebaf9ee71ea99e716b8105cc26f6126d348198b88",
           "cases": [
             {
               "id": "adapted:styled-components-brand-symbol",
@@ -178,9 +168,9 @@
           ]
         },
         {
-          "path": "packages/styled-components/tests/conformance/transient-props.test.ts",
+          "path": "packages/styled-components/tests/adapted/ref-prop.test.ts",
           "role": "test",
-          "sha256": "b538106041db604ff532b54efc2181680adfff0e0411177105878bb81a842f8b",
+          "sha256": "3a240e313adfb3fc30381e892128ba64c75f4dd8fb47ff7109f547a538704bb6",
           "cases": [
             {
               "id": "adapted:styled-components-ref-prop",
@@ -190,9 +180,9 @@
           ]
         },
         {
-          "path": "packages/styled-components/tests/conformance/sheet.test.ts",
+          "path": "packages/styled-components/tests/adapted/unnamed-stylis-plugin.test.ts",
           "role": "test",
-          "sha256": "f33d0d36859bd6ceb38d165cca6847fd25fa277fb2d946bcb973d5ab270926c2",
+          "sha256": "11856140bf650646b557716d5d8e688af2156431b93ad334d2acb7e9fcfbfeea",
           "cases": [
             {
               "id": "adapted:styled-components-unnamed-stylis-plugin",
@@ -221,7 +211,7 @@
         {
           "path": "packages/styled-components/audit/test-classifications.json",
           "role": "support",
-          "sha256": "29e1a0d17eb5d9dd4dfae01ad60be44636fedf97c6cbcb2842d20459c14fa1f5"
+          "sha256": "1788fe3aa673ca252310e48a017312764ac485f8b32cc0f9dce1f67610adb0ce"
         },
         {
           "path": "packages/octane/tests/_helpers.ts",
@@ -231,7 +221,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "e48698ece8ad88ed4ecba4d7d7851601746439a746ad744b1f6952e445d28335"
+          "sha256": "13f55e109fb5270af80446120266a8c53bbb82b7c9b80e929943df8a4ea1c019"
         }
       ]
     },
@@ -244,24 +234,24 @@
       "notes": "Authenticates automatic CSS collection, compatibility capture, and the deliberate streaming API rejection.",
       "files": [
         {
-          "path": "packages/styled-components/tests/ssr/server.test.ts",
+          "path": "packages/styled-components/tests/ssr/adapted-divergences.test.ts",
           "role": "test",
-          "sha256": "5c41e1334227bb37c35c1ab7ff019cffb4e23566742b63fac13743018d342855",
+          "sha256": "69156f1c974da65e9bb1bb61aef2007c3a4d37295d785cd761a68225e81aa7cf",
           "cases": [
             {
               "id": "adapted:styled-components-automatic-ssr",
               "testName": "collects styled/keyframes/global css into RenderResult.css with zero config",
-              "fullName": "@octanejs/styled-components \u2014 server rendering collects styled/keyframes/global css into RenderResult.css with zero config"
+              "fullName": "@octanejs/styled-components — server rendering collects styled/keyframes/global css into RenderResult.css with zero config"
             },
             {
               "id": "adapted:styled-components-server-sheet-compat",
               "testName": "ServerStyleSheet compat: collectStyles + getStyleTags/getStyleElement still work",
-              "fullName": "@octanejs/styled-components \u2014 server rendering ServerStyleSheet compat: collectStyles + getStyleTags/getStyleElement still work"
+              "fullName": "@octanejs/styled-components — server rendering ServerStyleSheet compat: collectStyles + getStyleTags/getStyleElement still work"
             },
             {
               "id": "adapted:styled-components-no-node-stream-interleave",
               "testName": "throws the documented seal/stream errors",
-              "fullName": "@octanejs/styled-components \u2014 server rendering throws the documented seal/stream errors"
+              "fullName": "@octanejs/styled-components — server rendering throws the documented seal/stream errors"
             }
           ]
         },
@@ -273,12 +263,12 @@
         {
           "path": "packages/styled-components/audit/test-classifications.json",
           "role": "support",
-          "sha256": "29e1a0d17eb5d9dd4dfae01ad60be44636fedf97c6cbcb2842d20459c14fa1f5"
+          "sha256": "1788fe3aa673ca252310e48a017312764ac485f8b32cc0f9dce1f67610adb0ce"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "e48698ece8ad88ed4ecba4d7d7851601746439a746ad744b1f6952e445d28335"
+          "sha256": "13f55e109fb5270af80446120266a8c53bbb82b7c9b80e929943df8a4ea1c019"
         }
       ]
     },
@@ -324,9 +314,7 @@
   "divergences": [
     {
       "id": "styled-components-ref-prop",
-      "caseIds": [
-        "adapted:styled-components-ref-prop"
-      ],
+      "caseIds": ["adapted:styled-components-ref-prop"],
       "upstreamResult": "React forwards ref outside the ordinary prop-filtering path through forwardRef.",
       "octaneResult": "ref is a plain prop that always attaches to the rendered host and bypasses shouldForwardProp.",
       "rationale": "Octane components use ref-as-prop semantics and have no forwardRef wrapper.",
@@ -354,9 +342,7 @@
     },
     {
       "id": "styled-components-default-props",
-      "caseIds": [
-        "adapted:styled-components-default-props"
-      ],
+      "caseIds": ["adapted:styled-components-default-props"],
       "upstreamResult": "React applies component defaultProps at the component call boundary.",
       "octaneResult": "The styled factory resolves defaultProps during render and folding deep-merges them.",
       "rationale": "Octane call sites do not apply component defaultProps.",
@@ -368,9 +354,7 @@
     },
     {
       "id": "styled-components-polymorphic-host-types",
-      "caseIds": [
-        "types:styled-components-polymorphic-hosts"
-      ],
+      "caseIds": ["types:styled-components-polymorphic-hosts"],
       "upstreamResult": "React JSX.IntrinsicElements narrows polymorphic host props per selected tag.",
       "octaneResult": "Host tags use a permissive prop bag while component targets retain inferred props.",
       "rationale": "Octane has no JSX.IntrinsicElements map to introspect.",
@@ -382,9 +366,7 @@
     },
     {
       "id": "styled-components-no-css-prop-transform",
-      "caseIds": [
-        "adapted:styled-components-no-css-prop-transform"
-      ],
+      "caseIds": ["adapted:styled-components-no-css-prop-transform"],
       "upstreamResult": "The upstream ecosystem supports a Babel transform for the css prop.",
       "octaneResult": "The package publishes only its runtime entry point and no Babel css-prop transform.",
       "rationale": "The Octane compiler does not integrate the upstream Babel transform.",
@@ -396,9 +378,7 @@
     },
     {
       "id": "styled-components-dynamic-creation-heuristic",
-      "caseIds": [
-        "adapted:styled-components-dynamic-creation-heuristic"
-      ],
+      "caseIds": ["adapted:styled-components-dynamic-creation-heuristic"],
       "upstreamResult": "Development builds probe React's dispatcher to detect styled() calls during render.",
       "octaneResult": "Development builds warn once after 200 creations sharing a displayName.",
       "rationale": "Octane exposes no React hook dispatcher to probe.",
@@ -410,9 +390,7 @@
     },
     {
       "id": "styled-components-unnamed-stylis-plugin",
-      "caseIds": [
-        "adapted:styled-components-unnamed-stylis-plugin"
-      ],
+      "caseIds": ["adapted:styled-components-unnamed-stylis-plugin"],
       "upstreamResult": "Version 6.4.3 constructs error 15 for unnamed Stylis plugins but does not throw it.",
       "octaneResult": "Unnamed Stylis plugins throw documented error 15.",
       "rationale": "Failing early preserves stable plugin identity and stylesheet hashing.",
@@ -424,9 +402,7 @@
     },
     {
       "id": "styled-components-brand-symbol",
-      "caseIds": [
-        "adapted:styled-components-brand-symbol"
-      ],
+      "caseIds": ["adapted:styled-components-brand-symbol"],
       "upstreamResult": "Styled components are identified using React forward-ref identity alongside styled statics.",
       "octaneResult": "Plain-function styled components carry a dedicated Octane symbol brand.",
       "rationale": "Octane styled components do not use React forwardRef.",

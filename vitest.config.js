@@ -2929,7 +2929,13 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/styled-components/tests/adapted/**/*.test.ts',
+						'packages/styled-components/tests/divergences.test.ts',
+					],
+				},
 				test: {
 					name: 'styled-components',
 					include: [
@@ -2975,7 +2981,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/styled-components/tests/ssr/adapted-divergences.test.ts'],
+				},
 				test: {
 					name: 'styled-components-ssr',
 					include: ['packages/styled-components/tests/ssr/**/*.test.ts'],

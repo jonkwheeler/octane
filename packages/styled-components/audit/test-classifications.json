@@ -2,10 +2,27 @@
   "schemaVersion": 1,
   "tests": [
     {
-      "path": "packages/styled-components/tests/conformance/api.test.ts",
+      "path": "packages/styled-components/tests/adapted/api-divergences.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "styled-components-brand-symbol",
+      "reason": "Contains exact executable evidence for documented Styled Components factory adaptations."
+    },
+    {
+      "path": "packages/styled-components/tests/adapted/ref-prop.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "styled-components-ref-prop",
       "reason": "Contains exact executable evidence for a documented Styled Components adaptation."
+    },
+    {
+      "path": "packages/styled-components/tests/adapted/unnamed-stylis-plugin.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "styled-components-unnamed-stylis-plugin",
+      "reason": "Contains exact executable evidence for a documented Styled Components adaptation."
+    },
+    {
+      "path": "packages/styled-components/tests/conformance/api.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks an Octane styled-components framework contract; it is not a React oracle."
     },
     {
       "path": "packages/styled-components/tests/conformance/attrs.test.ts",
@@ -44,9 +61,8 @@
     },
     {
       "path": "packages/styled-components/tests/conformance/sheet.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "styled-components-unnamed-stylis-plugin",
-      "reason": "Contains exact executable evidence for a documented Styled Components adaptation."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks an Octane styled-components framework contract; it is not a React oracle."
     },
     {
       "path": "packages/styled-components/tests/conformance/theming.test.ts",
@@ -55,9 +71,8 @@
     },
     {
       "path": "packages/styled-components/tests/conformance/transient-props.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "styled-components-ref-prop",
-      "reason": "Contains exact executable evidence for a documented Styled Components adaptation."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks an Octane styled-components framework contract; it is not a React oracle."
     },
     {
       "path": "packages/styled-components/tests/differential/parity.test.ts",
@@ -76,10 +91,15 @@
       "reason": "Checks Octane hydration adoption; it is not compared with React hydration."
     },
     {
-      "path": "packages/styled-components/tests/ssr/server.test.ts",
+      "path": "packages/styled-components/tests/ssr/adapted-divergences.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "styled-components-automatic-ssr",
       "reason": "Authenticates the automatic Octane CSS channel and compatibility wrapper."
+    },
+    {
+      "path": "packages/styled-components/tests/ssr/server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks Octane SSR isolation and streaming order; it is not a React oracle."
     }
   ]
 }
