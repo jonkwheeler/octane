@@ -1,6 +1,6 @@
 import { useIsDocumentHidden } from '../../../src/hooks.tsrx';
 
-// SSR probe for OCTANE DIVERGENCE[sonner-ssr-visibility-guard]: toast items call
+// SSR probe for divergence note (sonner-ssr-visibility-guard): toast items call
 // this hook, and an empty Toaster never mounts them. Render the hook directly so
 // server rendering authenticates the guarded document.hidden read.
 export function VisibilityProbe() {

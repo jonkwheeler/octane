@@ -3,7 +3,6 @@ import { renderToString } from 'octane/server';
 import { VisibilityProbe } from './_fixtures/visibility-probe.tsrx';
 
 describe('@octanejs/sonner — server rendering', function () {
-	// @parity-case adapted:sonner-ssr-visibility-guard
 	it('guards document.hidden when toast visibility state initializes on the server', function () {
 		const { html } = renderToString(VisibilityProbe);
 		expect(html).toContain('data-document-hidden="false"');

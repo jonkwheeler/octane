@@ -252,7 +252,7 @@ test('validates exact focused Vitest identities from the execution report', () =
 	);
 });
 
-test('selects every available required lane for aggregate execution', () => {
+test('selects every available required lane for recorded-unverified aggregate execution', () => {
 	const value = manifest();
 	value.lanes.push(
 		{ ...value.lanes[0], id: 'differential', type: 'differential' },
@@ -263,19 +263,25 @@ test('selects every available required lane for aggregate execution', () => {
 		requiredExecutableLanes(value).map((lane) => lane.id),
 		['adapted', 'differential'],
 	);
+	value.provenance.verification = 'verified';
+	assert.deepEqual(
+		requiredExecutableLanes(value).map((lane) => lane.id),
+		['adapted', 'differential'],
+	);
 });
 
 test('sonner exact selection fails closed when a declared case is renamed', async () => {
 	const value = await loadManifest('packages/sonner/audit/react-parity.json');
 	await assert.doesNotReject(() => verifyManifestTestSelections(value, process.cwd()));
-	for (const laneIndex of [0, 1, 2]) {
-		const renamed = structuredClone(value);
-		renamed.lanes[laneIndex].files[0].cases[0].fullName += ' renamed';
-		await assert.rejects(
-			() => verifyManifestTestSelections(renamed, process.cwd()),
-			/must match exactly one collected Vitest test/,
-		);
-	}
+	const differential = value.lanes.find((lane) => lane.id === 'sonner-runtime-differential');
+	assert.ok(differential);
+	const renamed = structuredClone(value);
+	const lane = renamed.lanes.find((entry) => entry.id === 'sonner-runtime-differential');
+	lane.files[0].cases[0].fullName += ' renamed';
+	await assert.rejects(
+		() => verifyManifestTestSelections(renamed, process.cwd()),
+		/must match exactly one collected Vitest test/,
+	);
 });
 
 test('accepts explicit TypeScript lanes and builds portable compiler argv without a shell', () => {

@@ -690,7 +690,7 @@ SSR / hydration: Supported and tested: `Toaster` server-renders without browser 
 
 Scope/evidence last checked: 2026-08-02.
 
-- Bounded React parity runs one exact same-fixture lifecycle case against published sonner@2.0.7 plus exact adapted cases for all documented renderer divergences.
+- Bounded React parity runs the vendored Playwright suite unchanged against published sonner@2.0.7 plus one exact same-fixture differential lifecycle case. Renderer-divergence authentication stays in ordinary package shards and is not counted as React-parity evidence.
 
 See also: [`docs/sonner-port-plan.md`](sonner-port-plan.md)
 

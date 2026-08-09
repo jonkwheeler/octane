@@ -1,247 +1,147 @@
 {
-  "$schema": "../../hook-form/audit/react-parity.schema.json",
-  "schemaVersion": 1,
-  "provenance": {
-    "repo": "https://github.com/emilkowalski/sonner.git",
-    "version": "2.0.7",
-    "commit": "3ba7aa17ab7e8101b9cf4893936f873b0d4769b3",
-    "sourceRoot": "src",
-    "testRoot": "test",
-    "license": "MIT",
-    "integrity": "sha256:eb0f5dd35d890d38e8dcba1b242e9ac38cf45cc92c02aa914f144d98cfa7ce8f",
-    "verification": "recorded-unverified"
-  },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
-  "adaptedRoots": {
-    "source": {
-      "roots": [
-        "packages/sonner/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": []
-    },
-    "tests": {
-      "roots": [
-        "packages/sonner/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
-      "exclude": []
-    }
-  },
-  "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
-    "duplicateEntriesWithinLanes": 0,
-    "identitiesSharedAcrossLanes": 0
-  },
-  "environments": {
-    "workspace-node": {
-      "node": ">=22",
-      "platform": "any",
-      "arch": "any",
-      "packageManager": "pnpm@11.15.1",
-      "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
-    }
-  },
-  "lanes": [
-    {
-      "id": "sonner-runtime-differential",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "sonner-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs one exact same-fixture lifecycle case against the published sonner@2.0.7 React runtime.",
-      "files": [
-        {
-          "path": "packages/sonner/tests/differential/parity.test.ts",
-          "role": "test",
-          "sha256": "e336b7de15920066f95c7368c6eba7faceb8c6e75072b30b358b97843c4b9439",
-          "cases": [
-            {
-              "id": "differential:sonner-toast-lifecycle",
-              "testName": "matches mount, toast creation, updates and actions",
-              "fullName": "differential: @octanejs/sonner vs sonner@2.0.7 matches mount, toast creation, updates and actions"
-            }
-          ]
-        },
-        {
-          "path": "packages/sonner/tests/_fixtures/sonner-diff.tsrx",
-          "role": "support",
-          "sha256": "fced8881426c0fbe32434311cbedd2202b145565830980074112411a93cd043d"
-        },
-        {
-          "path": "packages/sonner/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "9301fc5bcae367e4ee0f3dbff5f662899b1505da2cb3da2d79f11106e55264ae"
-        },
-        {
-          "path": "packages/sonner/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "6109233c6cf3095bc68477c7007d428c49417a8ff4cf68553cb08e5360bc01ee"
-        },
-        {
-          "path": "packages/octane/tests/differential/_rig.ts",
-          "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "b85e070b59ddafc280373c23814e0bbb06c6f8a926bbc5af553b7993bc729730"
-        }
-      ]
-    },
-    {
-      "id": "sonner-adapted-divergence-contracts",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "sonner",
-      "notes": "Runs exact Octane DOM cases authenticating native action events and the normal ref prop.",
-      "files": [
-        {
-          "path": "packages/sonner/tests/parity/divergence-contracts.test.ts",
-          "role": "test",
-          "sha256": "9dd811a03dbb27509052f0e81c089a98fcd0659130b6326ce9d5365634a31240",
-          "cases": [
-            {
-              "id": "adapted:sonner-native-action-events",
-              "testName": "supports native action/cancel semantics and custom Octane elements",
-              "fullName": "@octanejs/sonner — Toaster supports native action/cancel semantics and custom Octane elements"
-            },
-            {
-              "id": "adapted:sonner-normal-ref-prop",
-              "testName": "accepts the Toaster host ref as an ordinary prop",
-              "fullName": "@octanejs/sonner — Toaster accepts the Toaster host ref as an ordinary prop"
-            }
-          ]
-        },
-        {
-          "path": "packages/sonner/tests/_helpers.ts",
-          "role": "support",
-          "sha256": "d75b48bc3ca3f6fd4a384a9ee58344d6d06aad46cef388d047fa579ffd84d9fc"
-        },
-        {
-          "path": "packages/sonner/tests/_fixtures/app.tsrx",
-          "role": "support",
-          "sha256": "709a28994558d81f39c5e8af6018227af3486e3c3385d488c0e000251da068b0"
-        },
-        {
-          "path": "packages/octane/tests/_helpers.ts",
-          "role": "support",
-          "sha256": "a4a9ee179a2dcaf20a96cb5807f5584f484deddc2bf25fb94cc90ade9e920572"
-        },
-        {
-          "path": "packages/sonner/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "6109233c6cf3095bc68477c7007d428c49417a8ff4cf68553cb08e5360bc01ee"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "b85e070b59ddafc280373c23814e0bbb06c6f8a926bbc5af553b7993bc729730"
-        }
-      ]
-    },
-    {
-      "id": "sonner-adapted-ssr-divergence",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "sonner-ssr",
-      "notes": "Runs the server-rendering case that mounts useIsDocumentHidden and authenticates the document visibility guard.",
-      "files": [
-        {
-          "path": "packages/sonner/tests/ssr/visibility-guard.test.ts",
-          "role": "test",
-          "sha256": "a044e407e715087f600f9da78e40d30a943b0b79eee02d2bbce7fff8b65a29e0",
-          "cases": [
-            {
-              "id": "adapted:sonner-ssr-visibility-guard",
-              "testName": "guards document.hidden when toast visibility state initializes on the server",
-              "fullName": "@octanejs/sonner — server rendering guards document.hidden when toast visibility state initializes on the server"
-            }
-          ]
-        },
-        {
-          "path": "packages/sonner/tests/ssr/_fixtures/server.tsrx",
-          "role": "support",
-          "sha256": "ada156543ffd739bffcf4ed057b3a6e7a209f69ad304d67bed4ba71c3bcc2085"
-        },
-        {
-          "path": "packages/sonner/tests/ssr/_fixtures/visibility-probe.tsrx",
-          "role": "support",
-          "sha256": "97ba17972e45bbf68a553ed671f3ab4c16ad00ec44c60a54f8433265fc7c4328"
-        },
-        {
-          "path": "packages/sonner/src/hooks.tsrx",
-          "role": "support",
-          "sha256": "4106337a0f2c402203e1a68a8559f54304ac10193a0d7062540f4c2651c62838"
-        },
-        {
-          "path": "packages/sonner/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "6109233c6cf3095bc68477c7007d428c49417a8ff4cf68553cb08e5360bc01ee"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "b85e070b59ddafc280373c23814e0bbb06c6f8a926bbc5af553b7993bc729730"
-        }
-      ]
-    }
-  ],
-  "divergences": [
-    {
-      "id": "sonner-native-action-events",
-      "caseIds": [
-        "adapted:sonner-native-action-events"
-      ],
-      "upstreamResult": "Action callbacks receive React synthetic mouse events.",
-      "octaneResult": "Action callbacks receive native DOM MouseEvent objects.",
-      "rationale": "Octane uses delegated native DOM events rather than React's synthetic event layer.",
-      "classification": "event-model",
-      "consumerImpact": "Callbacks observe native event identity and lifecycle semantics.",
-      "migrationGuidance": "Type action callbacks against the exported ActionEvent native-event contract.",
-      "owner": "@octanejs/sonner",
-      "reviewCondition": "Review if Octane introduces React-compatible synthetic events."
-    },
-    {
-      "id": "sonner-normal-ref-prop",
-      "caseIds": [
-        "adapted:sonner-normal-ref-prop"
-      ],
-      "upstreamResult": "React exposes the Toaster ref through forwardRef.",
-      "octaneResult": "Toaster accepts ref as an ordinary component prop and forwards it to the host section.",
-      "rationale": "Octane components do not require React's forwardRef wrapper.",
-      "classification": "ref-model",
-      "consumerImpact": "Consumers pass ref normally without relying on a forwardRef component identity.",
-      "migrationGuidance": "Pass the host ref through the Toaster ref prop.",
-      "owner": "@octanejs/sonner",
-      "reviewCondition": "Review if Octane adopts a distinct ref-wrapper contract."
-    },
-    {
-      "id": "sonner-ssr-visibility-guard",
-      "caseIds": [
-        "adapted:sonner-ssr-visibility-guard"
-      ],
-      "upstreamResult": "Version 2.0.7 reads document.hidden during render behind its client boundary.",
-      "octaneResult": "The initial visibility read is guarded when document is unavailable during server rendering.",
-      "rationale": "Octane executes the Toaster component in its server runtime without an RSC client boundary.",
-      "classification": "ssr",
-      "consumerImpact": "Toaster can render an accessible empty host without browser globals.",
-      "migrationGuidance": "No consumer action is required; preserve the guard when syncing upstream.",
-      "owner": "@octanejs/sonner",
-      "reviewCondition": "Review if upstream becomes server-safe or Octane adds an equivalent client boundary."
-    }
-  ]
+	"$schema": "../../hook-form/audit/react-parity.schema.json",
+	"schemaVersion": 1,
+	"provenance": {
+		"repo": "https://github.com/emilkowalski/sonner.git",
+		"version": "2.0.7",
+		"commit": "3ba7aa17ab7e8101b9cf4893936f873b0d4769b3",
+		"sourceRoot": "src",
+		"testRoot": "test",
+		"license": "MIT",
+		"integrity": "sha256:eb0f5dd35d890d38e8dcba1b242e9ac38cf45cc92c02aa914f144d98cfa7ce8f",
+		"verification": "recorded-unverified"
+	},
+	"upstreamSuites": {
+		"runtime": "present",
+		"types": "absent"
+	},
+	"adaptedRoots": {
+		"source": {
+			"roots": [
+				"packages/sonner/src"
+			],
+			"include": [
+				"\\.(?:ts|tsrx)$"
+			],
+			"exclude": []
+		},
+		"tests": {
+			"roots": [
+				"packages/sonner/tests"
+			],
+			"include": [
+				"\\.test\\.ts$"
+			],
+			"exclude": []
+		}
+	},
+	"adaptedRuntimeSummary": {
+		"inventoryEntries": 0,
+		"uniqueIdentities": 0,
+		"duplicateEntriesWithinLanes": 0,
+		"identitiesSharedAcrossLanes": 0
+	},
+	"environments": {
+		"workspace-node": {
+			"node": ">=22",
+			"platform": "any",
+			"arch": "any",
+			"packageManager": "pnpm@11.15.1",
+			"lockfile": "pnpm-lock.yaml",
+			"lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
+		}
+	},
+	"lanes": [
+		{
+			"id": "sonner-pristine-upstream",
+			"type": "pristine-upstream",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "sonner-pristine",
+			"evidenceOrigin": "upstream-suite",
+			"notes": "Runs the vendored Playwright suite unchanged against published sonner@2.0.7 (chromium project) via the generic playwright-full runner.",
+			"execution": {
+				"kind": "playwright-full",
+				"config": "packages/sonner/scripts/pristine-playwright.json",
+				"root": "packages/sonner/upstream",
+				"inventory": "packages/sonner/audit/pristine-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/sonner/audit/pristine-runtime.json",
+					"role": "support",
+					"sha256": "ab64849f62fdc1a07136b600e04c204cacf3e4acbcbb45074a1ff461d3048bff"
+				},
+				{
+					"path": "packages/sonner/scripts/pristine-playwright.json",
+					"role": "support",
+					"sha256": "77197e0b45c37c5c543612d7a48d5feb9f500e7561d6b0fceb3e9c3e94ac4724"
+				},
+				{
+					"path": "scripts/react-parity/playwright-full-runner.mjs",
+					"role": "support",
+					"sha256": "28ee1d771c352f4caeb402e1608db14dc4392dc88a4ee49b24cb1674ba92fbb6"
+				},
+				{
+					"path": "packages/sonner/upstream/playwright.config.ts",
+					"role": "support",
+					"sha256": "89d9018cb3efcf73e6b267f4414aabf0eab3f98105ea8157cd6a6a5f9f0b24af"
+				},
+				{
+					"path": "packages/sonner/upstream/test/tests/basic.spec.ts",
+					"role": "support",
+					"sha256": "76d2900a8a42c7b6b364bf5272b32537da5f1f68f9153de4b632f82cffe1e7ee"
+				}
+			]
+		},
+		{
+			"id": "sonner-runtime-differential",
+			"type": "differential",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "sonner-differential",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Runs one exact same-fixture lifecycle case against the published sonner@2.0.7 React runtime.",
+			"files": [
+				{
+					"path": "packages/sonner/tests/differential/parity.test.ts",
+					"role": "test",
+					"sha256": "e336b7de15920066f95c7368c6eba7faceb8c6e75072b30b358b97843c4b9439",
+					"cases": [
+						{
+							"id": "differential:sonner-toast-lifecycle",
+							"testName": "matches mount, toast creation, updates and actions",
+							"fullName": "differential: @octanejs/sonner vs sonner@2.0.7 matches mount, toast creation, updates and actions"
+						}
+					]
+				},
+				{
+					"path": "packages/sonner/tests/_fixtures/sonner-diff.tsrx",
+					"role": "support",
+					"sha256": "fced8881426c0fbe32434311cbedd2202b145565830980074112411a93cd043d"
+				},
+				{
+					"path": "packages/sonner/tests/differential/_setup.ts",
+					"role": "support",
+					"sha256": "9301fc5bcae367e4ee0f3dbff5f662899b1505da2cb3da2d79f11106e55264ae"
+				},
+				{
+					"path": "packages/sonner/audit/test-classifications.json",
+					"role": "support",
+					"sha256": "ad128f6a3181486a1048014767ffb1ec2560a9a16b2b9afd39bf58cbbc3379cf"
+				},
+				{
+					"path": "packages/octane/tests/differential/_rig.ts",
+					"role": "support",
+					"sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+				},
+				{
+					"path": "vitest.config.js",
+					"role": "support",
+					"sha256": "53e3236b19b94f06a62f74a9adc129663d6fedd64155413d54f5194696948720"
+				}
+			]
+		}
+	],
+	"divergences": []
 }

@@ -13,9 +13,8 @@
     },
     {
       "path": "packages/sonner/tests/parity/divergence-contracts.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "sonner-native-action-events",
-      "reason": "Authenticates the documented native-event and ordinary-ref divergence contracts."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates native-event and ordinary-ref renderer contracts without a paired React/upstream oracle; not React-parity evidence."
     },
     {
       "path": "packages/sonner/tests/ssr/server.test.ts",
@@ -24,9 +23,8 @@
     },
     {
       "path": "packages/sonner/tests/ssr/visibility-guard.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "sonner-ssr-visibility-guard",
-      "reason": "Authenticates the documented SSR visibility guard."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates the SSR document-visibility guard without a React/upstream SSR oracle; not React-parity evidence."
     },
     {
       "path": "packages/sonner/tests/state.test.ts",
@@ -36,7 +34,7 @@
     {
       "path": "packages/sonner/tests/toaster.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Checks broad Octane Toaster behavior; React-parity divergence cases live in tests/parity/."
+      "reason": "Checks broad Octane Toaster behavior; it is not a React oracle."
     }
   ]
 }

@@ -69,8 +69,9 @@ export interface ToastIcons {
 	close?: ToastContent;
 }
 
-// OCTANE DIVERGENCE[sonner-native-action-events][adapted:sonner-native-action-events]:
-// callbacks receive native DOM MouseEvents rather than React synthetic events.
+// Divergence note (sonner-native-action-events): callbacks receive native DOM
+// MouseEvents rather than React synthetic events. Authenticated by the ordinary
+// packages/sonner/tests/parity/divergence-contracts.test.ts contract (not parity evidence).
 export type ActionEvent = MouseEvent & { currentTarget: HTMLButtonElement };
 
 export interface Action {

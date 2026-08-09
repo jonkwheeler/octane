@@ -11,7 +11,6 @@ afterEach(async function () {
 });
 
 describe('@octanejs/sonner — Toaster', function () {
-	// @parity-case adapted:sonner-native-action-events
 	it('supports native action/cancel semantics and custom Octane elements', async function () {
 		const root = mountApp(ToasterApp);
 		await settle();
@@ -69,7 +68,6 @@ describe('@octanejs/sonner — Toaster', function () {
 		unmountApp(root);
 	});
 
-	// @parity-case adapted:sonner-normal-ref-prop
 	it('accepts the Toaster host ref as an ordinary prop', async function () {
 		let host: HTMLElement | null = null;
 		const root = mountApp(ToasterApp, {
