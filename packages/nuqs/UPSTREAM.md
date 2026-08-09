@@ -10,7 +10,8 @@
 Nuqs colocates runtime, browser, and type tests with source. This binding does
 **not** vendor a pristine upstream runtime or type suite, and it does not ship
 one-for-one adapted copies of those suites (`upstreamSuites.runtime` and
-`upstreamSuites.types` are therefore `absent`). Evidence here is a
-repo-authored same-fixture differential against `nuqs@2.9.1`, plus Octane-only
-divergence/framework-contract probes, a Node server lane, and repo-authored
-adapted public-API typetests.
+`upstreamSuites.types` are therefore `absent`). Provenance is `verified` with
+repo-authored evidence: a same-fixture differential against `nuqs@2.9.1`, full
+adapted-octane Vitest inventories for conformance/divergence and Node server
+lanes, plus paired pristine (`tsc` vs published `nuqs`) and adapted
+(`tsrx-tsc` vs `@octanejs/nuqs`) public-API typetests.

@@ -9,7 +9,7 @@
     "testRoot": "packages/nuqs/src",
     "license": "MIT",
     "integrity": "sha256:23b331aa1371c760b349b81a26ca87c505e5991c14e23b6fd0ab8759dc3784c5",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "absent",
@@ -24,12 +24,12 @@
     "tests": {
       "roots": ["packages/nuqs/tests"],
       "include": ["\\.test\\.(?:ts|tsx|tsrx)$"],
-      "exclude": []
+      "exclude": ["packages/nuqs/tests/differential/"]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 27,
+    "uniqueIdentities": 27,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -88,7 +88,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "nuqs",
-      "notes": "Repo-authored Octane-only divergence/framework-contract probes (not a one-for-one upstream suite adaptation).",
+      "notes": "Full repo-authored Octane adapted suite (conformance + divergence probes). Upstream suites are absent; this vitest-full lane is the required adapted-octane evidence.",
       "files": [
         {
           "path": "packages/nuqs/tests/conformance/core.test.ts",
@@ -130,8 +130,18 @@
               "fullName": "@octanejs/nuqs documented integration divergences declares TransitionStartFunction without a React type dependency"
             }
           ]
+        },
+        {
+          "path": "packages/nuqs/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "b7dd36e8259094a3f815be3fed1211ce524a037635c0a4b0d183c769c619f4ae"
         }
-      ]
+      ],
+      "evidenceOrigin": "repo-authored",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/nuqs/audit/adapted-runtime.json"
+      }
     },
     {
       "id": "nuqs-server-runtime",
@@ -139,7 +149,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "nuqs-ssr",
-      "notes": "Repo-authored Octane-only Node server probe (not a one-for-one upstream suite adaptation).",
+      "notes": "Full repo-authored Node server suite for the react-free server entry (vitest-full).",
       "files": [
         {
           "path": "packages/nuqs/tests/ssr/server.test.ts",
@@ -152,6 +162,55 @@
               "fullName": "@octanejs/nuqs server entry parses and serializes search params without a DOM or renderer"
             }
           ]
+        },
+        {
+          "path": "packages/nuqs/audit/adapted-runtime-server.json",
+          "role": "support",
+          "sha256": "a07b83005a97e96bcd961b4c2f88181bbca3d032d5c153096cbe3bfefef40a19"
+        }
+      ],
+      "evidenceOrigin": "repo-authored",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/nuqs/audit/adapted-runtime-server.json"
+      }
+    },
+    {
+      "id": "nuqs-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "nuqs-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored public-API typetests compiled with tsc against published nuqs@2.9.1 (upstream type suite absent).",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/nuqs/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/nuqs/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "640b893525e5d1376bf06dc4bfb21bbb55bba7833c06f9bc91c94bd061f711de",
+          "cases": [
+            {
+              "id": "types:nuqs-pristine-public-api",
+              "testName": "Nuqs pristine public declarations",
+              "fullName": "Nuqs pristine public declarations"
+            }
+          ]
+        },
+        {
+          "path": "packages/nuqs/typetests/pristine/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "e9fd835cead7f199740a227f0d62afff02e7e971d0ae0d71948093a795e98207"
+        },
+        {
+          "path": "packages/nuqs/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "ac8f8e2771d0c8f261bcd8776dcd6045d1eb0c70b9452279141aeb26ed012cc8"
         }
       ]
     },

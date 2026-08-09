@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "project": "nuqs-ssr",
+  "roots": ["packages/nuqs/tests"],
+  "files": ["packages/nuqs/tests/ssr/server.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:c3a4e9297864f7e5",
+      "file": "packages/nuqs/tests/ssr/server.test.ts",
+      "fullName": "@octanejs/nuqs server entry parses and serializes search params without a DOM or renderer"
+    }
+  ]
+}
