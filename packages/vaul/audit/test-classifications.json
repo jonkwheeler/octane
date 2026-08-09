@@ -12,6 +12,11 @@
       "oracle": "Adapted Playwright cases from pinned vaul@1.1.2 base/initial-snap/with-handle specs with upstream citations."
     },
     {
+      "path": "packages/vaul/tests/differential/react-oracle.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Same closed trigger/content trees and click-open path against published vaul@1.1.2 on React and @octanejs/vaul; cites base.spec.ts:10."
+    },
+    {
       "path": "packages/vaul/tests/drawer.test.ts",
       "disposition": "adapted-upstream-suite",
       "oracle": "Adapted open/close and controlled close cases from upstream/test/tests/base.spec.ts."
@@ -20,11 +25,6 @@
       "path": "packages/vaul/tests/exports.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks published @octanejs/vaul export keys against pinned vaul@1.1.2; package surface contract, not adapted suite evidence."
-    },
-    {
-      "path": "packages/vaul/tests/react-oracle.test.ts",
-      "disposition": "react-octane-differential",
-      "oracle": "Same closed trigger/content trees and click-open path against published vaul@1.1.2 on React and @octanejs/vaul; cites base.spec.ts:10."
     },
     {
       "path": "packages/vaul/tests/ssr/server.test.ts",
@@ -40,6 +40,21 @@
       "path": "packages/vaul/tests/upstream-original.test.ts",
       "disposition": "unmodified-upstream-suite-wrapper",
       "oracle": "Runs the vendored vaul@1.1.2 Playwright suite unchanged against published React vaul@1.1.2 and checks passed identities against audit/pristine-runtime.json."
+    },
+    {
+      "path": "scripts/react-parity/vaul-classifications-lib.test.mjs",
+      "disposition": "audit-verifier",
+      "reason": "Negative controls for port-authored Vaul test classification completeness."
+    },
+    {
+      "path": "scripts/react-parity/vaul-runtime-lib.test.mjs",
+      "disposition": "audit-verifier",
+      "reason": "Negative controls for adapted runtime structural crosswalk and fixture integrity."
+    },
+    {
+      "path": "scripts/react-parity/vaul-upstream-lib.test.mjs",
+      "disposition": "audit-verifier",
+      "reason": "Negative controls for Vaul upstream SHA inventory verification."
     }
   ]
 }

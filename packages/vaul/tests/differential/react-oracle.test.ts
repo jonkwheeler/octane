@@ -3,8 +3,8 @@ import { act as reactAct } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Drawer as ReactDrawer } from 'vaul';
 import { describe, expect, it } from 'vitest';
-import { act, mount } from '../../octane/tests/_helpers.ts';
-import { DrawerFixture } from './_fixtures/drawer.tsrx';
+import { act, mount } from '../../../octane/tests/_helpers.ts';
+import { DrawerFixture } from '../_fixtures/drawer.tsrx';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
 	true;
@@ -39,6 +39,7 @@ function semanticSnapshot(content: Element | null) {
 describe('vaul v1.1.2 React oracle', () => {
 	// Per upstream/test/tests/base.spec.ts:10 (should open drawer).
 	// Same closed trigger/content trees and click open on React Vaul and @octanejs/vaul.
+	// @parity-case runtime:a739226076100d42
 	it('matches React drawer semantics after opening', async () => {
 		const reactHost = document.createElement('div');
 		document.body.appendChild(reactHost);

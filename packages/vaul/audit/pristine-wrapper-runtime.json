@@ -1,12 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "vaul-pristine",
-  "roots": [
-    "packages/vaul/tests"
-  ],
-  "files": [
-    "packages/vaul/tests/upstream-original.test.ts"
-  ],
+  "roots": ["packages/vaul/tests"],
+  "files": ["packages/vaul/tests/upstream-original.test.ts"],
   "tests": [
     {
       "id": "runtime:53b51464b19981c7",

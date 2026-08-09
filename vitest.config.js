@@ -3603,14 +3603,12 @@ export default defineConfig({
 				},
 			},
 			{
-				// Mixed project: react-parity owns only adapted/differential evidence.
-				// exports.test.ts stays in ordinary shards as an Octane package contract.
+				// Mixed project: react-parity owns only adapted drawer evidence.
+				// Differential evidence lives in vaul-differential. exports.test.ts stays
+				// in ordinary shards as an Octane package contract.
 				testExecution: {
 					group: 'react-parity',
-					include: [
-						'packages/vaul/tests/drawer.test.ts',
-						'packages/vaul/tests/react-oracle.test.ts',
-					],
+					include: ['packages/vaul/tests/drawer.test.ts'],
 				},
 				test: {
 					name: 'vaul',
@@ -3619,6 +3617,7 @@ export default defineConfig({
 						'!packages/vaul/tests/ssr/**/*.test.ts',
 						'!packages/vaul/tests/browser/**/*.test.ts',
 						'!packages/vaul/tests/browser-conformance/**/*.test.ts',
+						'!packages/vaul/tests/differential/**/*.test.ts',
 						'!packages/vaul/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
@@ -3632,6 +3631,25 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/vaul/src/index.tsrx'),
 						},
 					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'vaul-differential',
+					include: ['packages/vaul/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/vaul$/,
+							replacement: resolve(import.meta.dirname, 'packages/vaul/src/index.tsrx'),
+						},
+					],
+					dedupe: ['react', 'react-dom'],
 				},
 			},
 			{

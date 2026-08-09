@@ -20,6 +20,13 @@ async function fixture() {
 		);
 	}
 	await cp(new URL('../../vitest.config.js', import.meta.url), join(root, 'vitest.config.js'));
+	for (const file of [
+		'vaul-classifications-lib.test.mjs',
+		'vaul-runtime-lib.test.mjs',
+		'vaul-upstream-lib.test.mjs',
+	]) {
+		await cp(new URL(`./${file}`, import.meta.url), join(root, `scripts/react-parity/${file}`));
+	}
 	return root;
 }
 
@@ -85,12 +92,23 @@ test('rejects Octane-only ownership drift into the react-parity include set', as
 	const vitestPath = join(root, 'vitest.config.js');
 	const source = await readFile(vitestPath, 'utf8');
 	const drifted = source.replace(
-		"'packages/vaul/tests/react-oracle.test.ts',",
-		"'packages/vaul/tests/react-oracle.test.ts',\n\t\t\t\t\t\t'packages/vaul/tests/exports.test.ts',",
+		"include: ['packages/vaul/tests/drawer.test.ts'],",
+		"include: ['packages/vaul/tests/drawer.test.ts', 'packages/vaul/tests/exports.test.ts'],",
 	);
 	assert.notEqual(drifted, source);
 	await writeFile(vitestPath, drifted);
 	assert.throws(function run() {
 		verifyVaulTestClassifications(root);
 	}, /must not be owned by a react-parity lane/);
+});
+
+test('rejects an unclassified script-side Vaul audit test', async function rejectsUnclassifiedAudit(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await writeFile(join(root, 'scripts/react-parity/vaul-extra-lib.test.mjs'), 'export {};\n');
+	assert.throws(function run() {
+		verifyVaulTestClassifications(root);
+	}, /exactly one classification/);
 });

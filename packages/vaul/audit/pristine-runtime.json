@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "vaul-pristine",
-  "roots": [
-    "packages/vaul/upstream"
-  ],
+  "roots": ["packages/vaul/upstream"],
   "files": [
     "packages/vaul/upstream/test/tests/base.spec.ts",
     "packages/vaul/upstream/test/tests/controlled.spec.ts",

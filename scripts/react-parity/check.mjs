@@ -17,6 +17,7 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyVaulTestClassifications } from './vaul-classifications-lib.mjs';
+import { verifyVaulAdaptedRuntimeStructure } from './vaul-runtime-lib.mjs';
 import { verifyVaulUpstream } from './vaul-upstream-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
@@ -76,6 +77,11 @@ try {
 	verifyVaulTestClassifications(REPO);
 } catch (error) {
 	errors.push(`vaul test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyVaulAdaptedRuntimeStructure(REPO);
+} catch (error) {
+	errors.push(`vaul adapted runtime structural evidence is invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components

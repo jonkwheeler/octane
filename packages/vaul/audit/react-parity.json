@@ -72,12 +72,12 @@
         {
           "path": "packages/vaul/audit/pristine-wrapper-runtime.json",
           "role": "support",
-          "sha256": "ea758bd5ee220cbaee2d7f082d99d84397e684a88f91cd4dd1a9d4473f33850d"
+          "sha256": "ddef24df2b2a74eb3ebc2808bb1a3230ec7d8608d9f8aa94b71f9bd8f20a5b96"
         },
         {
           "path": "packages/vaul/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "e15335e9ca2ef8b3f6ce403ef070a9e92cd47078ded744f001a1d58a9ab8ec4b"
+          "sha256": "76f890356727d99202b0bd4ffec9e9ca74234d6c28a35d499be9704da61e9eaf"
         },
         {
           "path": "packages/vaul/tests/upstream-original.test.ts",
@@ -189,7 +189,7 @@
       "environment": "workspace-node",
       "project": "vaul",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the adapted DOM and React-oracle suite with exact test identities. Export package-contract coverage stays outside this lane.",
+      "notes": "Runs the adapted DOM drawer suite with exact test identities and a structural/semantic crosswalk. Export package-contract coverage and the React oracle stay outside this lane.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/vaul/audit/adapted-runtime.json"
@@ -198,17 +198,64 @@
         {
           "path": "packages/vaul/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "fb57bd842916e828743f0a933957463f035dde3fc7b6ecf8e819b0a7c559f1c9"
+          "sha256": "fb814f7f746072195505e61b9a713e57002083859ab1ca2a6b958338ce5fd745"
+        },
+        {
+          "path": "packages/vaul/audit/adapted-runtime-crosswalk.json",
+          "role": "support",
+          "sha256": "5dab04a7552b8de7da6d9a290618ef84f7cd2ea0162a8feb3a9355dee8450287"
         },
         {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "ff4b3a5c0808697c089a8ba0f33d43e29b933b3cc84999b154c18434691f4419"
+          "sha256": "cdfa4e2e8cb57a66be6da251a781d5a8cff19c77c4c558cc665fe18665aa1bd8"
+        },
+        {
+          "path": "scripts/react-parity/vaul-runtime-lib.mjs",
+          "role": "support",
+          "sha256": "cf7a872acb9ce5ad25cd85926dbc9ed553daefa5bb3ae521a90ab82ec30b94a3"
         },
         {
           "path": "packages/vaul/upstream/SHA256SUMS",
           "role": "support",
           "sha256": "a95445810caa946472b2693d52b59281e2e6350f45a06067d7c42b277b257813"
+        }
+      ]
+    },
+    {
+      "id": "vaul-differential",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "React/Octane differential oracle for the open-drawer scenario against published vaul@1.1.2. Fully owned by the vaul-differential Vitest project so React-side compilation cannot bleed into the adapted suite.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/vaul/audit/adapted-runtime-differential.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/audit/adapted-runtime-differential.json",
+          "role": "support",
+          "sha256": "5a3a8e5a10f30ae8b3b6f1c155ebb5ba27d8b2a7283aae7d2b5c39360698a874"
+        },
+        {
+          "path": "packages/vaul/tests/differential/react-oracle.test.ts",
+          "role": "test",
+          "sha256": "f40b9bbfdb226f925216f80e3e3d43c7c07396d2ccaf66fc631e78e29cbc91ea",
+          "cases": [
+            {
+              "id": "runtime:a739226076100d42",
+              "testName": "matches React drawer semantics after opening",
+              "fullName": "vaul v1.1.2 React oracle matches React drawer semantics after opening"
+            }
+          ]
+        },
+        {
+          "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "cdfa4e2e8cb57a66be6da251a781d5a8cff19c77c4c558cc665fe18665aa1bd8"
         }
       ]
     },
@@ -231,9 +278,19 @@
           "sha256": "97fcdca0432065ba9cf72ad18ef48419cdb10fba0562dbfb4c4aa47934d7b43a"
         },
         {
+          "path": "packages/vaul/audit/adapted-runtime-crosswalk.json",
+          "role": "support",
+          "sha256": "5dab04a7552b8de7da6d9a290618ef84f7cd2ea0162a8feb3a9355dee8450287"
+        },
+        {
           "path": "scripts/react-parity/vaul-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "ff4b3a5c0808697c089a8ba0f33d43e29b933b3cc84999b154c18434691f4419"
+          "sha256": "cdfa4e2e8cb57a66be6da251a781d5a8cff19c77c4c558cc665fe18665aa1bd8"
+        },
+        {
+          "path": "scripts/react-parity/vaul-runtime-lib.mjs",
+          "role": "support",
+          "sha256": "cf7a872acb9ce5ad25cd85926dbc9ed553daefa5bb3ae521a90ab82ec30b94a3"
         },
         {
           "path": "packages/vaul/tests/browser/harness/main.tsrx",

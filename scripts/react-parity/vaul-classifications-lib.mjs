@@ -10,8 +10,10 @@ const DISPOSITIONS = new Set([
 	'react-octane-differential',
 	'octane-only-divergence',
 	'octane-only-framework-contract',
+	'audit-verifier',
 ]);
 const TYPE_TEST_ROOT = 'packages/vaul/tests/types/';
+const AUDIT_TEST_ROOT = 'scripts/react-parity/';
 
 function toPortablePath(root, absolutePath) {
 	return relative(root, absolutePath).split(sep).join('/');
@@ -19,7 +21,7 @@ function toPortablePath(root, absolutePath) {
 
 function discoverPortAuthoredVaulTests(root) {
 	const testsRoot = resolve(root, 'packages/vaul/tests');
-	return readdirSync(testsRoot, { recursive: true, withFileTypes: true })
+	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
 		.filter(function keepClassifiedFiles(entry) {
 			if (!entry.isFile()) return false;
 			const absolute = resolve(entry.parentPath ?? entry.path, entry.name);
@@ -32,26 +34,61 @@ function discoverPortAuthoredVaulTests(root) {
 		})
 		.map(function toPortable(entry) {
 			return toPortablePath(root, resolve(entry.parentPath ?? entry.path, entry.name));
-		})
-		.sort();
+		});
+	const auditRoot = resolve(root, AUDIT_TEST_ROOT);
+	if (existsSync(auditRoot)) {
+		for (const entry of readdirSync(auditRoot, { withFileTypes: true })) {
+			if (!entry.isFile()) continue;
+			if (!/^vaul-.*\.test\.mjs$/.test(entry.name)) continue;
+			discovered.push(toPortablePath(root, resolve(auditRoot, entry.name)));
+		}
+	}
+	return discovered.sort();
 }
 
 function readVaulParityOwnedPaths(root) {
 	const source = readFileSync(resolve(root, VITEST_CONFIG), 'utf8');
-	const nameIndex = source.indexOf("name: 'vaul'");
-	if (nameIndex === -1) throw new Error(`missing vitest project vaul in ${VITEST_CONFIG}`);
-	const before = source.slice(0, nameIndex);
-	const executionIndex = before.lastIndexOf('testExecution:');
-	if (executionIndex === -1) return null;
-	const executionBlock = before.slice(executionIndex, nameIndex);
-	if (!/testExecution:\s*\{[\s\S]*\}\s*,\s*test:\s*\{\s*$/.test(executionBlock)) {
-		return null;
+	const owned = new Set();
+	const projectBlocks = [
+		{ name: 'vaul', whollyOwned: false },
+		{ name: 'vaul-differential', whollyOwned: true },
+		{ name: 'vaul-browser', whollyOwned: true },
+		{ name: 'vaul-pristine', whollyOwned: true },
+	];
+	for (const project of projectBlocks) {
+		const marker = `name: '${project.name}'`;
+		const nameIndex = source.indexOf(marker);
+		if (nameIndex === -1) continue;
+		const before = source.slice(0, nameIndex);
+		const executionIndex = before.lastIndexOf('testExecution:');
+		if (executionIndex === -1) continue;
+		const executionBlock = before.slice(executionIndex, nameIndex);
+		if (!/testExecution:\s*\{[\s\S]*\}\s*,\s*test:\s*\{\s*$/.test(executionBlock)) {
+			continue;
+		}
+		const includeMatch = executionBlock.match(/include:\s*\[([\s\S]*?)\]/);
+		if (includeMatch) {
+			for (const match of includeMatch[1].matchAll(/'([^']+)'/g)) {
+				owned.add(match[1]);
+			}
+			continue;
+		}
+		if (project.whollyOwned || /group:\s*'react-parity'/.test(executionBlock)) {
+			const testBlock = source.slice(nameIndex);
+			const projectInclude = testBlock.match(/include:\s*\[([\s\S]*?)\]/);
+			if (!projectInclude) continue;
+			for (const match of projectInclude[1].matchAll(/'([^']+)'/g)) {
+				const pattern = match[1];
+				if (pattern.startsWith('!')) continue;
+				if (pattern.includes('*')) {
+					owned.add(pattern);
+				} else {
+					owned.add(pattern);
+				}
+			}
+		}
 	}
-	const includeMatch = executionBlock.match(/include:\s*\[([\s\S]*?)\]/);
-	if (!includeMatch) return null;
-	return [...includeMatch[1].matchAll(/'([^']+)'/g)].map(function pathOf(match) {
-		return match[1];
-	});
+	return [...owned];
 }
 
 function pathOwnedByParity(path, ownedPaths) {
@@ -60,12 +97,20 @@ function pathOwnedByParity(path, ownedPaths) {
 			path.startsWith('packages/vaul/tests/') &&
 			path.endsWith('.test.ts') &&
 			!path.includes('/tests/ssr/') &&
-			!path.includes('/tests/browser/') &&
 			!path.includes('/tests/browser-conformance/') &&
 			path !== 'packages/vaul/tests/upstream-original.test.ts'
 		);
 	}
-	return ownedPaths.includes(path);
+	if (ownedPaths.includes(path)) return true;
+	return ownedPaths.some(function matchesGlob(pattern) {
+		if (!pattern.includes('*')) return false;
+		const escaped = pattern
+			.replace(/[.+^${}()|[\]\\]/g, '\\$&')
+			.replace(/\*\*/g, '::DOUBLE::')
+			.replace(/\*/g, '[^/]*')
+			.replace(/::DOUBLE::/g, '.*');
+		return new RegExp(`^${escaped}$`).test(path);
+	});
 }
 
 export function verifyVaulTestClassifications(root) {
@@ -91,6 +136,18 @@ export function verifyVaulTestClassifications(root) {
 	for (const entry of config.tests) {
 		if (!DISPOSITIONS.has(entry.disposition))
 			throw new Error(`${entry.path}: unknown test disposition`);
+		if (entry.disposition === 'audit-verifier') {
+			if (!entry.path.startsWith(AUDIT_TEST_ROOT)) {
+				throw new Error(`${entry.path}: audit-verifier tests must live under ${AUDIT_TEST_ROOT}`);
+			}
+			if (entry.oracle) {
+				throw new Error(`${entry.path}: audit-verifier tests must not claim React parity`);
+			}
+			if (!entry.reason) {
+				throw new Error(`${entry.path}: audit-verifier tests require an explicit reason`);
+			}
+			continue;
+		}
 		if (entry.disposition.startsWith('octane-only-')) {
 			if (!entry.reason)
 				throw new Error(`${entry.path}: Octane-only tests require an explicit reason`);

@@ -5,6 +5,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
+import { verifyVaulAdaptedRuntimeStructure } from './vaul-runtime-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const classifications = JSON.parse(
@@ -22,6 +23,7 @@ const parityOwnedFiles = new Set(
 const lanes = [
 	['vaul', 'packages/vaul/audit/adapted-runtime.json'],
 	['vaul-browser', 'packages/vaul/audit/adapted-runtime-browser.json'],
+	['vaul-differential', 'packages/vaul/audit/adapted-runtime-differential.json'],
 ];
 
 for (const [project, destination] of lanes) {
@@ -71,3 +73,8 @@ for (const [project, destination] of lanes) {
 	writeFileSync(absolute, `${JSON.stringify(inventory, null, 2)}\n`);
 	console.log(`${destination}: ${tests.length} tests`);
 }
+
+const structural = verifyVaulAdaptedRuntimeStructure(root);
+console.log(
+	`adapted runtime structural crosswalk: ${structural.cases} cases across ${structural.projects.join(', ')}`,
+);

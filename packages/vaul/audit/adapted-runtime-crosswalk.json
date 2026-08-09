@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "permittedTransformations": [
+    "Playwright page.getByTestId / getByRole selectors map to Vitest jsdom querySelector / labeled button helpers or Playwright Chromium locators in the browser harness",
+    "Playwright waitForTimeout(ANIMATION_DURATION) maps to act + setTimeout(550) or page.waitForTimeout(550) before asserting drawer content is gone",
+    "Next.js demo routes under upstream/test map to Octane .tsrx fixtures under packages/vaul/tests/_fixtures and packages/vaul/tests/browser/harness",
+    "Playwright test.describe nesting may flatten into Vitest describe/it fullName titles while preserving the cited upstream scenario title in a // Per comment",
+    "data-testid content visibility asserts map to [data-vaul-drawer] presence / null after the exit interval"
+  ],
+  "cases": [
+    {
+      "id": "runtime:6190e5f0dc689735",
+      "lane": "vaul",
+      "project": "vaul",
+      "adaptedFile": "packages/vaul/tests/drawer.test.ts",
+      "adaptedTitle": "opens and closes through the public trigger and close controls",
+      "upstream": {
+        "file": "packages/vaul/upstream/test/tests/base.spec.ts",
+        "titles": ["should open drawer", "should close when `Drawer.Close` is clicked"]
+      },
+      "requiredFragments": [
+        "Open drawer",
+        "Close drawer",
+        "[data-vaul-drawer]",
+        "data-vaul-drawer-direction",
+        "Account settings",
+        "#drawer-state"
+      ],
+      "fixtureFiles": ["packages/vaul/tests/_fixtures/drawer.tsrx"],
+      "fixtureFragments": [
+        "id=\"drawer-state\"",
+        "open={open}",
+        "onOpenChange={setOpen}",
+        "Drawer.Trigger",
+        "Drawer.Close"
+      ]
+    },
+    {
+      "id": "runtime:447e00559bdf66d3",
+      "lane": "vaul",
+      "project": "vaul",
+      "adaptedFile": "packages/vaul/tests/drawer.test.ts",
+      "adaptedTitle": "closes when the controlled open prop is set false",
+      "upstream": {
+        "file": "packages/vaul/upstream/test/tests/base.spec.ts",
+        "titles": ["should close when controlled"]
+      },
+      "requiredFragments": [
+        "Controlled close",
+        "[data-vaul-drawer]",
+        "setTimeout(resolve, 550)",
+        "querySelector('[data-vaul-drawer]')).toBeNull()"
+      ],
+      "fixtureFiles": ["packages/vaul/tests/_fixtures/drawer.tsrx"],
+      "fixtureFragments": ["data-testid=\"controlled-close\"", "open={open}", "setOpen(false)"]
+    },
+    {
+      "id": "runtime:1717c6555e691737",
+      "lane": "vaul-browser",
+      "project": "vaul-browser",
+      "adaptedFile": "packages/vaul/tests/browser/vaul.browser.test.ts",
+      "adaptedTitle": "preserves open/close, focus semantics, styling, and cleanup",
+      "upstream": {
+        "file": "packages/vaul/upstream/test/tests/base.spec.ts",
+        "titles": ["should open drawer", "should close when `Drawer.Close` is clicked"]
+      },
+      "requiredFragments": [
+        "Open drawer",
+        "Close drawer",
+        "[data-vaul-drawer]",
+        "waitForTimeout(550)",
+        "locator('[data-vaul-drawer]').count()",
+        "role",
+        "dialog"
+      ],
+      "fixtureFiles": ["packages/vaul/tests/browser/harness/main.tsrx"],
+      "fixtureFragments": ["Drawer.Root", "Drawer.Trigger", "Drawer.Close", "drawer-state"]
+    },
+    {
+      "id": "runtime:16e2e1a40071846f",
+      "lane": "vaul-browser",
+      "project": "vaul-browser",
+      "adaptedFile": "packages/vaul/tests/browser/vaul.browser.test.ts",
+      "adaptedTitle": "is open and snapped on initial load at the pinned active snap index",
+      "upstream": {
+        "file": "packages/vaul/upstream/test/tests/initial-snap.spec.ts",
+        "titles": ["should be open and snapped on initial load"]
+      },
+      "requiredFragments": [
+        "fixture=initial-snap",
+        "#active-snap-index",
+        "'1'",
+        "--snap-point-height",
+        "652px"
+      ],
+      "fixtureFiles": ["packages/vaul/tests/browser/harness/main.tsrx"],
+      "fixtureFragments": ["initial-snap", "activeSnapPoint", "148px"]
+    },
+    {
+      "id": "runtime:3d95cd646b27393f",
+      "lane": "vaul-browser",
+      "project": "vaul-browser",
+      "adaptedFile": "packages/vaul/tests/browser/vaul.browser.test.ts",
+      "adaptedTitle": "cycles to the next snap point when the handle is clicked",
+      "upstream": {
+        "file": "packages/vaul/upstream/test/tests/with-handle.spec.ts",
+        "titles": ["click should cycle to the next snap point"]
+      },
+      "requiredFragments": [
+        "fixture=with-handle",
+        "[data-vaul-handle]",
+        "#active-snap-index",
+        "355px"
+      ],
+      "fixtureFiles": ["packages/vaul/tests/browser/harness/main.tsrx"],
+      "fixtureFragments": ["with-handle", "Drawer.Handle", "148px", "355px"]
+    }
+  ]
+}
