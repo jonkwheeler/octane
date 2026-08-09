@@ -198,11 +198,12 @@
     },
     {
       "id": "radix-parity-audit-contracts",
-      "type": "adapted-octane",
+      "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "radix-parity-audit",
-      "notes": "Ordinary-shard audit contracts for the vendored boundary and structured renderer adaptations. Not React behavioral parity; kept out of testExecution.group react-parity.",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored ledger/adaptation contracts for the vendored boundary and structured renderer adaptations. Not adapted upstream-suite runtime evidence and not same-fixture React/Octane differentials; kept out of testExecution.group react-parity.",
       "files": [
         {
           "path": "packages/radix/tests/parity/contracts.test.ts",
@@ -240,8 +241,8 @@
       "available": true,
       "environment": "workspace-node",
       "project": "radix-pristine-types",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "Runs tsc --noEmit against the pinned radix-ui@1.6.4 root export surface (upstream package script is typecheck: tsc --noEmit).",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored tsc --noEmit smoke against the pinned radix-ui@1.6.4 root export surface. Not a one-for-one port of an upstream typecheck project.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -274,8 +275,8 @@
       "available": true,
       "environment": "workspace-node",
       "project": "radix-adapted-types",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "Adapted Octane root type surface via tsrx-tsc, including unstable_* renames and Slot descriptor typing.",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored tsrx-tsc smoke of the Octane root type surface, including unstable_* renames and Slot descriptor typing. Not a one-for-one adapted upstream type suite.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",

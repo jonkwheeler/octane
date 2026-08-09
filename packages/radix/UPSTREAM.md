@@ -48,10 +48,11 @@ Octane also exposes composition substrates that are not unified root exports (`A
 
 - Differential lane: all 16 collected same-fixture scenarios against `@octanejs/radix` and the
   pinned real `radix-ui` package (byte-identical DOM).
-- Type lanes: pristine `tsc` against the pinned `radix-ui` root surface and adapted `tsrx-tsc`
-  against `@octanejs/radix`.
+- Type lanes: repo-authored pristine `tsc` and adapted `tsrx-tsc` root-export smokes (not a
+  one-for-one upstream type suite).
 - Ordinary audit contracts: authenticate the vendored boundary and keep the Slot descriptor /
-  ref-as-prop adaptations explicit. Those contracts are not React-oracle parity evidence.
+  ref-as-prop adaptations explicit. Those contracts are repo-authored ledger evidence, not an
+  adapted upstream runtime suite.
 
 The other local tests are Octane framework contracts. They cover additional component behavior but
 are not counted as React parity. The differential suite is bounded jsdom evidence, not exhaustive
