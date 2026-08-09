@@ -45,7 +45,7 @@
       "path": "Transition-test.js",
       "disposition": "pristine-oracle-adapted",
       "caseCount": 18,
-      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/Transition.test.ts. The upstream findDOMNode-without-nodeRef case is recorded as not-applicable in audit/case-crosswalk.json.",
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/Transition.test.ts. Both upstream findDOMNode cases are recorded as not-applicable in audit/case-crosswalk.json.",
       "adaptedEvidence": ["packages/react-transition-group/tests/upstream/Transition.test.ts"]
     },
     {

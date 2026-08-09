@@ -179,6 +179,20 @@ export function NullRenderGroupProbe(props: { active: boolean }) @{
 	<TransitionGroup children={child} />
 }
 
+function ConditionalHostChild(props: { show: boolean }) {
+	if (!props.show) return null;
+	return <div id="conditional-host" />;
+}
+
+export function ConditionalHostGroupProbe(props: { show: boolean }) @{
+	<TransitionGroup
+		appear={true}
+		children={<CSSTransition key="child" classNames="yolo" timeout={0} appear>
+			<ConditionalHostChild show={props.show} />
+		</CSSTransition>}
+	/>
+}
+
 export function CloningWrapper(props: { children?: unknown }) @{
 	const mapped = Children.map(props.children, function cloneChild(child) {
 		if (child == null) return null;
@@ -247,6 +261,15 @@ export function SwitchTransitionProbe(props: SwitchProbeProps) @{
 						<span ref={nodeRef} id="switch-status">{props.keyId + ' status: ' + status}</span>}
 				</Transition>;
 	<SwitchTransition mode={props.mode} children={child} />
+}
+
+export function SwitchTransitionStaticChildProbe() @{
+	const nodeRef = useRef<HTMLSpanElement | null>(null);
+	<SwitchTransition
+		children={<Transition key="first" nodeRef={nodeRef} timeout={0}>
+			<span ref={nodeRef} />
+		</Transition>}
+	/>
 }
 
 export type GroupChildProbeProps = {

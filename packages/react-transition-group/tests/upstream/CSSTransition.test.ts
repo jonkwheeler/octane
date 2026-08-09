@@ -21,9 +21,8 @@ describe('CSSTransition', function cssTransitionSuite() {
 			shown: false,
 			timeout: 0,
 			classNames: 'test',
-			className: 'test-class',
 		});
-		expect(view.container.querySelector('#css-node')?.classList.contains('test-class')).toBe(true);
+		expect(view.container.querySelector('#css-node')?.classList.contains('test-class')).toBe(false);
 		await act(function enter() {
 			view.update(CSSTransitionProbe, {
 				shown: true,

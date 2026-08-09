@@ -21,6 +21,16 @@ async function fixture() {
 		join(root, 'packages/react-transition-group/tests/upstream'),
 		{ recursive: true },
 	);
+	await mkdir(join(root, 'packages/react-transition-group/tests/_fixtures'), {
+		recursive: true,
+	});
+	await cp(
+		new URL(
+			'../../packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx',
+			import.meta.url,
+		),
+		join(root, 'packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx'),
+	);
 	await mkdir(join(root, 'packages/react-transition-group/tests/ssr'), { recursive: true });
 	await cp(
 		new URL(
@@ -31,6 +41,7 @@ async function fixture() {
 	);
 	for (const file of [
 		'SHA256SUMS',
+		'adapted-evidence.SHA256SUMS',
 		'upstream-test-dispositions.json',
 		'case-crosswalk.json',
 		'adapted-runtime.json',
@@ -52,8 +63,8 @@ test('accepts the committed upstream dispositions and case inventory', async fun
 	const summary = verifyReactTransitionGroupUpstream(root);
 	assert.equal(summary.artifacts, 11);
 	assert.equal(summary.cases, collectUpstreamCaseInventory(root).length);
-	assert.equal(summary.adaptedCases, 55);
-	assert.equal(summary.notApplicableCases, 1);
+	assert.equal(summary.adaptedCases, 54);
+	assert.equal(summary.notApplicableCases, 2);
 	assert.ok(summary.cases > 0);
 });
 
@@ -239,4 +250,36 @@ test('rejects duplicate adapted titles sharing one inventory identity', async fu
 	assert.throws(function run() {
 		verifyReactTransitionGroupUpstream(root);
 	}, /adapted inventory is missing identity for "should fire callbacks"|missing identity for should fire callbacks/);
+});
+
+test('rejects deleting assertions from an adapted case', async function rejectsDeletedAssertions(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const adaptedPath = join(
+		root,
+		'packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+	);
+	const source = await readFile(adaptedPath, 'utf8');
+	await writeFile(adaptedPath, source.replace(/expect\([^;]+;/g, 'void 0;'));
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /adapted assertion\/fixture inventory drifted/);
+});
+
+test('rejects fixture drift in adapted upstream probes', async function rejectsFixtureDrift(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const fixturePath = join(
+		root,
+		'packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx',
+	);
+	const source = await readFile(fixturePath, 'utf8');
+	await writeFile(fixturePath, `${source}\n// fixture drift\n`);
+	assert.throws(function run() {
+		verifyReactTransitionGroupUpstream(root);
+	}, /adapted assertion\/fixture inventory drifted/);
 });

@@ -130,11 +130,19 @@ describe('Transition', function transitionSuite() {
 			timeout: {},
 		});
 		expect(view.container.querySelector('#status')?.textContent).toBe('status: entered');
+		let calledAfterTimeout = false;
+		setTimeout(function markLate() {
+			calledAfterTimeout = true;
+		}, 10);
 		await act(function exit() {
 			view.update(TransitionStatusProbe, {
 				shown: false,
 				timeout: {},
 				onExited: function onExited() {
+					expect(view.container.querySelector('#status')?.textContent).toBe('status: exited');
+					if (calledAfterTimeout) {
+						throw new Error('wrong timeout');
+					}
 					done = true;
 				},
 			});
@@ -144,22 +152,6 @@ describe('Transition', function transitionSuite() {
 		});
 		expect(done).toBe(true);
 		expect(view.container.querySelector('#status')?.textContent).toBe('status: exited');
-		view.unmount();
-	});
-
-	// Per path: packages/react-transition-group/upstream/test/Transition-test.js:215-229
-	// Upstream asserts findDOMNode is unused when nodeRef is set. Octane has no
-	// findDOMNode; this case proves nodeRef-driven lifecycle still completes.
-	it('should not use `React.findDOMNode` when `nodeRef` is provided', async function nodeRefPath() {
-		const view = mount(TransitionStatusProbe, {
-			shown: true,
-			appear: true,
-			timeout: 0,
-		});
-		await act(function flush() {
-			vi.runAllTimers();
-		});
-		expect(view.container.querySelector('#status')?.textContent).toBe('status: entered');
 		view.unmount();
 	});
 

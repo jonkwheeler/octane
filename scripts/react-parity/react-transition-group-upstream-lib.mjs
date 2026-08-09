@@ -8,11 +8,17 @@ const PACKAGE_ROOT = 'packages/react-transition-group';
 const UPSTREAM_ROOT = `${PACKAGE_ROOT}/upstream`;
 const UPSTREAM_TEST_ROOT = `${UPSTREAM_ROOT}/test`;
 const INVENTORY_PATH = `${PACKAGE_ROOT}/audit/SHA256SUMS`;
+const ADAPTED_EVIDENCE_INVENTORY_PATH = `${PACKAGE_ROOT}/audit/adapted-evidence.SHA256SUMS`;
 const DISPOSITION_PATH = `${PACKAGE_ROOT}/audit/upstream-test-dispositions.json`;
 const CROSSWALK_PATH = `${PACKAGE_ROOT}/audit/case-crosswalk.json`;
 const ADAPTED_INVENTORIES = [
 	`${PACKAGE_ROOT}/audit/adapted-runtime.json`,
 	`${PACKAGE_ROOT}/audit/adapted-runtime-server.json`,
+];
+const ADAPTED_EVIDENCE_ROOTS = [
+	`${PACKAGE_ROOT}/tests/upstream`,
+	`${PACKAGE_ROOT}/tests/ssr/upstream-import.test.ts`,
+	`${PACKAGE_ROOT}/tests/_fixtures/upstream-probes.tsrx`,
 ];
 
 const SUPPORT_ARTIFACTS = new Set(['.eslintrc.yml', 'setup.js', 'setupAfterEnv.js', 'utils.js']);
@@ -60,6 +66,35 @@ export function renderReactTransitionGroupUpstreamInventory(repoRoot) {
 		.map(function lineFor(file) {
 			const digest = createHash('sha256').update(readFileSync(file)).digest('hex');
 			return `${digest}  upstream/${portableRelative(upstreamRoot, file)}`;
+		})
+		.join('\n')}\n`;
+}
+
+function listAdaptedEvidenceFiles(repoRoot) {
+	const files = [];
+	for (const root of ADAPTED_EVIDENCE_ROOTS) {
+		const absolute = resolve(repoRoot, root);
+		if (!existsSync(absolute)) {
+			throw new Error(`missing adapted evidence root: ${root}`);
+		}
+		if (statSync(absolute).isFile()) {
+			files.push(absolute);
+			continue;
+		}
+		for (const file of filesBelow(absolute)) {
+			if (file.endsWith('.test.ts') || file.endsWith('.tsrx')) {
+				files.push(file);
+			}
+		}
+	}
+	return files.sort();
+}
+
+export function renderReactTransitionGroupAdaptedEvidenceInventory(repoRoot) {
+	return `${listAdaptedEvidenceFiles(repoRoot)
+		.map(function lineFor(file) {
+			const digest = createHash('sha256').update(readFileSync(file)).digest('hex');
+			return `${digest}  ${portableRelative(repoRoot, file)}`;
 		})
 		.join('\n')}\n`;
 }
@@ -400,6 +435,17 @@ export function verifyReactTransitionGroupUpstream(repoRoot) {
 	}
 
 	const crosswalk = verifyCaseCrosswalk(repoRoot, inventoriedCases);
+
+	const expectedAdaptedEvidence = readFileSync(
+		resolve(repoRoot, ADAPTED_EVIDENCE_INVENTORY_PATH),
+		'utf8',
+	);
+	const actualAdaptedEvidence = renderReactTransitionGroupAdaptedEvidenceInventory(repoRoot);
+	if (actualAdaptedEvidence !== expectedAdaptedEvidence) {
+		throw new Error(
+			'react-transition-group adapted assertion/fixture inventory drifted; review and record the change',
+		);
+	}
 
 	return {
 		artifacts: artifacts.length,

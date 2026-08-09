@@ -6,6 +6,7 @@ import { act, mount } from '../../../octane/tests/_helpers.ts';
 import {
 	CallbackRefGroupProbe,
 	CloningWrapper,
+	ConditionalHostGroupProbe,
 	CSSTransitionGroupProbe,
 	NullRenderGroupProbe,
 	TransitionGroupCountProbe,
@@ -208,9 +209,9 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 
 	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:226-257
 	it('should handle unmounted elements properly', async function unmountedElements() {
-		const view = mount(CSSTransitionGroupProbe, { items: ['child'], appear: true });
-		await act(function hide() {
-			view.update(CSSTransitionGroupProbe, { items: [], appear: true });
+		const view = mount(ConditionalHostGroupProbe, { show: true });
+		await act(function hideHost() {
+			view.update(ConditionalHostGroupProbe, { show: false });
 		});
 		await act(function flush() {
 			vi.runAllTimers();

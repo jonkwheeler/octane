@@ -1,7 +1,10 @@
 // Ported from react-transition-group@4.4.5 test/SwitchTransition-test.js (jest → vitest, octane runtime).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, mount } from '../../../octane/tests/_helpers.ts';
-import { SwitchTransitionProbe } from '../_fixtures/upstream-probes.tsrx';
+import {
+	SwitchTransitionProbe,
+	SwitchTransitionStaticChildProbe,
+} from '../_fixtures/upstream-probes.tsrx';
 
 describe('SwitchTransition', function switchSuite() {
 	beforeEach(function useFake() {
@@ -36,8 +39,8 @@ describe('SwitchTransition', function switchSuite() {
 
 	// Per path: packages/react-transition-group/upstream/test/SwitchTransition-test.js:87-99
 	it('should work without childs', function withoutChilds() {
-		expect(function renderEmpty() {
-			const view = mount(SwitchTransitionProbe, { keyId: null });
+		expect(function renderStaticChild() {
+			const view = mount(SwitchTransitionStaticChildProbe, {});
 			view.unmount();
 		}).not.toThrow();
 	});

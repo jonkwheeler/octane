@@ -38,8 +38,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 55,
-    "uniqueIdentities": 55,
+    "inventoryEntries": 53,
+    "uniqueIdentities": 53,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -77,17 +77,17 @@
         {
           "path": "packages/react-transition-group/audit/upstream-test-dispositions.json",
           "role": "support",
-          "sha256": "7781204d33906bcc575d857fddb43dd4c874980c99c0e11703fddae1a3575bb2"
+          "sha256": "ac7eea51bb73906112a440014e73bf0c8ee90a4825a15bc04ddf585ddd1d1a4e"
         },
         {
           "path": "packages/react-transition-group/audit/case-crosswalk.json",
           "role": "support",
-          "sha256": "8512ae96cd7a3301b2eff0035780e0fe374ffd747fac505e30e207d9006ea910"
+          "sha256": "3263c8d9ac32e686aea23a30ce6c2c927a6f895888f4f22eab22203fcc59eb55"
         },
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "5462b6369303be440d180239e36ddee000e58e68dd98d31a79325f3d35b768d9"
+          "sha256": "f1e944e1f78bddb2ea4c13c508f50af6e88094c588aa94f5145466eca4243000"
         },
         {
           "path": "packages/react-transition-group/audit/adapted-runtime-server.json",
@@ -122,7 +122,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.mjs",
           "role": "support",
-          "sha256": "7dfc92c0188c50f4dd873f7da45421901333f3dfb17472d027571a81d5cd23b3"
+          "sha256": "16fa9d5b0c3db5c48193e6f3b375a644624909054c25681d933b5da9b057e679"
         },
         {
           "path": "scripts/react-parity/react-transition-group-upstream.mjs",
@@ -132,12 +132,17 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.test.mjs",
           "role": "support",
-          "sha256": "89179479aadb329ace3a6d7c43256cfbe261c5b62f6939560bd492966272d928"
+          "sha256": "861eb2711732116ee9a6ed85bd5dc4f34bb0e24a183f19c208009eae7b77ef12"
         },
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",
           "role": "support",
           "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
+        },
+        {
+          "path": "packages/react-transition-group/audit/adapted-evidence.SHA256SUMS",
+          "role": "support",
+          "sha256": "65a211950afe6a50a629417925d2d18d1a7de73a6d720a47fa574690dfe96cd1"
         }
       ]
     },
@@ -157,7 +162,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "5462b6369303be440d180239e36ddee000e58e68dd98d31a79325f3d35b768d9"
+          "sha256": "f1e944e1f78bddb2ea4c13c508f50af6e88094c588aa94f5145466eca4243000"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",

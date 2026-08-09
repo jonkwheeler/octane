@@ -372,10 +372,8 @@
       "upstreamFile": "test/Transition-test.js",
       "upstreamTitle": "should not use `React.findDOMNode` when `nodeRef` is provided",
       "upstreamLine": 215,
-      "disposition": "adapted",
-      "adaptedFile": "packages/react-transition-group/tests/upstream/Transition.test.ts",
-      "adaptedTitle": "should not use `React.findDOMNode` when `nodeRef` is provided",
-      "citation": "packages/react-transition-group/upstream/test/Transition-test.js:215-229"
+      "disposition": "not-applicable",
+      "rationale": "Octane has no ReactDOM.findDOMNode to spy on; the only upstream observable is that findDOMNode is unused when nodeRef is set. NodeRef lifecycle coverage lives in Octane-only transition tests, outside parity ownership."
     },
     {
       "upstreamFile": "test/Transition-test.js",

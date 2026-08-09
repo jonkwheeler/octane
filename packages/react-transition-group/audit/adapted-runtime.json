@@ -179,11 +179,6 @@
       "fullName": "Transition should not transition on mount"
     },
     {
-      "id": "runtime:b567c4351e7cc9ee",
-      "file": "packages/react-transition-group/tests/upstream/Transition.test.ts",
-      "fullName": "Transition should not use `React.findDOMNode` when `nodeRef` is provided"
-    },
-    {
       "id": "runtime:d10e6200fc171d3d",
       "file": "packages/react-transition-group/tests/upstream/Transition.test.ts",
       "fullName": "Transition should pass filtered props to children"
