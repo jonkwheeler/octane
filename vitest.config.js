@@ -1207,6 +1207,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-store-pristine',
 					include: ['packages/tanstack-store/tests/upstream-original.test.ts'],
