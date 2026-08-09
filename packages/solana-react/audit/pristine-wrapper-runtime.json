@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "project": "solana-react-pristine",
+  "roots": ["packages/solana-react/tests"],
+  "files": ["packages/solana-react/tests/upstream-original.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:37f7d425358cd7ab",
+      "file": "packages/solana-react/tests/upstream-original.test.ts",
+      "fullName": "runs the pinned @solana/react 7.0.0 client-provider suite unchanged"
+    }
+  ]
+}

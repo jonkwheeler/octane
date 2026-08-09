@@ -28,15 +28,18 @@
   "files": [
     "src",
     "README.md",
-    "status.json"
+    "status.json",
+    "UPSTREAM.md"
   ],
   "exports": {
     ".": "./src/index.ts",
     "./query": "./src/query.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project solana-react",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+    "test": "vitest run --root ../.. --project solana-react --project solana-react-adapted --project solana-react-pristine",
+    "test:upstream": "node scripts/run-pristine-upstream.mjs",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json",
+    "upstream:verify": "node scripts/verify-upstream.mjs"
   },
   "dependencies": {
     "@solana/kit": "7.0.0",
@@ -48,8 +51,14 @@
   },
   "devDependencies": {
     "@solana/react": "7.0.0",
+    "@testing-library/react": "catalog:livestore-react-oracle",
+    "@types/react": "catalog:livestore-react-oracle",
+    "@types/react-dom": "catalog:livestore-react-oracle",
     "@wallet-standard/react": "1.0.3",
     "octane": "workspace:*",
+    "react": "catalog:livestore-react-oracle",
+    "react-dom": "catalog:livestore-react-oracle",
+    "react-error-boundary": "catalog:default",
     "vitest": "catalog:default"
   }
 }

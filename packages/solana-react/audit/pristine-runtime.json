@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "project": "solana-react-pristine",
+  "roots": ["packages/solana-react/upstream"],
+  "files": [
+    "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+    "packages/solana-react/upstream/src/__tests__/useClientCapability-test.browser.tsx"
+  ],
+  "tests": [
+    {
+      "id": "runtime:af11bdcfc924b912",
+      "file": "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+      "fullName": "ClientProvider + useClient async client lets a rejected client promise propagate to the nearest error boundary"
+    },
+    {
+      "id": "runtime:bc04c30958a1d14d",
+      "file": "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+      "fullName": "ClientProvider + useClient async client renders the children once the client promise has resolved"
+    },
+    {
+      "id": "runtime:069a598bd8d08378",
+      "file": "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+      "fullName": "ClientProvider + useClient async client suspends while the promise is pending"
+    },
+    {
+      "id": "runtime:f794d86a35291f77",
+      "file": "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+      "fullName": "ClientProvider + useClient lets the nearest provider win for nested mounts"
+    },
+    {
+      "id": "runtime:2c700595d693f940",
+      "file": "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+      "fullName": "ClientProvider + useClient publishes the client to descendants and returns the same reference across renders"
+    },
+    {
+      "id": "runtime:bb37f457abd4ea9f",
+      "file": "packages/solana-react/upstream/src/__tests__/ClientProvider-test.browser.tsx",
+      "fullName": "ClientProvider + useClient throws SolanaError MISSING_PROVIDER when `useClient` is called outside a provider"
+    },
+    {
+      "id": "runtime:a21f61c2db931c07",
+      "file": "packages/solana-react/upstream/src/__tests__/useClientCapability-test.browser.tsx",
+      "fullName": "useClientCapability reports every missing entry when several capabilities are absent"
+    },
+    {
+      "id": "runtime:2ba5d02a011dfc59",
+      "file": "packages/solana-react/upstream/src/__tests__/useClientCapability-test.browser.tsx",
+      "fullName": "useClientCapability reports only the missing entries when capability is an array"
+    },
+    {
+      "id": "runtime:5520952918ca590f",
+      "file": "packages/solana-react/upstream/src/__tests__/useClientCapability-test.browser.tsx",
+      "fullName": "useClientCapability returns the client when the capability is present"
+    },
+    {
+      "id": "runtime:ded9f6944425a643",
+      "file": "packages/solana-react/upstream/src/__tests__/useClientCapability-test.browser.tsx",
+      "fullName": "useClientCapability throws MISSING_CAPABILITY with hookName + providerHint when the capability is absent"
+    },
+    {
+      "id": "runtime:98bd911272e70782",
+      "file": "packages/solana-react/upstream/src/__tests__/useClientCapability-test.browser.tsx",
+      "fullName": "useClientCapability underlying useClient throws MISSING_PROVIDER outside a provider"
+    }
+  ],
+  "snapshots": 0
+}

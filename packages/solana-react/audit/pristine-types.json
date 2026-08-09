@@ -1,0 +1,10 @@
+[
+  {
+    "path": "public-api.test-d.ts",
+    "sha256": "9738f9c9c9d4cae45fa5b9fce96d748b69afb0c5f66def9f053edb02640a314d",
+    "assertionGroups": [
+      "67f6673cedb5999145659973fdd03442cf223c0597bec07b28df3c81a770cda8",
+      "653f9693267bd24fc350066913ae5d2d3e599c65932da42aa84c679f9fddadc4"
+    ]
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "project": "solana-react-adapted",
+  "roots": ["packages/solana-react/tests/upstream"],
+  "files": [
+    "packages/solana-react/tests/upstream/client-provider.test.ts",
+    "packages/solana-react/tests/upstream/use-client-capability.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:806d9535524f1602",
+      "file": "packages/solana-react/tests/upstream/client-provider.test.ts",
+      "fullName": "ClientProvider + useClient lets the nearest provider win for nested mounts"
+    },
+    {
+      "id": "runtime:d6356bc291ebe4f3",
+      "file": "packages/solana-react/tests/upstream/client-provider.test.ts",
+      "fullName": "ClientProvider + useClient publishes the client to descendants and returns the same reference across renders"
+    },
+    {
+      "id": "runtime:081816f027c70cc0",
+      "file": "packages/solana-react/tests/upstream/client-provider.test.ts",
+      "fullName": "ClientProvider + useClient throws when `useClient` is called outside a provider"
+    },
+    {
+      "id": "runtime:ad59fa9b59c507a2",
+      "file": "packages/solana-react/tests/upstream/use-client-capability.test.ts",
+      "fullName": "useClientCapability reports the first missing entry when capability is an array"
+    },
+    {
+      "id": "runtime:802ea218a4c064aa",
+      "file": "packages/solana-react/tests/upstream/use-client-capability.test.ts",
+      "fullName": "useClientCapability returns the client when the capability is present"
+    },
+    {
+      "id": "runtime:d19263abe251ae27",
+      "file": "packages/solana-react/tests/upstream/use-client-capability.test.ts",
+      "fullName": "useClientCapability throws with hookName + providerHint when the capability is absent"
+    }
+  ]
+}
