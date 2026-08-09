@@ -244,6 +244,36 @@ describe('useRequestQuery', () => {
 			result.unmount();
 		});
 
+		// Kit PendingRpcRequest duck-types also expose `send`; prefer reactiveStore().
+		it('prefers reactiveStore over send when both are present', async () => {
+			const dispatchAsync = vi.fn(async function dispatch() {
+				return 'reactive';
+			});
+			const withSignal = vi.fn(function wrap(_signal: AbortSignal) {
+				return { dispatchAsync };
+			});
+			const send = vi.fn(async function sendPath() {
+				return 'send';
+			});
+			const source = {
+				reactiveStore() {
+					return { withSignal, dispatchAsync };
+				},
+				send,
+			} as unknown as ReactiveActionSource<string>;
+			const result = mount(RequestQueryApp, {
+				client,
+				queryKey: ['prefer-reactive'],
+				source,
+			});
+			await flush();
+			expect(withSignal).toHaveBeenCalledTimes(1);
+			expect(dispatchAsync).toHaveBeenCalledTimes(1);
+			expect(send).not.toHaveBeenCalled();
+			expect(result.find('#data').textContent).toBe('reactive');
+			result.unmount();
+		});
+
 		// Per upstream/src/query/__tests__/useRequestQuery-test.browser.tsx:249.
 		it('surfaces the rejection as `error`', async () => {
 			const boom = new Error('boom');

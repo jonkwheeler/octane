@@ -36,8 +36,8 @@
 		}
 	},
 	"adaptedRuntimeSummary": {
-		"inventoryEntries": 18,
-		"uniqueIdentities": 18,
+		"inventoryEntries": 19,
+		"uniqueIdentities": 19,
 		"duplicateEntriesWithinLanes": 0,
 		"identitiesSharedAcrossLanes": 0
 	},
@@ -133,7 +133,7 @@
 				{
 					"path": "packages/solana-react/audit/adapted-runtime.json",
 					"role": "support",
-					"sha256": "0ff391463318366c0f46bb3bf3a2eb5bb60c6aa77ad8ab7783eb5d5dd9fea47d"
+					"sha256": "2be9734322e6672751931689836c6bffa07fd05e2161e90121a0023ef047e060"
 				},
 				{
 					"path": "vitest.config.js",

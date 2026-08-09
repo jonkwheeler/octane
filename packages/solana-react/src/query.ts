@@ -47,10 +47,12 @@ function isReactiveSource<T>(source: object): source is ReactiveActionSource<T> 
 
 async function dispatchSource<T>(source: RequestSource<T>, signal: AbortSignal): Promise<T> {
 	if (typeof source === 'function') return source(signal);
-	if (isSendSource<T>(source)) return source.send({ abortSignal: signal });
+	// Kit PendingRpcRequest exposes both reactiveStore() and send(); prefer the
+	// ReactiveActionSource path so getAbortSignal/withSignal composition matches upstream.
 	if (isReactiveSource<T>(source)) {
 		return source.reactiveStore().withSignal(signal).dispatchAsync();
 	}
+	if (isSendSource<T>(source)) return source.send({ abortSignal: signal });
 	throw new Error('useRequestQuery: unsupported request source');
 }
 
