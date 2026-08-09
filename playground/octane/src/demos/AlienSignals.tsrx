@@ -8,14 +8,22 @@ import {
 } from '@octanejs/alien-signals';
 
 const countSignal = createSignal(1);
-const doubledSignal = createComputed(() => countSignal() * 2);
+const doubledSignal = createComputed(function doubleCount() {
+	return countSignal() * 2;
+});
+
+function effectRegionMount() {
+	// No signal reads: cleanup must run only when the region unmounts, not on
+	// every parent re-render or count update.
+	console.info('[alien-signals] effect region mounted');
+	return function cleanup() {
+		console.info('[alien-signals] effect cleanup');
+	};
+}
 
 function EffectRegion() @{
 	const count = useSignalValue(countSignal);
-	useSignalEffect(() => {
-		console.info(`[alien-signals] effect count=${countSignal()}`);
-		return () => console.info('[alien-signals] effect cleanup');
-	});
+	useSignalEffect(effectRegionMount);
 
 	<p id="alien-signals-effect">{'Effect region is observing ' + count}</p>
 }
@@ -33,7 +41,13 @@ export function AlienSignalsDemo() @{
 
 		<div class="panel">
 			<div class="row">
-				<button id="alien-signals-decrement" class="btn" onClick={() => setCount(count - 1)}>
+				<button
+					id="alien-signals-decrement"
+					class="btn"
+					onClick={function decrement() {
+						setCount(count - 1);
+					}}
+				>
 					−
 				</button>
 				<strong id="alien-signals-count">{'Count: ' + count}</strong>
@@ -41,7 +55,11 @@ export function AlienSignalsDemo() @{
 				<button
 					id="alien-signals-increment"
 					class="btn"
-					onClick={() => setCount((value) => value + 1)}
+					onClick={function increment() {
+						setCount(function next(value) {
+							return value + 1;
+						});
+					}}
 				>
 					+
 				</button>
@@ -49,7 +67,11 @@ export function AlienSignalsDemo() @{
 			<button
 				id="alien-signals-toggle-effect"
 				class="btn"
-				onClick={() => setShowEffect((value) => !value)}
+				onClick={function toggleEffect() {
+					setShowEffect(function next(value) {
+						return !value;
+					});
+				}}
 			>
 				{showEffect ? 'Unmount effect region' : 'Mount effect region'}
 			</button>

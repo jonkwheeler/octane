@@ -16,10 +16,15 @@ describe('Alien Signals playground demo', () => {
 			expect(result.find('#alien-signals-count').textContent).toBe('Count: 1');
 			expect(result.find('#alien-signals-doubled').textContent).toBe('Doubled: 2');
 
+			expect(info).toHaveBeenCalledWith('[alien-signals] effect region mounted');
+			info.mockClear();
+
 			result.click('#alien-signals-increment');
 			await nextPaint();
 			expect(result.find('#alien-signals-count').textContent).toBe('Count: 2');
 			expect(result.find('#alien-signals-doubled').textContent).toBe('Doubled: 4');
+			expect(result.find('#alien-signals-effect').textContent).toBe('Effect region is observing 2');
+			expect(info).not.toHaveBeenCalledWith('[alien-signals] effect cleanup');
 
 			result.click('#alien-signals-toggle-effect');
 			await nextPaint();
