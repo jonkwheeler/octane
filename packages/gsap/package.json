@@ -40,7 +40,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project gsap --project gsap-ssr --project gsap-adapted --project gsap-differential"
+    "test": "vitest run --root ../.. --project gsap --project gsap-ssr --project gsap-differential"
   },
   "peerDependencies": {
     "gsap": "^3.12.5",

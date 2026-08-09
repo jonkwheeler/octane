@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "gsap-differential",
-  "roots": ["packages/gsap/tests/parity"],
+  "roots": ["packages/gsap/tests/differential"],
   "files": ["packages/gsap/tests/differential/parity.test.ts"],
   "tests": [
     {

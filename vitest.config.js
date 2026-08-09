@@ -3435,27 +3435,8 @@ export default defineConfig({
 					include: [
 						'packages/gsap/tests/**/*.test.ts',
 						'!packages/gsap/tests/ssr/**/*.test.ts',
-						'!packages/gsap/tests/parity/**/*.test.ts',
 						'!packages/gsap/tests/differential/**/*.test.ts',
 					],
-					environment: 'jsdom',
-					globals: false,
-				},
-				plugins: [octane()],
-				resolve: {
-					alias: [
-						{
-							find: /^@octanejs\/gsap$/,
-							replacement: resolve(import.meta.dirname, 'packages/gsap/src/index.ts'),
-						},
-					],
-				},
-			},
-			{
-				testExecution: { group: 'react-parity' },
-				test: {
-					name: 'gsap-adapted',
-					include: ['packages/gsap/tests/parity/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},

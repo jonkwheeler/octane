@@ -31,14 +31,14 @@ upstream counterpart.
 
 | Upstream surface | Octane status | Evidence |
 | --- | --- | --- |
-| `useGSAP(callback?, dependenciesOrConfig?)` | Ported. Callback, positional dependency, and config signatures are supported. | `tests/parity/lifecycle.test.ts`; `tests/differential/parity.test.ts`; `typetests/adapted/types.test-d.ts` |
-| Returned `context` | Ported with stable component-lifetime identity. | `tests/parity/lifecycle.test.ts`; `tests/differential/parity.test.ts` |
-| Returned `contextSafe` | Ported with stable identity and GSAP context registration. | `tests/parity/lifecycle.test.ts`; `tests/differential/parity.test.ts` |
+| `useGSAP(callback?, dependenciesOrConfig?)` | Ported. Callback, positional dependency, and config signatures are supported. | `tests/use-gsap.test.ts`; `tests/differential/parity.test.ts`; `typetests/adapted/types.test-d.ts` |
+| Returned `context` | Ported with stable component-lifetime identity. | `tests/use-gsap.test.ts`; `tests/differential/parity.test.ts` |
+| Returned `contextSafe` | Ported with stable identity and GSAP context registration. | `tests/use-gsap.test.ts`; `tests/differential/parity.test.ts` |
 | Config `scope` | Ported for selector, element, and ref-like values. | `tests/_fixtures/app.tsrx`; `typetests/adapted/types.test-d.ts` |
 | Config `dependencies` | Ported, including upstream's distinction between an absent property and explicit `undefined` or `null`. | `tests/use-gsap.test.ts` |
-| Config `revertOnUpdate` | Ported. | `tests/parity/lifecycle.test.ts`; `tests/differential/parity.test.ts` |
-| `useGSAP.register(core)` | Ported. | `tests/parity/lifecycle.test.ts`; `typetests/adapted/types.test-d.ts` |
-| `useGSAP.headless === true` | Ported. | `tests/parity/lifecycle.test.ts`; `typetests/adapted/types.test-d.ts` |
+| Config `revertOnUpdate` | Ported. | `tests/use-gsap.test.ts`; `tests/differential/parity.test.ts` |
+| `useGSAP.register(core)` | Ported. | `tests/use-gsap.test.ts`; `typetests/adapted/types.test-d.ts` |
+| `useGSAP.headless === true` | Ported. | `tests/use-gsap.test.ts`; `typetests/adapted/types.test-d.ts` |
 
 There are no silent or open export gaps at this pin.
 
@@ -49,9 +49,8 @@ or the published package metadata, so there is no pristine suite to run or adapt
 Parity evidence is therefore repo-authored and registered in
 `audit/react-parity.json`:
 
-- `gsap-adapted` — inventoried Octane lifecycle suite under `tests/parity/`
-- `gsap-differential` — the same fixture through Octane and published
-  `@gsap/react` 2.1.2 via the shared differential rig
+- `gsap-differential` — the same lifecycle fixture through Octane and published
+  `@gsap/react` 2.1.2 via the shared differential rig (required runtime oracle)
 - pristine/adapted type lanes under `typetests/{pristine,adapted}/`
 
 The ordinary `tests/use-gsap.test.ts` and SSR cases remain unpaired
