@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/sonner/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/sonner/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/sonner/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/sonner/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -153,17 +145,17 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "sonner-ssr",
-      "notes": "Runs the exact server-rendering case that authenticates the document visibility guard.",
+      "notes": "Runs the server-rendering case that mounts useIsDocumentHidden and authenticates the document visibility guard.",
       "files": [
         {
           "path": "packages/sonner/tests/ssr/server.test.ts",
           "role": "test",
-          "sha256": "5cc9ad07fe733cf302990e3d390b85cb3eeb9670c851e0a1af5e8431c516b05e",
+          "sha256": "efa586b1aa6fce43d1bc9b074c6a6381b59fd549692328d3147b649243ec194d",
           "cases": [
             {
               "id": "adapted:sonner-ssr-visibility-guard",
-              "testName": "renders the accessible empty host without reading browser globals",
-              "fullName": "@octanejs/sonner \u2014 server rendering renders the accessible empty host without reading browser globals"
+              "testName": "guards document.hidden when toast visibility state initializes on the server",
+              "fullName": "@octanejs/sonner \u2014 server rendering guards document.hidden when toast visibility state initializes on the server"
             }
           ]
         },
@@ -171,6 +163,16 @@
           "path": "packages/sonner/tests/ssr/_fixtures/server.tsrx",
           "role": "support",
           "sha256": "ada156543ffd739bffcf4ed057b3a6e7a209f69ad304d67bed4ba71c3bcc2085"
+        },
+        {
+          "path": "packages/sonner/tests/ssr/_fixtures/visibility-probe.tsrx",
+          "role": "support",
+          "sha256": "97ba17972e45bbf68a553ed671f3ab4c16ad00ec44c60a54f8433265fc7c4328"
+        },
+        {
+          "path": "packages/sonner/src/hooks.tsrx",
+          "role": "support",
+          "sha256": "4106337a0f2c402203e1a68a8559f54304ac10193a0d7062540f4c2651c62838"
         },
         {
           "path": "packages/sonner/audit/test-classifications.json",
@@ -188,9 +190,7 @@
   "divergences": [
     {
       "id": "sonner-native-action-events",
-      "caseIds": [
-        "adapted:sonner-native-action-events"
-      ],
+      "caseIds": ["adapted:sonner-native-action-events"],
       "upstreamResult": "Action callbacks receive React synthetic mouse events.",
       "octaneResult": "Action callbacks receive native DOM MouseEvent objects.",
       "rationale": "Octane uses delegated native DOM events rather than React's synthetic event layer.",
@@ -202,9 +202,7 @@
     },
     {
       "id": "sonner-normal-ref-prop",
-      "caseIds": [
-        "adapted:sonner-normal-ref-prop"
-      ],
+      "caseIds": ["adapted:sonner-normal-ref-prop"],
       "upstreamResult": "React exposes the Toaster ref through forwardRef.",
       "octaneResult": "Toaster accepts ref as an ordinary component prop and forwards it to the host section.",
       "rationale": "Octane components do not require React's forwardRef wrapper.",
@@ -216,9 +214,7 @@
     },
     {
       "id": "sonner-ssr-visibility-guard",
-      "caseIds": [
-        "adapted:sonner-ssr-visibility-guard"
-      ],
+      "caseIds": ["adapted:sonner-ssr-visibility-guard"],
       "upstreamResult": "Version 2.0.7 reads document.hidden during render behind its client boundary.",
       "octaneResult": "The initial visibility read is guarded when document is unavailable during server rendering.",
       "rationale": "Octane executes the Toaster component in its server runtime without an RSC client boundary.",
