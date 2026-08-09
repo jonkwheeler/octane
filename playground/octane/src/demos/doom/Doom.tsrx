@@ -65,10 +65,21 @@ export function DoomDemo() @{
 	const [pointerLocked, setPointerLocked] = useState(false);
 	const [permissionError, setPermissionError] = useState<string | null>(null);
 
-	phaseRef.current = phase;
 	pausedRef.current = paused;
 	pointerLockedRef.current = pointerLocked;
 	permissionErrorRef.current = permissionError;
+
+	function setPhaseNow(next: Phase): void {
+		// Keep the rAF / input loop in sync before the next paint. Do not mirror
+		// `phase` into phaseRef during render — that would clobber this update if
+		// another state write re-enters with a stale phase.
+		phaseRef.current = next;
+		setPhase(next);
+	}
+
+	useEffect(function syncPhaseRef() {
+		phaseRef.current = phase;
+	}, [phase]);
 
 	function invalidateEnterSession(): void {
 		enterSessionRef.current += 1;
@@ -103,7 +114,7 @@ export function DoomDemo() @{
 
 	const enter = useCallback(async function enter() {
 		if (!hasWebGL()) {
-			setPhase('failed');
+			setPhaseNow('failed');
 			return;
 		}
 		const session = enterSessionRef.current + 1;
@@ -113,7 +124,7 @@ export function DoomDemo() @{
 			loadingTimeoutRef.current = null;
 		}
 		reset();
-		setPhase('loading');
+		setPhaseNow('loading');
 		// The playground router owns location.hash. Add an internal history entry
 		// without changing the URL so Back exits the level without unmounting Doom.
 		history.pushState({ ...history.state, octaneDoom: true }, '', location.href);
@@ -123,9 +134,8 @@ export function DoomDemo() @{
 			function startPlaying() {
 				loadingTimeoutRef.current = null;
 				if (enterSessionRef.current !== session) return;
-				setPhase(function advancePhase(current) {
-					return current === 'loading' ? 'playing' : current;
-				});
+				if (phaseRef.current !== 'loading') return;
+				setPhaseNow('playing');
 			},
 			420,
 		);
@@ -139,7 +149,7 @@ export function DoomDemo() @{
 		invalidateEnterSession();
 		document.exitPointerLock?.();
 		audioRef.current?.stop();
-		setPhase('landing');
+		setPhaseNow('landing');
 		reset();
 		if (history.state?.octaneDoom === true) history.back();
 	}, [reset]);
@@ -154,7 +164,7 @@ export function DoomDemo() @{
 				invalidateEnterSession();
 				document.exitPointerLock?.();
 				audioRef.current?.stop();
-				setPhase('landing');
+				setPhaseNow('landing');
 				reset();
 			}
 		};
@@ -334,7 +344,7 @@ export function DoomDemo() @{
 				<div>
 					<h2>{'WebGL unavailable'}</h2>
 					<p>{'Enable hardware acceleration or try a WebGL-capable browser.'}</p>
-					<button onClick={() => setPhase('landing')}>{'Return'}</button>
+					<button onClick={function returnToLanding() { setPhaseNow('landing'); }}>{'Return'}</button>
 				</div>
 			</div>
 		} @else {

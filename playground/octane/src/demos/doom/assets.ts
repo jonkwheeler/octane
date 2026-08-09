@@ -33,6 +33,8 @@ export function createProceduralAudio() {
 			}
 		},
 		play(cue: Exclude<DoomCue, 'background'>) {
+			// After stop(), do not recreate a closed AudioContext from leftover cues.
+			if (context === null || context.state === 'closed') return;
 			if (cue === 'fire') tone(72, 0.11, 0.5, 'square');
 			else if (cue === 'pickup') tone(620, 0.18, 0.18, 'sine');
 			else tone(95, 0.55, 0.28, 'sawtooth');
