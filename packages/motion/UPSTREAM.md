@@ -20,13 +20,22 @@ The binding reuses Motion's framework-neutral animation engine and ports a bound
 | `motion.<tag>` | `motion.<tag>` | Ported host-component factory | differential render/update case and conformance render/effects suites |
 | `AnimatePresence` | `AnimatePresence` | Ported with cleanup-before-detach divergence | `conformance/exit.test.ts` |
 | `MotionConfig` | `MotionConfig` | Ported default transition context | `conformance/config.test.ts` |
-| `useMotionValue`, `useMotionValueEvent` | same | Ported | motion-value conformance suites |
+| `useMotionValue`, `useMotionValueEvent` | same | Ported | curated upstream useMotionValue lane + conformance |
 | `useAnimate`, `useScroll`, `useTransform`, `useSpring` | same | Ported bounded forms | corresponding conformance suites |
 | framework-neutral exports from `motion` | root re-exports | Reused unchanged | package dependency and typecheck |
 | Remaining React components and hooks | not exported | Explicit gaps | `status.json` notes |
 
 ## Test-suite disposition
 
-The canonical tag contains extensive React runtime, SSR, browser/Cypress, and embedded type tests under `packages/framer-motion`. They are present but are not executed unchanged in this recorded-unverified retrofit. One exact React/Octane fixture authenticates host rendering, Motion-only prop filtering, and child updates; the existing Octane conformance suite records animation, gesture, cleanup, layout, and hook behavior without claiming those cases as React equality. The upstream type suite is present but not adapted here.
+Upstream ships an extensive Jest client suite plus Cypress and embedded type tests under `packages/framer-motion`. The npm tarball does not include those tests; they are taken from the git pin.
 
-React materializes styles for an `initial`-only target while the current Octane binding does not. The bounded differential fixture therefore uses `initial={false}` and the package continues to avoid claiming complete React Motion parity.
+This package records `upstreamSuites.runtime/types` as **insufficient** and executes a curated, verified subset:
+
+- pristine: byte-exact `useMotionValue` cases from the pin, run against `motion/react@12.42.2`
+- adapted: one-for-one Octane ports of those cases
+- repo-authored pristine/adapted type probes
+- repo-authored differential host-rendering lane
+
+The remaining upstream React/SSR/Cypress cases are present at the pin but not yet preserved or adapted here. `packages/motion/upstream/` holds the curated pin artifacts (`upstream:verify`).
+
+React materializes styles for an `initial`-only target while the current Octane binding does not. The bounded differential fixture therefore uses `initial={false}` and the package continues to avoid claiming complete React Motion parity. A zero MotionValue bound through `style.x` serializes as `translateX(0px)` on Octane versus `none` on React (see `motion-zero-transform-serialization`).

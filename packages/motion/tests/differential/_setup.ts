@@ -4,14 +4,7 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync } from 'esbuild';
-import {
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	readdirSync,
-	statSync,
-	writeFileSync,
-} from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileFixture } from './fixture-compiler.mjs';

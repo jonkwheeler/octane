@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "project": "motion-pristine",
+  "roots": ["packages/motion/upstream"],
+  "files": ["packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx"],
+  "tests": [
+    {
+      "id": "runtime:071ef4b6fc38993b",
+      "file": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
+      "fullName": "useMotionValue accepts new motion values"
+    },
+    {
+      "id": "runtime:8559a1c8a4c0dd97",
+      "file": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
+      "fullName": "useMotionValue can be set manually"
+    },
+    {
+      "id": "runtime:c32ce255c5e5996e",
+      "file": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
+      "fullName": "useMotionValue fires callbacks"
+    },
+    {
+      "id": "runtime:64062c94636b6bdb",
+      "file": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
+      "fullName": "useMotionValue is typed"
+    },
+    {
+      "id": "runtime:e03226d2e1fcabef",
+      "file": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
+      "fullName": "useMotionValue sets initial value"
+    }
+  ]
+}

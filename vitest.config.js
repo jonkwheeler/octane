@@ -2369,7 +2369,49 @@ export default defineConfig({
 					name: 'motion',
 					include: ['packages/motion/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: ['packages/motion/tests/differential/**/*.test.ts'],
+					exclude: [
+						'packages/motion/tests/differential/**/*.test.ts',
+						'packages/motion/tests/upstream/**/*.test.ts',
+					],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/motion$/,
+							replacement: resolve(import.meta.dirname, 'packages/motion/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/motion\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/motion/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'motion-pristine',
+					include: ['packages/motion/upstream/src/**/*.test.tsx'],
+					environment: 'jsdom',
+					globalSetup: ['packages/motion/tests/pristine/_setup.ts'],
+					// Upstream Motion Jest suites use describe/test/expect globals.
+					globals: true,
+				},
+				oxc: {
+					jsx: {
+						runtime: 'automatic',
+						importSource: 'react',
+					},
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'motion-upstream',
+					include: ['packages/motion/tests/upstream/**/*.test.ts'],
+					environment: 'jsdom',
 					globals: false,
 				},
 				plugins: [octane()],

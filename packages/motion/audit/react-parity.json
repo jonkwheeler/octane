@@ -9,35 +9,27 @@
     "testRoot": "packages/framer-motion/src and packages/framer-motion/cypress",
     "license": "MIT",
     "integrity": "sha256:d99821507dace914ef6924e95c25beb2d618438fc925517569dd6b083a4df793",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
-    "runtime": "present",
-    "types": "present"
+    "runtime": "insufficient",
+    "types": "insufficient"
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/motion/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
+      "roots": ["packages/motion/src"],
+      "include": ["\\.ts$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/motion/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/motion/tests/upstream"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 5,
+    "uniqueIdentities": 5,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -48,10 +40,161 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "ccd841b2f63876de58055699d5c3385a6f1985e2a43fae0a03db0ef705043e70"
+      "lockfileSha256": "2355090a530e735d49fc85255411d41ab235e0f8068d3f807f4746a5b277ee74"
     }
   },
   "lanes": [
+    {
+      "id": "motion-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the curated Motion 12.42.2 useMotionValue Jest cases byte-exact against motion/react via Vitest, with pin artifacts under packages/motion/upstream/.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/motion/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/motion/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "dad5d8bc632ef0ec2966bec4a1cf3172e507faedd9e6c5c9585f8eab5cea7ccb"
+        },
+        {
+          "path": "packages/motion/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "677c528699eee578a30a8c9e775c01cdc2ee59f5a7b3cbd7b73bf9f0210c6ede"
+        },
+        {
+          "path": "packages/motion/scripts/verify-upstream.mjs",
+          "role": "support",
+          "sha256": "56311d68b15292ebdcb4fc46dc1296cb63b29eec06097af980a09d4961326bb9"
+        },
+        {
+          "path": "packages/motion/upstream/LICENSE.md",
+          "role": "support",
+          "sha256": "5ff46083b88563822b0560dd6221ab89d2f74bc97a52d4c97a75020fd62c6f32"
+        },
+        {
+          "path": "packages/motion/upstream/package.json",
+          "role": "support",
+          "sha256": "b89dbd2ecda49863338123e0232ff32c0390918ca7f86943c7b327c4f099abef"
+        },
+        {
+          "path": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
+          "role": "support",
+          "sha256": "8e651d66fa7f5292f6f5d335e6bd492959a73d59682fb1c31a2f702d2894ef3b"
+        },
+        {
+          "path": "packages/motion/upstream/src/jest.setup.upstream.tsx",
+          "role": "support",
+          "sha256": "b3a4efce5810f0f4a83d9cdb5581b66de0746819d3d618ccb8e10070ae01a9dd"
+        },
+        {
+          "path": "packages/motion/upstream/src/gestures/__tests__/utils.ts",
+          "role": "support",
+          "sha256": "ee0d589731d082978838a05748c9a9166711932241c6ed0df9419555e2f3e5e6"
+        }
+      ]
+    },
+    {
+      "id": "motion-adapted-upstream",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion-upstream",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one Octane adaptation of the curated useMotionValue upstream cases.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/motion/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/motion/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "da1378c1976427ab83129db50348b04d64b219c9ad3b0ae05bc07dac1caa76d8"
+        },
+        {
+          "path": "packages/motion/tests/upstream/use-motion-value.test.ts",
+          "role": "support",
+          "sha256": "da1c1d6881f685e4b550108254a6bec47076f117b7fa291fc8e4d67e50e9ca76"
+        },
+        {
+          "path": "packages/motion/tests/_fixtures/upstream-use-motion-value.tsrx",
+          "role": "support",
+          "sha256": "ce14faaedb16f41226fa3d60dadfd8ed07cec195ee08fd99bf3b50fb02c0336c"
+        }
+      ]
+    },
+    {
+      "id": "motion-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored public surface probes against motion/react@12.42.2 with tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/motion/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/motion/typetests/pristine/types.test-d.ts",
+          "role": "test",
+          "sha256": "27395db724f168022fa10b9fb45543928ad5bc37dfe30d18398b2ca9262593a2",
+          "cases": [
+            {
+              "id": "types:motion-pristine",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "3dc38e3ee0bcb2422f93b22e8e05a7d81373966ce72404a94060a065c3068c38"
+        }
+      ]
+    },
+    {
+      "id": "motion-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored public surface probes against @octanejs/motion with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/motion/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/motion/typetests/adapted/types.test-d.ts",
+          "role": "test",
+          "sha256": "e248814c171a5117ee33a31d0de5f9d3071b1def69c8614d65b4b90eaec6e0be",
+          "cases": [
+            {
+              "id": "types:motion-adapted",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "7ba9dc4219148b59df19e5b944ca527bf348d67200612d4fbf671605b43be89d"
+        }
+      ]
+    },
     {
       "id": "motion-runtime-differential",
       "type": "differential",
@@ -91,5 +234,18 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "motion-zero-transform-serialization",
+      "caseIds": ["runtime:a6edd8704002ab6c"],
+      "upstreamResult": "A MotionValue of 0 bound to style.x serializes as transform: none.",
+      "octaneResult": "A MotionValue of 0 bound to style.x serializes as translateX(0px).",
+      "rationale": "Octane rebuilds the transform string from shorthand keys, including an explicit zero translate.",
+      "classification": "framework-integration",
+      "consumerImpact": "Computed style / CSSOM string equality against React Motion may differ at zero.",
+      "migrationGuidance": "Prefer reading MotionValue.get() or numeric style intent over exact transform string equality at zero.",
+      "owner": "@octanejs/motion",
+      "reviewCondition": "Review if Octane collapses zero transforms to none."
+    }
+  ]
 }

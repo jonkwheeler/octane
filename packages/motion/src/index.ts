@@ -257,6 +257,15 @@ function createMotionComponent(tag: string) {
 
 		// Motion values + static transform shorthands in `style`. MotionValues are
 		// subscribed (and update the element without a re-render); shorthands apply once.
+		// Re-bind when the style bag's MotionValue identities or shorthand values change
+		// so callers can swap `style={{ x }}` across updates (upstream useMotionValue).
+		const styleMvDeps: any[] = [];
+		if (props.style && typeof props.style === 'object') {
+			for (const key in props.style) {
+				const v = props.style[key];
+				if (isMotionValue(v) || isTransformKey(key)) styleMvDeps.push(key, v);
+			}
+		}
 		useLayoutEffect(
 			() => {
 				const style = props.style;
@@ -275,7 +284,7 @@ function createMotionComponent(tag: string) {
 				}
 				return () => cleanups.forEach((c) => c());
 			},
-			[],
+			styleMvDeps,
 			MV,
 		);
 

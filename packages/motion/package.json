@@ -38,15 +38,19 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "upstream:verify": "node ./scripts/verify-upstream.mjs"
   },
   "dependencies": {
-    "motion": "catalog:default"
+    "motion": "catalog:default",
+    "motion-dom": "catalog:default"
   },
   "peerDependencies": {
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "catalog:default",
+    "@testing-library/react": "16.3.2",
     "@tsrx/react": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
