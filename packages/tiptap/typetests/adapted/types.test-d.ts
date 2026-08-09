@@ -1,13 +1,13 @@
-// Pristine side: published @tiptap/react 3.28.0 typings, compiled with plain
-// tsc. Assertion groups are listed in ../assertions.md and must stay
-// one-for-one with ../adapted/types.test-d.ts.
+// Adapted side: @octanejs/tiptap, compiled with tsc. Assertion groups are
+// listed in ../assertions.md and must stay one-for-one with
+// ../pristine/types.test-d.ts.
 import type { Editor } from '@tiptap/core';
 import {
 	BubbleMenu,
 	FloatingMenu,
 	type BubbleMenuProps,
 	type FloatingMenuProps,
-} from '@tiptap/react/menus';
+} from '@octanejs/tiptap/menus';
 import {
 	EditorContent,
 	useCurrentEditor,
@@ -15,9 +15,9 @@ import {
 	useEditorState,
 	type EditorContentProps,
 	type UseEditorOptions,
-} from '@tiptap/react';
+} from '@octanejs/tiptap';
 import StarterKit from '@tiptap/starter-kit';
-import type { CSSProperties, ReactNode } from 'react';
+import type { OctaneNode } from 'octane';
 
 // 1. UseEditorOptions accepts starter options.
 const options: UseEditorOptions = {
@@ -43,15 +43,15 @@ const text: string | null = useEditorState({
 // 5. EditorContent accepts props and is callable with those props.
 const contentProps: EditorContentProps = {
 	editor,
-	children: null as ReactNode,
-	style: { marginTop: 8 } satisfies CSSProperties,
+	children: null as OctaneNode,
+	style: { marginTop: 8 },
 };
 EditorContent(contentProps);
 
 // 6. BubbleMenu / FloatingMenu accept props and are callable with those props.
 const bubbleProps: BubbleMenuProps = {
 	children: 'bubble',
-	className: 'menu',
+	class: 'menu',
 };
 const floatingProps = {
 	editor: null as Editor | null,

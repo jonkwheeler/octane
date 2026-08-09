@@ -27,9 +27,11 @@ The pin ships four Vitest specs (seven cases). They are preserved byte-exact und
 ## Type suites
 
 Upstream has no dedicated compile-time suite (`upstreamSuites.types:
-insufficient`). Repo-authored pristine assertions compile against
-`@tiptap/react` under `typetests/pristine/`; adapted declaration contracts live
-under `typetests/*.test-d.ts`.
+insufficient`). Repo-authored one-for-one probes live under
+`typetests/pristine/types.test-d.ts` and `typetests/adapted/types.test-d.ts`,
+with permitted transforms listed in `typetests/assertions.md`. Root
+`typetests/*-api.test-d.ts` files are Octane-only declaration contracts outside
+the React-parity type lane.
 
 ## Additional evidence
 

@@ -209,7 +209,7 @@
 			"environment": "workspace-node",
 			"project": "tiptap-pristine-types",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Repo-authored public surface type assertions compiled against @tiptap/react@3.28.0 with tsc.",
+			"notes": "Port-authored React declaration probes against @tiptap/react@3.28.0 with tsc. Permitted transformations are listed in typetests/assertions.md.",
 			"execution": {
 				"kind": "typescript",
 				"compiler": "tsc",
@@ -219,7 +219,7 @@
 				{
 					"path": "packages/tiptap/typetests/pristine/types.test-d.ts",
 					"role": "test",
-					"sha256": "d90ca9141937a2c78c8dd40a4fc73f41b760ad8e253a6c0fd501a9162cc4bb37",
+					"sha256": "46a7b119512b21f25395a0a974331e9ef729de43684414911d766843ffdb5dd8",
 					"cases": [
 						{
 							"id": "types:tiptap-pristine",
@@ -232,6 +232,11 @@
 					"path": "packages/tiptap/typetests/pristine/tsconfig.json",
 					"role": "support",
 					"sha256": "625adac63dfb75c80a49670b8e58122bebf57f8395a4729d8f69e9a26c5c28fb"
+				},
+				{
+					"path": "packages/tiptap/typetests/assertions.md",
+					"role": "support",
+					"sha256": "4f0e22296f3143e3024506dcceb8f33211b3c3044410f094628d186e8807ca32"
 				}
 			]
 		},
@@ -242,39 +247,34 @@
 			"environment": "workspace-node",
 			"project": "tiptap-adapted-types",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Compiles the root and menus public declaration contracts with standard TypeScript.",
+			"notes": "Matching Octane public probes against @octanejs/tiptap with tsc. Permitted transformations are listed in typetests/assertions.md.",
 			"execution": {
 				"kind": "typescript",
 				"compiler": "tsc",
-				"project": "packages/tiptap/typetests/tsconfig.json"
+				"project": "packages/tiptap/typetests/adapted/tsconfig.json"
 			},
 			"files": [
 				{
-					"path": "packages/tiptap/audit/adapted-types.json",
+					"path": "packages/tiptap/typetests/adapted/types.test-d.ts",
 					"role": "test",
-					"sha256": "a59d45818ef1ccd62396f9a0d74eac96134f61126abdf12b8b5f857b6d05d87a",
+					"sha256": "e81c46e07ed7a78f8633d9680790abbb9511f67ef149d30af5ccb6829ad9aa26",
 					"cases": [
 						{
-							"id": "types:tiptap-public-api",
-							"testName": "root and menus public declaration contracts",
-							"fullName": "root and menus public declaration contracts"
+							"id": "types:tiptap-adapted",
+							"testName": "public surface type assertions",
+							"fullName": "public surface type assertions"
 						}
 					]
 				},
 				{
-					"path": "packages/tiptap/typetests/menus-api.test-d.ts",
+					"path": "packages/tiptap/typetests/adapted/tsconfig.json",
 					"role": "support",
-					"sha256": "e85acf127278b830e31be56fa990934d1de22d2e54e4880cfcc2eb593a37bf94"
+					"sha256": "85342f8f26ac24e2ac20a4f02687b4d82db76a7796c8395a2aa4d6933a398ecd"
 				},
 				{
-					"path": "packages/tiptap/typetests/public-api.test-d.ts",
+					"path": "packages/tiptap/typetests/assertions.md",
 					"role": "support",
-					"sha256": "91a6aeffe4664204a1cc39ff28f7bfbe79d61b5ae0b317bcd73943af7ab24b0a"
-				},
-				{
-					"path": "packages/tiptap/typetests/tsconfig.json",
-					"role": "support",
-					"sha256": "a100deb138120810f69a7d50c5e90e0475093460e1b00a4af2c2063378f6792e"
+					"sha256": "4f0e22296f3143e3024506dcceb8f33211b3c3044410f094628d186e8807ca32"
 				}
 			]
 		}
