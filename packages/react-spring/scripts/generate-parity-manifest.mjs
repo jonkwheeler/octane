@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { format, resolveConfig } from 'prettier';
 import { summarizeRuntimeInventories } from '../../../scripts/react-parity/harness-lib.mjs';
+import { renderTypeInventories } from '../../../scripts/react-parity/react-spring-types-lib.mjs';
 
 const PACKAGE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REPO = path.resolve(PACKAGE, '../..');
@@ -365,9 +366,12 @@ const typeParity = {
 	],
 	divergences: [],
 	notes:
-		'Adapted type programs are inventoried one-for-one with the vendored *.test-d.ts/*.test-d.tsx suite. Execution currently fails until the Octane public type surface matches the pinned upstream contracts.',
+		'Adapted type programs are inventoried one-for-one with the vendored *.test-d.ts/*.test-d.tsx suite and executed by the adapted-types lane.',
 };
 await writeJson(path.join(REPO, 'packages/react-spring/audit/type-parity.json'), typeParity);
+const { inventory: typeInventories } = renderTypeInventories(REPO);
+await writeJson(path.join(REPO, typeParity.inventories.upstream), typeInventories.upstream);
+await writeJson(path.join(REPO, typeParity.inventories.adapted), typeInventories.adapted);
 
 for (const lane of manifest.lanes) {
 	for (const file of lane.files) {

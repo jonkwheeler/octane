@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { verifyReactSpringTypes } from './react-spring-types-lib.mjs';
 
 const ROOT = 'packages/react-spring/upstream';
 const PER_COMMENT = /^\s*\/\/\s*Per\s+(\S+):(\d+)\s*$/;
@@ -87,6 +88,8 @@ export function verifyReactSpringVendoredBytes(repoRoot) {
 }
 
 export function verifyReactSpringUpstream(repoRoot) {
+	verifyReactSpringTypes(repoRoot);
+
 	const vendored = verifyReactSpringVendoredBytes(repoRoot);
 	const testFiles = vendored.testFiles
 		.filter(function isTest(path) {

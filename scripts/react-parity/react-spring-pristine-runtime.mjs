@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 import { verifyReactSpringVendoredBytes } from './react-spring-upstream-lib.mjs';
@@ -125,7 +125,7 @@ export function inventoryFromIdentities(identities) {
 	};
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(resolve(process.argv[1] ?? '')).href) {
 	const result = runPristineUpstreamSuite();
 	if (result.stdout) process.stdout.write(result.stdout);
 	if (result.stderr) process.stderr.write(result.stderr);

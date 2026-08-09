@@ -29,5 +29,5 @@
     }
   ],
   "divergences": [],
-  "notes": "Adapted type programs are inventoried one-for-one with the vendored *.test-d.ts/*.test-d.tsx suite. Execution currently fails until the Octane public type surface matches the pinned upstream contracts."
+  "notes": "Adapted type programs are inventoried one-for-one with the vendored *.test-d.ts/*.test-d.tsx suite and executed by the adapted-types lane."
 }
