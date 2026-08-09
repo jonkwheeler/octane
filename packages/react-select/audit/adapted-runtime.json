@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "react-select",
-  "roots": [
-    "packages/react-select/tests/upstream"
-  ],
+  "roots": ["packages/react-select/tests/upstream"],
   "files": [
     "packages/react-select/tests/upstream/Async.test.ts",
     "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
@@ -12,6 +10,11 @@
     "packages/react-select/tests/upstream/StateManaged.test.ts"
   ],
   "tests": [
+    {
+      "id": "runtime:ab1f05982da729d5",
+      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "fullName": "defaults - snapshot"
+    },
     {
       "id": "runtime:b20b3c94f3472107",
       "file": "packages/react-select/tests/upstream/Async.test.ts",
@@ -58,6 +61,11 @@
       "fullName": "creates an inner Select"
     },
     {
+      "id": "runtime:a42b7fb2e888a830",
+      "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "fullName": "defaults - snapshot"
+    },
+    {
       "id": "runtime:9d43c5bd8c8694cd",
       "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
       "fullName": "render decorated select with props passed"
@@ -73,6 +81,16 @@
       "fullName": "to show the create option in menu"
     },
     {
+      "id": "runtime:9fc448c921a1bbde",
+      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "fullName": "close by hitting escape with search text present multi select should remove the search text"
+    },
+    {
+      "id": "runtime:539ee31b10d77650",
+      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "fullName": "close by hitting escape with search text present single select should remove the search text"
+    },
+    {
       "id": "runtime:e417b23b6f4c53bb",
       "file": "packages/react-select/tests/upstream/Creatable.test.ts",
       "fullName": "compareOption() method multi select should handle options with custom structure"
@@ -81,6 +99,11 @@
       "id": "runtime:ab06fa4204f92844",
       "file": "packages/react-select/tests/upstream/Creatable.test.ts",
       "fullName": "compareOption() method single select should handle options with custom structure"
+    },
+    {
+      "id": "runtime:494bad9491e3b8a9",
+      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "fullName": "defaults - snapshot"
     },
     {
       "id": "runtime:1ae057d06707dc39",
@@ -143,6 +166,21 @@
       "fullName": "isValidNewOption() prop single select should show \"create...\" prompt only if isValidNewOption returns thruthy value"
     },
     {
+      "id": "runtime:192b08a01f12c784",
+      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "fullName": "should remove the new option after closing on blur"
+    },
+    {
+      "id": "runtime:cddf1d9eadafd5a0",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "Clicking Enter on a focused select while !menuIsOpen should not invoke event.preventDefault"
+    },
+    {
+      "id": "runtime:dbc0a164cdb94c62",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "Clicking Enter on a focused select while menuIsOpen && focusedOption && !isComposing  should invoke event.preventDefault"
+    },
+    {
       "id": "runtime:58b5d9f1a581d870",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "Clicking dropdown indicator on select with closed menu with primary button on mouse multi select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
@@ -191,6 +229,16 @@
       "id": "runtime:974c45ade0149c94",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "accessibility announces cleared values"
+    },
+    {
+      "id": "runtime:b1a562cf236d5097",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility interacting with disabled options shows correct A11yText"
+    },
+    {
+      "id": "runtime:5d11db2e3afb52d1",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "accessibility interacting with multi values options shows correct A11yText"
     },
     {
       "id": "runtime:49f85ba60225bc46",
@@ -353,6 +401,16 @@
       "fullName": "clearing select using clear button to not call onMenuOpen or onMenuClose"
     },
     {
+      "id": "runtime:f2a7d36e39e51fc1",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "click to open select multi select should focus the first option"
+    },
+    {
+      "id": "runtime:dbd945070673632b",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "click to open select single select should focus the first option"
+    },
+    {
       "id": "runtime:19abec63f49ecf61",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "clicking on disabled option multi select should not select the disabled option"
@@ -366,6 +424,11 @@
       "id": "runtime:76ca78ff373278a2",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "clicking when focused does not open select when openMenuOnClick=false"
+    },
+    {
+      "id": "runtime:c4ceb17582bea6e6",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "close menu on hitting escape and clear input value if menu is open even if escapeClearsValue and isClearable are true"
     },
     {
       "id": "runtime:5f0d67c69c0577a5",
@@ -613,6 +676,11 @@
       "fullName": "hitting spacebar should not select option if isSearchable is true (default)"
     },
     {
+      "id": "runtime:23e073bada27e3b4",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "hitting spacebar should select option if isSearchable is false"
+    },
+    {
       "id": "runtime:a1a4826ff6ff89d4",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "hitting tab on option should not call onChange if tabSelectsValue is false"
@@ -818,6 +886,16 @@
       "fullName": "placeholder single select should display provided string placeholder"
     },
     {
+      "id": "runtime:7a79e77078779ab8",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "pressing enter on disabled option multi select should not select the disabled option"
+    },
+    {
+      "id": "runtime:08c21b44f86ce8b7",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "pressing enter on disabled option single select should not select the disabled option"
+    },
+    {
       "id": "runtime:c530b9aca8ae20b1",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "render custom Input Component"
@@ -876,6 +954,11 @@
       "id": "runtime:9eaf4ec850d1eb34",
       "file": "packages/react-select/tests/upstream/Select.test.ts",
       "fullName": "single select passing multiple values should select the first value"
+    },
+    {
+      "id": "runtime:395703c588e87592",
+      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "fullName": "snapshot - defaults"
     },
     {
       "id": "runtime:7ca2a7169abfcd91",
@@ -998,9 +1081,124 @@
       "fullName": "Integration tests selecting an option mouse interaction single select clicking on an option should select the clicked option"
     },
     {
+      "id": "runtime:ca3726da2a9f80b6",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 1 x ArrowUp -> Enter) should select the last option in the select"
+    },
+    {
+      "id": "runtime:84fefd2b3de92e9a",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) should select the second option - default pageSize 5"
+    },
+    {
+      "id": "runtime:55b71d7c8cd1d144",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 1 x PageDown -> Enter) should select the first option on next page - default pageSize 5"
+    },
+    {
+      "id": "runtime:3cfdd641613ad221",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) should select the first option in the select"
+    },
+    {
+      "id": "runtime:2d77beb306b0b260",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 3 x ArrowDown -> Enter) should select the forth option in the select"
+    },
+    {
+      "id": "runtime:0036ceed766278be",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 3 x PageDown -> Home -> Enter) should select the last option"
+    },
+    {
+      "id": "runtime:bce14cda45530c79",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> End -> Enter) should select the last option"
+    },
+    {
+      "id": "runtime:1d377bb807027e29",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select cycle options ( open select -> End -> ArrowDown -> Enter) should select the first option"
+    },
+    {
+      "id": "runtime:4bb706ec8108496e",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select cycle options (open select -> ArrowUp -> Enter) should select the last option"
+    },
+    {
+      "id": "runtime:f229583d3ca47109",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction multi select open select and hit enter should select first option"
+    },
+    {
+      "id": "runtime:a98b72c69fa77e00",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 1 x ArrowUp -> Enter) should select the last option in the select"
+    },
+    {
+      "id": "runtime:2b1533e4b4580a60",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) should select the second option - default pageSize 5"
+    },
+    {
+      "id": "runtime:c4e4ed032ed39199",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 1 x PageDown -> Enter) should select the first option on next page - default pageSize 5"
+    },
+    {
+      "id": "runtime:58da842ef387df9c",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) should select the first option in the select"
+    },
+    {
+      "id": "runtime:1dc77dfd812c11b1",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 3 x ArrowDown -> Enter) should select the forth option in the select"
+    },
+    {
+      "id": "runtime:3ec818274826c08e",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 3 x PageDown -> Home -> Enter) should select the last option"
+    },
+    {
+      "id": "runtime:56689a4957929010",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select (open select -> End -> Enter) should select the last option"
+    },
+    {
+      "id": "runtime:c9c520704fd55524",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select cycle options ( open select -> End -> ArrowDown -> Enter) should select the first option"
+    },
+    {
+      "id": "runtime:f61606f9554630df",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select cycle options (open select -> ArrowUp -> Enter) should select the last option"
+    },
+    {
+      "id": "runtime:75c08cfb8244bb9a",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Integration tests selection an option keyboard interaction single select open select and hit enter should select first option"
+    },
+    {
       "id": "runtime:95726e5b61237f84",
       "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
       "fullName": "Menu is controllable by menuIsOpen prop"
+    },
+    {
+      "id": "runtime:bfa4f47984afc606",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Menu to open by default if menuIsOpen prop is true multi select should keep Menu open by default if true is passed for menuIsOpen prop"
+    },
+    {
+      "id": "runtime:a5ed1e99ee334ad5",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "Menu to open by default if menuIsOpen prop is true single select should keep Menu open by default if true is passed for menuIsOpen prop"
+    },
+    {
+      "id": "runtime:fb7fa53f3fa129e9",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "`required` prop should validate"
     },
     {
       "id": "runtime:56959a624a3f150f",
@@ -1028,9 +1226,19 @@
       "fullName": "defaultValue prop should update the value on selecting option"
     },
     {
+      "id": "runtime:2d47976f8dcf9dbf",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "defaults snapshot"
+    },
+    {
       "id": "runtime:7f81c33ab7a5162e",
       "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
       "fullName": "inputValue prop should not update the inputValue when on change of input if inputValue prop is provided"
+    },
+    {
+      "id": "runtime:66f51bec84e3e3d6",
+      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "fullName": "multi select selecting multiple values"
     },
     {
       "id": "runtime:45707bbbd83ac663",

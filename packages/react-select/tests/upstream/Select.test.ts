@@ -60,6 +60,11 @@ function menu(container: HTMLElement): Element | null {
 	return container.querySelector('.react-select__menu');
 }
 
+upstreamTest('snapshot - defaults', function snapshotsDefaults() {
+	const result = render(Select);
+	expect(result.container).toMatchSnapshot();
+});
+
 upstreamTest(
 	'instanceId prop > to have instanceId as id prefix for the select components',
 	function appliesInstanceId() {
@@ -2093,3 +2098,185 @@ upstreamTest('renders with custom theme', function rendersCustomTheme() {
 	expect(window.getComputedStyle(menuElement).borderRadius).toBe('180px');
 	expect(window.getComputedStyle(firstOption).backgroundColor).toBe(primary);
 });
+
+function assertEnterPrevention(menuIsOpen: boolean, expected: boolean): void {
+	const result = renderSelect({ menuIsOpen });
+	let defaultPrevented = false;
+	result.container.addEventListener('keydown', function recordsPrevention(event) {
+		defaultPrevented = event.defaultPrevented;
+	});
+	const root = result.container.querySelector<HTMLElement>('.react-select');
+	if (!root) throw new Error('Expected select root');
+	fireEvent.keyDown(root, { key: 'Enter', keyCode: 13 });
+	expect(defaultPrevented).toBe(expected);
+}
+
+upstreamTest(
+	'Clicking Enter on a focused select while menuIsOpen && focusedOption && !isComposing  > should invoke event.preventDefault',
+	function preventsOpenMenuEnter() {
+		assertEnterPrevention(true, true);
+	},
+);
+
+upstreamTest(
+	'Clicking Enter on a focused select while !menuIsOpen > should not invoke event.preventDefault',
+	function allowsClosedMenuEnter() {
+		assertEnterPrevention(false, false);
+	},
+);
+
+interface MenuRerender {
+	(): void;
+}
+
+function assertClickOpensMenu(isMulti: boolean): void {
+	let rerenderMenu: MenuRerender | undefined;
+	function onMenuOpen(): void {
+		rerenderMenu?.();
+	}
+	const result = renderSelect({ isMulti, onMenuOpen });
+	function rerenderOpenMenu(): void {
+		result.rerender({
+			props: basicProps({ isMulti, menuIsOpen: true }),
+		});
+	}
+	rerenderMenu = rerenderOpenMenu;
+	const indicator = result.container.querySelector<HTMLElement>(
+		'.react-select__dropdown-indicator',
+	);
+	if (!indicator) throw new Error('Expected dropdown indicator');
+	fireEvent.mouseDown(indicator, { button: 0 });
+	expect(focusedOption(result.container).textContent).toBe('0');
+}
+
+upstreamTest(
+	'click to open select single select > should focus the first option',
+	function opensSingleMenuByClick() {
+		assertClickOpensMenu(false);
+	},
+);
+
+upstreamTest(
+	'click to open select multi select > should focus the first option',
+	function opensMultiMenuByClick() {
+		assertClickOpensMenu(true);
+	},
+);
+
+upstreamTest(
+	'close menu on hitting escape and clear input value if menu is open even if escapeClearsValue and isClearable are true',
+	function closesMenuBeforeClearingValue() {
+		const onInputChange = vi.fn();
+		const onMenuClose = vi.fn();
+		const result = renderSelect({
+			escapeClearsValue: true,
+			isClearable: true,
+			menuIsOpen: true,
+			onInputChange,
+			onMenuClose,
+			value: OPTIONS[0],
+		});
+		const root = result.container.querySelector<HTMLElement>('.react-select');
+		if (!root) throw new Error('Expected select root');
+		fireEvent.keyDown(root, { key: 'Escape', keyCode: 27 });
+		expect(result.container.querySelector('.react-select__single-value')?.textContent).toBe('0');
+		expect(onMenuClose).toHaveBeenCalled();
+		expect(onInputChange).toHaveBeenCalledWith('', {
+			action: 'menu-close',
+			prevInputValue: '',
+		});
+	},
+);
+
+function assertDisabledEnterAfterFocus(isMulti: boolean): void {
+	const onChange = vi.fn();
+	const options = [
+		{ label: 'option 1', value: 'opt1' },
+		{ label: 'option 2', value: 'opt2', isDisabled: true },
+	];
+	const result = renderSelect({ isMulti, menuIsOpen: true, onChange, options });
+	const menuElement = menu(result.container);
+	if (!menuElement) throw new Error('Expected select menu');
+	fireEvent.keyDown(menuElement, { key: 'ArrowDown', keyCode: 40 });
+	expect(focusedOption(result.container).textContent).toBe('option 2');
+	fireEvent.keyDown(menuElement, { key: 'Enter', keyCode: 13 });
+	expect(onChange).not.toHaveBeenCalled();
+}
+
+upstreamTest(
+	'pressing enter on disabled option single select > should not select the disabled option',
+	function ignoresFocusedSingleDisabledOption() {
+		assertDisabledEnterAfterFocus(false);
+	},
+);
+
+upstreamTest(
+	'pressing enter on disabled option multi select > should not select the disabled option',
+	function ignoresFocusedMultiDisabledOption() {
+		assertDisabledEnterAfterFocus(true);
+	},
+);
+
+upstreamTest(
+	'accessibility > interacting with disabled options shows correct A11yText',
+	function announcesDisabledOption() {
+		const options = [
+			{ label: '0', value: 'zero' },
+			{ label: '1', value: 'one', isDisabled: true },
+			{ label: '2', value: 'two' },
+		];
+		const result = renderSelect({ menuIsOpen: true, options });
+		fireEvent.focus(inputFor(result.container));
+		const menuElement = menu(result.container);
+		if (!menuElement) throw new Error('Expected select menu');
+		fireEvent.keyDown(menuElement, { key: 'ArrowDown', keyCode: 40 });
+		fireEvent.keyDown(menuElement, { key: 'Enter', keyCode: 13 });
+		expect(result.container.querySelector('#aria-selection')?.textContent).toMatch(
+			'option 1 is disabled. Select another option.',
+		);
+	},
+);
+
+upstreamTest(
+	'accessibility > interacting with multi values options shows correct A11yText',
+	function announcesFocusedMultiValues() {
+		const options = [
+			{ label: '0', value: 'zero' },
+			{ label: '1', value: 'one', isDisabled: true },
+			{ label: '2', value: 'two' },
+		];
+		const result = renderSelect({
+			hideSelectedOptions: false,
+			isMulti: true,
+			options,
+			value: [options[0], options[1]],
+		});
+		const input = inputFor(result.container);
+		fireEvent.focus(input);
+		fireEvent.keyDown(input, { key: 'ArrowLeft', keyCode: 37 });
+		expect(result.container.querySelector('#aria-focused')?.textContent).toMatch(
+			'value 1 focused, 2 of 2.',
+		);
+		fireEvent.keyDown(input, { key: 'ArrowLeft', keyCode: 37 });
+		expect(result.container.querySelector('#aria-focused')?.textContent).toMatch(
+			'value 0 focused, 1 of 2.',
+		);
+	},
+);
+
+upstreamTest(
+	'hitting spacebar should select option if isSearchable is false',
+	function selectsFocusedOptionWithSpace() {
+		const onChange = vi.fn();
+		const result = renderSelect({ isSearchable: true, menuIsOpen: true, onChange });
+		const root = result.container.querySelector<HTMLElement>('.react-select');
+		if (!root) throw new Error('Expected select root');
+		fireEvent.keyDown(root, { key: ' ', keyCode: 32 });
+		expect(onChange).toHaveBeenCalledTimes(1);
+		expect(onChange.mock.calls[0][0]).toEqual(OPTIONS[0]);
+		expect(onChange.mock.calls[0][1]).toMatchObject({
+			action: 'select-option',
+			name: 'test-input-name',
+		});
+	},
+);

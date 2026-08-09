@@ -20,7 +20,7 @@ function pristineFixture() {
 function adaptedFixture() {
 	const pristine = pristineFixture();
 	return {
-		tests: pristine.tests.slice(0, 206).map(function adaptedCase(entry) {
+		tests: pristine.tests.slice(0, 248).map(function adaptedCase(entry) {
 			return {
 				file: `packages/react-select/tests/upstream/${basenameFor(entry.file)}.test.ts`,
 				fullName: entry.fullName,
@@ -46,7 +46,7 @@ test('rejects a removed adapted identity', function rejectsRemovedAdaptedIdentit
 	adapted.tests.pop();
 	assert.throws(function buildInvalidInventory() {
 		buildAdaptationInventory(pristineFixture(), adapted);
-	}, /Expected 206 adapted cases/);
+	}, /Expected 248 adapted cases/);
 });
 
 test('rejects a renamed adapted identity', function rejectsRenamedAdaptedIdentity() {

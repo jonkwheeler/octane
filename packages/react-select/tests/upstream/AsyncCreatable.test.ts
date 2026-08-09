@@ -8,6 +8,11 @@ import { inputFor, OPTIONS, optionTexts, type Option, upstreamTest } from './hel
 
 afterEach(cleanup);
 
+upstreamTest('defaults - snapshot', function snapshotsDefaults() {
+	const result = render(AsyncCreatable);
+	expect(result.container).toMatchSnapshot();
+});
+
 upstreamTest('creates an inner Select', function createsInnerSelect() {
 	const result = render(AsyncCreatable, {
 		props: { className: 'react-select', classNamePrefix: 'react-select' } as never,

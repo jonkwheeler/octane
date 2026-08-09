@@ -1,12 +1,17 @@
 // @vitest-environment jsdom
 
-import { cleanup, render } from '@octanejs/testing-library';
+import { cleanup, fireEvent, render } from '@octanejs/testing-library';
 import { afterEach, expect, vi } from 'vitest';
 
 import Creatable from '../../src/creatable.tsrx';
 import { OPTIONS, upstreamTest } from './helpers';
 
 afterEach(cleanup);
+
+upstreamTest('defaults - snapshot', function snapshotsDefaults() {
+	const result = render(Creatable);
+	expect(result.container).toMatchSnapshot();
+});
 
 interface CustomOption {
 	readonly key: string;
@@ -241,5 +246,34 @@ upstreamTest(
 	'compareOption() method multi select > should handle options with custom structure',
 	function comparesMultiCustomOption() {
 		assertCustomComparison(true);
+	},
+);
+
+function assertEscapeWithSearchText(isMulti: boolean): void {
+	const result = renderCreatable({ inputValue: 'new Option', isMulti });
+	fireEvent.keyDown(result.container, { key: 'Escape', keyCode: 27 });
+	expect(result.container.querySelector('input')?.textContent).toBe('');
+}
+
+upstreamTest(
+	'close by hitting escape with search text present single select > should remove the search text',
+	function clearsSingleSearchOnEscape() {
+		assertEscapeWithSearchText(false);
+	},
+);
+
+upstreamTest(
+	'close by hitting escape with search text present multi select > should remove the search text',
+	function clearsMultiSearchOnEscape() {
+		assertEscapeWithSearchText(true);
+	},
+);
+
+upstreamTest(
+	'should remove the new option after closing on blur',
+	function clearsNewOptionOnBlur() {
+		const result = renderCreatable({ inputValue: 'new Option' });
+		fireEvent.blur(result.container);
+		expect(result.container.querySelector('input')?.textContent).toBe('');
 	},
 );

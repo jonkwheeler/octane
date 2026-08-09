@@ -8,6 +8,11 @@ import { inputFor, OPTIONS, optionTexts, type Option, upstreamTest } from './hel
 
 afterEach(cleanup);
 
+upstreamTest('defaults - snapshot', function snapshotsDefaults() {
+	const result = render(Async);
+	expect(result.container).toMatchSnapshot();
+});
+
 upstreamTest(
 	'load option prop with defaultOptions true with callback  > should resolve options',
 	async function resolvesCallbackDefaults() {

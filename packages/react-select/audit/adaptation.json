@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "upstreamCases": 255,
-  "adaptedCases": 206,
+  "adaptedCases": 248,
   "notApplicableCases": 0,
-  "pendingCases": 49,
+  "pendingCases": 7,
   "permittedTransforms": [
     "import React APIs from Octane equivalents",
     "re-author JSX component fixtures as compiled .tsrx components",
@@ -17,8 +17,8 @@
       "id": "src/__tests__/Async.test.tsx\u0000defaults - snapshot",
       "upstreamFile": "src/__tests__/Async.test.tsx",
       "fullName": "defaults - snapshot",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Async.test.ts"
     },
     {
       "id": "src/__tests__/Async.test.tsx\u0000in case of callbacks display the most recently-requested loaded options (if results are returned out of order)",
@@ -87,8 +87,8 @@
       "id": "src/__tests__/AsyncCreatable.test.tsx\u0000defaults - snapshot",
       "upstreamFile": "src/__tests__/AsyncCreatable.test.tsx",
       "fullName": "defaults - snapshot",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/AsyncCreatable.test.ts"
     },
     {
       "id": "src/__tests__/AsyncCreatable.test.tsx\u0000render decorated select with props passed",
@@ -115,15 +115,15 @@
       "id": "src/__tests__/Creatable.test.tsx\u0000close by hitting escape with search text present multi select > should remove the search text",
       "upstreamFile": "src/__tests__/Creatable.test.tsx",
       "fullName": "close by hitting escape with search text present multi select > should remove the search text",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Creatable.test.ts"
     },
     {
       "id": "src/__tests__/Creatable.test.tsx\u0000close by hitting escape with search text present single select > should remove the search text",
       "upstreamFile": "src/__tests__/Creatable.test.tsx",
       "fullName": "close by hitting escape with search text present single select > should remove the search text",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Creatable.test.ts"
     },
     {
       "id": "src/__tests__/Creatable.test.tsx\u0000compareOption() method multi select > should handle options with custom structure",
@@ -143,8 +143,8 @@
       "id": "src/__tests__/Creatable.test.tsx\u0000defaults - snapshot",
       "upstreamFile": "src/__tests__/Creatable.test.tsx",
       "fullName": "defaults - snapshot",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Creatable.test.ts"
     },
     {
       "id": "src/__tests__/Creatable.test.tsx\u0000filterOptions returns invalid value ( null ) multi select > should not show \"create...\" prompt\"",
@@ -234,22 +234,22 @@
       "id": "src/__tests__/Creatable.test.tsx\u0000should remove the new option after closing on blur",
       "upstreamFile": "src/__tests__/Creatable.test.tsx",
       "fullName": "should remove the new option after closing on blur",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Creatable.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000Clicking Enter on a focused select while !menuIsOpen > should not invoke event.preventDefault",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "Clicking Enter on a focused select while !menuIsOpen > should not invoke event.preventDefault",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000Clicking Enter on a focused select while menuIsOpen && focusedOption && !isComposing  > should invoke event.preventDefault",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "Clicking Enter on a focused select while menuIsOpen && focusedOption && !isComposing  > should invoke event.preventDefault",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000Clicking dropdown indicator on select with closed menu with primary button on mouse multi select > should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed",
@@ -326,49 +326,49 @@
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for basic options test-input-name",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding focusing the first option instead of the controlled selected option when the menu opens."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for basic options test-input-name\u00002",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for basic options test-input-name",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding focusing the first option instead of the controlled selected option when the menu opens."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for grouped options test-input-name",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for grouped options test-input-name",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding focusing the first grouped option instead of the controlled selected option when the menu opens."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for grouped options test-input-name\u00002",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant for grouped options test-input-name",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding focusing the first grouped option instead of the controlled selected option when the menu opens."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant should not exist if hideSelectedOptions=true",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > aria-activedescendant should not exist if hideSelectedOptions=true",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding assigning the first visible option instead of an empty aria-activedescendant when the selected option is hidden."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > interacting with disabled options shows correct A11yText",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > interacting with disabled options shows correct A11yText",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > interacting with multi values options shows correct A11yText",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > interacting with multi values options shows correct A11yText",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > passes through aria-errormessage prop multi select > should pass aria-errormessage prop down to input",
@@ -598,15 +598,15 @@
       "id": "src/__tests__/Select.test.tsx\u0000click to open select multi select > should focus the first option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "click to open select multi select > should focus the first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000click to open select single select > should focus the first option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "click to open select single select > should focus the first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000clicking on disabled option multi select > should not select the disabled option",
@@ -633,8 +633,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000close menu on hitting escape and clear input value if menu is open even if escapeClearsValue and isClearable are true",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "close menu on hitting escape and clear input value if menu is open even if escapeClearsValue and isClearable are true",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000closeMenuOnSelect prop > when passed as false it should not call onMenuClose on selecting option",
@@ -983,8 +983,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000hitting spacebar should select option if isSearchable is false",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting spacebar should select option if isSearchable is false",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting tab on option should not call onChange if tabSelectsValue is false",
@@ -1277,15 +1277,15 @@
       "id": "src/__tests__/Select.test.tsx\u0000pressing enter on disabled option multi select > should not select the disabled option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "pressing enter on disabled option multi select > should not select the disabled option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000pressing enter on disabled option single select > should not select the disabled option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "pressing enter on disabled option single select > should not select the disabled option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000render custom Input Component",
@@ -1348,7 +1348,7 @@
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding suppressing the clear callback for an empty single-select value."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000should call onChange with an array on hitting backspace when backspaceRemovesValue is true and isMulti is true",
@@ -1382,8 +1382,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000snapshot - defaults",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "snapshot - defaults",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000to clear value when hitting escape if escapeClearsValue and isClearable are true",
@@ -1411,7 +1411,7 @@
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "to not clear value when hitting escape if escapeClearsValue is true and isClearable is false",
       "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "reason": "Blocked by the Octane binding clearing on Escape even when isClearable is false."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000to only render groups with at least one match when filtering",
@@ -1564,141 +1564,141 @@
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> 1 x ArrowUp -> Enter) > should select the last option in the select",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> 1 x ArrowUp -> Enter) > should select the last option in the select",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) > should select the second option - default pageSize 5",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) > should select the second option - default pageSize 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> 1 x PageDown -> Enter) > should select the first option on next page - default pageSize 5",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> 1 x PageDown -> Enter) > should select the first option on next page - default pageSize 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) > should select the first option in the select",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) > should select the first option in the select",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> 3 x ArrowDown -> Enter) > should select the forth option in the select",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> 3 x ArrowDown -> Enter) > should select the forth option in the select",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> 3 x PageDown -> Home -> Enter) > should select the last option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> 3 x PageDown -> Home -> Enter) > should select the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > (open select -> End -> Enter) > should select the last option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > (open select -> End -> Enter) > should select the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > cycle options > ( open select -> End -> ArrowDown -> Enter) > should select the first option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > cycle options > ( open select -> End -> ArrowDown -> Enter) > should select the first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > cycle options > (open select -> ArrowUp -> Enter) > should select the last option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > cycle options > (open select -> ArrowUp -> Enter) > should select the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction multi select > open select and hit enter > should select first option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction multi select > open select and hit enter > should select first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> 1 x ArrowUp -> Enter) > should select the last option in the select",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> 1 x ArrowUp -> Enter) > should select the last option in the select",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) > should select the second option - default pageSize 5",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) > should select the second option - default pageSize 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> 1 x PageDown -> Enter) > should select the first option on next page - default pageSize 5",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> 1 x PageDown -> Enter) > should select the first option on next page - default pageSize 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) > should select the first option in the select",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) > should select the first option in the select",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> 3 x ArrowDown -> Enter) > should select the forth option in the select",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> 3 x ArrowDown -> Enter) > should select the forth option in the select",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> 3 x PageDown -> Home -> Enter) > should select the last option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> 3 x PageDown -> Home -> Enter) > should select the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > (open select -> End -> Enter) > should select the last option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > (open select -> End -> Enter) > should select the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > cycle options > ( open select -> End -> ArrowDown -> Enter) > should select the first option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > cycle options > ( open select -> End -> ArrowDown -> Enter) > should select the first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > cycle options > (open select -> ArrowUp -> Enter) > should select the last option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > cycle options > (open select -> ArrowUp -> Enter) > should select the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Integration tests > selection an option > keyboard interaction single select > open select and hit enter > should select first option",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Integration tests > selection an option > keyboard interaction single select > open select and hit enter > should select first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Menu is controllable by menuIsOpen prop",
@@ -1711,22 +1711,22 @@
       "id": "src/__tests__/StateManaged.test.tsx\u0000Menu to open by default if menuIsOpen prop is true multi select > should keep Menu open by default if true is passed for menuIsOpen prop",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Menu to open by default if menuIsOpen prop is true multi select > should keep Menu open by default if true is passed for menuIsOpen prop",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000Menu to open by default if menuIsOpen prop is true single select > should keep Menu open by default if true is passed for menuIsOpen prop",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "Menu to open by default if menuIsOpen prop is true single select > should keep Menu open by default if true is passed for menuIsOpen prop",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000`required` prop > should validate",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "`required` prop > should validate",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000click on dropdown indicator multi select > should toggle Menu",
@@ -1767,8 +1767,8 @@
       "id": "src/__tests__/StateManaged.test.tsx\u0000defaults > snapshot",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "defaults > snapshot",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000inputValue prop > should not update the inputValue when on change of input if inputValue prop is provided",
@@ -1781,8 +1781,8 @@
       "id": "src/__tests__/StateManaged.test.tsx\u0000multi select > selecting multiple values",
       "upstreamFile": "src/__tests__/StateManaged.test.tsx",
       "fullName": "multi select > selecting multiple values",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/StateManaged.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000passes down the className prop",
