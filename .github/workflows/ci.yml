@@ -604,7 +604,6 @@ jobs:
             specs: >-
               packages/octane/tests/browser
               packages/dexie/tests/browser
-              packages/react-draggable/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
           - lane: browser
@@ -612,7 +611,6 @@ jobs:
             specs: >-
               packages/octane/tests/browser
               packages/dexie/tests/browser
-              packages/react-draggable/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
           - lane: astro

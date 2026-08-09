@@ -3,7 +3,13 @@
   "consumerAuthority": {
     "artifact": "npm:react-draggable@4.7.1",
     "root": "upstream/npm",
-    "scope": ["published runtime", "published declarations", "package metadata", "public exports", "public subpaths"]
+    "scope": [
+      "published runtime",
+      "published declarations",
+      "package metadata",
+      "public exports",
+      "public subpaths"
+    ]
   },
   "provenanceAuthority": {
     "artifact": "git:https://github.com/react-grid-layout/react-draggable.git#v4.7.1",

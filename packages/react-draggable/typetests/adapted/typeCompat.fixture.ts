@@ -1,3 +1,15 @@
+/**
+ * One-for-one Octane adaptation of upstream tag/test/typeCompat/fixture.tsx.
+ *
+ * Allowed transforms (recorded in audit/upstream-inventory.json allowedTransforms):
+ * - import root: react-draggable -> @octanejs/react-draggable
+ * - React.MouseEvent/TouchEvent unions -> native MouseEvent/TouchEvent (Octane events)
+ * - React.Component class assignability -> function-component component types
+ * - children: React.ReactNode -> OctaneNode / omit class-only children probes that are
+ *   React-declaration regressions for the published React package
+ * - JSX consumer usage of the fixture lives in typings.consumer.tsrx
+ */
+
 import Draggable, {
 	DraggableCore,
 	type ControlPosition,

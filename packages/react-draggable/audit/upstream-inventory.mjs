@@ -104,7 +104,7 @@ async function buildInventory(root = packageRoot) {
 		const source = await readFile(join(root, path), 'utf8');
 		adaptedCases.push(...parityMarkers(source, path));
 	}
-	const publicCasePath = 'tests/runtime/upstream-public.test.ts';
+	const publicCasePath = 'tests/upstream/public-root.test.ts';
 	const publicCaseSource = await readFile(join(root, publicCasePath), 'utf8');
 	const publicCases = staticCalls(publicCaseSource, ['adaptedCase']);
 	const publicUnitCases = unitCases.filter(
@@ -135,7 +135,8 @@ async function buildInventory(root = packageRoot) {
 		});
 	}
 	adaptedCases.push(
-		{ id: 'type-program:public-api', path: 'typetests/public-api.test.ts' },
+		{ id: 'type-program:adapted-consumer', path: 'typetests/adapted/typings.consumer.ts' },
+		{ id: 'type-program:adapted-compatibility', path: 'typetests/adapted/typeCompat.fixture.ts' },
 		{ id: 'type-program:pristine', path: 'typetests/tsconfig.pristine.json' },
 		{ id: 'type-program:adapted', path: 'typetests/tsconfig.adapted.json' },
 	);
@@ -171,12 +172,14 @@ async function buildInventory(root = packageRoot) {
 			return ['src/DraggableCore.tsrx', 'tests/runtime/core.test.ts'];
 		if (path === 'tag/lib/cjs.ts' || path === 'tag/lib/umd.ts')
 			return ['src/index.tsrx', 'tests/runtime/draggable.test.ts'];
-		if (path === 'tag/lib/utils/types.ts') return ['src/types.ts', 'typetests/public-api.test.ts'];
-		return [path.replace('tag/lib/', 'src/'), 'tests/runtime/upstream-public.test.ts'];
+		if (path === 'tag/lib/utils/types.ts')
+			return ['src/types.ts', 'typetests/adapted/typeCompat.fixture.ts'];
+		return [path.replace('tag/lib/', 'src/'), 'tests/upstream/public-root.test.ts'];
 	};
 	const unitCoverage = (entry) => {
 		if (entry.file.includes('/utils/')) return [];
-		if (entry.file === 'tag/test/typeCompat.test.ts') return ['type-program:public-api'];
+		if (entry.file === 'tag/test/typeCompat.test.ts')
+			return ['type-program:adapted-consumer', 'type-program:adapted-compatibility'];
 		return [adaptedUnitId(entry)];
 	};
 	const evidenceFor = (caseIds) => [
@@ -240,7 +243,10 @@ async function buildInventory(root = packageRoot) {
 				adapted(value, 'runtime-export', ['src/index.tsrx', 'tests/runtime/draggable.test.ts']),
 			),
 			typeExports: typeExports.map((value) =>
-				adapted(value, 'type-export', ['src/index.tsrx', 'typetests/public-api.test.ts']),
+				adapted(value, 'type-export', [
+					'src/index.tsrx',
+					'typetests/adapted/typeCompat.fixture.ts',
+				]),
 			),
 			unitCases: unitCases.map((value) => {
 				const caseIds = unitCoverage(value);
@@ -290,12 +296,17 @@ async function buildInventory(root = packageRoot) {
 					value.id,
 					'type-assertion',
 					[
-						'typetests/public-api.test.ts',
+						'typetests/adapted/typeCompat.fixture.ts',
 						'typetests/tsconfig.pristine.json',
 						'typetests/tsconfig.adapted.json',
 					],
 					'Checked by both pristine-upstream and adapted public-contract type programs.',
-					['type-program:public-api', 'type-program:pristine', 'type-program:adapted'],
+					[
+						'type-program:adapted-consumer',
+						'type-program:adapted-compatibility',
+						'type-program:pristine',
+						'type-program:adapted',
+					],
 				),
 			),
 			authoredTests: [
@@ -311,7 +322,30 @@ async function buildInventory(root = packageRoot) {
 				},
 			],
 		},
-		allowedTransforms: [],
+		allowedTransforms: [
+			{
+				id: 'import-root-octanejs',
+				description: 'Rewrite react-draggable imports to @octanejs/react-draggable',
+				appliesTo: ['adapted-runtime', 'adapted-types'],
+			},
+			{
+				id: 'native-events',
+				description: 'Replace React synthetic MouseEvent/TouchEvent unions with native events',
+				appliesTo: ['adapted-types'],
+			},
+			{
+				id: 'function-components',
+				description:
+					'Replace React.Component class assignability with Octane function-component types',
+				appliesTo: ['adapted-types'],
+			},
+			{
+				id: 'nodeRef-prop-surface',
+				description:
+					'Express consumer refs through Octane nodeRef props rather than class-component refs',
+				appliesTo: ['adapted-types', 'adapted-runtime'],
+			},
+		],
 	};
 }
 

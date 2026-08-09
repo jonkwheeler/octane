@@ -841,18 +841,31 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-draggable-pristine',
+					include: ['packages/react-draggable/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+					testTimeout: 120_000,
+					hookTimeout: 120_000,
+				},
+			},
+			{
 				testExecution: {
 					group: 'react-parity',
-					include: [
-						'packages/react-draggable/tests/upstream/**/*.test.ts',
-						'packages/react-draggable/tests/runtime/**/*.test.ts',
-					],
+					include: ['packages/react-draggable/tests/upstream/**/*.test.ts'],
 				},
 				test: {
 					name: 'react-draggable',
 					include: [
 						'packages/react-draggable/tests/upstream/**/*.test.ts',
 						'packages/react-draggable/tests/runtime/**/*.test.ts',
+					],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-draggable/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -870,7 +883,6 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-draggable-hydration',
 					include: ['packages/react-draggable/tests/hydration/**/*.test.ts'],
@@ -880,7 +892,6 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-draggable-ssr',
 					include: ['packages/react-draggable/tests/ssr/**/*.test.ts'],

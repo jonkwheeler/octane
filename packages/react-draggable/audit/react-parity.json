@@ -27,7 +27,6 @@
     },
     "tests": {
       "roots": [
-        "packages/react-draggable/tests/runtime",
         "packages/react-draggable/tests/upstream"
       ],
       "include": [
@@ -37,8 +36,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 87,
-    "uniqueIdentities": 87,
+    "inventoryEntries": 61,
+    "uniqueIdentities": 61,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -49,18 +48,63 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "29938fa1ecf2e666c5956763e7754d3893f0bfcb1d4954249d29605792a6074c"
+      "lockfileSha256": "3adb35a4fd845f7ee843c2be9867bf02785c2d420b15d16ea5b6b014c6c7dedc"
     }
   },
   "lanes": [
+    {
+      "id": "react-draggable-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-draggable-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-draggable 4.7.1 Vitest suite against the vendored React binding and checks every passed identity against the committed inventory.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-draggable/audit/pristine-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-draggable/audit/pristine-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "3b94f640286edea40e497b45b022a5ff409886155013b7eeb6dfbf178fb33aed"
+        },
+        {
+          "path": "packages/react-draggable/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "ef61568e2c2aa00f17f2acc56b65efce55d9dfe6c41d4a6b090e15440f1bc6fd"
+        },
+        {
+          "path": "packages/react-draggable/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "72cba985b559d80a88b3ce2058a7d7010245005150870bd0c6fd78b898caf5e2"
+        },
+        {
+          "path": "scripts/react-parity/react-draggable-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "7b35ffe920bf3d9bae0d8ab14a95e3d895de11ff1b48b4d7d6ffce16dd84a5ce"
+        },
+        {
+          "path": "packages/react-draggable/scripts/run-pristine-upstream.mjs",
+          "role": "support",
+          "sha256": "083fb2a55387ae9aae5b045632952c242d8ef2f4b9d5701d3c76f52a8d664808"
+        },
+        {
+          "path": "packages/react-draggable/tests/upstream-vitest.config.ts",
+          "role": "support",
+          "sha256": "0f0c5d9b7a1683ad69ef6ac1c9d12e6fd1fad15114b78bea1d2c8e2ed0f7fe20"
+        }
+      ]
+    },
     {
       "id": "react-draggable-adapted-full-suite",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-draggable",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs every collected adapted runtime and upstream-public test and verifies exact test identities.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the one-for-one adapted public-root suite under tests/upstream with exact inventoried identities; private-helper upstream cases remain dispositioned against pristine evidence.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-draggable/audit/adapted-runtime.json"
@@ -69,12 +113,12 @@
         {
           "path": "packages/react-draggable/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "7ec408204026705fcbeb2616c216929fd9feea2e9a7d31493d7f9c7b428f547d"
+          "sha256": "20abd31b5a475b367b776b5a03f1ef29c2db9fe9dc34b55c3064a83339f1aeff"
         },
         {
           "path": "scripts/react-parity/react-draggable-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "c0a415c426129547c7c30250445de1420df011cc7be179d989f410f3660a5945"
+          "sha256": "d5483036701aa9dc4f9c7d2ec415ebfc577c16d804e9e5a4dfbd3bd92d33936f"
         }
       ]
     },
@@ -102,61 +146,12 @@
       ]
     },
     {
-      "id": "react-draggable-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-draggable-ssr",
-      "notes": "Renders deterministic public-root HTML, SVG, and DraggableCore output without browser globals.",
-      "files": [
-        {
-          "path": "packages/react-draggable/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "aefd127fc881f328acfa1d11db13c9dd34bfa03828ed342af5459b1d031a1997",
-          "cases": [
-            {
-              "id": "adapted:react-draggable-ssr",
-              "testName": "renders deterministic HTML, SVG, and core children without browser globals",
-              "fullName": "@octanejs/react-draggable SSR renders deterministic HTML, SVG, and core children without browser globals"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-draggable/tests/ssr/_fixtures/server.tsrx",
-          "role": "support",
-          "sha256": "b467366472c72292c0f2a1b6735af597d206bca8c98162057cd65b5758dd177c"
-        }
-      ]
-    },
-    {
-      "id": "react-draggable-hydration",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-draggable-hydration",
-      "notes": "Adopts public-root HTML and SVG nodes, transitions SVG transform form, and becomes mouse-interactive without warnings or duplicates.",
-      "files": [
-        {
-          "path": "packages/react-draggable/tests/hydration/hydration.test.ts",
-          "role": "test",
-          "sha256": "3a2d5178c0120b10dcd5f772576a5bfeaad4f8873800d031b0a47210a4a80674",
-          "cases": [
-            {
-              "id": "adapted:react-draggable-hydration",
-              "testName": "adopts all child nodes, selects SVG transform form, and becomes mouse interactive",
-              "fullName": "@octanejs/react-draggable hydration adopts all child nodes, selects SVG transform form, and becomes mouse interactive"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "react-draggable-browser",
       "type": "browser",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-draggable-browser",
-      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Browser-platform evidence only; no physical-device or mobile-WebKit claim. The branch consumes shared Firefox runner PR #548 through reviewed head 994dc59fe9646e01da137b15825c1743a340017e and CommonJS package-condition PR #550 through the reviewed cached TS\u042fX head 369557c3e.",
+      "notes": "Runs paired Chromium and Firefox public-root journeys for real geometry, mouse/touch, iframe owner documents, ShadowRoot selector bounds, SVG, focus, unmount cleanup, pinned active-error retention and later cleanup, and overlapping input. Executed through react-parity discovery rather than a package-specific ci.yml path.",
       "files": [
         {
           "path": "packages/react-draggable/tests/browser/parity.browser.test.ts",
@@ -214,7 +209,7 @@
         {
           "path": "packages/react-draggable/typetests/tsconfig.pristine.json",
           "role": "support",
-          "sha256": "db8f6ce2a8b677d9fe6c86441da811fc350a857d8e7a34803e0854e884b827de"
+          "sha256": "995ccbe831cc476adb53ad8424c76ebcd09820030b7a6759acf16cb8c9f6d360"
         },
         {
           "path": "packages/react-draggable/upstream/tag/typings/test.tsx",
@@ -249,7 +244,7 @@
       "environment": "workspace-node",
       "project": "react-draggable-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Compiles the complete exported Octane prop/type contract, including positive assignments and negative controls.",
+      "notes": "Compiles one-for-one adapted counterparts of typings/test.tsx and test/typeCompat/fixture.tsx through tsrx-tsc with recorded renderer-specific transforms.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -259,17 +254,29 @@
         {
           "path": "packages/react-draggable/typetests/tsconfig.adapted.json",
           "role": "support",
-          "sha256": "0f84e831906209e866489b14726cce49e4d73395d160d54c1b4618234e35c2a7"
+          "sha256": "f7c06a2be4fc87321bfa37fee75f6dd8295ce9b11021d4486b7c45b885864e03"
         },
         {
-          "path": "packages/react-draggable/typetests/public-api.test.ts",
+          "path": "packages/react-draggable/typetests/adapted/typings.consumer.ts",
           "role": "test",
-          "sha256": "01e8c1a1f662700cc1eea63db66f77b3339d3a0b8e85242c3f7ba4dbf732cbb6",
+          "sha256": "49035c2476e4b7482f0d8b4f8cf58a1b56c04d1fdc6e314f3735da2a7526f577",
           "cases": [
             {
-              "id": "types:react-draggable-adapted-public-api",
-              "testName": "complete Octane public contract",
-              "fullName": "Octane react-draggable declaration contract: complete public API"
+              "id": "types:react-draggable-adapted-consumer",
+              "testName": "adapted consumer program",
+              "fullName": "Octane react-draggable declaration contract: adapted consumer program"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-draggable/typetests/adapted/typeCompat.fixture.ts",
+          "role": "test",
+          "sha256": "fba7da9cc35b02038958e24e7eff68e9d98256e54f57ebd7fc16a95e64998684",
+          "cases": [
+            {
+              "id": "types:react-draggable-adapted-compatibility",
+              "testName": "adapted compatibility fixture",
+              "fullName": "Octane react-draggable declaration contract: adapted compatibility fixture"
             }
           ]
         }

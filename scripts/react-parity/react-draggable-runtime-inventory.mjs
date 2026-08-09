@@ -9,6 +9,7 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const project = 'react-draggable';
 const destination = 'packages/react-draggable/audit/adapted-runtime.json';
+const upstreamRoot = 'packages/react-draggable/tests/upstream/';
 const idOccurrences = new Map();
 const output = execFileSync(
 	process.execPath,
@@ -17,7 +18,7 @@ const output = execFileSync(
 );
 const tests = JSON.parse(output)
 	.map((test) => ({ ...test, relativeFile: toPortablePath(relative(root, test.file)) }))
-	.filter((test) => test.relativeFile.startsWith('packages/react-draggable/tests/'))
+	.filter((test) => test.relativeFile.startsWith(upstreamRoot))
 	.map((test) => {
 		const fullName = test.name.replaceAll(' > ', ' ');
 		const baseId = `runtime:${createHash('sha256')
@@ -36,10 +37,7 @@ const tests = JSON.parse(output)
 const inventory = {
 	schemaVersion: 1,
 	project,
-	roots: [
-		'packages/react-draggable/tests/runtime',
-		'packages/react-draggable/tests/upstream',
-	],
+	roots: ['packages/react-draggable/tests/upstream'],
 	files: [...new Set(tests.map((test) => test.file))],
 	tests,
 };

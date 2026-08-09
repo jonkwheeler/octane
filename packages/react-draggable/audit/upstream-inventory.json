@@ -12,10 +12,7 @@
     "license": "MIT"
   },
   "publicSurface": {
-    "runtimeExports": [
-      "default",
-      "DraggableCore"
-    ],
+    "runtimeExports": ["default", "DraggableCore"],
     "typeExports": [
       "ControlPosition",
       "DraggableBounds",
@@ -26,10 +23,7 @@
       "DraggableProps",
       "PositionOffsetControlPosition"
     ],
-    "subpaths": [
-      ".",
-      "./package.json"
-    ]
+    "subpaths": [".", "./package.json"]
   },
   "artifacts": [
     {
@@ -2007,367 +2001,367 @@
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should have sensible defaults",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should have sensible defaults",
         "line": 76
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should render with default class",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should render with default class",
         "line": 86
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should preserve child className",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should preserve child className",
         "line": 90
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should preserve child styles",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should preserve child styles",
         "line": 94
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should apply transform style",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should apply transform style",
         "line": 98
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should use custom defaultClassName",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should use custom defaultClassName",
         "line": 102
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should add dragging class during drag",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should add dragging class during drag",
         "line": 106
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should add dragged class after drag",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should add dragged class after drag",
         "line": 111
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should use custom class names",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should use custom class names",
         "line": 117
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should respect defaultPosition",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should respect defaultPosition",
         "line": 128
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should use controlled position",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should use controlled position",
         "line": 132
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should respect positionOffset with numbers",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should respect positionOffset with numbers",
         "line": 136
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should respect positionOffset with percentages",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should respect positionOffset with percentages",
         "line": 140
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should not move when axis=\"none\"",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not move when axis=\"none\"",
         "line": 144
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should call onStart when drag starts",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call onStart when drag starts",
         "line": 149
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should cancel drag when onStart returns false",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should cancel drag when onStart returns false",
         "line": 155
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should detect SVG elements",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should detect SVG elements",
         "line": 161
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should not set isElementSVG for non-SVG elements",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not set isElementSVG for non-SVG elements",
         "line": 172
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should set initial transform attribute for SVG",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should set initial transform attribute for SVG",
         "line": 179
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should respect position prop changes",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should respect position prop changes",
         "line": 189
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should revert to controlled position after drag",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should revert to controlled position after drag",
         "line": 200
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should not drag when disabled",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not drag when disabled",
         "line": 209
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should throw when no children provided",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should throw when no children provided",
         "line": 215
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should throw when multiple children provided",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should throw when multiple children provided",
         "line": 222
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should still render when className is set on Draggable",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should still render when className is set on Draggable",
         "line": 231
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should still render when style is set on Draggable",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should still render when style is set on Draggable",
         "line": 237
       },
       {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should still render when transform is set on Draggable",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should still render when transform is set on Draggable",
         "line": 243
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should render its child",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should render its child",
         "line": 252
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should accept a single child only",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should accept a single child only",
         "line": 255
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onStart when mouse down",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call onStart when mouse down",
         "line": 259
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onDrag during mouse move",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call onDrag during mouse move",
         "line": 264
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onStop when mouse up",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call onStop when mouse up",
         "line": 270
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should provide correct data in callbacks",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should provide correct data in callbacks",
         "line": 276
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not start dragging when disabled",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not start dragging when disabled",
         "line": 282
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should cancel drag when onStart returns false",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should cancel drag when onStart returns false",
         "line": 287
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should stop drag when onDrag returns false",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should stop drag when onDrag returns false",
         "line": 297
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should only drag from handle",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should only drag from handle",
         "line": 304
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should work with nested elements in handle",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should work with nested elements in handle",
         "line": 309
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not drag from cancel elements",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not drag from cancel elements",
         "line": 314
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should snap movement to grid",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should snap movement to grid",
         "line": 319
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not call onDrag if movement is less than grid",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not call onDrag if movement is less than grid",
         "line": 325
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should adjust position based on scale",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should adjust position based on scale",
         "line": 334
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should work with scale < 1",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should work with scale < 1",
         "line": 340
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should only respond to left click by default",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should only respond to left click by default",
         "line": 346
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should respond to any click when allowAnyClick is true",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should respond to any click when allowAnyClick is true",
         "line": 354
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should use nodeRef instead of findDOMNode",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should use nodeRef instead of findDOMNode",
         "line": 362
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should work with forwardRef components",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should work with forwardRef components",
         "line": 367
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should handle touch start",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should handle touch start",
         "line": 371
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call preventDefault on touchstart by default",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call preventDefault on touchstart by default",
         "line": 378
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not call preventDefault when allowMobileScroll is true",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not call preventDefault when allowMobileScroll is true",
         "line": 387
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onMouseDown callback",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call onMouseDown callback",
         "line": 396
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call onMouseDown even when disabled",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call onMouseDown even when disabled",
         "line": 401
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should add transparent selection class by default",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should add transparent selection class by default",
         "line": 406
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not add class when enableUserSelectHack is false",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not add class when enableUserSelectHack is false",
         "line": 414
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not add user-select class when onStart returns false",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not add user-select class when onStart returns false",
         "line": 422
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::applies the nonce to the injected style element on drag start",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "applies the nonce to the injected style element on drag start",
         "line": 430
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should track mounted state correctly",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should track mounted state correctly",
         "line": 441
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not continue drag if onStart returns false",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not continue drag if onStart returns false",
         "line": 446
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should call preventDefault on touchstart when using handle",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should call preventDefault on touchstart when using handle",
         "line": 455
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should not call preventDefault on touchstart for cancel elements",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should not call preventDefault on touchstart for cancel elements",
         "line": 464
       },
       {
         "id": "adapted-public:tag/test/DraggableCore.test.jsx::should throw error when no children provided",
-        "path": "tests/runtime/upstream-public.test.ts",
+        "path": "tests/upstream/public-root.test.ts",
         "name": "should throw error when no children provided",
         "line": 473
       },
@@ -2510,8 +2504,12 @@
         "scenario": "browser:react-draggable-native"
       },
       {
-        "id": "type-program:public-api",
-        "path": "typetests/public-api.test.ts"
+        "id": "type-program:adapted-consumer",
+        "path": "typetests/adapted/typings.consumer.ts"
+      },
+      {
+        "id": "type-program:adapted-compatibility",
+        "path": "typetests/adapted/typeCompat.fixture.ts"
       },
       {
         "id": "type-program:pristine",
@@ -2529,100 +2527,70 @@
         "upstream": "tag/lib/Draggable.tsx",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/Draggable.tsrx",
-          "tests/runtime/draggable.test.ts"
-        ],
+        "evidence": ["src/Draggable.tsrx", "tests/runtime/draggable.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/DraggableCore.tsx",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/DraggableCore.tsrx",
-          "tests/runtime/core.test.ts"
-        ],
+        "evidence": ["src/DraggableCore.tsrx", "tests/runtime/core.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/cjs.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "tests/runtime/draggable.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "tests/runtime/draggable.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/umd.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "tests/runtime/draggable.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "tests/runtime/draggable.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/domFns.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "tests/upstream/public-root.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/getPrefix.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/utils/getPrefix.ts",
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts", "tests/upstream/public-root.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/log.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/utils/log.ts",
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["src/utils/log.ts", "tests/upstream/public-root.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/positionFns.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/utils/positionFns.ts",
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["src/utils/positionFns.ts", "tests/upstream/public-root.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/shims.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/utils/shims.ts",
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["src/utils/shims.ts", "tests/upstream/public-root.test.ts"],
         "note": "Ported source with executable contract coverage."
       },
       {
         "upstream": "tag/lib/utils/types.ts",
         "kind": "source",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/types.ts",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/types.ts", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Ported source with executable contract coverage."
       }
     ],
@@ -2631,20 +2599,14 @@
         "upstream": "default",
         "kind": "runtime-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "tests/runtime/draggable.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "tests/runtime/draggable.test.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableCore",
         "kind": "runtime-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "tests/runtime/draggable.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "tests/runtime/draggable.test.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       }
     ],
@@ -2653,80 +2615,56 @@
         "upstream": "ControlPosition",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableBounds",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableCoreProps",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableData",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableEvent",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableEventHandler",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "DraggableProps",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       },
       {
         "upstream": "PositionOffsetControlPosition",
         "kind": "type-export",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "src/index.tsrx",
-          "typetests/public-api.test.ts"
-        ],
+        "evidence": ["src/index.tsrx", "typetests/adapted/typeCompat.fixture.ts"],
         "note": "Adapted to the Octane public/runtime contract."
       }
     ],
@@ -2735,9 +2673,7 @@
         "upstream": "tag/test/Draggable.test.jsx:34::should have sensible defaults",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should have sensible defaults"
         ],
@@ -2747,9 +2683,7 @@
         "upstream": "tag/test/Draggable.test.jsx:52::should render with default class",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should render with default class"
         ],
@@ -2759,9 +2693,7 @@
         "upstream": "tag/test/Draggable.test.jsx:62::should preserve child className",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should preserve child className"
         ],
@@ -2771,9 +2703,7 @@
         "upstream": "tag/test/Draggable.test.jsx:73::should preserve child styles",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should preserve child styles"
         ],
@@ -2783,9 +2713,7 @@
         "upstream": "tag/test/Draggable.test.jsx:83::should apply transform style",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should apply transform style"
         ],
@@ -2795,9 +2723,7 @@
         "upstream": "tag/test/Draggable.test.jsx:93::should use custom defaultClassName",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should use custom defaultClassName"
         ],
@@ -2807,9 +2733,7 @@
         "upstream": "tag/test/Draggable.test.jsx:106::should add dragging class during drag",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should add dragging class during drag"
         ],
@@ -2819,9 +2743,7 @@
         "upstream": "tag/test/Draggable.test.jsx:124::should add dragged class after drag",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should add dragged class after drag"
         ],
@@ -2831,9 +2753,7 @@
         "upstream": "tag/test/Draggable.test.jsx:138::should use custom class names",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should use custom class names"
         ],
@@ -2843,9 +2763,7 @@
         "upstream": "tag/test/Draggable.test.jsx:165::should respect defaultPosition",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should respect defaultPosition"
         ],
@@ -2855,9 +2773,7 @@
         "upstream": "tag/test/Draggable.test.jsx:175::should use controlled position",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should use controlled position"
         ],
@@ -2867,9 +2783,7 @@
         "upstream": "tag/test/Draggable.test.jsx:185::should respect positionOffset with numbers",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should respect positionOffset with numbers"
         ],
@@ -2879,9 +2793,7 @@
         "upstream": "tag/test/Draggable.test.jsx:195::should respect positionOffset with percentages",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should respect positionOffset with percentages"
         ],
@@ -2891,9 +2803,7 @@
         "upstream": "tag/test/Draggable.test.jsx:211::should not move when axis=\"none\"",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should not move when axis=\"none\""
         ],
@@ -2903,9 +2813,7 @@
         "upstream": "tag/test/Draggable.test.jsx:228::should call onStart when drag starts",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should call onStart when drag starts"
         ],
@@ -2915,9 +2823,7 @@
         "upstream": "tag/test/Draggable.test.jsx:246::should cancel drag when onStart returns false",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should cancel drag when onStart returns false"
         ],
@@ -2927,21 +2833,15 @@
         "upstream": "tag/test/Draggable.test.jsx:266::should detect SVG elements",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
-        "adaptedCases": [
-          "adapted-public:tag/test/Draggable.test.jsx::should detect SVG elements"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
+        "adaptedCases": ["adapted-public:tag/test/Draggable.test.jsx::should detect SVG elements"],
         "note": "Mapped one-to-one to an executable public-root adapted test."
       },
       {
         "upstream": "tag/test/Draggable.test.jsx:277::should not set isElementSVG for non-SVG elements",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should not set isElementSVG for non-SVG elements"
         ],
@@ -2951,9 +2851,7 @@
         "upstream": "tag/test/Draggable.test.jsx:288::should set initial transform attribute for SVG",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should set initial transform attribute for SVG"
         ],
@@ -2963,9 +2861,7 @@
         "upstream": "tag/test/Draggable.test.jsx:300::should respect position prop changes",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should respect position prop changes"
         ],
@@ -2975,9 +2871,7 @@
         "upstream": "tag/test/Draggable.test.jsx:324::should revert to controlled position after drag",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should revert to controlled position after drag"
         ],
@@ -2987,9 +2881,7 @@
         "upstream": "tag/test/Draggable.test.jsx:342::should not drag when disabled",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should not drag when disabled"
         ],
@@ -2999,9 +2891,7 @@
         "upstream": "tag/test/Draggable.test.jsx:358::should throw when no children provided",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should throw when no children provided"
         ],
@@ -3011,9 +2901,7 @@
         "upstream": "tag/test/Draggable.test.jsx:375::should throw when multiple children provided",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should throw when multiple children provided"
         ],
@@ -3023,9 +2911,7 @@
         "upstream": "tag/test/Draggable.test.jsx:400::should still render when className is set on Draggable",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should still render when className is set on Draggable"
         ],
@@ -3035,9 +2921,7 @@
         "upstream": "tag/test/Draggable.test.jsx:412::should still render when style is set on Draggable",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should still render when style is set on Draggable"
         ],
@@ -3047,9 +2931,7 @@
         "upstream": "tag/test/Draggable.test.jsx:423::should still render when transform is set on Draggable",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/Draggable.test.jsx::should still render when transform is set on Draggable"
         ],
@@ -3059,21 +2941,15 @@
         "upstream": "tag/test/DraggableCore.test.jsx:23::should render its child",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
-        "adaptedCases": [
-          "adapted-public:tag/test/DraggableCore.test.jsx::should render its child"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
+        "adaptedCases": ["adapted-public:tag/test/DraggableCore.test.jsx::should render its child"],
         "note": "Mapped one-to-one to an executable public-root adapted test."
       },
       {
         "upstream": "tag/test/DraggableCore.test.jsx:33::should accept a single child only",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should accept a single child only"
         ],
@@ -3083,9 +2959,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:58::should call onStart when mouse down",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call onStart when mouse down"
         ],
@@ -3095,9 +2969,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:70::should call onDrag during mouse move",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call onDrag during mouse move"
         ],
@@ -3107,9 +2979,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:87::should call onStop when mouse up",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call onStop when mouse up"
         ],
@@ -3119,9 +2989,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:99::should provide correct data in callbacks",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should provide correct data in callbacks"
         ],
@@ -3131,9 +2999,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:122::should not start dragging when disabled",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not start dragging when disabled"
         ],
@@ -3143,9 +3009,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:136::should cancel drag when onStart returns false",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should cancel drag when onStart returns false"
         ],
@@ -3155,9 +3019,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:152::should stop drag when onDrag returns false",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should stop drag when onDrag returns false"
         ],
@@ -3167,9 +3029,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:170::should only drag from handle",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should only drag from handle"
         ],
@@ -3179,9 +3039,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:190::should work with nested elements in handle",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should work with nested elements in handle"
         ],
@@ -3191,9 +3049,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:208::should not drag from cancel elements",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not drag from cancel elements"
         ],
@@ -3203,9 +3059,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:230::should snap movement to grid",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should snap movement to grid"
         ],
@@ -3215,9 +3069,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:247::should not call onDrag if movement is less than grid",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not call onDrag if movement is less than grid"
         ],
@@ -3227,9 +3079,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:264::should adjust position based on scale",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should adjust position based on scale"
         ],
@@ -3239,9 +3089,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:281::should work with scale < 1",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should work with scale < 1"
         ],
@@ -3251,9 +3099,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:300::should only respond to left click by default",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should only respond to left click by default"
         ],
@@ -3263,9 +3109,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:319::should respond to any click when allowAnyClick is true",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should respond to any click when allowAnyClick is true"
         ],
@@ -3275,9 +3119,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:340::should use nodeRef instead of findDOMNode",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should use nodeRef instead of findDOMNode"
         ],
@@ -3287,9 +3129,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:362::should work with forwardRef components",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should work with forwardRef components"
         ],
@@ -3299,9 +3139,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:390::should handle touch start",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should handle touch start"
         ],
@@ -3311,9 +3149,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:402::should call preventDefault on touchstart by default",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call preventDefault on touchstart by default"
         ],
@@ -3323,9 +3159,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:417::should not call preventDefault when allowMobileScroll is true",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not call preventDefault when allowMobileScroll is true"
         ],
@@ -3335,9 +3169,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:434::should call onMouseDown callback",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call onMouseDown callback"
         ],
@@ -3347,9 +3179,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:446::should call onMouseDown even when disabled",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call onMouseDown even when disabled"
         ],
@@ -3359,9 +3189,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:462::should add transparent selection class by default",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should add transparent selection class by default"
         ],
@@ -3371,9 +3199,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:477::should not add class when enableUserSelectHack is false",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not add class when enableUserSelectHack is false"
         ],
@@ -3383,9 +3209,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:488::should not add user-select class when onStart returns false",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not add user-select class when onStart returns false"
         ],
@@ -3395,9 +3219,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:515::applies the nonce to the injected style element on drag start",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::applies the nonce to the injected style element on drag start"
         ],
@@ -3407,9 +3229,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:530::should track mounted state correctly",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should track mounted state correctly"
         ],
@@ -3419,9 +3239,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:549::should not continue drag if onStart returns false",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not continue drag if onStart returns false"
         ],
@@ -3431,9 +3249,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:568::should call preventDefault on touchstart when using handle",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should call preventDefault on touchstart when using handle"
         ],
@@ -3443,9 +3259,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:586::should not call preventDefault on touchstart for cancel elements",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should not call preventDefault on touchstart for cancel elements"
         ],
@@ -3455,9 +3269,7 @@
         "upstream": "tag/test/DraggableCore.test.jsx:608::should throw error when no children provided",
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/runtime/upstream-public.test.ts"
-        ],
+        "evidence": ["tests/upstream/public-root.test.ts"],
         "adaptedCases": [
           "adapted-public:tag/test/DraggableCore.test.jsx::should throw error when no children provided"
         ],
@@ -3468,11 +3280,10 @@
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts"
+          "typetests/adapted/typings.consumer.ts",
+          "typetests/adapted/typeCompat.fixture.ts"
         ],
-        "adaptedCases": [
-          "type-program:public-api"
-        ],
+        "adaptedCases": ["type-program:adapted-consumer", "type-program:adapted-compatibility"],
         "note": "Mapped one-to-one to an executable public-root adapted test."
       },
       {
@@ -3480,1362 +3291,997 @@
         "kind": "unit-case",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts"
+          "typetests/adapted/typings.consumer.ts",
+          "typetests/adapted/typeCompat.fixture.ts"
         ],
-        "adaptedCases": [
-          "type-program:public-api"
-        ],
+        "adaptedCases": ["type-program:adapted-consumer", "type-program:adapted-compatibility"],
         "note": "Mapped one-to-one to an executable public-root adapted test."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:20::returns false for a node without any matches() implementation",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:28::uses attachEvent/detachEvent when present",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:39::falls back to on<event> assignment when neither API exists",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:50::treats the body offsetParent as origin {0,0}",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:58::subtracts the parent rect and adds scroll for non-body parents",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:70::divides by scale",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:80::keys the transform under the browser-prefixed transform property",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:86::prepends a positionOffset",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:92::supports string (percentage) positionOffsets",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:100::produces a unit-less translate string",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:104::prepends a unit-less positionOffset",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:112::finds the touch in targetTouches by identifier",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:120::falls back to changedTouches",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:128::returns undefined when no touch matches",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:135::reads the first targetTouches identifier",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:140::falls back to changedTouches when targetTouches is empty",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:145::returns undefined when there are no touches",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:160::is a no-op when doc is null/undefined",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:166::injects a style element and tags the body once",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:177::does not inject a second style element on repeated calls",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:184::does not set a nonce attribute when none is provided",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:190::applies an explicit nonce to the injected style element",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:196::does not retroactively set a nonce on an already-injected element",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:203::falls back to __webpack_nonce__ when no explicit nonce is passed",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:214::prefers an explicit nonce over __webpack_nonce__",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:225::removes the body class via requestAnimationFrame",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:249::is a no-op when scheduling removal with a null doc",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:257::does not clear a focused-input Caret selection",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:272::adds via string concatenation when classList is unavailable",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.extra.test.js:281::removes via regex when classList is unavailable",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:29::should match simple class selectors",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:37::should match id selectors",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:44::should match tag selectors",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:54::should match element itself",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:61::should match parent elements",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:71::should stop at baseNode",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:86::should return false when no match",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:94::should add and remove event listeners",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:107::should handle null elements gracefully",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:115::should calculate outer dimensions including borders",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:131::should calculate inner dimensions excluding padding",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:144::should add class names",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:150::should not duplicate class names",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:157::should remove class names",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:166::should handle removing non-existent classes",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:175::should create translate string with px suffix",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:180::should create translate string without suffix (for SVG)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:185::should include position offset when provided",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/domFns.test.js:190::should handle percentage offsets",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:6::handles a single-character property",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:10::handles trailing hyphen gracefully",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:15::emits a leading hyphen literally (no preceding char to capitalize)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:23::lowercases multi-letter prefixes",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:27::returns the prop untouched for an empty prefix",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:41::detects the ms prefix",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:48::detects the O prefix",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:55::returns empty string when documentElement itself is missing",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:60::returns empty string when document is missing entirely",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.extra.test.js:65::detects prefixes for a kebab-cased property",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:6::should return prop unchanged when no prefix",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:10::should prefix and capitalize for Webkit",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:14::should prefix and capitalize for Moz",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:18::should handle kebab-case properties",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:22::should handle multi-hyphen properties",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:28::should return prop unchanged when no prefix",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:32::should add CSS prefix for Webkit",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:36::should add CSS prefix for Moz",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:40::should add CSS prefix for ms",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:56::should return empty string when window is undefined",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:61::should return empty string when documentElement.style is unavailable",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:66::should return empty string when prop exists unprefixed",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:77::should return Webkit prefix when WebkitTransform exists",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:88::should return Moz prefix when MozTransform exists",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:99::should return empty string when no prefix matches",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/getPrefix.test.js:110::should use transform as default prop",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/getPrefix.ts"
-        ],
+        "evidence": ["src/utils/getPrefix.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:30::short-circuits and returns x/y unchanged when bounds is falsy",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:36::clamps to object bounds (right/bottom upper limits)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:42::clamps to object bounds (left/top lower limits)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:48::ignores limits that are not numbers (partial bounds object)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:56::does not mutate the original bounds object (clone)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:64::throws when the node has been unmounted",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:92::resolves bounds=\"parent\" against the parent node",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:107::resolves bounds via a CSS selector against the root node",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:121::throws a descriptive error when the selector matches nothing",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:142::returns mouse coords mapped through the document body offsetParent",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:152::applies scale to the returned coordinates",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:161::honors a user-provided offsetParent and its scroll/rect",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:177::returns null when a touchIdentifier is given but the touch is absent",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.bounds.test.js:186::reads the matching touch when a touchIdentifier is provided",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:6::should snap to grid values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:11::should handle different x and y grid values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:16::should handle zero values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:20::should handle negative values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:27::should snap exactly at grid boundaries",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:32::should round at midpoint (standard Math.round behavior)",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:41::should return true for axis \"both\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:46::should return true for axis \"x\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:51::should return false for axis \"y\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:56::should return false for axis \"none\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:63::should return true for axis \"both\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:68::should return true for axis \"y\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:73::should return false for axis \"x\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:78::should return false for axis \"none\"",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:87::should create initial data when lastX/lastY are NaN",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:105::should calculate deltas when lastX/lastY are set",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:123::should throw when node is unmounted",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:136::should create data with scale of 1",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/positionFns.test.js:162::should apply scale to delta values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/domFns.ts",
-          "src/utils/positionFns.ts"
-        ],
+        "evidence": ["src/utils/domFns.ts", "src/utils/positionFns.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:6::returns undefined for an empty array",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:10::works over array-like (TouchList-style) objects with a length",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:20::returns the first match when multiple satisfy the callback",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:24::does not return falsy elements even if the callback is truthy at that index",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:32::recognizes class constructors as functions",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:37::recognizes generator functions as functions",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:42::returns false for boolean values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:49::treats -Infinity as a number",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:53::returns false for boxed Number objects",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:59::returns false for arrays",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:65::returns NaN for non-numeric strings",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:69::returns NaN for an empty string",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:73::parses leading sign and ignores trailing units",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:80::flags truthy non-string prop values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:87::returns undefined for an absent prop",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.extra.test.js:91::returns undefined for falsy NaN values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:6::should find first element matching callback",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:12::should return undefined if no match found",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:18::should work with objects",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:24::should pass index and array to callback",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:32::should return true for regular functions",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:36::should return true for arrow functions",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:40::should return true for async functions",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:44::should return false for non-functions",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:55::should return true for valid numbers",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:63::should return false for NaN",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:67::should return false for non-numbers",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:76::should parse integer strings",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:82::should parse pixel values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:87::should handle decimal strings by truncating",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:94::should return error when prop is set",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:102::should return undefined when prop is not set",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       },
       {
         "upstream": "tag/test/utils/shims.test.js:108::should return undefined for falsy values",
         "kind": "unit-case",
         "disposition": "upstream-internal-implementation",
-        "evidence": [
-          "src/utils/shims.ts"
-        ],
+        "evidence": ["src/utils/shims.ts"],
         "note": "The upstream case targets an unexported helper. Octane preserves the public behavior through component/runtime/browser cases without pinning private implementation seams."
       }
     ],
@@ -4844,9 +4290,7 @@
         "upstream": "tag/test/browser/browser.test.js:42::should update transform on drag",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:42::should update transform on drag"
         ],
@@ -4856,9 +4300,7 @@
         "upstream": "tag/test/browser/browser.test.js:79::should honor x axis constraint",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:79::should honor x axis constraint"
         ],
@@ -4868,9 +4310,7 @@
         "upstream": "tag/test/browser/browser.test.js:109::should honor y axis constraint",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:109::should honor y axis constraint"
         ],
@@ -4880,9 +4320,7 @@
         "upstream": "tag/test/browser/browser.test.js:141::should call onStop when drag ends",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:141::should call onStop when drag ends"
         ],
@@ -4892,9 +4330,7 @@
         "upstream": "tag/test/browser/browser.test.js:179::should clip dragging to bounds object",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:179::should clip dragging to bounds object"
         ],
@@ -4904,9 +4340,7 @@
         "upstream": "tag/test/browser/browser.test.js:213::should clip dragging to parent bounds",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:213::should clip dragging to parent bounds"
         ],
@@ -4916,9 +4350,7 @@
         "upstream": "tag/test/browser/browser.test.js:256::should clip to negative bounds",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:256::should clip to negative bounds"
         ],
@@ -4928,9 +4360,7 @@
         "upstream": "tag/test/browser/browser.test.js:293::should snap movement to grid",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:293::should snap movement to grid"
         ],
@@ -4940,9 +4370,7 @@
         "upstream": "tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid"
         ],
@@ -4952,9 +4380,7 @@
         "upstream": "tag/test/browser/browser.test.js:371::should snap to larger grid correctly",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:371::should snap to larger grid correctly"
         ],
@@ -4964,9 +4390,7 @@
         "upstream": "tag/test/browser/browser.test.js:413::should adjust position when scale is 2x",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:413::should adjust position when scale is 2x"
         ],
@@ -4976,9 +4400,7 @@
         "upstream": "tag/test/browser/browser.test.js:454::should only drag from handle",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:454::should only drag from handle"
         ],
@@ -4988,9 +4410,7 @@
         "upstream": "tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements"
         ],
@@ -5000,9 +4420,7 @@
         "upstream": "tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements"
         ],
@@ -5012,9 +4430,7 @@
         "upstream": "tag/test/browser/browser.test.js:591::should work correctly inside an iframe",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:591::should work correctly inside an iframe"
         ],
@@ -5024,9 +4440,7 @@
         "upstream": "tag/test/browser/browser.test.js:664::should respect bounds inside an iframe",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:664::should respect bounds inside an iframe"
         ],
@@ -5036,9 +4450,7 @@
         "upstream": "tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers"
         ],
@@ -5048,9 +4460,7 @@
         "upstream": "tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM"
         ],
@@ -5060,9 +4470,7 @@
         "upstream": "tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM"
         ],
@@ -5072,9 +4480,7 @@
         "upstream": "tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback"
         ],
@@ -5084,9 +4490,7 @@
         "upstream": "tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts"
         ],
@@ -5096,9 +4500,7 @@
         "upstream": "tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag"
         ],
@@ -5108,9 +4510,7 @@
         "upstream": "tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly",
         "kind": "browser-case",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "adaptedCases": [
           "adapted-browser:tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly"
         ],
@@ -5122,45 +4522,35 @@
         "upstream": "tag/test/browser/test.html",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/setup.js",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/testUtils.js",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/typeCompat/fixture.tsx",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "note": "Replaced by deterministic Octane real-browser fixtures."
       },
       {
         "upstream": "tag/test/typeCompat/tsconfig.json",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
-        "evidence": [
-          "tests/browser/parity.browser.test.ts"
-        ],
+        "evidence": ["tests/browser/parity.browser.test.ts"],
         "note": "Replaced by deterministic Octane real-browser fixtures."
       }
     ],
@@ -5170,12 +4560,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5186,12 +4577,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5202,12 +4594,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5218,12 +4611,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5234,12 +4628,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5250,12 +4645,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5266,12 +4662,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5282,12 +4679,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5298,12 +4696,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5314,12 +4713,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5330,12 +4730,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5346,12 +4747,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5362,12 +4764,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5378,12 +4781,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5394,12 +4798,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5410,12 +4815,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5426,12 +4832,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5442,12 +4849,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5458,12 +4866,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5474,12 +4883,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5490,12 +4900,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5506,12 +4917,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5522,12 +4934,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5538,12 +4951,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5554,12 +4968,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5570,12 +4985,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5586,12 +5002,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5602,12 +5019,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5618,12 +5036,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5634,12 +5053,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5650,12 +5070,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5666,12 +5087,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5682,12 +5104,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5698,12 +5121,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5714,12 +5138,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5730,12 +5155,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5746,12 +5172,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5762,12 +5189,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5778,12 +5206,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5794,12 +5223,13 @@
         "kind": "type-assertion",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "typetests/public-api.test.ts",
+          "typetests/adapted/typeCompat.fixture.ts",
           "typetests/tsconfig.pristine.json",
           "typetests/tsconfig.adapted.json"
         ],
         "adaptedCases": [
-          "type-program:public-api",
+          "type-program:adapted-consumer",
+          "type-program:adapted-compatibility",
           "type-program:pristine",
           "type-program:adapted"
         ],
@@ -5811,14 +5241,33 @@
         "upstream": "octane-only:upstream-inventory-negative-controls",
         "kind": "octane-only-test",
         "disposition": "octane-only-framework-contract",
-        "evidence": [
-          "tests/audit/upstream-inventory.test.mjs"
-        ],
+        "evidence": ["tests/audit/upstream-inventory.test.mjs"],
         "path": "tests/audit/upstream-inventory.test.mjs",
         "classification": "octane-only-framework-contract",
         "reason": "Negative controls prove that the provenance and crosswalk machinery fails closed; upstream has no equivalent self-audit."
       }
     ]
   },
-  "allowedTransforms": []
+  "allowedTransforms": [
+    {
+      "id": "import-root-octanejs",
+      "description": "Rewrite react-draggable imports to @octanejs/react-draggable",
+      "appliesTo": ["adapted-runtime", "adapted-types"]
+    },
+    {
+      "id": "native-events",
+      "description": "Replace React synthetic MouseEvent/TouchEvent unions with native events",
+      "appliesTo": ["adapted-types"]
+    },
+    {
+      "id": "function-components",
+      "description": "Replace React.Component class assignability with Octane function-component types",
+      "appliesTo": ["adapted-types"]
+    },
+    {
+      "id": "nodeRef-prop-surface",
+      "description": "Express consumer refs through Octane nodeRef props rather than class-component refs",
+      "appliesTo": ["adapted-types", "adapted-runtime"]
+    }
+  ]
 }

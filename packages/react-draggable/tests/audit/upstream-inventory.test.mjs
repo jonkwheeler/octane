@@ -76,7 +76,7 @@ await rejectsMutation(
 await rejectsMutation(
 	'a renamed public adapted case fails closed',
 	async (root) => {
-		const path = join(root, 'tests/runtime/upstream-public.test.ts');
+		const path = join(root, 'tests/upstream/public-root.test.ts');
 		await writeFile(
 			path,
 			(await readFile(path, 'utf8')).replace(
