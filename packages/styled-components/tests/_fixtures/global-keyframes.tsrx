@@ -6,7 +6,7 @@ const slide = keyframes`
   to { transform: translateX(10px); }
 `;
 
-// Dynamic letter-spacing is on the styled element (not createGlobalStyle) so
+// Dynamic letter-spacing lives on the styled element (not createGlobalStyle) so
 // widen changes both the container class list and each engine's isolated
 // `style[data-styled]` sheet. createGlobalStyle-only updates leave the
 // container unchanged and are covered by Octane conformance tests instead.

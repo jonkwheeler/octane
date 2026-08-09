@@ -133,7 +133,7 @@
         {
           "path": "packages/styled-components/tests/_fixtures/global-keyframes.tsrx",
           "role": "support",
-          "sha256": "8ad2e0573a5342127a0407529cf04f89fbbde61716e5bd3521a9ec6c8f647dc8"
+          "sha256": "9a84a2efa65ca348554eb774760ac1db4748929d13c88f4aa372e40eb7ea975d"
         },
         {
           "path": "packages/styled-components/tests/_fixtures/compose.tsrx",
