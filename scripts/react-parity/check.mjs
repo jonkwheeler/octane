@@ -15,12 +15,17 @@ import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+<<<<<<< HEAD
 import {
 	loadManifest,
 	selectHarnessAction,
 	verifyLaneEnvironment,
 	verifyManifestFiles,
 } from './harness-lib.mjs';
+=======
+import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
+import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
+>>>>>>> origin/main
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
@@ -53,6 +58,11 @@ try {
 	verifyLivestoreTypes(REPO);
 } catch (error) {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);
+}
+try {
+	verifySolanaReactTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/solana-react type evidence is invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);
