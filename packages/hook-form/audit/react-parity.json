@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
+      "lockfileSha256": "5966e99698b5f8099e3ef2e62625cc31f3a3e60305f1def8d4066c6cd9f98824"
     }
   },
   "lanes": [
@@ -270,8 +270,8 @@
           "cases": [
             {
               "id": "differential:register",
-              "testName": "register: typing → per-keystroke validation → submit → reset renders byte-identical",
-              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing → per-keystroke validation → submit → reset renders byte-identical"
+              "testName": "register: typing \u2192 per-keystroke validation \u2192 submit \u2192 reset renders byte-identical",
+              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing \u2192 per-keystroke validation \u2192 submit \u2192 reset renders byte-identical"
             },
             {
               "id": "differential:controller",
@@ -303,7 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3870d32f1c94bd007af98e9eb977bb77fcd031e9dd35d7cc38f2699a8cdbe426"
+          "sha256": "1b66c13599df5fd47e2f5548d6b60d742616f284721ab4fa59522fb950a6dad0"
         }
       ]
     }
