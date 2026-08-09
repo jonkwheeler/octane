@@ -53,6 +53,25 @@ function run(command, commandArgs, cwd) {
 	return result;
 }
 
+function statusFromSpec(spec) {
+	// Do not use Playwright's aggregated `ok` flag: it is also true for skipped
+	// and expected-failure tests. Use the final result status after retries.
+	const entries = spec.tests ?? [];
+	if (entries.length === 0) return 'failed';
+	let sawSkipped = false;
+	for (const entry of entries) {
+		const results = entry.results ?? [];
+		const finalResult = results[results.length - 1];
+		const resultStatus = finalResult?.status;
+		if (resultStatus === 'skipped') {
+			sawSkipped = true;
+			continue;
+		}
+		if (resultStatus !== 'passed') return 'failed';
+	}
+	return sawSkipped ? 'skipped' : 'passed';
+}
+
 function collectTests(suites) {
 	const tests = [];
 	function visit(suite, ancestors, isRoot) {
@@ -65,17 +84,7 @@ function collectTests(suites) {
 			const fullName = [...nextAncestors, specTitle].filter(Boolean).join(' ');
 			const relativeFile = typeof spec.file === 'string' ? spec.file : suite.file;
 			const file = toPortablePath(join('test', relativeFile));
-			// Prefer Playwright's aggregated ok flag. Retries leave earlier failed
-			// attempts in results[], so requiring every result to pass is wrong.
-			const ok =
-				typeof spec.ok === 'boolean'
-					? spec.ok
-					: (spec.tests ?? []).every(function everyTest(entry) {
-							const results = entry.results ?? [];
-							const finalResult = results[results.length - 1];
-							return finalResult?.status === 'passed';
-						});
-			tests.push({ file, fullName, status: ok ? 'passed' : 'failed' });
+			tests.push({ file, fullName, status: statusFromSpec(spec) });
 		}
 	}
 	for (const suite of suites) visit(suite, [], true);
