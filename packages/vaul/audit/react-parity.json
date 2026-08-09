@@ -16,21 +16,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/vaul/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/vaul/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/vaul/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/vaul/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": [
         "packages/vaul/tests/ssr/",
         "packages/vaul/tests/browser-conformance/",
@@ -106,13 +98,51 @@
       ]
     },
     {
+      "id": "vaul-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "vaul-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored declaration probes against pinned published vaul@1.1.2 because upstream ships no type-test suite.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/vaul/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/vaul/typetests/pristine/types.test-d.ts",
+          "role": "test",
+          "sha256": "ad8d522a4c167164c72c32b16aa9ac4796d37790c260c686037e0d677e2556e7",
+          "cases": [
+            {
+              "id": "types:pristine-public-api",
+              "testName": "pinned React Vaul public API",
+              "fullName": "pinned React Vaul public API"
+            }
+          ]
+        },
+        {
+          "path": "packages/vaul/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "02a748795b5b54272291f2e093bf59acaec22cb648e20ddd724a2f0e951aaab2"
+        },
+        {
+          "path": "packages/vaul/typetests/assertions.md",
+          "role": "support",
+          "sha256": "f863896c60d81e39e2daed21a99c5a3f3ac33e9761d5f1e9677a94717b64de53"
+        }
+      ]
+    },
+    {
       "id": "vaul-adapted-types",
       "type": "adapted-types",
-      "oracle": "optional",
+      "oracle": "required",
       "environment": "workspace-node",
       "project": "vaul-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Package-conformance accept/reject matrix for public Vaul props. Optional because it is not executed against pinned React/Vaul types, has no hashed assertion-group inventory, and lacks machinery negative controls required for a required React-parity types lane.",
+      "notes": "Octane accept/reject matrix for the corresponding public drawer content and trigger prop contracts.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -135,6 +165,11 @@
           "path": "packages/vaul/tsconfig.json",
           "role": "support",
           "sha256": "a42fbdc850941411a0bda3a8aafa26008bfc772b7964e447a8c042e3096e1605"
+        },
+        {
+          "path": "packages/vaul/typetests/assertions.md",
+          "role": "support",
+          "sha256": "f863896c60d81e39e2daed21a99c5a3f3ac33e9761d5f1e9677a94717b64de53"
         }
       ]
     },

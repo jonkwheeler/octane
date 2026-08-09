@@ -54,18 +54,18 @@ in `audit/react-parity.json`. Port-authored test classifications live in
 | `tests/ssr/server.test.ts` | Octane-only framework contract | unpaired — upstream ships no SSR suite; closed trigger must render without browser globals. Runs in ordinary Vitest shards; not React-parity evidence. |
 | `tests/browser/vaul.browser.test.ts` | adapted upstream (real browser) | cites base open/close, initial-snap load, and with-handle cycle; executes in the `vaul-real-browser` lane |
 | `tests/browser-conformance/snap-drag.browser.test.ts` | Octane-only browser contract | unpaired snap-point mid-drag release stays open; `vaul-browser-conformance` project, not React-parity evidence |
-| `tests/types/public-api.ts` | package conformance (types) | accept/reject matrix for public props; optional lane only — not required React-parity type evidence |
+| `tests/types/public-api.ts` | package conformance (types) | accept/reject matrix for public props; required adapted-types lane paired with `typetests/pristine` |
 
 ## Registered parity lanes
 
 | Lane id | Kind | Project | Notes |
 | --- | --- | --- | --- |
 | `vaul-pristine-upstream` | pristine-upstream | `vaul-pristine` | vendored Playwright suite vs published React Vaul |
-| `vaul-adapted-types` | adapted-types (optional) | `vaul-types` | package-conformance `tsrx-tsc` matrix; not a required parity oracle |
+| `vaul-pristine-types` | pristine-types | `vaul-pristine-types` | repo-authored `tsc` probes against pinned React Vaul declarations |
+| `vaul-adapted-types` | adapted-types | `vaul-types` | corresponding Octane `tsrx-tsc` accept/reject matrix |
 | `vaul-adapted-full-suite` | adapted-octane | `vaul` | DOM / export / React-oracle inventory |
 | `vaul-real-browser` | adapted-octane (real browser) | `vaul-browser` | headless Chromium inventory |
 
-No pristine-types lane is registered: upstream ships no type-test suite at
-`v1.1.2`, and required type-probe machinery is not yet wired for verified
-provenance. The `vaul-ssr` and `vaul-browser-conformance` Vitest projects stay
-outside parity ownership.
+Upstream ships no type-test suite at `v1.1.2`, so the required pristine and
+adapted type lanes use paired repo-authored declaration probes. The `vaul-ssr`
+and `vaul-browser-conformance` Vitest projects stay outside parity ownership.
