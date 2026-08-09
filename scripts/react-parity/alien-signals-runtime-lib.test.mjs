@@ -113,6 +113,62 @@ test('rejects deleting an adapted expect assertion', function rejectsDeletedAsse
 	}, /runtime assertion drift/);
 });
 
+test('rejects a weakened expect receiver', function rejectsWeakenedReceiver() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const weakened = adaptedSource.replace(
+		'expect(mySignal()).toBe(0);\n\t\tmySignal(10);\n\t\texpect(mySignal()).toBe(10);',
+		'expect(0).toBe(0);\n\t\tmySignal(10);\n\t\texpect(mySignal()).toBe(10);',
+	);
+	assert.notEqual(weakened, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: weakened,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /runtime assertion drift/);
+});
+
+test('rejects a missing Per citation', function rejectsMissingCitation() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const stripped = adaptedSource.replace(
+		"\t// Per src/index.test.ts:31\n\tit('should create a writable signal'",
+		"\tit('should create a writable signal'",
+	);
+	assert.notEqual(stripped, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: stripped,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /missing a \/\/ Per src\/index\.test\.ts:<line> citation/);
+});
+
 test('rejects fixture file drift against the transformation ledger', function rejectsFixtureDrift() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
@@ -136,4 +192,29 @@ test('rejects fixture file drift against the transformation ledger', function re
 			repoRoot: root,
 		});
 	}, /fixture drift/);
+});
+
+test('rejects semantic fixture drift even when the ledger sha256 is updated', function rejectsSemanticFixtureDrift() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const mutated = fixtureSource.replaceAll('id="value"', 'id="renamed-value"');
+	assert.notEqual(mutated, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: mutated,
+			expectedFixtureSha256: fixtureFileFingerprint(mutated),
+		});
+	}, /semantic fixture drift/);
 });

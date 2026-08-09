@@ -85,7 +85,7 @@ at [`upstream/src/index.test.ts`](./upstream/src/index.test.ts) and executes byt
 | should handle computed dependencies correctly | 401 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
 | should cleanup all subscriptions on unmount | 422 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
 | should handle multiple mount/unmount cycles | 449 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
-| should handle concurrent updates correctly | 477 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) (final value; React `act` batching itself is not applicable) |
+| should handle concurrent updates correctly | 477 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) (same `Promise.all` + microtask setters; final value) |
 
 Octane-only framework contracts stay outside parity ownership: SSR render safety in
 [`render-safety.test.ts`](./tests/ssr/render-safety.test.ts), hydration adoption in
@@ -102,5 +102,3 @@ Octane-only framework contracts stay outside parity ownership: SSR render safety
   writable-only narrowing.
 - Octane hooks carry compiler slots internally; this is invisible to consumers and required for
   stable composition outside `.tsrx` modules.
-- Concurrent/batched React updates are covered by sequential notifications that still settle on the
-  same final signal value.

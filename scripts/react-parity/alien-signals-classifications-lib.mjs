@@ -3,6 +3,16 @@ import { relative, resolve, sep } from 'node:path';
 
 const CONFIG = 'packages/alien-signals/audit/test-classifications.json';
 const MANIFEST = 'packages/alien-signals/audit/react-parity.json';
+const DISCOVERY_ROOTS = [
+	{
+		root: 'packages/alien-signals/tests',
+		match: /\.test\.(?:ts|tsx|tsrx)$/,
+	},
+	{
+		root: 'playground/octane/src/demos',
+		match: /^AlienSignals.*\.test\.(?:ts|tsx|tsrx)$/,
+	},
+];
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
@@ -10,18 +20,26 @@ const DISPOSITIONS = new Set([
 	'octane-only-framework-contract',
 ]);
 
+function discoverPortAuthoredTests(root) {
+	const discovered = [];
+	for (const entry of DISCOVERY_ROOTS) {
+		const absRoot = resolve(root, entry.root);
+		if (!existsSync(absRoot)) continue;
+		const files = readdirSync(absRoot, { recursive: true, withFileTypes: true });
+		for (const file of files) {
+			if (!file.isFile() || !entry.match.test(file.name)) continue;
+			discovered.push(
+				relative(root, resolve(file.parentPath ?? file.path, file.name))
+					.split(sep)
+					.join('/'),
+			);
+		}
+	}
+	return discovered.sort();
+}
+
 export function verifyAlienSignalsTestClassifications(root) {
-	const testsRoot = resolve(root, 'packages/alien-signals/tests');
-	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
-		.filter(function keepTestFiles(entry) {
-			return entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name);
-		})
-		.map(function toPortablePath(entry) {
-			return relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
-				.split(sep)
-				.join('/');
-		})
-		.sort();
+	const discovered = discoverPortAuthoredTests(root);
 	const configPath = resolve(root, CONFIG);
 	if (!existsSync(configPath)) throw new Error(`missing port-test classifications: ${CONFIG}`);
 	const config = JSON.parse(readFileSync(configPath, 'utf8'));

@@ -417,10 +417,22 @@ describe('Alien React Library', () => {
 			onEffect: effectFn,
 		});
 		await nextPaint();
-		result.click('#set1');
-		result.click('#set2');
-		result.click('#set3');
-		result.click('#set4');
+		// Same microtask-stratum concurrent writes as upstream's
+		// Promise.all([Promise.resolve().then(setter)...]) inside async act.
+		await Promise.all([
+			Promise.resolve().then(function setOne() {
+				signal(1);
+			}),
+			Promise.resolve().then(function setTwo() {
+				signal(2);
+			}),
+			Promise.resolve().then(function setThree() {
+				signal(3);
+			}),
+			Promise.resolve().then(function setFour() {
+				signal(4);
+			}),
+		]);
 		await nextPaint();
 		expect(signal()).toBe(4);
 		result.unmount();

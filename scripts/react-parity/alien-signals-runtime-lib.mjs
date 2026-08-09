@@ -166,7 +166,104 @@ function callTitle(node, sourceFile) {
 	return {
 		title: titleNode.text,
 		body: node.arguments[1],
+		node,
 	};
+}
+
+function normalizeReceiver(node, sourceFile) {
+	if (node === undefined) return 'empty';
+	if (
+		ts.isStringLiteral(node) ||
+		ts.isNoSubstitutionTemplateLiteral(node) ||
+		(typeof ts.isNumericLiteral === 'function' && ts.isNumericLiteral(node)) ||
+		node.kind === ts.SyntaxKind.TrueKeyword ||
+		node.kind === ts.SyntaxKind.FalseKeyword ||
+		node.kind === ts.SyntaxKind.NullKeyword
+	) {
+		return `literal:${node.getText(sourceFile).trim()}`;
+	}
+	if (
+		ts.isCallExpression(node) &&
+		ts.isIdentifier(node.expression) &&
+		node.arguments.length === 0
+	) {
+		return `call:${node.expression.text}`;
+	}
+	if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) {
+		const text = node.getText(sourceFile).replace(/\s+/g, '');
+		if (text === 'result.current' || /^result\.current\[\d+\]$/.test(text)) return 'surface';
+		if (text.endsWith('.textContent')) return 'surface';
+	}
+	if (ts.isIdentifier(node)) {
+		if (node.text === 'undefined') return 'literal:undefined';
+		return `id:${node.text}`;
+	}
+	return `expr:${node.getText(sourceFile).replace(/\s+/g, '')}`;
+}
+
+function splitContract(contract) {
+	const separator = contract.indexOf('|');
+	if (separator === -1) {
+		return { receiver: 'legacy', matcherContract: contract };
+	}
+	return {
+		receiver: contract.slice(0, separator),
+		matcherContract: contract.slice(separator + 1),
+	};
+}
+
+function receiversCompatible(pristineReceiver, adaptedReceiver) {
+	if (pristineReceiver === adaptedReceiver) return true;
+	if (pristineReceiver === 'legacy' || adaptedReceiver === 'legacy') return true;
+	if (pristineReceiver.startsWith('call:') || adaptedReceiver.startsWith('call:')) {
+		return pristineReceiver === adaptedReceiver;
+	}
+	if (pristineReceiver.startsWith('literal:') || adaptedReceiver.startsWith('literal:')) {
+		return pristineReceiver === adaptedReceiver;
+	}
+	// assertion-surface: result.current may become DOM textContent or a local stopper/value id
+	if (pristineReceiver === 'surface' && adaptedReceiver.startsWith('id:')) return true;
+	if (pristineReceiver.startsWith('id:') && adaptedReceiver === 'surface') return true;
+	if (pristineReceiver === 'surface' && adaptedReceiver === 'surface') return true;
+	if (pristineReceiver.startsWith('id:') && adaptedReceiver.startsWith('id:')) {
+		return pristineReceiver === adaptedReceiver;
+	}
+	return false;
+}
+
+const PER_CITATION = /\/\/\s*Per\s+src\/index\.test\.ts:(\d+)\s*$/;
+
+function citationLineForCase(node, sourceFile) {
+	const trivia = sourceFile.text.slice(node.getFullStart(), node.getStart(sourceFile));
+	const lines = trivia.split(/\r?\n/);
+	for (let index = lines.length - 1; index >= 0; index -= 1) {
+		const match = lines[index].trim().match(PER_CITATION);
+		if (match) return Number(match[1]);
+	}
+	return null;
+}
+
+export function extractPristineCaseLines(source, fileName = 'pristine.ts') {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const byTitle = new Map();
+	function visit(node) {
+		const titled = callTitle(node, sourceFile);
+		if (titled !== null) {
+			const line =
+				sourceFile.getLineAndCharacterOfPosition(titled.node.getStart(sourceFile)).line + 1;
+			byTitle.set(titled.title, line);
+			return;
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(sourceFile);
+	return byTitle;
 }
 
 export function extractCaseAssertionContracts(source, fileName = 'suite.ts') {
@@ -190,20 +287,51 @@ export function extractCaseAssertionContracts(source, fileName = 'suite.ts') {
 					MATCHER_NAMES.has(assertionNode.expression.name.text)
 				) {
 					const matcher = assertionNode.expression.name.text;
-					contracts.push(
-						normalizeContract(matcher, evaluateLiteral(assertionNode.arguments[0], sourceFile)),
+					const expectCall = assertionNode.expression.expression;
+					const receiverNode =
+						ts.isCallExpression(expectCall) &&
+						ts.isIdentifier(expectCall.expression) &&
+						expectCall.expression.text === 'expect'
+							? expectCall.arguments[0]
+							: undefined;
+					const matcherContract = normalizeContract(
+						matcher,
+						evaluateLiteral(assertionNode.arguments[0], sourceFile),
 					);
+					contracts.push(`${normalizeReceiver(receiverNode, sourceFile)}|${matcherContract}`);
 				}
 				ts.forEachChild(assertionNode, visitAssertions);
 			}
 			visitAssertions(titled.body);
-			cases.push({ title: titled.title, contracts });
+			cases.push({
+				title: titled.title,
+				contracts,
+				citationLine: citationLineForCase(titled.node, sourceFile),
+			});
 			return;
 		}
 		ts.forEachChild(node, visit);
 	}
 	visit(sourceFile);
 	return cases;
+}
+
+export function extractReferencedFixtureIds(adaptedSource) {
+	const ids = new Set();
+	for (const match of adaptedSource.matchAll(
+		/\bresult\.(?:find|click)\(\s*['"]#([A-Za-z0-9_-]+)['"]\s*\)/g,
+	)) {
+		ids.add(match[1]);
+	}
+	return [...ids].sort();
+}
+
+export function extractFixtureElementIds(fixtureSource) {
+	const ids = new Set();
+	for (const match of fixtureSource.matchAll(/\bid\s*=\s*["']([A-Za-z0-9_-]+)["']/g)) {
+		ids.add(match[1]);
+	}
+	return [...ids].sort();
 }
 
 export function extractMountedFixtures(adaptedSource, fileName = 'adapted.ts') {
@@ -246,9 +374,12 @@ export function fixtureFileFingerprint(fixtureSource) {
 function contractsCovered(pristineContracts, adaptedContracts) {
 	const remaining = adaptedContracts.slice();
 	for (const pristineContract of pristineContracts) {
-		const candidates = expandContract(pristineContract);
+		const pristineParts = splitContract(pristineContract);
+		const candidates = expandContract(pristineParts.matcherContract);
 		const index = remaining.findIndex(function matches(adaptedContract) {
-			const adaptedExpanded = expandContract(adaptedContract);
+			const adaptedParts = splitContract(adaptedContract);
+			if (!receiversCompatible(pristineParts.receiver, adaptedParts.receiver)) return false;
+			const adaptedExpanded = expandContract(adaptedParts.matcherContract);
 			for (const candidate of candidates) {
 				if (adaptedExpanded.has(candidate)) return true;
 			}
@@ -283,21 +414,33 @@ export function assertRuntimeStructureCrosswalk({
 	}
 	const pristineCases = extractCaseAssertionContracts(pristineSource, 'pristine.ts');
 	const adaptedCases = extractCaseAssertionContracts(adaptedSource, 'adapted.ts');
+	const pristineLines = extractPristineCaseLines(pristineSource, 'pristine.ts');
 	const adaptedByTitle = new Map(
 		adaptedCases.map(function entryOf(caseEntry) {
-			return [caseEntry.title, caseEntry.contracts];
+			return [caseEntry.title, caseEntry];
 		}),
 	);
 	for (const pristineCase of pristineCases) {
-		const adaptedContracts = adaptedByTitle.get(pristineCase.title);
-		if (adaptedContracts === undefined) {
+		const adaptedCase = adaptedByTitle.get(pristineCase.title);
+		if (adaptedCase === undefined) {
 			throw new Error(
 				`alien-signals runtime structure crosswalk missing adapted case: ${pristineCase.title}`,
 			);
 		}
-		if (!contractsCovered(pristineCase.contracts, adaptedContracts)) {
+		if (adaptedCase.citationLine === null) {
 			throw new Error(
-				`alien-signals runtime assertion drift in "${pristineCase.title}": pristine contracts ${JSON.stringify(pristineCase.contracts)} are not covered by adapted contracts ${JSON.stringify(adaptedContracts)}`,
+				`alien-signals adapted case "${pristineCase.title}" is missing a // Per src/index.test.ts:<line> citation`,
+			);
+		}
+		const expectedLine = pristineLines.get(pristineCase.title);
+		if (expectedLine !== undefined && adaptedCase.citationLine !== expectedLine) {
+			throw new Error(
+				`alien-signals adapted case "${pristineCase.title}" cites line ${adaptedCase.citationLine} but pristine title is at line ${expectedLine}`,
+			);
+		}
+		if (!contractsCovered(pristineCase.contracts, adaptedCase.contracts)) {
+			throw new Error(
+				`alien-signals runtime assertion drift in "${pristineCase.title}": pristine contracts ${JSON.stringify(pristineCase.contracts)} are not covered by adapted contracts ${JSON.stringify(adaptedCase.contracts)}`,
 			);
 		}
 	}
@@ -311,6 +454,15 @@ export function assertRuntimeStructureCrosswalk({
 	if (mounted.length === 0) {
 		throw new Error('alien-signals adapted suite must mount at least one fixture component');
 	}
+	const referencedIds = extractReferencedFixtureIds(adaptedSource);
+	const fixtureIds = new Set(extractFixtureElementIds(fixtureSource));
+	for (const id of referencedIds) {
+		if (!fixtureIds.has(id)) {
+			throw new Error(
+				`alien-signals semantic fixture drift: adapted suite references #${id} missing from hooks.tsrx`,
+			);
+		}
+	}
 	const fixtureSha256 = fixtureFileFingerprint(fixtureSource);
 	if (recordedFixtureSha256 && recordedFixtureSha256 !== fixtureSha256) {
 		throw new Error(
@@ -322,6 +474,7 @@ export function assertRuntimeStructureCrosswalk({
 		fixtures: mounted.length,
 		fixtureExports: exports.size,
 		fixtureFileSha256: fixtureSha256,
+		referencedFixtureIds: referencedIds.length,
 	};
 }
 

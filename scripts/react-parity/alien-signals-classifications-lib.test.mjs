@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import test from 'node:test';
@@ -11,6 +11,11 @@ async function fixture() {
 		new URL('../../packages/alien-signals/tests', import.meta.url),
 		join(root, 'packages/alien-signals/tests'),
 		{ recursive: true },
+	);
+	await mkdir(join(root, 'playground/octane/src/demos'), { recursive: true });
+	await cp(
+		new URL('../../playground/octane/src/demos/AlienSignals.test.ts', import.meta.url),
+		join(root, 'playground/octane/src/demos/AlienSignals.test.ts'),
 	);
 	for (const file of ['test-classifications.json', 'react-parity.json']) {
 		await cp(
@@ -28,6 +33,20 @@ test('rejects an unclassified port-authored test', async function rejectsUnclass
 		return rm(root, { recursive: true, force: true });
 	});
 	await writeFile(join(root, 'packages/alien-signals/tests/new.test.ts'), 'export {};\n');
+	assert.throws(function run() {
+		verifyAlienSignalsTestClassifications(root);
+	}, /exactly one classification/);
+});
+
+test('rejects an unclassified playground alien-signals test', async function rejectsUnclassifiedPlayground(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await writeFile(
+		join(root, 'playground/octane/src/demos/AlienSignals.extra.test.ts'),
+		'export {};\n',
+	);
 	assert.throws(function run() {
 		verifyAlienSignalsTestClassifications(root);
 	}, /exactly one classification/);

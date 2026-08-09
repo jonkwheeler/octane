@@ -19,16 +19,20 @@
     },
     {
       "kind": "assertion-surface",
-      "rule": "result.current / result.current[0] / toEqual object receivers may become DOM textContent string forms of the same observable value; matcher contracts (toBe/toEqual/toHaveBeenCalledTimes/toBeDefined/toBeGreaterThan) must still cover every pristine assertion value"
+      "rule": "result.current / result.current[0] / toEqual object receivers may become DOM textContent string forms of the same observable value; expect() receivers are compared (signal calls and literals must not weaken); matcher contracts (toBe/toEqual/toHaveBeenCalledTimes/toBeDefined/toBeGreaterThan) must still cover every pristine assertion value"
     },
     {
       "kind": "async-flush",
-      "rule": "act(...) may become await nextPaint() around the same state transition"
+      "rule": "act(...) may become await nextPaint() around the same state transition; concurrent Promise.all microtask setters stay microtask-concurrent"
     },
     {
-      "kind": "divergence",
-      "rule": "Concurrent React act batching may be replaced by sequential notifications that still settle on the same final signal value (documented in UPSTREAM.md)"
+      "kind": "citation",
+      "rule": "Every adapted case requires // Per src/index.test.ts:<line> citing the pristine it() line for that title"
+    },
+    {
+      "kind": "fixture-structure",
+      "rule": "Adapted result.find/click #ids must exist in hooks.tsrx; file sha256 alone cannot silence semantic id removal"
     }
   ],
-  "notes": "Title identity remains one-for-one. This ledger is enforced by scripts/react-parity/alien-signals-runtime-lib.mjs, which compares normalized assertion contracts and fixture-export fingerprints rather than titles alone."
+  "notes": "Title identity remains one-for-one. This ledger is enforced by scripts/react-parity/alien-signals-runtime-lib.mjs, which compares normalized assertion contracts (including expect receivers), Per citations, referenced fixture ids, and fixture-export fingerprints rather than titles alone."
 }

@@ -133,7 +133,7 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "200669350307abbe5081a964644d4f4abeb51e8191bef6eab5df5029b5b71038"
+          "sha256": "6fb34eea520d98ba7eb16b8ec9c1d0473d74c5d004ec19e8dfc16e101cb209ef"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
@@ -143,12 +143,12 @@
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "ce52c1441545e46abd77266fcb8f0020a66e82a00facba454ae6edd89d3e6243"
+          "sha256": "5df425b9bec5386009e325c9fbe5232742ec1bd7e3b331c3ffd488879b7832ef"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
           "role": "support",
-          "sha256": "d0a8828ecf11535a48f48926e3bb9f901b957cf18a477a7aea2a9b7f879657d6"
+          "sha256": "752fad363079c21d2bbd691c13ab6772f9b1df024726802619abb455b29ba101"
         },
         {
           "path": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
@@ -158,7 +158,7 @@
         {
           "path": "scripts/react-parity/alien-signals-classifications-lib.mjs",
           "role": "support",
-          "sha256": "1c26404e4f355654144c05c7e6df76ac97837cfaa210440718ae31652183d4d5"
+          "sha256": "a7ea0c5e304dadf57cc24a2d0146200a6cfc7ba0d2deec115d6b96a504062136"
         }
       ]
     },
