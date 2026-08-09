@@ -702,6 +702,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'jotai-differential',
 					include: ['packages/jotai/tests/differential/**/*.test.ts'],
