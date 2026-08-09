@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1d9827e3c696174116d097eacaceba3bb1f43e4b4a48968e38140166306f1866"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -64,7 +64,7 @@
         {
           "path": "packages/nuqs/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "5a0a72b49818fe7f29af391539e24a712156f6038b6cb78b56948570dbb6eab7",
+          "sha256": "89e0b2699184a7f8f26806c6d3bf0d3e5d238b14ea7de848b00e380e365cc191",
           "cases": [
             {
               "id": "differential:nuqs-query-state",
