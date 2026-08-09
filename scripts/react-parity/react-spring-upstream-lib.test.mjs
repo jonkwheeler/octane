@@ -22,7 +22,9 @@ test('accepts the pinned byte-exact upstream tree with case-level evidence', () 
 	try {
 		const result = verifyReactSpringUpstream(root);
 		assert.equal(result.files, 167);
+		assert.ok(result.pristineCases > 0);
 		assert.ok(result.adaptedCases > 0);
+		assert.equal(result.caseDispositions, result.pristineCases);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}
@@ -48,24 +50,31 @@ test('rejects missing upstream evidence', () => {
 	}
 });
 
-test('rejects an unclassified upstream test file', () => {
+test('rejects a pristine identity without a case disposition', () => {
 	const { root } = fixture();
 	try {
-		const path = join(root, 'packages/react-spring/audit/upstream-test-dispositions.json');
+		const path = join(root, 'packages/react-spring/audit/upstream-case-dispositions.json');
 		const dispositions = JSON.parse(readFileSync(path, 'utf8'));
-		delete dispositions['targets/web/src/animated.test.tsx'];
+		dispositions.cases = dispositions.cases.slice(1);
 		writeFileSync(path, `${JSON.stringify(dispositions, null, 2)}\n`);
-		assert.throws(() => verifyReactSpringUpstream(root), /disposition inventory drifted/);
+		assert.throws(() => verifyReactSpringUpstream(root), /lacks a case disposition/);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
-test('rejects an empty adapted evidence file', () => {
+test('rejects adapted disposition pointing at a missing adapted identity', () => {
 	const { root } = fixture();
 	try {
-		writeFileSync(join(root, 'packages/react-spring/tests/conformance/engine.test.ts'), '');
-		assert.throws(() => verifyReactSpringUpstream(root), /adapted evidence file is empty/);
+		const path = join(root, 'packages/react-spring/audit/upstream-case-dispositions.json');
+		const dispositions = JSON.parse(readFileSync(path, 'utf8'));
+		const adapted = dispositions.cases.find(function findAdapted(entry) {
+			return entry.disposition === 'adapted';
+		});
+		assert.ok(adapted);
+		adapted.adaptedFullName = 'this adapted title does not exist';
+		writeFileSync(path, `${JSON.stringify(dispositions, null, 2)}\n`);
+		assert.throws(() => verifyReactSpringUpstream(root), /missing adapted inventory identity/);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}
@@ -74,7 +83,7 @@ test('rejects an empty adapted evidence file', () => {
 test('rejects adapted evidence without Per provenance', () => {
 	const { root } = fixture();
 	try {
-		const path = join(root, 'packages/react-spring/tests/conformance/engine.test.ts');
+		const path = join(root, 'packages/react-spring/tests/upstream/helpers.test.ts');
 		const sourceText = readFileSync(path, 'utf8').replaceAll(/^\s*\/\/ Per .+\n/gm, '');
 		writeFileSync(path, sourceText);
 		assert.throws(() => verifyReactSpringUpstream(root), /lacks \/\/ Per provenance/);
@@ -83,30 +92,24 @@ test('rejects adapted evidence without Per provenance', () => {
 	}
 });
 
-test('rejects adapted evidence that drops an inventoried case title', () => {
+test('rejects skipped adapted cases', () => {
 	const { root } = fixture();
 	try {
-		const path = join(root, 'packages/react-spring/tests/conformance/engine.test.ts');
-		const sourceText = readFileSync(path, 'utf8').replace(
-			'settles a loop without a usable from value instead of recursing',
-			'renamed case that is no longer inventoried',
-		);
+		const path = join(root, 'packages/react-spring/tests/upstream/helpers.test.ts');
+		const sourceText = readFileSync(path, 'utf8').replace('it(', 'it.skip(');
 		writeFileSync(path, sourceText);
-		assert.throws(
-			() => verifyReactSpringUpstream(root),
-			/inventoried case is missing from adapted evidence source/,
-		);
+		assert.throws(() => verifyReactSpringUpstream(root), /contains skipped cases/);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}
 });
 
-test('rejects React imports in the published source boundary', () => {
+test('rejects React imports in published source', () => {
 	const { root } = fixture();
 	try {
 		writeFileSync(
-			join(root, 'packages/react-spring/src/index.ts'),
-			"import React from 'react';\nexport { React };\n",
+			join(root, 'packages/react-spring/src/leak.ts'),
+			"import React from 'react'\nexport const x = React\n",
 		);
 		assert.throws(() => verifyReactSpringUpstream(root), /React import leaked/);
 	} finally {

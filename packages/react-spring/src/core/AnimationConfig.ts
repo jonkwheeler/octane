@@ -40,15 +40,21 @@ export function mergeConfig(
 }
 
 function sanitizeConfig(config: Partial<AnimationConfig>, props: Partial<AnimationConfig>): void {
-	if (props.decay !== undefined) config.duration = undefined;
-	else if (
-		props.tension !== undefined ||
-		props.friction !== undefined ||
-		props.frequency !== undefined ||
-		props.damping !== undefined ||
-		props.mass !== undefined
-	) {
+	if (props.decay !== undefined) {
 		config.duration = undefined;
-		config.decay = undefined;
+	} else {
+		const isTensionConfig = props.tension !== undefined || props.friction !== undefined;
+		if (
+			isTensionConfig ||
+			props.frequency !== undefined ||
+			props.damping !== undefined ||
+			props.mass !== undefined
+		) {
+			config.duration = undefined;
+			config.decay = undefined;
+		}
+		if (isTensionConfig) {
+			config.frequency = undefined;
+		}
 	}
 }

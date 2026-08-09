@@ -86,21 +86,18 @@ exports.
 
 ## Upstream test-suite disposition
 
-The pinned boundary contains 26 executable unit/type-test files, one shared
-setup module, the framework-neutral `rafz` suite, and a nine-file Parallax
-browser demo. The vendored files are the authoritative work list. Every test
-file has a machine-checked disposition in
-`audit/upstream-test-dispositions.json`; the verifier rejects omissions, extra
-rows, missing evidence files, and React imports in published source.
+The pinned boundary contains the executable unit/type-test files under
+`packages/{animated,core,rafz,shared}` and `targets/web`, plus setup and the
+Parallax demo. The vendored files are the authoritative work list.
 
-| Upstream area | Disposition |
-|---|---|
-| `packages/rafz/src/index.test.ts` | Reused exact dependency; controlled by frame-loop and scheduler conformance |
-| Shared interpolation tests | Adapted into interpolation and advanced-engine conformance |
-| Shared resize and reduced-motion tests | Adapted into browser-hook and live-browser lanes |
-| `packages/animated/src/createHost.test.ts` | Adapted into host, hydration, and coherent-frame conformance |
-| Core engine tests | Adapted into engine, advanced-engine, controller, lifecycle, frame-loop, interpolation, and animated suites |
-| Core context and hook tests | Adapted into TSRX component, hook, transition, and cleanup suites |
-| Core type tests | Adapted into the strict public type project; React renderables become Octane renderables |
-| `targets/web/src/animated.test.tsx` | Adapted into host, SSR/hydration, and playground browser lanes |
-| `packages/parallax/test/**` | Adapted into deterministic Parallax, SSR/hydration, and development/production playground journeys |
+Runtime identities are inventoried by the pristine Vitest lane and mapped
+one-for-one in `audit/upstream-case-dispositions.json` to an adapted identity,
+a reused-dependency note, or an explicit `awaiting-adaptation` reason. Negative
+controls reject missing/extra pristine identities, adapted title drift, and
+skipped adapted cases. Repo-authored conformance/hydration/browser suites stay
+in the ordinary shards and are not React-parity ownership.
+
+Type programs under `*.test-d.ts` / `*.test-d.tsx` run pristine via
+`audit/type-probes/tsconfig.pristine-upstream.json`. One-for-one adapted type
+counterparts live under `typetests/upstream/` and still require Octane public
+type-surface work before the adapted-types lane is green.

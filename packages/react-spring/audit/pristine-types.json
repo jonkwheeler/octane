@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "cases": [
     {
-      "id": "types:react-spring-pristine",
-      "testName": "pinned React declaration probes",
-      "fullName": "pinned React declaration probes"
+      "id": "types:pristine-upstream",
+      "testName": "pinned upstream type suite",
+      "fullName": "pinned upstream type suite"
     }
   ]
 }

@@ -12,8 +12,8 @@
     "verification": "verified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
-    "types": "insufficient"
+    "runtime": "present",
+    "types": "present"
   },
   "adaptedRoots": {
     "source": {
@@ -22,14 +22,14 @@
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-spring/tests/conformance", "packages/react-spring/tests/hydration"],
+      "roots": ["packages/react-spring/tests/upstream"],
       "include": ["\\.test\\.ts$"],
-      "exclude": ["/tests/conformance/exports\\.test\\.ts$"]
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 62,
-    "uniqueIdentities": 62,
+    "inventoryEntries": 10,
+    "uniqueIdentities": 10,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -40,18 +40,63 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "862f59b6bf97fd04494440163d04ae661ee22e91e2b1cea0c38b2dec622c6c5f"
+      "lockfileSha256": "cd230e7df08125960dfa9ba53d16fee896739dee56e592ccb9bd49db002cc56c"
     }
   },
   "lanes": [
+    {
+      "id": "react-spring-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-spring-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-spring 10.1.2 Vitest browser unit suite against the vendored React source and checks every passed identity against the committed inventory.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-spring/audit/pristine-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-spring/audit/pristine-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "b4a97878731b893a5d4178ea0f435fb97a8a9b39e629e064b52a5b328d2b6c8d"
+        },
+        {
+          "path": "packages/react-spring/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "141df3957f39f4cd9182dd7bd6e0b7fcf83de8f299cde29f0336df8b89585473"
+        },
+        {
+          "path": "packages/react-spring/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "b5ed847ab76dc54ba963c861ab22a5aca82e7b9b61788ea7ba65762d7125a884"
+        },
+        {
+          "path": "scripts/react-parity/react-spring-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "eb534c4dcf7cea13abacfe5cfeaa77f80220ebb44e3ad8fcc4919062e055ec7c"
+        },
+        {
+          "path": "packages/react-spring/tests/upstream-vitest.config.ts",
+          "role": "support",
+          "sha256": "a40aea20c0423ed5686d5cdafb28eb06d8509bc1e533d2383ac5718f3b199d54"
+        },
+        {
+          "path": "packages/react-spring/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "10e6fb1c530efe9409d9f3184488bc7d57bcbae3c92ee97553859e4cd0eda993"
+        }
+      ]
+    },
     {
       "id": "react-spring-adapted-full-suite",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-spring",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs adapted Octane conformance and hydration evidence with exact inventoried identities.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs one-for-one adapted upstream identities under tests/upstream with exact inventoried names; remaining pristine identities are tracked in upstream-case-dispositions.json.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-spring/audit/adapted-runtime.json"
@@ -60,26 +105,12 @@
         {
           "path": "packages/react-spring/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "68ee8454fe8602916d36116b817e7daf7ea99329f8c74181bba59b8252d51bff"
-        }
-      ]
-    },
-    {
-      "id": "react-spring-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-spring-browser",
-      "notes": "Live playground journeys through Playwright Chromium.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-spring/audit/browser-runtime.json"
-      },
-      "files": [
+          "sha256": "4f2c9e6a6d6ac7e5fc0e6c88bd2dfa7e372fca12755a11ecc6a52b16cb9fd4ee"
+        },
         {
-          "path": "packages/react-spring/audit/browser-runtime.json",
+          "path": "packages/react-spring/audit/upstream-case-dispositions.json",
           "role": "support",
-          "sha256": "dd69258d4308acde0160c55bf6be3806c6645f42ff8de47e2e98fa5814f02589"
+          "sha256": "787682eb1af7e6aecbe9226618cd246f21b45e819a583cdcc34302165b8bcbfe"
         }
       ]
     },
@@ -112,40 +143,35 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-spring-pristine-types",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored React declaration probes against @react-spring/web 10.1.2.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the pinned upstream *.test-d.ts/*.test-d.tsx programs with tsc against the vendored core sources.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/react-spring/audit/type-probes/tsconfig.pristine.json"
+        "project": "packages/react-spring/audit/type-probes/tsconfig.pristine-upstream.json"
       },
       "files": [
         {
           "path": "packages/react-spring/audit/pristine-types.json",
           "role": "test",
-          "sha256": "3fa1487db3fd1002e77bcbf09ce2b9b56aefa73aeacb83e3364384478cbd08af",
+          "sha256": "4b5f8ba16f385db6feebcf9cfd776dbcebe5d3a9ec38d3ae3a687043d1778085",
           "cases": [
             {
-              "id": "types:react-spring-pristine",
-              "testName": "pinned React declaration probes",
-              "fullName": "pinned React declaration probes"
+              "id": "types:pristine-upstream",
+              "testName": "pinned upstream type suite",
+              "fullName": "pinned upstream type suite"
             }
           ]
         },
         {
-          "path": "packages/react-spring/audit/type-probes/public-api.test-d.ts",
+          "path": "packages/react-spring/audit/type-probes/tsconfig.pristine-upstream.json",
           "role": "support",
-          "sha256": "db7e5e15ff3aaf5b17c65bf2c077146476806669228dcd8edc2efcb1fedd0376"
-        },
-        {
-          "path": "packages/react-spring/audit/type-probes/tsconfig.pristine.json",
-          "role": "support",
-          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+          "sha256": "823a266ec0d981baa182b100d7393e43b55913ce9952cef32485cae19a9fed14"
         },
         {
           "path": "packages/react-spring/audit/type-parity.json",
           "role": "support",
-          "sha256": "458a947e90cc72daedbe4dd2b6feca8a0ac0b3799d5c263e7dd2c1c5ebc6ebcd"
+          "sha256": "23f0c3176b26981bff0dd03c658871e479b9ed2371cbeeaec599038544df075e"
         }
       ]
     },
@@ -155,40 +181,35 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-spring-adapted-types",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Octane public type probes after ReactNode→OctaneNode adaptation.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one adapted upstream type programs under typetests/upstream after permitted import-root transforms.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/react-spring/typetests/tsconfig.json"
+        "project": "packages/react-spring/typetests/tsconfig.upstream.json"
       },
       "files": [
         {
           "path": "packages/react-spring/audit/adapted-types.json",
           "role": "test",
-          "sha256": "faa3f7fa861af5a471137415d9038aa27ffa15f4f37f895ab7a4d34d05d55907",
+          "sha256": "799dfd209afc059a3c8593061e451e588a0d542523ab76080ec67a29aacf8201",
           "cases": [
             {
-              "id": "types:react-spring-adapted",
-              "testName": "adapted Octane declaration probes",
-              "fullName": "adapted Octane declaration probes"
+              "id": "types:adapted-octane",
+              "testName": "adapted Octane type suite",
+              "fullName": "adapted Octane type suite"
             }
           ]
         },
         {
-          "path": "packages/react-spring/typetests/public-api.test-d.tsx",
+          "path": "packages/react-spring/typetests/tsconfig.upstream.json",
           "role": "support",
-          "sha256": "50e65632d134b4499233655374a3c4cc0eed72c666cf7d5ac95b96ae15f70e93"
-        },
-        {
-          "path": "packages/react-spring/typetests/tsconfig.json",
-          "role": "support",
-          "sha256": "6c7e9b2f29818fc3798a981700ffcc61ef72462a59903b7a409f5a4894d5b2bc"
+          "sha256": "43df9e56079387552526989f7060047a22ffc0045d3f61e9c6c1ecb947fd3f8a"
         },
         {
           "path": "packages/react-spring/audit/type-parity.json",
           "role": "support",
-          "sha256": "458a947e90cc72daedbe4dd2b6feca8a0ac0b3799d5c263e7dd2c1c5ebc6ebcd"
+          "sha256": "23f0c3176b26981bff0dd03c658871e479b9ed2371cbeeaec599038544df075e"
         }
       ]
     }

@@ -173,6 +173,8 @@ const RESERVED = new Set([
 	'children',
 	'onDestroyed',
 	'keys',
+	'callId',
+	'parentId',
 ]);
 
 export function hasReservedProps(props: object): boolean {

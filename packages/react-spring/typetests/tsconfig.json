@@ -14,5 +14,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["./**/*.test-d.tsx", "./react-types-must-not-be-imported.d.ts"]
+  "include": ["./public-api.test-d.tsx", "./react-types-must-not-be-imported.d.ts"],
+  "exclude": ["./upstream/**"]
 }

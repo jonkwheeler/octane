@@ -27,27 +27,10 @@ async function writeJson(absolute, value) {
 	);
 }
 
-const TEST_ROOTS = [
-	'packages/react-spring/tests/conformance',
-	'packages/react-spring/tests/hydration',
-];
-
 const ADAPTED_FILES = [
-	'packages/react-spring/tests/conformance/advanced-engine.test.ts',
-	'packages/react-spring/tests/conformance/animated.test.ts',
-	'packages/react-spring/tests/conformance/browser-hooks.test.ts',
-	'packages/react-spring/tests/conformance/components.test.ts',
-	'packages/react-spring/tests/conformance/controller.test.ts',
-	'packages/react-spring/tests/conformance/engine.test.ts',
-	'packages/react-spring/tests/conformance/frame-loop.test.ts',
-	'packages/react-spring/tests/conformance/hooks.test.ts',
-	'packages/react-spring/tests/conformance/interpolation.test.ts',
-	'packages/react-spring/tests/conformance/lifecycle.test.ts',
-	'packages/react-spring/tests/conformance/parallax.test.ts',
-	'packages/react-spring/tests/conformance/prerequisite-seams.test.ts',
-	'packages/react-spring/tests/conformance/transitions.test.ts',
-	'packages/react-spring/tests/hydration/animated-host.test.ts',
-	'packages/react-spring/tests/hydration/parallax.test.ts',
+	'packages/react-spring/tests/upstream/AnimationConfig.test.ts',
+	'packages/react-spring/tests/upstream/helpers.test.ts',
+	'packages/react-spring/tests/upstream/stringInterpolation.test.ts',
 ];
 
 function listProject(project) {
@@ -81,31 +64,29 @@ function writeInventory(project, ownedFiles, inventoryRelative, roots) {
 		return a.file + a.fullName < b.file + b.fullName ? -1 : 1;
 	});
 	if (tests.length === 0) throw new Error(`project ${project} collected no owned tests`);
-	const inventory = {
-		schemaVersion: 1,
-		project,
-		roots,
-		files: [...files].sort(),
-		tests,
+	return {
+		inventory: {
+			schemaVersion: 1,
+			project,
+			roots,
+			files: [...files].sort(),
+			tests,
+		},
+		inventoryRelative,
 	};
-	return { inventory, inventoryRelative };
 }
 
 const adapted = writeInventory(
 	'react-spring',
 	ADAPTED_FILES,
 	'packages/react-spring/audit/adapted-runtime.json',
-	TEST_ROOTS,
-);
-const browser = writeInventory(
-	'react-spring-browser',
-	['packages/react-spring/tests/browser/playground.browser.test.ts'],
-	'packages/react-spring/audit/browser-runtime.json',
-	['packages/react-spring/tests/browser'],
+	['packages/react-spring/tests/upstream'],
 );
 
 const lockfileSha256 = sha256(readFileSync(path.join(REPO, 'pnpm-lock.yaml')));
 const summary = summarizeRuntimeInventories([adapted.inventory]);
+const pristineInventoryRelative = 'packages/react-spring/audit/pristine-wrapper-runtime.json';
+const pristineCaseInventoryRelative = 'packages/react-spring/audit/pristine-runtime.json';
 
 const differentialPath = 'packages/react-spring/tests/differential/parity.test.ts';
 const differentialCase = {
@@ -129,8 +110,8 @@ const manifest = {
 		verification: 'verified',
 	},
 	upstreamSuites: {
-		runtime: 'absent',
-		types: 'insufficient',
+		runtime: 'present',
+		types: 'present',
 	},
 	adaptedRoots: {
 		source: {
@@ -139,9 +120,9 @@ const manifest = {
 			exclude: [],
 		},
 		tests: {
-			roots: TEST_ROOTS,
+			roots: ['packages/react-spring/tests/upstream'],
 			include: ['\\.test\\.ts$'],
-			exclude: ['/tests/conformance/exports\\.test\\.ts$'],
+			exclude: [],
 		},
 	},
 	adaptedRuntimeSummary: summary,
@@ -157,14 +138,60 @@ const manifest = {
 	},
 	lanes: [
 		{
+			id: 'react-spring-pristine-upstream',
+			type: 'pristine-upstream',
+			oracle: 'required',
+			environment: 'workspace-node',
+			project: 'react-spring-pristine',
+			evidenceOrigin: 'upstream-suite',
+			notes:
+				'Runs the byte-exact react-spring 10.1.2 Vitest browser unit suite against the vendored React source and checks every passed identity against the committed inventory.',
+			execution: {
+				kind: 'vitest-full',
+				inventory: pristineInventoryRelative,
+			},
+			files: [
+				{
+					path: pristineInventoryRelative,
+					role: 'support',
+					sha256: 'pending',
+				},
+				{
+					path: pristineCaseInventoryRelative,
+					role: 'support',
+					sha256: 'pending',
+				},
+				{
+					path: 'packages/react-spring/tests/upstream-original.test.ts',
+					role: 'support',
+					sha256: 'pending',
+				},
+				{
+					path: 'scripts/react-parity/react-spring-pristine-runtime.mjs',
+					role: 'support',
+					sha256: 'pending',
+				},
+				{
+					path: 'packages/react-spring/tests/upstream-vitest.config.ts',
+					role: 'support',
+					sha256: 'pending',
+				},
+				{
+					path: 'packages/react-spring/upstream/SHA256SUMS',
+					role: 'support',
+					sha256: 'pending',
+				},
+			],
+		},
+		{
 			id: 'react-spring-adapted-full-suite',
 			type: 'adapted-octane',
 			oracle: 'required',
 			environment: 'workspace-node',
 			project: 'react-spring',
-			evidenceOrigin: 'repo-authored',
+			evidenceOrigin: 'upstream-suite',
 			notes:
-				'Runs adapted Octane conformance and hydration evidence with exact inventoried identities.',
+				'Runs one-for-one adapted upstream identities under tests/upstream with exact inventoried names; remaining pristine identities are tracked in upstream-case-dispositions.json.',
 			execution: {
 				kind: 'vitest-full',
 				inventory: adapted.inventoryRelative,
@@ -175,22 +202,8 @@ const manifest = {
 					role: 'support',
 					sha256: 'pending',
 				},
-			],
-		},
-		{
-			id: 'react-spring-browser',
-			type: 'browser',
-			oracle: 'required',
-			environment: 'workspace-node',
-			project: 'react-spring-browser',
-			notes: 'Live playground journeys through Playwright Chromium.',
-			execution: {
-				kind: 'vitest-full',
-				inventory: browser.inventoryRelative,
-			},
-			files: [
 				{
-					path: browser.inventoryRelative,
+					path: 'packages/react-spring/audit/upstream-case-dispositions.json',
 					role: 'support',
 					sha256: 'pending',
 				},
@@ -219,12 +232,13 @@ const manifest = {
 			oracle: 'required',
 			environment: 'workspace-node',
 			project: 'react-spring-pristine-types',
-			evidenceOrigin: 'repo-authored',
-			notes: 'Repo-authored React declaration probes against @react-spring/web 10.1.2.',
+			evidenceOrigin: 'upstream-suite',
+			notes:
+				'Runs the pinned upstream *.test-d.ts/*.test-d.tsx programs with tsc against the vendored core sources.',
 			execution: {
 				kind: 'typescript',
 				compiler: 'tsc',
-				project: 'packages/react-spring/audit/type-probes/tsconfig.pristine.json',
+				project: 'packages/react-spring/audit/type-probes/tsconfig.pristine-upstream.json',
 			},
 			files: [
 				{
@@ -233,19 +247,14 @@ const manifest = {
 					sha256: 'pending',
 					cases: [
 						{
-							id: 'types:react-spring-pristine',
-							testName: 'pinned React declaration probes',
-							fullName: 'pinned React declaration probes',
+							id: 'types:pristine-upstream',
+							testName: 'pinned upstream type suite',
+							fullName: 'pinned upstream type suite',
 						},
 					],
 				},
 				{
-					path: 'packages/react-spring/audit/type-probes/public-api.test-d.ts',
-					role: 'support',
-					sha256: 'pending',
-				},
-				{
-					path: 'packages/react-spring/audit/type-probes/tsconfig.pristine.json',
+					path: 'packages/react-spring/audit/type-probes/tsconfig.pristine-upstream.json',
 					role: 'support',
 					sha256: 'pending',
 				},
@@ -262,12 +271,13 @@ const manifest = {
 			oracle: 'required',
 			environment: 'workspace-node',
 			project: 'react-spring-adapted-types',
-			evidenceOrigin: 'repo-authored',
-			notes: 'Octane public type probes after ReactNode→OctaneNode adaptation.',
+			evidenceOrigin: 'upstream-suite',
+			notes:
+				'One-for-one adapted upstream type programs under typetests/upstream after permitted import-root transforms.',
 			execution: {
 				kind: 'typescript',
 				compiler: 'tsrx-tsc',
-				project: 'packages/react-spring/typetests/tsconfig.json',
+				project: 'packages/react-spring/typetests/tsconfig.upstream.json',
 			},
 			files: [
 				{
@@ -276,19 +286,14 @@ const manifest = {
 					sha256: 'pending',
 					cases: [
 						{
-							id: 'types:react-spring-adapted',
-							testName: 'adapted Octane declaration probes',
-							fullName: 'adapted Octane declaration probes',
+							id: 'types:adapted-octane',
+							testName: 'adapted Octane type suite',
+							fullName: 'adapted Octane type suite',
 						},
 					],
 				},
 				{
-					path: 'packages/react-spring/typetests/public-api.test-d.tsx',
-					role: 'support',
-					sha256: 'pending',
-				},
-				{
-					path: 'packages/react-spring/typetests/tsconfig.json',
+					path: 'packages/react-spring/typetests/tsconfig.upstream.json',
 					role: 'support',
 					sha256: 'pending',
 				},
@@ -307,9 +312,9 @@ const pristineTypes = {
 	schemaVersion: 1,
 	cases: [
 		{
-			id: 'types:react-spring-pristine',
-			testName: 'pinned React declaration probes',
-			fullName: 'pinned React declaration probes',
+			id: 'types:pristine-upstream',
+			testName: 'pinned upstream type suite',
+			fullName: 'pinned upstream type suite',
 		},
 	],
 };
@@ -317,24 +322,53 @@ const adaptedTypes = {
 	schemaVersion: 1,
 	cases: [
 		{
-			id: 'types:react-spring-adapted',
-			testName: 'adapted Octane declaration probes',
-			fullName: 'adapted Octane declaration probes',
+			id: 'types:adapted-octane',
+			testName: 'adapted Octane type suite',
+			fullName: 'adapted Octane type suite',
 		},
 	],
 };
 
 await writeJson(path.join(REPO, adapted.inventoryRelative), adapted.inventory);
-await writeJson(path.join(REPO, browser.inventoryRelative), browser.inventory);
 await writeJson(path.join(REPO, 'packages/react-spring/audit/pristine-types.json'), pristineTypes);
 await writeJson(path.join(REPO, 'packages/react-spring/audit/adapted-types.json'), adaptedTypes);
 
-for (const lane of manifest.lanes) {
-	for (const file of lane.files) {
-		file.sha256 = hashFile(file.path);
-	}
-}
-// Re-hash inventories after writing them above; already hashed.
+const typeParity = {
+	schemaVersion: 1,
+	upstreamRoot: 'packages/react-spring/upstream/packages/core/src',
+	adaptedRoot: 'packages/react-spring/typetests/upstream',
+	inventories: {
+		upstream: 'packages/react-spring/audit/upstream-types.json',
+		adapted: 'packages/react-spring/audit/adapted-types-inventory.json',
+	},
+	lanes: {
+		pristine: {
+			compiler: 'tsc',
+			project: 'packages/react-spring/audit/type-probes/tsconfig.pristine-upstream.json',
+			sourcePolicy: 'byte-exact pinned upstream programs',
+		},
+		adapted: {
+			compiler: 'tsrx-tsc',
+			project: 'packages/react-spring/typetests/tsconfig.upstream.json',
+			sourcePolicy: 'structurally equivalent after permitted import-root transforms',
+		},
+	},
+	permittedTransformations: [
+		{
+			kind: 'import-root',
+			rule: 'relative upstream source imports may become @octanejs/react-spring',
+		},
+		{
+			kind: 'jsx-import-source',
+			rule: 'adapted component type tests use jsxImportSource octane',
+		},
+	],
+	divergences: [],
+	notes:
+		'Adapted type programs are inventoried one-for-one with the vendored *.test-d.ts/*.test-d.tsx suite. Execution currently fails until the Octane public type surface matches the pinned upstream contracts.',
+};
+await writeJson(path.join(REPO, 'packages/react-spring/audit/type-parity.json'), typeParity);
+
 for (const lane of manifest.lanes) {
 	for (const file of lane.files) {
 		file.sha256 = hashFile(file.path);
@@ -343,6 +377,6 @@ for (const lane of manifest.lanes) {
 
 await writeJson(path.join(REPO, 'packages/react-spring/audit/react-parity.json'), manifest);
 console.log(
-	`react-parity.json: adapted=${adapted.inventory.tests.length} browser=${browser.inventory.tests.length}`,
+	`react-parity.json: pristine=${JSON.parse(readFileSync(path.join(REPO, pristineInventoryRelative), 'utf8')).tests.length} adapted=${adapted.inventory.tests.length}`,
 );
 console.log('adaptedRuntimeSummary', JSON.stringify(summary));

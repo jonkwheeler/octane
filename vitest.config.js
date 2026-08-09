@@ -2225,30 +2225,32 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-spring-pristine',
+					include: ['packages/react-spring/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+					testTimeout: 180_000,
+					hookTimeout: 180_000,
+				},
+			},
+			{
 				testExecution: {
 					group: 'react-parity',
-					include: [
-						'packages/react-spring/tests/conformance/advanced-engine.test.ts',
-						'packages/react-spring/tests/conformance/animated.test.ts',
-						'packages/react-spring/tests/conformance/browser-hooks.test.ts',
-						'packages/react-spring/tests/conformance/components.test.ts',
-						'packages/react-spring/tests/conformance/controller.test.ts',
-						'packages/react-spring/tests/conformance/engine.test.ts',
-						'packages/react-spring/tests/conformance/frame-loop.test.ts',
-						'packages/react-spring/tests/conformance/hooks.test.ts',
-						'packages/react-spring/tests/conformance/interpolation.test.ts',
-						'packages/react-spring/tests/conformance/lifecycle.test.ts',
-						'packages/react-spring/tests/conformance/parallax.test.ts',
-						'packages/react-spring/tests/conformance/prerequisite-seams.test.ts',
-						'packages/react-spring/tests/conformance/transitions.test.ts',
-						'packages/react-spring/tests/hydration/**/*.test.ts',
-					],
+					include: ['packages/react-spring/tests/upstream/**/*.test.ts'],
 				},
 				test: {
 					name: 'react-spring',
 					include: [
 						'packages/react-spring/tests/conformance/**/*.test.ts',
 						'packages/react-spring/tests/hydration/**/*.test.ts',
+						'packages/react-spring/tests/upstream/**/*.test.ts',
+					],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/react-spring/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -2293,7 +2295,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-spring-browser',
 					include: ['packages/react-spring/tests/browser/**/*.test.ts'],

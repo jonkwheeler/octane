@@ -119,10 +119,7 @@ function sameLookup(left: unknown, right: unknown): boolean {
 	});
 }
 
-function sameSpringUpdate(
-	left: ControllerUpdate<Record<string, any>>,
-	right: ControllerUpdate<Record<string, any>>,
-): boolean {
+function sameSpringUpdate(left: ControllerUpdate<any>, right: ControllerUpdate<any>): boolean {
 	return (
 		sameLookup(left.to, right.to) &&
 		sameLookup(left.from, right.from) &&
@@ -158,7 +155,12 @@ export function useSpring<State extends Record<string, any>>(
 		inferTo(updateFrom(props) as object) as ControllerUpdate<State>,
 		context,
 	);
-	const [controller] = useState(() => new Controller<State>(update), sub(slot, 'controller'));
+	const [controller] = useState(
+		function createController() {
+			return new Controller<State>(update as never);
+		},
+		sub(slot, 'controller'),
+	);
 	const deps = args.find(Array.isArray) as any[] | undefined;
 	const functionProps = typeof props === 'function';
 	const cached = useRef(update, sub(slot, 'cached'));

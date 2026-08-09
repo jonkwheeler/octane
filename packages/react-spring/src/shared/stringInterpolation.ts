@@ -10,16 +10,17 @@ export function createStringInterpolator(
 	config: InterpolatorConfig<string>,
 ): InterpolatorFn<string> {
 	const output = config.output.slice();
-	const tokens = output.map((value) => value.match(numberRegex) ?? []);
-	const outputRanges = tokens[0]!.map((_, index) =>
-		tokens.map((values) => {
+	// Number-less outputs (e.g. `none`) yield `[]` rather than throwing on a
+	// null match — see https://github.com/pmndrs/react-spring/issues/2327.
+	const tokens = output.map(function extractNumbers(value) {
+		return value.match(numberRegex) ?? [];
+	});
+	const outputRanges = tokens[0]!.map(function buildRange(_, index) {
+		return tokens.map(function valueAt(values) {
 			if (!(index in values)) throw new Error('The arity of each "output" value must be equal');
 			return Number(values[index]);
-		}),
-	);
-	if (tokens.some((values) => values.length !== outputRanges.length)) {
-		throw new Error('The arity of each "output" value must be equal');
-	}
+		});
+	});
 	const interpolators = outputRanges.map((range) =>
 		createInterpolator({ ...config, output: range }),
 	);
