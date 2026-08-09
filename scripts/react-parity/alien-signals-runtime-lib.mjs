@@ -463,20 +463,70 @@ function normalizeUpdateShape(expression, sourceFile) {
 	return `val:${expression.getText(sourceFile).replace(/\s+/g, '')}`;
 }
 
-function collectNamedSetterInvocations(expression, names, sourceFile) {
+function isPropsSourceCall(call) {
+	return (
+		ts.isPropertyAccessExpression(call.expression) &&
+		ts.isIdentifier(call.expression.expression) &&
+		call.expression.expression.text === 'props' &&
+		ts.isIdentifier(call.expression.name) &&
+		call.expression.name.text === 'source'
+	);
+}
+
+/**
+ * Count setter invocations that always run when the handler runs.
+ * Nested functions and non-taken control-flow branches are ignored; a
+ * `props.source(...)` write in the same executed path disqualifies the handler.
+ */
+function collectAuthenticatedHandlerSetterInvocations(expression, names, sourceFile) {
 	const shapes = [];
-	function visit(node) {
+	let hasDirectSourceWrite = false;
+
+	function visitExecutedExpression(node, rootExpression) {
+		if (functionLikeOf(node) !== null && node !== rootExpression) {
+			return;
+		}
 		const call = callExpressionOf(node);
 		if (call !== null) {
+			if (isPropsSourceCall(call) && call.arguments.length > 0) {
+				hasDirectSourceWrite = true;
+			}
 			const root = calleeRootIdentifier(call.expression);
 			if (root !== null && names.has(root) && call.arguments.length > 0) {
 				shapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
 			}
 		}
-		ts.forEachChild(node, visit);
+		ts.forEachChild(node, function visitChild(child) {
+			visitExecutedExpression(child, rootExpression);
+		});
 	}
-	visit(expression);
-	return shapes;
+
+	function visitAlwaysExecutedStatement(statement) {
+		if (ts.isExpressionStatement(statement)) {
+			visitExecutedExpression(statement.expression, statement.expression);
+			return;
+		}
+		if (ts.isReturnStatement(statement) && statement.expression !== undefined) {
+			visitExecutedExpression(statement.expression, statement.expression);
+		}
+	}
+
+	const fn = functionLikeOf(expression);
+	if (fn === null) {
+		visitExecutedExpression(expression, expression);
+		return { shapes: hasDirectSourceWrite ? [] : shapes, hasDirectSourceWrite };
+	}
+	if (fn.body === undefined) {
+		return { shapes: [], hasDirectSourceWrite: false };
+	}
+	if (!ts.isBlock(fn.body)) {
+		visitExecutedExpression(fn.body, fn.body);
+		return { shapes: hasDirectSourceWrite ? [] : shapes, hasDirectSourceWrite };
+	}
+	for (const statement of fn.body.statements) {
+		visitAlwaysExecutedStatement(statement);
+	}
+	return { shapes: hasDirectSourceWrite ? [] : shapes, hasDirectSourceWrite };
 }
 
 function jsxAttributeInitializer(attribute) {
@@ -575,7 +625,9 @@ export function extractFixturesThatRecordHookSetters(fixtureSource) {
 /**
  * Per-fixture element ids whose onClick handlers invoke a hook-returned setter
  * (`useSignal` / `useSetSignal`), with the authenticated setter-invocation count
- * and normalized update shapes inside that handler. A single click that queues
+ * and normalized update shapes inside that handler. Only always-executed handler
+ * statements count; dead branches, nested unused functions, and handlers that
+ * also write `props.source(...)` do not authenticate. A single click that queues
  * two functional updates contributes two hook-path writes, not one.
  */
 export function extractFixtureHookSetterClickIds(fixtureSource) {
@@ -604,7 +656,11 @@ export function extractFixtureHookSetterClickIds(fixtureSource) {
 							// argument shape unknown until event time.
 							shapes = ['fn:event'];
 						} else {
-							shapes = collectNamedSetterInvocations(onClick, setters, sourceFile);
+							shapes = collectAuthenticatedHandlerSetterInvocations(
+								onClick,
+								setters,
+								sourceFile,
+							).shapes;
 						}
 						if (shapes.length > 0) {
 							ids.set(id, { writes: shapes.length, shapes });

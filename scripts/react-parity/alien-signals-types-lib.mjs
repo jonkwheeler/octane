@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/alien-signals/audit/type-parity.json';
@@ -11,6 +11,48 @@ function sha256(value) {
 
 function posix(value) {
 	return value.split(sep).join('/');
+}
+
+function compilerProgramFiles(root, projectPath) {
+	const configPath = resolve(root, projectPath);
+	if (!existsSync(configPath)) {
+		throw new Error(`missing compiler project: ${projectPath}`);
+	}
+	const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+	if (configFile.error) {
+		throw new Error(
+			`failed to read ${projectPath}: ${ts.flattenDiagnosticMessageText(configFile.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		configFile.config,
+		ts.sys,
+		dirname(configPath),
+		undefined,
+		configPath,
+	);
+	if (parsed.errors.length > 0) {
+		throw new Error(
+			`failed to parse ${projectPath}: ${ts.flattenDiagnosticMessageText(parsed.errors[0].messageText, '\n')}`,
+		);
+	}
+	return new Set(
+		parsed.fileNames.map(function toRepoPath(fileName) {
+			return posix(relative(root, fileName));
+		}),
+	);
+}
+
+function assertFilesBelongToProgram(root, relativeFiles, projectPath, label) {
+	const programFiles = compilerProgramFiles(root, projectPath);
+	for (const relativeFile of relativeFiles) {
+		const repoPath = posix(relativeFile);
+		if (!programFiles.has(repoPath)) {
+			throw new Error(
+				`${label}: inventoried file ${repoPath} is not included in compiler program ${projectPath}`,
+			);
+		}
+	}
 }
 
 function listProbeFiles(root) {
@@ -172,7 +214,10 @@ function inventoryTypecheckPairs(root, config) {
 			);
 		}
 		if (entry.compare === 'structural') {
-			if (structuralSource(upstreamSource, entry.upstream) !== structuralSource(adaptedSource, entry.adapted)) {
+			if (
+				structuralSource(upstreamSource, entry.upstream) !==
+				structuralSource(adaptedSource, entry.adapted)
+			) {
 				throw new Error(
 					`${entry.adapted}: adapted type test contains a change outside the permitted transformations`,
 				);
@@ -245,10 +290,50 @@ function inventoryProbePairs(root, config) {
 	return { upstream, adapted };
 }
 
+function verifyInventoriedFilesBelongToPrograms(root, config, probes) {
+	const typecheckProject = config.upstreamTypecheck.project;
+	const probeProject = config.lanes?.pristineProbes?.project ?? config.probeProject ?? null;
+	const adaptedProject = config.lanes?.adapted?.project ?? null;
+	assertFilesBelongToProgram(
+		root,
+		config.upstreamTypecheck.files.map(function toRepoPath(entry) {
+			return posix(`${config.upstreamTypecheck.root}/${entry.upstream}`);
+		}),
+		typecheckProject,
+		'upstream typecheck',
+	);
+	if (probeProject !== null) {
+		assertFilesBelongToProgram(
+			root,
+			probes.upstream.map(function toRepoPath(entry) {
+				return posix(`${config.upstreamRoot}/${entry.path}`);
+			}),
+			probeProject,
+			'pristine type probes',
+		);
+	}
+	if (adaptedProject !== null) {
+		assertFilesBelongToProgram(
+			root,
+			[
+				...config.upstreamTypecheck.files.map(function toRepoPath(entry) {
+					return posix(`${config.adaptedRoot}/${entry.adapted}`);
+				}),
+				...probes.adapted.map(function toRepoPath(entry) {
+					return posix(`${config.adaptedRoot}/${entry.path}`);
+				}),
+			],
+			adaptedProject,
+			'adapted type suite',
+		);
+	}
+}
+
 export function buildTypeInventory(root, config) {
 	verifyUpstreamTypecheckConfig(root, config);
 	const typecheck = inventoryTypecheckPairs(root, config);
 	const probes = inventoryProbePairs(root, config);
+	verifyInventoriedFilesBelongToPrograms(root, config, probes);
 	return {
 		upstream: [...typecheck.upstream, ...probes.upstream],
 		adapted: [...typecheck.adapted, ...probes.adapted],

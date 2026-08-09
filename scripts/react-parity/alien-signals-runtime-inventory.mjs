@@ -153,6 +153,7 @@ const supportPaths = [
 	'packages/alien-signals/audit/pristine-runtime.json',
 	'packages/alien-signals/audit/adapted-runtime.json',
 	'packages/alien-signals/audit/pristine-types.json',
+	'packages/alien-signals/audit/pristine-type-probes.json',
 	'packages/alien-signals/audit/adapted-types.json',
 	'packages/alien-signals/audit/type-parity.json',
 	'packages/alien-signals/audit/pristine-oracle-environment.json',

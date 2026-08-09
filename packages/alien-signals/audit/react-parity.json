@@ -120,22 +120,22 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "33e30f12cf9703a67d4a75dfb448a7c49f0e46ee7592ed2619384dee49f88417"
+          "sha256": "f935148f8c9baf51cb8dac3286eed726614ad14238ac5e4c08849dfc23e71f66"
         },
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "d8a14bad3216e747a53797679ff6a9efb25ab740d248bff0e123f3a25c221b71"
+          "sha256": "eb28ecbbd4af2aaf60eaf65a86f39e27860f7530a82d3057e73d62998232da42"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
           "role": "support",
-          "sha256": "8eb9c93b7c28f476ef99a29502e6e6e7be58e06c3c28de81ff55ffbfcb9e739c"
+          "sha256": "328be1f7fd15881c49136788959b8d7e141785651e4a41712e3381f454b15ef3"
         },
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "09cbab0793ab94428ab11898f1ba82e268fd671dd9dd4c8bdc68faf4960b4a68"
+          "sha256": "b670c3002599d9c302254ab209182c38e297d9124368bb14117334b20ece7d94"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
@@ -196,14 +196,52 @@
           "sha256": "479232596a061b5226bba6061b1ae8b66698e5bde8dc342d84b27ce01c4af500"
         },
         {
+          "path": "packages/alien-signals/audit/type-parity.json",
+          "role": "support",
+          "sha256": "9cede6604817fa9ed009fc8a1a1850b47df149f0152ff5bdc3b34a28c8ea155e"
+        }
+      ]
+    },
+    {
+      "id": "alien-signals-pristine-type-probes",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "alien-signals-pristine-type-probes",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes compiled with tsc via audit/type-probes/tsconfig.pristine.json. Inventory membership is mechanically asserted against that compiler program.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/alien-signals/audit/type-probes/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/alien-signals/audit/pristine-type-probes.json",
+          "role": "test",
+          "sha256": "0323e55315b3956d397a0e9bfbb31c2e08e882e5520eba0cb07214fd4c6655f4",
+          "cases": [
+            {
+              "id": "types:alien-signals-pristine-probes",
+              "testName": "pinned React declaration probes",
+              "fullName": "pinned React declaration probes"
+            }
+          ]
+        },
+        {
           "path": "packages/alien-signals/audit/type-probes/public-api.test-d.ts",
           "role": "support",
           "sha256": "7205108d1bad438525a8114bdf37793faab70558dd7bdbd9f4679a273d8f8465"
         },
         {
+          "path": "packages/alien-signals/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+        },
+        {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "ebbaaf29fa91b45492087a2f5882b827076dd9c8d71cbd3fbcf502a49ebc7599"
+          "sha256": "9cede6604817fa9ed009fc8a1a1850b47df149f0152ff5bdc3b34a28c8ea155e"
         }
       ]
     },
@@ -263,7 +301,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "ebbaaf29fa91b45492087a2f5882b827076dd9c8d71cbd3fbcf502a49ebc7599"
+          "sha256": "9cede6604817fa9ed009fc8a1a1850b47df149f0152ff5bdc3b34a28c8ea155e"
         }
       ]
     }

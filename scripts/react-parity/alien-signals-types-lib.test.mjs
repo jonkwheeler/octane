@@ -19,7 +19,10 @@ async function fixture() {
 		recursive: true,
 	});
 	await mkdir(join(typecheckRoot, 'src'), { recursive: true });
-	await writeFile(join(typecheckRoot, 'tsconfig.json'), '{ "compilerOptions": { "strict": true } }\n');
+	await writeFile(
+		join(typecheckRoot, 'tsconfig.json'),
+		'{ "compilerOptions": { "strict": true } }\n',
+	);
 	await writeFile(
 		join(typecheckRoot, 'src/index.test.ts'),
 		await readFile(
@@ -27,8 +30,6 @@ async function fixture() {
 			'utf8',
 		),
 	);
-	await rm(join(upstreamRoot, 'tsconfig.pristine.json'), { force: true });
-	await rm(join(adaptedRoot, 'tsconfig.json'), { force: true });
 	return {
 		root,
 		upstreamRoot,
@@ -48,6 +49,16 @@ async function fixture() {
 			},
 			upstreamRoot: 'probes',
 			adaptedRoot: 'adapted',
+			lanes: {
+				pristineProbes: {
+					compiler: 'tsc',
+					project: 'probes/tsconfig.pristine.json',
+				},
+				adapted: {
+					compiler: 'tsrx-tsc',
+					project: 'adapted/tsconfig.json',
+				},
+			},
 		},
 	};
 }
@@ -63,9 +74,7 @@ test('rejects a skipped adapted type-test file', async function rejectsSkippedFi
 	}, /every upstream type artifact/);
 });
 
-test('rejects a skipped adapted upstream-typecheck counterpart', async function rejectsSkippedTypecheck(
-	t,
-) {
+test('rejects a skipped adapted upstream-typecheck counterpart', async function rejectsSkippedTypecheck(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
@@ -104,9 +113,7 @@ test('rejects removing an adapted @ts-expect-error', async function rejectsRemov
 	}, /assertion groups differ/);
 });
 
-test('rejects removing the upstream-typecheck @ts-expect-error', async function rejectsTypecheckExpectError(
-	t,
-) {
+test('rejects removing the upstream-typecheck @ts-expect-error', async function rejectsTypecheckExpectError(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
@@ -131,4 +138,33 @@ test('rejects an unauthorized non-assertion structural change', async function r
 	assert.throws(function run() {
 		buildTypeInventory(value.root, value.config);
 	}, /change outside the permitted transformations/);
+});
+
+test('rejects inventoried probes missing from the pristine compiler program', async function rejectsProbeOutsideProgram(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	await writeFile(join(value.upstreamRoot, 'empty.ts'), 'export {};\n');
+	await writeFile(
+		join(value.upstreamRoot, 'tsconfig.pristine.json'),
+		JSON.stringify(
+			{
+				compilerOptions: {
+					strict: true,
+					noEmit: true,
+					module: 'ESNext',
+					moduleResolution: 'Bundler',
+					target: 'ES2022',
+					skipLibCheck: true,
+				},
+				include: ['empty.ts'],
+			},
+			null,
+			2,
+		),
+	);
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /not included in compiler program/);
 });
