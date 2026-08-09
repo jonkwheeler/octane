@@ -131,7 +131,12 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`)))
+		// Livestore uses a dedicated classifier (adapted-upstream-suite + pristine
+		// path filters); shared binding classifications cover hook-form / RTL.
+		if (
+			binding !== 'livestore' &&
+			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
+		)
 			verifyPortTestClassifications(REPO, binding);
 		await verifyManifestFiles(manifest, REPO);
 		const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8' });
