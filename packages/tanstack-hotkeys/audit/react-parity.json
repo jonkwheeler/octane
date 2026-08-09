@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "32f4828a67502958c143151dcdf6845fa46494fc066305dc6640345086576a9d"
+      "lockfileSha256": "9a28be1d9229dfc681d68e9c9efd021dac79d2eef080b766975d9f4a055bc461"
     }
   },
   "lanes": [
@@ -60,7 +60,7 @@
         {
           "path": "packages/tanstack-hotkeys/audit/pristine-wrapper-runtime.json",
           "role": "support",
-          "sha256": "8a59acd98e7d92bb39c3c4661ca7e0d651660c959a6c25a87069f8d761aaaa18"
+          "sha256": "711702a84feea85335c5bebb1bfd456b74efcb279e485cdf51de72121a576d28"
         },
         {
           "path": "packages/tanstack-hotkeys/audit/pristine-runtime.json",
@@ -110,7 +110,7 @@
         {
           "path": "packages/tanstack-hotkeys/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "2ed4ff7da5455902959df69e526b8f51fc639e20b3bd41c31b702e2189343ccd"
+          "sha256": "e5869993d034496b7d33adb23653b74bbf7a7ba89d53a1ae8d250813da00552d"
         },
         {
           "path": "packages/tanstack-hotkeys/tests/_setup.ts",
@@ -234,7 +234,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "cd33e7da4639a482a7a53043523265abc2847b51dc151dfa83eb735303a74588"
+          "sha256": "e731d56e03979da8be5f48b31d9b8aa7ff2881f87db1ac86239db278d286efbe"
         }
       ]
     }
