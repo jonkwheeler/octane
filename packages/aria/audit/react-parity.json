@@ -59,7 +59,7 @@
       "environment": "workspace-node",
       "project": "aria-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs representative interaction, field, collection, Select, ComboBox, RAC, and Tree/Table scenarios against the pinned React Aria packages.",
+      "notes": "Runs representative React/Octane differentials against the pinned React Aria packages. This is bounded evidence only; it does not execute the present upstream runtime or type suites.",
       "files": [
         {
           "path": "packages/aria/tests/differential/parity.test.ts",
@@ -68,8 +68,8 @@
           "cases": [
             {
               "id": "differential:aria-interactions-press",
-              "testName": "usePress: pointer press start \u2192 pressed state \u2192 press sequence, byte-identical",
-              "fullName": "differential: @octanejs/aria vs real react-aria on React usePress: pointer press start \u2192 pressed state \u2192 press sequence, byte-identical"
+              "testName": "usePress: pointer press start → pressed state → press sequence, byte-identical",
+              "fullName": "differential: @octanejs/aria vs real react-aria on React usePress: pointer press start → pressed state → press sequence, byte-identical"
             }
           ]
         },
@@ -206,104 +206,11 @@
           "path": "packages/aria/tests/_fixtures/aria-diff-tree-table.tsrx",
           "role": "support",
           "sha256": "aac296ea6fe592c3c69822aad592d209085b577d64f5df485da5b6b1dd5e7344"
-        }
-      ]
-    },
-    {
-      "id": "aria-adapted-contracts",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "aria",
-      "notes": "Pins documented framework divergences and executes the immutable upstream export/test crosswalk.",
-      "files": [
-        {
-          "path": "packages/aria/tests/foundation.test.ts",
-          "role": "test",
-          "sha256": "77c3d922fe048d6e4cdee2456faef0216b03653acc179f2c7fb110ed7f944897",
-          "cases": [
-            {
-              "id": "adapted:aria-ref-as-prop",
-              "testName": "forwards the attached node to the original callback ref",
-              "fullName": "@octanejs/aria \u2014 useObjectRef forwards the attached node to the original callback ref"
-            }
-          ]
         },
         {
-          "path": "packages/aria/tests/i18n-server.test.ts",
-          "role": "test",
-          "sha256": "fd9390b877e013ba116cc232c2de3f87ae733e481fb06f2f44b154516cbbbce3",
-          "cases": [
-            {
-              "id": "adapted:aria-i18n-identifiers",
-              "testName": "emits an executable bootstrap script when more than 26 strings are hoisted",
-              "fullName": "@octanejs/aria \u2014 i18n server serializer emits an executable bootstrap script when more than 26 strings are hoisted"
-            }
-          ]
-        },
-        {
-          "path": "packages/aria/tests/upstream-crosswalk.test.ts",
-          "role": "test",
-          "sha256": "080a717ba166b3c30a8dd09879c46732f94997cc5beab2c83280950dbc3a02d7",
-          "cases": [
-            {
-              "id": "adapted:aria-upstream-crosswalk",
-              "testName": "classifies all 1,294 exports and 185 upstream test artifacts",
-              "fullName": "@octanejs/aria pinned upstream crosswalk classifies all 1,294 exports and 185 upstream test artifacts"
-            }
-          ]
-        },
-        {
-          "path": "packages/aria/tests/_fixtures/foundation.tsx",
+          "path": "vitest.config.js",
           "role": "support",
-          "sha256": "bf1731fd7a7f56339073dca5175a55eacccdc6e0af6f0b85f1feefe0a38c59f8"
-        },
-        {
-          "path": "packages/aria/audit/upstream-crosswalk.json",
-          "role": "support",
-          "sha256": "b79171de942142bb30804747aabd53d1065330ae9d8047c5f520643a868778c1"
-        },
-        {
-          "path": "packages/aria/scripts/build-upstream-crosswalk.mjs",
-          "role": "support",
-          "sha256": "b2746d32fca3ea3e6588977ee428aeb7c62494fc84e0759a7dbb875803fd2d70"
-        },
-        {
-          "path": "packages/aria/scripts/check-upstream-crosswalk.mjs",
-          "role": "support",
-          "sha256": "140852ca061dd9025776d5cb3d4c3cb062d5d21ef099a3dc670396780d542b08"
-        },
-        {
-          "path": "packages/aria/scripts/crosswalk-lib.mjs",
-          "role": "support",
-          "sha256": "c8c3f6aee9bdf48d8c5177a4bed6ff9e7488f893c9e298ddcfcdf7946dbf6402"
-        }
-      ]
-    },
-    {
-      "id": "aria-server-contract",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "aria-ssr",
-      "notes": "Runs the injected RTL locale contract in the real Octane server renderer.",
-      "files": [
-        {
-          "path": "packages/aria/tests/ssr/ssr.test.ts",
-          "role": "test",
-          "sha256": "746b9ca7cbabfcfcbacaf10284193f3bddded08a5c434edd5ba4b9a6720fc46d",
-          "cases": [
-            {
-              "id": "adapted:aria-server-rtl",
-              "testName": "derives the server-rendered text direction from an injected RTL locale",
-              "fullName": "@octanejs/aria server rendering derives the server-rendered text direction from an injected RTL locale"
-            }
-          ]
-        },
-        {
-          "path": "packages/aria/tests/ssr/_fixtures/server.tsx",
-          "role": "support",
-          "sha256": "47fdf1536f82f9ad2c416b1c36567223293e53e85ff4a295d99849afa27d1e70"
+          "sha256": "ae9f69f08959aeff700138fbf48dc50f8c178c15d54ca844a38e6141f0dd8f45"
         }
       ]
     }
@@ -322,48 +229,6 @@
       "migrationGuidance": "Use onInput for raw text host edits and keep React Aria value callbacks unchanged.",
       "owner": "@octanejs/aria",
       "reviewCondition": "Review if Octane introduces a synthetic change-event compatibility layer."
-    },
-    {
-      "id": "ref-as-prop",
-      "caseIds": [
-        "adapted:aria-ref-as-prop"
-      ],
-      "upstreamResult": "React component refs are exposed through forwardRef wrappers.",
-      "octaneResult": "Refs arrive as ordinary component props and are forwarded to the authored host node.",
-      "rationale": "Octane follows a compiler-visible ref-as-prop contract.",
-      "classification": "framework-integration",
-      "consumerImpact": "Consumers pass ref normally, but React forwardRef component identity is not reproduced.",
-      "migrationGuidance": "Declare and forward the ref prop directly in Octane components.",
-      "owner": "@octanejs/aria",
-      "reviewCondition": "Review if Octane adopts React forwardRef compatibility."
-    },
-    {
-      "id": "valid-hoisted-identifiers",
-      "caseIds": [
-        "adapted:aria-i18n-identifiers"
-      ],
-      "upstreamResult": "The pinned serializer derives identifiers from character codes and emits invalid JavaScript after 26 common strings.",
-      "octaneResult": "The serializer uses a-z followed by valid underscore-number identifiers.",
-      "rationale": "Server bootstrap output must remain executable for every dictionary size.",
-      "classification": "intentional-correction",
-      "consumerImpact": "Large localized dictionaries produce valid inline bootstrap scripts.",
-      "migrationGuidance": "No migration is required; do not rely on invalid upstream output.",
-      "owner": "@octanejs/aria",
-      "reviewCondition": "Review when upstream changes its hoisted-string identifier algorithm."
-    },
-    {
-      "id": "server-rtl-direction",
-      "caseIds": [
-        "adapted:aria-server-rtl"
-      ],
-      "upstreamResult": "The pinned SSR branch returns ltr even when the injected locale is RTL.",
-      "octaneResult": "SSR direction is derived from the injected locale through isRTL.",
-      "rationale": "The returned direction must agree with the locale used by the same server snapshot.",
-      "classification": "intentional-correction",
-      "consumerImpact": "RTL server markup receives the correct direction before hydration.",
-      "migrationGuidance": "No migration is required; consume the locale direction returned by the provider.",
-      "owner": "@octanejs/aria",
-      "reviewCondition": "Review when upstream fixes its SSR locale direction."
     }
   ]
 }

@@ -17,8 +17,6 @@ describe('@octanejs/aria server rendering', () => {
 		expect(css).toBe('');
 	});
 
-	// OCTANE DIVERGENCE[server-rtl-direction][adapted:aria-server-rtl]
-	// @parity-case adapted:aria-server-rtl
 	it('derives the server-rendered text direction from an injected RTL locale', () => {
 		const { html } = renderToString(AriaServerFixture, { locale: 'ar-AE' });
 

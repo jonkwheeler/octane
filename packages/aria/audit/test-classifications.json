@@ -83,9 +83,8 @@
     },
     {
       "path": "packages/aria/tests/foundation.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Pins documented Octane integration behavior that intentionally differs from the React implementation.",
-      "divergenceIds": ["ref-as-prop"]
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins Octane ref-as-prop foundation behavior; remains ordinary-shard coverage until one-for-one adapted upstream lanes exist."
     },
     {
       "path": "packages/aria/tests/hydration.test.ts",
@@ -94,9 +93,8 @@
     },
     {
       "path": "packages/aria/tests/i18n-server.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Pins documented Octane integration behavior that intentionally differs from the React implementation.",
-      "divergenceIds": ["valid-hoisted-identifiers"]
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins Octane i18n serializer identifier validity; remains ordinary-shard coverage until one-for-one adapted upstream lanes exist."
     },
     {
       "path": "packages/aria/tests/leaf-behaviors.test.ts",
@@ -220,9 +218,8 @@
     },
     {
       "path": "packages/aria/tests/ssr/ssr.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Pins documented Octane integration behavior that intentionally differs from the React implementation.",
-      "divergenceIds": ["server-rtl-direction"]
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins Octane SSR locale-direction behavior; remains ordinary-shard coverage until one-for-one adapted upstream lanes exist."
     },
     {
       "path": "packages/aria/tests/stately-collections-states.test.ts",

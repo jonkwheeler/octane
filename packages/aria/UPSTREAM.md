@@ -45,14 +45,16 @@ adapted case-by-case, so this binding remains `recorded-unverified`.
 
 ## Executable evidence
 
-The bounded differential lane compiles the same `.tsrx` fixtures once for Octane and once
-for the pinned React packages. It covers interaction hooks, form-field event wiring,
-collections, Select, ComboBox, React Aria Components render props, keyed collection updates,
-and Tree/Table state. Separate adapted lanes pin the export/test crosswalk and the documented
-framework divergences. The SSR lane verifies the server locale contract in the Node renderer.
+The only React-parity-owned executable lane today is the bounded differential project. It
+compiles the same `.tsrx` fixtures once for Octane and once for the pinned React packages,
+covering interaction hooks, form-field event wiring, collections, Select, ComboBox, React Aria
+Components render props, keyed collection updates, and Tree/Table state.
 
-These lanes are representative evidence. They do not replace or claim execution of the full
-canonical upstream suites.
+That lane is representative evidence only. Declaring the upstream runtime and type suites
+`present` records that the coordinated checkout contains those suites; it is not a claim that
+this binding has completed pristine full-suite, one-for-one adapted, or type-lane execution.
+The export/test crosswalk and Octane-only divergence/framework contracts remain ordinary-shard
+coverage until those required lanes and inventories exist.
 
 ## Intentional divergences
 
@@ -64,4 +66,6 @@ canonical upstream suites.
 - Server locale direction is derived from the injected locale, including RTL locales, rather
   than being hard-coded to `ltr`.
 
-Every divergence is linked to an executing case in `audit/react-parity.json`.
+`native-input-event-wiring` is linked to the differential case in `audit/react-parity.json`.
+The other divergences above remain documented package contracts with ordinary-shard tests; they
+are not counted as completed React-parity suite evidence until adapted upstream lanes exist.
