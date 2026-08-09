@@ -10,36 +10,55 @@ import {
 	useTable,
 } from '@octanejs/tanstack-table';
 
+type Equal<Left, Right> =
+	(<Value>() => Value extends Left ? 1 : 2) extends <Value>() => Value extends Right ? 1 : 2
+		? true
+		: false;
+type Expect<Value extends true> = Value;
+
 type Person = { name: string; age: number };
 
 // 1. useTable accepts features, data, and columns and returns a typed table.
 const features = tableFeatures({});
 const columns = [{ accessorKey: 'name' as const, header: 'Name' }];
 const table = useTable({ features, data: [{ name: 'Ada', age: 36 }], columns });
-const firstOriginal: Person = table.getRowModel().rows[0].original;
-void firstOriginal;
+const firstOriginal = table.getRowModel().rows[0].original;
+type _FirstOriginal = Expect<Equal<typeof firstOriginal, Person>>;
 
 // 2. A selector overload preserves TableState inference.
 const selected = useTable(
 	{ features, data: [{ name: 'Ada', age: 36 }], columns },
-	(state) => state,
+	function (state) {
+		return state;
+	},
 );
-const selectedState: Readonly<TableState<typeof features>> = selected.state;
-void selectedState;
+type _SelectedState = Expect<Equal<typeof selected.state, Readonly<TableState<typeof features>>>>;
 
 // 3. createColumnHelper is a callable helper factory.
 const helper = createColumnHelper<typeof features, Person>();
-const helperIsFunction: typeof helper.accessor = helper.accessor;
-void helperIsFunction;
+const nameColumn = helper.accessor('name', {
+	header: 'Name',
+	cell: function (info) {
+		const value = info.getValue();
+		type _NameValue = Expect<Equal<typeof value, string>>;
+		return value;
+	},
+});
+void nameColumn;
 
 // 4. flexRender is a callable render helper.
-const flexRenderIsFunction: typeof flexRender = flexRender;
-void flexRenderIsFunction;
+function Label(props: { text: string }) {
+	return props.text;
+}
+const rendered = flexRender(Label, { text: 'x' });
+void rendered;
 
 // 5. createTableHookContexts exposes useTableContext.
 const contexts = createTableHookContexts<typeof features>();
-const useTableContextIsFunction: typeof contexts.useTableContext = contexts.useTableContext;
-void useTableContextIsFunction;
+const tableFromContext = contexts.useTableContext();
+type _ContextTableState = Expect<
+	Equal<typeof tableFromContext.state, Readonly<TableState<typeof features>>>
+>;
 
 // 6. useTable rejects an unknown option key.
 useTable({

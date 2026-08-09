@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-table/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-table/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-table/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-table/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -182,7 +172,7 @@
         {
           "path": "packages/tanstack-table/typetests/pristine/types.test-d.ts",
           "role": "support",
-          "sha256": "b2accda6d23dbcc992b631caa652fbb828da62ab82c25edbceb3e8a53b95a421"
+          "sha256": "8dc82294f9b16dc3057a0722f88a3285b97178a9e7efeb561da9f90d93503af8"
         },
         {
           "path": "packages/tanstack-table/typetests/pristine/tsconfig.json",
@@ -226,7 +216,7 @@
         {
           "path": "packages/tanstack-table/typetests/adapted/types.test-d.ts",
           "role": "support",
-          "sha256": "0f52bc5364889d17bcefebefa3c2eaa7d9b68e95c03766569dc48b8f507899fe"
+          "sha256": "aa56790559f127ba86348727faa232d26cf70805aae95046f80b47bf2d89f6d8"
         },
         {
           "path": "packages/tanstack-table/typetests/adapted/tsconfig.json",
