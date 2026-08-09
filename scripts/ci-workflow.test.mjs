@@ -355,14 +355,24 @@ describe('CI workflow aggregation', () => {
 		assert.equal(projects[1].testExecution, undefined);
 	});
 
-	test('runs Dexie browser parity only in Chromium-capable jobs', () => {
-		assert.match(
-			jobSource('test_shard'),
-			/--exclude "packages\/dexie\/tests\/browser\/\*\*\/\*\.test\.ts"/,
+	test('keeps Dexie browser coverage on parity ownership without workflow path entries', () => {
+		assert.doesNotMatch(jobSource('test_shard'), /dexie/);
+		assert.doesNotMatch(jobSource('heavy_integration'), /dexie/);
+		const baseProjects = new Map(
+			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
 		);
-		assert.match(jobSource('heavy_integration'), /packages\/dexie\/tests\/browser/);
-		assert.match(jobSource('heavy_integration'), /playwright install --with-deps chromium/);
-		assert.match(jobSource('lint_checks'), /playwright install --with-deps chromium/);
+		assert.equal(baseProjects.get('dexie-differential').testExecution.group, 'react-parity');
+		assert.deepEqual(baseProjects.get('dexie-differential').testExecution.include, [
+			'packages/dexie/tests/differential/parity.test.ts',
+		]);
+		assert.equal(baseProjects.get('dexie-browser').testExecution.group, 'react-parity');
+		// Required browser oracle lanes run under react-parity:check; Chromium
+		// must be installed in that job, not the validate-only lint_checks path.
+		const parity = jobSource('react_parity_checks');
+		const install = parity.indexOf('Install Playwright Chromium');
+		const check = parity.indexOf('Check React parity inventories and execute required lanes');
+		assert.ok(install >= 0 && install < check);
+		assert.doesNotMatch(jobSource('lint_checks'), /Install Playwright Chromium/);
 	});
 });
 

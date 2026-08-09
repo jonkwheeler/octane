@@ -555,6 +555,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/dexie/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'dexie-differential',
 					include: ['packages/dexie/tests/differential/**/*.test.ts'],
@@ -576,6 +580,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'dexie-browser',
 					include: ['packages/dexie/tests/browser/**/*.test.ts'],

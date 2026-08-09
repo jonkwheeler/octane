@@ -454,7 +454,6 @@ jobs:
           --exclude "packages/rsbuild-plugin-octane/tests/rsbuild.integration.test.ts"
           --exclude "packages/vite-plugin-octane/tests/production.test.ts"
           --exclude "packages/octane/tests/browser/**/*.test.ts"
-          --exclude "packages/dexie/tests/browser/**/*.test.ts"
           --exclude "packages/tiptap/tests/browser/**/*.test.ts"
           --exclude "packages/three/tests/browser/**/*.test.ts"
           --exclude "$ASTRO_E2E_SPEC"
@@ -483,6 +482,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
+
+      # Required browser oracle lanes launch real Chromium via Playwright.
+      # Install here — react-parity:check runs those lanes from manifests;
+      # lint_checks only validates metadata and never starts a browser.
+      - name: Install Playwright Chromium for parity browser lanes
+        run: pnpm --filter website exec playwright install --with-deps chromium
 
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
@@ -600,7 +605,6 @@ jobs:
             chromium: true
             specs: >-
               packages/octane/tests/browser
-              packages/dexie/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
           - lane: astro
@@ -675,11 +679,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      # react-parity:check executes every available required lane, including
-      # Dexie's real-browser upstream evidence.
-      - name: Install Playwright Chromium
-        run: pnpm --filter @octanejs/dexie exec playwright install --with-deps chromium
 
       - name: Check formatting
         run: pnpm format:check
