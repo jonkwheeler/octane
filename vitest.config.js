@@ -2877,10 +2877,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/xyflow/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'xyflow',
 					include: ['packages/xyflow/tests/**/*.test.ts'],

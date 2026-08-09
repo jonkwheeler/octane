@@ -28,6 +28,7 @@ afterAll(function restoreResizeObserver() {
 });
 
 describe('differential: @octanejs/xyflow vs @xyflow/react', () => {
+	// @parity-case differential:initial-mount
 	it('matches initial flow mount markup', async () => {
 		const differential = await mountDifferential(FIXTURE, 'XyflowDiff', { prefix: 'xy' }, CACHE);
 		await differential.step('initial mount', function step() {});

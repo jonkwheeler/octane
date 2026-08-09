@@ -3,7 +3,15 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,27 +30,21 @@ function hashString(value: string): string {
 
 function compileOne(sourcePath: string): void {
 	const source = readFileSync(sourcePath, 'utf8');
-	let compiled;
-	try {
-		compiled = compileToReact(source, sourcePath);
-	} catch {
-		return;
+	const compiled = compileToReact(source, sourcePath);
+	if (compiled.errors && compiled.errors.length > 0) {
+		throw new Error(
+			`React fixture compilation failed for ${sourcePath}: ${JSON.stringify(compiled.errors)}`,
+		);
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
 
-	let transformed;
-	try {
-		transformed = esbuildTransformSync(compiled.code, {
-			loader: 'tsx',
-			jsx: 'automatic',
-			jsxImportSource: 'react',
-			target: 'esnext',
-			format: 'esm',
-			sourcefile: sourcePath,
-		});
-	} catch {
-		return;
-	}
+	const transformed = esbuildTransformSync(compiled.code, {
+		loader: 'tsx',
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+		target: 'esnext',
+		format: 'esm',
+		sourcefile: sourcePath,
+	});
 
 	const rewritten = transformed.code
 		.replace(/from\s+["']@octanejs\/xyflow["']/g, 'from "@xyflow/react"')
@@ -62,7 +64,8 @@ function walk(directory: string): string[] {
 }
 
 export async function setup(): Promise<void> {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
 	if (!existsSync(FIXTURE_DIR)) return;
 	for (const sourcePath of walk(FIXTURE_DIR)) compileOne(sourcePath);
 }

@@ -1,0 +1,92 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/xyflow/xyflow.git",
+    "version": "12.11.2",
+    "commit": "dd308ab401d49518f73d1e91c43faf254ff5a4c9",
+    "sourceRoot": "packages/react/src",
+    "testRoot": "packages/react",
+    "license": "MIT",
+    "integrity": "sha256:ddfb74037a3979ed98c8784034071f24040b5a6b7d560254fcb6c6676946da47",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/xyflow/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/xyflow/tests/differential"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "6d9f2425796cc66d61f418f8ac23f7b1fa91542506725b2bccadd6656fa9886a"
+    }
+  },
+  "lanes": [
+    {
+      "id": "xyflow-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "xyflow-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same fixture runs through Octane and real @xyflow/react via the shared differential rig.",
+      "files": [
+        {
+          "path": "packages/xyflow/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "f91630e9dd415caf17d3d72b6042283665a6c48576f572c84224cf443a2b5df5",
+          "cases": [
+            {
+              "id": "differential:initial-mount",
+              "testName": "matches initial flow mount markup",
+              "fullName": "differential: @octanejs/xyflow vs @xyflow/react matches initial flow mount markup"
+            }
+          ]
+        },
+        {
+          "path": "packages/xyflow/tests/_fixtures/xyflow-diff.tsrx",
+          "role": "support",
+          "sha256": "5cff6c57d694237a735d4037e27b3f0bb75afd477ddd5df1c951c8b4c3d26e3b"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/xyflow/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "897efdd4751f2397fe53003c131f24975710209d886cc64406149b9763432c62"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "475262875976aaff36b7347390d15bdd0ac45471deeddeead2b72daa3cb2c2ce"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}
