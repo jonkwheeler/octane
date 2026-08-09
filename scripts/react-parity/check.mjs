@@ -17,6 +17,7 @@ import { verifyFormischTestClassifications } from './formisch-classifications-li
 import { verifyFormischUpstream } from './formisch-upstream-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyTypeParity } from './type-parity-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
@@ -56,6 +57,11 @@ try {
 	verifyLivestoreTypes(REPO);
 } catch (error) {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);
+}
+try {
+	verifySolanaReactTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/solana-react type evidence is invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);

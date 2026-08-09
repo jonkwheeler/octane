@@ -16,6 +16,10 @@ packages/*/upstream/
 # their formatting and rejects any other structural change.
 packages/formisch/audit/pristine-react/
 packages/formisch/typetests/upstream/
+# One-for-one adapted type-suite mirrors must stay structurally identical to
+# the vendored upstream typetests after permitted import rewrites only.
+packages/solana-react/typetests/__typetests__/
+packages/solana-react/typetests/query/__typetests__/
 packages/shadcn/tests/differential/upstream/
 # The framework-neutral half of @vis.gl/react-mapbox is reused byte-for-byte, so
 # an upstream bump stays a clean diff against packages/react-map-gl/upstream/.
