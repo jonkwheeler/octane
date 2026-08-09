@@ -12,6 +12,16 @@ async function fixture() {
 		join(root, 'packages/alien-signals/tests'),
 		{ recursive: true },
 	);
+	await cp(
+		new URL('../../packages/alien-signals/audit/type-probes', import.meta.url),
+		join(root, 'packages/alien-signals/audit/type-probes'),
+		{ recursive: true },
+	);
+	await cp(
+		new URL('../../packages/alien-signals/typetests', import.meta.url),
+		join(root, 'packages/alien-signals/typetests'),
+		{ recursive: true },
+	);
 	await mkdir(join(root, 'playground/octane/src/demos'), { recursive: true });
 	await cp(
 		new URL('../../playground/octane/src/demos/AlienSignals.test.ts', import.meta.url),
@@ -47,6 +57,31 @@ test('rejects an unclassified playground alien-signals test', async function rej
 		join(root, 'playground/octane/src/demos/AlienSignals.extra.test.ts'),
 		'export {};\n',
 	);
+	assert.throws(function run() {
+		verifyAlienSignalsTestClassifications(root);
+	}, /exactly one classification/);
+});
+
+test('rejects an unclassified type probe', async function rejectsUnclassifiedTypeProbe(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await writeFile(
+		join(root, 'packages/alien-signals/audit/type-probes/extra.test-d.ts'),
+		'export {};\n',
+	);
+	assert.throws(function run() {
+		verifyAlienSignalsTestClassifications(root);
+	}, /exactly one classification/);
+});
+
+test('rejects an unclassified adapted typetest', async function rejectsUnclassifiedTypetest(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await writeFile(join(root, 'packages/alien-signals/typetests/extra.test-d.ts'), 'export {};\n');
 	assert.throws(function run() {
 		verifyAlienSignalsTestClassifications(root);
 	}, /exactly one classification/);

@@ -326,6 +326,189 @@ export function extractReferencedFixtureIds(adaptedSource) {
 	return [...ids].sort();
 }
 
+const TRANSITION_CALLEE_EXCLUDE = new Set([
+	'act',
+	'cleanup',
+	'createComputed',
+	'createEffect',
+	'createSignal',
+	'createSignalScope',
+	'describe',
+	'expect',
+	'it',
+	'mount',
+	'nextPaint',
+	'renderHook',
+	'test',
+	'vi',
+]);
+
+function isResultCurrentAccess(node) {
+	if (ts.isElementAccessExpression(node)) {
+		return isResultCurrentAccess(node.expression);
+	}
+	return (
+		ts.isPropertyAccessExpression(node) &&
+		ts.isIdentifier(node.expression) &&
+		node.expression.text === 'result' &&
+		ts.isIdentifier(node.name) &&
+		node.name.text === 'current'
+	);
+}
+
+function collectBindingNames(nameNode, into) {
+	if (ts.isIdentifier(nameNode)) {
+		into.add(nameNode.text);
+		return;
+	}
+	if (ts.isArrayBindingPattern(nameNode) || ts.isObjectBindingPattern(nameNode)) {
+		for (const element of nameNode.elements) {
+			if (ts.isBindingElement(element)) collectBindingNames(element.name, into);
+		}
+	}
+}
+
+function callExpressionOf(node) {
+	if (ts.isCallExpression(node)) return node;
+	if (typeof ts.isOptionalCallExpression === 'function' && ts.isOptionalCallExpression(node)) {
+		return node;
+	}
+	return null;
+}
+
+function calleeRootIdentifier(expression) {
+	let current = expression;
+	while (
+		ts.isPropertyAccessExpression(current) ||
+		ts.isElementAccessExpression(current) ||
+		(typeof ts.isNonNullExpression === 'function' && ts.isNonNullExpression(current)) ||
+		(typeof ts.isParenthesizedExpression === 'function' && ts.isParenthesizedExpression(current))
+	) {
+		current = current.expression;
+	}
+	if (
+		typeof ts.isOptionalChain === 'function' &&
+		ts.isOptionalChain(current) &&
+		'expression' in current
+	) {
+		return calleeRootIdentifier(current.expression);
+	}
+	return ts.isIdentifier(current) ? current.text : null;
+}
+
+/**
+ * Per-case transition shape for the harness/fixture ledger rule:
+ * pristine hook-surface setter writes (result.current / aliases) must remain
+ * hook-path transitions in adapted (result.click or recorded setter calls),
+ * not silent direct createSignal writes.
+ */
+export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const cases = [];
+	function visit(node) {
+		const titled = callTitle(node, sourceFile);
+		if (titled !== null && titled.body) {
+			const signalBindings = new Set();
+			const hookAliases = new Set();
+			let hookSurfaceWrites = 0;
+			let fixtureClicks = 0;
+			let directSourceWrites = 0;
+			let otherSetterWrites = 0;
+
+			function visitBody(bodyNode) {
+				if (ts.isVariableDeclaration(bodyNode) && bodyNode.initializer && bodyNode.name) {
+					if (
+						ts.isCallExpression(bodyNode.initializer) &&
+						ts.isIdentifier(bodyNode.initializer.expression) &&
+						bodyNode.initializer.expression.text === 'createSignal'
+					) {
+						collectBindingNames(bodyNode.name, signalBindings);
+					}
+					if (isResultCurrentAccess(bodyNode.initializer)) {
+						collectBindingNames(bodyNode.name, hookAliases);
+					}
+				}
+
+				const call = callExpressionOf(bodyNode);
+				if (call !== null) {
+					const expression = call.expression;
+					if (
+						ts.isPropertyAccessExpression(expression) &&
+						ts.isIdentifier(expression.expression) &&
+						expression.expression.text === 'result' &&
+						ts.isIdentifier(expression.name) &&
+						expression.name.text === 'click'
+					) {
+						fixtureClicks += 1;
+					} else if (isResultCurrentAccess(expression) && call.arguments.length > 0) {
+						hookSurfaceWrites += 1;
+					} else {
+						const root = calleeRootIdentifier(expression);
+						if (root !== null && call.arguments.length > 0) {
+							if (hookAliases.has(root)) {
+								hookSurfaceWrites += 1;
+							} else if (signalBindings.has(root)) {
+								directSourceWrites += 1;
+							} else if (!TRANSITION_CALLEE_EXCLUDE.has(root)) {
+								otherSetterWrites += 1;
+							}
+						}
+					}
+				}
+				ts.forEachChild(bodyNode, visitBody);
+			}
+			visitBody(titled.body);
+			cases.push({
+				title: titled.title,
+				hookSurfaceWrites,
+				fixtureClicks,
+				directSourceWrites,
+				otherSetterWrites,
+				hookPathWrites: fixtureClicks + otherSetterWrites,
+			});
+			return;
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(sourceFile);
+	return cases;
+}
+
+export function assertPerCaseTransitionStructure(pristineSource, adaptedSource) {
+	const pristineCases = extractCaseTransitionStructure(pristineSource, 'pristine.ts');
+	const adaptedCases = extractCaseTransitionStructure(adaptedSource, 'adapted.ts');
+	const adaptedByTitle = new Map(
+		adaptedCases.map(function entryOf(caseEntry) {
+			return [caseEntry.title, caseEntry];
+		}),
+	);
+	for (const pristineCase of pristineCases) {
+		if (pristineCase.hookSurfaceWrites === 0) continue;
+		const adaptedCase = adaptedByTitle.get(pristineCase.title);
+		if (adaptedCase === undefined) {
+			throw new Error(
+				`alien-signals runtime transition crosswalk missing adapted case: ${pristineCase.title}`,
+			);
+		}
+		if (adaptedCase.hookPathWrites < pristineCase.hookSurfaceWrites) {
+			throw new Error(
+				`alien-signals adapted case "${pristineCase.title}" bypasses ${pristineCase.hookSurfaceWrites} hook-surface transition(s) with direct source mutation (${adaptedCase.directSourceWrites} direct write(s), ${adaptedCase.fixtureClicks} fixture click(s), ${adaptedCase.otherSetterWrites} recorded setter write(s)); keep hook-driven interactions under the transformation ledger`,
+			);
+		}
+	}
+	return {
+		pristineHookSurfaceCases: pristineCases.filter(function hasHook(caseEntry) {
+			return caseEntry.hookSurfaceWrites > 0;
+		}).length,
+	};
+}
+
 export function extractFixtureElementIds(fixtureSource) {
 	const ids = new Set();
 	for (const match of fixtureSource.matchAll(/\bid\s*=\s*["']([A-Za-z0-9_-]+)["']/g)) {
@@ -444,6 +627,7 @@ export function assertRuntimeStructureCrosswalk({
 			);
 		}
 	}
+	const transitions = assertPerCaseTransitionStructure(pristineSource, adaptedSource);
 	const mounted = extractMountedFixtures(adaptedSource);
 	const exports = new Set(fixtureExportNames(fixtureSource));
 	for (const fixtureName of mounted) {
@@ -475,6 +659,7 @@ export function assertRuntimeStructureCrosswalk({
 		fixtureExports: exports.size,
 		fixtureFileSha256: fixtureSha256,
 		referencedFixtureIds: referencedIds.length,
+		hookSurfaceCases: transitions.pristineHookSurfaceCases,
 	};
 }
 

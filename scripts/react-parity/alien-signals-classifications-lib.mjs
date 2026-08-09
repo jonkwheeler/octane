@@ -9,6 +9,14 @@ const DISCOVERY_ROOTS = [
 		match: /\.test\.(?:ts|tsx|tsrx)$/,
 	},
 	{
+		root: 'packages/alien-signals/audit/type-probes',
+		match: /\.test-d\.ts$/,
+	},
+	{
+		root: 'packages/alien-signals/typetests',
+		match: /\.test-d\.ts$/,
+	},
+	{
 		root: 'playground/octane/src/demos',
 		match: /^AlienSignals.*\.test\.(?:ts|tsx|tsrx)$/,
 	},

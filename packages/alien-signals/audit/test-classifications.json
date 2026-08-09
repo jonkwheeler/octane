@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "tests": [
     {
+      "path": "packages/alien-signals/audit/type-probes/public-api.test-d.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Repo-authored pristine React declaration probes against the vendored react-alien-signals 0.3.0 public surface (alien-signals-pristine-types lane)."
+    },
+    {
       "path": "packages/alien-signals/tests/hydration.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Hydration adoption for signal-backed views is an Octane SSR/hydration contract unpaired against the upstream bun React suite."
@@ -25,6 +30,11 @@
       "path": "packages/alien-signals/tests/upstream-original.test.ts",
       "disposition": "unmodified-upstream-suite-wrapper",
       "oracle": "Runs the byte-exact pinned react-alien-signals 0.3.0 bun:test suite against the recorded workspace React oracle after vendored-byte verification."
+    },
+    {
+      "path": "packages/alien-signals/typetests/public-api.test-d.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted Octane public type probes paired with the pristine type-probes lane (alien-signals-adapted-types)."
     },
     {
       "path": "playground/octane/src/demos/AlienSignals.test.ts",
