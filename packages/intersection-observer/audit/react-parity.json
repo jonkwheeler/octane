@@ -234,7 +234,7 @@
         {
           "path": "packages/intersection-observer/audit/pristine-types.json",
           "role": "test",
-          "sha256": "e3c90907e59ecae0153974783452fdd0d4c6e7a616367f4713c48dbf0d388bb9",
+          "sha256": "0c5a661f3e1469b06a374432c79e4bf830bff220f5839fec903e059678334ced",
           "cases": [
             {
               "id": "types:intersection-observer-pristine",
@@ -246,7 +246,7 @@
         {
           "path": "packages/intersection-observer/audit/type-probes/public-api.test-d.ts",
           "role": "support",
-          "sha256": "394c4f04770a2a48d3e2e01205bd482710032d2049a395ffff50fe8c61ea28b7"
+          "sha256": "43c264dbf02ce621b231570672999a56ee62af72bbb74dee932ecd6d3f613be5"
         },
         {
           "path": "packages/intersection-observer/audit/type-probes/tsconfig.pristine.json",
@@ -277,7 +277,7 @@
         {
           "path": "packages/intersection-observer/audit/adapted-types.json",
           "role": "test",
-          "sha256": "6d4e4d8a617a122566fa4994f02504cebbbcfa500ce115908e2eda67021eb670",
+          "sha256": "cfcf62a7de01328e4c45b5075355e8f46f3d1917a5b59c92d8fa1d35029cd192",
           "cases": [
             {
               "id": "types:intersection-observer-adapted",
@@ -289,7 +289,7 @@
         {
           "path": "packages/intersection-observer/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "72c8026cd35222953bc3ed03a8089b0755160cf2b1141401ba80c1d128ebc84c"
+          "sha256": "1e94b4805d77c880279e817903c35c42ed0e5a3cd582a3407c063bf7d20d3f79"
         },
         {
           "path": "packages/intersection-observer/typetests/tsconfig.json",

@@ -36,3 +36,9 @@ useInView({ notARealOption: true });
 
 // @ts-expect-error defaultFallbackInView rejects non-boolean non-undefined values
 defaultFallbackInView('yes');
+
+// @ts-expect-error useOnInView options omit initialInView
+useOnInView(function noop() {}, { initialInView: true });
+
+// @ts-expect-error useOnInView options omit fallbackInView
+useOnInView(function noop() {}, { fallbackInView: true });

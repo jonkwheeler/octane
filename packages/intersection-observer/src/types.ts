@@ -40,4 +40,7 @@ export type InViewHookResponse = [
 	entry?: IntersectionObserverEntry;
 };
 
-export type IntersectionEffectOptions = Omit<IntersectionOptions, 'onChange'>;
+export type IntersectionEffectOptions = Omit<
+	IntersectionOptions,
+	'onChange' | 'fallbackInView' | 'initialInView'
+>;

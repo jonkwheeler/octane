@@ -15,35 +15,30 @@ export function useOnInView(
 	return useCallback((node: Element | null) => {
 		unobserve.current?.();
 		unobserve.current = undefined;
-		lastInView.current = options.initialInView;
+		lastInView.current = undefined;
 		if (!node || options.skip) return;
-		unobserve.current = observe(
-			node,
-			(inView, entry) => {
-				const previousInView = lastInView.current;
-				lastInView.current = inView;
-				if (previousInView === undefined && !inView) return;
-				callback.current(inView, entry);
-				if (inView && options.triggerOnce) {
-					unobserve.current?.();
-					unobserve.current = undefined;
-					lastInView.current = undefined;
-				}
-			},
-			{
-				root: options.root,
-				rootMargin: options.rootMargin,
-				threshold: options.threshold,
-				trackVisibility: options.trackVisibility,
-				delay: options.delay,
-				scrollMargin: options.scrollMargin,
-			},
-			options.fallbackInView,
-		);
+		unobserve.current = observe(node, (inView, entry) => {
+			const previousInView = lastInView.current;
+			lastInView.current = inView;
+			if (previousInView === undefined && !inView) return;
+			callback.current(inView, entry);
+			if (inView && options.triggerOnce) {
+				unobserve.current?.();
+				unobserve.current = undefined;
+				lastInView.current = undefined;
+			}
+		}, {
+			root: options.root,
+			rootMargin: options.rootMargin,
+			threshold: options.threshold,
+			trackVisibility: options.trackVisibility,
+			delay: options.delay,
+			scrollMargin: options.scrollMargin,
+		});
 		return () => {
 			unobserve.current?.();
 			unobserve.current = undefined;
 			lastInView.current = undefined;
 		};
-	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.fallbackInView, options.delay, options.scrollMargin, options.initialInView]);
+	}, [Array.isArray(options.threshold) ? options.threshold.toString() : options.threshold, options.root, options.rootMargin, options.triggerOnce, options.skip, options.trackVisibility, options.delay, options.scrollMargin]);
 }
