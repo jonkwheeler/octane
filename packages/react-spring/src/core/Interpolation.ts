@@ -1,7 +1,7 @@
 // React-free behavioral port of react-spring v10.1.2 packages/core/src/Interpolation.ts.
 import { createInterpolator } from '../shared/index';
 import type { Interpolator } from '../types/interpolate';
-import type { InterpolatorConfig } from '../types/index';
+import type { ExtrapolateType, InterpolatorConfig } from '../types/index';
 import { FrameValue } from './FrameValue';
 
 export class Interpolation<T = any> extends FrameValue<T> {
@@ -30,7 +30,14 @@ export class Interpolation<T = any> extends FrameValue<T> {
 	}
 }
 
-export const to: Interpolator = function to(source: any, calc: any): Interpolation<any> {
+export const to: Interpolator = function to(source: any, ...args: any[]): Interpolation<any> {
+	if (args.length >= 2 && Array.isArray(args[0]) && Array.isArray(args[1])) {
+		const range = args[0] as readonly number[];
+		const output = args[1] as readonly unknown[];
+		const extrapolate = args[2] as ExtrapolateType | undefined;
+		return to(source, { range, output, extrapolate } as InterpolatorConfig);
+	}
+	const calc = args[0];
 	const interpolate =
 		typeof calc === 'function' ? calc : createInterpolator(calc as InterpolatorConfig);
 	return new Interpolation(Array.isArray(source) ? source : [source], interpolate);

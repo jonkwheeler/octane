@@ -30,7 +30,7 @@ export interface SpringConfig {
 export type LoopProp<T> = boolean | (() => boolean | Partial<SpringUpdate<T>>);
 
 export interface SpringUpdate<T> {
-	to: T | FrameValue<T>;
+	to?: T | FrameValue<T>;
 	from?: T;
 	config?: SpringConfig;
 	delay?: number;
@@ -76,11 +76,19 @@ export class SpringValue<T = number> extends FrameValue<T> {
 	constructor(props?: SpringUpdate<T>);
 	constructor(arg1?: any, arg2?: any) {
 		super();
-		if (typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1) && arg2 === undefined) {
-			this.value = ((arg1 as SpringUpdate<T>).from ?? (arg1 as SpringUpdate<T>).to) as T;
-		} else {
-			this.value = arg1 as T;
+		if (arg1 === undefined && arg2 === undefined) {
+			this.value = undefined as T;
+			return;
 		}
+		const props =
+			typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1)
+				? { ...(arg1 as SpringUpdate<T>) }
+				: { ...(arg2 as SpringUpdate<T> | undefined), from: arg1 as T };
+		this.value = (props.from ?? goal(props.to, undefined as T)) as T;
+		if ((props as SpringUpdate<T> & { default?: boolean }).default === undefined) {
+			(props as SpringUpdate<T> & { default?: boolean }).default = true;
+		}
+		void this.start(props);
 	}
 	get(): T {
 		return this.value;
@@ -96,14 +104,14 @@ export class SpringValue<T = number> extends FrameValue<T> {
 			this.stop(true);
 			return Promise.resolve(getCancelledResult(this.value));
 		}
-		const nextGoal = goal(props.to);
+		const nextGoal = goal(props.to, this.value);
 		const active = this.active;
 		if (
 			active &&
 			!active.settled &&
 			!props.reset &&
 			props.from === undefined &&
-			Object.is(goal(active.props.to), nextGoal)
+			Object.is(goal(active.props.to, this.value), nextGoal)
 		) {
 			const previousResolve = active.resolve;
 			active.props = { ...active.props, ...props, to: active.props.to };
@@ -164,7 +172,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		this.hasAnimated = true;
 		active.started = true;
 		this.velocity = props.config?.velocity ?? 0;
-		const target = goal(props.to);
+		const target = goal(props.to, this.value);
 		const immediate =
 			props.immediate === true ||
 			Globals.skipAnimation ||
@@ -195,7 +203,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		active.frame = (dt) => {
 			if (this.active !== active || active.settled) return false;
 			if (this.paused) return true;
-			const currentTarget = goal(props.to);
+			const currentTarget = goal(props.to, this.value);
 			let next: number;
 			let done: boolean;
 			if (options.decay) {
@@ -254,7 +262,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 				loop,
 				reset: true,
 			};
-			if (nextProps.from === undefined && Object.is(this.value, goal(nextProps.to))) {
+			if (nextProps.from === undefined && Object.is(this.value, goal(nextProps.to, this.value))) {
 				this.settle(active, getFinishedResult(this.value, true), true);
 				return;
 			}
@@ -280,12 +288,35 @@ export class SpringValue<T = number> extends FrameValue<T> {
 	}
 }
 
-function asUpdate<T>(update: T | SpringUpdate<T>): SpringUpdate<T> {
-	return typeof update === 'object' && update !== null && 'to' in update
-		? (update as SpringUpdate<T>)
-		: { to: update as T };
+function looksLikeSpringUpdate(value: object): boolean {
+	return (
+		'to' in value ||
+		'from' in value ||
+		'config' in value ||
+		'delay' in value ||
+		'immediate' in value ||
+		'reset' in value ||
+		'pause' in value ||
+		'cancel' in value ||
+		'loop' in value ||
+		'onStart' in value ||
+		'onChange' in value ||
+		'onPause' in value ||
+		'onResume' in value ||
+		'onRest' in value ||
+		'onResolve' in value ||
+		'default' in value
+	);
 }
 
-function goal<T>(value: T | FrameValue<T>): T {
+function asUpdate<T>(update: T | SpringUpdate<T>): SpringUpdate<T> {
+	if (typeof update === 'object' && update !== null && !Array.isArray(update) && looksLikeSpringUpdate(update)) {
+		return update as SpringUpdate<T>;
+	}
+	return { to: update as T };
+}
+
+function goal<T>(value: T | FrameValue<T> | undefined, fallback?: T): T {
+	if (value === undefined) return fallback as T;
 	return value instanceof FrameValue ? value.get() : value;
 }
