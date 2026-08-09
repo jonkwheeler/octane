@@ -550,9 +550,9 @@
     },
     {
       "path": "packages/drei/tests/react-parity-guard.test.ts",
-      "sha256": "e53bd0b95a5e4e5300febdcfb731fe604ab5e9c60f7f94ade91c7ab11e512ce0",
+      "sha256": "86d87fec9783e902a677998bf7fa5758b6601e2a1524826d15337fc3ffc0cca3",
       "assertionCount": 4,
-      "assertionInventorySha256": "20f0a8f18772d084df0e5d62e6bb74ee24828843d6802adf0bd35648b577e4d4"
+      "assertionInventorySha256": "0e2a56d6b2800f2a5c5a61db2f1548d8b1d4397b7f429239cd2a46148c633fdb"
     },
     {
       "path": "packages/drei/tests/render-textures.test.ts",
