@@ -9,8 +9,10 @@ const UPSTREAM_ROOT = `${PACKAGE_ROOT}/upstream`;
 const UPSTREAM_TEST_ROOT = `${UPSTREAM_ROOT}/test`;
 const INVENTORY_PATH = `${PACKAGE_ROOT}/audit/SHA256SUMS`;
 const ADAPTED_EVIDENCE_INVENTORY_PATH = `${PACKAGE_ROOT}/audit/adapted-evidence.SHA256SUMS`;
+const CASE_CONTRACTS_PATH = `${PACKAGE_ROOT}/audit/adapted-case-contracts.json`;
 const DISPOSITION_PATH = `${PACKAGE_ROOT}/audit/upstream-test-dispositions.json`;
 const CROSSWALK_PATH = `${PACKAGE_ROOT}/audit/case-crosswalk.json`;
+const FIXTURE_PATH = `${PACKAGE_ROOT}/tests/_fixtures/upstream-probes.tsrx`;
 const ADAPTED_INVENTORIES = [
 	`${PACKAGE_ROOT}/audit/adapted-runtime.json`,
 	`${PACKAGE_ROOT}/audit/adapted-runtime-server.json`,
@@ -24,6 +26,229 @@ const ADAPTED_EVIDENCE_ROOTS = [
 const SUPPORT_ARTIFACTS = new Set(['.eslintrc.yml', 'setup.js', 'setupAfterEnv.js', 'utils.js']);
 const CITATION_RE = /\/\/\s*Per path:\s*(.+)$/;
 const CITATION_PATH_RE = /^(.*?):(\d+)(?:-(\d+))?$/;
+
+function sha256Text(value) {
+	return createHash('sha256').update(value).digest('hex');
+}
+
+function findMatchingParen(source, openIndex) {
+	let depth = 0;
+	let inStr = null;
+	let inLineComment = false;
+	let inBlockComment = false;
+	for (let i = openIndex; i < source.length; i++) {
+		const c = source[i];
+		const next = source[i + 1];
+		if (inLineComment) {
+			if (c === '\n') inLineComment = false;
+			continue;
+		}
+		if (inBlockComment) {
+			if (c === '*' && next === '/') {
+				inBlockComment = false;
+				i++;
+			}
+			continue;
+		}
+		if (inStr) {
+			if (c === '\\') {
+				i++;
+				continue;
+			}
+			if (c === inStr) inStr = null;
+			continue;
+		}
+		if (c === '/' && next === '/') {
+			inLineComment = true;
+			i++;
+			continue;
+		}
+		if (c === '/' && next === '*') {
+			inBlockComment = true;
+			i++;
+			continue;
+		}
+		if (c === "'" || c === '"' || c === '`') {
+			inStr = c;
+			continue;
+		}
+		if (c === '(') depth++;
+		else if (c === ')') {
+			depth--;
+			if (depth === 0) return i;
+		}
+	}
+	return -1;
+}
+
+function caseBodyAtLine(source, line) {
+	const lines = source.split('\n');
+	let offset = 0;
+	for (let i = 0; i < line - 1; i++) {
+		offset += lines[i].length + 1;
+	}
+	const open = source.indexOf('(', offset);
+	if (open < 0) {
+		throw new Error(`missing case call at line ${line}`);
+	}
+	const close = findMatchingParen(source, open);
+	if (close < 0) {
+		throw new Error(`unbalanced case call at line ${line}`);
+	}
+	return source.slice(offset, close + 1);
+}
+
+function extractExpectAssertions(body) {
+	const assertions = [];
+	let index = 0;
+	while (index < body.length) {
+		const start = body.indexOf('expect(', index);
+		if (start < 0) break;
+		if (start > 0 && /[\w$]/.test(body[start - 1])) {
+			index = start + 6;
+			continue;
+		}
+		const open = start + 'expect'.length;
+		const close = findMatchingParen(body, open);
+		if (close < 0) break;
+		let end = close + 1;
+		while (body[end] === '.') {
+			const rest = body.slice(end);
+			const match = rest.match(/^\.[\w$]+\s*\(/);
+			if (!match) break;
+			const chainOpen = end + match[0].length - 1;
+			const chainClose = findMatchingParen(body, chainOpen);
+			if (chainClose < 0) break;
+			end = chainClose + 1;
+		}
+		assertions.push(body.slice(start, end).replace(/\s+/g, ' ').trim());
+		index = end;
+	}
+	return assertions;
+}
+
+function extractFixtureExports(source) {
+	const exports = new Set();
+	for (const match of source.matchAll(/export\s+(?:async\s+)?function\s+(\w+)/g)) {
+		exports.add(match[1]);
+	}
+	for (const match of source.matchAll(/export\s+(?:type|interface)\s+(\w+)/g)) {
+		exports.add(match[1]);
+	}
+	for (const match of source.matchAll(/export\s+(?:const|let|var|class)\s+(\w+)/g)) {
+		exports.add(match[1]);
+	}
+	return [...exports].sort();
+}
+
+function fixtureExportsUsed(body, exports) {
+	return exports.filter(function used(name) {
+		return new RegExp(`\\b${name}\\b`).test(body);
+	});
+}
+
+export function buildAdaptedCaseContracts(repoRoot) {
+	const crosswalkPath = resolve(repoRoot, CROSSWALK_PATH);
+	if (!existsSync(crosswalkPath)) {
+		throw new Error(`missing case crosswalk: ${CROSSWALK_PATH}`);
+	}
+	const crosswalk = JSON.parse(readFileSync(crosswalkPath, 'utf8'));
+	const fixtureAbsolute = resolve(repoRoot, FIXTURE_PATH);
+	if (!existsSync(fixtureAbsolute)) {
+		throw new Error(`missing adapted fixture: ${FIXTURE_PATH}`);
+	}
+	const fixtureSource = readFileSync(fixtureAbsolute, 'utf8');
+	const fixtureExports = extractFixtureExports(fixtureSource);
+	const fixtures = [
+		{
+			path: FIXTURE_PATH,
+			sha256: sha256Text(fixtureSource),
+			exports: fixtureExports,
+		},
+	];
+	const cases = [];
+	for (const entry of crosswalk.cases ?? []) {
+		if (entry.disposition !== 'adapted') continue;
+		const adaptedSource = readFileSync(resolve(repoRoot, entry.adaptedFile), 'utf8');
+		const adaptedMatches = extractTestCases(adaptedSource, { file: entry.adaptedFile }).filter(
+			function sameTitle(item) {
+				return item.title === entry.adaptedTitle;
+			},
+		);
+		const citedMatch = adaptedMatches.find(function hasCitation(item) {
+			return citationForCase(adaptedSource, item.line) === entry.citation;
+		});
+		if (!citedMatch) {
+			throw new Error(
+				`${entry.adaptedFile}: missing cited adapted case ${JSON.stringify(entry.adaptedTitle)}`,
+			);
+		}
+		const adaptedBody = caseBodyAtLine(adaptedSource, citedMatch.line);
+		const adaptedAssertions = extractExpectAssertions(adaptedBody);
+		const parsed = parseCitation(entry.citation);
+		if (!parsed) {
+			throw new Error(
+				`${entry.upstreamFile}::${entry.upstreamTitle}: citation must be path:start[-end]`,
+			);
+		}
+		const upstreamSource = readFileSync(resolve(repoRoot, parsed.path), 'utf8');
+		const upstreamBody = upstreamSource
+			.split('\n')
+			.slice(parsed.start - 1, parsed.end)
+			.join('\n');
+		const upstreamAssertions = extractExpectAssertions(upstreamBody);
+		cases.push({
+			upstreamFile: entry.upstreamFile,
+			upstreamTitle: entry.upstreamTitle,
+			upstreamLine: entry.upstreamLine,
+			citation: entry.citation,
+			adaptedFile: entry.adaptedFile,
+			adaptedTitle: entry.adaptedTitle,
+			upstreamBodySha256: sha256Text(upstreamBody.replace(/\s+/g, ' ').trim()),
+			upstreamAssertions: upstreamAssertions.map(sha256Text),
+			adaptedBodySha256: sha256Text(adaptedBody.replace(/\s+/g, ' ').trim()),
+			adaptedAssertions: adaptedAssertions.map(sha256Text),
+			fixtureExports: fixtureExportsUsed(adaptedBody, fixtureExports),
+		});
+	}
+	cases.sort(function compareCases(left, right) {
+		return (
+			left.upstreamFile.localeCompare(right.upstreamFile) ||
+			left.upstreamLine - right.upstreamLine ||
+			left.upstreamTitle.localeCompare(right.upstreamTitle)
+		);
+	});
+	return {
+		schemaVersion: 1,
+		fixtures,
+		cases,
+	};
+}
+
+export function verifyAdaptedCaseContracts(repoRoot) {
+	const contractsPath = resolve(repoRoot, CASE_CONTRACTS_PATH);
+	if (!existsSync(contractsPath)) {
+		throw new Error(`missing adapted case contracts: ${CASE_CONTRACTS_PATH}`);
+	}
+	const expected = JSON.parse(readFileSync(contractsPath, 'utf8'));
+	const actual = buildAdaptedCaseContracts(repoRoot);
+	if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+		throw new Error(
+			'adapted assertion/fixture contracts drifted against cited upstream scenarios; review and record the change',
+		);
+	}
+	return {
+		cases: actual.cases.length,
+		fixtures: actual.fixtures.length,
+		assertions: actual.cases.reduce(function sum(total, entry) {
+			return total + entry.adaptedAssertions.length;
+		}, 0),
+	};
+}
+
+export function renderAdaptedCaseContracts(repoRoot) {
+	return `${JSON.stringify(buildAdaptedCaseContracts(repoRoot), null, '\t')}\n`;
+}
 
 function filesBelow(root) {
 	return readdirSync(root, { recursive: true, withFileTypes: true })
@@ -447,10 +672,14 @@ export function verifyReactTransitionGroupUpstream(repoRoot) {
 		);
 	}
 
+	const contracts = verifyAdaptedCaseContracts(repoRoot);
+
 	return {
 		artifacts: artifacts.length,
 		cases: inventoriedCases.length,
 		adaptedCases: crosswalk.adapted,
 		notApplicableCases: crosswalk.notApplicable,
+		contractCases: contracts.cases,
+		contractAssertions: contracts.assertions,
 	};
 }

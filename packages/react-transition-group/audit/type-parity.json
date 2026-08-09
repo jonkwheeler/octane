@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRoot": "packages/react-transition-group/audit/type-probes",
+  "upstreamRoot": "packages/react-transition-group/upstream-types",
   "adaptedRoot": "packages/react-transition-group/typetests",
   "inventories": {
     "upstream": "packages/react-transition-group/audit/pristine-types.json",
@@ -9,33 +9,28 @@
   "lanes": {
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/react-transition-group/audit/type-probes/tsconfig.pristine.json",
-      "sourcePolicy": "repo-authored React declaration probes against @types/react-transition-group"
+      "project": "packages/react-transition-group/upstream-types/tsconfig.json",
+      "sourcePolicy": "Byte-exact DefinitelyTyped react-transition-group-tests.tsx at cccd2a9ffecb708ac0606faa7f81f0b7ec535bf9, compiled against npm @types/react-transition-group@4.4.12 and pinned React types."
     },
     "adapted": {
       "compiler": "tsrx-tsc",
       "project": "packages/react-transition-group/typetests/tsconfig.json",
-      "sourcePolicy": "one-for-one Octane probes after permitted import-root and ReactNode→OctaneNode transformations"
+      "sourcePolicy": "One-for-one Octane adaptation of the DefinitelyTyped suite after the permitted React-to-Octane type and import transformations."
     }
   },
   "permittedTransformations": [
     {
       "kind": "import-root",
-      "rule": "react-transition-group package and subpath imports become relative ../src/index.ts and ../src/types.ts imports; multiple type subpath imports may consolidate into one ../src/types.ts import"
+      "rule": "react-transition-group root imports become ../src/index.ts; Transition and SwitchTransition subpaths become their corresponding ../src/*.tsrx modules."
     },
     {
-      "kind": "node-type",
-      "rule": "ReactNode becomes OctaneNode and the react type import becomes an octane type import"
+      "kind": "react-type",
+      "rule": "React.ReactElement, React.FunctionComponent, React.useRef, and JSX resolve to ElementDescriptor, a local FunctionComponent alias, useRef, and Octane's jsxImportSource types respectively."
     },
     {
       "kind": "formatting",
-      "rule": "TypeScript printer output must remain structurally identical after the permitted import and node-type rewrites"
+      "rule": "TypeScript printer output must remain structurally identical after the permitted import and React type rewrites."
     }
   ],
-  "divergences": [
-    {
-      "id": "replace-transition-types-absent",
-      "rationale": "@types/react-transition-group 4.4.x does not export ReplaceTransition; the Octane package still ships ReplaceTransition and exports.test.ts covers the runtime export outside these one-for-one type probes."
-    }
-  ]
+  "divergences": []
 }

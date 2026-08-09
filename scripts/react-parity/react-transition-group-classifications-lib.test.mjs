@@ -13,8 +13,8 @@ async function fixture() {
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-transition-group/audit/type-probes', import.meta.url),
-		join(root, 'packages/react-transition-group/audit/type-probes'),
+		new URL('../../packages/react-transition-group/upstream-types', import.meta.url),
+		join(root, 'packages/react-transition-group/upstream-types'),
 		{ recursive: true },
 	);
 	await cp(
@@ -65,7 +65,7 @@ test('rejects a parity classification without an oracle', async function rejects
 	const path = join(root, 'packages/react-transition-group/audit/test-classifications.json');
 	const config = JSON.parse(await readFile(path, 'utf8'));
 	delete config.tests.find(function findDifferential(entry) {
-		return entry.disposition === 'react-octane-differential';
+		return entry.disposition === 'unmodified-upstream-suite-wrapper';
 	}).oracle;
 	await writeFile(path, `${JSON.stringify(config)}\n`);
 	assert.throws(function run() {

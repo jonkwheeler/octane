@@ -32,13 +32,13 @@ export function verifyReactTransitionGroupTestClassifications(root) {
 		}),
 		...discoverUnder(
 			root,
-			'packages/react-transition-group/audit/type-probes',
+			'packages/react-transition-group/upstream-types',
 			function isTypeProbe(name) {
-				return name.endsWith('.test-d.ts');
+				return name.endsWith('-tests.tsx');
 			},
 		),
 		...discoverUnder(root, 'packages/react-transition-group/typetests', function isTypeProbe(name) {
-			return name.endsWith('.test-d.ts');
+			return name.endsWith('.test-d.ts') || name.endsWith('-tests.tsx');
 		}),
 	]
 		.filter(function excludeParityOwned(path) {

@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "tests": [
     {
-      "path": "packages/react-transition-group/audit/type-probes/public-api.test-d.ts",
-      "disposition": "react-octane-differential",
-      "oracle": "Pristine React declaration probe lane paired one-for-one with typetests/public-api.test-d.ts via audit/type-parity.json."
+      "path": "packages/react-transition-group/upstream-types/react-transition-group-tests.tsx",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Byte-exact DefinitelyTyped suite at cccd2a9ffecb708ac0606faa7f81f0b7ec535bf9, paired one-for-one with typetests/react-transition-group-tests.tsx via audit/type-parity.json."
     },
     {
       "path": "packages/react-transition-group/tests/exports.test.ts",
@@ -22,9 +22,9 @@
       "reason": "Repo-authored Octane lifecycle/DOM guards for nodeRef and compiler children contracts; adapted upstream-suite identities live under tests/upstream/."
     },
     {
-      "path": "packages/react-transition-group/typetests/public-api.test-d.ts",
-      "disposition": "react-octane-differential",
-      "oracle": "Adapted Octane declaration probe lane paired one-for-one with audit/type-probes/public-api.test-d.ts via audit/type-parity.json."
+      "path": "packages/react-transition-group/typetests/react-transition-group-tests.tsx",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "One-for-one Octane adaptation of DefinitelyTyped's react-transition-group-tests.tsx, paired with upstream-types/react-transition-group-tests.tsx via audit/type-parity.json."
     }
   ]
 }

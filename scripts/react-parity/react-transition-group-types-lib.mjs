@@ -16,7 +16,9 @@ function posix(value) {
 function listProbeFiles(root) {
 	return readdirSync(root, { recursive: true, withFileTypes: true })
 		.filter(function keepProbes(entry) {
-			return entry.isFile() && entry.name.endsWith('.test-d.ts');
+			return (
+				entry.isFile() && (entry.name.endsWith('.test-d.ts') || entry.name.endsWith('-tests.tsx'))
+			);
 		})
 		.map(function toRelative(entry) {
 			return posix(relative(root, resolve(entry.parentPath ?? entry.path, entry.name)));
@@ -43,7 +45,7 @@ function assertionGroups(source, fileName) {
 		source,
 		ts.ScriptTarget.Latest,
 		true,
-		ts.ScriptKind.TS,
+		fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
 	);
 	const printer = ts.createPrinter({ removeComments: true });
 	const groups = [];
@@ -54,6 +56,24 @@ function assertionGroups(source, fileName) {
 		groups.push(`expect-error:${match[1].trim()}:${match[2].replace(/\s+/g, ' ').trim()}`);
 	}
 	function visit(node) {
+		if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+			const attributes = node.attributes.properties.map(function describeAttribute(attribute) {
+				return attribute.name.getText(sourceFile);
+			});
+			groups.push(`jsx:${node.tagName.getText(sourceFile)}:${attributes.join(',')}`);
+		}
+		if (
+			ts.isBinaryExpression(node) &&
+			node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+			ts.isPropertyAccessExpression(node.left)
+		) {
+			groups.push(
+				`assignment:${printer
+					.printNode(ts.EmitHint.Unspecified, node, sourceFile)
+					.replace(/\s+/g, ' ')
+					.trim()}`,
+			);
+		}
 		if (ts.isCallExpression(node) && containsExpectType(node.expression)) {
 			const typeArgs = (node.typeArguments ?? [])
 				.map(function printType(typeNode) {
@@ -81,10 +101,23 @@ function assertionGroups(source, fileName) {
 
 function structuralSource(source, fileName) {
 	let normalized = source
-		.replace(/\bReactNode\b/g, 'OctaneNode')
-		.replace(/from ['"]react['"]/g, "from 'octane'")
+		.replace(/import \* as React from ['"]react['"];\n?/g, '')
+		.replace(/import \{ type ElementDescriptor, useRef \} from ['"]octane['"];\n?/g, '')
+		.replace(
+			/type FunctionComponent<Props = Record<string, never>> = \(props: Props\) => ElementDescriptor;\n?/g,
+			'',
+		)
+		.replace(/\bReact\.FunctionComponent\b/g, 'FunctionComponent')
+		.replace(/\bReact\.ReactElement\b/g, 'ReactElement')
+		.replace(/\bReact\.useRef\b/g, 'useRef')
+		.replace(/\bElementDescriptor\b/g, 'ReactElement')
+		.replace(/useRef<HTMLDivElement \| null>/g, 'useRef<HTMLDivElement>')
 		.replace(/from ['"]react-transition-group(?:\/[^'"]+)?['"]/g, "from 'CANONICAL_RTG'")
-		.replace(/from ['"]\.\.\/src\/(?:types|index)\.ts['"]/g, "from 'CANONICAL_RTG'");
+		.replace(/from ['"]\.\.\/src\/(?:types|index)\.ts['"]/g, "from 'CANONICAL_RTG'")
+		.replace(
+			/from ['"]\.\.\/src\/(?:Transition|SwitchTransition)\.tsrx['"]/g,
+			"from 'CANONICAL_RTG'",
+		);
 	normalized = normalized.replace(
 		/import type \{[^}]+\} from 'CANONICAL_RTG';\n?/g,
 		"import type { CanonicalTypes } from 'CANONICAL_RTG';\n",
@@ -97,22 +130,20 @@ function structuralSource(source, fileName) {
 		/(import type \{ CanonicalTypes \} from 'CANONICAL_RTG';\n)+/g,
 		"import type { CanonicalTypes } from 'CANONICAL_RTG';\n",
 	);
-	const sourceFile = ts.createSourceFile(
-		fileName,
-		normalized,
-		ts.ScriptTarget.Latest,
-		true,
-		ts.ScriptKind.TS,
-	);
-	return ts
-		.createPrinter({ removeComments: true })
-		.printFile(sourceFile)
+	return normalized
+		.replace(/"/g, "'")
+		.replace(/\{\((\w+)\) =>/g, '{$1 =>')
 		.replace(/\s+/g, ' ')
 		.trim();
 }
 
 function normalizeAssertionGroup(group) {
-	return group.replace(/\bReactNode\b/g, 'OctaneNode');
+	return group
+		.replace(/\bReact\.ReactElement\b/g, 'ElementDescriptor')
+		.replace(/\bReact\.FunctionComponent\b/g, 'FunctionComponent')
+		.replace(/\bReact\.useRef\b/g, 'useRef')
+		.replace(/\bReactElement\b/g, 'ElementDescriptor')
+		.replace(/useRef<HTMLDivElement \| null>/g, 'useRef<HTMLDivElement>');
 }
 
 export function buildTypeInventory(root, config) {

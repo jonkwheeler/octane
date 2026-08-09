@@ -16,5 +16,5 @@
     "jsxImportSource": "octane",
     "allowImportingTsExtensions": true
   },
-  "include": ["./**/*.test-d.ts"]
+  "files": ["react-transition-group-tests.tsx"]
 }

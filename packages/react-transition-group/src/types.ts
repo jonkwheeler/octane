@@ -2,20 +2,21 @@ import type { ComponentBody, ElementDescriptor, OctaneNode } from 'octane';
 
 export type TransitionStatus = 'unmounted' | 'exited' | 'entering' | 'entered' | 'exiting';
 export type TransitionTimeout = number | { appear?: number; enter?: number; exit?: number };
-export type TransitionNodeRef = { current: Element | null };
+export type TransitionNodeRef = { current: HTMLElement | null };
 
 export interface TransitionCallbacks {
-	onEnter?: (node?: Element, isAppearing?: boolean) => void;
-	onEntering?: (node?: Element, isAppearing?: boolean) => void;
-	onEntered?: (node?: Element, isAppearing?: boolean) => void;
-	onExit?: (node?: Element) => void;
-	onExiting?: (node?: Element) => void;
-	onExited?: (node?: Element) => void;
+	onEnter?: (...args: any[]) => void;
+	onEntering?: (...args: any[]) => void;
+	onEntered?: (...args: any[]) => void;
+	onExit?: (...args: any[]) => void;
+	onExiting?: (...args: any[]) => void;
+	onExited?: (...args: any[]) => void;
 }
 
 export interface TransitionProps extends TransitionCallbacks {
-	children:
-		OctaneNode | ((status: TransitionStatus, childProps: Record<string, unknown>) => OctaneNode);
+	children?:
+		| ElementDescriptor
+		| ((status: TransitionStatus, childProps?: Record<string, unknown>) => OctaneNode);
 	in?: boolean;
 	mountOnEnter?: boolean;
 	unmountOnExit?: boolean;
@@ -23,7 +24,7 @@ export interface TransitionProps extends TransitionCallbacks {
 	enter?: boolean;
 	exit?: boolean;
 	timeout?: TransitionTimeout;
-	addEndListener?: ((done: () => void) => void) | ((node: Element, done: () => void) => void);
+	addEndListener?: (...args: any[]) => void;
 	nodeRef?: TransitionNodeRef;
 	[key: string]: unknown;
 }
@@ -56,7 +57,7 @@ export interface CSSTransitionProps extends TransitionProps {
 
 export interface TransitionGroupProps {
 	children?: OctaneNode;
-	component?: ComponentBody<any> | string | null;
+	component?: ComponentBody<any> | ((props: any) => unknown) | string | null;
 	childFactory?: (child: ElementDescriptor) => ElementDescriptor;
 	appear?: boolean;
 	enter?: boolean;

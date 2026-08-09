@@ -6,6 +6,7 @@ import test from 'node:test';
 
 import {
 	collectUpstreamCaseInventory,
+	renderReactTransitionGroupAdaptedEvidenceInventory,
 	verifyReactTransitionGroupUpstream,
 } from './react-transition-group-upstream-lib.mjs';
 
@@ -42,6 +43,7 @@ async function fixture() {
 	for (const file of [
 		'SHA256SUMS',
 		'adapted-evidence.SHA256SUMS',
+		'adapted-case-contracts.json',
 		'upstream-test-dispositions.json',
 		'case-crosswalk.json',
 		'adapted-runtime.json',
@@ -263,9 +265,14 @@ test('rejects deleting assertions from an adapted case', async function rejectsD
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(adaptedPath, source.replace(/expect\([^;]+;/g, 'void 0;'));
+	const evidencePath = join(
+		root,
+		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+	);
+	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	assert.throws(function run() {
 		verifyReactTransitionGroupUpstream(root);
-	}, /adapted assertion\/fixture inventory drifted/);
+	}, /adapted assertion\/fixture contracts drifted|adaptedAssertions|adaptedBodySha256/);
 });
 
 test('rejects fixture drift in adapted upstream probes', async function rejectsFixtureDrift(t) {
@@ -279,7 +286,12 @@ test('rejects fixture drift in adapted upstream probes', async function rejectsF
 	);
 	const source = await readFile(fixturePath, 'utf8');
 	await writeFile(fixturePath, `${source}\n// fixture drift\n`);
+	const evidencePath = join(
+		root,
+		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+	);
+	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	assert.throws(function run() {
 		verifyReactTransitionGroupUpstream(root);
-	}, /adapted assertion\/fixture inventory drifted/);
+	}, /adapted assertion\/fixture contracts drifted|fixture/);
 });
