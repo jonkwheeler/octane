@@ -25,6 +25,7 @@
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
       "@octanejs/remix-router",
+      "@octanejs/inertia",
       "@octanejs/nuqs"
     ]
   },
@@ -33,7 +34,8 @@
     "description": "Wallet connection, chain state, contract reads, signing, and transactions.",
     "packages": [
       "@octanejs/wagmi",
-      "@octanejs/rainbowkit"
+      "@octanejs/rainbowkit",
+      "@octanejs/solana-react"
     ]
   },
   {
@@ -46,6 +48,7 @@
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/animejs",
+      "@octanejs/gsap",
       "@octanejs/motion",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
@@ -63,14 +66,14 @@
     "title": "Forms and content",
     "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
     "packages": [
-      "@octanejs/blocknote",
       "@octanejs/hook-form",
-      "@octanejs/i18next",
-      "@octanejs/lexical",
-      "@octanejs/mdx",
-      "@octanejs/streamdown",
       "@octanejs/tanstack-form",
-      "@octanejs/tiptap"
+      "@octanejs/lexical",
+      "@octanejs/tiptap",
+      "@octanejs/blocknote",
+      "@octanejs/streamdown",
+      "@octanejs/mdx",
+      "@octanejs/i18next"
     ]
   },
   {
