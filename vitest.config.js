@@ -740,7 +740,13 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Mixed project: only the same-fixture parity case is react-parity
+				// owned. setup.test.ts is an Octane-only fail-closed compiler guard
+				// and must stay on ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/nuqs/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'nuqs-differential',
 					include: ['packages/nuqs/tests/differential/**/*.test.ts'],
