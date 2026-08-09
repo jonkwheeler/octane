@@ -300,21 +300,25 @@ describe('Transition', function transitionSuite() {
 
 		// Per path: packages/react-transition-group/upstream/test/Transition-test.js:403-438
 		it('should move to each transition state', async function exitStates() {
-			const states: string[] = [];
+			let count = 0;
 			let done = false;
 			const view = mount(TransitionStatusProbe, { shown: true, timeout: 10 });
+			expect(view.container.querySelector('#status')?.textContent).toBe('status: entered');
 			await act(function exit() {
 				view.update(TransitionStatusProbe, {
 					shown: false,
 					timeout: 10,
 					onExit: function onExit() {
-						states.push('onExit');
+						count++;
+						expect(view.container.querySelector('#status')?.textContent).toBe('status: entered');
 					},
 					onExiting: function onExiting() {
-						states.push('onExiting');
+						count++;
+						expect(view.container.querySelector('#status')?.textContent).toBe('status: exiting');
 					},
 					onExited: function onExited() {
-						states.push('onExited');
+						expect(view.container.querySelector('#status')?.textContent).toBe('status: exited');
+						expect(count).toBe(2);
 						done = true;
 					},
 				});
@@ -322,9 +326,7 @@ describe('Transition', function transitionSuite() {
 			await act(function flush() {
 				vi.advanceTimersByTime(10);
 			});
-			expect(states).toEqual(['onExit', 'onExiting', 'onExited']);
 			expect(done).toBe(true);
-			expect(view.container.querySelector('#status')?.textContent).toBe('status: exited');
 			view.unmount();
 		});
 	});

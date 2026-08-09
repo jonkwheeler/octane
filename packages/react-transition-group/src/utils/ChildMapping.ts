@@ -87,7 +87,16 @@ export function getNextChildMapping(
 				onExited: (node?: Element) => onExited(child, node),
 			});
 		} else if (!hasNext && hasPrevious && !isLeaving) {
-			children[key] = cloneElement(child, { in: false });
+			// Apply the group's current exit/enter flags when a child begins
+			// leaving so switching TransitionGroup.exit from false → true keeps
+			// the outgoing node for the exit transition (upstream only sets
+			// `in: false`, which leaves a stale exit=false from the prior enter).
+			children[key] = cloneElement(child, {
+				in: false,
+				enter: inherited(child, 'enter', nextProps),
+				exit: inherited(child, 'exit', nextProps),
+				onExited: (node?: Element) => onExited(child, node),
+			});
 		} else if (hasNext && hasPrevious && isValidElement(previousChild)) {
 			children[key] = cloneElement(child, {
 				enter: inherited(child, 'enter', nextProps),

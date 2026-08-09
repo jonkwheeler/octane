@@ -4,9 +4,9 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "sideEffects": false,
-  "engines": {
-    "node": ">=22"
-  },
+	"engines": {
+		"node": ">=22.22.2"
+	},
   "description": "React Transition Group-compatible transition components for Octane.",
   "author": {
     "name": "Dominic Gannaway",

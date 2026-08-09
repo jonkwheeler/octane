@@ -1,10 +1,13 @@
 // Ported from react-transition-group@4.4.5 test/TransitionGroup-test.js and
 // test/CSSTransitionGroup-test.js (jest → vitest, octane runtime).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Children, cloneElement, type ElementDescriptor } from 'octane';
+import { Children } from 'octane';
 import { act, mount } from '../../../octane/tests/_helpers.ts';
 import {
+	CallbackRefGroupProbe,
+	CloningWrapper,
 	CSSTransitionGroupProbe,
+	NullRenderGroupProbe,
 	TransitionGroupCountProbe,
 } from '../_fixtures/upstream-probes.tsrx';
 
@@ -30,11 +33,13 @@ describe('TransitionGroup', function transitionGroupSuite() {
 	});
 
 	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:59-72
-	// Upstream asserts class-component callback refs. Octane has no class
-	// components; cover that TransitionGroup mounts a child without throwing.
+	// Upstream uses a class-component callback ref. Octane has no class
+	// components; assert a plain-prop callback ref on a child/host instead.
 	it('should allow callback refs', function callbackRefs() {
-		const view = mount(CSSTransitionGroupProbe, { items: ['one'] });
-		expect(view.container.querySelector('#one')).not.toBeNull();
+		const ref = vi.fn();
+		const view = mount(CallbackRefGroupProbe, { onRef: ref });
+		expect(ref).toHaveBeenCalled();
+		expect(view.container.querySelector('#callback-ref-child')).not.toBeNull();
 		view.unmount();
 	});
 
@@ -141,11 +146,9 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 			});
 		});
 		// With exit re-enabled, the previous child is retained until exit finishes.
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(2);
 		expect(view.container.querySelector('#three')).not.toBeNull();
-		expect(
-			view.container.querySelector('#two') != null ||
-				view.container.querySelectorAll('[id]').length >= 1,
-		).toBe(true);
+		expect(view.container.querySelector('#two')).not.toBeNull();
 		view.unmount();
 	});
 
@@ -157,12 +160,12 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 
 	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:149-163
 	it('should work with a child which renders as null', async function nullRenderChild() {
-		const view = mount(CSSTransitionGroupProbe, { items: [] });
+		const view = mount(NullRenderGroupProbe, { active: false });
 		await act(function add() {
-			view.update(CSSTransitionGroupProbe, { items: ['ghost'] });
+			view.update(NullRenderGroupProbe, { active: true });
 		});
 		await act(function clear() {
-			view.update(CSSTransitionGroupProbe, { items: [] });
+			view.update(NullRenderGroupProbe, { active: false });
 		});
 		view.unmount();
 	});
@@ -217,15 +220,12 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 
 	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:258-298
 	it('should work with custom component wrapper cloning children', async function customWrapper() {
-		const extraClassNameProp = 'wrapper-item';
 		const view = mount(CSSTransitionGroupProbe, {
 			items: ['one'],
-			childFactory: function factory(child: ElementDescriptor) {
-				return cloneElement(child, { className: extraClassNameProp });
-			},
+			component: CloningWrapper,
 		});
 		const child = view.container.querySelector('#one');
-		expect(child?.classList.contains(extraClassNameProp)).toBe(true);
+		expect(child?.classList.contains('wrapper-item')).toBe(true);
 		await act(function flush() {
 			vi.runAllTimers();
 		});

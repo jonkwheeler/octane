@@ -1,6 +1,7 @@
 import {
 	Children,
 	cloneElement,
+	flushSync,
 	isChildrenBlock,
 	useContext,
 	useLayoutEffect,
@@ -72,9 +73,14 @@ function TransitionImpl(props: TransitionProps) @{
 	const generation = useRef(0);
 	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const previousIn = useRef(props.in === true);
+	// Upstream calls onEntering/onExiting/onEntered/onExited from setState
+	// callbacks so the committed status is observable. Schedule those after the
+	// matching status commit instead of firing them synchronously with setState.
+	const pendingPhase = useRef<{ status: TransitionStatus; run: () => void } | null>(null);
 
 	const cancelPending = () => {
 		generation.current += 1;
+		pendingPhase.current = null;
 		if (timer.current !== null) {
 			clearTimeout(timer.current);
 			timer.current = null;
@@ -106,27 +112,50 @@ function TransitionImpl(props: TransitionProps) @{
 		else if (active && (!props.addEndListener || !node)) timer.current = setTimeout(finish, 0);
 	};
 
+	const commitStatus = (next: TransitionStatus, run: () => void) => {
+		pendingPhase.current = { status: next, run };
+		setStatus(next);
+	};
+
+	// Final ENTERED/EXITED completions must run before the current timeout
+	// callback yields — otherwise fake-timer suites can fire a slower
+	// addEndListener in the same runAllTimers pass before onEntered.
+	const commitStatusNow = (next: TransitionStatus, run: () => void) => {
+		pendingPhase.current = { status: next, run };
+		flushSync(function applyStatus() {
+			setStatus(next);
+		});
+		if (pendingPhase.current && pendingPhase.current.status === next) {
+			const pending = pendingPhase.current;
+			pendingPhase.current = null;
+			pending.run();
+		}
+	};
+
 	const performEnter = (mounting: boolean) => {
 		cancelPending();
 		const appearing = group ? group.isMounting : mounting;
 		const node = props.nodeRef?.current ?? undefined;
 		if (!mounting && props.enter === false || config.disabled) {
-			setStatus(ENTERED);
-			callEnterCallback(props.onEntered, props.nodeRef, node, appearing);
+			commitStatus(ENTERED, function afterEntered() {
+				callEnterCallback(props.onEntered, props.nodeRef, node, appearing);
+			});
 			return;
 		}
 		callEnterCallback(props.onEnter, props.nodeRef, node, appearing);
-		setStatus(ENTERING);
-		callEnterCallback(props.onEntering, props.nodeRef, node, appearing);
 		const timeouts = getTimeouts(props.timeout);
-		finishAfter(appearing ? timeouts.appear : timeouts.enter, () => {
-			setStatus(ENTERED);
-			callEnterCallback(
-				latestProps.current.onEntered,
-				latestProps.current.nodeRef,
-				node,
-				appearing,
-			);
+		commitStatus(ENTERING, function afterEntering() {
+			callEnterCallback(props.onEntering, props.nodeRef, node, appearing);
+			finishAfter(appearing ? timeouts.appear : timeouts.enter, function enterDone() {
+				commitStatusNow(ENTERED, function afterEntered() {
+					callEnterCallback(
+						latestProps.current.onEntered,
+						latestProps.current.nodeRef,
+						node,
+						appearing,
+					);
+				});
+			});
 		});
 	};
 
@@ -134,16 +163,19 @@ function TransitionImpl(props: TransitionProps) @{
 		cancelPending();
 		const node = props.nodeRef?.current ?? undefined;
 		if (props.exit === false || config.disabled) {
-			setStatus(EXITED);
-			props.onExited?.(props.nodeRef ? undefined : node);
+			commitStatus(EXITED, function afterExited() {
+				props.onExited?.(props.nodeRef ? undefined : node);
+			});
 			return;
 		}
 		props.onExit?.(props.nodeRef ? undefined : node);
-		setStatus(EXITING);
-		props.onExiting?.(props.nodeRef ? undefined : node);
-		finishAfter(getTimeouts(props.timeout).exit, () => {
-			setStatus(EXITED);
-			latestProps.current.onExited?.(latestProps.current.nodeRef ? undefined : node);
+		commitStatus(EXITING, function afterExiting() {
+			props.onExiting?.(props.nodeRef ? undefined : node);
+			finishAfter(getTimeouts(props.timeout).exit, function exitDone() {
+				commitStatusNow(EXITED, function afterExited() {
+					latestProps.current.onExited?.(latestProps.current.nodeRef ? undefined : node);
+				});
+			});
 		});
 	};
 
@@ -183,6 +215,14 @@ function TransitionImpl(props: TransitionProps) @{
 			setStatus(UNMOUNTED);
 		}
 	}, null);
+
+	useLayoutEffect(() => {
+		const pending = pendingPhase.current;
+		if (pending && pending.status === status) {
+			pendingPhase.current = null;
+			pending.run();
+		}
+	}, [status]);
 
 	let rendered: OctaneNode = null;
 	if (status !== UNMOUNTED) {

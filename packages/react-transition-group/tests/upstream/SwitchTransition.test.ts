@@ -29,6 +29,8 @@ describe('SwitchTransition', function switchSuite() {
 		expect(view.container.querySelector('#switch-status')?.textContent).toBe(
 			'first status: exiting',
 		);
+		expect(view.container.textContent).not.toContain('second');
+		expect(view.container.querySelectorAll('#switch-status')).toHaveLength(1);
 		view.unmount();
 	});
 

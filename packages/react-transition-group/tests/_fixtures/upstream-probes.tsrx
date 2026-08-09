@@ -1,4 +1,4 @@
-import { useRef, type ElementDescriptor } from 'octane';
+import { Children, cloneElement, useRef, type ElementDescriptor } from 'octane';
 import {
 	CSSTransition,
 	SwitchTransition,
@@ -155,6 +155,67 @@ export function CSSTransitionGroupProbe(props: GroupProbeProps) @{
 	/>
 }
 
+function CallbackRefChild(props: { ref?: (node: HTMLSpanElement | null) => void }) @{
+	<span ref={props.ref} id="callback-ref-child" />
+}
+
+export function CallbackRefGroupProbe(props: {
+	onRef: (node: HTMLSpanElement | null) => void;
+}) @{
+	<TransitionGroup children={[<CallbackRefChild key="child" ref={props.onRef} />]} />
+}
+
+function NullRenderChild() {
+	return null;
+}
+
+export function NullRenderGroupProbe(props: { active: boolean }) @{
+	const child =
+		props.active
+			? <CSSTransition key="null-child" classNames="yolo" timeout={0}>
+					<NullRenderChild />
+				</CSSTransition>
+			: null;
+	<TransitionGroup children={child} />
+}
+
+export function CloningWrapper(props: { children?: unknown }) @{
+	const mapped = Children.map(props.children, function cloneChild(child) {
+		if (child == null) return null;
+		return cloneElement(child as ElementDescriptor, { className: 'wrapper-item' });
+	});
+	<div>{mapped}</div>
+}
+
+export type ReenterGroupProbeProps = {
+	text: string;
+	direction: string;
+	nodeRef: { current: HTMLSpanElement | null };
+	timeout?: number;
+	onEnter?: (node?: Element, isAppearing?: boolean) => void;
+	onEntering?: (node?: Element, isAppearing?: boolean) => void;
+	onEntered?: (node?: Element, isAppearing?: boolean) => void;
+};
+
+export function CSSTransitionReenterGroupProbe(props: ReenterGroupProbeProps) @{
+	<TransitionGroup
+		component={null}
+		childFactory={function applyDirection(child: ElementDescriptor) {
+			return cloneElement(child, { classNames: props.direction });
+		}}
+		children={<CSSTransition
+			key={props.text}
+			timeout={props.timeout ?? 100}
+			nodeRef={props.nodeRef}
+			onEnter={props.onEnter}
+			onEntering={props.onEntering}
+			onEntered={props.onEntered}
+		>
+			<span ref={props.nodeRef} id={'reenter-' + props.text}>{props.text as string}</span>
+		</CSSTransition>}
+	/>
+}
+
 export type SwitchProbeProps = {
 	keyId: string | null;
 	mode?: 'out-in' | 'in-out';
@@ -203,7 +264,6 @@ export function TransitionGroupCountProbe(props: GroupChildProbeProps) @{
 				nodeRef={nodeRef}
 				timeout={0}
 				onEnter={function onEnter(isAppearing?: Element | boolean) {
-					// nodeRef callback shape: first argument is isAppearing.
 					props.log.push(isAppearing === true ? 'appear' : 'enter');
 				}}
 				onEntering={function onEntering(isAppearing?: Element | boolean) {

@@ -1,7 +1,10 @@
 // Ported from react-transition-group@4.4.5 test/CSSTransition-test.js (jest → vitest, octane runtime).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, mount } from '../../../octane/tests/_helpers.ts';
-import { CSSTransitionProbe } from '../_fixtures/upstream-probes.tsrx';
+import {
+	CSSTransitionProbe,
+	CSSTransitionReenterGroupProbe,
+} from '../_fixtures/upstream-probes.tsrx';
 
 describe('CSSTransition', function cssTransitionSuite() {
 	beforeEach(function useFake() {
@@ -413,43 +416,58 @@ describe('CSSTransition', function cssTransitionSuite() {
 
 	describe('reentering', function reentering() {
 		// Per path: packages/react-transition-group/upstream/test/CSSTransition-test.js:415-493
-		// Upstream uses TransitionGroup childFactory to swap classNames; cover the
-		// same className swap on a keyed CSSTransition child.
 		it('should remove dynamically applied classes', async function dynamicClasses() {
 			let count = 0;
-			const view = mount(CSSTransitionProbe, {
-				shown: true,
+			const nodeRef = {
+				foo: { current: null as HTMLSpanElement | null },
+				bar: { current: null as HTMLSpanElement | null },
+			};
+			const view = mount(CSSTransitionReenterGroupProbe, {
+				text: 'foo',
+				direction: 'down',
 				timeout: 100,
-				classNames: 'down',
+				nodeRef: nodeRef.foo,
 			});
-			await act(function swap() {
-				view.update(CSSTransitionProbe, {
-					shown: false,
+			await act(function toBar() {
+				view.update(CSSTransitionReenterGroupProbe, {
+					text: 'bar',
+					direction: 'up',
 					timeout: 100,
-					classNames: 'down',
-				});
-			});
-			await act(function enterUp() {
-				view.update(CSSTransitionProbe, {
-					shown: true,
-					timeout: 100,
-					classNames: 'up',
+					nodeRef: nodeRef.bar,
 					onEnter: function onEnter() {
 						count++;
-						expect(view.container.querySelector('#css-node')?.className).toBe('up-enter');
+						expect(nodeRef.bar.current?.className).toBe('up-enter');
 					},
 					onEntering: function onEntering() {
 						count++;
-						expect(view.container.querySelector('#css-node')?.className).toBe(
-							'up-enter up-enter-active',
-						);
+						expect(nodeRef.bar.current?.className).toBe('up-enter up-enter-active');
 					},
 				});
 			});
-			await act(function flush() {
+			await act(function flushBar() {
 				vi.advanceTimersByTime(100);
 			});
 			expect(count).toBe(2);
+			await act(function toFoo() {
+				view.update(CSSTransitionReenterGroupProbe, {
+					text: 'foo',
+					direction: 'down',
+					timeout: 100,
+					nodeRef: nodeRef.foo,
+					onEntering: function onEntering() {
+						count++;
+						expect(nodeRef.foo.current?.className).toBe('down-enter down-enter-active');
+					},
+					onEntered: function onEntered() {
+						count++;
+						expect(nodeRef.foo.current?.className).toBe('down-enter-done');
+					},
+				});
+			});
+			await act(function flushFoo() {
+				vi.advanceTimersByTime(100);
+			});
+			expect(count).toBe(4);
 			view.unmount();
 		});
 	});
