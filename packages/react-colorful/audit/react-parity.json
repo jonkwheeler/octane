@@ -8,7 +8,7 @@
     "testRoot": "tests",
     "license": "MIT",
     "integrity": "sha256:d1ad50cb61882c3e631de05414688d74740281c46633ce40492855bc3816f1c6",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -109,7 +109,7 @@
         {
           "path": "packages/react-colorful/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "6f4a56a0d2198927212002c67be970eb701c1c69e15be1c78f1b87b89dd8e782"
+          "sha256": "115e5823a86b184665a0eb70bcc0e0f67f77604e1a0a7cee22c66320311c33ee"
         }
       ]
     },
