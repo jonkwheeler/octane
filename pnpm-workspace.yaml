@@ -154,6 +154,7 @@ catalogs:
     '@livestore/utils': 0.4.0
     '@opentelemetry/api': 1.9.0
     '@apollo/client': 4.2.6
+    animejs: 4.5.0
     dexie: 4.4.4
     date-fns: ^4.1.0
     fake-indexeddb: 6.2.5
