@@ -256,4 +256,22 @@ describe('Waypoint', () => {
 		expect(onEnter).toHaveBeenCalledOnce();
 		result.unmount();
 	});
+
+	it('does not re-fire onEnter when the measured host remounts still inside', () => {
+		const onEnter = vi.fn();
+		const result = mount(ChildProbe, { onEnter, hostKey: 'a' });
+		flushEffects();
+		const first = result.find('[data-testid="child"]');
+		first.getBoundingClientRect = () => rect(20, 40);
+		vi.runAllTimers();
+		expect(onEnter).toHaveBeenCalledOnce();
+
+		result.update(ChildProbe, { onEnter, hostKey: 'b' });
+		flushEffects();
+		const second = result.find('[data-testid="child"]');
+		second.getBoundingClientRect = () => rect(20, 40);
+		vi.runAllTimers();
+		expect(onEnter).toHaveBeenCalledOnce();
+		result.unmount();
+	});
 });

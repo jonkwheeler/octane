@@ -120,11 +120,14 @@ function WaypointComponent(props: WaypointProps) {
 		});
 	}, null);
 
+	// When the measured host briefly clears (Suspense, conditional child, or a
+	// remounted host), keep previousPosition. Upstream never resets
+	// `_previousPosition` for the instance lifetime; resetting here would make a
+	// still-inside remount look like the first enter and re-fire onEnter.
 	useEffect(function cleanupOnUnmountOrNodeClear() {
 		if (!node) {
 			clearScrollListeners();
 			ancestorRef.current = null;
-			previousPosition.current = undefined;
 		}
 		return function cleanup() {
 			if (cancelOnNextTick.current) {

@@ -16,9 +16,14 @@ export function ChildProbe(props: {
 	onEnter(args: WaypointCallbackArgs): void;
 	childRef?: (node: Element | null) => void;
 	label?: string;
+	hostKey?: string;
 }) @{
 	<Waypoint
 		onEnter={props.onEnter}
-		children={<div ref={props.childRef} data-testid="child">{props.label ?? 'child'}</div>}
+		children={
+			<div key={props.hostKey} ref={props.childRef} data-testid="child">
+				{props.label ?? 'child'}
+			</div>
+		}
 	/>
 }
