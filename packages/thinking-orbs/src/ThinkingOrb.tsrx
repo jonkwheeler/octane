@@ -18,6 +18,26 @@ const LABELS: Record<string, string> = {
 	shaping: 'Shaping…',
 };
 
+function assignConsumerRef(
+	consumer: ThinkingOrbProps['ref'],
+	node: HTMLCanvasElement | null,
+): void {
+	if (consumer == null) {
+		return;
+	}
+	if (typeof consumer === 'function') {
+		consumer(node);
+		return;
+	}
+	if (Array.isArray(consumer)) {
+		for (let i = 0; i < consumer.length; i++) {
+			assignConsumerRef(consumer[i] as ThinkingOrbProps['ref'], node);
+		}
+		return;
+	}
+	(consumer as { current: HTMLCanvasElement | null }).current = node;
+}
+
 export function ThinkingOrb({
 	state = 'working',
 	size = 64,
@@ -32,22 +52,29 @@ export function ThinkingOrb({
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const consumerRefRef = useRef(consumerRef);
 	consumerRefRef.current = consumerRef;
+	// Stable identity so theme/reduced-motion updates do not detach the canvas.
+	// consumerRefRef always holds the latest consumer for attach/detach.
 	const assignCanvasRef = useRef(function assignCanvasRef(node: HTMLCanvasElement | null): void {
 		canvasRef.current = node;
-		const consumer = consumerRefRef.current;
-		if (typeof consumer === 'function') {
-			consumer(node);
-		} else if (consumer != null) {
-			consumer.current = node;
-		}
+		assignConsumerRef(consumerRefRef.current, node);
 	}).current;
 	const dark = useResolvedDark(theme, canvasRef);
 	const reduced = useReducedMotion();
 
+	// Ref prop swaps do not re-run the stable canvas callback; sync the consumer
+	// here so the previous holder is cleared and the new one receives the node.
+	useEffect(function syncConsumerRef() {
+		const node = canvasRef.current;
+		assignConsumerRef(consumerRef, node);
+		return function cleanupConsumerRef() {
+			assignConsumerRef(consumerRef, null);
+		};
+	}, [consumerRef]);
+
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-		const dpr = Math.min(2, (typeof devicePixelRatio !== 'undefined' && devicePixelRatio) || 1);
+		const dpr = Math.min(2, typeof devicePixelRatio !== 'undefined' && devicePixelRatio || 1);
 		canvas.width = Math.round(size * dpr);
 		canvas.height = Math.round(size * dpr);
 		const ctx = canvas.getContext('2d');
@@ -110,13 +137,11 @@ export function ThinkingOrb({
 		};
 	}, [state, size, dark, speed, paused, reduced]);
 
-	return (
-		<canvas
-			ref={assignCanvasRef}
-			role="img"
-			aria-label={ariaLabel ?? LABELS[state]}
-			style={{ width: size, height: size, display: 'block', ...style }}
-			{...rest}
-		/>
-	);
+	return <canvas
+		ref={assignCanvasRef}
+		role="img"
+		aria-label={ariaLabel ?? LABELS[state]}
+		style={{ width: size, height: size, display: 'block', ...style }}
+		{...rest}
+	/>;
 }
