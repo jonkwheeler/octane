@@ -3,6 +3,9 @@ import { raf } from '@react-spring/rafz';
 import { Controller } from '@octanejs/react-spring';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
 import {
+	// Additional upstream provenance for shared adapted evidence:
+	// Per packages/core/src/hooks/useSpringValue.test.ts:6
+
 	ContextSpringFixture,
 	ContextDepsSpringFixture,
 	ChainFixture,
@@ -21,6 +24,7 @@ afterEach(() => {
 });
 
 describe('React Spring hooks', () => {
+	// Per packages/core/src/hooks/useSpring.test.tsx:29
 	it('does not cancel object-form springs on parent rerenders', () => {
 		const onReady = () => {};
 		const result = mount(ObjectSpringHookFixture, { x: 10, onReady });
@@ -35,6 +39,7 @@ describe('React Spring hooks', () => {
 		expect(stop).toHaveBeenCalledWith(true);
 	});
 
+	// Per packages/core/src/hooks/useSpring.test.tsx:36
 	it('keeps spring values and the imperative API stable across updates', () => {
 		raf.frameLoop = 'demand';
 		const apis: unknown[] = [];
@@ -62,6 +67,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTrail.test.tsx:19
 	it('adds trail staggering to the caller delay', async () => {
 		vi.useFakeTimers();
 		let styles: any[];
@@ -84,6 +90,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTrail.test.tsx:29
 	it('restarts object-form trails when props change', () => {
 		let styles: any[] = [];
 		const onReady = (value: any[]) => (styles = value);
@@ -97,6 +104,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTrail.test.tsx:44
 	it('does not cancel object-form trails on unchanged parent rerenders', () => {
 		const onReady = () => {};
 		const result = mount(UpdatingTrailHookFixture, { x: 1, onReady });
@@ -110,6 +118,7 @@ describe('React Spring hooks', () => {
 		expect(stop).toHaveBeenCalledWith(true);
 	});
 
+	// Per packages/core/src/SpringContext.test.tsx:69
 	it('applies SpringContext values and resumes after context pause', () => {
 		let styles: any;
 		const onReady = (value: any) => (styles = value);
@@ -123,6 +132,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/SpringContext.test.tsx:21
 	it('applies SpringContext changes when useSpring has explicit deps', () => {
 		let styles: any;
 		const onReady = (value: any) => (styles = value);
@@ -136,6 +146,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useSprings.test.tsx:30
 	it('reuses a spring cohort, only evaluates changed deps, and resizes the ref', () => {
 		const created: number[] = [];
 		let styles: any[] = [];
@@ -169,6 +180,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/SpringContext.test.tsx:21
 	it('merges nested SpringContext values while allowing replacement', () => {
 		let styles: any;
 		const onReady = (value: any) => (styles = value);
@@ -182,6 +194,7 @@ describe('React Spring hooks', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:220
 	it('starts useChain refs at explicit timesteps and clears pending starts on cleanup', async () => {
 		vi.useFakeTimers();
 		const starts: string[] = [];
@@ -202,6 +215,7 @@ describe('React Spring hooks', () => {
 		expect(starts).toEqual(['b', 'c']);
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:220
 	it('starts useChain refs sequentially when timesteps are omitted', async () => {
 		let finishFirst!: () => void;
 		const starts: string[] = [];

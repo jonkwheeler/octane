@@ -4,11 +4,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SpringValue } from '../../src/index';
 import { AnimatedSsrFixture } from '../_fixtures/animated-host.tsrx';
 
+// Additional upstream provenance for shared adapted evidence:
+// Per packages/animated/src/createHost.test.ts:11
+
 afterEach(() => {
 	raf.frameLoop = 'always';
 });
 
 describe('React Spring animated host hydration', () => {
+	// Per targets/web/src/animated.test.tsx:50
 	it('serializes initial values and adopts the existing host before client animation', () => {
 		const container = document.createElement('div');
 		container.innerHTML =

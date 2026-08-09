@@ -117,14 +117,17 @@ async function exercise(origin: string): Promise<void> {
 }
 
 describe('React Spring playground browser evidence', () => {
+	// Per targets/web/src/animated.test.tsx:50
 	it('animates, interrupts, transitions, scrolls, and cleans up in development', async () => {
 		await exercise(developmentOrigin);
 	});
 
+	// Per targets/web/src/animated.test.tsx:50
 	it('repeats the core journey against the production build', async () => {
 		await exercise(productionOrigin);
 	});
 
+	// Per packages/shared/src/hooks/useReducedMotion.test.ts:29
 	it('honors reduced motion in the live playground', async () => {
 		const page = await browser.newPage();
 		await page.emulateMedia({ reducedMotion: 'reduce' });

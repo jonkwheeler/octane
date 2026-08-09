@@ -4,6 +4,7 @@ import { Globals } from '../../src/index';
 import { BrowserHooksFixture } from '../_fixtures/browser-hooks.tsrx';
 
 describe('React Spring browser hooks', () => {
+	// Per packages/shared/src/dom-events/resize/resizeElement.test.ts:16
 	it('stops resize springs when ResizeObserver is unavailable', () => {
 		vi.stubGlobal('ResizeObserver', undefined);
 		const target = document.createElement('div');
@@ -26,6 +27,7 @@ describe('React Spring browser hooks', () => {
 		expect(stopHeight).toHaveBeenCalledWith(true);
 	});
 
+	// Per packages/shared/src/hooks/useReducedMotion.test.ts:29
 	it('reports scroll, resize, intersection, and reduced motion and cleans up', async () => {
 		const listeners = new Map<string, EventListener>();
 		const target = document.createElement('div');

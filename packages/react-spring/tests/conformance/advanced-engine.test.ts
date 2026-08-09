@@ -2,6 +2,10 @@ import { raf } from '@react-spring/rafz';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Controller, SpringValue } from '../../src/core/index';
 
+// Additional upstream provenance for shared adapted evidence:
+// Per packages/core/src/helpers.test.ts:5
+// Per packages/shared/src/stringInterpolation.test.ts:10
+
 afterEach(() => (raf.frameLoop = 'always'));
 
 function advance(frames = 120): void {
@@ -34,6 +38,7 @@ describe('advanced upstream engine parity', () => {
 		expect((await result).value).toEqual(to);
 	});
 
+	// Per packages/core/src/AnimationConfig.test.ts:73
 	it('supports frequency physics, frame rounding, and decay', async () => {
 		raf.frameLoop = 'demand';
 		const rounded = new SpringValue(0);
@@ -51,6 +56,7 @@ describe('advanced upstream engine parity', () => {
 		expect(decay.get()).not.toBe(999);
 	});
 
+	// Per packages/core/src/SpringValue.test.ts:185
 	it('tracks a dynamic SpringValue target while animating', async () => {
 		raf.frameLoop = 'demand';
 		const target = new SpringValue(10);
@@ -62,6 +68,7 @@ describe('advanced upstream engine parity', () => {
 		expect((await result).value).toBe(20);
 	});
 
+	// Per packages/core/src/Controller.test.ts:63
 	it('inherits explicit controller defaults across replacement updates', async () => {
 		const controller = new Controller<{ x: number }>({
 			from: { x: 0 },
@@ -71,6 +78,7 @@ describe('advanced upstream engine parity', () => {
 		expect((await controller.start({ to: { x: 2 } })).value).toEqual({ x: 2 });
 	});
 
+	// Per packages/core/src/SpringValue.test.ts:194
 	it('applies bounce at overshoot instead of escaping the goal', async () => {
 		raf.frameLoop = 'demand';
 		const spring = new SpringValue(0);

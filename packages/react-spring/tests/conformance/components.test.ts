@@ -3,6 +3,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Controller } from '@octanejs/react-spring';
 import { flushEffects, mount } from '../../../motion/tests/_helpers';
 import {
+	// Additional upstream provenance for shared adapted evidence:
+	// Per packages/core/src/SpringContext.test.tsx:21
+
 	SpringComponentFixture,
 	TrailComponentFixture,
 	TransitionComponentFixture,
@@ -11,6 +14,7 @@ import {
 afterEach(() => vi.restoreAllMocks());
 
 describe('React Spring render-prop components', () => {
+	// Per packages/core/src/hooks/useSpring.test.tsx:29
 	it('renders Spring children with animated values', () => {
 		raf.frameLoop = 'demand';
 		const result = mount(SpringComponentFixture);
@@ -22,6 +26,7 @@ describe('React Spring render-prop components', () => {
 		raf.frameLoop = 'always';
 	});
 
+	// Per packages/core/src/hooks/useTrail.test.tsx:19
 	it('preserves keyed render-prop children when items reorder', () => {
 		const first = { id: 'first', label: 'First' };
 		const second = { id: 'second', label: 'Second' };
@@ -40,6 +45,7 @@ describe('React Spring render-prop components', () => {
 		}
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:25
 	it('does not restart unchanged transitions on parent rerenders', () => {
 		const item = { id: 'first', label: 'First' };
 		const result = mount(TransitionComponentFixture, { items: [item] });

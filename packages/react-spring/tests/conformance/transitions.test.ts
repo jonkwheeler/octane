@@ -5,6 +5,7 @@ import { TransitionFixture } from '../_fixtures/transitions.tsrx';
 
 describe('useTransition', () => {
 	afterEach(() => vi.useRealTimers());
+	// Per packages/core/src/hooks/useTransition.test.tsx:25
 	it('retains keys and removes a settled leaving item', async () => {
 		raf.frameLoop = 'demand';
 		const result = mount(TransitionFixture, {
@@ -43,6 +44,7 @@ describe('useTransition', () => {
 		raf.frameLoop = 'always';
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:311
 	it('holds entering items until exiting items settle', async () => {
 		const result = mount(TransitionFixture, {
 			items: [{ id: 'a', label: 'A' }],
@@ -65,6 +67,7 @@ describe('useTransition', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:400
 	it('applies reverse trail order to leaving transitions', async () => {
 		vi.useFakeTimers();
 		const started: string[] = [];
@@ -95,6 +98,7 @@ describe('useTransition', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:25
 	it('sorts rendered transitions independently from input order', () => {
 		const result = mount(TransitionFixture, {
 			items: [
@@ -111,6 +115,7 @@ describe('useTransition', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:336
 	it('keeps expired=false leaves mounted and honours cancellation and pause', async () => {
 		const starts: unknown[] = [];
 		const result = mount(TransitionFixture, {
@@ -128,6 +133,7 @@ describe('useTransition', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:105
 	it('cancels delayed expiration when the same key re-enters', async () => {
 		vi.useFakeTimers();
 		const item = { id: 'a', label: 'A' };
@@ -144,6 +150,7 @@ describe('useTransition', () => {
 		result.unmount();
 	});
 
+	// Per packages/core/src/hooks/useTransition.test.tsx:400
 	it('reverses item-specific leave start order', async () => {
 		vi.useFakeTimers();
 		const order: string[] = [];

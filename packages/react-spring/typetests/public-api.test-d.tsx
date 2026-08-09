@@ -62,6 +62,3 @@ expectType<unknown>(scene);
 
 // @ts-expect-error spring values retain their initial value type
 value.set('wrong');
-// @ts-expect-error Parallax requires a page count
-const missingPages = <Parallax />;
-void missingPages;

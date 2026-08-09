@@ -2,6 +2,10 @@ import { raf } from '@react-spring/rafz';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Controller, SpringValue } from '../../src/core/index';
 
+// Additional upstream provenance for shared adapted evidence:
+// Per packages/core/src/AnimationConfig.test.ts:6
+// Per packages/core/src/hooks/useSpringValue.test.ts:6
+
 afterEach(() => {
 	raf.frameLoop = 'always';
 	vi.useRealTimers();
@@ -19,6 +23,7 @@ function advance(frames = 20): void {
 }
 
 describe('upstream lifecycle parity', () => {
+	// Per packages/core/src/SpringValue.test.ts:63
 	it('freezes duration progress while paused and resumes the same start', async () => {
 		raf.frameLoop = 'demand';
 		const spring = new SpringValue(0);
@@ -33,6 +38,7 @@ describe('upstream lifecycle parity', () => {
 		expect(await result).toMatchObject({ value: 1, finished: true, cancelled: false });
 	});
 
+	// Per packages/core/src/SpringValue.test.ts:84
 	it('cancels a delayed update without firing lifecycle callbacks', async () => {
 		vi.useFakeTimers();
 		const onStart = vi.fn();
@@ -46,6 +52,7 @@ describe('upstream lifecycle parity', () => {
 		expect(onRest).not.toHaveBeenCalled();
 	});
 
+	// Per packages/core/src/Controller.test.ts:43
 	it('runs an async controller script in sequence', async () => {
 		const controller = new Controller({ from: { x: 0 } });
 		const result = await controller.start({
@@ -58,6 +65,7 @@ describe('upstream lifecycle parity', () => {
 		expect(result).toMatchObject({ value: { x: 2 }, finished: true, cancelled: false });
 	});
 
+	// Per packages/core/src/SpringValue.test.ts:109
 	it('loops while the loop function returns an update', async () => {
 		const spring = new SpringValue(0);
 		let loops = 0;
@@ -71,6 +79,7 @@ describe('upstream lifecycle parity', () => {
 		expect(loops).toBe(2);
 	});
 
+	// Per packages/core/src/SpringValue.test.ts:154
 	it('fires immediate lifecycle callbacks in resolution order', async () => {
 		const calls: string[] = [];
 		const spring = new SpringValue(0);

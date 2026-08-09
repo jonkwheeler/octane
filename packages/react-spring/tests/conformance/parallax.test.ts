@@ -5,6 +5,7 @@ import type { IParallax } from '../../src/parallax.tsrx';
 import { ParallaxFixture } from '../_fixtures/parallax.tsrx';
 
 describe('Parallax', () => {
+	// Per packages/parallax/src/index.tsx:219
 	it('positions normal and sticky layers and exposes imperative scrolling', async () => {
 		const disconnect = vi.fn();
 		vi.stubGlobal(

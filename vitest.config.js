@@ -2181,12 +2181,30 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/react-spring/tests/conformance/advanced-engine.test.ts',
+						'packages/react-spring/tests/conformance/animated.test.ts',
+						'packages/react-spring/tests/conformance/browser-hooks.test.ts',
+						'packages/react-spring/tests/conformance/components.test.ts',
+						'packages/react-spring/tests/conformance/controller.test.ts',
+						'packages/react-spring/tests/conformance/engine.test.ts',
+						'packages/react-spring/tests/conformance/frame-loop.test.ts',
+						'packages/react-spring/tests/conformance/hooks.test.ts',
+						'packages/react-spring/tests/conformance/interpolation.test.ts',
+						'packages/react-spring/tests/conformance/lifecycle.test.ts',
+						'packages/react-spring/tests/conformance/parallax.test.ts',
+						'packages/react-spring/tests/conformance/prerequisite-seams.test.ts',
+						'packages/react-spring/tests/conformance/transitions.test.ts',
+						'packages/react-spring/tests/hydration/**/*.test.ts',
+					],
+				},
 				test: {
 					name: 'react-spring',
 					include: [
 						'packages/react-spring/tests/conformance/**/*.test.ts',
 						'packages/react-spring/tests/hydration/**/*.test.ts',
-						'packages/react-spring/tests/pack/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -2231,6 +2249,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-spring-browser',
 					include: ['packages/react-spring/tests/browser/**/*.test.ts'],
@@ -2238,6 +2257,28 @@ export default defineConfig({
 					globals: false,
 					testTimeout: 60_000,
 					hookTimeout: 60_000,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-spring-differential',
+					include: ['packages/react-spring/tests/differential/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-spring$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-spring/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/react-spring\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-spring/src') + '/$1.ts',
+						},
+					],
 				},
 			},
 			{

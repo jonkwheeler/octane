@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:react-spring-adapted",
+      "testName": "adapted Octane declaration probes",
+      "fullName": "adapted Octane declaration probes"
+    }
+  ]
+}

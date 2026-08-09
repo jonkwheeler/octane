@@ -1,60 +1,28 @@
 import assert from 'node:assert/strict';
-import {
-	cpSync,
-	existsSync,
-	mkdtempSync,
-	mkdirSync,
-	readFileSync,
-	rmSync,
-	writeFileSync,
-} from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import test from 'node:test';
 import { verifyReactSpringUpstream } from './react-spring-upstream-lib.mjs';
 
-const source = new URL('../../packages/react-spring/upstream', import.meta.url);
-
 function fixture() {
 	const root = mkdtempSync(join(tmpdir(), 'react-spring-upstream-'));
-	const target = join(root, 'packages/react-spring/upstream');
-	cpSync(source, target, { recursive: true });
-	mkdirSync(join(root, 'packages/react-spring/audit'), { recursive: true });
 	cpSync(
-		new URL('../../packages/react-spring/audit/upstream-test-dispositions.json', import.meta.url),
-		join(root, 'packages/react-spring/audit/upstream-test-dispositions.json'),
-	);
-	cpSync(
-		new URL('../../packages/react-spring/src', import.meta.url),
-		join(root, 'packages/react-spring/src'),
+		new URL('../../packages/react-spring', import.meta.url),
+		join(root, 'packages/react-spring'),
 		{
 			recursive: true,
 		},
 	);
-	for (const disposition of Object.values(
-		JSON.parse(
-			readFileSync(
-				new URL(
-					'../../packages/react-spring/audit/upstream-test-dispositions.json',
-					import.meta.url,
-				),
-				'utf8',
-			),
-		),
-	)) {
-		for (const evidence of disposition.evidence) {
-			const path = join(root, 'packages/react-spring', evidence);
-			mkdirSync(dirname(path), { recursive: true });
-			if (!existsSync(path)) writeFileSync(path, 'fixture\n');
-		}
-	}
-	return { root, target };
+	return { root, target: join(root, 'packages/react-spring/upstream') };
 }
 
-test('accepts the pinned byte-exact upstream tree', () => {
+test('accepts the pinned byte-exact upstream tree with case-level evidence', () => {
 	const { root } = fixture();
 	try {
-		assert.equal(verifyReactSpringUpstream(root).files, 167);
+		const result = verifyReactSpringUpstream(root);
+		assert.equal(result.files, 167);
+		assert.ok(result.adaptedCases > 0);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}
@@ -88,6 +56,46 @@ test('rejects an unclassified upstream test file', () => {
 		delete dispositions['targets/web/src/animated.test.tsx'];
 		writeFileSync(path, `${JSON.stringify(dispositions, null, 2)}\n`);
 		assert.throws(() => verifyReactSpringUpstream(root), /disposition inventory drifted/);
+	} finally {
+		rmSync(root, { recursive: true, force: true });
+	}
+});
+
+test('rejects an empty adapted evidence file', () => {
+	const { root } = fixture();
+	try {
+		writeFileSync(join(root, 'packages/react-spring/tests/conformance/engine.test.ts'), '');
+		assert.throws(() => verifyReactSpringUpstream(root), /adapted evidence file is empty/);
+	} finally {
+		rmSync(root, { recursive: true, force: true });
+	}
+});
+
+test('rejects adapted evidence without Per provenance', () => {
+	const { root } = fixture();
+	try {
+		const path = join(root, 'packages/react-spring/tests/conformance/engine.test.ts');
+		const sourceText = readFileSync(path, 'utf8').replaceAll(/^\s*\/\/ Per .+\n/gm, '');
+		writeFileSync(path, sourceText);
+		assert.throws(() => verifyReactSpringUpstream(root), /lacks \/\/ Per provenance/);
+	} finally {
+		rmSync(root, { recursive: true, force: true });
+	}
+});
+
+test('rejects adapted evidence that drops an inventoried case title', () => {
+	const { root } = fixture();
+	try {
+		const path = join(root, 'packages/react-spring/tests/conformance/engine.test.ts');
+		const sourceText = readFileSync(path, 'utf8').replace(
+			'settles a loop without a usable from value instead of recursing',
+			'renamed case that is no longer inventoried',
+		);
+		writeFileSync(path, sourceText);
+		assert.throws(
+			() => verifyReactSpringUpstream(root),
+			/inventoried case is missing from adapted evidence source/,
+		);
 	} finally {
 		rmSync(root, { recursive: true, force: true });
 	}

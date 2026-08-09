@@ -19,12 +19,14 @@ function advanceUntilIdle(limit = 240): void {
 }
 
 describe('React Spring engine', () => {
+	// Per packages/core/src/SpringValue.test.ts:15
 	it('settles a loop without a usable from value instead of recursing', async () => {
 		const value = new SpringValue(1);
 		await expect(value.start({ to: 1, loop: true, immediate: true })).resolves.toMatchObject({
 			finished: true,
 		});
 	});
+	// Per packages/core/src/SpringValue.test.ts:25
 	it('advances a spring and resolves its public result', async () => {
 		raf.frameLoop = 'demand';
 		const value = new SpringValue(0);
@@ -40,6 +42,7 @@ describe('React Spring engine', () => {
 		expect(value.get()).toBe(100);
 	});
 
+	// Per packages/core/src/SpringValue.test.ts:39
 	it('cancels an active animation with a cancelled result', async () => {
 		raf.frameLoop = 'demand';
 		const value = new SpringValue(0);
@@ -51,6 +54,7 @@ describe('React Spring engine', () => {
 		expect(value.idle).toBe(true);
 	});
 
+	// Per packages/core/src/Controller.test.ts:8
 	it('coordinates keyed values through Controller', async () => {
 		raf.frameLoop = 'demand';
 		const controller = new Controller({ from: { x: 0, opacity: 0 } });
@@ -62,6 +66,7 @@ describe('React Spring engine', () => {
 		expect(controller.get()).toEqual({ x: 20, opacity: 1 });
 	});
 
+	// Per packages/core/src/Controller.test.ts:23
 	it('cancels a delayed controller start before it launches springs', async () => {
 		vi.useFakeTimers();
 		const controller = new Controller({ from: { x: 0 } });
@@ -74,6 +79,7 @@ describe('React Spring engine', () => {
 		expect(controller.get()).toEqual({ x: 0 });
 	});
 
+	// Per packages/core/src/Interpolation.test.ts:6
 	it('derives interpolated values from fluid parents', () => {
 		const x = new SpringValue(0);
 		const doubled = to(x, (value) => value * 2);

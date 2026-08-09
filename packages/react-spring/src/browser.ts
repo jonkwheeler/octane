@@ -155,9 +155,7 @@ export interface InViewOptions extends Omit<IntersectionObserverInit, 'root' | '
 	amount?: 'any' | 'all' | number | number[];
 }
 
-function createInViewRef(
-	setTarget: (target: Element | null) => void,
-): ElementRef<Element> {
+function createInViewRef(setTarget: (target: Element | null) => void): ElementRef<Element> {
 	const state = { value: null as Element | null };
 	return {
 		get current() {

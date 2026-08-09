@@ -1,0 +1,197 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/pmndrs/react-spring.git",
+    "version": "10.1.2",
+    "commit": "59b1e5306402d3039120e2da464b66e10b1a1aa1",
+    "sourceRoot": "packages/core/src",
+    "testRoot": "packages/core/src",
+    "license": "MIT",
+    "integrity": "sha256:10e6fb1c530efe9409d9f3184488bc7d57bcbae3c92ee97553859e4cd0eda993",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "insufficient"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/react-spring/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/react-spring/tests/conformance", "packages/react-spring/tests/hydration"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": ["/tests/conformance/exports\\.test\\.ts$"]
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 58,
+    "uniqueIdentities": 58,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "4085ba484ea24451f3e5a2ed572cf8db6eb70628785898c079122b51eec160f3"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-spring-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-spring",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs adapted Octane conformance and hydration evidence with exact inventoried identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-spring/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-spring/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "8952d00f37717d8971e5a7de22ffebc05ba0058201c677863ebe414cb3af38fe"
+        }
+      ]
+    },
+    {
+      "id": "react-spring-browser",
+      "type": "browser",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-spring-browser",
+      "notes": "Live playground journeys through Playwright Chromium.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-spring/audit/browser-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-spring/audit/browser-runtime.json",
+          "role": "support",
+          "sha256": "dd69258d4308acde0160c55bf6be3806c6645f42ff8de47e2e98fa5814f02589"
+        }
+      ]
+    },
+    {
+      "id": "react-spring-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-spring-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Same SpringValue settle path through Octane and published @react-spring/web.",
+      "files": [
+        {
+          "path": "packages/react-spring/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "88551a9a650b319efc155db502d2f224e7f4647ee88f354109a9a50ccebc360d",
+          "cases": [
+            {
+              "id": "differential:spring-value-settle",
+              "testName": "SpringValue: settles an identical numeric goal to the same final value",
+              "fullName": "differential: @octanejs/react-spring vs @react-spring/web SpringValue: settles an identical numeric goal to the same final value"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-spring-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-spring-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes against @react-spring/web 10.1.2.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-spring/audit/type-probes/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-spring/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "3fa1487db3fd1002e77bcbf09ce2b9b56aefa73aeacb83e3364384478cbd08af",
+          "cases": [
+            {
+              "id": "types:react-spring-pristine",
+              "testName": "pinned React declaration probes",
+              "fullName": "pinned React declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-spring/audit/type-probes/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "db7e5e15ff3aaf5b17c65bf2c077146476806669228dcd8edc2efcb1fedd0376"
+        },
+        {
+          "path": "packages/react-spring/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+        },
+        {
+          "path": "packages/react-spring/audit/type-parity.json",
+          "role": "support",
+          "sha256": "458a947e90cc72daedbe4dd2b6feca8a0ac0b3799d5c263e7dd2c1c5ebc6ebcd"
+        }
+      ]
+    },
+    {
+      "id": "react-spring-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-spring-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Octane public type probes after ReactNode→OctaneNode adaptation.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-spring/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-spring/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "faa3f7fa861af5a471137415d9038aa27ffa15f4f37f895ab7a4d34d05d55907",
+          "cases": [
+            {
+              "id": "types:react-spring-adapted",
+              "testName": "adapted Octane declaration probes",
+              "fullName": "adapted Octane declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-spring/typetests/public-api.test-d.tsx",
+          "role": "support",
+          "sha256": "50e65632d134b4499233655374a3c4cc0eed72c666cf7d5ac95b96ae15f70e93"
+        },
+        {
+          "path": "packages/react-spring/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "6c7e9b2f29818fc3798a981700ffcc61ef72462a59903b7a409f5a4894d5b2bc"
+        },
+        {
+          "path": "packages/react-spring/audit/type-parity.json",
+          "role": "support",
+          "sha256": "458a947e90cc72daedbe4dd2b6feca8a0ac0b3799d5c263e7dd2c1c5ebc6ebcd"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

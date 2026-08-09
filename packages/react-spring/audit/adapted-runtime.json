@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "project": "react-spring",
+  "roots": ["packages/react-spring/tests/conformance", "packages/react-spring/tests/hydration"],
+  "files": [
+    "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+    "packages/react-spring/tests/conformance/animated.test.ts",
+    "packages/react-spring/tests/conformance/browser-hooks.test.ts",
+    "packages/react-spring/tests/conformance/components.test.ts",
+    "packages/react-spring/tests/conformance/controller.test.ts",
+    "packages/react-spring/tests/conformance/engine.test.ts",
+    "packages/react-spring/tests/conformance/frame-loop.test.ts",
+    "packages/react-spring/tests/conformance/hooks.test.ts",
+    "packages/react-spring/tests/conformance/interpolation.test.ts",
+    "packages/react-spring/tests/conformance/lifecycle.test.ts",
+    "packages/react-spring/tests/conformance/parallax.test.ts",
+    "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+    "packages/react-spring/tests/conformance/transitions.test.ts",
+    "packages/react-spring/tests/hydration/animated-host.test.ts",
+    "packages/react-spring/tests/hydration/parallax.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:1983abbec6f8374b",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity animates shaped value \"#ff0000\""
+    },
+    {
+      "id": "runtime:420801b4cac96100",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity animates shaped value \"10px\""
+    },
+    {
+      "id": "runtime:8fe9bb268cfe3837",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity animates shaped value [0,10]"
+    },
+    {
+      "id": "runtime:733e7889d57419af",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity applies bounce at overshoot instead of escaping the goal"
+    },
+    {
+      "id": "runtime:4c62c79c4caacabf",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity inherits explicit controller defaults across replacement updates"
+    },
+    {
+      "id": "runtime:ef738969d1d10828",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity supports frequency physics, frame rounding, and decay"
+    },
+    {
+      "id": "runtime:b965a3fcc44950a8",
+      "file": "packages/react-spring/tests/conformance/advanced-engine.test.ts",
+      "fullName": "advanced upstream engine parity tracks a dynamic SpringValue target while animating"
+    },
+    {
+      "id": "runtime:8a07fbd0ec172b0a",
+      "file": "packages/react-spring/tests/conformance/animated.test.ts",
+      "fullName": "upstream animated graph parity reports whether an animated leaf actually changed"
+    },
+    {
+      "id": "runtime:5db79bef71f77819",
+      "file": "packages/react-spring/tests/conformance/animated.test.ts",
+      "fullName": "upstream animated graph parity retains leaf identity when array values change"
+    },
+    {
+      "id": "runtime:75e6c446ab7b1ea6",
+      "file": "packages/react-spring/tests/conformance/browser-hooks.test.ts",
+      "fullName": "React Spring browser hooks reports scroll, resize, intersection, and reduced motion and cleans up"
+    },
+    {
+      "id": "runtime:ba28e8e454807ecb",
+      "file": "packages/react-spring/tests/conformance/browser-hooks.test.ts",
+      "fullName": "React Spring browser hooks stops resize springs when ResizeObserver is unavailable"
+    },
+    {
+      "id": "runtime:da4b714bbeb8ad03",
+      "file": "packages/react-spring/tests/conformance/components.test.ts",
+      "fullName": "React Spring render-prop components does not restart unchanged transitions on parent rerenders"
+    },
+    {
+      "id": "runtime:0128f6fdee607200",
+      "file": "packages/react-spring/tests/conformance/components.test.ts",
+      "fullName": "React Spring render-prop components preserves keyed render-prop children when items reorder"
+    },
+    {
+      "id": "runtime:9c5617ca21f88db1",
+      "file": "packages/react-spring/tests/conformance/components.test.ts",
+      "fullName": "React Spring render-prop components renders Spring children with animated values"
+    },
+    {
+      "id": "runtime:fe19544dd3fdf96b",
+      "file": "packages/react-spring/tests/conformance/controller.test.ts",
+      "fullName": "upstream controller configuration parity derives tension and friction from frequency and damping"
+    },
+    {
+      "id": "runtime:616aefb597d3804f",
+      "file": "packages/react-spring/tests/conformance/controller.test.ts",
+      "fullName": "upstream controller configuration parity keeps decay and duration mutually exclusive"
+    },
+    {
+      "id": "runtime:ecd4113a7e915418",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine advances a spring and resolves its public result"
+    },
+    {
+      "id": "runtime:2c279fc13276eeed",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine cancels a delayed controller start before it launches springs"
+    },
+    {
+      "id": "runtime:96274140b78c05b7",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine cancels an active animation with a cancelled result"
+    },
+    {
+      "id": "runtime:3df77b519d63e9b3",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine coordinates keyed values through Controller"
+    },
+    {
+      "id": "runtime:b5cd930f9af24134",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine derives interpolated values from fluid parents"
+    },
+    {
+      "id": "runtime:7b326fbb1597d0be",
+      "file": "packages/react-spring/tests/conformance/engine.test.ts",
+      "fullName": "React Spring engine settles a loop without a usable from value instead of recursing"
+    },
+    {
+      "id": "runtime:6f732ede512cbf91",
+      "file": "packages/react-spring/tests/conformance/frame-loop.test.ts",
+      "fullName": "upstream frame loop parity advances animations in ascending priority and retains active work"
+    },
+    {
+      "id": "runtime:82cfde1ac7ecc555",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks adds trail staggering to the caller delay"
+    },
+    {
+      "id": "runtime:713f9d638f5c4b35",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks applies SpringContext changes when useSpring has explicit deps"
+    },
+    {
+      "id": "runtime:2b067a79e00af96f",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks applies SpringContext values and resumes after context pause"
+    },
+    {
+      "id": "runtime:7088c4aad20c08f3",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks does not cancel object-form springs on parent rerenders"
+    },
+    {
+      "id": "runtime:e7e00fff52cfd944",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks does not cancel object-form trails on unchanged parent rerenders"
+    },
+    {
+      "id": "runtime:395404eee063861b",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks keeps spring values and the imperative API stable across updates"
+    },
+    {
+      "id": "runtime:0245d08cfa590170",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks merges nested SpringContext values while allowing replacement"
+    },
+    {
+      "id": "runtime:7a745a9c33d16973",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks restarts object-form trails when props change"
+    },
+    {
+      "id": "runtime:44f066c6f2923690",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks reuses a spring cohort, only evaluates changed deps, and resizes the ref"
+    },
+    {
+      "id": "runtime:c969f126bc8f9cd8",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks starts useChain refs at explicit timesteps and clears pending starts on cleanup"
+    },
+    {
+      "id": "runtime:591ff625b72799cb",
+      "file": "packages/react-spring/tests/conformance/hooks.test.ts",
+      "fullName": "React Spring hooks starts useChain refs sequentially when timesteps are omitted"
+    },
+    {
+      "id": "runtime:e5a5f13818166710",
+      "file": "packages/react-spring/tests/conformance/interpolation.test.ts",
+      "fullName": "upstream interpolation parity interpolates compound strings and preserves exact keyframes"
+    },
+    {
+      "id": "runtime:7ffb93f4b39e3ffb",
+      "file": "packages/react-spring/tests/conformance/interpolation.test.ts",
+      "fullName": "upstream interpolation parity rejects output strings with mismatched numeric arity"
+    },
+    {
+      "id": "runtime:6824990b0d915a35",
+      "file": "packages/react-spring/tests/conformance/interpolation.test.ts",
+      "fullName": "upstream interpolation parity selects ranges and applies per-side extrapolation"
+    },
+    {
+      "id": "runtime:a14b87477427cef1",
+      "file": "packages/react-spring/tests/conformance/lifecycle.test.ts",
+      "fullName": "upstream lifecycle parity cancels a delayed update without firing lifecycle callbacks"
+    },
+    {
+      "id": "runtime:1a5ccd102a09394a",
+      "file": "packages/react-spring/tests/conformance/lifecycle.test.ts",
+      "fullName": "upstream lifecycle parity fires immediate lifecycle callbacks in resolution order"
+    },
+    {
+      "id": "runtime:76aec275d4052c7a",
+      "file": "packages/react-spring/tests/conformance/lifecycle.test.ts",
+      "fullName": "upstream lifecycle parity freezes duration progress while paused and resumes the same start"
+    },
+    {
+      "id": "runtime:86f044f848d72bf1",
+      "file": "packages/react-spring/tests/conformance/lifecycle.test.ts",
+      "fullName": "upstream lifecycle parity loops while the loop function returns an update"
+    },
+    {
+      "id": "runtime:c151e93f6e65553e",
+      "file": "packages/react-spring/tests/conformance/lifecycle.test.ts",
+      "fullName": "upstream lifecycle parity runs an async controller script in sequence"
+    },
+    {
+      "id": "runtime:c7ecd668105b2a18",
+      "file": "packages/react-spring/tests/conformance/parallax.test.ts",
+      "fullName": "Parallax positions normal and sticky layers and exposes imperative scrolling"
+    },
+    {
+      "id": "runtime:ea49a386467fc5f6",
+      "file": "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+      "fullName": "React Spring prerequisite seams applies related fluid values coherently without rerendering the component"
+    },
+    {
+      "id": "runtime:ecf2c8ad6b41b67b",
+      "file": "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+      "fullName": "React Spring prerequisite seams cancels queued host writes during unmount"
+    },
+    {
+      "id": "runtime:c714b164793fffa9",
+      "file": "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+      "fullName": "React Spring prerequisite seams imperatively updates ref-forwarding custom components and safely rerenders opaque ones"
+    },
+    {
+      "id": "runtime:a014bdcba549f5a6",
+      "file": "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+      "fullName": "React Spring prerequisite seams mirrors the web host surface and applies one latest coherent snapshot"
+    },
+    {
+      "id": "runtime:f697152eac666a08",
+      "file": "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+      "fullName": "React Spring prerequisite seams replaces fluid dependencies and refs without retaining stale observers"
+    },
+    {
+      "id": "runtime:46875190aad27305",
+      "file": "packages/react-spring/tests/conformance/prerequisite-seams.test.ts",
+      "fullName": "React Spring prerequisite seams updates static children without replacing the animated host"
+    },
+    {
+      "id": "runtime:553a8b8f786e1720",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition applies reverse trail order to leaving transitions"
+    },
+    {
+      "id": "runtime:1c8afeb484ad3389",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition cancels delayed expiration when the same key re-enters"
+    },
+    {
+      "id": "runtime:6e440dbf7c0fec93",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition holds entering items until exiting items settle"
+    },
+    {
+      "id": "runtime:9616e5c0ebb93818",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition keeps expired=false leaves mounted and honours cancellation and pause"
+    },
+    {
+      "id": "runtime:c3f86b380ab0ef96",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition retains keys and removes a settled leaving item"
+    },
+    {
+      "id": "runtime:56201bc85e5bd6f6",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition reverses item-specific leave start order"
+    },
+    {
+      "id": "runtime:49f6ab6076de8a63",
+      "file": "packages/react-spring/tests/conformance/transitions.test.ts",
+      "fullName": "useTransition sorts rendered transitions independently from input order"
+    },
+    {
+      "id": "runtime:39207570112a3bac",
+      "file": "packages/react-spring/tests/hydration/animated-host.test.ts",
+      "fullName": "React Spring animated host hydration serializes initial values and adopts the existing host before client animation"
+    },
+    {
+      "id": "runtime:2d56a7f00e1babf9",
+      "file": "packages/react-spring/tests/hydration/parallax.test.ts",
+      "fullName": "React Spring Parallax hydration adopts the server structure before client measurement"
+    }
+  ]
+}

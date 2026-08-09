@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { raf } from '@react-spring/rafz';
 import { mount, nextPaint } from '../../../motion/tests/_helpers';
 import {
+	// Additional upstream provenance for shared adapted evidence:
+	// Per packages/animated/src/createHost.test.ts:11
+
 	AnimatedCustomFixture,
 	AnimatedHostFixture,
 	AnimatedHostSurfaceFixture,
@@ -9,6 +12,7 @@ import {
 import { SpringValue } from '../../src/index';
 
 describe('React Spring prerequisite seams', () => {
+	// Per targets/web/src/animated.test.tsx:50
 	it('applies related fluid values coherently without rerendering the component', async () => {
 		let values: { x: { set(value: number): void }; y: { set(value: number): void } } | undefined;
 		const rendered = { count: 0 };
@@ -34,6 +38,7 @@ describe('React Spring prerequisite seams', () => {
 		raf.frameLoop = 'always';
 	});
 
+	// Per targets/web/src/animated.test.tsx:247
 	it('cancels queued host writes during unmount', async () => {
 		let values: { x: { set(value: number): void } } | undefined;
 		const result = mount(AnimatedHostFixture, {
@@ -52,6 +57,7 @@ describe('React Spring prerequisite seams', () => {
 		raf.frameLoop = 'always';
 	});
 
+	// Per targets/web/src/animated.test.tsx:20
 	it('mirrors the web host surface and applies one latest coherent snapshot', async () => {
 		const values = {
 			width: new SpringValue(10),
@@ -107,6 +113,7 @@ describe('React Spring prerequisite seams', () => {
 		raf.frameLoop = 'always';
 	});
 
+	// Per targets/web/src/animated.test.tsx:153
 	it('replaces fluid dependencies and refs without retaining stale observers', async () => {
 		const oldWidth = new SpringValue(10);
 		const nextWidth = new SpringValue(20);
@@ -152,6 +159,7 @@ describe('React Spring prerequisite seams', () => {
 		raf.frameLoop = 'always';
 	});
 
+	// Per targets/web/src/animated.test.tsx:291
 	it('updates static children without replacing the animated host', async () => {
 		const base = {
 			width: 10,
@@ -177,6 +185,7 @@ describe('React Spring prerequisite seams', () => {
 		result.unmount();
 	});
 
+	// Per targets/web/src/animated.test.tsx:29
 	it('imperatively updates ref-forwarding custom components and safely rerenders opaque ones', async () => {
 		const width = new SpringValue(5);
 		const value = new SpringValue('a');
