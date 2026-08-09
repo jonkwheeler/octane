@@ -85,7 +85,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/zag` | [`packages/zag`](../packages/zag) | framework binding | `0.0.1` | 1 |
 | `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.31` | 5 |
 | `create-octane` | [`packages/create-octane`](../packages/create-octane) | project scaffolder | `0.0.7` | 1 |
-| `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.32` | 21 |
+| `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.32` | 22 |
 
 ## Private packages
 
