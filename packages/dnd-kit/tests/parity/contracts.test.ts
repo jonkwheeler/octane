@@ -10,7 +10,6 @@ const manifest = JSON.parse(
 const status = JSON.parse(readFileSync(resolve(root, 'packages/dnd-kit/status.json'), 'utf8'));
 
 describe('@octanejs/dnd-kit parity audit contracts', () => {
-	// @parity-case adapted:dnd-kit-upstream-ledger
 	it('authenticates the pinned upstream source and absent upstream suites', () => {
 		expect(manifest.provenance).toMatchObject({
 			version: '0.5.0',
@@ -25,8 +24,6 @@ describe('@octanejs/dnd-kit parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	// OCTANE DIVERGENCE[renderer-owned-drag-adaptations][adapted:dnd-kit-renderer-adaptations]
-	// @parity-case adapted:dnd-kit-renderer-adaptations
 	it('keeps renderer-owned drag adaptations explicit', () => {
 		expect(status.divergences).toHaveLength(2);
 		expect(status.divergences.join(' ')).toContain('OptimisticSortingPlugin');

@@ -2220,7 +2220,6 @@ export default defineConfig({
 					environment: 'node',
 					globals: false,
 				},
-				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {
@@ -2236,6 +2235,7 @@ export default defineConfig({
 					setupFiles: ['packages/dnd-kit/tests/_setup.ts'],
 					globals: false,
 				},
+				testExecution: { group: 'react-parity' },
 				plugins: [octane()],
 				resolve: {
 					alias: [

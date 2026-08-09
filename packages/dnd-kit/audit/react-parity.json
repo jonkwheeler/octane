@@ -17,22 +17,14 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/dnd-kit/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/dnd-kit/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/dnd-kit/tests/parity"
-      ],
-      "include": [
-        "contracts\\.test\\.ts$"
-      ],
-      "exclude": []
+      "roots": ["packages/dnd-kit/tests/parity"],
+      "include": ["contracts\\.test\\.ts$"],
+      "exclude": ["contracts\\.test\\.ts$"]
     }
   },
   "adaptedRuntimeSummary": {
@@ -111,52 +103,10 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "34d01657e2254c5543d871ffe10aa603a8e3c9ed2250a2ee5fda2c6b8ae5f073"
-        }
-      ]
-    },
-    {
-      "id": "dnd-kit-parity-audit-contracts",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "dnd-kit-parity-audit",
-      "notes": "Authenticates the upstream boundary and structured renderer adaptations without counting them as behavioral React parity.",
-      "files": [
-        {
-          "path": "packages/dnd-kit/tests/parity/contracts.test.ts",
-          "role": "test",
-          "sha256": "408e1a28cb20355c92dc9d60dd0cc34bd42e27c8858ff71dce67b8ba4e1a5f2d",
-          "cases": [
-            {
-              "id": "adapted:dnd-kit-upstream-ledger",
-              "testName": "authenticates the pinned upstream source and absent upstream suites",
-              "fullName": "@octanejs/dnd-kit parity audit contracts authenticates the pinned upstream source and absent upstream suites"
-            },
-            {
-              "id": "adapted:dnd-kit-renderer-adaptations",
-              "testName": "keeps renderer-owned drag adaptations explicit",
-              "fullName": "@octanejs/dnd-kit parity audit contracts keeps renderer-owned drag adaptations explicit"
-            }
-          ]
+          "sha256": "7d47a99fe9cb0fc2db3f58f105b500025995f08b5c71a13ded1841d9d73e6419"
         }
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "renderer-owned-drag-adaptations",
-      "caseIds": [
-        "adapted:dnd-kit-renderer-adaptations"
-      ],
-      "upstreamResult": "React accepts ordinary element children in DragOverlay and enables optimistic DOM sorting by default.",
-      "octaneResult": "The binding distinguishes compiled child blocks from render props and omits the default optimistic sorting plugin.",
-      "rationale": "Moving a host before application state commits can split an Octane renderer-owned keyed range.",
-      "classification": "rendering",
-      "consumerImpact": "Optimistic pre-commit sortable movement must be opted into explicitly, and overlay child plumbing follows Octane compilation semantics.",
-      "migrationGuidance": "Commit sortable order in application state and pass explicit plugins only when their DOM ownership is safe.",
-      "owner": "@octanejs/dnd-kit",
-      "reviewCondition": "Review if Octane supports safe external movement of renderer-owned keyed ranges."
-    }
-  ]
+  "divergences": []
 }
