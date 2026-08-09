@@ -2104,15 +2104,8 @@ export default defineConfig({
 				},
 			},
 			{
-				// Mixed ownership: only the dedicated adapted-octane divergence files
-				// are parity-owned. Framework-contract conformance stays ordinary.
-				testExecution: {
-					group: 'react-parity',
-					include: [
-						'packages/tanstack-router/tests/conformance/parity-link-divergences.test.ts',
-						'packages/tanstack-router/tests/conformance/divergences.test.ts',
-					],
-				},
+				// Ordinary package shards: conformance, divergences, and harness negatives.
+				// Only the differential project is react-parity-owned.
 				test: {
 					name: 'tanstack-router',
 					include: ['packages/tanstack-router/tests/**/*.test.ts'],
@@ -2164,9 +2157,7 @@ export default defineConfig({
 				},
 			},
 			{
-				// Node-environment SSR contract; kept out of the jsdom project so the
-				// adapted-ssr lane proves rendering without browser globals.
-				testExecution: { group: 'react-parity' },
+				// Octane-only Node SSR framework contract; not a React SSR oracle.
 				test: {
 					name: 'tanstack-router-ssr',
 					include: ['packages/tanstack-router/tests/ssr/**/*.test.ts'],

@@ -9,9 +9,14 @@
 - License: MIT
 - npm tarball SHA-256: `921d54033a68692c3528658b6300573743e6a09bb3c316e14cdc513b6bee6c31`
 
-The tagged repository contains runtime and compile-time suites. The published
-npm artifact contains source and declarations but omits those tests, so
-provenance remains recorded-unverified. Required evidence executes the exact
-shared React/Octane navigation fixture, documented Octane adaptations, the
-retained full-document and streaming SSR contract, and the repository-authored
-public type suite.
+The tagged repository contains runtime and compile-time suites. The published npm
+artifact omits those tests; that does not waive fetching the canonical tag for
+parity provenance. Until pristine-upstream and one-for-one adapted suite lanes
+are fetched from that tag and registered, `provenance.verification` stays
+`recorded-unverified` and the generic React parity job only validates this
+manifest.
+
+Current executable evidence on this branch is the repo-authored differential
+lane (`tanstack-router-differential`) plus the repository-authored adapted type
+suite. Octane-only divergence and SSR framework-contract tests remain in the
+ordinary shards and are not counted as adapted React-parity evidence.

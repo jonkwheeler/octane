@@ -12,7 +12,7 @@ async function flush() {
 
 // Documented Link divergences selected by the adapted-octane parity lanes.
 describe('@octanejs/tanstack-router — Link', () => {
-	// OCTANE DIVERGENCE[tanstack-router-ref-prop][adapted:tanstack-router-ref-prop]
+	// Octane framework contract: plain ref prop (no forwardRef).
 	// @parity-case adapted:tanstack-router-ref-prop
 	it('passes the custom createLink anchor through the plain ref prop', async () => {
 		resetLinkEvidence();
@@ -24,7 +24,7 @@ describe('@octanejs/tanstack-router — Link', () => {
 		r.unmount();
 	});
 
-	// OCTANE DIVERGENCE[tanstack-router-native-events][adapted:tanstack-router-native-events]
+	// Octane framework contract: native MouseEvent link callbacks.
 	// @parity-case adapted:tanstack-router-native-events
 	it('passes a native MouseEvent to Link callbacks', async () => {
 		resetLinkEvidence();

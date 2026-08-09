@@ -13,9 +13,8 @@
     },
     {
       "path": "packages/tanstack-router/tests/conformance/divergences.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-router-separate-devtools",
-      "reason": "Authenticates the documented separate devtools distribution."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates the documented separate devtools distribution as an Octane framework contract; not same-scenario React-parity evidence."
     },
     {
       "path": "packages/tanstack-router/tests/conformance/features.test.ts",
@@ -54,9 +53,8 @@
     },
     {
       "path": "packages/tanstack-router/tests/conformance/parity-link-divergences.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceIds": ["tanstack-router-ref-prop", "tanstack-router-native-events"],
-      "reason": "Authenticates plain ref props and native link callback events."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates plain ref props and native link callback events as an Octane framework contract; not same-scenario React-parity evidence."
     },
     {
       "path": "packages/tanstack-router/tests/conformance/parity.test.ts",
