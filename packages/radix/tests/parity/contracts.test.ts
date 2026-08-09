@@ -8,6 +8,9 @@ const manifest = JSON.parse(
 	readFileSync(resolve(root, 'packages/radix/audit/react-parity.json'), 'utf8'),
 );
 const status = JSON.parse(readFileSync(resolve(root, 'packages/radix/status.json'), 'utf8'));
+const crosswalk = JSON.parse(
+	readFileSync(resolve(root, 'packages/radix/audit/export-crosswalk.json'), 'utf8'),
+);
 
 describe('@octanejs/radix parity audit contracts', () => {
 	// @parity-case adapted:radix-upstream-ledger
@@ -17,12 +20,31 @@ describe('@octanejs/radix parity audit contracts', () => {
 			commit: 'eb8b851619a655e278c819b959be0d3924b0ada8',
 			verification: 'recorded-unverified',
 		});
+		expect(manifest.upstreamSuites).toMatchObject({
+			runtime: 'present',
+			types: 'present',
+		});
 		expect(() =>
 			execFileSync(process.execPath, ['packages/radix/scripts/check-upstream-ledger.mjs'], {
 				cwd: root,
 				stdio: 'pipe',
 			}),
 		).not.toThrow();
+	});
+
+	// @parity-case adapted:radix-export-crosswalk
+	it('crosswalks every upstream root export to an Octane mapping', () => {
+		expect(crosswalk.exports.length).toBeGreaterThan(0);
+		expect(
+			crosswalk.exports.some(function (row) {
+				return row.upstream === 'unstable_OneTimePasswordField';
+			}),
+		).toBe(true);
+		expect(
+			crosswalk.exports.some(function (row) {
+				return row.upstream === 'unstable_PasswordToggleField';
+			}),
+		).toBe(true);
 	});
 
 	// OCTANE DIVERGENCE[slot-descriptor-adaptation][adapted:radix-slot-descriptors]

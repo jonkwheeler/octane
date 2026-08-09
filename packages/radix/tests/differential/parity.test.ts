@@ -18,10 +18,18 @@ const CACHE = resolve(__dirname, '.react-cache');
 // Let queued `requestAnimationFrame` callbacks fire on BOTH sides before interacting.
 // Radix's Collapsible content arms a mount-time rAF that disables its "block the mount
 // animation" guard; in a real browser it has long fired before any user click, but under
-// jsdom + act() the React side's rAF stays queued unless real timers get a turn — leaving
+// jsdom + act() the React side's rAF stays queued unless the frame callbacks run — leaving
 // the two sides in different guard states (a test-environment artifact, not a renderer
-// divergence).
-const settleRaf = (): Promise<void> => new Promise((res) => setTimeout(res, 40));
+// divergence). Drive the rAF queue explicitly instead of a wall-clock `setTimeout`.
+function settleRaf(): Promise<void> {
+	return new Promise(function (resolve) {
+		requestAnimationFrame(function () {
+			requestAnimationFrame(function () {
+				resolve();
+			});
+		});
+	});
+}
 
 // Real Radix's useSize constructs ResizeObserver unguarded (jsdom has none) — the form
 // controls' bubble inputs and the slider thumb hit it on the React side. A no-op stub

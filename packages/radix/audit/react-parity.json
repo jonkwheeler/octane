@@ -13,7 +13,7 @@
   },
   "upstreamSuites": {
     "runtime": "present",
-    "types": "absent"
+    "types": "present"
   },
   "adaptedRoots": {
     "source": {
@@ -65,7 +65,7 @@
         {
           "path": "packages/radix/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "ad898ce8ded9bdb36a51758bd8009e5e178ab2ea8faea702c2da2915f72cec5c",
+          "sha256": "eca6b7710c3e3f48764e923c8f9e99239a320ac64482ffa447223aaabdedfdd6",
           "cases": [
             {
               "id": "differential:radix-separator",
@@ -172,12 +172,12 @@
         {
           "path": "packages/radix/audit/test-classifications.json",
           "role": "support",
-          "sha256": "9a1b8ff5132abcbb4f30b3e7adbe15fee32f6431a7fe7ca13095403ac6c35cf6"
+          "sha256": "fd2595b3045800bf93141f4413e39ebfb33da6eda6dd7d0baf4b27bd404ba64b"
         },
         {
           "path": "packages/radix/scripts/check-upstream-ledger.mjs",
           "role": "support",
-          "sha256": "af1e1f458e9fa41f1e7a9244d2b919065b141ce8ac81e37eda6982109550d16c"
+          "sha256": "fd69d907aa63cf1a35aad2c8a51d17155fee2fce61cc21832cc53eb649704c67"
         },
         {
           "path": "scripts/react-parity/radix-controls.test.mjs",
@@ -187,7 +187,12 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "426dbaf28f499efabeb75aa3d8ae7f1f5cd5aafc3c90fb1161b5d2b7cbb3f81d"
+          "sha256": "75cab9b80e3baf420392e89f1bef1e54f0c75ef33bde76009b3ad9ccc2401865"
+        },
+        {
+          "path": "packages/radix/audit/export-crosswalk.json",
+          "role": "support",
+          "sha256": "97763764b16bfe05ee9ea3558a8a2278aed8f2ad262c6938f093fe21fd2cbe57"
         }
       ]
     },
@@ -197,17 +202,22 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "radix-parity-audit",
-      "notes": "Authenticates the complete transitive upstream boundary and structured renderer adaptations without counting them as React behavioral parity.",
+      "notes": "Ordinary-shard audit contracts for the vendored boundary and structured renderer adaptations. Not React behavioral parity; kept out of testExecution.group react-parity.",
       "files": [
         {
           "path": "packages/radix/tests/parity/contracts.test.ts",
           "role": "test",
-          "sha256": "eb87e183d6b6d1339c9451b7c0fa594772eb42b7ea7af9eb7b4135876752e2d2",
+          "sha256": "03de9a3b594f6475a44f9feabb38049cca8a94ede4c33ac7c470a1b32546dbea",
           "cases": [
             {
               "id": "adapted:radix-upstream-ledger",
               "testName": "authenticates the complete pinned transitive source and test boundary",
               "fullName": "@octanejs/radix parity audit contracts authenticates the complete pinned transitive source and test boundary"
+            },
+            {
+              "id": "adapted:radix-export-crosswalk",
+              "testName": "crosswalks every upstream root export to an Octane mapping",
+              "fullName": "@octanejs/radix parity audit contracts crosswalks every upstream root export to an Octane mapping"
             },
             {
               "id": "adapted:radix-slot-descriptors",
@@ -220,6 +230,74 @@
               "fullName": "@octanejs/radix parity audit contracts keeps the ref-as-prop adaptation explicit"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "radix-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "radix-pristine-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs tsc --noEmit against the pinned radix-ui@1.6.4 root export surface (upstream package script is typecheck: tsc --noEmit).",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/radix/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/radix/typetests/pristine/types.test-d.ts",
+          "role": "test",
+          "sha256": "ae29bfb1744e4ed59663ca054f1117f57b56abbfedd100e3bccc4ed703b8e25f",
+          "cases": [
+            {
+              "id": "types:pristine-upstream",
+              "testName": "pinned upstream type suite",
+              "fullName": "pinned upstream type suite"
+            }
+          ]
+        },
+        {
+          "path": "packages/radix/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "a3fd2898b1009486f615562d7f4684e11e3eb78a298f045a3cde12bd31e95d7f"
+        }
+      ]
+    },
+    {
+      "id": "radix-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "radix-adapted-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Adapted Octane root type surface via tsrx-tsc, including unstable_* renames and Slot descriptor typing.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/radix/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/radix/typetests/adapted/types.test-d.ts",
+          "role": "test",
+          "sha256": "ebf1869e6112240d2c31a1a4f3cde419711471c92ca2258add52963442d7ef4e",
+          "cases": [
+            {
+              "id": "types:adapted-octane",
+              "testName": "adapted Octane type suite",
+              "fullName": "adapted Octane type suite"
+            }
+          ]
+        },
+        {
+          "path": "packages/radix/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "1aab9d14bbf79182f2e56974e3caee04fe004c555eb4a75c2f8d05ec3d0ada72"
         }
       ]
     }

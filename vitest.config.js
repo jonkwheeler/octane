@@ -2422,13 +2422,14 @@ export default defineConfig({
 				},
 			},
 			{
+				// Ledger + structured divergence contracts only — not React oracle evidence.
+				// Keep this project out of the react-parity group so ordinary shards own it.
 				test: {
 					name: 'radix-parity-audit',
 					include: ['packages/radix/tests/parity/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
-				testExecution: { group: 'react-parity' },
 			},
 			{
 				test: {
