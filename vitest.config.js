@@ -1491,12 +1491,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: [
-						'packages/tanstack-query/tests/conformance/adapted-suspense.test.ts',
-					],
-				},
 				test: {
 					name: 'tanstack-query',
 					include: ['packages/tanstack-query/tests/conformance/**/*.test.ts'],
@@ -1544,7 +1538,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-query-ssr',
 					include: ['packages/tanstack-query/tests/ssr/**/*.test.ts'],

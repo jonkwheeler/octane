@@ -3,9 +3,8 @@
   "tests": [
     {
       "path": "packages/tanstack-query/tests/conformance/adapted-suspense.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tanstack-query-octane-suspense",
-      "reason": "Authenticates Octane pending-boundary integration while preserving the upstream observable loading and data lifecycle."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates Octane pending-boundary integration; unpaired from React Suspense, so it is not React-parity evidence."
     },
     {
       "path": "packages/tanstack-query/tests/conformance/boundaries.test.ts",

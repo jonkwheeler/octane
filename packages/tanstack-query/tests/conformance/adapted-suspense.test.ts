@@ -1,7 +1,6 @@
 /**
- * Parity-owned Octane suspense adaptation: the documented @pending loading
- * lifecycle for a suspense query. Kept in its own file so ordinary conformance
- * cases in suspense.test.ts stay on the regular CI shards.
+ * Octane-only suspense divergence: documents the @pending loading lifecycle for
+ * a suspense query. Runs in ordinary shards; it is not React-parity evidence.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { QueryClient } from '@octanejs/tanstack-query';
@@ -22,7 +21,6 @@ async function flush() {
 }
 
 describe('suspense query', () => {
-	// @parity-case adapted:tanstack-query-suspense
 	it('shows @pending while loading, then the data', async () => {
 		let resolveFn: (v: string) => void = () => {};
 		const queryFn = () => new Promise<string>((res) => (resolveFn = res));

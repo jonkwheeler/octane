@@ -11,7 +11,13 @@
 
 The tagged repository contains the upstream runtime and compile-time suites.
 The published npm artifact contains source and declarations but omits those
-tests, so provenance remains recorded-unverified. Required evidence runs three
-same-fixture React/Octane differential scenarios, the documented Octane
-suspense adaptation, an Octane SSR contract, and a repository-authored public
-type contract.
+tests, so provenance remains `recorded-unverified` until those suites are
+fetched from the canonical tag, registered as pristine/adapted lanes, and
+verification is established. Until then, `pnpm react-parity:check` only
+validates manifest metadata for this binding (it does not `run-required`).
+
+Current executable React-parity evidence is the three same-fixture React/Octane
+differential scenarios. The Octane suspense adaptation and DOM-free SSR contract
+remain ordinary package tests (octane-only divergence / framework contract); they
+are not counted as React-parity evidence. A repository-authored public type
+contract lane is recorded as optional until pristine/adapted type suites land.

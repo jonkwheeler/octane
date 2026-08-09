@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-query/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-query/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-query/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-query/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -103,67 +93,13 @@
       ]
     },
     {
-      "id": "tanstack-query-adapted-suspense",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-query",
-      "notes": "Authenticates the documented Octane pending-boundary adaptation and its consumer-visible loading-to-data lifecycle.",
-      "files": [
-        {
-          "path": "packages/tanstack-query/tests/conformance/adapted-suspense.test.ts",
-          "role": "test",
-          "sha256": "f68e440467e56d7916eb23aee6233bb4e134bf47f217f75869d726e1925acc01",
-          "cases": [
-            {
-              "id": "adapted:tanstack-query-suspense",
-              "testName": "shows @pending while loading, then the data",
-              "fullName": "suspense query shows @pending while loading, then the data"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-query/tests/_fixtures/suspense.tsrx",
-          "role": "support",
-          "sha256": "de5cd83e50d65cd0b86615b5fcf665204fd8f6186bfa50c3e9c6099f71605025"
-        }
-      ]
-    },
-    {
-      "id": "tanstack-query-adapted-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-query-ssr",
-      "notes": "Authenticates initial query rendering in Octane's DOM-free server environment.",
-      "files": [
-        {
-          "path": "packages/tanstack-query/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "767c6859d05010b50d88e8e6daff4fb4c132a0cccd321bc6aad77f2a805e6815",
-          "cases": [
-            {
-              "id": "adapted:tanstack-query-ssr",
-              "testName": "renders initial query data without a DOM",
-              "fullName": "@octanejs/tanstack-query SSR renders initial query data without a DOM"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-query/tests/_fixtures/server.tsrx",
-          "role": "support",
-          "sha256": "065b17df7610d685e65e8514a9892e775594b2d51a95f4c2eb53911ae57d9ca5"
-        }
-      ]
-    },
-    {
       "id": "tanstack-query-adapted-types",
       "type": "adapted-types",
-      "oracle": "required",
+      "oracle": "optional",
       "environment": "workspace-node",
       "project": "tanstack-query-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the checked Octane generic query inference and cache lookup contract.",
+      "notes": "Runs the checked Octane generic query inference and cache lookup contract. Optional while provenance remains recorded-unverified and pristine/adapted type suites from the canonical tag are not registered.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -195,20 +131,5 @@
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "tanstack-query-octane-suspense",
-      "caseIds": [
-        "adapted:tanstack-query-suspense"
-      ],
-      "upstreamResult": "React Query suspends by throwing the in-flight promise to React Suspense.",
-      "octaneResult": "The Octane binding passes the in-flight thenable through Octane use() to @pending or Suspense boundaries.",
-      "rationale": "Octane uses its native thenable and pending-boundary integration instead of React's thrown-promise mechanism.",
-      "classification": "framework-integration",
-      "consumerImpact": "Consumers observe the same loading fallback and resolved data lifecycle through Octane boundary syntax.",
-      "migrationGuidance": "Wrap suspense queries in @pending or Octane Suspense instead of React Suspense.",
-      "owner": "@octanejs/tanstack-query",
-      "reviewCondition": "Review if Octane adopts React's thrown-promise Suspense mechanism."
-    }
-  ]
+  "divergences": []
 }
