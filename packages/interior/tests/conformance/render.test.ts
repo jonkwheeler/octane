@@ -1,3 +1,10 @@
+/**
+ * OCTANE DIVERGENCE[interior-motion-svg-emission][differential:copy-button]:
+ * upstream motion/react stamps pathLength/stroke-dash* on idle check paths and
+ * camelCase viewBox; @octanejs/motion omits idle dash attrs and lowercases
+ * viewBox. Differential parity strips only those tokens before comparing.
+ */
+
 import { afterEach, describe, expect, it } from 'vitest';
 import { flushSync } from 'octane';
 import { flushEffects, mount } from '../../../octane/tests/_helpers';

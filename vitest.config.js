@@ -2921,6 +2921,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/interior/tests/conformance/render.test.ts'],
+				},
 				test: {
 					name: 'interior',
 					include: ['packages/interior/tests/**/*.test.ts'],

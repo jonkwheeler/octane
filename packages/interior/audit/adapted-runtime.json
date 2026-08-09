@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "project": "interior",
+  "roots": [
+    "packages/interior/tests/conformance"
+  ],
+  "files": [
+    "packages/interior/tests/conformance/render.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:2158103293671a5a",
+      "file": "packages/interior/tests/conformance/render.test.ts",
+      "fullName": "@octanejs/interior — render contract renders a copy button with default label"
+    }
+  ]
+}

@@ -1,122 +1,239 @@
 {
-  "$schema": "../../hook-form/audit/react-parity.schema.json",
-  "schemaVersion": 1,
-  "provenance": {
-    "repo": "https://github.com/ddoemonn/interior.git",
-    "version": "47a4d2d70c9d9758f4d472f2f5bd5029eaf6d3c0",
-    "commit": "47a4d2d70c9d9758f4d472f2f5bd5029eaf6d3c0",
-    "sourceRoot": "components/interior",
-    "testRoot": "components/interior",
-    "license": "MIT",
-    "integrity": "sha256:ad4e1da987540d9aea9a0412259a811aa04a3a751c4793aef188be4e70e54319",
-    "verification": "recorded-unverified"
-  },
-  "upstreamSuites": {
-    "runtime": "absent",
-    "types": "absent"
-  },
-  "adaptedRoots": {
-    "source": {
-      "roots": [
-        "packages/interior/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
-      "exclude": []
-    },
-    "tests": {
-      "roots": [
-        "packages/interior/tests"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
-      "exclude": [
-        "/tests/conformance/"
-      ]
-    }
-  },
-  "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
-    "duplicateEntriesWithinLanes": 0,
-    "identitiesSharedAcrossLanes": 0
-  },
-  "environments": {
-    "workspace-node": {
-      "node": ">=22",
-      "platform": "any",
-      "arch": "any",
-      "packageManager": "pnpm@11.15.1",
-      "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "e606abe100070a29f00d7dadb7efe1d7a8b912ac3e884aa652a0ba7b7ed44be6"
-    }
-  },
-  "lanes": [
-    {
-      "id": "interior-differential",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "interior-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "CopyButton fixture through Octane and the pinned ddoemonn/interior React copy-paste source. Upstream has no npm package or test suite; the React oracle is the vendored component under tests/differential/upstream/.",
-      "files": [
-        {
-          "path": "packages/interior/tests/differential/parity.test.ts",
-          "role": "test",
-          "sha256": "8972e8ab6c38ed7e8e080f88a943f9d09aef974146e233d74d29d81ea5ae8f9a",
-          "cases": [
-            {
-              "id": "differential:copy-button",
-              "testName": "matches idle mount and copied-state markup",
-              "fullName": "differential: @octanejs/interior vs ddoemonn/interior CopyButton matches idle mount and copied-state markup"
-            }
-          ]
-        },
-        {
-          "path": "packages/interior/tests/differential/_fixtures/copy-button-diff.tsrx",
-          "role": "support",
-          "sha256": "7164c5237f750486124dccbc5ecfb1b1ee24c31aa4d74cc79b32ea3ab9e803b2"
-        },
-        {
-          "path": "packages/interior/tests/differential/upstream/copy-button.tsx",
-          "role": "support",
-          "sha256": "ad4e1da987540d9aea9a0412259a811aa04a3a751c4793aef188be4e70e54319"
-        },
-        {
-          "path": "packages/octane/tests/differential/_rig.ts",
-          "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "packages/interior/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "59fdf64f9c474e2e3594a4a70d6e34dcb9271d1804b767ff3c1e0d8b61cb239d"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "4818102638b5595e86b01500fc8d9ce29b36cc048602172487af7560e05ed95b"
-        }
-      ]
-    }
-  ],
-  "divergences": [
-    {
-      "id": "interior-motion-svg-emission",
-      "caseIds": [
-        "differential:copy-button"
-      ],
-      "upstreamResult": "motion/react emits pathLength/stroke-dash* on idle check paths and camelCase viewBox.",
-      "octaneResult": "@octanejs/motion omits idle dash attrs and lowercases SVG viewBox.",
-      "rationale": "Known motion binding SVG emission difference; the differential strips only those tokens before comparing CopyButton markup.",
-      "classification": "rendering",
-      "consumerImpact": "SVG attribute casing and idle pathLength dash attrs can differ when comparing raw HTML to motion/react.",
-      "migrationGuidance": "Assert semantic CopyButton state rather than raw motion SVG dash attributes.",
-      "owner": "@octanejs/motion",
-      "reviewCondition": "Review if @octanejs/motion aligns SVG attribute emission with motion/react."
-    }
-  ]
+	"$schema": "../../hook-form/audit/react-parity.schema.json",
+	"schemaVersion": 1,
+	"provenance": {
+		"repo": "https://github.com/ddoemonn/interior.git",
+		"version": "47a4d2d70c9d9758f4d472f2f5bd5029eaf6d3c0",
+		"commit": "47a4d2d70c9d9758f4d472f2f5bd5029eaf6d3c0",
+		"sourceRoot": "components/interior",
+		"testRoot": "components/interior",
+		"license": "MIT",
+		"integrity": "sha256:ad4e1da987540d9aea9a0412259a811aa04a3a751c4793aef188be4e70e54319",
+		"verification": "verified"
+	},
+	"upstreamSuites": {
+		"runtime": "absent",
+		"types": "absent"
+	},
+	"adaptedRoots": {
+		"source": {
+			"roots": [
+				"packages/interior/src"
+			],
+			"include": [
+				"\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+			],
+			"exclude": []
+		},
+		"tests": {
+			"roots": [
+				"packages/interior/tests/conformance"
+			],
+			"include": [
+				"\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+			],
+			"exclude": [
+				"exports\\.test\\.ts$",
+				"text-input-events\\.test\\.ts$"
+			]
+		}
+	},
+	"adaptedRuntimeSummary": {
+		"inventoryEntries": 1,
+		"uniqueIdentities": 1,
+		"duplicateEntriesWithinLanes": 0,
+		"identitiesSharedAcrossLanes": 0
+	},
+	"environments": {
+		"workspace-node": {
+			"node": ">=22",
+			"platform": "any",
+			"arch": "any",
+			"packageManager": "pnpm@11.15.1",
+			"lockfile": "pnpm-lock.yaml",
+			"lockfileSha256": "e606abe100070a29f00d7dadb7efe1d7a8b912ac3e884aa652a0ba7b7ed44be6"
+		}
+	},
+	"lanes": [
+		{
+			"id": "interior-adapted-full-suite",
+			"type": "adapted-octane",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "interior",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Repo-authored Octane render-contract suite covering CopyButton mount markup.",
+			"execution": {
+				"kind": "vitest-full",
+				"inventory": "packages/interior/audit/adapted-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/interior/audit/adapted-runtime.json",
+					"role": "support",
+					"sha256": "c603b9596474fe391e269bc44cc71b755a6e70f82c0f3319586ac3245e1a1ff6"
+				},
+				{
+					"path": "packages/interior/tests/conformance/render.test.ts",
+					"role": "support",
+					"sha256": "be7f6cecff91b51316d5c3bcb8e1fb0c57365295f01774ae709ef79d3ab4364e"
+				},
+				{
+					"path": "vitest.config.js",
+					"role": "support",
+					"sha256": "2d0d818e1eca3cf413a96c370e7306319da712787426832741dd32cdc5a4bafd"
+				}
+			]
+		},
+		{
+			"id": "interior-differential",
+			"type": "differential",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "interior-differential",
+			"evidenceOrigin": "repo-authored",
+			"notes": "CopyButton fixture through Octane and the pinned ddoemonn/interior React copy-paste source. Upstream has no npm package or test suite; the React oracle is the vendored component under tests/differential/upstream/.",
+			"files": [
+				{
+					"path": "packages/interior/tests/differential/parity.test.ts",
+					"role": "test",
+					"sha256": "8972e8ab6c38ed7e8e080f88a943f9d09aef974146e233d74d29d81ea5ae8f9a",
+					"cases": [
+						{
+							"id": "differential:copy-button",
+							"testName": "matches idle mount and copied-state markup",
+							"fullName": "differential: @octanejs/interior vs ddoemonn/interior CopyButton matches idle mount and copied-state markup"
+						}
+					]
+				},
+				{
+					"path": "packages/interior/tests/differential/_fixtures/copy-button-diff.tsrx",
+					"role": "support",
+					"sha256": "7164c5237f750486124dccbc5ecfb1b1ee24c31aa4d74cc79b32ea3ab9e803b2"
+				},
+				{
+					"path": "packages/interior/tests/differential/upstream/copy-button.tsx",
+					"role": "support",
+					"sha256": "ad4e1da987540d9aea9a0412259a811aa04a3a751c4793aef188be4e70e54319"
+				},
+				{
+					"path": "packages/octane/tests/differential/_rig.ts",
+					"role": "support",
+					"sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+				},
+				{
+					"path": "packages/interior/tests/differential/_setup.ts",
+					"role": "support",
+					"sha256": "59fdf64f9c474e2e3594a4a70d6e34dcb9271d1804b767ff3c1e0d8b61cb239d"
+				},
+				{
+					"path": "vitest.config.js",
+					"role": "support",
+					"sha256": "2d0d818e1eca3cf413a96c370e7306319da712787426832741dd32cdc5a4bafd"
+				}
+			]
+		},
+		{
+			"id": "interior-pristine-types",
+			"type": "pristine-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "interior-pristine-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Repo-authored React declaration probes for the pinned CopyButton upstream surface (no published npm package).",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsc",
+				"project": "packages/interior/audit/type-probes/tsconfig.pristine.json"
+			},
+			"files": [
+				{
+					"path": "packages/interior/audit/pristine-types.json",
+					"role": "test",
+					"sha256": "77bb3bfc7e8b8bd7e398b844e777053d92595253f317380ba277bde3b0dbed9d",
+					"cases": [
+						{
+							"id": "types:interior-pristine",
+							"testName": "pinned React declaration probes",
+							"fullName": "pinned React declaration probes"
+						}
+					]
+				},
+				{
+					"path": "packages/interior/audit/type-probes/public-api.test-d.ts",
+					"role": "support",
+					"sha256": "03e2e86128b0f51168ce032c95e369b8dc0b422c9ffb884d03dfe6a4592e3476"
+				},
+				{
+					"path": "packages/interior/audit/type-probes/upstream-copy-button.d.ts",
+					"role": "support",
+					"sha256": "9fe4a5c2ca9be68a90eec1eba1c553efb8556caa19e57a32d731f8ac6828085c"
+				},
+				{
+					"path": "packages/interior/audit/type-probes/tsconfig.pristine.json",
+					"role": "support",
+					"sha256": "07efafb44c2aaa46bca10ce981a2825fe6ce2df685b5f3e8f4158bd5a00cd523"
+				}
+			]
+		},
+		{
+			"id": "interior-adapted-types",
+			"type": "adapted-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "interior-adapted-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Octane public type probes with matching negative controls on the @octanejs/interior CopyButton surface.",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsrx-tsc",
+				"project": "packages/interior/typetests/tsconfig.json"
+			},
+			"files": [
+				{
+					"path": "packages/interior/audit/adapted-types.json",
+					"role": "test",
+					"sha256": "b70e70a5c6d909cf276f8ac42bab9d31103b60be9e7a41dfc2b1e731d8bfad46",
+					"cases": [
+						{
+							"id": "types:interior-adapted",
+							"testName": "adapted Octane declaration probes",
+							"fullName": "adapted Octane declaration probes"
+						}
+					]
+				},
+				{
+					"path": "packages/interior/typetests/public-api.test-d.ts",
+					"role": "support",
+					"sha256": "6946253b1ca3a2db0f94349977481b03a054b9678194649b93fd97d35c956064"
+				},
+				{
+					"path": "packages/interior/typetests/_public-surface.ts",
+					"role": "support",
+					"sha256": "0ed34a2ebfe639ee3672c6629c6198d8890a65c6bd529b2e44034af67799657f"
+				},
+				{
+					"path": "packages/interior/typetests/tsconfig.json",
+					"role": "support",
+					"sha256": "f4fd39548d2effb3f01caf302e42ba1487e17fc0cf3c4503731939fe9ddee533"
+				}
+			]
+		}
+	],
+	"divergences": [
+		{
+			"id": "interior-motion-svg-emission",
+			"caseIds": [
+				"differential:copy-button"
+			],
+			"upstreamResult": "motion/react emits pathLength/stroke-dash* on idle check paths and camelCase viewBox.",
+			"octaneResult": "@octanejs/motion omits idle dash attrs and lowercases SVG viewBox.",
+			"rationale": "Known motion binding SVG emission difference; the differential strips only those tokens before comparing CopyButton markup.",
+			"classification": "rendering",
+			"consumerImpact": "SVG attribute casing and idle pathLength dash attrs can differ when comparing raw HTML to motion/react.",
+			"migrationGuidance": "Assert semantic CopyButton state rather than raw motion SVG dash attributes.",
+			"owner": "@octanejs/motion",
+			"reviewCondition": "Review if @octanejs/motion aligns SVG attribute emission with motion/react."
+		}
+	]
 }

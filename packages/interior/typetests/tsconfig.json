@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "types": ["node"],
+    "noEmit": true,
+    "noErrorTruncation": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "octane",
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@octanejs/interior": ["./_public-surface.ts"],
+      "@octanejs/motion": ["../../motion/src/index.ts"],
+      "@octanejs/motion/*": ["../../motion/src/*"],
+      "octane": ["../../octane/src/index.ts"]
+    }
+  },
+  "include": ["./**/*.test-d.ts"]
+}
