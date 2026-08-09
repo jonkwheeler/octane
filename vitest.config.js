@@ -1676,11 +1676,29 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/swr/tests/upstream/**/*.test.ts'],
+				},
 				test: {
 					name: 'swr',
 					include: ['packages/swr/tests/**/*.test.ts'],
-					exclude: [...configDefaults.exclude, 'packages/swr/upstream/**'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/swr/upstream/**',
+						'packages/swr/tests/differential/**/*.test.ts',
+					],
+					environment: 'happy-dom',
+					fileParallelism: false,
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'swr-differential',
+					include: ['packages/swr/tests/differential/**/*.test.ts'],
 					environment: 'happy-dom',
 					fileParallelism: false,
 					globals: false,

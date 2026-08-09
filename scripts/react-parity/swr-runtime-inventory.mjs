@@ -37,7 +37,7 @@ const tests = JSON.parse(listed)
 		file: toPortablePath(relative(root, test.file)),
 		fullName: test.name.replaceAll(' > ', ' '),
 	}))
-	.filter((test) => test.file.startsWith('packages/swr/tests/'))
+	.filter((test) => test.file.startsWith('packages/swr/tests/upstream/'))
 	.map((test) => {
 		const baseId = `runtime:${createHash('sha256')
 			.update(`${test.file}\0${test.fullName}`)
@@ -59,7 +59,7 @@ writeFileSync(
 		{
 			schemaVersion: 1,
 			project: 'swr',
-			roots: ['packages/swr/tests'],
+			roots: ['packages/swr/tests/upstream'],
 			files: [...new Set(tests.map((test) => test.file))],
 			tests,
 		},

@@ -31,6 +31,7 @@ function cacheTrace() {
 }
 
 describe('SWR U2 React/Octane differential traces', () => {
+	// @parity-case differential:cache-serialize
 	it('matches the pinned serialization and config oracle', () => {
 		for (const candidate of candidates) {
 			expect(octane.serialize(candidate)).toEqual(reactSerialize(candidate));
@@ -41,6 +42,7 @@ describe('SWR U2 React/Octane differential traces', () => {
 		expect(octane.mergeConfigs(parent, child)).toEqual(reactMergeConfigs(parent, child));
 	});
 
+	// @parity-case differential:cache-trace
 	it('matches cache snapshots and callback logs', () => {
 		expect(cacheTrace()).toEqual({
 			snapshot: { data: 2, error: 'boom' },

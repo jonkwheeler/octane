@@ -44,7 +44,7 @@ const manifest = {
 		testRoot: 'test',
 		license: 'MIT',
 		integrity: 'sha256:948ad899c51e73ca9555e8182946978f367410406fe6c2acb4d1012c509c9982',
-		verification: 'verified',
+		verification: 'recorded-unverified',
 	},
 	upstreamSuites: { runtime: 'present', types: 'present' },
 	adaptedRoots: {
@@ -53,7 +53,11 @@ const manifest = {
 			include: ['\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$'],
 			exclude: [],
 		},
-		tests: { roots: ['packages/swr/tests'], include: ['\\.test\\.ts$'], exclude: [] },
+		tests: {
+			roots: ['packages/swr/tests/upstream'],
+			include: ['\\.test\\.ts$'],
+			exclude: [],
+		},
 	},
 	adaptedRuntimeSummary: {
 		inventoryEntries: adaptedRuntime.tests.length,
@@ -153,6 +157,63 @@ const manifest = {
 			files: [
 				file('packages/swr/audit/adapted-runtime.json'),
 				file('scripts/react-parity/swr-runtime-inventory.mjs'),
+				file('vitest.config.js'),
+			],
+		},
+		{
+			id: 'swr-differential',
+			type: 'differential',
+			oracle: 'required',
+			environment: 'workspace-node',
+			project: 'swr-differential',
+			evidenceOrigin: 'repo-authored',
+			notes:
+				'Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted full suite.',
+			files: [
+				file('packages/swr/tests/differential/cache.test.ts', 'test', [
+					{
+						id: 'differential:cache-serialize',
+						testName: 'matches the pinned serialization and config oracle',
+						fullName:
+							'SWR U2 React/Octane differential traces matches the pinned serialization and config oracle',
+					},
+					{
+						id: 'differential:cache-trace',
+						testName: 'matches cache snapshots and callback logs',
+						fullName:
+							'SWR U2 React/Octane differential traces matches cache snapshots and callback logs',
+					},
+				]),
+				file('packages/swr/tests/differential/config.test.ts', 'test', [
+					{
+						id: 'differential:internal-exports',
+						testName: 'exports every and only pinned runtime name',
+						fullName:
+							'SWR U2 exact _internal runtime oracle exports every and only pinned runtime name',
+					},
+				]),
+				file('packages/swr/tests/differential/root.test.ts', 'test', [
+					{
+						id: 'differential:root-surface',
+						testName: 'preserves the exact pinned root runtime surface',
+						fullName:
+							'SWR U3 pinned React/Octane root trace preserves the exact pinned root runtime surface',
+					},
+					{
+						id: 'differential:root-trace',
+						testName: 'matches request-state and callback ordering',
+						fullName:
+							'SWR U3 pinned React/Octane root trace matches request-state and callback ordering',
+					},
+				]),
+				file('packages/swr/tests/differential/specialized-exports.test.ts', 'test', [
+					{
+						id: 'differential:specialized-exports',
+						testName: 'matches every pinned specialized runtime name',
+						fullName:
+							'SWR U4 exact specialized runtime oracles matches every pinned specialized runtime name',
+					},
+				]),
 				file('vitest.config.js'),
 			],
 		},

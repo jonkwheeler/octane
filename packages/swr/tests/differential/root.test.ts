@@ -13,6 +13,7 @@ async function settle() {
 }
 
 describe('SWR U3 pinned React/Octane root trace', () => {
+	// @parity-case differential:root-surface
 	it('preserves the exact pinned root runtime surface', () => {
 		expect(Object.keys(rootBinding).sort()).toEqual([
 			'SWRConfig',
@@ -24,6 +25,7 @@ describe('SWR U3 pinned React/Octane root trace', () => {
 		]);
 	});
 
+	// @parity-case differential:root-trace
 	it('matches request-state and callback ordering', async () => {
 		renderTrace.length = 0;
 		const callbacks: string[] = [];

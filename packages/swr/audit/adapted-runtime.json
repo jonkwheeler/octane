@@ -1,116 +1,12 @@
 {
   "schemaVersion": 1,
   "project": "swr",
-  "roots": [
-    "packages/swr/tests"
-  ],
+  "roots": ["packages/swr/tests/upstream"],
   "files": [
-    "packages/swr/tests/adoption/adoption.test.ts",
-    "packages/swr/tests/differential/cache.test.ts",
-    "packages/swr/tests/differential/config.test.ts",
-    "packages/swr/tests/differential/root.test.ts",
-    "packages/swr/tests/differential/specialized-exports.test.ts",
-    "packages/swr/tests/probes/architecture.test.ts",
-    "packages/swr/tests/unit/core.test.ts",
     "packages/swr/tests/upstream/root/root.test.ts",
     "packages/swr/tests/upstream/specialized/specialized.test.ts"
   ],
   "tests": [
-    {
-      "id": "runtime:9f259c5d779865b0",
-      "file": "packages/swr/tests/adoption/adoption.test.ts",
-      "fullName": "SWR migration adoption maps every public import root without an SWR-specific API redesign"
-    },
-    {
-      "id": "runtime:beecd99aea9724fa",
-      "file": "packages/swr/tests/differential/cache.test.ts",
-      "fullName": "SWR U2 React/Octane differential traces matches cache snapshots and callback logs"
-    },
-    {
-      "id": "runtime:e3adde42988a3a44",
-      "file": "packages/swr/tests/differential/cache.test.ts",
-      "fullName": "SWR U2 React/Octane differential traces matches the pinned serialization and config oracle"
-    },
-    {
-      "id": "runtime:7de2bc0e3e09a63b",
-      "file": "packages/swr/tests/differential/config.test.ts",
-      "fullName": "SWR U2 exact _internal runtime oracle exports every and only pinned runtime name"
-    },
-    {
-      "id": "runtime:e3aff991fd35cfa9",
-      "file": "packages/swr/tests/differential/root.test.ts",
-      "fullName": "SWR U3 pinned React/Octane root trace matches request-state and callback ordering"
-    },
-    {
-      "id": "runtime:e1defae3dbe4d8df",
-      "file": "packages/swr/tests/differential/root.test.ts",
-      "fullName": "SWR U3 pinned React/Octane root trace preserves the exact pinned root runtime surface"
-    },
-    {
-      "id": "runtime:062470f2b40317cb",
-      "file": "packages/swr/tests/differential/specialized-exports.test.ts",
-      "fullName": "SWR U4 exact specialized runtime oracles matches every pinned specialized runtime name"
-    },
-    {
-      "id": "runtime:54c889de3b993150",
-      "file": "packages/swr/tests/probes/architecture.test.ts",
-      "fullName": "SWR U1 architecture gates accepts only data-valued middleware arrays and never evaluates hostile getters"
-    },
-    {
-      "id": "runtime:a42e038717fdfbbe",
-      "file": "packages/swr/tests/probes/architecture.test.ts",
-      "fullName": "SWR U1 architecture gates commits mutation-like state updates through startTransition"
-    },
-    {
-      "id": "runtime:5323829c9132663c",
-      "file": "packages/swr/tests/probes/architecture.test.ts",
-      "fullName": "SWR U1 architecture gates subscribes once, updates snapshots, swaps stores, and cleans up exactly once"
-    },
-    {
-      "id": "runtime:3740c03a0f769053",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core accepts ordered devtools arrays but rejects hostile ambient values"
-    },
-    {
-      "id": "runtime:f9baaddc76866691",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core appends middleware at the same source-near boundary"
-    },
-    {
-      "id": "runtime:044932bed3b76c84",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core does not expose compiler slots as middleware configuration"
-    },
-    {
-      "id": "runtime:56cdf43606f10552",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core isolates providers, publishes snapshots, and tears subscriptions down once"
-    },
-    {
-      "id": "runtime:e666555a68e241b0",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core preserves normalization and nested config precedence"
-    },
-    {
-      "id": "runtime:15ae8a093cdd41df",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core preserves primitive, structural, circular, throwing, and falsy key serialization"
-    },
-    {
-      "id": "runtime:932b0371cc2c536e",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core removes keyed callbacks without disturbing remaining callback order"
-    },
-    {
-      "id": "runtime:1a1206dcb6051d1c",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core reuses a preload once and consumes it at the middleware boundary"
-    },
-    {
-      "id": "runtime:99e5ceae0f5b7dc7",
-      "file": "packages/swr/tests/unit/core.test.ts",
-      "fullName": "SWR U2 framework-neutral core strips compiler slots from every optional root argument shape"
-    },
     {
       "id": "runtime:483952ca70cf3e3e",
       "file": "packages/swr/tests/upstream/root/root.test.ts",

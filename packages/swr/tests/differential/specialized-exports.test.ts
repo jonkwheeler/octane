@@ -5,6 +5,7 @@ import * as mutation from '../../src/mutation/index';
 import * as subscription from '../../src/subscription/index';
 
 describe('SWR U4 exact specialized runtime oracles', () => {
+	// @parity-case differential:specialized-exports
 	it('matches every pinned specialized runtime name', () => {
 		expect(Object.keys(infinite).sort()).toEqual(['default', 'infinite', 'unstable_serialize']);
 		expect(Object.keys(immutable).sort()).toEqual(['default', 'immutable']);
