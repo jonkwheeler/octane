@@ -16,7 +16,7 @@ function walk(directory) {
 
 /**
  * Verifies every vendored react-waypoint upstream byte against upstream/SHA256SUMS
- * and confirms the required node-suite artifacts are present.
+ * and confirms the required node and browser suite artifacts are present.
  */
 export function verifyWaypointUpstream(root = packageRoot) {
 	const upstream = join(root, 'upstream');
@@ -55,6 +55,7 @@ export function verifyWaypointUpstream(root = packageRoot) {
 		'test/node/onNextTick.test.js',
 		'test/node/resolveScrollableAncestorProp.test.js',
 		'test/node/waypoint.test.jsx',
+		'test/browser/waypoint_test.jsx',
 		'index.d.ts',
 		'src/waypoint.jsx',
 	]) {

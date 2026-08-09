@@ -45,6 +45,17 @@ describe('geometry', () => {
 		expect(parseOffset('18px', 200)).toBe(18);
 	});
 
+	it('classifies a zero-height viewport as invisible', () => {
+		expect(
+			getCurrentPosition({
+				waypointTop: 0,
+				waypointBottom: 0,
+				viewportTop: 0,
+				viewportBottom: 0,
+			}),
+		).toBe(INVISIBLE);
+	});
+
 	it('classifies above, inside, and below bounds', () => {
 		expect(
 			getCurrentPosition({

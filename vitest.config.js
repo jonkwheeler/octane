@@ -839,6 +839,7 @@ export default defineConfig({
 					exclude: [
 						...configDefaults.exclude,
 						'packages/waypoint/tests/upstream/**/*.test.ts',
+						'packages/waypoint/tests/browser/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -870,6 +871,39 @@ export default defineConfig({
 							find: /^octane$/,
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
 						},
+						{
+							find: /^@octanejs\/waypoint$/,
+							replacement: resolve(import.meta.dirname, 'packages/waypoint/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				// Real-browser pristine Karma/Jasmine suite (Playwright + Chromium).
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'waypoint-pristine-browser',
+					include: ['packages/waypoint/tests/browser/pristine/**/*.browser.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 120_000,
+					hookTimeout: 120_000,
+				},
+			},
+			{
+				// Real-browser adapted Octane suite (same scenarios as upstream Karma).
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'waypoint-adapted-browser',
+					include: ['packages/waypoint/tests/browser/adapted/**/*.browser.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 120_000,
+					hookTimeout: 120_000,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
 						{
 							find: /^@octanejs\/waypoint$/,
 							replacement: resolve(import.meta.dirname, 'packages/waypoint/src/index.ts'),

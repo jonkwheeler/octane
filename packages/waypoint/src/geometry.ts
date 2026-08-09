@@ -64,7 +64,22 @@ export function getBounds(
 
 export function getCurrentPosition(bounds: WaypointBounds | null) {
 	if (!bounds) return INVISIBLE;
-	if (bounds.waypointBottom < bounds.viewportTop) return ABOVE;
-	if (bounds.waypointTop > bounds.viewportBottom) return BELOW;
-	return INSIDE;
+	// Per upstream getCurrentPosition.js: a zero-height scrollable parent
+	// (e.g. display:none) is invisible, not inside.
+	if (bounds.viewportBottom - bounds.viewportTop === 0) return INVISIBLE;
+	if (bounds.viewportTop <= bounds.waypointTop && bounds.waypointTop <= bounds.viewportBottom) {
+		return INSIDE;
+	}
+	if (
+		bounds.viewportTop <= bounds.waypointBottom &&
+		bounds.waypointBottom <= bounds.viewportBottom
+	) {
+		return INSIDE;
+	}
+	if (bounds.waypointTop <= bounds.viewportTop && bounds.viewportBottom <= bounds.waypointBottom) {
+		return INSIDE;
+	}
+	if (bounds.viewportBottom < bounds.waypointTop) return BELOW;
+	if (bounds.waypointTop < bounds.viewportTop) return ABOVE;
+	return INVISIBLE;
 }

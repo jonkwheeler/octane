@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>react-waypoint pristine browser suite</title>
+		<link rel="stylesheet" href="/jasmine.css" />
+		<style>
+			/* Karma's iframe has no default body margin; Chromium's 8px margin
+			   shifts getBoundingClientRect and breaks upstream pixel assertions. */
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+		<script src="/jasmine.js"></script>
+		<script src="/jasmine-boot.js"></script>
+	</head>
+	<body>
+		<script type="module" src="/boot.js"></script>
+	</body>
+</html>

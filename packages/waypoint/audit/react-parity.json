@@ -48,7 +48,7 @@
 			"arch": "any",
 			"packageManager": "pnpm@11.15.1",
 			"lockfile": "pnpm-lock.yaml",
-			"lockfileSha256": "c361e3c2ce829db2f383171f95ddf66f0abdc8ce52701e07f381f5c6feccd272"
+			"lockfileSha256": "b7cd22e1edb3636ee7b3665164407aa540ba64550cf1d5f3b1406217c8412415"
 		}
 	},
 	"lanes": [
@@ -59,7 +59,7 @@
 			"environment": "workspace-node",
 			"project": "waypoint-pristine",
 			"evidenceOrigin": "upstream-suite",
-			"notes": "Runs the byte-exact react-waypoint 10.3.0 Jest node suite against the vendored React binding and checks every passed identity against the committed inventory. The Karma browser suite remains deferred.",
+			"notes": "Runs the byte-exact react-waypoint 10.3.0 Jest node suite against the vendored React binding and checks every passed identity against the committed inventory.",
 			"execution": {
 				"kind": "jest-full",
 				"config": "packages/waypoint/tests/upstream-jest.config.cjs",
@@ -95,18 +95,18 @@
 				{
 					"path": "packages/waypoint/scripts/verify-upstream.mjs",
 					"role": "support",
-					"sha256": "ca109317ff47124917c50dda28cb559e246dc6395c338d488a8bc41c96e4b844"
+					"sha256": "ca9fe6ff5ca3bb59576d5baca09ac5867add8b1357eb10e9cca058dacec82816"
 				}
 			]
 		},
 		{
-			"id": "waypoint-adapted-full-suite",
+			"id": "waypoint-adapted-node-suite",
 			"type": "adapted-octane",
 			"oracle": "required",
 			"environment": "workspace-node",
 			"project": "waypoint-adapted",
 			"evidenceOrigin": "upstream-suite",
-			"notes": "One-for-one adapted node suite for onNextTick, resolveScrollableAncestorProp, and the no-window SSR case.",
+			"notes": "One-for-one adapted node suite for onNextTick, resolveScrollableAncestorProp, and the no-window SSR case (not the browser suite).",
 			"execution": {
 				"kind": "vitest-full",
 				"inventory": "packages/waypoint/audit/adapted-runtime.json"
@@ -121,6 +121,74 @@
 					"path": "scripts/react-parity/waypoint-runtime-inventory.mjs",
 					"role": "support",
 					"sha256": "ef4dd43688f4f2c423bdd68ad70f9a46a371cb0c0922567a11724ec920d08dfc"
+				}
+			]
+		},
+		{
+			"id": "waypoint-pristine-browser",
+			"type": "browser",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "waypoint-pristine-browser",
+			"notes": "Runs the vendored Karma/Jasmine browser suite in Chromium via Playwright against the React binding, preserving every upstream identity.",
+			"execution": {
+				"kind": "vitest-full",
+				"inventory": "packages/waypoint/audit/pristine-browser-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/waypoint/audit/pristine-browser-runtime.json",
+					"role": "support",
+					"sha256": "b0602696f3b96ec44d6c10a2ed3c43cace7c07cb11b4d34dec3bb0e82496d2b6"
+				},
+				{
+					"path": "packages/waypoint/tests/browser/_shared/upstream-browser-identities.json",
+					"role": "support",
+					"sha256": "4ae768230faa6a8340eb667b8cdda679c25814716573ee0f3f79e82b3130cd45"
+				},
+				{
+					"path": "packages/waypoint/upstream/test/browser/waypoint_test.jsx",
+					"role": "support",
+					"sha256": "ebf85375651d8481742cd9b5f7b0c0fcc1b92845d817fa50e50e5877c04eda93"
+				},
+				{
+					"path": "packages/waypoint/tests/browser/pristine/waypoint.browser.test.ts",
+					"role": "support",
+					"sha256": "fc2fcb53f7da5e27f9b82a47922ecce1492aabc789d28deed54276081ea1c2c8"
+				}
+			]
+		},
+		{
+			"id": "waypoint-adapted-browser",
+			"type": "browser",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "waypoint-adapted-browser",
+			"notes": "Same-scenario Octane browser suite adapted from upstream/test/browser/waypoint_test.jsx, executed in Chromium via Playwright.",
+			"execution": {
+				"kind": "vitest-full",
+				"inventory": "packages/waypoint/audit/adapted-browser-runtime.json"
+			},
+			"files": [
+				{
+					"path": "packages/waypoint/audit/adapted-browser-runtime.json",
+					"role": "support",
+					"sha256": "aa7a2286a32ab139315cf7b9ebd38114fbe386ab2557b3a8c7270e425feb9cd8"
+				},
+				{
+					"path": "packages/waypoint/tests/browser/_shared/upstream-browser-identities.json",
+					"role": "support",
+					"sha256": "4ae768230faa6a8340eb667b8cdda679c25814716573ee0f3f79e82b3130cd45"
+				},
+				{
+					"path": "packages/waypoint/tests/browser/adapted/harness/waypoint_adapted_suite.jsx",
+					"role": "support",
+					"sha256": "b73028a74f83f7b86c5dca5858d455b9a80c065b6cbdef045423d8c71f45d088"
+				},
+				{
+					"path": "packages/waypoint/tests/browser/adapted/waypoint.browser.test.ts",
+					"role": "support",
+					"sha256": "2d4a2f88a6439d59374d4ce9e112fca4838c1e377b667ee5002a147281eff781"
 				}
 			]
 		},
