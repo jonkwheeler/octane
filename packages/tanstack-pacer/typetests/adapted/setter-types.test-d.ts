@@ -13,11 +13,18 @@ function acceptsNumberSetter(setter: NumberSetter): void {
 	});
 }
 
-declare const debounced: ReturnType<typeof useDebouncedState<number>>;
-declare const throttled: ReturnType<typeof useThrottledState<number>>;
+function probeDebouncedSetterAssignability(): void {
+	const [, setDebounced] = useDebouncedState(0, { wait: 40 });
+	acceptsNumberSetter(setDebounced);
+}
 
-acceptsNumberSetter(debounced[1] as unknown as NumberSetter);
-acceptsNumberSetter(throttled[1] as unknown as NumberSetter);
+function probeThrottledSetterAssignability(): void {
+	const [, setThrottled] = useThrottledState(0, { wait: 40 });
+	acceptsNumberSetter(setThrottled);
+}
+
+void probeDebouncedSetterAssignability;
+void probeThrottledSetterAssignability;
 
 // Local aliases must remain structurally assignable to the React spelling when present.
 type ReactLikeSetter = (value: number | ((prev: number) => number)) => void;

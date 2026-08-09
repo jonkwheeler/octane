@@ -1,5 +1,7 @@
 import { resolve } from 'node:path';
+import { act as reactAct } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { drainPassiveEffects } from 'octane';
 import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
 
 const fixture = resolve(__dirname, '../_fixtures/pacer-diff.tsrx');
@@ -7,6 +9,17 @@ const cache = resolve(__dirname, '.react-cache');
 
 async function advanceWait(ms: number): Promise<void> {
 	await vi.advanceTimersByTimeAsync(ms);
+}
+
+async function flushBothRuntimes(): Promise<void> {
+	drainPassiveEffects();
+	await reactAct(async function () {
+		const wait = new Promise<void>(function (resolve) {
+			setTimeout(resolve, 0);
+		});
+		await vi.advanceTimersByTimeAsync(0);
+		await wait;
+	});
 }
 
 beforeEach(function () {
@@ -28,32 +41,41 @@ describe('differential: @octanejs/tanstack-pacer vs @tanstack/react-pacer', () =
 			await octane.click('#debounce');
 			await react.click('#debounce');
 			expect(octane.find('#debounced').textContent).toBe('debounced:0');
+			expect(react.find('#debounced').textContent).toBe('debounced:0');
 		});
-		await differential.step('debounce expires', async function (octane) {
+		await differential.step('debounce expires', async function (octane, react) {
 			await advanceWait(40);
+			await flushBothRuntimes();
 			expect(octane.find('#debounced').textContent).toBe('debounced:1');
+			expect(react.find('#debounced').textContent).toBe('debounced:1');
 		});
 		await differential.step('leading throttle', async function (octane, react) {
 			await octane.click('#throttle');
 			await react.click('#throttle');
 			expect(octane.find('#throttled').textContent).toBe('throttled:1');
+			expect(react.find('#throttled').textContent).toBe('throttled:1');
 		});
 		await differential.step('trailing throttle', async function (octane, react) {
 			await octane.click('#throttle');
 			await react.click('#throttle');
 			expect(octane.find('#throttled').textContent).toBe('throttled:1');
+			expect(react.find('#throttled').textContent).toBe('throttled:1');
 			await advanceWait(40);
+			await flushBothRuntimes();
 			expect(octane.find('#throttled').textContent).toBe('throttled:2');
+			expect(react.find('#throttled').textContent).toBe('throttled:2');
 		});
 		await differential.step('first batch item', async function (octane, react) {
 			await octane.click('#batch-a');
 			await react.click('#batch-a');
 			expect(octane.find('#batch').textContent).toBe('batch:');
+			expect(react.find('#batch').textContent).toBe('batch:');
 		});
 		await differential.step('batch reaches maximum size', async function (octane, react) {
 			await octane.click('#batch-b');
 			await react.click('#batch-b');
 			expect(octane.find('#batch').textContent).toBe('batch:a,b');
+			expect(react.find('#batch').textContent).toBe('batch:a,b');
 		});
 		await differential.step('schedule work before teardown', async function (octane, react) {
 			await octane.click('#pending');

@@ -59,7 +59,7 @@
         {
           "path": "packages/tanstack-pacer/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "b079542b30f6e3d97e8fa579505eb92dc3758fd1633f1710217416c4e64a73b1",
+          "sha256": "23ef984f982ee225fdbbee3da53d2e07f5f5a63e6cc81b8f09517c3235f3b038",
           "cases": [
             {
               "id": "differential:tanstack-pacer-scheduler-lifecycle",
@@ -175,7 +175,7 @@
         {
           "path": "packages/tanstack-pacer/audit/adapted-types.json",
           "role": "test",
-          "sha256": "269211b47e73812850ed99f79fb9042403fe6dd5663dbf90161038e985fb4520",
+          "sha256": "e32b3e3d6b431501d879df8372d9fdea460e117fc62d47ce00cccd865d1e711c",
           "cases": [
             {
               "id": "types:adapted-octane",
@@ -192,7 +192,7 @@
         {
           "path": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
           "role": "test",
-          "sha256": "9ab4578bfef73edc21d86c24f483d59ce6587318dcf89c615528b083f72fd42f",
+          "sha256": "c73ca59223858255ef6ac080d8ffee821808dab5d6dead7afb0962d2de384030",
           "cases": [
             {
               "id": "types:adapted-setters",
