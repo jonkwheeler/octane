@@ -3427,6 +3427,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'embla-carousel',
 					include: ['packages/embla-carousel/tests/conformance/**/*.test.ts'],
@@ -3444,6 +3445,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'embla-carousel-pristine-utils',
 					include: [
@@ -3462,6 +3464,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'embla-carousel-browser',
 					include: ['packages/embla-carousel/tests/browser/**/*.test.ts'],
@@ -3472,6 +3475,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'embla-carousel-differential',
 					include: ['packages/embla-carousel/tests/differential/**/*.test.ts'],

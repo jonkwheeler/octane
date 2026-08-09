@@ -30,7 +30,7 @@ tests. Vendored evidence is excluded from the published `files` list.
 | `embla-carousel-react/src/components/useEmblaCarousel.ts` | Ported module-by-module; only the framework hook import and formatting differ |
 | `embla-carousel-reactive-utils/src/components/utils.ts` | Reused unchanged from the published framework-neutral dependency |
 | `embla-carousel-reactive-utils/src/index.ts` | Reused unchanged from the published framework-neutral dependency |
-| `embla-carousel-reactive-utils/src/__tests__/utils.test.ts` | Upstream suite exists and belongs to the reused dependency; its option/plugin equality observations are covered by the adapter conformance cases |
+| `embla-carousel-reactive-utils/src/__tests__/utils.test.ts` | Upstream suite registered as the `embla-pristine-utils` parity lane (`embla-carousel-pristine-utils`) |
 | React adapter tests | No test files exist at the pinned tag; `package.json`'s test script reports no tests |
 | Upstream type tests | None exist at the pinned tag; pristine declaration consumption and adapted public types are checked locally |
 

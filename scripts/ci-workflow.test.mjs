@@ -145,12 +145,20 @@ describe('CI workflow aggregation', () => {
 		}
 	});
 
-	test('isolates Embla browser coverage to Chromium-provisioned jobs', () => {
-		assert.match(
-			jobSource('test_shard'),
-			/--exclude "packages\/embla-carousel\/tests\/browser\/\*\*\/\*\.test\.ts"/,
+	test('keeps Embla browser coverage on parity ownership without workflow path entries', () => {
+		assert.doesNotMatch(jobSource('test_shard'), /embla-carousel/);
+		assert.doesNotMatch(jobSource('heavy_integration'), /embla-carousel/);
+		const baseProjects = new Map(
+			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
 		);
-		assert.match(jobSource('heavy_integration'), /packages\/embla-carousel\/tests\/browser/);
+		for (const project of [
+			'embla-carousel',
+			'embla-carousel-pristine-utils',
+			'embla-carousel-browser',
+			'embla-carousel-differential',
+		]) {
+			assert.equal(baseProjects.get(project).testExecution.group, 'react-parity');
+		}
 		// Required browser oracle lanes run under react-parity:check; Chromium
 		// must be installed in that job, not the validate-only lint_checks path.
 		const parity = jobSource('react_parity_checks');

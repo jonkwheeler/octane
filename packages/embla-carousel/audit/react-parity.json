@@ -45,6 +45,31 @@
   },
   "lanes": [
     {
+      "id": "embla-pristine-utils",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "embla-carousel-pristine-utils",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the vendored embla-carousel-reactive-utils equality suite unchanged as pristine evidence for the reused framework-neutral dependency.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/embla-carousel/audit/pristine-utils-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/embla-carousel/audit/pristine-utils-runtime.json",
+          "role": "support",
+          "sha256": "0a0312fe3189de6baadf8c30926653fe15c50a7ca81205c0afbde55264f16f03"
+        },
+        {
+          "path": "packages/embla-carousel/upstream/embla-carousel-reactive-utils/src/__tests__/utils.test.ts",
+          "role": "support",
+          "sha256": "978122cbf058d9f4d57fc00fd589bcdbea0c639842d31cf86aef286e369156fd"
+        }
+      ]
+    },
+    {
       "id": "embla-adapted-runtime",
       "type": "adapted-octane",
       "oracle": "required",
