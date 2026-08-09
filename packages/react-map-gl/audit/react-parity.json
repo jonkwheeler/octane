@@ -143,7 +143,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ee3c887f2210babd02b6dcf7ad051805163c09207af49d484f86e2d81ea3de30"
+          "sha256": "4da9ac5b2c278df5c3c340231eb9d1939090266877c05cb81239e8b5cbf4d8b9"
         }
       ]
     },
@@ -235,7 +235,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ee3c887f2210babd02b6dcf7ad051805163c09207af49d484f86e2d81ea3de30"
+          "sha256": "4da9ac5b2c278df5c3c340231eb9d1939090266877c05cb81239e8b5cbf4d8b9"
         }
       ]
     },
@@ -437,7 +437,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ee3c887f2210babd02b6dcf7ad051805163c09207af49d484f86e2d81ea3de30"
+          "sha256": "4da9ac5b2c278df5c3c340231eb9d1939090266877c05cb81239e8b5cbf4d8b9"
         }
       ]
     },
@@ -612,7 +612,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "ee3c887f2210babd02b6dcf7ad051805163c09207af49d484f86e2d81ea3de30"
+          "sha256": "4da9ac5b2c278df5c3c340231eb9d1939090266877c05cb81239e8b5cbf4d8b9"
         }
       ]
     }

@@ -131,7 +131,11 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))) {
+		// Livestore owns a separate disposition vocabulary and verifier.
+		if (
+			binding !== 'livestore' &&
+			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
+		) {
 			verifyPortTestClassifications(REPO, binding);
 		}
 		await verifyManifestFiles(manifest, REPO);
