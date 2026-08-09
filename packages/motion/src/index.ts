@@ -271,18 +271,29 @@ function createMotionComponent(tag: string) {
 				const style = props.style;
 				if (!style || typeof style !== 'object') return;
 				const transformState: Record<string, any> = {};
+				const appliedKeys: string[] = [];
 				const cleanups: Array<() => void> = [];
 				for (const key in style) {
 					const v = style[key];
 					if (isMotionValue(v)) {
 						const apply = (val: any) => applyStyleValue(node, key, val, transformState);
 						apply(v.get());
+						appliedKeys.push(key);
 						cleanups.push(v.on('change', apply));
 					} else if (isTransformKey(key)) {
 						applyStyleValue(node, key, v, transformState);
+						appliedKeys.push(key);
 					}
 				}
-				return () => cleanups.forEach((c) => c());
+				return function clearMotionStyles() {
+					for (const cleanup of cleanups) cleanup();
+					let clearTransform = false;
+					for (const key of appliedKeys) {
+						if (isTransformKey(key)) clearTransform = true;
+						else (node.style as any)[key] = '';
+					}
+					if (clearTransform) node.style.transform = '';
+				};
 			},
 			styleMvDeps,
 			MV,
