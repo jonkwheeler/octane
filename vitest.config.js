@@ -1502,9 +1502,9 @@ export default defineConfig({
 				},
 			},
 			{
-				// Same-fixture React/Octane scenarios. Left ordinary while provenance
-				// stays recorded-unverified so CI still executes them (react-parity:check
-				// validates metadata only until verification).
+				// Same-fixture React/Octane scenarios — parity-owned regardless of
+				// provenance status. Compiler-control and Octane-only SSR stay ordinary.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-virtual-differential',
 					include: ['packages/tanstack-virtual/tests/differential/parity.test.ts'],

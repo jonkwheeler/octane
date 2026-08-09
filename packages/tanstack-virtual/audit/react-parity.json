@@ -51,7 +51,7 @@
       "environment": "workspace-node",
       "project": "tanstack-virtual-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Documents four same-fixture React/Octane windowing scenarios. Optional while provenance is recorded-unverified: ordinary CI executes the project; react-parity:check validates metadata only until pristine/adapted full-suite verification lands.",
+      "notes": "Documents four same-fixture React/Octane windowing scenarios. Optional while provenance is recorded-unverified (react-parity:check validates metadata only until pristine/adapted full-suite verification lands). Vitest project is wholly react-parity-owned via testExecution.",
       "files": [
         {
           "path": "packages/tanstack-virtual/tests/differential/parity.test.ts",
