@@ -17,7 +17,7 @@ function ancestorTheme(el: Element | null): boolean | null {
 }
 
 function systemDark(): boolean {
-	return typeof matchMedia === 'undefined' || matchMedia('(prefers-color-scheme: dark)').matches;
+	return typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 function initialDark(theme: OrbTheme): boolean {
