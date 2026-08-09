@@ -23,7 +23,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public HotkeysProvider contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:HotkeysProviderOptions",
@@ -143,7 +143,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useDefaultHotkeysOptions contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useHeldKeyCodes",
@@ -155,7 +155,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useHeldKeyCodes contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useHeldKeys",
@@ -167,7 +167,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useHeldKeys contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useHotkey",
@@ -191,7 +191,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useHotkeyRecorder contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useHotkeyRegistrations",
@@ -215,7 +215,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useHotkeySequence contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useHotkeySequenceRecorder",
@@ -227,7 +227,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useHotkeySequenceRecorder contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useHotkeySequences",
@@ -263,7 +263,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useHotkeysContext contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     },
     {
       "id": "export:useKeyHold",
@@ -275,7 +275,7 @@
       },
       "classification": "behavioral",
       "reason": "Octane provides the same public useKeyHold contract; adapted upstream or local evidence exercises it.",
-      "evidenceTarget": "packages/tanstack-hotkeys/tests/hotkeys.test.ts"
+      "evidenceTarget": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys.tsrx"
     }
   ],
   "coreReexport": {

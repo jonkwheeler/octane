@@ -90,7 +90,7 @@
         {
           "path": "packages/tanstack-hotkeys/scripts/check-upstream-ledger.mjs",
           "role": "support",
-          "sha256": "bad36f02fb36829bb32b8209d42f741baced0fb6c685829c487d7f087c0dcb5e"
+          "sha256": "55834dbdf5d55e9059c643074257b38ce48c453caf32bb1d54609ff7c8f606a8"
         }
       ]
     },
@@ -120,7 +120,7 @@
         {
           "path": "packages/tanstack-hotkeys/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "9740eebc36539c390e7e79a1ad512f90d76ec894b0d90a03eef0b50b99d0c1fd"
+          "sha256": "03bf000c8edc41d144d37b989da6e0c982f72a465d19f2d5ecc763333ebd33ea"
         }
       ]
     },

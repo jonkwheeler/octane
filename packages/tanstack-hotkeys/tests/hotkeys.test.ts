@@ -169,7 +169,8 @@ describe('@octanejs/tanstack-hotkeys', () => {
 		const result = mount(ContextProbe);
 		flushEffects();
 
-		expect(result.container.textContent).toContain('true');
+		expect(result.container.querySelector('#has-context')?.textContent).toBe('true');
+		expect(result.container.querySelector('#default-enabled')?.textContent).toBe('true');
 		result.unmount();
 	});
 });

@@ -99,8 +99,11 @@ const missingEvidence = crosswalk.adapterExports.filter((entry) => {
 	const absolute = resolve(repoRoot, entry.evidenceTarget);
 	try {
 		const source = readFileSync(absolute, 'utf8');
-		const pattern = new RegExp(`\\b${entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
-		return !pattern.test(source);
+		const escaped = entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		// Require an import or a call/JSX use — a title mention alone is not evidence.
+		const imported = new RegExp(`\\bimport\\b[^;]*\\b${escaped}\\b`).test(source);
+		const called = new RegExp(`\\b${escaped}\\s*[<(]`).test(source);
+		return !(imported || called);
 	} catch {
 		return true;
 	}
