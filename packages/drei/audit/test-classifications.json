@@ -517,6 +517,11 @@
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
     },
     {
+      "path": "packages/drei/tests/view-renderer-boundary.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence."
+    },
+    {
       "path": "packages/drei/tests/wireframe.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."

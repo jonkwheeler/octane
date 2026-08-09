@@ -1957,7 +1957,6 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'doom',
 					include: ['playground/octane/src/demos/doom/**/*.test.ts'],
@@ -1983,6 +1982,7 @@ export default defineConfig({
 						'packages/drei/tests/config.test.ts',
 						'packages/drei/tests/crosswalk-guard.test.ts',
 						'packages/drei/tests/react-parity-guard.test.ts',
+						'packages/drei/tests/view-renderer-boundary.test.ts',
 						'packages/drei/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
@@ -2029,6 +2029,7 @@ export default defineConfig({
 						'packages/drei/tests/config.test.ts',
 						'packages/drei/tests/crosswalk-guard.test.ts',
 						'packages/drei/tests/react-parity-guard.test.ts',
+						'packages/drei/tests/view-renderer-boundary.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,

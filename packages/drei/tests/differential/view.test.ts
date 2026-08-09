@@ -9,11 +9,9 @@ import {
 } from '@react-three/fiber';
 import { View as ReactView } from '@react-three/drei/web/View.js';
 import { createRoot as createOctaneRoot } from '@octanejs/three';
-import { createRoot as createOctaneDomRoot } from 'octane';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { View } from '../../src/web/View.three.tsrx';
-import { ViewDomBoundary } from '../_fixtures/view-dom-boundary.tsrx';
 import { ViewPortScene, ViewScene } from '../_fixtures/view.three.tsrx';
 
 beforeAll(() => {
@@ -172,6 +170,7 @@ describe('View', () => {
 		await act(async () => pair.reactRoot.unmount());
 	});
 
+	// @parity-case differential:view-visibility
 	it('matches invisible and offscreen clear/render boundaries and event connection cleanup', async () => {
 		const invisible = await mountPair({ visible: false }, rect());
 		await act(async () => reactAdvance(1 / 60, true, invisible.reactState));
@@ -188,17 +187,9 @@ describe('View', () => {
 		await act(async () => offscreen.reactRoot.unmount());
 	});
 
+	// @parity-case differential:view-port-surface
 	it('preserves the View.Port static surface', () => {
 		expect(View.Port).toBeTypeOf('function');
 		expect(ReactView.Port).toBeTypeOf('function');
-	});
-
-	// OCTANE DIVERGENCE[view-renderer-boundary][differential:view-rendering]
-	it('documents the outside-DOM renderer boundary while keeping View.Port callable', () => {
-		const root = createOctaneDomRoot(document.createElement('div'));
-		expect(() => root.render(ViewDomBoundary, {})).toThrow(
-			'Universal hooks may only run while a universal component is rendering.',
-		);
-		expect(() => View.Port).not.toThrow();
 	});
 });

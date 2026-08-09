@@ -15,6 +15,7 @@ const OCTANE_ONLY = new Set([
 	'packages/drei/tests/config.test.ts',
 	'packages/drei/tests/crosswalk-guard.test.ts',
 	'packages/drei/tests/react-parity-guard.test.ts',
+	'packages/drei/tests/view-renderer-boundary.test.ts',
 ]);
 
 function listProject(project) {
@@ -79,6 +80,13 @@ const classifications = {
 					path,
 					disposition: 'octane-only-framework-contract',
 					reason: 'Validates the Octane renderer-boundary preset, which has no React counterpart.',
+				};
+			}
+			if (path.endsWith('/view-renderer-boundary.test.ts')) {
+				return {
+					path,
+					disposition: 'octane-only-framework-contract',
+					reason: 'Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence.',
 				};
 			}
 			return {
@@ -217,6 +225,7 @@ manifest.adaptedRoots = {
 			'tests/config\\.test\\.ts$',
 			'tests/crosswalk-guard\\.test\\.ts$',
 			'tests/react-parity-guard\\.test\\.ts$',
+			'tests/view-renderer-boundary\\.test\\.ts$',
 			'tests/differential/',
 		],
 	},
@@ -231,12 +240,28 @@ manifest.environments['workspace-node'].lockfileSha256 = digest(
 	readFileSync(resolve(root, manifest.environments['workspace-node'].lockfile)),
 );
 
-const viewCase = differentialTests.find((test) =>
+function requireDifferentialCase(needle) {
+	const match = differentialTests.find((test) => test.fullName.includes(needle));
+	if (!match) {
+		throw new Error(`differential canary case missing from drei-differential project: ${needle}`);
+	}
+	return match;
+}
+const viewRenderingCase = requireDifferentialCase(
+	'matches tracked rect, viewport/scissor/render restoration, frames and refs',
+);
+const viewVisibilityCase = requireDifferentialCase(
+	'matches invisible and offscreen clear/render boundaries and event connection cleanup',
+);
+const viewPortSurfaceCase = requireDifferentialCase('preserves the View.Port static surface');
+const boundaryCase = guardTests.find((test) =>
 	test.fullName.includes(
-		'matches tracked rect, viewport/scissor/render restoration, frames and refs',
+		'documents the outside-DOM renderer boundary while keeping View.Port callable',
 	),
 );
-if (!viewCase) throw new Error('differential canary case missing from drei-differential project');
+if (!boundaryCase) {
+	throw new Error('view renderer-boundary case missing from drei-guards project');
+}
 
 manifest.lanes = [
 	{
@@ -304,7 +329,45 @@ manifest.lanes = [
 					{
 						id: 'differential:view-rendering',
 						testName: 'matches tracked rect, viewport/scissor/render restoration, frames and refs',
-						fullName: viewCase.fullName,
+						fullName: viewRenderingCase.fullName,
+					},
+					{
+						id: 'differential:view-visibility',
+						testName:
+							'matches invisible and offscreen clear/render boundaries and event connection cleanup',
+						fullName: viewVisibilityCase.fullName,
+					},
+					{
+						id: 'differential:view-port-surface',
+						testName: 'preserves the View.Port static surface',
+						fullName: viewPortSurfaceCase.fullName,
+					},
+				],
+			},
+		],
+	},
+	{
+		id: 'drei-view-renderer-boundary',
+		type: 'differential',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'drei-guards',
+		evidenceOrigin: 'repo-authored',
+		notes:
+			'Ordinary-project framework-contract pin for the intentional DOM-root View renderer-boundary divergence.',
+		files: [
+			{
+				path: 'packages/drei/tests/view-renderer-boundary.test.ts',
+				role: 'test',
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/tests/view-renderer-boundary.test.ts')),
+				),
+				cases: [
+					{
+						id: 'differential:view-renderer-boundary',
+						testName:
+							'documents the outside-DOM renderer boundary while keeping View.Port callable',
+						fullName: boundaryCase.fullName,
 					},
 				],
 			},
@@ -384,6 +447,22 @@ manifest.lanes = [
 				),
 			},
 		],
+	},
+];
+
+manifest.divergences = [
+	{
+		id: 'view-renderer-boundary',
+		caseIds: ['differential:view-renderer-boundary'],
+		upstreamResult: 'React Drei can move View children between DOM and Three roots through tunnel-rat.',
+		octaneResult:
+			"Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
+		rationale: 'Octane components are statically owned by one renderer.',
+		classification: 'intentional-divergence',
+		consumerImpact: 'A View cannot transport authored Three children from an independent DOM root.',
+		migrationGuidance: 'Author View inside the Three Canvas and avoid the DOM-root View.Port transport form.',
+		owner: '@octanejs/drei',
+		reviewCondition: 'Revisit if Octane gains cross-renderer component transport.',
 	},
 ];
 

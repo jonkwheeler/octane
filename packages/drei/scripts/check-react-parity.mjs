@@ -18,6 +18,7 @@ const OCTANE_ONLY = new Set([
 	'packages/drei/tests/config.test.ts',
 	'packages/drei/tests/crosswalk-guard.test.ts',
 	'packages/drei/tests/react-parity-guard.test.ts',
+	'packages/drei/tests/view-renderer-boundary.test.ts',
 ]);
 
 const inventory = read('adapted-runtime.json');

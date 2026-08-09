@@ -27,6 +27,7 @@
         "tests/config\\.test\\.ts$",
         "tests/crosswalk-guard\\.test\\.ts$",
         "tests/react-parity-guard\\.test\\.ts$",
+        "tests/view-renderer-boundary\\.test\\.ts$",
         "tests/differential/"
       ]
     }
@@ -69,12 +70,12 @@
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "681b85024ac2b7af94065fd16a4714f41a5ceb90954e2d3ba37c3376321a41bb"
+          "sha256": "7323b87516e262743885f51154edea4feb3adb7ac9ddf4abff66845614d681f0"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "1207635fb6ab8addb97394de470984015d293df577a75fc5c115cc2bb56128be"
+          "sha256": "2564bed7645f65a5a50e1deda4714d2f5b0a37e832d15d89b0c2359ea1be8927"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
@@ -84,7 +85,7 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "b34830b8bbd2cb6c535ffff7274ac18fcc006c29f33875817bd42cb821e043aa"
+          "sha256": "3e2690953ebb2a16d76854cd6548f0901ed322d7642bdad4dd3c1a0b3d56cc69"
         }
       ]
     },
@@ -100,12 +101,45 @@
         {
           "path": "packages/drei/tests/differential/view.test.ts",
           "role": "test",
-          "sha256": "84950fe5d6b3673a0d67d30cc80eea524b8a4d48608ec0831db23164876491c9",
+          "sha256": "11ce7b6ef5cb8b02f5a1aee35950b6fd93c81a01ba97c39ec8db014f37147da8",
           "cases": [
             {
               "id": "differential:view-rendering",
               "testName": "matches tracked rect, viewport/scissor/render restoration, frames and refs",
               "fullName": "View matches tracked rect, viewport/scissor/render restoration, frames and refs"
+            },
+            {
+              "id": "differential:view-visibility",
+              "testName": "matches invisible and offscreen clear/render boundaries and event connection cleanup",
+              "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
+            },
+            {
+              "id": "differential:view-port-surface",
+              "testName": "preserves the View.Port static surface",
+              "fullName": "View preserves the View.Port static surface"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drei-view-renderer-boundary",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei-guards",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Ordinary-project framework-contract pin for the intentional DOM-root View renderer-boundary divergence.",
+      "files": [
+        {
+          "path": "packages/drei/tests/view-renderer-boundary.test.ts",
+          "role": "test",
+          "sha256": "8d7ad247ff992fd1326ca8f336da5a7cf64f3f213b068a808c0dc5a3203c04f5",
+          "cases": [
+            {
+              "id": "differential:view-renderer-boundary",
+              "testName": "documents the outside-DOM renderer boundary while keeping View.Port callable",
+              "fullName": "View renderer boundary documents the outside-DOM renderer boundary while keeping View.Port callable"
             }
           ]
         }
@@ -181,7 +215,7 @@
   "divergences": [
     {
       "id": "view-renderer-boundary",
-      "caseIds": ["differential:view-rendering"],
+      "caseIds": ["differential:view-renderer-boundary"],
       "upstreamResult": "React Drei can move View children between DOM and Three roots through tunnel-rat.",
       "octaneResult": "Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
       "rationale": "Octane components are statically owned by one renderer.",
