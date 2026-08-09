@@ -303,11 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-<<<<<<< HEAD
-          "sha256": "9145470d57ed79d798e82e801e8ecd66219e38d2f7e6aedc2a2aa84562d2c06b"
-=======
-          "sha256": "6a1a74cae758742165983cb0c14780340a2a7e4030574f32cddc6a73fef686a0"
->>>>>>> origin/main
+          "sha256": "6d2710b701dc4b454103d8cc70e823a4e963fa78caa42bf017a6ec8f3011b63a"
         }
       ]
     }
