@@ -111,9 +111,9 @@
       "notes": "Authenticates all six documented framework and lifecycle divergences.",
       "files": [
         {
-          "path": "packages/tiptap/tests/unit/public-surface.test.ts",
+          "path": "packages/tiptap/tests/unit/native-external-store.test.ts",
           "role": "test",
-          "sha256": "28566c68d7f09b1c85d74a5f60020a538672093c6b0a6978241a4ac18effb9d2",
+          "sha256": "8aa7723543a5b5ab18cff597ca415b92dd99382bb67fc7e80b41df6d098c57f4",
           "cases": [
             {
               "id": "adapted:tiptap-native-external-store",
@@ -123,9 +123,9 @@
           ]
         },
         {
-          "path": "packages/tiptap/tests/unit/components.test.ts",
+          "path": "packages/tiptap/tests/unit/editor-consumer.test.ts",
           "role": "test",
-          "sha256": "543cb7d851cf047e7c432d6467c6c477baaaff7438db33cc5013d1ba49f2c707",
+          "sha256": "0f81b20d939c75b95ef2d0fe6dbacb0f5dae9356be6ef4a26c0f7aa00ebd08d6",
           "cases": [
             {
               "id": "adapted:tiptap-editor-consumer",
@@ -157,9 +157,9 @@
           ]
         },
         {
-          "path": "packages/tiptap/tests/unit/menus.test.ts",
+          "path": "packages/tiptap/tests/unit/native-menu-events.test.ts",
           "role": "test",
-          "sha256": "bdeb4a5fe5750598241cc94eee15a43415f7999539716ce7ec2fe0040879fb68",
+          "sha256": "94aba473cbbae74fcc98cb27c249a662c414df9735b71c1013d6e56e364bd95c",
           "cases": [
             {
               "id": "adapted:tiptap-native-menu-events",

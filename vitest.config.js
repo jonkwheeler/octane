@@ -2319,13 +2319,23 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Adapted divergence cases live in dedicated files so file-granular
+				// ordinary exclusion does not hide the rest of unit conformance.
+				testExecution: {
+					group: 'react-parity',
+					include: [
+						'packages/tiptap/tests/unit/native-external-store.test.ts',
+						'packages/tiptap/tests/unit/editor-consumer.test.ts',
+						'packages/tiptap/tests/unit/custom-views.test.ts',
+						'packages/tiptap/tests/unit/native-menu-events.test.ts',
+						'packages/tiptap/tests/hydration/**/*.test.ts',
+					],
+				},
 				test: {
 					name: 'tiptap',
 					include: [
 						'packages/tiptap/tests/unit/**/*.test.ts',
 						'packages/tiptap/tests/unit/**/*.test.tsx',
-						'packages/tiptap/tests/differential/**/*.test.ts',
 						'packages/tiptap/tests/hydration/**/*.test.ts',
 					],
 					environment: 'jsdom',
@@ -2354,6 +2364,7 @@ export default defineConfig({
 					globalSetup: ['packages/tiptap/tests/differential/_setup.ts'],
 					globals: false,
 				},
+
 				plugins: [octane()],
 				resolve: {
 					alias: [
