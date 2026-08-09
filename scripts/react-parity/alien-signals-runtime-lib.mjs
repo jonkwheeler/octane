@@ -446,6 +446,39 @@ function expressionCallsNamedCallee(expression, names) {
 	return found;
 }
 
+function normalizeUpdateShape(expression, sourceFile) {
+	if (expression === undefined || expression === null) return 'none';
+	const fn = functionLikeOf(expression);
+	if (fn !== null) {
+		const params = [];
+		for (const parameter of fn.parameters) {
+			if (ts.isIdentifier(parameter.name)) params.push(parameter.name.text);
+		}
+		let bodyText = fn.body.getText(sourceFile);
+		for (let index = 0; index < params.length; index++) {
+			bodyText = bodyText.replace(new RegExp(`\\b${params[index]}\\b`, 'g'), `$${index}`);
+		}
+		return `fn:${bodyText.replace(/\s+/g, '')}`;
+	}
+	return `val:${expression.getText(sourceFile).replace(/\s+/g, '')}`;
+}
+
+function collectNamedSetterInvocations(expression, names, sourceFile) {
+	const shapes = [];
+	function visit(node) {
+		const call = callExpressionOf(node);
+		if (call !== null) {
+			const root = calleeRootIdentifier(call.expression);
+			if (root !== null && names.has(root) && call.arguments.length > 0) {
+				shapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(expression);
+	return shapes;
+}
+
 function jsxAttributeInitializer(attribute) {
 	if (attribute.initializer === undefined) return null;
 	if (
@@ -541,8 +574,9 @@ export function extractFixturesThatRecordHookSetters(fixtureSource) {
 
 /**
  * Per-fixture element ids whose onClick handlers invoke a hook-returned setter
- * (`useSignal` / `useSetSignal`). Clicks on other ids do not count as hook-path
- * transitions.
+ * (`useSignal` / `useSetSignal`), with the authenticated setter-invocation count
+ * and normalized update shapes inside that handler. A single click that queues
+ * two functional updates contributes two hook-path writes, not one.
  */
 export function extractFixtureHookSetterClickIds(fixtureSource) {
 	const byFixture = new Map();
@@ -557,17 +591,23 @@ export function extractFixtureHookSetterClickIds(fixtureSource) {
 			continue;
 		}
 		const setters = collectHookReturnedSetterNames(statement.body);
-		const ids = new Set();
+		const ids = new Map();
 		if (setters.size > 0) {
 			function visit(node) {
 				if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
 					const id = elementIdFromJsxAttributes(node.attributes);
 					const onClick = onClickExpressionFromJsxAttributes(node.attributes);
 					if (id !== null && onClick !== null) {
+						let shapes = [];
 						if (ts.isIdentifier(onClick) && setters.has(onClick.text)) {
-							ids.add(id);
-						} else if (expressionCallsNamedCallee(onClick, setters)) {
-							ids.add(id);
+							// Bare setter reference as the handler: one invocation per click,
+							// argument shape unknown until event time.
+							shapes = ['fn:event'];
+						} else {
+							shapes = collectNamedSetterInvocations(onClick, setters, sourceFile);
+						}
+						if (shapes.length > 0) {
+							ids.set(id, { writes: shapes.length, shapes });
 						}
 					}
 				}
@@ -742,7 +782,8 @@ function calleeRootIdentifier(expression) {
  * handler mounted on one of those fixtures.
  *
  * When `fixtureHookSetterClicks` is provided, `mountResult.click('#id')` counts
- * only when the mounted fixture's `#id` onClick invokes a hook-returned setter.
+ * the authenticated setter invocations (and their normalized update shapes)
+ * inside that fixture handler — not one write per click.
  */
 export function extractCaseTransitionStructure(
 	source,
@@ -772,6 +813,8 @@ export function extractCaseTransitionStructure(
 			let fixtureClicks = 0;
 			let directSourceWrites = 0;
 			let recordedSetterWrites = 0;
+			const hookSurfaceShapes = [];
+			const hookPathShapes = [];
 
 			function visitBody(bodyNode) {
 				if (ts.isVariableDeclaration(bodyNode) && bodyNode.initializer && bodyNode.name) {
@@ -817,21 +860,27 @@ export function extractCaseTransitionStructure(
 							fixtureHookSetterClicks !== null
 						) {
 							const authenticated = fixtureHookSetterClicks.get(fixtureName);
-							if (authenticated !== undefined && authenticated.has(selectorId)) {
-								fixtureClicks += 1;
+							const clickMeta =
+								authenticated !== undefined ? authenticated.get(selectorId) : undefined;
+							if (clickMeta !== undefined) {
+								fixtureClicks += clickMeta.writes;
+								for (const shape of clickMeta.shapes) hookPathShapes.push(shape);
 							}
 						}
 					} else if (isResultCurrentAccess(expression) && call.arguments.length > 0) {
 						hookSurfaceWrites += 1;
+						hookSurfaceShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
 					} else {
 						const root = calleeRootIdentifier(expression);
 						if (root !== null && call.arguments.length > 0) {
 							if (hookAliases.has(root)) {
 								hookSurfaceWrites += 1;
+								hookSurfaceShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
 							} else if (signalBindings.has(root)) {
 								directSourceWrites += 1;
 							} else if (recordedSetterAliases.has(root)) {
 								recordedSetterWrites += 1;
+								hookPathShapes.push(normalizeUpdateShape(call.arguments[0], sourceFile));
 							}
 						}
 					}
@@ -846,6 +895,8 @@ export function extractCaseTransitionStructure(
 				directSourceWrites,
 				recordedSetterWrites,
 				hookPathWrites: fixtureClicks + recordedSetterWrites,
+				hookSurfaceShapes,
+				hookPathShapes,
 			});
 			return;
 		}
@@ -876,15 +927,16 @@ export function assertPerCaseTransitionStructure(pristineSource, adaptedSource, 
 				`alien-signals runtime transition crosswalk missing adapted case: ${pristineCase.title}`,
 			);
 		}
-		// Fixture clicks may batch multiple pristine setter writes (e.g. #inc-twice).
-		// Reject only when the adapted case has no hook-path coverage, or pads a
-		// shortfall with direct createSignal writes / incidental non-setter calls.
+		// Authenticated clicks contribute their in-handler setter-invocation count
+		// (and shapes). Collapsing two queued functional updates into one write —
+		// even when the final DOM value still matches — is a bypass.
 		const underCovered = adaptedCase.hookPathWrites < pristineCase.hookSurfaceWrites;
-		const bypassed =
-			adaptedCase.hookPathWrites === 0 || (underCovered && adaptedCase.directSourceWrites > 0);
-		if (bypassed) {
+		const pristineShapes = [...pristineCase.hookSurfaceShapes].sort();
+		const adaptedShapes = [...adaptedCase.hookPathShapes].sort();
+		const shapeMismatch = JSON.stringify(pristineShapes) !== JSON.stringify(adaptedShapes);
+		if (underCovered || shapeMismatch) {
 			throw new Error(
-				`alien-signals adapted case "${pristineCase.title}" bypasses ${pristineCase.hookSurfaceWrites} hook-surface transition(s) with direct source mutation (${adaptedCase.directSourceWrites} direct write(s), ${adaptedCase.fixtureClicks} fixture click(s), ${adaptedCase.recordedSetterWrites} recorded setter write(s)); keep hook-driven interactions under the transformation ledger`,
+				`alien-signals adapted case "${pristineCase.title}" bypasses ${pristineCase.hookSurfaceWrites} hook-surface transition(s) with direct source mutation (${adaptedCase.directSourceWrites} direct write(s), ${adaptedCase.fixtureClicks} authenticated setter write(s) from clicks, ${adaptedCase.recordedSetterWrites} recorded setter write(s)); keep hook-driven interactions under the transformation ledger`,
 			);
 		}
 	}

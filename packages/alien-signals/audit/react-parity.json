@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/alien-signals/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/alien-signals/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/alien-signals/tests"
-      ],
-      "include": [
-        "upstream-adapted\\.test\\.ts$"
-      ],
+      "roots": ["packages/alien-signals/tests"],
+      "include": ["upstream-adapted\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -133,7 +125,7 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "0d340f5b09f8b64105ed4e641ab979478444092e455ce81126ae4dcca9916e54"
+          "sha256": "d8a14bad3216e747a53797679ff6a9efb25ab740d248bff0e123f3a25c221b71"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
@@ -143,12 +135,12 @@
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "dc3075d880b84e73075a8b5053f35b65720024cb4c7b467c78e673c61eefa1f5"
+          "sha256": "09cbab0793ab94428ab11898f1ba82e268fd671dd9dd4c8bdc68faf4960b4a68"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
           "role": "support",
-          "sha256": "6d8094368440dce3eb12a76ceab951d2f6523d4180d0e69462de73f514edfaa5"
+          "sha256": "6254e1f78e9ecafbb96036fad90e924a351ec89f83bc29c735ee1238eebb345d"
         },
         {
           "path": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
@@ -158,7 +150,7 @@
         {
           "path": "scripts/react-parity/alien-signals-classifications-lib.mjs",
           "role": "support",
-          "sha256": "5106c279b97ebbeb44b54ae071c4eaf171b22db1ca821725478ff656964467ee"
+          "sha256": "8bc2ba728bdea2f8aff5fbf3830a09138f5a31e3badd4a6e1c74cb53cc2fafb3"
         }
       ]
     },
@@ -232,7 +224,7 @@
         {
           "path": "packages/alien-signals/audit/adapted-types.json",
           "role": "test",
-          "sha256": "69a82cdcac44a2ff3c392360863351e32ad1ccefa9efad73f7270fdcb4a79676",
+          "sha256": "41b109668c877b4b5b3d458635a5830446ff9fa6e33fbd5737eb55a8dfc3beda",
           "cases": [
             {
               "id": "types:alien-signals-adapted",
@@ -244,7 +236,7 @@
         {
           "path": "packages/alien-signals/typetests/upstream-typecheck.test-d.ts",
           "role": "support",
-          "sha256": "3d2b4bd023e4d01bb9674847b284309c5d54ff1de9ba706b41818650550181c6"
+          "sha256": "6aba5615fdb24329246f8c05421d3b3717e8ca9eca868938f881975f11a75cb9"
         },
         {
           "path": "packages/alien-signals/typetests/public-api.test-d.ts",
@@ -279,9 +271,7 @@
   "divergences": [
     {
       "id": "alien-signals-readable-computed",
-      "caseIds": [
-        "types:alien-signals-readable-computed"
-      ],
+      "caseIds": ["types:alien-signals-readable-computed"],
       "upstreamResult": "Pinned react-alien-signals declarations narrow useSignalValue to WritableSignal, so readable computed probes are rejected.",
       "octaneResult": "useSignalValue accepts ReadableSignal, including createComputed results, matching the documented Octane surface.",
       "rationale": "Upstream docs and runtime treat computed signals as readable; the published React declaration is narrower than that contract. Octane corrects the accept surface without weakening the read-only computed negative control.",

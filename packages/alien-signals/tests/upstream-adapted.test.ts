@@ -122,7 +122,7 @@ describe('Alien React Library', () => {
 	it('useSignalScope should create and manage an effect scope in React', async function useSignalScopeShouldCreateAndManageScope() {
 		const source = createSignal(0);
 		const entries: string[] = [];
-		let stop = function noop() {};
+		let stop: (() => void) | undefined;
 		const result = mount(ScopeProbe, {
 			source,
 			label: 'scope',
@@ -135,6 +135,7 @@ describe('Alien React Library', () => {
 		});
 		await nextPaint();
 		expect(stop).toBeDefined();
+		expect(entries).toEqual(['scope:0']);
 		result.unmount();
 		await nextPaint();
 		source(1);

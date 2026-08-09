@@ -51,6 +51,21 @@
       "path": "playground/octane/src/demos/AlienSignals.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Central playground registration and demo journey for @octanejs/alien-signals; unpaired against the upstream bun React suite."
+    },
+    {
+      "path": "scripts/react-parity/alien-signals-classifications-lib.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Negative-control suite for port-authored test classification discovery; supports the parity claim but is not an adapted upstream title."
+    },
+    {
+      "path": "scripts/react-parity/alien-signals-runtime-lib.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Negative-control suite for runtime assertion/fixture/transition crosswalk; supports the parity claim but is not an adapted upstream title."
+    },
+    {
+      "path": "scripts/react-parity/alien-signals-types-lib.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Negative-control suite for type-oracle crosswalk; supports the parity claim but is not an adapted upstream title."
     }
   ]
 }

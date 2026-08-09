@@ -219,6 +219,34 @@ test('rejects semantic fixture drift even when the ledger sha256 is updated', fu
 	}, /semantic fixture drift/);
 });
 
+test('rejects collapsing queued functional updates into one authenticated click write', function rejectsCollapsedFunctionalUpdates() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const collapsed = fixtureSource.replace(
+		'onClick={() => {\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t\tsetValue((previous) => previous + 1);\n\t\t\t}}',
+		'onClick={() => {\n\t\t\t\tsetValue((previous) => previous + 2);\n\t\t\t}}',
+	);
+	assert.notEqual(collapsed, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: collapsed,
+			expectedFixtureSha256: fixtureFileFingerprint(collapsed),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects replacing hook-driven clicks with direct source mutation', function rejectsHookBypass() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),

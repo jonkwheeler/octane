@@ -27,6 +27,14 @@ async function fixture() {
 		new URL('../../playground/octane/src/demos/AlienSignals.test.ts', import.meta.url),
 		join(root, 'playground/octane/src/demos/AlienSignals.test.ts'),
 	);
+	await mkdir(join(root, 'scripts/react-parity'), { recursive: true });
+	for (const file of [
+		'alien-signals-classifications-lib.test.mjs',
+		'alien-signals-runtime-lib.test.mjs',
+		'alien-signals-types-lib.test.mjs',
+	]) {
+		await cp(new URL(`./${file}`, import.meta.url), join(root, `scripts/react-parity/${file}`));
+	}
 	for (const file of ['test-classifications.json', 'react-parity.json']) {
 		await cp(
 			new URL(`../../packages/alien-signals/audit/${file}`, import.meta.url),
@@ -87,6 +95,22 @@ test('rejects an unclassified adapted typetest', async function rejectsUnclassif
 	}, /exactly one classification/);
 });
 
+test('rejects an unclassified scripts react-parity harness test', async function rejectsUnclassifiedScriptsHarness(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const path = join(root, 'packages/alien-signals/audit/test-classifications.json');
+	const config = JSON.parse(await readFile(path, 'utf8'));
+	config.tests = config.tests.filter(function keepNonRuntimeHarness(entry) {
+		return entry.path !== 'scripts/react-parity/alien-signals-runtime-lib.test.mjs';
+	});
+	await writeFile(path, `${JSON.stringify(config)}\n`);
+	assert.throws(function run() {
+		verifyAlienSignalsTestClassifications(root);
+	}, /exactly one classification/);
+});
+
 test('rejects a parity classification without an oracle', async function rejectsMissingOracle(t) {
 	const root = await fixture();
 	t.after(function cleanup() {
@@ -140,5 +164,5 @@ test('accepts the committed paired type-oracle classification', async function a
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	assert.deepEqual(verifyAlienSignalsTestClassifications(root), { tests: 10 });
+	assert.deepEqual(verifyAlienSignalsTestClassifications(root), { tests: 13 });
 });

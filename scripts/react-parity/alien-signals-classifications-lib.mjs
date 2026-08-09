@@ -20,6 +20,10 @@ const DISCOVERY_ROOTS = [
 		root: 'playground/octane/src/demos',
 		match: /^AlienSignals.*\.test\.(?:ts|tsx|tsrx)$/,
 	},
+	{
+		root: 'scripts/react-parity',
+		match: /^alien-signals-(?:classifications|runtime|types)-lib\.test\.mjs$/,
+	},
 ];
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
