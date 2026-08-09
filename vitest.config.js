@@ -1909,7 +1909,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Keep outside react-parity ownership while the manifest is
+				// recorded-unverified: react-parity:check only validates that
+				// status, so ordinary shards must still execute the oracle.
 				test: {
 					name: 'recharts-differential',
 					include: ['packages/recharts/tests/differential/**/*.test.ts'],
