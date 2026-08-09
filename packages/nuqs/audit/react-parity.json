@@ -244,6 +244,11 @@
           "path": "packages/nuqs/typetests/public-api.test-d.ts",
           "role": "support",
           "sha256": "24af067a8b1ae35e8ae141cfd0242f55c5ddc86ccc1a6a842f8fc75fc0ea9cde"
+        },
+        {
+          "path": "packages/nuqs/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "d999d9d832e80137a5a0b485aba5348581dd6a45d703bfc2bb659c33361cd13c"
         }
       ]
     }
