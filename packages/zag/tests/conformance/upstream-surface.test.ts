@@ -39,7 +39,7 @@ describe('@zag-js/react public surface', () => {
 		expect(normalized.ref).toBe(ref);
 	});
 
-	it('preserves native onChange for select and checkable inputs', () => {
+	it('preserves native onChange for select and non-text inputs', () => {
 		const onChange = function onChange() {};
 
 		const selectProps = zag.normalizeProps.select({ onChange });
@@ -53,5 +53,17 @@ describe('@zag-js/react public surface', () => {
 		const radioProps = zag.normalizeProps.input({ type: 'radio', onChange });
 		expect(radioProps.onChange).toBe(onChange);
 		expect(radioProps).not.toHaveProperty('onInput');
+
+		const fileProps = zag.normalizeProps.input({ type: 'file', onChange });
+		expect(fileProps.onChange).toBe(onChange);
+		expect(fileProps).not.toHaveProperty('onInput');
+
+		const dateProps = zag.normalizeProps.input({ type: 'date', onChange });
+		expect(dateProps.onChange).toBe(onChange);
+		expect(dateProps).not.toHaveProperty('onInput');
+
+		const rangeProps = zag.normalizeProps.input({ type: 'range', onChange });
+		expect(rangeProps.onChange).toBe(onChange);
+		expect(rangeProps).not.toHaveProperty('onInput');
 	});
 });

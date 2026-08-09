@@ -35,10 +35,13 @@ version are reused unchanged and are not reimplemented here.
 
 - **Text-host `onChange` → `onInput`.** Upstream `normalizeProps` is an identity
   normalizer. Octane rewrites React-style text-entry `onChange` to native
-  `onInput` for `normalizeProps.input` (non-checkbox/radio) and
-  `normalizeProps.textarea`. `<select>` and checkbox/radio hosts keep native
-  `onChange`. Upstream has no cases for this export; the rewrite is pinned by
-  `tests/conformance/upstream-surface.test.ts` and recorded in `status.json`.
+  `onInput` for `normalizeProps.textarea` and `normalizeProps.input` when the
+  type is a text-entry host (`text`/`search`/`url`/`tel`/`password`/`email`/
+  `number`, plus missing/invalid types that HTML defaults to text).
+  `<select>` and non-text inputs (`checkbox`/`radio`/`file`/`date`/`range`/
+  …) keep native `onChange`. Upstream has no cases for this export; the rewrite
+  is pinned by `tests/conformance/upstream-surface.test.ts` and recorded in
+  `status.json`.
 - **Portal ref / children shape.** Container refs use Octane's structural
   `{ current: HTMLElement | null }` rather than `React.RefObject`. Compiled
   Octane children blocks portal as one unit so component scope is preserved;
