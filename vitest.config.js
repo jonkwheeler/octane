@@ -3430,7 +3430,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Ordinary ownership: repo-authored Octane-only smoke stays out of
+				// adaptedRuntimeSummary / react-parity evidence.
 				test: {
 					name: 'react-day-picker',
 					include: [
@@ -3453,7 +3454,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker-ssr',
 					include: ['packages/react-day-picker/tests/ssr/**/*.test.ts'],
@@ -3475,7 +3475,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker-browser',
 					include: ['packages/react-day-picker/tests/browser/**/*.test.ts'],
@@ -3486,9 +3485,8 @@ export default defineConfig({
 				},
 			},
 			{
-				// React oracle evidence: Octane fixtures vs published react-day-picker on
-				// real React. Own project so the React-side path stays out of the adapted
-				// suite inventory.
+				// Bounded React oracle evidence only — unpaired smoke/SSR/browser
+				// projects stay on ordinary ownership above.
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker-differential',

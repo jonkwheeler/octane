@@ -145,6 +145,34 @@ describe('CI workflow aggregation', () => {
 		}
 	});
 
+	test('keeps DayPicker unpaired smoke on ordinary ownership and installs Chromium for parity browser lanes', () => {
+		const baseProjects = new Map(
+			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
+		);
+		for (const project of [
+			'react-day-picker',
+			'react-day-picker-ssr',
+			'react-day-picker-browser',
+		]) {
+			assert.equal(baseProjects.get(project).testExecution, undefined);
+		}
+		assert.equal(
+			baseProjects.get('react-day-picker-differential').testExecution.group,
+			'react-parity',
+		);
+		assert.ok(
+			jobSource('test_shard').includes(
+				'--exclude "packages/react-day-picker/tests/browser/**/*.test.ts"',
+			),
+		);
+		assert.ok(jobSource('heavy_integration').includes('packages/react-day-picker/tests/browser'));
+		const parity = jobSource('react_parity_checks');
+		const install = parity.indexOf('Install Playwright Chromium for parity browser lanes');
+		const check = parity.indexOf('Check React parity inventories and execute required lanes');
+		assert.ok(install >= 0 && install < check);
+		assert.doesNotMatch(jobSource('lint_checks'), /Install Playwright Chromium for parity/);
+	});
+
 	test('skips expensive jobs only after the committed scope classifier opts out', () => {
 		assert.match(
 			jobSource('release_change'),
@@ -282,17 +310,14 @@ describe('CI workflow aggregation', () => {
 		assert.match(aggregate, /test "\$REACT_PARITY_RESULT" = skipped/);
 		assert.match(aggregate, /test "\$REACT_PARITY_RESULT" = success/);
 
-		// The manifest runner owns all required lanes in one process. Execution
-		// reports prove exact identities, so only explicit validation collects.
-		assert.match(
+		// The manifest runner owns all required lanes in one process, including
+		// recorded-unverified manifests. Execution reports prove exact identities,
+		// so only explicit --validate-only skips lane execution.
+		assert.match(reactParityCheck, /\[HARNESS_PATH, 'run-required', '--manifest', relativeFile\]/);
+		assert.doesNotMatch(
 			reactParityCheck,
 			/manifest\.provenance\.verification === 'verified' \? 'run-required' : 'validate'/,
 		);
-		assert.match(
-			reactParityCheck,
-			/if \(!validateOnly\) \{\s+const action =[^;]+;\s+execFileSync\(process\.execPath, \[HARNESS_PATH, action, '--manifest', relativeFile\]/,
-		);
-		assert.match(reactParityCheck, /\[HARNESS_PATH, action, '--manifest', relativeFile\]/);
 		assert.doesNotMatch(reactParityCheck, /'--lane'/);
 		const executionMarker = "} else {\n\tif (action === 'run-required'";
 		const executionStart = reactParityHarness.indexOf(executionMarker);

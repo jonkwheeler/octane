@@ -7,14 +7,10 @@ import { fileURLToPath } from 'node:url';
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
+// Only the bounded differential lane is React-parity evidence. Unpaired smoke,
+// SSR, and browser suites stay under ordinary Vitest ownership.
 const lanes = [
-	['react-day-picker', 'packages/react-day-picker/audit/adapted-runtime.json'],
-	['react-day-picker-ssr', 'packages/react-day-picker/audit/adapted-runtime-server.json'],
-	['react-day-picker-browser', 'packages/react-day-picker/audit/adapted-runtime-browser.json'],
-	[
-		'react-day-picker-differential',
-		'packages/react-day-picker/audit/differential-runtime.json',
-	],
+	['react-day-picker-differential', 'packages/react-day-picker/audit/differential-runtime.json'],
 ];
 
 for (const [project, destination] of lanes) {

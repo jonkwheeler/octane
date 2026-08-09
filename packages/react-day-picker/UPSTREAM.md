@@ -17,8 +17,8 @@ This port is **explicitly incomplete** for React-parity evidence. Upstream ships
 Still missing before this binding can claim a parity suite:
 
 - pristine runtime lane that runs the unchanged pinned upstream suite with case/assertion negative controls
-- adapted one-for-one upstream runtime inventory (today's `adapted-runtime*.json` files are provisional repo-authored evidence only)
+- adapted one-for-one upstream runtime inventory (today's leftover `adapted-runtime*.json` files are provisional repo-authored smoke only and are not parity evidence)
 - pristine type lane and one-for-one adapted type inventory with accept/reject negative controls
 - exhaustive upstream-test disposition for every vendored test artifact
 
-Until those land, do not treat the adapted/browser/differential inventories as a substitute for the upstream suite. Current Vitest projects (`react-day-picker`, `react-day-picker-ssr`, `react-day-picker-browser`, `react-day-picker-differential`) are owned by `testExecution.group: react-parity` and provide provisional repo-authored smoke and differential evidence only. Provenance verification remains `recorded-unverified`.
+Until those land, do not treat unpaired smoke inventories as a substitute for the upstream suite. The only React-parity evidence on this package is the bounded differential Vitest project (`react-day-picker-differential`). Repo-authored DOM, SSR, and browser smoke projects stay under ordinary ownership outside `adaptedRuntimeSummary`. Provenance verification remains `recorded-unverified`.

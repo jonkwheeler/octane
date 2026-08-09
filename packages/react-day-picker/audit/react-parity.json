@@ -21,14 +21,14 @@
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-day-picker/tests"],
-      "include": ["\\.test\\.ts$"],
-      "exclude": ["/tests/differential/"]
+      "roots": ["packages/react-day-picker/tests/differential"],
+      "include": ["parity\\.test\\.ts$"],
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 13,
-    "uniqueIdentities": 13,
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -39,90 +39,10 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8c38c3bca72ae682154fbac228b57db26da45be895c64d59196d2c37af37dbf4"
+      "lockfileSha256": "ea5fc28315363239e40ad4d1188f7e8b03148a4c32e53934fc6145062c7c40e9"
     }
   },
   "lanes": [
-    {
-      "id": "react-day-picker-adapted-full-suite",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-day-picker",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Provisional repo-authored adapted DOM and export smoke evidence. Not a one-for-one upstream-suite substitute; see UPSTREAM.md parity incompleteness.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-day-picker/audit/adapted-runtime.json"
-      },
-      "files": [
-        {
-          "path": "packages/react-day-picker/audit/adapted-runtime.json",
-          "role": "support",
-          "sha256": "f785229a30636788dd3ab6ba43ec9ed34b9149fc90e5ec60d160f2918125b0ac"
-        },
-        {
-          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
-          "role": "support",
-          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
-        },
-        {
-          "path": "packages/react-day-picker/audit/upstream-integrity.json",
-          "role": "support",
-          "sha256": "89f6591d65ac0c3d42838b2c8c4e531eab7faa005e3978188eac99d9a3f6b263"
-        }
-      ]
-    },
-    {
-      "id": "react-day-picker-adapted-full-suite-server",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-day-picker-ssr",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Provisional repo-authored server-rendering smoke evidence. Not a one-for-one upstream-suite substitute; see UPSTREAM.md parity incompleteness.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-day-picker/audit/adapted-runtime-server.json"
-      },
-      "files": [
-        {
-          "path": "packages/react-day-picker/audit/adapted-runtime-server.json",
-          "role": "support",
-          "sha256": "52195ca5b501debf0fcae0f3ffc0f42799b11f3f2c51a6d39f118a4d0a4a0dba"
-        },
-        {
-          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
-          "role": "support",
-          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
-        }
-      ]
-    },
-    {
-      "id": "react-day-picker-real-browser",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-day-picker-browser",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Provisional real-browser smoke for selection, focus movement, navigation, and animation cleanup. Not a one-for-one upstream-suite substitute; see UPSTREAM.md parity incompleteness.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/react-day-picker/audit/adapted-runtime-browser.json"
-      },
-      "files": [
-        {
-          "path": "packages/react-day-picker/audit/adapted-runtime-browser.json",
-          "role": "support",
-          "sha256": "84d95b31beee6e6e4aedb16f0607808724f4fbac1a18397ea8c9d6c70fee1088"
-        },
-        {
-          "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
-          "role": "support",
-          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
-        }
-      ]
-    },
     {
       "id": "react-day-picker-differential",
       "type": "differential",
@@ -144,7 +64,12 @@
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "ca804ad00c7768b183a15c3d7d4ae35da1d420d15afb441254e5eca4fdb02a09"
+          "sha256": "cb89501a524eb8f308d892236bb8b4e467a07f7359cba7879e3e984a26ad86e0"
+        },
+        {
+          "path": "packages/react-day-picker/audit/upstream-integrity.json",
+          "role": "support",
+          "sha256": "89f6591d65ac0c3d42838b2c8c4e531eab7faa005e3978188eac99d9a3f6b263"
         }
       ]
     }
