@@ -18,12 +18,12 @@ The published artifact supplies the runtime and declaration boundary. The canoni
 | Upstream entry/export | Octane entry/export | Disposition | Evidence |
 | --- | --- | --- | --- |
 | `valtio` vanilla exports | `@octanejs/valtio` | Reused from `valtio/vanilla` | `tests/conformance/exports.test.ts` |
-| `useSnapshot` | `@octanejs/valtio`, `@octanejs/valtio/react` | Ported to Octane hooks | differential snapshot case and `tests/conformance/binding.test.ts` |
-| `valtio/react/utils` `useProxy` | `@octanejs/valtio/react/utils` | Ported to Octane hooks | differential useProxy case and `tests/conformance/binding.test.ts` |
+| `useSnapshot` | `@octanejs/valtio`, `@octanejs/valtio/react` | Ported to Octane hooks | differential snapshot case and `tests/upstream/use-hooks.test.ts` |
+| `valtio/react/utils` `useProxy` | `@octanejs/valtio/react/utils` | Ported to Octane hooks | differential useProxy case and `tests/upstream/use-hooks.test.ts` |
 | `valtio/vanilla` | `@octanejs/valtio/vanilla` | Re-exported unchanged | `tests/conformance/exports.test.ts` |
 | `valtio/vanilla/utils` | `@octanejs/valtio/vanilla/utils` | Re-exported unchanged | `tests/conformance/exports.test.ts` |
 | React DevTools affected-path label | none | Intentional divergence | `tests/conformance/debug-labels.test.ts` |
 
 ## Upstream suite disposition
 
-The tag contains 20 runtime test files. Most cover the framework-neutral vanilla implementation and are already owned by the exact `valtio` dependency reused here; React hook cases are broad and coupled to React Testing Library. This retrofit records upstream runtime suites as **absent** for executable parity (no pristine or one-for-one adapted upstream suite is claimed). Evidence is a repo-authored Octane adapted suite for the public `useSnapshot` / `useProxy` surface plus two representative same-fixture differential cases against the pinned React hooks. The repository has TypeScript assertions embedded in its `.tsx` runtime tests but no standalone one-for-one public declaration suite, so upstream type evidence is classified as **insufficient** with paired repo-authored pristine and adapted type probes.
+The tag contains 20 runtime test files. Most cover the framework-neutral vanilla implementation and are already owned by the exact `valtio` dependency reused here; React hook cases are broad and coupled to React Testing Library. This retrofit records upstream runtime suites as **absent** for executable parity (no pristine or one-for-one adapted upstream suite is claimed). Evidence is a repo-authored adapted suite that cites the pinned `valtio@2.3.2` React hook source (`tests/upstream/use-hooks.test.ts`) plus two representative same-fixture differential cases against those hooks. Broader Octane-only binding coverage stays in ordinary shards (`tests/conformance/binding.test.ts`). The repository has TypeScript assertions embedded in its `.tsx` runtime tests but no standalone one-for-one public declaration suite, so upstream type evidence is classified as **insufficient** with paired repo-authored pristine and adapted type probes.

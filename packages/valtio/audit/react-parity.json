@@ -28,8 +28,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 6,
-    "uniqueIdentities": 6,
+    "inventoryEntries": 3,
+    "uniqueIdentities": 3,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -51,7 +51,7 @@
       "environment": "workspace-node",
       "project": "valtio",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored Octane suite for the public useSnapshot and useProxy surface. Upstream React hook tests are not claimed as an executed one-for-one suite.",
+      "notes": "Repo-authored adapted suite citing pinned valtio@2.3.2 React hook source for useSnapshot and useProxy. Broader Octane-only binding coverage stays in ordinary shards.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/valtio/audit/adapted-runtime.json"
@@ -60,12 +60,12 @@
         {
           "path": "packages/valtio/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "2f3064c67598a3780ff2ee89f3d1c4fc3d5c3abdb2e012a45d0d6e14493a20ee"
+          "sha256": "aeaa79e9a90be03924bf1a36d12cc99923fb135c644bbff2b3043354786b84da"
         },
         {
-          "path": "packages/valtio/tests/upstream/binding.test.ts",
+          "path": "packages/valtio/tests/upstream/use-hooks.test.ts",
           "role": "support",
-          "sha256": "c97fa9f4a775eb320676a8e5a3896781332c7df1f001f928f0aa468641811dda"
+          "sha256": "a68f6830fd3266c919137bd4049aa0342b6e1fb079fc54d96a7408c64e6a2eab"
         }
       ]
     },

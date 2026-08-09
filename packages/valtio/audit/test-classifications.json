@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "tests": [
     {
+      "path": "packages/valtio/tests/conformance/binding.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Broader Octane-only binding coverage for useSnapshot and useProxy; not claimed as adapted React parity evidence."
+    },
+    {
       "path": "packages/valtio/tests/conformance/debug-labels.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Guards the intentional omission of React DevTools affected-path labels outside React parity execution."
