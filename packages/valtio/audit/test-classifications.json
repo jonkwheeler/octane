@@ -7,10 +7,15 @@
       "reason": "Checks additional Octane subscription, slot, and accessed-path behavior beyond the bounded differential scenarios."
     },
     {
-      "path": "packages/valtio/tests/conformance/exports.test.ts",
+      "path": "packages/valtio/tests/conformance/debug-labels.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "valtio-debug-labels",
-      "reason": "Authenticates the documented omission of React DevTools affected-path labels and the framework-neutral re-export boundary."
+      "reason": "Authenticates the documented omission of React DevTools affected-path labels."
+    },
+    {
+      "path": "packages/valtio/tests/conformance/exports.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the framework-neutral vanilla re-export boundary for the public Octane entries."
     },
     {
       "path": "packages/valtio/tests/differential/parity.test.ts",

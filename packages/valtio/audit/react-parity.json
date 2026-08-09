@@ -106,14 +106,14 @@
       "notes": "Authenticates the documented omission of React DevTools affected-path labels.",
       "files": [
         {
-          "path": "packages/valtio/tests/conformance/exports.test.ts",
+          "path": "packages/valtio/tests/conformance/debug-labels.test.ts",
           "role": "test",
-          "sha256": "58f1193e2b7729b8b5ef59d9a4f16c93d15dc62750e424c6356b66a2de498813",
+          "sha256": "b7d3b7a17c42668ac0abfe64ec34708d67df74a93bc30c62a66d86490e4128c8",
           "cases": [
             {
               "id": "adapted:valtio-debug-labels",
               "testName": "omits React DevTools debug labels from the snapshot hook",
-              "fullName": "vanilla entry points omits React DevTools debug labels from the snapshot hook"
+              "fullName": "valtio debug labels omits React DevTools debug labels from the snapshot hook"
             }
           ]
         }

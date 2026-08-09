@@ -22,7 +22,7 @@ The published artifact supplies the runtime and declaration boundary. The canoni
 | `valtio/react/utils` `useProxy` | `@octanejs/valtio/react/utils` | Ported to Octane hooks | differential useProxy case and `tests/conformance/binding.test.ts` |
 | `valtio/vanilla` | `@octanejs/valtio/vanilla` | Re-exported unchanged | `tests/conformance/exports.test.ts` |
 | `valtio/vanilla/utils` | `@octanejs/valtio/vanilla/utils` | Re-exported unchanged | `tests/conformance/exports.test.ts` |
-| React DevTools affected-path label | none | Intentional divergence | `tests/conformance/exports.test.ts` |
+| React DevTools affected-path label | none | Intentional divergence | `tests/conformance/debug-labels.test.ts` |
 
 ## Upstream suite disposition
 

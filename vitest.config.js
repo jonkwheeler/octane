@@ -499,6 +499,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/valtio/tests/conformance/debug-labels.test.ts'],
+				},
 				test: {
 					name: 'valtio',
 					include: ['packages/valtio/tests/**/*.test.ts'],
@@ -506,6 +510,7 @@ export default defineConfig({
 					exclude: ['packages/valtio/tests/differential/**/*.test.ts'],
 					globals: false,
 				},
+
 				plugins: [octane()],
 				resolve: {
 					alias: [
@@ -533,6 +538,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/valtio/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'valtio-differential',
 					include: ['packages/valtio/tests/differential/**/*.test.ts'],
@@ -540,6 +549,7 @@ export default defineConfig({
 					globals: false,
 					globalSetup: ['packages/valtio/tests/differential/_setup.ts'],
 				},
+
 				plugins: [octane()],
 				resolve: {
 					alias: [
