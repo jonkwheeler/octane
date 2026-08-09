@@ -1417,10 +1417,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/react-window/tests/hydration.test.ts'],
-				},
 				test: {
 					name: 'react-window',
 					include: [
@@ -1469,7 +1465,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-window-ssr',
 					include: ['packages/react-window/tests/ssr/**/*.test.ts'],

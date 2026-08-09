@@ -296,55 +296,6 @@
           "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
         }
       ]
-    },
-    {
-      "id": "react-window-hydration",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-window",
-      "notes": "Adopts real Octane server markup for List and Grid, preserves node identity, and verifies both virtualizers remain live after hydration.",
-      "files": [
-        {
-          "path": "packages/react-window/tests/hydration.test.ts",
-          "role": "test",
-          "sha256": "7957b64fe9af95d683655e9cf4f657a0dac17cea70d5bebc2d77fa41520fee29",
-          "cases": [
-            {
-              "id": "adapted:react-window-hydration",
-              "testName": "adopts server List and Grid nodes and keeps virtualization live",
-              "fullName": "@octanejs/react-window hydration adopts server List and Grid nodes and keeps virtualization live"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-window-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-window-ssr",
-      "notes": "Renders bounded List and Grid markup from default dimensions without DOM or ResizeObserver globals.",
-      "files": [
-        {
-          "path": "packages/react-window/tests/ssr/ssr.test.ts",
-          "role": "test",
-          "sha256": "41d04041d251fedf255b4087058c98e1e0a8295f0a8e58c65a1690266992b523",
-          "cases": [
-            {
-              "id": "adapted:react-window-ssr",
-              "testName": "uses default dimensions without accessing browser layout APIs",
-              "fullName": "@octanejs/react-window server rendering uses default dimensions without accessing browser layout APIs"
-            }
-          ]
-        },
-        {
-          "path": "packages/react-window/tests/ssr/_fixtures/server.tsx",
-          "role": "support",
-          "sha256": "5bc5959fdc206930bed43e8ae35bfe4d929848375116a2d9f9c36db728e9ef30"
-        }
-      ]
     }
   ],
   "divergences": [

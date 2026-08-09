@@ -19,7 +19,6 @@ beforeEach(() => {
 afterEach(() => restoreResizeObserver?.());
 
 describe('@octanejs/react-window hydration', () => {
-	// @parity-case adapted:react-window-hydration
 	it('adopts server List and Grid nodes and keeps virtualization live', async () => {
 		const server = await renderHydrationFixture(
 			'react-window',
