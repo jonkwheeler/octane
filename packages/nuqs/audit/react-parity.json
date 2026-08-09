@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/nuqs/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
+      "roots": ["packages/nuqs/src"],
+      "include": ["\\.ts$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/nuqs/tests"
-      ],
-      "include": [
-        "\\.test\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/nuqs/tests"],
+      "include": ["\\.test\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
+      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
     }
   },
   "lanes": [
@@ -200,9 +192,7 @@
   "divergences": [
     {
       "id": "router-adapters-unavailable",
-      "caseIds": [
-        "adapted:nuqs-router-adapters"
-      ],
+      "caseIds": ["adapted:nuqs-router-adapters"],
       "upstreamResult": "Nuqs ships Next, Remix, React Router, and TanStack Router adapters.",
       "octaneResult": "The Octane binding ships standalone React-style, custom, and testing adapters only.",
       "rationale": "Router-specific adapters require renderer-specific ports and integration contracts.",
@@ -214,9 +204,7 @@
     },
     {
       "id": "rsc-cache-unavailable",
-      "caseIds": [
-        "adapted:nuqs-rsc-cache"
-      ],
+      "caseIds": ["adapted:nuqs-rsc-cache"],
       "upstreamResult": "nuqs/server exports createSearchParamsCache backed by React.cache.",
       "octaneResult": "The server entry omits createSearchParamsCache.",
       "rationale": "Octane does not implement the React Server Components cache primitive.",
@@ -228,9 +216,7 @@
     },
     {
       "id": "local-transition-start-type",
-      "caseIds": [
-        "adapted:nuqs-transition-type"
-      ],
+      "caseIds": ["adapted:nuqs-transition-type"],
       "upstreamResult": "Nuqs imports TransitionStartFunction from React's type declarations.",
       "octaneResult": "The binding declares the compatible function shape locally.",
       "rationale": "The Octane package intentionally carries no React type dependency.",
@@ -242,9 +228,7 @@
     },
     {
       "id": "testing-adapter-reset-once",
-      "caseIds": [
-        "adapted:nuqs-testing-reset"
-      ],
+      "caseIds": ["adapted:nuqs-testing-reset"],
       "upstreamResult": "NuqsTestingAdapter resets the shared update queue during every render.",
       "octaneResult": "The Octane adapter resets the queue once per mount before child hooks consume it.",
       "rationale": "Repeated render-time resets abort pending debounced writes under Octane's update scheduling.",
