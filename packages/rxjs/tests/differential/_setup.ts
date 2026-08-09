@@ -1,12 +1,15 @@
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
 import { basename, dirname, join } from 'node:path';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const directory = dirname(fileURLToPath(import.meta.url));
 const fixtureDirectory = join(directory, '../_fixtures');
 const cacheDirectory = join(directory, '.react-cache');
+
+/** Fixtures owned by this differential lane — never the unit-only `_fixtures` tree. */
+const PARITY_FIXTURES = ['parity.tsrx'] as const;
 
 function hashString(value: string): string {
 	let hash = 5381;
@@ -20,10 +23,15 @@ function compileFixture(sourcePath: string): void {
 	let compiled;
 	try {
 		compiled = compileToReact(source, sourcePath);
-	} catch {
-		return;
+	} catch (error) {
+		const detail = error instanceof Error ? error.message : String(error);
+		throw new Error(`React differential compile failed for ${sourcePath}: ${detail}`);
 	}
-	if (compiled.errors?.length) return;
+	if (compiled.errors?.length) {
+		throw new Error(
+			`React differential compile failed for ${sourcePath}: ${compiled.errors.join('\n')}`,
+		);
+	}
 
 	let transformed;
 	try {
@@ -35,8 +43,9 @@ function compileFixture(sourcePath: string): void {
 			format: 'esm',
 			sourcefile: sourcePath,
 		});
-	} catch {
-		return;
+	} catch (error) {
+		const detail = error instanceof Error ? error.message : String(error);
+		throw new Error(`React differential transform failed for ${sourcePath}: ${detail}`);
 	}
 
 	const rewritten = transformed.code
@@ -48,16 +57,12 @@ function compileFixture(sourcePath: string): void {
 	writeFileSync(join(cacheDirectory, `${slug}-${hashString(sourcePath)}.js`), rewritten);
 }
 
-function fixtures(directoryPath: string): string[] {
-	return readdirSync(directoryPath).flatMap(function (name) {
-		const file = join(directoryPath, name);
-		return statSync(file).isDirectory() ? fixtures(file) : file.endsWith('.tsrx') ? [file] : [];
-	});
-}
-
 export async function setup(): Promise<void> {
-	if (!existsSync(cacheDirectory)) mkdirSync(cacheDirectory, { recursive: true });
-	for (const file of fixtures(fixtureDirectory)) compileFixture(file);
+	rmSync(cacheDirectory, { recursive: true, force: true });
+	mkdirSync(cacheDirectory, { recursive: true });
+	for (const name of PARITY_FIXTURES) {
+		compileFixture(join(fixtureDirectory, name));
+	}
 }
 
 export async function teardown(): Promise<void> {}
