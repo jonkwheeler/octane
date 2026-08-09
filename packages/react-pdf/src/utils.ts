@@ -15,6 +15,13 @@ export function dataURItoBytes(uri: string): Uint8Array {
 	return Uint8Array.from(dataURItoByteString(uri), (character) => character.charCodeAt(0));
 }
 
+export function convertDataUriParameterObject<T extends { url: string }>(
+	file: T,
+): Omit<T, 'url'> & { data: Uint8Array } {
+	const { url, ...otherParams } = file;
+	return { data: dataURItoBytes(url), ...otherParams };
+}
+
 export function isProvided<T>(value: T | null | undefined): value is T {
 	return value !== null && value !== undefined;
 }

@@ -12,7 +12,7 @@ import LinkService from './LinkService.js';
 import PasswordResponses from './PasswordResponses.js';
 import Ref from './Ref.js';
 import { setRef } from './refs.js';
-import { dataURItoBytes, isDataURI } from './utils.js';
+import { convertDataUriParameterObject, dataURItoBytes, isDataURI } from './utils.js';
 import type {
 	Annotations,
 	DocumentContextValue,
@@ -91,6 +91,9 @@ async function resolveSource(file: DocumentProps['file']): Promise<Source | null
 		return { data: await file.arrayBuffer() };
 	}
 	if (typeof file === 'object' && ('data' in file || 'range' in file || 'url' in file)) {
+		if ('url' in file && typeof file.url === 'string' && isDataURI(file.url)) {
+			return convertDataUriParameterObject(file);
+		}
 		return file;
 	}
 	throw new Error('Invalid PDF source.');

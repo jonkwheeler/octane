@@ -3,7 +3,12 @@ import { describe, expect, it, vi } from 'vitest';
 import LinkService from '../../src/LinkService.js';
 import Ref from '../../src/Ref.js';
 import { setRef } from '../../src/refs.js';
-import { dataURItoByteString, isDataURI } from '../../src/utils.js';
+import {
+	convertDataUriParameterObject,
+	dataURItoByteString,
+	dataURItoBytes,
+	isDataURI,
+} from '../../src/utils.js';
 
 describe('@octanejs/react-pdf private upstream evidence', () => {
 	// @parity-case adapted:react-pdf-utils
@@ -15,6 +20,16 @@ describe('@octanejs/react-pdf private upstream evidence', () => {
 		expect(dataURItoByteString('data:text/plain;base64,SGVsbG8sIHdvcmxkIQ==')).toBe(
 			'Hello, world!',
 		);
+		const dataUri = 'data:text/plain;base64,SGVsbG8sIHdvcmxkIQ==';
+		const converted = convertDataUriParameterObject({
+			url: dataUri,
+			httpHeaders: { Authorization: 'Bearer token' },
+		});
+		expect(converted).toEqual({
+			data: dataURItoBytes(dataUri),
+			httpHeaders: { Authorization: 'Bearer token' },
+		});
+		expect('url' in converted).toBe(false);
 	});
 
 	// @parity-case adapted:react-pdf-refs
