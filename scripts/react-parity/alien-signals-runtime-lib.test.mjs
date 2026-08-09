@@ -274,3 +274,31 @@ test('rejects incidental calls that try to mask a hook-path bypass', function re
 		});
 	}, /bypasses .* hook-surface transition/);
 });
+
+test('rejects fake setter aliases from stub arrays without push', function rejectsFakeSetterAliases() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const faked = adaptedSource.replace(
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tresult.click('#set');\n\t\texpect(countSignal()).toBe(10);\n\t\tresult.click('#inc');\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tconst setters = [];\n\t\tconst setValue = setters.at(-1);\n\t\tsetValue?.(10);\n\t\tsetValue?.(15);\n\t\tcountSignal(10);\n\t\texpect(countSignal()).toBe(10);\n\t\tcountSignal(15);\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+	);
+	assert.notEqual(faked, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: faked,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});

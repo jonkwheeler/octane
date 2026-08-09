@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/alien-signals/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/alien-signals/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/alien-signals/tests"],
-      "include": ["upstream-adapted\\.test\\.ts$"],
+      "roots": [
+        "packages/alien-signals/tests"
+      ],
+      "include": [
+        "upstream-adapted\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -125,7 +133,7 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "ff9fc19665fdd9adc43751fd8f027cebbdb1694179310ba4228caf976a895843"
+          "sha256": "37d869da462d7aa569ce24f3ec3e7e83943adcb41a8fbb8b9b88aa44a21c9e70"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
@@ -135,7 +143,7 @@
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "7788919813d0da58ee9f9a5c4ccf7f65e20e1700dc86cdfd93b9a71a7a16de17"
+          "sha256": "45812ac0672126f0a698d9adda3a9edeceead744b3e7416c1b7f43c746b9f195"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",

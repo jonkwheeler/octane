@@ -340,23 +340,23 @@ function isResultCurrentAccess(node) {
 }
 
 /**
- * SetterProbe-style lookup: `setters.at(-1)` or `setters[i]`.
- * Only aliases bound from these forms count as recorded hook-path setters.
+ * SetterProbe-style lookup from an array that received `.push(...)`:
+ * `setters.at(-1)` or `setters[i]`. Empty stub arrays do not qualify.
  */
-function isRecordedSetterLookup(node) {
+function isRecordedSetterLookup(node, pushedArrays) {
+	let arrayName = null;
 	if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression)) {
-		return true;
-	}
-	if (
+		arrayName = node.expression.text;
+	} else if (
 		ts.isCallExpression(node) &&
 		ts.isPropertyAccessExpression(node.expression) &&
 		ts.isIdentifier(node.expression.expression) &&
 		ts.isIdentifier(node.expression.name) &&
 		node.expression.name.text === 'at'
 	) {
-		return true;
+		arrayName = node.expression.expression.text;
 	}
-	return false;
+	return arrayName !== null && pushedArrays.has(arrayName);
 }
 
 function collectBindingNames(nameNode, into) {
@@ -419,6 +419,7 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 		if (titled !== null && titled.body) {
 			const signalBindings = new Set();
 			const hookAliases = new Set();
+			const pushedArrays = new Set();
 			const recordedSetterAliases = new Set();
 			let hookSurfaceWrites = 0;
 			let fixtureClicks = 0;
@@ -437,7 +438,7 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 					if (isResultCurrentAccess(bodyNode.initializer)) {
 						collectBindingNames(bodyNode.name, hookAliases);
 					}
-					if (isRecordedSetterLookup(bodyNode.initializer)) {
+					if (isRecordedSetterLookup(bodyNode.initializer, pushedArrays)) {
 						collectBindingNames(bodyNode.name, recordedSetterAliases);
 					}
 				}
@@ -446,6 +447,14 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 				if (call !== null) {
 					const expression = call.expression;
 					if (
+						ts.isPropertyAccessExpression(expression) &&
+						ts.isIdentifier(expression.expression) &&
+						ts.isIdentifier(expression.name) &&
+						expression.name.text === 'push' &&
+						call.arguments.length > 0
+					) {
+						pushedArrays.add(expression.expression.text);
+					} else if (
 						ts.isPropertyAccessExpression(expression) &&
 						ts.isIdentifier(expression.expression) &&
 						expression.expression.text === 'result' &&
