@@ -34,7 +34,7 @@
     {
       "path": "hooks/useSignals/useSignals.test.tsx",
       "upstreamSha256": "442d99419d851e81b5e9da146fb28d43e38bb5779a6dec1461f4700d6bac1219",
-      "adaptedSha256": "5547d23a4dbfb1370e2b43bab95b2ee577f24502fef4fe930dcece6cc61e5a06"
+      "adaptedSha256": "f156eaabdc34d6284837d92ec970b173dce0ce1bf9b690171968483f48e10ea0"
     }
   ]
 }

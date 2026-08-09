@@ -47,6 +47,7 @@ afterEach(() => {
 });
 
 describe('Formisch differential parity', () => {
+	// @parity-case differential:field-update
 	it('matches the real React adapter across a programmatic field update', async () => {
 		const octane = render(<OctaneDifferentialForm />);
 		reactContainer = document.createElement('div');

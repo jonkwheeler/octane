@@ -44,7 +44,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "6a986792ec67e65b1adbf621232148879be85d3d1f2cb247e66266e68f2ff69b"
+      "lockfileSha256": "d5c6e907a998ebe8a8e20a51311dc5072bf04f87d17ccb30447d726cff03d73d"
     }
   },
   "lanes": [
@@ -69,7 +69,7 @@
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
           "role": "support",
-          "sha256": "e2c389fcc90b937510b8e9ed32dc8ec1b21fd5ad3d00c629023bf47c167bc321"
+          "sha256": "1574f216d5ad13ef683a6e2231f036030eabad0e442b87cc649dc7b9030a5a2b"
         },
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
@@ -84,7 +84,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f4206e0821beb16fd0a6222dd9c3039dfdfd171012ab625fdeed750fc477d83c"
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -124,7 +124,7 @@
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
           "role": "support",
-          "sha256": "e2c389fcc90b937510b8e9ed32dc8ec1b21fd5ad3d00c629023bf47c167bc321"
+          "sha256": "1574f216d5ad13ef683a6e2231f036030eabad0e442b87cc649dc7b9030a5a2b"
         },
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
@@ -139,7 +139,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f4206e0821beb16fd0a6222dd9c3039dfdfd171012ab625fdeed750fc477d83c"
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -179,7 +179,7 @@
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
           "role": "support",
-          "sha256": "e2c389fcc90b937510b8e9ed32dc8ec1b21fd5ad3d00c629023bf47c167bc321"
+          "sha256": "1574f216d5ad13ef683a6e2231f036030eabad0e442b87cc649dc7b9030a5a2b"
         },
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
@@ -194,7 +194,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f4206e0821beb16fd0a6222dd9c3039dfdfd171012ab625fdeed750fc477d83c"
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -234,7 +234,7 @@
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
           "role": "support",
-          "sha256": "e2c389fcc90b937510b8e9ed32dc8ec1b21fd5ad3d00c629023bf47c167bc321"
+          "sha256": "1574f216d5ad13ef683a6e2231f036030eabad0e442b87cc649dc7b9030a5a2b"
         },
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
@@ -249,7 +249,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f4206e0821beb16fd0a6222dd9c3039dfdfd171012ab625fdeed750fc477d83c"
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -289,7 +289,7 @@
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
           "role": "support",
-          "sha256": "e2c389fcc90b937510b8e9ed32dc8ec1b21fd5ad3d00c629023bf47c167bc321"
+          "sha256": "1574f216d5ad13ef683a6e2231f036030eabad0e442b87cc649dc7b9030a5a2b"
         },
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
@@ -304,7 +304,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f4206e0821beb16fd0a6222dd9c3039dfdfd171012ab625fdeed750fc477d83c"
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -344,7 +344,7 @@
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
           "role": "support",
-          "sha256": "e2c389fcc90b937510b8e9ed32dc8ec1b21fd5ad3d00c629023bf47c167bc321"
+          "sha256": "1574f216d5ad13ef683a6e2231f036030eabad0e442b87cc649dc7b9030a5a2b"
         },
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
@@ -359,7 +359,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f4206e0821beb16fd0a6222dd9c3039dfdfd171012ab625fdeed750fc477d83c"
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -375,6 +375,44 @@
           "path": "packages/formisch/upstream/frameworks/react/src/vitest/setup.ts",
           "role": "support",
           "sha256": "adab121a4bb7c7560fb8faf2ed46d9acbe3b7dbf474b584c90a2ebb46e605fb7"
+        }
+      ]
+    },
+    {
+      "id": "formisch-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "formisch-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same Formisch field-update fixture runs against Octane and the real @formisch/react adapter.",
+      "files": [
+        {
+          "path": "packages/formisch/tests/_fixtures/differential.test.tsrx",
+          "role": "test",
+          "sha256": "fc2b2b2456764989448e0d2a5a3f42e7e436cfe54db516d6e35ba3692bd54056",
+          "cases": [
+            {
+              "id": "differential:field-update",
+              "testName": "matches the real React adapter across a programmatic field update",
+              "fullName": "Formisch differential parity matches the real React adapter across a programmatic field update"
+            }
+          ]
+        },
+        {
+          "path": "packages/formisch/tests/differential/parity.test.ts",
+          "role": "support",
+          "sha256": "5c1e558ceb6526a917f3eed3f4ea018a1ff8c96e2380868ce2352135999dd3ae"
+        },
+        {
+          "path": "packages/formisch/tests/_fixtures/differential.tsrx",
+          "role": "support",
+          "sha256": "e16bc568b8309d07a9d64f96f6782196f78b9f00a90c7c8b3445e2f336e4a262"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
         }
       ]
     },

@@ -1272,10 +1272,41 @@ export default defineConfig({
 					name: 'formisch',
 					include: [
 						'packages/formisch/tests/conformance/**/*.test.ts',
-						'packages/formisch/tests/differential/**/*.test.ts',
 						'packages/formisch/tests/hydration/**/*.test.ts',
 						'packages/formisch/tests/upstream/**/*.test.tsrx',
 					],
+					exclude: [...configDefaults.exclude, 'packages/formisch/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					setupFiles: ['packages/formisch/tests/conformance/test-setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/formisch$/,
+							replacement: resolve(import.meta.dirname, 'packages/formisch/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/formisch\/core$/,
+							replacement: resolve(import.meta.dirname, 'packages/formisch/src/core/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/testing-library\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'formisch-differential',
+					include: ['packages/formisch/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					setupFiles: ['packages/formisch/tests/conformance/test-setup.ts'],
 					globals: false,

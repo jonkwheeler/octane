@@ -13,8 +13,11 @@ import {
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyFormischTestClassifications } from './formisch-classifications-lib.mjs';
+import { verifyFormischUpstream } from './formisch-upstream-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+import { verifyTypeParity } from './type-parity-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -58,6 +61,23 @@ try {
 	verifyLivestoreTestClassifications(REPO);
 } catch (error) {
 	errors.push(`livestore test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyFormischUpstream(REPO, {
+		integrity: '8e1ccebb3a92c76e02f5ded91046dda71cdd106b813f91071b133e7147037b4f',
+	});
+} catch (error) {
+	errors.push(`formisch upstream evidence is invalid: ${error.message}`);
+}
+try {
+	verifyTypeParity(REPO, { configPath: 'packages/formisch/audit/type-parity.json' });
+} catch (error) {
+	errors.push(`formisch type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyFormischTestClassifications(REPO);
+} catch (error) {
+	errors.push(`formisch test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
