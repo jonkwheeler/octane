@@ -1,7 +1,7 @@
 /**
- * Precompile Apollo differential fixtures for React. The same `.tsrx` source
- * is loaded by Octane and rewritten to use published @apollo/client/react on
- * the React side.
+ * Precompile Apollo differential fixtures for React. Only `.tsrx` under
+ * `_fixtures/differential` are oracles; conformance/upstream fixtures stay out
+ * of this lane so their Octane-only imports cannot poison the React cache.
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync } from 'esbuild';
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { compileFixture } from './fixture-compiler.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const FIXTURE_DIR = join(__dirname, '../_fixtures');
+const FIXTURE_DIR = join(__dirname, '../_fixtures/differential');
 const CACHE_DIR = join(__dirname, '.react-cache');
 
 function walk(directory: string): string[] {

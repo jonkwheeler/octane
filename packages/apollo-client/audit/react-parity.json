@@ -131,7 +131,7 @@
         {
           "path": "packages/apollo-client/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "c1f455b03831c8749d3fe071494f6ef3ed58175888cb2ccea80aa6eccbae49ab",
+          "sha256": "7cdab8fb95c4c889f659cd47e1d22cff832fa7d65cf409fa87133dce6133a397",
           "cases": [
             {
               "id": "differential:apollo-cache-query",
@@ -143,15 +143,15 @@
         {
           "path": "packages/apollo-client/tests/differential/fixture-compiler.mjs",
           "role": "support",
-          "sha256": "8c320a85aac7b8ccb8c3475ca767130aafefe64c2ed80727e67ac901a840cacd"
+          "sha256": "1f9c2dbbf7f40b0f212555f208e67579fae16fdce337acbf219e95ad17798e95"
         },
         {
           "path": "packages/apollo-client/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "cefc152033427439699dbde8b5ecd2c8035e7643d1705302d04eb9dcca580e07"
+          "sha256": "c738756007b512f69275f460f42edf2eecec8f96ab9aac2977d692501036dc77"
         },
         {
-          "path": "packages/apollo-client/tests/_fixtures/query-diff.tsrx",
+          "path": "packages/apollo-client/tests/_fixtures/differential/query-diff.tsrx",
           "role": "support",
           "sha256": "37d21e19d5bd666cde6280402ad44ea1d43df5f56345dc91dc0863558c6d66b4"
         }
