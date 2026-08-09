@@ -12,6 +12,7 @@ import { DynamicDemo } from './demos/Dynamic.tsrx';
 import { DreiDemo } from './demos/Drei.tsrx';
 import { DoomDemo } from './demos/doom/Doom.tsrx';
 import { Inputs } from './demos/Inputs.tsrx';
+import { GSAPDemo } from './demos/GSAP.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { LiveStoreDemo } from './demos/LiveStore.tsrx';
@@ -37,6 +38,7 @@ import doomSceneSource from './demos/doom/Doom.three.tsrx?raw';
 import doomModelSource from './demos/doom/model.ts?raw';
 import doomAssetsSource from './demos/doom/assets.ts?raw';
 import inputsSource from './demos/Inputs.tsrx?raw';
+import gsapSource from './demos/GSAP.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import liveStoreSource from './demos/LiveStore.tsrx?raw';
@@ -144,6 +146,12 @@ export const GROUPS: readonly DemoGroup[] = [
 				title: 'Drei',
 				Component: DreiDemo,
 				source: dreiSource,
+			},
+			{
+				id: 'gsap',
+				title: 'GSAP',
+				Component: GSAPDemo,
+				source: gsapSource,
 			},
 			{
 				id: 'cmdk',
