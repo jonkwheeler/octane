@@ -1,0 +1,87 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/chakra-ui/zag.git",
+    "version": "1.42.0",
+    "commit": "df65e4c87c75a1c84eb6eb08a8e30dac0e1bb77f",
+    "sourceRoot": "packages/frameworks/react",
+    "testRoot": "packages/frameworks/react",
+    "license": "MIT",
+    "integrity": "sha256:7d7afdce41cbdc8282b5917bb507e0bec3ffafee4f9b447528d07598d1be5134",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/zag/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/zag/tests/differential"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "3ed57d70dd3f2fc2cdf611a7e104c5bc0f05bfc06c4b28967bcdd511a431e991"
+    }
+  },
+  "lanes": [
+    {
+      "id": "zag-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "zag-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "One machine fixture through Octane and published @zag-js/react@1.42.0 on React 19.2.7, comparing transition and bindable-context traces.",
+      "files": [
+        {
+          "path": "packages/zag/tests/differential/machine.test.ts",
+          "role": "test",
+          "sha256": "e9acb76d86048ec4a6f2c62dd6d9a2b5806e6e228e5024dfb6dee8da43a17e4d",
+          "cases": [
+            {
+              "id": "differential:machine-trace",
+              "testName": "matches @zag-js/react@1.42.0 for transitions and bindable context",
+              "fullName": "upstream differential parity matches @zag-js/react@1.42.0 for transitions and bindable context"
+            }
+          ]
+        },
+        {
+          "path": "packages/zag/tests/_fixtures/machine.tsrx",
+          "role": "support",
+          "sha256": "527d366e4b10fc04b01ad6f1bd5b5efef5372e3b847f27123cada96e8cfbea80"
+        },
+        {
+          "path": "packages/zag/tests/_helpers.ts",
+          "role": "support",
+          "sha256": "c31c081a87ea93dc1bd951d371059f32a38246fdee8df7cc29e59f48080b79a5"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "22835bf2965604332802b3171ea9f706ec791533f8cc27a82f173f6914be7881"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

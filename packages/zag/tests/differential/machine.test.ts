@@ -50,6 +50,7 @@ async function octaneTrace() {
 }
 
 describe('upstream differential parity', () => {
+	// @parity-case differential:machine-trace
 	it('matches @zag-js/react@1.42.0 for transitions and bindable context', async () => {
 		expect(await octaneTrace()).toEqual(await reactTrace());
 	});

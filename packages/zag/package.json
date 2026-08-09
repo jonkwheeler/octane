@@ -31,13 +31,14 @@
   "types": "src/index.ts",
   "files": [
     "src",
-    "README.md"
+    "README.md",
+    "UPSTREAM.md"
   ],
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --config vitest.config.ts && vitest run --config vitest.ssr.config.ts"
+    "test": "vitest run --root ../.. --project zag --project zag-differential --project zag-ssr"
   },
   "dependencies": {
     "@zag-js/core": "catalog:default",

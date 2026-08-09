@@ -7,10 +7,8 @@ export default defineConfig({
 	plugins: [octane()],
 	test: {
 		environment: 'jsdom',
-		include: [
-			'packages/zag/tests/conformance/**/*.test.ts',
-			'packages/zag/tests/differential/**/*.test.ts',
-		],
+		include: ['packages/zag/tests/conformance/**/*.test.ts'],
+		exclude: ['packages/zag/tests/differential/**/*.test.ts'],
 		globals: false,
 	},
 	resolve: {

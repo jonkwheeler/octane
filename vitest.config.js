@@ -1025,10 +1025,26 @@ export default defineConfig({
 			{
 				test: {
 					name: 'zag',
-					include: [
-						'packages/zag/tests/conformance/**/*.test.ts',
-						'packages/zag/tests/differential/**/*.test.ts',
+					include: ['packages/zag/tests/conformance/**/*.test.ts'],
+					exclude: [...configDefaults.exclude, 'packages/zag/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/zag$/,
+							replacement: resolve(import.meta.dirname, 'packages/zag/src/index.ts'),
+						},
 					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'zag-differential',
+					include: ['packages/zag/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},

@@ -1118,6 +1118,8 @@ Scope/evidence last checked: 2026-07-30.
 - Differential coverage compares transition and bindable-context traces with the published React adapter; behavioral coverage also exercises independent hook call sites and portal modes.
 - Published dependencies and source contain no React or react-dom imports.
 
+See also: [`packages/zag/UPSTREAM.md`](../packages/zag/UPSTREAM.md)
+
 ## @octanejs/zustand
 
 [`packages/zustand`](../packages/zustand) `0.1.30` — ports `zustand@5.0.14`. Status data: [`packages/zustand/status.json`](../packages/zustand/status.json).
