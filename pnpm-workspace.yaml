@@ -105,6 +105,10 @@ overrides:
   '@solid-primitives/event-listener>solid-js': '1.9.14'
   '@solid-primitives/keyboard>solid-js': '1.9.14'
   '@solid-primitives/resize-observer>solid-js': '1.9.14'
+  # Preserve the serializer stack from react-select's pinned upstream lockfile.
+  '@emotion/jest@11.5.0>@emotion/css-prettifier': '1.0.0'
+  '@emotion/jest@11.5.0>stylis': '4.0.13'
+  '@emotion/css-prettifier@1.0.0>stylis': '4.0.13'
 
 # Rspeedy exposes Rsbuild/Rspack-backed plugin state but does not declare
 # @rspack/core itself. Make the audited Lynx instance explicit so a newer

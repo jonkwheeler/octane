@@ -3430,11 +3430,44 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-transition-group-pristine',
+					include: ['packages/react-transition-group/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-transition-group-adapted',
+					include: ['packages/react-transition-group/tests/adapted/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-transition-group$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-transition-group/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
 				test: {
 					name: 'react-transition-group',
 					include: [
 						'packages/react-transition-group/tests/**/*.test.ts',
 						'!packages/react-transition-group/tests/ssr/**/*.test.ts',
+						'!packages/react-transition-group/tests/adapted/**/*.test.ts',
+						'!packages/react-transition-group/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,

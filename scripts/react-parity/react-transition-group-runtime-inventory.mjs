@@ -8,11 +8,7 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const lanes = [
-	['react-transition-group', 'packages/react-transition-group/audit/adapted-runtime.json'],
-	[
-		'react-transition-group-ssr',
-		'packages/react-transition-group/audit/adapted-runtime-server.json',
-	],
+	['react-transition-group-adapted', 'packages/react-transition-group/audit/adapted-runtime.json'],
 ];
 
 for (const [project, destination] of lanes) {
@@ -24,7 +20,9 @@ for (const [project, destination] of lanes) {
 	);
 	const tests = JSON.parse(output)
 		.map((test) => ({ ...test, relativeFile: toPortablePath(relative(root, test.file)) }))
-		.filter((test) => test.relativeFile.startsWith('packages/react-transition-group/tests/'))
+		.filter((test) =>
+			test.relativeFile.startsWith('packages/react-transition-group/tests/adapted/'),
+		)
 		.map((test) => {
 			const fullName = test.name.replaceAll(' > ', ' ');
 			const baseId = `runtime:${createHash('sha256')
@@ -43,7 +41,7 @@ for (const [project, destination] of lanes) {
 	const inventory = {
 		schemaVersion: 1,
 		project,
-		roots: ['packages/react-transition-group/tests'],
+		roots: ['packages/react-transition-group/tests/adapted'],
 		files: [...new Set(tests.map((test) => test.file))],
 		tests,
 	};

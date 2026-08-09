@@ -6,9 +6,9 @@ The upstream project and this adapted package are licensed under BSD-3-Clause. T
 
 ## Vendored evidence
 
-`upstream/src` and `upstream/test` are byte-exact copies of the source and tests at the pinned tag. `audit/SHA256SUMS` records every retained artifact and `pnpm upstream:check` rejects drift.
+`upstream/src` and `upstream/test` are byte-exact copies of the source and tests at the pinned tag. `audit/SHA256SUMS` records every retained artifact and `pnpm upstream:check` rejects drift. The pristine Jest lane executes all seven vendored suites and all 56 cases unchanged against React 18.3.1.
 
-The vendored JavaScript is audit evidence only and is not published or executed by the Octane package. The maintained implementation is under `src`; adapted tests are under `tests`.
+The vendored JavaScript is audit evidence only and is not published by the Octane package. The maintained implementation is under `src`; one-for-one Octane ports are under `tests/adapted`. `audit/adaptation.json` accounts for every upstream case, including the legacy `findDOMNode` case that cannot apply to Octane.
 
 ## Public surface
 

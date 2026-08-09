@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "upstreamCases": 56,
+  "adaptedCases": 5,
+  "notApplicableCases": 1,
+  "pendingCases": 50,
+  "permittedTransforms": [
+    "import React APIs from Octane equivalents",
+    "re-author JSX component fixtures as .tsrx function components",
+    "replace React Testing Library mounting with Octane test helpers",
+    "replace legacy class instances and findDOMNode with nodeRef when behavior remains observable",
+    "preserve upstream describe and test titles exactly"
+  ],
+  "cases": [
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition appearing should apply appear classes at each transition state",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition appearing should apply appear classes at each transition state",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition appearing should lose the \"*-appear-done\" class after leaving and entering again",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition appearing should lose the \"*-appear-done\" class after leaving and entering again",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition appearing should not add undefined when appearDone is not defined",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition appearing should not add undefined when appearDone is not defined",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition appearing should not be appearing in normal enter mode",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition appearing should not be appearing in normal enter mode",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition appearing should not enter the transition states when appear=false",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition appearing should not enter the transition states when appear=false",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition entering should apply classes at each transition state",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition entering should apply classes at each transition state",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition entering should apply custom classNames names",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition entering should apply custom classNames names",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition exiting should apply classes at each transition state",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition exiting should apply classes at each transition state",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition exiting should apply custom classNames names",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition exiting should apply custom classNames names",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition exiting should support empty prefix",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition exiting should support empty prefix",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition reentering should remove dynamically applied classes",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition reentering should remove dynamically applied classes",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransition-test.js\u0000CSSTransition should flush new props to the DOM before initiating a transition",
+      "upstreamFile": "test/CSSTransition-test.js",
+      "fullName": "CSSTransition should flush new props to the DOM before initiating a transition",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should clean-up silently after the timeout elapses",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should clean-up silently after the timeout elapses",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should clear transition timeouts when unmounted",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should clear transition timeouts when unmounted",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should handle unmounted elements properly",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should handle unmounted elements properly",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should keep both sets of DOM nodes around",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should keep both sets of DOM nodes around",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should switch transitionLeave from false to true",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should switch transitionLeave from false to true",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should transition from false to one",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should transition from false to one",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should transition from one to null",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should transition from one to null",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should work with a child which renders as null",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should work with a child which renders as null",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should work with a null child",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should work with a null child",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/CSSTransitionGroup-test.js\u0000CSSTransitionGroup should work with custom component wrapper cloning children",
+      "upstreamFile": "test/CSSTransitionGroup-test.js",
+      "fullName": "CSSTransitionGroup should work with custom component wrapper cloning children",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/ChildMapping-test.js\u0000ChildMapping should reconcile overlapping insertions and deletions",
+      "upstreamFile": "test/ChildMapping-test.js",
+      "fullName": "ChildMapping should reconcile overlapping insertions and deletions",
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts"
+    },
+    {
+      "id": "test/ChildMapping-test.js\u0000ChildMapping should support getChildMapping",
+      "upstreamFile": "test/ChildMapping-test.js",
+      "fullName": "ChildMapping should support getChildMapping",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/ChildMapping-test.js\u0000ChildMapping should support mergeChildMappings for adding and removing",
+      "upstreamFile": "test/ChildMapping-test.js",
+      "fullName": "ChildMapping should support mergeChildMappings for adding and removing",
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts"
+    },
+    {
+      "id": "test/ChildMapping-test.js\u0000ChildMapping should support mergeChildMappings for adding keys",
+      "upstreamFile": "test/ChildMapping-test.js",
+      "fullName": "ChildMapping should support mergeChildMappings for adding keys",
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts"
+    },
+    {
+      "id": "test/ChildMapping-test.js\u0000ChildMapping should support mergeChildMappings for removing keys",
+      "upstreamFile": "test/ChildMapping-test.js",
+      "fullName": "ChildMapping should support mergeChildMappings for removing keys",
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts"
+    },
+    {
+      "id": "test/ChildMapping-test.js\u0000ChildMapping should support mergeChildMappings with undefined input",
+      "upstreamFile": "test/ChildMapping-test.js",
+      "fullName": "ChildMapping should support mergeChildMappings with undefined input",
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts"
+    },
+    {
+      "id": "test/SSR-test.js\u0000SSR should import react-transition-group in node env",
+      "upstreamFile": "test/SSR-test.js",
+      "fullName": "SSR should import react-transition-group in node env",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/SwitchTransition-test.js\u0000SwitchTransition should have default mode: out-in",
+      "upstreamFile": "test/SwitchTransition-test.js",
+      "fullName": "SwitchTransition should have default mode: out-in",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/SwitchTransition-test.js\u0000SwitchTransition should have default status ENTERED",
+      "upstreamFile": "test/SwitchTransition-test.js",
+      "fullName": "SwitchTransition should have default status ENTERED",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/SwitchTransition-test.js\u0000SwitchTransition should switch between components on change state",
+      "upstreamFile": "test/SwitchTransition-test.js",
+      "fullName": "SwitchTransition should switch between components on change state",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/SwitchTransition-test.js\u0000SwitchTransition should switch between null and component",
+      "upstreamFile": "test/SwitchTransition-test.js",
+      "fullName": "SwitchTransition should switch between null and component",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/SwitchTransition-test.js\u0000SwitchTransition should work without childs",
+      "upstreamFile": "test/SwitchTransition-test.js",
+      "fullName": "SwitchTransition should work without childs",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition appearing timeout should use appear timeout if appear is set",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition appearing timeout should use appear timeout if appear is set",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition appearing timeout should use enter timeout if appear not set",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition appearing timeout should use enter timeout if appear not set",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition entering should fire callbacks",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition entering should fire callbacks",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition entering should move to each transition state",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition entering should move to each transition state",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition exiting should fire callbacks",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition exiting should fire callbacks",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition exiting should move to each transition state",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition exiting should move to each transition state",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition mountOnEnter should mount when entering",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition mountOnEnter should mount when entering",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition mountOnEnter should stay mounted after exiting",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition mountOnEnter should stay mounted after exiting",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should allow addEndListener instead of timeouts",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should allow addEndListener instead of timeouts",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should fallback to timeouts with addEndListener",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should fallback to timeouts with addEndListener",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should mount/unmount immediately if not have enter/exit timeout",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should mount/unmount immediately if not have enter/exit timeout",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should not transition on mount",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should not transition on mount",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should not use `React.findDOMNode` when `nodeRef` is provided",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should not use `React.findDOMNode` when `nodeRef` is provided",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should pass filtered props to children",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should pass filtered props to children",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should transition on mount with `appear`",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should transition on mount with `appear`",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition should use `React.findDOMNode` when `nodeRef` is not provided",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition should use `React.findDOMNode` when `nodeRef` is not provided",
+      "disposition": "not-applicable",
+      "reason": "Octane has no class instances or findDOMNode API; nodeRef is the supported node identity path."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition unmountOnExit should mount when entering",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition unmountOnExit should mount when entering",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/Transition-test.js\u0000Transition unmountOnExit should unmount after exiting",
+      "upstreamFile": "test/Transition-test.js",
+      "fullName": "Transition unmountOnExit should unmount after exiting",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/TransitionGroup-test.js\u0000TransitionGroup should allow callback refs",
+      "upstreamFile": "test/TransitionGroup-test.js",
+      "fullName": "TransitionGroup should allow callback refs",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/TransitionGroup-test.js\u0000TransitionGroup should allow null components",
+      "upstreamFile": "test/TransitionGroup-test.js",
+      "fullName": "TransitionGroup should allow null components",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/TransitionGroup-test.js\u0000TransitionGroup should handle transitioning correctly",
+      "upstreamFile": "test/TransitionGroup-test.js",
+      "fullName": "TransitionGroup should handle transitioning correctly",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    },
+    {
+      "id": "test/TransitionGroup-test.js\u0000TransitionGroup should work with no children",
+      "upstreamFile": "test/TransitionGroup-test.js",
+      "fullName": "TransitionGroup should work with no children",
+      "disposition": "pending-adaptation",
+      "reason": "Not yet ported one-for-one in this parity-scaffolding pass."
+    }
+  ]
+}

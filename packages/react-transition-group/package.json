@@ -4,9 +4,9 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "sideEffects": false,
-	"engines": {
-		"node": ">=22.22.2"
-	},
+  "engines": {
+    "node": ">=22.22.2"
+  },
   "description": "React Transition Group-compatible transition components for Octane.",
   "author": {
     "name": "Dominic Gannaway",
@@ -40,7 +40,7 @@
     "./config": "./src/config.ts"
   },
   "scripts": {
-    "test": "pnpm upstream:check && vitest run --root ../.. --project react-transition-group --project react-transition-group-ssr",
+    "test": "pnpm upstream:check && vitest run --root ../.. --project react-transition-group-pristine --project react-transition-group-adapted --project react-transition-group --project react-transition-group-ssr",
     "parity:inventory": "node ../../scripts/react-parity/react-transition-group-runtime-inventory.mjs",
     "upstream:check": "node audit/check-upstream.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
@@ -49,13 +49,23 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@babel/core": "catalog:default",
+    "@babel/preset-env": "7.29.7",
+    "@babel/preset-react": "7.29.7",
     "@octanejs/testing-library": "workspace:*",
+    "@testing-library/react": "16.3.2",
     "@tsrx/react": "catalog:default",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
+    "babel-jest": "30.4.1",
+    "babel-plugin-add-module-exports": "^1.0.4",
+    "dom-helpers": "5.2.1",
+    "jest": "30.4.2",
+    "jest-environment-jsdom": "30.4.1",
     "octane": "workspace:*",
-    "react": "catalog:default",
-    "react-dom": "catalog:default",
+    "prop-types": "15.8.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-transition-group": "catalog:default",
     "typescript": "catalog:default",
     "vitest": "catalog:default"
