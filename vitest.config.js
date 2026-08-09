@@ -2125,10 +2125,6 @@ export default defineConfig({
 				resolve: { alias: VISX_ALIASES },
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/visx/tests/differential/parity.test.ts'],
-				},
 				test: {
 					name: 'visx-differential',
 					include: ['packages/visx/tests/differential/**/*.test.ts'],
