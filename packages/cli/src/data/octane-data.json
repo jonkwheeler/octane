@@ -411,6 +411,16 @@
       "verified": "2026-08-06"
     },
     {
+      "name": "@octanejs/react-resizable-panels",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "react-resizable-panels", "version": "4.12.2" },
+      "surface": "Group, Panel, Separator, persistence hooks, refs, imperative APIs, layout constraints, pointer and keyboard interaction, ARIA, cursor handling, and ResizeObserver behavior are implemented against react-resizable-panels 4.12.2.",
+      "divergences": [],
+      "ssr": "Deterministic server rendering and live hydration adoption are covered by dedicated executable projects.",
+      "verified": "2026-08-02"
+    },
+    {
       "name": "@octanejs/recharts",
       "version": "0.1.29",
       "category": "Data-heavy screens",
@@ -981,6 +991,7 @@
     "react-map-gl": "@octanejs/react-map-gl",
     "react-map-gl/mapbox": "@octanejs/react-map-gl",
     "react-redux": "@octanejs/redux",
+    "react-resizable-panels": "@octanejs/react-resizable-panels",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
     "react-stately": "@octanejs/aria",
