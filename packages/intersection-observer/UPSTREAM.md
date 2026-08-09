@@ -22,7 +22,7 @@ It is development evidence and is excluded from the published `files`.
 | `useOnInView` | Ported | `tests/intersection-observer.test.ts` |
 | `observe` | Ported | `tests/intersection-observer.test.ts`; observer pooling is framework-neutral. |
 | `defaultFallbackInView` | Ported | `tests/intersection-observer.test.ts` |
-| `./test-utils` runtime exports | Ported | `src/test-utils.ts` and `tests/intersection-observer.test.ts` |
+| `./test-utils` runtime exports | Ported with setup divergence | `src/test-utils.ts` and `tests/intersection-observer.test.ts`; does not auto-register Vitest/Jest `beforeEach`/`afterEach` — call `setupIntersectionMocking`/`resetIntersectionMocking` yourself. |
 | `IntersectionObserverInitWithOptions` | Ported | `src/types.ts` |
 | `ObserverInstanceCallback` | Ported | `src/types.ts` |
 | `IntersectionChangeEffect` | Ported | `src/types.ts` |
@@ -65,3 +65,8 @@ outside `testExecution`. Parity evidence is owned by the
   the same `IntersectionObserver is not a constructor` error is reported via
   `console.error` / `tryBlock` rather than a try/catch around `render`. Prefer
   `fallbackInView` / `defaultFallbackInView`, or an error boundary.
+- `intersection-observer-test-utils-manual-setup` (test-utils): Upstream
+  `test-utils` auto-wires Vitest/Jest `beforeEach`/`afterEach` when those
+  globals exist. The Octane binding requires an explicit
+  `setupIntersectionMocking` / `resetIntersectionMocking` pair in the consumer
+  test setup file, including under Vitest.
