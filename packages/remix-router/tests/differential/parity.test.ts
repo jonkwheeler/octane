@@ -27,6 +27,16 @@ const CACHE = resolve(__dirname, '.react-cache');
 
 type Mount = { container: HTMLElement; find(selector: string): Element };
 
+function predicateHolds(predicate: (mount: Mount) => boolean, mount: Mount): boolean {
+	try {
+		return predicate(mount);
+	} catch {
+		// mount.find throws when a node is absent mid-transition; treat as
+		// unsettled so the retry loop can drain and poll again.
+		return false;
+	}
+}
+
 async function waitForBoth(
 	octane: Mount,
 	react: Mount,
@@ -34,7 +44,7 @@ async function waitForBoth(
 	predicate: (mount: Mount) => boolean,
 ): Promise<void> {
 	for (let attempt = 0; attempt < 100; attempt++) {
-		if (predicate(octane) && predicate(react)) return;
+		if (predicateHolds(predicate, octane) && predicateHolds(predicate, react)) return;
 		octaneDrainEffects();
 		await reactAct(async () => {
 			await new Promise((resolvePromise) => setTimeout(resolvePromise, 5));
@@ -70,8 +80,7 @@ describe('differential: @octanejs/remix-router vs real react-router', () => {
 				i,
 				r,
 				'user navigation',
-				(mount) =>
-					mount.find('h1').textContent === 'Users' && mount.find('p').textContent === 'Item 42',
+				(mount) => textIs('h1', 'Users')(mount) && textIs('p', 'Item 42')(mount),
 			);
 		});
 		await d.step('back home', async (i, r) => {
