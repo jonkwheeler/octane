@@ -275,15 +275,17 @@ function createMotionComponent(tag: string) {
 				// Clear prior motion-managed styles at bind time (rebind / empty bag).
 				// Do not clear in cleanup: on unmount the exit effect clones this node
 				// after layout-effect cleanups, and still needs the live transforms.
+				// Do not clear on first mount either — animate/initial may already have
+				// written transforms before this effect runs.
 				const prevKeys = motionStyleKeys.get(node);
 				if (prevKeys) {
+					let clearTransform = false;
 					for (const key of prevKeys) {
-						if (isTransformKey(key)) node.style.transform = '';
+						if (isTransformKey(key)) clearTransform = true;
 						else (node.style as any)[key] = '';
 					}
+					if (clearTransform) node.style.transform = '';
 					motionStyleKeys.delete(node);
-				} else {
-					node.style.transform = '';
 				}
 
 				const style = props.style;
