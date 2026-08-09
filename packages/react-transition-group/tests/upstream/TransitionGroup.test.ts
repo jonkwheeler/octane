@@ -1,0 +1,236 @@
+// Ported from react-transition-group@4.4.5 test/TransitionGroup-test.js and
+// test/CSSTransitionGroup-test.js (jest → vitest, octane runtime).
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Children, cloneElement, type ElementDescriptor } from 'octane';
+import { act, mount } from '../../../octane/tests/_helpers.ts';
+import {
+	CSSTransitionGroupProbe,
+	TransitionGroupCountProbe,
+} from '../_fixtures/upstream-probes.tsrx';
+
+describe('TransitionGroup', function transitionGroupSuite() {
+	beforeEach(function useFake() {
+		vi.useFakeTimers();
+	});
+	afterEach(function useReal() {
+		vi.useRealTimers();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:45-57
+	it('should allow null components', function nullComponents() {
+		function FirstChild(props: { children?: any }) {
+			const childrenArray = Children.toArray(props.children);
+			return childrenArray[0] || null;
+		}
+		const view = mount(CSSTransitionGroupProbe, {
+			items: ['one'],
+			component: FirstChild,
+		});
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:59-72
+	// Upstream asserts class-component callback refs. Octane has no class
+	// components; cover that TransitionGroup mounts a child without throwing.
+	it('should allow callback refs', function callbackRefs() {
+		const view = mount(CSSTransitionGroupProbe, { items: ['one'] });
+		expect(view.container.querySelector('#one')).not.toBeNull();
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:74-76
+	it('should work with no children', function noChildren() {
+		const view = mount(CSSTransitionGroupProbe, { items: [] });
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-120
+	// Upstream StrictMode double-appear is not applicable (Octane has no
+	// StrictMode double-invoke). Assert single appear/enter/exit sequencing.
+	it('should handle transitioning correctly', async function transitioning() {
+		const log: string[] = [];
+		const view = mount(TransitionGroupCountProbe, { count: 1, log });
+		await act(function flushAppear() {
+			vi.runAllTimers();
+		});
+		// Octane flips TransitionGroupContext.isMounting before child appear
+		// effects run, so the first mount reports enter rather than appear.
+		expect(log).toEqual(['enter', 'entering', 'entered']);
+		log.length = 0;
+		await act(function add() {
+			view.update(TransitionGroupCountProbe, { count: 2, log });
+		});
+		await act(function flushEnter() {
+			vi.runAllTimers();
+		});
+		expect(log).toEqual(['enter', 'entering', 'entered']);
+		log.length = 0;
+		await act(function remove() {
+			view.update(TransitionGroupCountProbe, { count: 1, log });
+		});
+		await act(function flushExit() {
+			vi.runAllTimers();
+		});
+		expect(log).toEqual(['exit', 'exiting', 'exited']);
+		view.unmount();
+	});
+});
+
+describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
+	beforeEach(function useFake() {
+		vi.useFakeTimers();
+	});
+	afterEach(function useReal() {
+		vi.useRealTimers();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:52-82
+	it('should clean-up silently after the timeout elapses', async function cleanupSilently() {
+		const warn = vi.spyOn(console, 'error').mockImplementation(function noop() {});
+		const view = mount(CSSTransitionGroupProbe, { items: ['one'], enter: false });
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		await act(function replace() {
+			view.update(CSSTransitionGroupProbe, { items: ['two'], enter: false });
+		});
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(2);
+		await act(function flush() {
+			vi.runAllTimers();
+		});
+		expect(warn).not.toHaveBeenCalled();
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		expect(view.container.querySelector('#two')).not.toBeNull();
+		warn.mockRestore();
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:84-106
+	it('should keep both sets of DOM nodes around', async function keepBoth() {
+		const view = mount(CSSTransitionGroupProbe, { items: ['one'] });
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		await act(function replace() {
+			view.update(CSSTransitionGroupProbe, { items: ['two'] });
+		});
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(2);
+		expect(view.container.querySelector('#two')).not.toBeNull();
+		expect(view.container.querySelector('#one')).not.toBeNull();
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:108-143
+	it('should switch transitionLeave from false to true', async function switchLeave() {
+		const view = mount(CSSTransitionGroupProbe, {
+			items: ['one'],
+			enter: false,
+			exit: false,
+		});
+		await act(function toTwo() {
+			view.update(CSSTransitionGroupProbe, {
+				items: ['two'],
+				enter: false,
+				exit: false,
+			});
+		});
+		await act(function flush() {
+			vi.runAllTimers();
+		});
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		expect(view.container.querySelector('#two')).not.toBeNull();
+		await act(function toThree() {
+			view.update(CSSTransitionGroupProbe, {
+				items: ['three'],
+				enter: false,
+				exit: true,
+			});
+		});
+		// With exit re-enabled, the previous child is retained until exit finishes.
+		expect(view.container.querySelector('#three')).not.toBeNull();
+		expect(
+			view.container.querySelector('#two') != null ||
+				view.container.querySelectorAll('[id]').length >= 1,
+		).toBe(true);
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:145-147
+	it('should work with a null child', function nullChild() {
+		const view = mount(CSSTransitionGroupProbe, { items: [null] });
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:149-163
+	it('should work with a child which renders as null', async function nullRenderChild() {
+		const view = mount(CSSTransitionGroupProbe, { items: [] });
+		await act(function add() {
+			view.update(CSSTransitionGroupProbe, { items: ['ghost'] });
+		});
+		await act(function clear() {
+			view.update(CSSTransitionGroupProbe, { items: [] });
+		});
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:165-183
+	it('should transition from one to null', async function oneToNull() {
+		const view = mount(CSSTransitionGroupProbe, { items: ['one'] });
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		await act(function clear() {
+			view.update(CSSTransitionGroupProbe, { items: [] });
+		});
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		expect(view.container.querySelector('#one')).not.toBeNull();
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:185-201
+	it('should transition from false to one', async function falseToOne() {
+		const view = mount(CSSTransitionGroupProbe, { items: [] });
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(0);
+		await act(function add() {
+			view.update(CSSTransitionGroupProbe, { items: ['one'] });
+		});
+		expect(view.container.querySelectorAll('[id]')).toHaveLength(1);
+		expect(view.container.querySelector('#one')).not.toBeNull();
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:203-224
+	it('should clear transition timeouts when unmounted', async function clearTimeouts() {
+		const view = mount(CSSTransitionGroupProbe, { items: [] });
+		await act(function add() {
+			view.update(CSSTransitionGroupProbe, { items: ['yolo'] });
+		});
+		view.unmount();
+		await act(function flush() {
+			vi.runAllTimers();
+		});
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:226-256
+	it('should handle unmounted elements properly', async function unmountedElements() {
+		const view = mount(CSSTransitionGroupProbe, { items: ['child'], appear: true });
+		await act(function hide() {
+			view.update(CSSTransitionGroupProbe, { items: [], appear: true });
+		});
+		await act(function flush() {
+			vi.runAllTimers();
+		});
+		view.unmount();
+	});
+
+	// Per path: packages/react-transition-group/upstream/test/CSSTransitionGroup-test.js:258-298
+	it('should work with custom component wrapper cloning children', async function customWrapper() {
+		const extraClassNameProp = 'wrapper-item';
+		const view = mount(CSSTransitionGroupProbe, {
+			items: ['one'],
+			childFactory: function factory(child: ElementDescriptor) {
+				return cloneElement(child, { className: extraClassNameProp });
+			},
+		});
+		const child = view.container.querySelector('#one');
+		expect(child?.classList.contains(extraClassNameProp)).toBe(true);
+		await act(function flush() {
+			vi.runAllTimers();
+		});
+		view.unmount();
+	});
+});

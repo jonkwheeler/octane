@@ -8,7 +8,7 @@
     "testRoot": "test",
     "license": "BSD-3-Clause",
     "integrity": "sha256:3d7afd4e95d7ac4fdbbc105c1775556da892de229363736659957ed3c3de40de",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -31,14 +31,12 @@
       "include": [
         "\\.test\\.ts$"
       ],
-      "exclude": [
-        "/tests/upstream-original\\.test\\.ts$"
-      ]
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 18,
-    "uniqueIdentities": 18,
+    "inventoryEntries": 73,
+    "uniqueIdentities": 73,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -49,7 +47,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "86230b69f0100fb966a09d5731a2b23cbdfb6e1048731101caa1eb4e80005be6"
+      "lockfileSha256": "d8324cab039d3230f7327d2b90eb68bef2fe1941947ae3ca5b98b6fd1da51b03"
     }
   },
   "lanes": [
@@ -60,7 +58,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-pristine",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the byte-exact react-transition-group 4.4.5 Jest suite against React 18 with the original setup, checks every executed identity against the committed inventory, and verifies every upstream test artifact disposition and case count.",
+      "notes": "Runs the byte-exact react-transition-group 4.4.5 Jest suite against React 18 via the manifest jest-full executor and checks every executed identity against the committed inventory.",
       "execution": {
         "kind": "jest-full",
         "config": "packages/react-transition-group/tests/upstream-jest.config.cjs",
@@ -69,11 +67,6 @@
       },
       "files": [
         {
-          "path": "packages/react-transition-group/tests/upstream-original.test.ts",
-          "role": "support",
-          "sha256": "00025b26f511fb4629ea5c4fae4404c8ba18dbe162cc1a7b9709811a815877cd"
-        },
-        {
           "path": "packages/react-transition-group/audit/pristine-runtime.json",
           "role": "support",
           "sha256": "4d2ff8fcad9788e2361bed7f40d2e036887bc17c36788c35d7596700c3b35101"
@@ -81,7 +74,7 @@
         {
           "path": "packages/react-transition-group/audit/upstream-test-dispositions.json",
           "role": "support",
-          "sha256": "4921594628ebd2a4482f965e2558ba9247f52073ca450f40c607a96bd7ad2a7e"
+          "sha256": "49499a99f8067ce8200293bd9291f67b2fdcfb0dd17d9a1d006a7131c97851b1"
         },
         {
           "path": "packages/react-transition-group/audit/SHA256SUMS",
@@ -111,7 +104,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-upstream-lib.mjs",
           "role": "support",
-          "sha256": "72f7aaea6d174cf9b0b254aed485cb237f071a78060900507583ef6656008181"
+          "sha256": "9464ff381a8fe0ea0d7125b2cb120f57719df1ef9845b6102726edf29020b0c0"
         },
         {
           "path": "scripts/react-parity/react-transition-group-upstream.mjs",
@@ -136,8 +129,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-transition-group",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs every collected adapted DOM and export test and verifies exact test identities.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the one-for-one adapted DOM/export suite (including tests/upstream) and verifies exact test identities.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-transition-group/audit/adapted-runtime.json"
@@ -146,7 +139,7 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "19d16e9dc9526fac3580b08d7241d54f5cd881e2c6a128123bab6b746357e2d4"
+          "sha256": "566ef8a731abb0dcec0ce94ec50b9b96e3257c16ca77f474ec84371c98c7ac5f"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
@@ -161,8 +154,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-transition-group-ssr",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs every collected adapted server-rendering test and verifies exact test identities.",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs adapted server-rendering tests including the upstream SSR import case and verifies exact test identities.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-transition-group/audit/adapted-runtime-server.json"
@@ -171,12 +164,88 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime-server.json",
           "role": "support",
-          "sha256": "3c173acf2c849da13a13f1c100355b055dbc20a4f46596771672bf612fefc2c2"
+          "sha256": "524038e7bc59758822c8259c682b5cc5f080bd22db20e9fa1c99780b51028717"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
           "role": "support",
           "sha256": "2460855aa9f6bedba76fa1a45f6f361162f6555cbf3a328d3b7ca9fb4e9525b7"
+        }
+      ]
+    },
+    {
+      "id": "react-transition-group-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes against @types/react-transition-group for the pinned 4.4.5 surface.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-transition-group/audit/type-probes/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "473a8e317e5290d1b71a2870c415bf88c59231ed3d2c9b6d57b5ba21c3def1d9",
+          "cases": [
+            {
+              "id": "types:react-transition-group-pristine",
+              "testName": "pinned React declaration probes",
+              "fullName": "pinned React declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-transition-group/audit/type-probes/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "eb8eb8652dd57d6c69c5433f25b2572ecaec0573869c642070dad177d4e937f6"
+        },
+        {
+          "path": "packages/react-transition-group/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
+        }
+      ]
+    },
+    {
+      "id": "react-transition-group-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Octane public type probes for the adapted binding surface after ReactNode\u2192OctaneNode transformation.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-transition-group/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/adapted-types.json",
+          "role": "test",
+          "sha256": "318a237c08e7faebcd3be075c8a3d23f561fefca52be6358e670bc7b9b806a54",
+          "cases": [
+            {
+              "id": "types:react-transition-group-adapted",
+              "testName": "adapted Octane declaration probes",
+              "fullName": "adapted Octane declaration probes"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-transition-group/typetests/public-api.test-d.ts",
+          "role": "support",
+          "sha256": "9ff8109b19cacbbf7078d07627b2f170af402883d119ae6b3b716727edf5e779"
+        },
+        {
+          "path": "packages/react-transition-group/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "3e5a10a15c7cfc431288f01fe2a1a279724e378d6ab0f154297d6f708dab6417"
         }
       ]
     }

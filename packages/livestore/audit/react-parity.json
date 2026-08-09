@@ -52,7 +52,8 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-"lockfileSha256": "5316200f0e89da100ee313c7c7372eeac2bd44ad60fcfb304b1f7996a07dede1"    }
+      "lockfileSha256": "d8324cab039d3230f7327d2b90eb68bef2fe1941947ae3ca5b98b6fd1da51b03"
+    }
   },
   "lanes": [
     {
@@ -185,7 +186,7 @@
       "environment": "workspace-node",
       "project": "livestore-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Octane public type probes with matching negative controls after the permitted ReactNode→OctaneNode transformation.",
+      "notes": "Octane public type probes with matching negative controls after the permitted ReactNode\u2192OctaneNode transformation.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",

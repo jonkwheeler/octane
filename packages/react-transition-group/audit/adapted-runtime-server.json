@@ -13,6 +13,11 @@
       "id": "runtime:d6fd90bdd92512ad",
       "file": "packages/react-transition-group/tests/ssr/server.test.ts",
       "fullName": "react-transition-group v4.4.5 server rendering renders the initial transition state without running effects"
+    },
+    {
+      "id": "runtime:083ce14fafee0a8d",
+      "file": "packages/react-transition-group/tests/ssr/server.test.ts",
+      "fullName": "react-transition-group v4.4.5 server rendering should import react-transition-group in node env"
     }
   ]
 }

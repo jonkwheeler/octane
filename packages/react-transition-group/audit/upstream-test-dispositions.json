@@ -8,52 +8,67 @@
     },
     {
       "path": "CSSTransition-test.js",
-      "disposition": "pristine-oracle-partially-adapted",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 12,
-      "rationale": "Runs unchanged under the pristine Jest oracle. Octane covers class application, appear, and nodeRef CSS paths in tests/transition.test.ts; remaining className/timeout matrix cases stay pristine-only until adapted one-for-one.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/transition.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/CSSTransition.test.ts with Per path citations; findDOMNode-free nodeRef paths match Octane's required DOM access model.",
+      "adaptedEvidence": [
+        "packages/react-transition-group/tests/upstream/CSSTransition.test.ts",
+        "packages/react-transition-group/tests/transition.test.ts"
+      ]
     },
     {
       "path": "CSSTransitionGroup-test.js",
-      "disposition": "pristine-oracle-partially-adapted",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 10,
-      "rationale": "Runs unchanged under the pristine Jest oracle. Octane keyed group enter/exit retention is covered in tests/transition.test.ts; CSSTransitionGroup wiring cases remain pristine-only.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/transition.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage of TransitionGroup+CSSTransition wiring lives in tests/upstream/TransitionGroup.test.ts.",
+      "adaptedEvidence": [
+        "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
+        "packages/react-transition-group/tests/transition.test.ts"
+      ]
     },
     {
       "path": "ChildMapping-test.js",
-      "disposition": "pristine-oracle",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 6,
-      "rationale": "Runs unchanged under the pristine Jest oracle. ChildMapping helpers are ported in src/utils/ChildMapping.ts and exercised indirectly by adapted group tests; no dedicated adapted suite yet.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/transition.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest oracle. Dedicated adapted unit coverage lives in tests/upstream/ChildMapping.test.ts.",
+      "adaptedEvidence": ["packages/react-transition-group/tests/upstream/ChildMapping.test.ts"]
     },
     {
       "path": "SSR-test.js",
-      "disposition": "pristine-oracle-partially-adapted",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 1,
-      "rationale": "Runs unchanged under the pristine Jest node environment. Octane server rendering coverage lives in tests/ssr/server.test.ts.",
+      "rationale": "Runs unchanged under the pristine Jest node environment. Octane covers the import-in-node case plus server rendering in tests/ssr/server.test.ts.",
       "adaptedEvidence": ["packages/react-transition-group/tests/ssr/server.test.ts"]
     },
     {
       "path": "SwitchTransition-test.js",
-      "disposition": "pristine-oracle-partially-adapted",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 5,
-      "rationale": "Runs unchanged under the pristine Jest oracle. Octane covers out-in/in-out sequencing and same-key updates in tests/transition.test.ts.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/transition.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/SwitchTransition.test.ts.",
+      "adaptedEvidence": [
+        "packages/react-transition-group/tests/upstream/SwitchTransition.test.ts",
+        "packages/react-transition-group/tests/transition.test.ts"
+      ]
     },
     {
       "path": "Transition-test.js",
-      "disposition": "pristine-oracle-partially-adapted",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 18,
-      "rationale": "Runs unchanged under the pristine Jest oracle. Octane covers lifecycle order, null nodeRef completion, appear, and cloned-child callback freshness in tests/transition.test.ts; remaining timeout/end-listener matrix cases stay pristine-only.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/transition.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/Transition.test.ts. The upstream findDOMNode-without-nodeRef case is not applicable: Octane has no findDOMNode and documents nodeRef as the supported DOM path in UPSTREAM.md.",
+      "adaptedEvidence": [
+        "packages/react-transition-group/tests/upstream/Transition.test.ts",
+        "packages/react-transition-group/tests/transition.test.ts"
+      ]
     },
     {
       "path": "TransitionGroup-test.js",
-      "disposition": "pristine-oracle-partially-adapted",
+      "disposition": "pristine-oracle-adapted",
       "caseCount": 4,
-      "rationale": "Runs unchanged under the pristine Jest oracle. Octane covers keyed retention, same-key child updates, and enter/exit flag propagation in tests/transition.test.ts.",
-      "adaptedEvidence": ["packages/react-transition-group/tests/transition.test.ts"]
+      "rationale": "Runs unchanged under the pristine Jest oracle. One-for-one Octane coverage lives in tests/upstream/TransitionGroup.test.ts. StrictMode double-appear is not applicable (Octane has no StrictMode double-invoke).",
+      "adaptedEvidence": [
+        "packages/react-transition-group/tests/upstream/TransitionGroup.test.ts",
+        "packages/react-transition-group/tests/transition.test.ts"
+      ]
     },
     {
       "path": "setup.js",

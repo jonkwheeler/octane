@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "types:react-transition-group-pristine",
+      "testName": "pinned React declaration probes",
+      "fullName": "pinned React declaration probes"
+    }
+  ]
+}

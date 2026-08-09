@@ -107,17 +107,29 @@ export function verifyReactTransitionGroupUpstream(repoRoot) {
 		if (!suiteFiles.includes(entry.path)) {
 			throw new Error(`${entry.path}: unknown upstream test artifact disposition`);
 		}
-		if (
-			entry.disposition !== 'pristine-oracle' &&
-			entry.disposition !== 'pristine-oracle-partially-adapted'
-		) {
-			throw new Error(`${entry.path}: suite disposition must be a pristine oracle classification`);
+		const allowed = new Set([
+			'pristine-oracle',
+			'pristine-oracle-partially-adapted',
+			'pristine-oracle-adapted',
+			'not-applicable',
+		]);
+		if (!allowed.has(entry.disposition)) {
+			throw new Error(
+				`${entry.path}: suite disposition must be a pristine oracle classification or not-applicable`,
+			);
 		}
 		if (typeof entry.rationale !== 'string' || entry.rationale.length === 0) {
 			throw new Error(`${entry.path}: disposition requires a rationale`);
 		}
 		if (!Number.isInteger(entry.caseCount) || entry.caseCount < 0) {
 			throw new Error(`${entry.path}: disposition requires a non-negative caseCount`);
+		}
+		if (
+			(entry.disposition === 'pristine-oracle-adapted' ||
+				entry.disposition === 'pristine-oracle-partially-adapted') &&
+			(!Array.isArray(entry.adaptedEvidence) || entry.adaptedEvidence.length === 0)
+		) {
+			throw new Error(`${entry.path}: adapted dispositions require adaptedEvidence`);
 		}
 	}
 
