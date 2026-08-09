@@ -138,7 +138,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "479ae1481b9a1e9572c44b74e437c6b1033d69e6e6cc4e4b75629f95b9276f38"
+          "sha256": "980b90bb146ac20c6361e0d00171f6d34f95ffce3d794f3f9e3d4dcadcde85bf"
         },
         {
           "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
@@ -207,7 +207,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "479ae1481b9a1e9572c44b74e437c6b1033d69e6e6cc4e4b75629f95b9276f38"
+          "sha256": "980b90bb146ac20c6361e0d00171f6d34f95ffce3d794f3f9e3d4dcadcde85bf"
         },
         {
           "path": "packages/streamdown/audit/upstream-suite-artifacts.json",
