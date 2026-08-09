@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/redux-toolkit/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/redux-toolkit/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/redux-toolkit/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/redux-toolkit/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -50,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b15d435c782fc2341f66e1969fa10aee4751e227f793128b7857053f4cf5550d"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -108,7 +98,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "8db8b5352373e0820a2a135d4a55c509fe564c07a2a946607fcf48d1b23f2a93"
+          "sha256": "d34298cd43c2dacb2ed564a137cb23687e90d62759c28c5d43b938c0ff48bd3e"
         }
       ]
     }
