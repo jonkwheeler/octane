@@ -2875,12 +2875,8 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
-			},,
+			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/interior/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'interior',
 					include: ['packages/interior/tests/**/*.test.ts'],

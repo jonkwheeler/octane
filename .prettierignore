@@ -11,6 +11,7 @@ packages/shadcn/registry/
 # provenance; do not reformat)
 packages/*/upstream/
 packages/shadcn/tests/differential/upstream/
+packages/interior/tests/differential/upstream/
 # The framework-neutral half of @vis.gl/react-mapbox is reused byte-for-byte, so
 # an upstream bump stays a clean diff against packages/react-map-gl/upstream/.
 # Provenance and per-file hashes live in packages/react-map-gl/UPSTREAM.md.

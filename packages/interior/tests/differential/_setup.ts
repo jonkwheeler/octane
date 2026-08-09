@@ -1,18 +1,29 @@
 /**
- * Precompile interior differential fixtures for React.
+ * Vitest globalSetup for `@octanejs/interior` differential tests.
  *
- * interior.dev has no npm package — differential tests compare Octane fixtures
- * against hand-authored React reference components vendored under _fixtures/.
+ * interior.dev has no npm package — the React oracle is the pinned upstream
+ * copy-paste source vendored under `tests/differential/upstream/`. Fixtures are
+ * compiled through `@tsrx/react` + esbuild with `@octanejs/interior` rewritten
+ * to that oracle and `octane` → `react`.
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const FIXTURE_DIR = join(__dirname, '../_fixtures');
+const FIXTURE_DIR = join(__dirname, '_fixtures');
+const UPSTREAM_DIR = join(__dirname, 'upstream');
 const CACHE_DIR = join(__dirname, '.react-cache');
 
 function hashString(value: string): string {
@@ -23,31 +34,42 @@ function hashString(value: string): string {
 	return Math.abs(hash).toString(36);
 }
 
+function compileUpstream(name: string): void {
+	const sourcePath = join(UPSTREAM_DIR, `${name}.tsx`);
+	const source = readFileSync(sourcePath, 'utf8');
+	const transformed = esbuildTransformSync(source, {
+		loader: 'tsx',
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+		target: 'esnext',
+		format: 'esm',
+		sourcefile: sourcePath,
+	});
+	writeFileSync(join(CACHE_DIR, `upstream-${name}.js`), transformed.code);
+}
+
 function compileOne(sourcePath: string): void {
 	const source = readFileSync(sourcePath, 'utf8');
-	let compiled;
-	try {
-		compiled = compileToReact(source, sourcePath);
-	} catch {
-		return;
+	const compiled = compileToReact(source, sourcePath);
+	if (compiled.errors && compiled.errors.length > 0) {
+		throw new Error(
+			`React fixture compilation failed for ${sourcePath}: ${JSON.stringify(compiled.errors)}`,
+		);
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
-
-	let transformed;
-	try {
-		transformed = esbuildTransformSync(compiled.code, {
-			loader: 'tsx',
-			jsx: 'automatic',
-			jsxImportSource: 'react',
-			target: 'esnext',
-			format: 'esm',
-			sourcefile: sourcePath,
-		});
-	} catch {
-		return;
-	}
-
-	const rewritten = transformed.code.replace(/from\s+["']octane["']/g, 'from "react"');
+	const transformed = esbuildTransformSync(compiled.code, {
+		loader: 'tsx',
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+		target: 'esnext',
+		format: 'esm',
+		sourcefile: sourcePath,
+	});
+	const rewritten = transformed.code
+		.replace(
+			/from\s+["']@octanejs\/interior(?:\/[^"']*)?["']/g,
+			'from "./upstream-copy-button.js"',
+		)
+		.replace(/from\s+["']octane["']/g, 'from "react"');
 	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
 	writeFileSync(join(CACHE_DIR, `${slug}-${hashString(sourcePath)}.js`), rewritten);
 }
@@ -63,7 +85,9 @@ function walk(directory: string): string[] {
 }
 
 export async function setup(): Promise<void> {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
+	compileUpstream('copy-button');
 	if (!existsSync(FIXTURE_DIR)) return;
 	for (const sourcePath of walk(FIXTURE_DIR)) compileOne(sourcePath);
 }

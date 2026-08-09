@@ -49,6 +49,7 @@
     "@octanejs/motion": "workspace:*",
     "@tsrx/react": "catalog:default",
     "esbuild": "catalog:default",
+    "motion": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default",
