@@ -812,7 +812,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'usehooks-ts-differential',
 					include: ['packages/usehooks-ts/tests/differential/**/*.test.ts'],
