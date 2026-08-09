@@ -1,7 +1,11 @@
 import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+function toPortablePath(path) {
+	return path.replaceAll('\\', '/');
+}
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamRoot = resolve(packageRoot, 'upstream');
@@ -11,10 +15,7 @@ const expected = JSON.parse(
 const files = (await readdir(upstreamRoot, { recursive: true, withFileTypes: true }))
 	.filter((entry) => entry.isFile())
 	.map((entry) =>
-		`upstream/${entry.parentPath.slice(upstreamRoot.length + 1)}/${entry.name}`.replace(
-			'upstream//',
-			'upstream/',
-		),
+		toPortablePath(`upstream/${relative(upstreamRoot, resolve(entry.parentPath, entry.name))}`),
 	)
 	.sort();
 if (files.length !== expected.files)
