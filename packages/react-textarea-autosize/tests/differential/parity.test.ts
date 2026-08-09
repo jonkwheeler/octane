@@ -1,9 +1,9 @@
 import { act, createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { flushEffects, mount } from '../../octane/tests/_helpers';
-import OctaneTextareaAutosize from '../src/index.tsrx';
-import ReactTextareaAutosize from '../upstream/src/index.tsx';
+import { flushEffects, mount } from '../../../octane/tests/_helpers';
+import OctaneTextareaAutosize from '../../src/index.tsrx';
+import ReactTextareaAutosize from '../../upstream/src/index.tsx';
 
 const style = {
 	boxSizing: 'border-box' as const,
@@ -143,33 +143,46 @@ describe('react-textarea-autosize pristine differential', () => {
 	});
 
 	// @parity-case runtime:differential:stop-propagation-input
+	it('matches same-target callbacks when onInput stops propagation', async () => {
+		await expectStopPropagationParity('onInput');
+	});
+
 	// @parity-case runtime:differential:stop-propagation-capture
-	it.each(['onInput', 'onChangeCapture'] as const)(
-		'matches same-target callbacks when %s stops propagation',
-		async (stoppingCallback) => {
-			const reactCalls: string[] = [];
-			const octaneCalls: string[] = [];
-			const props = (calls: string[]) => ({
-				defaultValue: 'one',
-				style,
-				onHeightChange: (height: number) => calls.push(`height:${height}`),
-				onChange: () => calls.push('change'),
-				[stoppingCallback]: (event: Event) => {
-					calls.push(stoppingCallback);
-					event.stopPropagation();
-				},
-			});
-			const react = await renderReact(props(reactCalls));
-			const octane = renderOctane(props(octaneCalls));
-			reactCalls.length = 0;
-			octaneCalls.length = 0;
-
-			await dispatchInput(react, 'one\ntwo');
-			await dispatchInput(octane.textarea, 'one\ntwo');
-
-			expect(octane.textarea.style.height).toBe(react.style.height);
-			expect(octaneCalls).toEqual(reactCalls);
-			octane.app.unmount();
-		},
-	);
+	it('matches same-target callbacks when onChangeCapture stops propagation', async () => {
+		await expectStopPropagationParity('onChangeCapture');
+	});
 });
+
+async function expectStopPropagationParity(
+	stoppingCallback: 'onInput' | 'onChangeCapture',
+): Promise<void> {
+	const reactCalls: string[] = [];
+	const octaneCalls: string[] = [];
+	function props(calls: string[]) {
+		return {
+			defaultValue: 'one',
+			style,
+			onHeightChange: function onHeightChange(height: number) {
+				calls.push(`height:${height}`);
+			},
+			onChange: function onChange() {
+				calls.push('change');
+			},
+			[stoppingCallback]: function stopPropagation(event: Event) {
+				calls.push(stoppingCallback);
+				event.stopPropagation();
+			},
+		};
+	}
+	const react = await renderReact(props(reactCalls));
+	const octane = renderOctane(props(octaneCalls));
+	reactCalls.length = 0;
+	octaneCalls.length = 0;
+
+	await dispatchInput(react, 'one\ntwo');
+	await dispatchInput(octane.textarea, 'one\ntwo');
+
+	expect(octane.textarea.style.height).toBe(react.style.height);
+	expect(octaneCalls).toEqual(reactCalls);
+	octane.app.unmount();
+}

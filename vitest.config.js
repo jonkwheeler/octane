@@ -3487,12 +3487,20 @@ export default defineConfig({
 				},
 			},
 			{
+				// Upstream-adapted inventory owns tests/upstream/**; behavior,
+				// measurement, and hydration stay in the ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-textarea-autosize/tests/upstream/**/*.test.ts'],
+				},
 				test: {
 					name: 'react-textarea-autosize',
 					include: ['packages/react-textarea-autosize/tests/**/*.test.ts'],
 					exclude: [
+						...configDefaults.exclude,
 						'packages/react-textarea-autosize/tests/browser/**/*.test.ts',
 						'packages/react-textarea-autosize/tests/ssr/**/*.test.ts',
+						'packages/react-textarea-autosize/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -3535,6 +3543,52 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-textarea-autosize-differential',
+					include: ['packages/react-textarea-autosize/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+					server: {
+						deps: {
+							inline: ['use-composed-ref', 'use-isomorphic-layout-effect', 'use-latest'],
+						},
+					},
+				},
+				plugins: [octane({ requireDirective: true }), react()],
+				resolve: {
+					dedupe: ['react', 'react-dom'],
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
+						},
+						{
+							find: /^use-composed-ref$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-composed-ref/dist/use-composed-ref.esm.js',
+							),
+						},
+						{
+							find: /^use-isomorphic-layout-effect$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-isomorphic-layout-effect/dist/use-isomorphic-layout-effect.esm.js',
+							),
+						},
+						{
+							find: /^use-latest$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'node_modules/use-latest/dist/use-latest.esm.js',
+							),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-textarea-autosize-ssr',
 					include: ['packages/react-textarea-autosize/tests/ssr/**/*.test.ts'],
@@ -3579,6 +3633,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-textarea-autosize-browser',
 					include: ['packages/react-textarea-autosize/tests/browser/**/*.test.ts'],

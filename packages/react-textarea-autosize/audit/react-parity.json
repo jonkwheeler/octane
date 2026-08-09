@@ -27,20 +27,17 @@
     },
     "tests": {
       "roots": [
-        "packages/react-textarea-autosize/tests"
+        "packages/react-textarea-autosize/tests/upstream"
       ],
       "include": [
         "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
       ],
-      "exclude": [
-        "/browser/",
-        "/ssr/"
-      ]
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 21,
-    "uniqueIdentities": 21,
+    "inventoryEntries": 2,
+    "uniqueIdentities": 2,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -89,7 +86,7 @@
       "environment": "workspace-node",
       "project": "react-textarea-autosize",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the complete adapted upstream inventory plus repository-authored lifecycle, measurement, hydration, and differential coverage.",
+      "notes": "Runs the two case-for-case Octane adaptations of the pinned upstream suite.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-textarea-autosize/audit/adapted-runtime.json"
@@ -98,7 +95,7 @@
         {
           "path": "packages/react-textarea-autosize/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "01b59140a37a14cef48f39b098111082f8d160b214286842cbc6b4ab35de7639"
+          "sha256": "6195e792d8ff13be8b077cf471475aafc95af1c670c43e6a4e1b856df45635d6"
         }
       ]
     },
@@ -107,14 +104,14 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-textarea-autosize",
+      "project": "react-textarea-autosize-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Compares React and Octane measurement and native edit ordering in one deterministic environment.",
       "files": [
         {
-          "path": "packages/react-textarea-autosize/tests/react-differential.test.ts",
+          "path": "packages/react-textarea-autosize/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "591b82dab91ed44b6661df187466d306447bb0dc59cc489086437e8bca24dccd",
+          "sha256": "bf0070b04cf0ee3d8cd990ea7f0a5e45a34e8a5888c2d14a05057ff822a782ac",
           "cases": [
             {
               "id": "runtime:differential:initial",
