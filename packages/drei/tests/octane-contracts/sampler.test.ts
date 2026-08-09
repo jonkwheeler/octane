@@ -15,7 +15,7 @@ import {
 	SamplerAutoScene,
 	SamplerExternalScene,
 	SurfaceSamplerScene,
-} from './_fixtures/sampler.three.tsrx';
+} from '../_fixtures/sampler.three.tsrx';
 
 const samplerCalls = vi.hoisted(() => [] as Array<{ weight?: string; built: boolean }>);
 
@@ -117,57 +117,24 @@ async function reactSurface(mesh: THREE.Mesh) {
 	return { root, buffer };
 }
 
-describe('Sampler', () => {
-	it('matches external refs, weighted sampling, transform payloads, matrices, invalidation, and group props', async () => {
-		const reactMesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
-		const octaneMesh = reactMesh.clone();
-		const reactInstances = new THREE.InstancedMesh(
-			new THREE.SphereGeometry(),
-			new THREE.MeshBasicMaterial(),
-			3,
-		);
-		const octaneInstances = new THREE.InstancedMesh(
-			new THREE.SphereGeometry(),
-			new THREE.MeshBasicMaterial(),
-			3,
-		);
-		const react = await reactExternal(reactMesh, reactInstances);
-		const octane = await createOctaneThree(SamplerExternalScene, {
-			meshRef: { current: octaneMesh },
-			instancesRef: { current: octaneInstances },
-			count: 3,
-			weight: 'weight',
-			transform,
-			position: [4, 5, 6],
-		});
-		expect(matrices(octaneInstances, 3)).toEqual(matrices(reactInstances, 3));
-		expect(octaneInstances.instanceMatrix.version).toBeGreaterThan(0);
-		expect(reactInstances.instanceMatrix.version).toBeGreaterThan(0);
-		expect(samplerCalls).toEqual([
-			{ weight: 'weight', built: true },
-			{ weight: 'weight', built: true },
-		]);
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
-	});
-
-	it('matches the hook default transform and returns a replaced buffer over the sampled storage', async () => {
-		const react = await reactSurface(
-			new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial()),
-		);
-		let buffer!: THREE.InstancedBufferAttribute;
-		const octane = await createOctaneThree(SurfaceSamplerScene, {
-			mesh: new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial()),
+describe('Sampler (Octane-only contracts)', () => {
+	it('matches automatic child discovery for the sampled and controlled meshes', async () => {
+		let sampled!: THREE.Mesh;
+		let instances!: THREE.InstancedMesh;
+		const root = await createOctaneThree(SamplerAutoScene, {
+			meshRef: (value: THREE.Mesh) => (sampled = value),
+			instancesRef: (value: THREE.InstancedMesh) => (instances = value),
+			geometry: new THREE.PlaneGeometry(2, 2),
+			meshMaterial: new THREE.MeshBasicMaterial(),
+			instanceGeometry: new THREE.BoxGeometry(),
+			instanceMaterial: new THREE.MeshBasicMaterial(),
 			count: 2,
-			transform: undefined,
-			weight: undefined,
-			onBuffer: (value: THREE.InstancedBufferAttribute) => (buffer = value),
+			transform,
 		});
-		expect(Array.from(buffer.array)).toEqual(Array.from(react.buffer.array));
-		expect(buffer.itemSize).toBe(react.buffer.itemSize);
-		expect(buffer.version).toBe(react.buffer.version);
-		expect(Array.from(buffer.array).slice(12, 15)).toEqual([1, 1.25, -1]);
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
+		expect(sampled.type).toBe('Mesh');
+		expect(instances.isInstancedMesh).toBe(true);
+		expect(matrices(instances, 2).slice(12, 15)).toEqual([1, 1.25 + 1, -1]);
+		expect(instances.instanceMatrix.version).toBeGreaterThan(0);
+		root.unmount();
 	});
 });

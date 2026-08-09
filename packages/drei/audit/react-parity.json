@@ -28,13 +28,14 @@
         "tests/crosswalk-guard\\.test\\.ts$",
         "tests/react-parity-guard\\.test\\.ts$",
         "tests/view-renderer-boundary\\.test\\.ts$",
+        "tests/octane-contracts/",
         "tests/differential/"
       ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 284,
-    "uniqueIdentities": 284,
+    "inventoryEntries": 259,
+    "uniqueIdentities": 259,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -65,17 +66,17 @@
         {
           "path": "packages/drei/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "432dfed848a872c3886ea9982554154222314e57416f851f6dfb2bf973bdcc67"
+          "sha256": "ee7f62bdf35eb11f166d08f63aa1d1f8c8a304cb670c8e316acda89b7dda4e2c"
         },
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "7323b87516e262743885f51154edea4feb3adb7ac9ddf4abff66845614d681f0"
+          "sha256": "538f695f78b18af0cf73eb2fcd1729e3891ccaa1a611fab6a1eb0ab361b12324"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "2564bed7645f65a5a50e1deda4714d2f5b0a37e832d15d89b0c2359ea1be8927"
+          "sha256": "f7573603afeafe09425c6a340ad1bcf5fe8778a9197ae66190e27742056592ed"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
@@ -85,7 +86,7 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "3e2690953ebb2a16d76854cd6548f0901ed322d7642bdad4dd3c1a0b3d56cc69"
+          "sha256": "63b97e0c0783eff953558498a9bcd3cabbeff8847cf5b1505911c711eb43b271"
         }
       ]
     },
@@ -101,7 +102,7 @@
         {
           "path": "packages/drei/tests/differential/view.test.ts",
           "role": "test",
-          "sha256": "11ce7b6ef5cb8b02f5a1aee35950b6fd93c81a01ba97c39ec8db014f37147da8",
+          "sha256": "deeb76074dc54419c24bb23e55e2d04da0c1b2d741dccdbcd1b0e4a419476112",
           "cases": [
             {
               "id": "differential:view-rendering",
@@ -112,11 +113,6 @@
               "id": "differential:view-visibility",
               "testName": "matches invisible and offscreen clear/render boundaries and event connection cleanup",
               "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
-            },
-            {
-              "id": "differential:view-port-surface",
-              "testName": "preserves the View.Port static surface",
-              "fullName": "View preserves the View.Port static surface"
             }
           ]
         }
@@ -134,7 +130,7 @@
         {
           "path": "packages/drei/tests/view-renderer-boundary.test.ts",
           "role": "test",
-          "sha256": "8d7ad247ff992fd1326ca8f336da5a7cf64f3f213b068a808c0dc5a3203c04f5",
+          "sha256": "e9976c3f5058b4e1261f5cc3f2da755fd3247e6796cb138439b35a8b04bf9e6e",
           "cases": [
             {
               "id": "differential:view-renderer-boundary",

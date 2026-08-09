@@ -9,7 +9,7 @@ import { RoundedBoxGeometry as ReactRoundedBoxGeometry } from '@react-three/drei
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { RoundedBoxGeometryScene } from './_fixtures/rounded-box.three.tsrx';
+import { RoundedBoxGeometryScene } from '../_fixtures/rounded-box.three.tsrx';
 
 interface Input {
 	args?: [width?: number, height?: number, depth?: number];
@@ -101,34 +101,30 @@ async function mountReact(input: Input): Promise<{
 	return { geometry, root };
 }
 
-describe('RoundedBoxGeometry', () => {
-	it.each([
-		['defaults', {}],
-		[
-			'custom dimensions and smoothing',
-			{
-				args: [2.5, 1.25, 0.75],
-				radius: 0.12,
-				smoothness: 7,
-				bevelSegments: 3,
-				steps: 2,
-				creaseAngle: 0.65,
-			},
-		],
-	] as const)('matches the pinned React Drei oracle for %s', async (_name, input) => {
-		const octaneRefs: Array<THREE.ExtrudeGeometry | null> = [];
-		const octane = await createOctaneThree(RoundedBoxGeometryScene, {
-			...input,
-			geometryRef: (value: THREE.ExtrudeGeometry | null) => octaneRefs.push(value),
+describe('RoundedBoxGeometry (Octane-only contracts)', () => {
+	it('recreates geometry when constructor inputs change and preserves it for equal args', async () => {
+		const refs: Array<THREE.ExtrudeGeometry | null> = [];
+		const geometryRef = (value: THREE.ExtrudeGeometry | null) => refs.push(value);
+		const firstInput = { args: [2, 1, 0.5] as Input['args'], radius: 0.1 };
+		const renderer = await createOctaneThree(RoundedBoxGeometryScene, {
+			...firstInput,
+			geometryRef,
 		});
-		const react = await mountReact(input);
-		const octaneGeometry = octaneRefs.at(-1);
-		if (octaneGeometry == null) throw new Error('Octane did not attach RoundedBoxGeometry.');
+		const first = refs.at(-1)!;
 
-		expect(geometrySnapshot(octaneGeometry)).toEqual(geometrySnapshot(react.geometry));
-		expect(octaneGeometry.boundingBox!.getCenter(new THREE.Vector3()).toArray()).toEqual([0, 0, 0]);
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
-		expect(octaneRefs.at(-1)).toBeNull();
+		renderer.update(RoundedBoxGeometryScene, { ...firstInput, geometryRef });
+		expect(refs.at(-1)).toBe(first);
+
+		renderer.update(RoundedBoxGeometryScene, {
+			args: [3, 1, 0.5],
+			radius: 0.1,
+			geometryRef,
+		});
+		const replacement = refs.at(-1)!;
+		expect(replacement).not.toBe(first);
+		expect(refs).toContain(null);
+
+		renderer.unmount();
+		expect(refs.at(-1)).toBeNull();
 	});
 });

@@ -16,12 +16,12 @@ import { useTexture as reactUseTexture } from '@react-three/drei/core/Texture.js
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { useTexture } from '../src/index.js';
+import { useTexture } from '../../src/index.js';
 import {
 	CloudInstanceWithoutParentScene,
 	CloudScene,
 	StandaloneCloudScene,
-} from './_fixtures/cloud.three.tsrx';
+} from '../_fixtures/cloud.three.tsrx';
 
 const originalTextureLoad = THREE.TextureLoader.prototype.load;
 
@@ -165,70 +165,10 @@ async function reactClouds(texture: string) {
 	return { root, group, first, second, getState };
 }
 
-describe('Clouds', () => {
-	it('matches seeded distribution, custom distribution, range, buffers, animation, texture aspect, material shader, and refs', async () => {
-		const texture = '/cloud-parity.png';
-		const react = await reactClouds(texture);
-		let group!: THREE.Group;
-		let first!: THREE.Group;
-		let second!: THREE.Group;
-		const octane = await createOctaneThree(CloudScene, {
-			ref: (value: THREE.Group) => (group = value),
-			firstRef: (value: THREE.Group) => (first = value),
-			secondRef: (value: THREE.Group) => (second = value),
-			texture,
-			limit: 6,
-			range: 4,
-			frustumCulled: false,
-			parentPosition: [2, 0, 0],
-			firstSeed: 4,
-			firstSegments: 3,
-			firstBounds: [2, 1, 3],
-			firstConcentrate: 'outside',
-			firstVolume: 2,
-			firstSmallestVolume: 0.1,
-			firstDistribute: distribute,
-			firstGrowth: 1.5,
-			firstSpeed: 0.75,
-			firstFade: 8,
-			firstOpacity: 0.6,
-			firstColor: '#4080c0',
-			firstPosition: [1, 2, 3],
-			showSecond: true,
-			secondSeed: 8,
-			secondSegments: 2,
-			secondColor: 'red',
-		});
-		await flushLoads();
-		await reactThreeAct(async () => reactAdvance(0.5, true, react.getState()));
-		octane.advanceFrames(1, 0.5);
-		expect(snapshot(group)).toEqual(snapshot(react.group));
-		expect(first.position.toArray()).toEqual(react.first.position.toArray());
-		expect(second.type).toBe(react.second.type);
-		octane.unmount();
-		await reactThreeAct(async () => react.root.unmount());
-		useTexture.clear(texture);
-		reactUseTexture.clear(texture);
-	});
-
-	it('wraps a standalone Cloud in an implicit Clouds provider', async () => {
-		const texture =
-			'https://rawcdn.githack.com/pmndrs/drei-assets/9225a9f1fbd449d9411125c2f419b843d0308c9f/cloud.png';
-		let cloud!: THREE.Group;
-		const root = await createOctaneThree(StandaloneCloudScene, {
-			ref: (value: THREE.Group) => (cloud = value),
-			seed: 2,
-			segments: 1,
-			color: 'white',
-		});
-		await flushLoads();
-		root.advanceFrames(1, 0.25);
-		expect(cloud.type).toBe('Group');
-		expect(
-			cloud.parent?.children.some((object) => (object as THREE.InstancedMesh).isInstancedMesh),
-		).toBe(true);
-		root.unmount();
-		useTexture.clear(texture);
-		reactUseTexture.clear(texture);
+describe('Clouds (Octane-only contracts)', () => {
+	it('rejects CloudInstance outside Clouds', async () => {
+		await expect(createOctaneThree(CloudInstanceWithoutParentScene, {})).rejects.toThrow(
+			'CloudInstance must be used inside Clouds component.',
+		);
 	});
 });

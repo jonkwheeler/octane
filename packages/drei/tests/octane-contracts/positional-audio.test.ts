@@ -16,7 +16,7 @@ import {
 	type WebGLRenderer,
 } from 'three';
 import * as THREE from 'three';
-import { PositionalAudioScene } from './_fixtures/positional-audio.three.tsrx';
+import { PositionalAudioScene } from '../_fixtures/positional-audio.three.tsrx';
 
 const originalLoad = AudioLoader.prototype.load;
 const buffer = { duration: 2 } as AudioBuffer;
@@ -115,61 +115,22 @@ function snapshot(sound: ThreePositionalAudio) {
 	};
 }
 
-describe('PositionalAudio', () => {
-	it('matches the pinned React Drei configuration, ref, update, and camera listener lifecycle', async () => {
-		const props = {
-			url: '/sound.ogg',
-			distance: 4,
-			loop: false,
-			autoplay: false,
-			position: [1, 2, 3] as const,
-		};
-		let reactSound!: ThreePositionalAudio;
-		const canvas = document.createElement('canvas');
-		const reactRoot = createReactThreeRoot(canvas);
-		await reactRoot.configure({
-			gl: renderer(canvas),
-			frameloop: 'never',
-			dpr: 1,
-			size: { width: 64, height: 64, top: 0, left: 0 },
-			camera: new PerspectiveCamera(),
-		});
-		await reactThreeAct(async () =>
-			reactRoot.render(
-				React.createElement(
-					React.Suspense,
-					{ fallback: null },
-					React.createElement(ReactPositionalAudio, {
-						...props,
-						ref: (value) => (reactSound = value!),
-					}),
-				),
-			),
-		);
-		let octaneSound!: ThreePositionalAudio;
-		const octaneRoot = await createOctaneThree(PositionalAudioScene, {
-			...props,
-			ref: (value: ThreePositionalAudio) => (octaneSound = value),
-		});
-		await flush();
-
-		expect(snapshot(octaneSound)).toEqual(snapshot(reactSound));
-		expect(octaneSound.listener.parent).toBeInstanceOf(PerspectiveCamera);
-
-		octaneRoot.update(PositionalAudioScene, {
-			...props,
-			distance: 9,
+describe('PositionalAudio (Octane-only contracts)', () => {
+	it('does not invent autoplay when upstream leaves it disabled', async () => {
+		const play = vi.spyOn(ThreePositionalAudio.prototype, 'play');
+		let sound!: ThreePositionalAudio;
+		const root = await createOctaneThree(PositionalAudioScene, {
+			url: '/quiet.ogg',
+			distance: 1,
 			loop: true,
-			ref: (value: ThreePositionalAudio) => (octaneSound = value),
+			autoplay: false,
+			position: [0, 0, 0],
+			ref: (value: ThreePositionalAudio) => (sound = value),
 		});
 		await flush();
-		expect(octaneSound.getRefDistance()).toBe(9);
-		expect(octaneSound.getLoop()).toBe(true);
-
-		const octaneListener = octaneSound.listener;
-		octaneRoot.unmount();
-		await flush();
-		expect(octaneListener.parent).toBeNull();
-		await reactThreeAct(async () => reactRoot.unmount());
+		expect(sound.isPlaying).toBe(false);
+		expect(play).not.toHaveBeenCalled();
+		play.mockRestore();
+		root.unmount();
 	});
 });

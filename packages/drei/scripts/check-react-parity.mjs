@@ -14,12 +14,14 @@ const fail = (message) => {
 	throw new Error(`Drei React-parity audit: ${message}`);
 };
 
-const OCTANE_ONLY = new Set([
+const OCTANE_ONLY_GUARDS = new Set([
 	'packages/drei/tests/config.test.ts',
 	'packages/drei/tests/crosswalk-guard.test.ts',
 	'packages/drei/tests/react-parity-guard.test.ts',
 	'packages/drei/tests/view-renderer-boundary.test.ts',
 ]);
+const isOctaneOnly = (path) =>
+	OCTANE_ONLY_GUARDS.has(path) || path.includes('/tests/octane-contracts/');
 
 const inventory = read('adapted-runtime.json');
 const evidence = read('runtime-evidence.json');
@@ -36,14 +38,17 @@ const discovered = readdirSync(resolve(root, 'packages/drei/tests'), {
 	.sort();
 const inventoried = [...inventory.files].sort();
 const differential = discovered.filter((path) => path.includes('/tests/differential/'));
-const guards = discovered.filter((path) => OCTANE_ONLY.has(path));
+const guards = discovered.filter((path) => isOctaneOnly(path));
 const expectedAdapted = discovered
-	.filter((path) => !OCTANE_ONLY.has(path) && !path.includes('/tests/differential/'))
+	.filter((path) => !isOctaneOnly(path) && !path.includes('/tests/differential/'))
 	.sort();
 if (JSON.stringify(expectedAdapted) !== JSON.stringify(inventoried))
 	fail('adapted inventory must cover every paired file and exclude guards/differential');
 if (differential.length === 0) fail('differential project files are missing');
-if (guards.length !== OCTANE_ONLY.size) fail('octane-only guard files drifted');
+if (guards.filter((path) => OCTANE_ONLY_GUARDS.has(path)).length !== OCTANE_ONLY_GUARDS.size)
+	fail('octane-only guard files drifted');
+if (!guards.some((path) => path.includes('/tests/octane-contracts/')))
+	fail('octane-contracts suite is missing');
 
 const classified = classifications.tests.map((entry) => entry.path).sort();
 if (JSON.stringify(discovered) !== JSON.stringify(classified))
@@ -57,11 +62,11 @@ for (const entry of classifications.tests) {
 		const source = readFileSync(resolve(root, entry.path), 'utf8');
 		if (!source.includes('@react-three/drei'))
 			fail(`${entry.path} no longer imports its React oracle`);
-		if (OCTANE_ONLY.has(entry.path))
+		if (isOctaneOnly(entry.path))
 			fail(`${entry.path} is classified as parity evidence but is an Octane-only guard`);
 	} else if (!entry.disposition.startsWith('octane-only-') || !entry.reason || entry.oracle) {
 		fail(`${entry.path} has an invalid unpaired classification`);
-	} else if (!OCTANE_ONLY.has(entry.path)) {
+	} else if (!isOctaneOnly(entry.path)) {
 		fail(`${entry.path} is classified Octane-only but is not a declared guard`);
 	}
 }

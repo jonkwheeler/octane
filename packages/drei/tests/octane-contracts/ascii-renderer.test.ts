@@ -10,7 +10,7 @@ import { act as octaneAct } from 'octane';
 import { createRoot as createOctaneThreeRoot } from '@octanejs/three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { AsciiRendererScene } from './_fixtures/ascii-renderer.three.tsrx';
+import { AsciiRendererScene } from '../_fixtures/ascii-renderer.three.tsrx';
 
 type MockEffect = {
 	domElement: HTMLDivElement;
@@ -84,60 +84,15 @@ function snapshot(effect: MockEffect, canvas: HTMLCanvasElement) {
 	};
 }
 
-describe('AsciiRenderer', () => {
-	it('matches the pinned React Drei effect configuration, styling, size, frame priority, and cleanup', async () => {
-		const props = {
-			renderIndex: 2,
-			bgColor: 'navy',
-			fgColor: 'gold',
-			characters: 'xo',
-			invert: false,
-			color: true,
-			resolution: 0.25,
-		};
-		const reactDom = parentedCanvas();
-		const reactRoot = createReactThreeRoot(reactDom.canvas);
-		await reactRoot.configure({
-			gl: renderer(reactDom.canvas),
-			frameloop: 'never',
-			dpr: 1,
-			size: { width: 320, height: 180, top: 0, left: 0 },
-		});
-		let reactState!: ReactRootState;
-		function ReactScene() {
-			reactState = reactUseThree();
-			return React.createElement(ReactAsciiRenderer, props);
-		}
-		await reactThreeAct(async () => reactRoot.render(React.createElement(ReactScene)));
-		const reactEffect = mocks.instances.at(-1)!;
-
-		const octaneDom = parentedCanvas();
-		const octaneRoot = createOctaneThreeRoot(octaneDom.canvas);
-		await octaneRoot.configure({
-			gl: renderer(octaneDom.canvas),
-			frameloop: 'never',
-			dpr: 1,
-			size: { width: 320, height: 180, top: 0, left: 0 },
-		});
-		await octaneAct(async () => octaneRoot.render(AsciiRendererScene, props));
-		const octaneEffect = mocks.instances.at(-1)!;
-
-		expect(snapshot(octaneEffect, octaneDom.canvas)).toEqual(
-			snapshot(reactEffect, reactDom.canvas),
-		);
-		await reactThreeAct(async () => reactState.advance(1 / 60, true));
-		octaneRoot.store.getState().advance(1 / 60);
-		expect(octaneEffect.render).toHaveBeenCalledTimes(reactEffect.render.mock.calls.length);
-		expect(octaneEffect.render).toHaveBeenLastCalledWith(
-			octaneRoot.store.getState().scene,
-			octaneRoot.store.getState().camera,
-		);
-
-		octaneRoot.unmount();
-		await reactThreeAct(async () => reactRoot.unmount());
-		expect(octaneDom.canvas.style.opacity).toBe('1');
-		expect(reactDom.canvas.style.opacity).toBe('1');
-		expect(octaneEffect.domElement.parentNode).toBeNull();
-		expect(reactEffect.domElement.parentNode).toBeNull();
+describe('AsciiRenderer (Octane-only contracts)', () => {
+	it('retains upstream defaults as a negative control', async () => {
+		const dom = parentedCanvas();
+		const root = createOctaneThreeRoot(dom.canvas);
+		await root.configure({ gl: renderer(dom.canvas), frameloop: 'never', dpr: 1 });
+		await octaneAct(async () => root.render(AsciiRendererScene, {}));
+		const effect = mocks.instances.at(-1)!;
+		expect(effect.characters).toBe(' .:-+*=%@#');
+		expect(effect.options).toEqual({ invert: true, color: false, resolution: 0.15 });
+		root.unmount();
 	});
 });

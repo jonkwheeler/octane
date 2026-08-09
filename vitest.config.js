@@ -2030,6 +2030,8 @@ export default defineConfig({
 				},
 			},
 			{
+				// Paired React/Octane characterization only. Octane-only contracts live in
+				// drei-guards so whole-project ownership does not absorb them as parity evidence.
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'drei',
@@ -2040,6 +2042,7 @@ export default defineConfig({
 						'packages/drei/tests/crosswalk-guard.test.ts',
 						'packages/drei/tests/react-parity-guard.test.ts',
 						'packages/drei/tests/view-renderer-boundary.test.ts',
+						'packages/drei/tests/octane-contracts/**/*.test.ts',
 						'packages/drei/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
@@ -2087,6 +2090,7 @@ export default defineConfig({
 						'packages/drei/tests/crosswalk-guard.test.ts',
 						'packages/drei/tests/react-parity-guard.test.ts',
 						'packages/drei/tests/view-renderer-boundary.test.ts',
+						'packages/drei/tests/octane-contracts/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,

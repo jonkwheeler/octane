@@ -297,6 +297,121 @@
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
     },
     {
+      "path": "packages/drei/tests/octane-contracts/ascii-renderer.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/camera-controls.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/cloud.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/core-utilities.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/depth-buffer.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/environment.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/fbo.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/font.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/html.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/instances.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/motion-path.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/performance-monitor.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/points.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/positional-audio.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/progress.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/rounded-box.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/sampler.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/soft-shadows.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/textures.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/trail-texture.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/trail.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/transform-controls.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
+      "path": "packages/drei/tests/octane-contracts/use-cursor.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only compiler, provider, or lifecycle contract without a paired React scenario."
+    },
+    {
       "path": "packages/drei/tests/outlines.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."

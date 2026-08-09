@@ -10,7 +10,7 @@ import { useDepthBuffer as reactUseDepthBuffer } from '@react-three/drei/core/us
 import { create as createOctaneThree } from '@octanejs/three/testing';
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { DepthBufferDefaultsScene, DepthBufferScene } from './_fixtures/depth-buffer.three.tsrx';
+import { DepthBufferDefaultsScene, DepthBufferScene } from '../_fixtures/depth-buffer.three.tsrx';
 
 type Recorder = THREE.WebGLRenderer & { renderCount: number };
 
@@ -66,40 +66,15 @@ function snapshot(texture: THREE.DepthTexture | null) {
 		: null;
 }
 
-describe('useDepthBuffer', () => {
-	it.each([
-		{ size: 128, expected: [128, 128] },
-		{ size: 0, expected: [320, 180] },
-	])(
-		'matches texture configuration and frame limits for size=$size',
-		async ({ size, expected }) => {
-			let reactTexture: THREE.DepthTexture | null = null;
-			function ReactHook() {
-				reactTexture = reactUseDepthBuffer({ size, frames: 1 });
-				return null;
-			}
-			const react = await reactRoot(ReactHook, 320, 180);
-			let octaneTexture: THREE.DepthTexture | null = null;
-			const octane = await createOctaneThree(
-				DepthBufferScene,
-				{
-					size,
-					frames: 1,
-					onTexture: (value: THREE.DepthTexture | null) => (octaneTexture = value),
-				},
-				{ width: 320, height: 180 },
-			);
-			expect(snapshot(octaneTexture)).toEqual(snapshot(reactTexture));
-			expect(snapshot(octaneTexture)).toMatchObject({ width: expected[0], height: expected[1] });
-			const reactBefore = react.gl.renderCount;
-			const octaneBefore = octane.renderer.frameCount;
-			reactAdvance(1000, true, react.getState());
-			octane.advanceFrames(1);
-			reactAdvance(2000, true, react.getState());
-			octane.advanceFrames(1);
-			expect(octane.renderer.frameCount - octaneBefore).toBe(react.gl.renderCount - reactBefore);
-			octane.unmount();
-			await reactThreeAct(async () => react.root.unmount());
-		},
-	);
+describe('useDepthBuffer (Octane-only contracts)', () => {
+	it('restores defaults after the compiler-injected trailing slot', async () => {
+		let texture: THREE.DepthTexture | null = null;
+		const root = await createOctaneThree(
+			DepthBufferDefaultsScene,
+			{ onTexture: (value: THREE.DepthTexture | null) => (texture = value) },
+			{ width: 320, height: 180 },
+		);
+		expect(snapshot(texture)).toMatchObject({ width: 256, height: 256 });
+		root.unmount();
+	});
 });

@@ -136,11 +136,6 @@
       "fullName": "AsciiRenderer matches the pinned React Drei effect configuration, styling, size, frame priority, and cleanup"
     },
     {
-      "id": "runtime:834b4a1a460027b5",
-      "file": "packages/drei/tests/ascii-renderer.test.ts",
-      "fullName": "AsciiRenderer retains upstream defaults as a negative control"
-    },
-    {
       "id": "runtime:49a92cb3ccdab000",
       "file": "packages/drei/tests/basic-controls.test.ts",
       "fullName": "basic controls matches ArcballControls construction, lifecycle, frames, events, refs, and default state"
@@ -209,11 +204,6 @@
       "id": "runtime:09ca474611c18d0b",
       "file": "packages/drei/tests/bvh.test.ts",
       "fullName": "BVH helpers matches deprecated useBVH installation, options, accelerated raycasts, and cleanup"
-    },
-    {
-      "id": "runtime:f6bc2382fd42adcd",
-      "file": "packages/drei/tests/camera-controls.test.ts",
-      "fullName": "CameraControls does not regress performance when regress is false"
     },
     {
       "id": "runtime:ead0e9769c2c8e32",
@@ -331,11 +321,6 @@
       "fullName": "Clouds matches seeded distribution, custom distribution, range, buffers, animation, texture aspect, material shader, and refs"
     },
     {
-      "id": "runtime:d7f172bb72e1d74d",
-      "file": "packages/drei/tests/cloud.test.ts",
-      "fullName": "Clouds rejects CloudInstance outside Clouds"
-    },
-    {
       "id": "runtime:0eb5ca4d878a71aa",
       "file": "packages/drei/tests/cloud.test.ts",
       "fullName": "Clouds wraps a standalone Cloud in an implicit Clouds provider"
@@ -354,11 +339,6 @@
       "id": "runtime:1db3f1570f0ce660",
       "file": "packages/drei/tests/core-utilities.test.ts",
       "fullName": "framework-neutral core utilities matches Drei bounds intersections and miss behavior"
-    },
-    {
-      "id": "runtime:ce1738de4b0d0b6b",
-      "file": "packages/drei/tests/core-utilities.test.ts",
-      "fullName": "framework-neutral core utilities matches Drei lazy bounds setup and ignores meshes without a material"
     },
     {
       "id": "runtime:14f3477d2b7e0965",
@@ -409,11 +389,6 @@
       "id": "runtime:2f7bd7e9d61ef4ab",
       "file": "packages/drei/tests/depth-buffer.test.ts",
       "fullName": "useDepthBuffer matches texture configuration and frame limits for size=128"
-    },
-    {
-      "id": "runtime:64761cd3b118d7cd",
-      "file": "packages/drei/tests/depth-buffer.test.ts",
-      "fullName": "useDepthBuffer restores defaults after the compiler-injected trailing slot"
     },
     {
       "id": "runtime:bbd45fa51fcf22be",
@@ -506,11 +481,6 @@
       "fullName": "useEnvironment matches validation and static API behavior"
     },
     {
-      "id": "runtime:42025575d026e746",
-      "file": "packages/drei/tests/environment.test.ts",
-      "fullName": "useEnvironment restores defaults after the compiler-injected trailing slot"
-    },
-    {
       "id": "runtime:25c2fa3018d93f62",
       "file": "packages/drei/tests/example.test.ts",
       "fullName": "Example matches the pinned React counter API, text output, material mode, group props, and user children"
@@ -566,11 +536,6 @@
       "fullName": "framebuffer objects matches viewport-sized targets and resize behavior"
     },
     {
-      "id": "runtime:162169d047bda7d6",
-      "file": "packages/drei/tests/fbo.test.ts",
-      "fullName": "framebuffer objects renders natural TSRX block children without invoking them as render props"
-    },
-    {
       "id": "runtime:d09c2bd8afd018ae",
       "file": "packages/drei/tests/fisheye.test.ts",
       "fullName": "Fisheye matches React radius, sphere segments, cube texture projection, portal ownership, and camera synchronization"
@@ -579,11 +544,6 @@
       "id": "runtime:3fa4d4a0ab133904",
       "file": "packages/drei/tests/font.test.ts",
       "fullName": "useFont matches the pinned React Drei parser, suspension, cache, preload, and clear behavior"
-    },
-    {
-      "id": "runtime:4223d24ae8df8d34",
-      "file": "packages/drei/tests/font.test.ts",
-      "fullName": "useFont preloads URL data once and refetches only after clear"
     },
     {
       "id": "runtime:61d726ee4e830d9c",
@@ -624,11 +584,6 @@
       "id": "runtime:384f596a93f8c26e",
       "file": "packages/drei/tests/hooks.test.ts",
       "fullName": "camera and intersection hooks matches useIntersect visibility transitions and restores onBeforeRender"
-    },
-    {
-      "id": "runtime:09bb2e9e17abda75",
-      "file": "packages/drei/tests/html.test.ts",
-      "fullName": "Html exports the upstream calculate-position behavior"
     },
     {
       "id": "runtime:85aac16a0e23f6a8",
@@ -694,21 +649,6 @@
       "id": "runtime:a2698f77f2c02048",
       "file": "packages/drei/tests/instances.test.ts",
       "fullName": "Instances matches virtual instances, matrix/color buffers, ranges, custom attributes, refs, and frame limits"
-    },
-    {
-      "id": "runtime:7119da1c8d091d47",
-      "file": "packages/drei/tests/instances.test.ts",
-      "fullName": "Instances rejects Instance outside its required provider"
-    },
-    {
-      "id": "runtime:039b348a8c68123f",
-      "file": "packages/drei/tests/instances.test.ts",
-      "fullName": "Instances supports createInstances factory context"
-    },
-    {
-      "id": "runtime:611e6d1e9625b213",
-      "file": "packages/drei/tests/instances.test.ts",
-      "fullName": "Instances supports render-prop local instances"
     },
     {
       "id": "runtime:1662d0836f934150",
@@ -831,11 +771,6 @@
       "fullName": "MotionPathControls matches React context state, imperative ref, damping, looping, focus, and curve traversal"
     },
     {
-      "id": "runtime:bad31153732f79ca",
-      "file": "packages/drei/tests/motion-path.test.ts",
-      "fullName": "MotionPathControls rejects useMotion outside MotionPathControls"
-    },
-    {
       "id": "runtime:c5d3aa2ca21eaebf",
       "file": "packages/drei/tests/outlines.test.ts",
       "fullName": "Outlines matches React parent geometry derivation and material configuration for angle=0"
@@ -849,11 +784,6 @@
       "id": "runtime:52665dcb1e0e50d7",
       "file": "packages/drei/tests/performance-monitor.test.ts",
       "fullName": "PerformanceMonitor matches decline, change, fallback, subscription, and sampling state"
-    },
-    {
-      "id": "runtime:da5efa2d9c1d726c",
-      "file": "packages/drei/tests/performance-monitor.test.ts",
-      "fullName": "PerformanceMonitor stops sampling after fallback"
     },
     {
       "id": "runtime:03890196218af674",
@@ -926,16 +856,6 @@
       "fullName": "Points matches instance subscriptions, refs, transforms, range, colors, sizes, and dynamic updates"
     },
     {
-      "id": "runtime:dcfd8dd136c31b01",
-      "file": "packages/drei/tests/points.test.ts",
-      "fullName": "Points rejects Point outside its required Points provider"
-    },
-    {
-      "id": "runtime:b03fe7258bacd2d4",
-      "file": "packages/drei/tests/positional-audio.test.ts",
-      "fullName": "PositionalAudio does not invent autoplay when upstream leaves it disabled"
-    },
-    {
       "id": "runtime:e721f5e7dea63cda",
       "file": "packages/drei/tests/positional-audio.test.ts",
       "fullName": "PositionalAudio matches the pinned React Drei configuration, ref, update, and camera listener lifecycle"
@@ -959,11 +879,6 @@
       "id": "runtime:a2f6b0db3eb95f3f",
       "file": "packages/drei/tests/progress.test.ts",
       "fullName": "Progress and useProgress matches the pinned React Drei loading-manager state and render-prop output"
-    },
-    {
-      "id": "runtime:f56fe7ca1d35e5cb",
-      "file": "packages/drei/tests/progress.test.ts",
-      "fullName": "Progress and useProgress renders natural TSRX block children without invoking them as render props"
     },
     {
       "id": "runtime:275c48d6f1d16a54",
@@ -1009,16 +924,6 @@
       "id": "runtime:f9ef1a3ce0d42e3f",
       "file": "packages/drei/tests/rounded-box.test.ts",
       "fullName": "RoundedBoxGeometry matches the pinned React Drei oracle for defaults"
-    },
-    {
-      "id": "runtime:3ece5816f55a7031",
-      "file": "packages/drei/tests/rounded-box.test.ts",
-      "fullName": "RoundedBoxGeometry recreates geometry when constructor inputs change and preserves it for equal args"
-    },
-    {
-      "id": "runtime:cb328879d2e108d3",
-      "file": "packages/drei/tests/sampler.test.ts",
-      "fullName": "Sampler matches automatic child discovery for the sampled and controlled meshes"
     },
     {
       "id": "runtime:6604e9b3effcf897",
@@ -1261,11 +1166,6 @@
       "fullName": "Sky matches the upstream angle conversion and reuses a supplied vector"
     },
     {
-      "id": "runtime:95b70ba73ad5b902",
-      "file": "packages/drei/tests/soft-shadows.test.ts",
-      "fullName": "SoftShadows does not retain a global shader mutation after unmount"
-    },
-    {
       "id": "runtime:a0eee8901630ea7f",
       "file": "packages/drei/tests/soft-shadows.test.ts",
       "fullName": "SoftShadows matches the pinned React Drei shader patch, material reset, compile, and restoration"
@@ -1446,24 +1346,9 @@
       "fullName": "Texture and useTexture matches the pinned React Drei oracle for single input"
     },
     {
-      "id": "runtime:b097e6fac08b1350",
-      "file": "packages/drei/tests/textures.test.ts",
-      "fullName": "Texture and useTexture renders natural TSRX block children without invoking them as render props"
-    },
-    {
       "id": "runtime:d1b0c362dd3f2833",
       "file": "packages/drei/tests/trail-texture.test.ts",
       "fullName": "TrailTexture matches texture setup, touch interpolation, force smoothing, drawing, and frame aging"
-    },
-    {
-      "id": "runtime:4638bd4ebc82a748",
-      "file": "packages/drei/tests/trail-texture.test.ts",
-      "fullName": "TrailTexture uses the upstream canvas defaults when no config is supplied"
-    },
-    {
-      "id": "runtime:5f1a20efd54850b2",
-      "file": "packages/drei/tests/trail.test.ts",
-      "fullName": "Trail discovers its first Object3D child and applies the first meshLineMaterial override"
     },
     {
       "id": "runtime:2cacdc4bb0c2e52e",
@@ -1474,11 +1359,6 @@
       "id": "runtime:f5f0b376dece7000",
       "file": "packages/drei/tests/trail.test.ts",
       "fullName": "Trail matches useTrail initialization and leaves a missing target unresolved"
-    },
-    {
-      "id": "runtime:f481f0b7aa08fcdc",
-      "file": "packages/drei/tests/transform-controls.test.ts",
-      "fullName": "TransformControls matches explicit object attachment instead of the child group"
     },
     {
       "id": "runtime:3c33ef6f02f89acd",
@@ -1494,11 +1374,6 @@
       "id": "runtime:b4d53466bb633d51",
       "file": "packages/drei/tests/use-cursor.test.ts",
       "fullName": "useCursor matches hover, prop updates, custom containers, and cleanup"
-    },
-    {
-      "id": "runtime:0835f4a2b2dcdddc",
-      "file": "packages/drei/tests/use-cursor.test.ts",
-      "fullName": "useCursor restores defaults after the compiler-injected trailing slot"
     },
     {
       "id": "runtime:5ad82c5576d173e2",

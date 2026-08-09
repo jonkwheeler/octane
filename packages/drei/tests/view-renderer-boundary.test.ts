@@ -11,6 +11,8 @@ describe('View renderer boundary', () => {
 		expect(() => root.render(ViewDomBoundary, {})).toThrow(
 			'Universal hooks may only run while a universal component is rendering.',
 		);
-		expect(() => View.Port).not.toThrow();
+		expect(View.Port).toBeTypeOf('function');
+		expect(() => View.Port({})).not.toThrow();
+		root.unmount();
 	});
 });

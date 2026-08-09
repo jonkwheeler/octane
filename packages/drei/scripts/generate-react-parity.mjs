@@ -11,12 +11,14 @@ const auditRoot = resolve(packageRoot, 'audit');
 const portable = (value) => value.replaceAll('\\', '/');
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 
-const OCTANE_ONLY = new Set([
+const OCTANE_ONLY_GUARDS = new Set([
 	'packages/drei/tests/config.test.ts',
 	'packages/drei/tests/crosswalk-guard.test.ts',
 	'packages/drei/tests/react-parity-guard.test.ts',
 	'packages/drei/tests/view-renderer-boundary.test.ts',
 ]);
+const isOctaneOnly = (path) =>
+	OCTANE_ONLY_GUARDS.has(path) || path.includes('/tests/octane-contracts/');
 
 function listProject(project) {
 	return JSON.parse(
@@ -74,7 +76,7 @@ const uniqueFiles = [...new Set(allParityAndGuardFiles)];
 const classifications = {
 	schemaVersion: 1,
 	tests: uniqueFiles.map((path) => {
-		if (OCTANE_ONLY.has(path)) {
+		if (isOctaneOnly(path)) {
 			if (path.endsWith('/config.test.ts')) {
 				return {
 					path,
@@ -86,7 +88,16 @@ const classifications = {
 				return {
 					path,
 					disposition: 'octane-only-framework-contract',
-					reason: 'Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence.',
+					reason:
+						'Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence.',
+				};
+			}
+			if (path.includes('/tests/octane-contracts/')) {
+				return {
+					path,
+					disposition: 'octane-only-framework-contract',
+					reason:
+						'Octane-only compiler, provider, or lifecycle contract without a paired React scenario.',
 				};
 			}
 			return {
@@ -226,6 +237,7 @@ manifest.adaptedRoots = {
 			'tests/crosswalk-guard\\.test\\.ts$',
 			'tests/react-parity-guard\\.test\\.ts$',
 			'tests/view-renderer-boundary\\.test\\.ts$',
+			'tests/octane-contracts/',
 			'tests/differential/',
 		],
 	},
@@ -253,7 +265,6 @@ const viewRenderingCase = requireDifferentialCase(
 const viewVisibilityCase = requireDifferentialCase(
 	'matches invisible and offscreen clear/render boundaries and event connection cleanup',
 );
-const viewPortSurfaceCase = requireDifferentialCase('preserves the View.Port static surface');
 const boundaryCase = guardTests.find((test) =>
 	test.fullName.includes(
 		'documents the outside-DOM renderer boundary while keeping View.Port callable',
@@ -336,11 +347,6 @@ manifest.lanes = [
 						testName:
 							'matches invisible and offscreen clear/render boundaries and event connection cleanup',
 						fullName: viewVisibilityCase.fullName,
-					},
-					{
-						id: 'differential:view-port-surface',
-						testName: 'preserves the View.Port static surface',
-						fullName: viewPortSurfaceCase.fullName,
 					},
 				],
 			},
@@ -454,13 +460,15 @@ manifest.divergences = [
 	{
 		id: 'view-renderer-boundary',
 		caseIds: ['differential:view-renderer-boundary'],
-		upstreamResult: 'React Drei can move View children between DOM and Three roots through tunnel-rat.',
+		upstreamResult:
+			'React Drei can move View children between DOM and Three roots through tunnel-rat.',
 		octaneResult:
 			"Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
 		rationale: 'Octane components are statically owned by one renderer.',
 		classification: 'intentional-divergence',
 		consumerImpact: 'A View cannot transport authored Three children from an independent DOM root.',
-		migrationGuidance: 'Author View inside the Three Canvas and avoid the DOM-root View.Port transport form.',
+		migrationGuidance:
+			'Author View inside the Three Canvas and avoid the DOM-root View.Port transport form.',
 		owner: '@octanejs/drei',
 		reviewCondition: 'Revisit if Octane gains cross-renderer component transport.',
 	},
