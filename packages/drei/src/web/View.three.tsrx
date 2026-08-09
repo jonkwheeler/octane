@@ -38,6 +38,7 @@ function ViewComponent(props: ViewProps & { ref?: ThreeRef<HTMLElement | THREE.G
 	<CanvasView {...props as any} />
 }
 
+// OCTANE DIVERGENCE[view-renderer-boundary][differential:view-rendering]
 export function ViewPort() @{
 	<></>
 }

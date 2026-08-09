@@ -153,6 +153,12 @@
       "assertionInventorySha256": "78bd444b194cbe885e137e210bd1ae725ad6c48c7f874bbc0c6e998b0f25539a"
     },
     {
+      "path": "packages/drei/tests/differential/view.test.ts",
+      "sha256": "84950fe5d6b3673a0d67d30cc80eea524b8a4d48608ec0831db23164876491c9",
+      "assertionCount": 4,
+      "assertionInventorySha256": "0576e2b48d92551f80f498426d3aaddb486612e69000a42a133bb469d395e0e4"
+    },
+    {
       "path": "packages/drei/tests/drag-controls.test.ts",
       "sha256": "38a5d91d36da225dc05d2a0335bec67dfd15313320ae94a7c94fa815abaa3eae",
       "assertionCount": 1,
@@ -613,12 +619,6 @@
       "sha256": "8a7534895422085797da56c016ae6137ffd9b9c3f0208e07e32d0ec203811d5f",
       "assertionCount": 3,
       "assertionInventorySha256": "236937023f0ce9cdbec67928927c4930ca0cf7ceee9900f2be912de587f669b8"
-    },
-    {
-      "path": "packages/drei/tests/view.test.ts",
-      "sha256": "41fb1410383cba251f72ccbafdce87e2ce30fdb9b150b4a6cabfe3118218e9b0",
-      "assertionCount": 4,
-      "assertionInventorySha256": "0576e2b48d92551f80f498426d3aaddb486612e69000a42a133bb469d395e0e4"
     },
     {
       "path": "packages/drei/tests/wireframe.test.ts",

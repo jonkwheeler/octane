@@ -4347,7 +4347,7 @@
       },
       "status": "divergence",
       "implementation": "packages/drei/src/web/View.three.tsrx",
-      "evidence": ["packages/drei/tests/view.test.ts"],
+      "evidence": ["packages/drei/tests/differential/view.test.ts"],
       "divergence": "Inline Canvas View behavior is ported. Octane components are statically renderer-owned, so React Drei's single-component DOM/Three context switch and tunnel-rat transport across independent roots cannot be represented; DOM-root invocation raises the renderer-boundary diagnostic and View.Port is a callable no-op."
     },
     {
