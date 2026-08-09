@@ -1430,7 +1430,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Keep outside react-parity testExecution while provenance is
+				// recorded-unverified: react-parity:check only validates that
+				// lane, so ordinary shards must still execute the differential.
 				test: {
 					name: 'wagmi-differential',
 					include: ['packages/wagmi/tests/differential/**/*.test.ts'],
