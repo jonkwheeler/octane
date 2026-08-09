@@ -32,6 +32,20 @@ describe('@octanejs/embla-carousel parity negative controls', function emblaPari
 		await expect(verifyManifestFiles(changed, root)).rejects.toThrow('integrity mismatch');
 	});
 
+	// @parity-case embla:audit:differential-fixture-drift
+	it('rejects differential Octane fixture support drift', async function rejectsDifferentialFixtureDrift() {
+		const changed = structuredClone(manifest);
+		const differential = changed.lanes.find(function findDifferential(lane) {
+			return lane.id === 'embla-react-differential';
+		});
+		const fixture = differential.files.find(function findFixture(file) {
+			return file.path === 'packages/embla-carousel/tests/_fixtures/carousel.tsrx';
+		});
+		expect(fixture).toBeDefined();
+		fixture.sha256 = '0'.repeat(64);
+		await expect(verifyManifestFiles(changed, root)).rejects.toThrow('integrity mismatch');
+	});
+
 	// @parity-case embla:audit:removed-runtime-case
 	it('rejects a removed runtime inventory case', function rejectsRemovedRuntimeCase() {
 		const baseline = summarizeRuntimeInventories([pristineInventory]);

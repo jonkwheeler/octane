@@ -35,6 +35,16 @@ function discoverPortAuthoredTests(root) {
 			);
 		}
 	}
+	// Embla-specific negative-control suites under scripts/react-parity — match
+	// only this port's files so sibling binding suites stay out of the ledger.
+	const scriptsRoot = resolve(root, 'scripts/react-parity');
+	if (existsSync(scriptsRoot)) {
+		for (const entry of readdirSync(scriptsRoot, { withFileTypes: true })) {
+			if (!entry.isFile()) continue;
+			if (!/^embla-carousel-.+\.test\.mjs$/.test(entry.name)) continue;
+			discovered.push(relative(root, resolve(scriptsRoot, entry.name)).split(sep).join('/'));
+		}
+	}
 	return discovered.sort();
 }
 

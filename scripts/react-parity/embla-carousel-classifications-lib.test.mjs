@@ -17,6 +17,12 @@ async function fixtureRoot(t) {
 			recursive: true,
 		},
 	);
+	// Discovery also inventories this port's narrowly matched scripts suite.
+	await mkdir(join(root, 'scripts/react-parity'), { recursive: true });
+	await cp(
+		join(import.meta.dirname, 'embla-carousel-classifications-lib.test.mjs'),
+		join(root, 'scripts/react-parity/embla-carousel-classifications-lib.test.mjs'),
+	);
 	return root;
 }
 
@@ -44,9 +50,7 @@ test('rejects a parity classification without an oracle', async function rejects
 	}, /requires a React oracle/);
 });
 
-test('rejects octane-only dispositions for required type-lane probes', async function rejectsOctaneOnlyTypeLane(
-	t,
-) {
+test('rejects octane-only dispositions for required type-lane probes', async function rejectsOctaneOnlyTypeLane(t) {
 	const root = await fixtureRoot(t);
 	const path = join(root, 'packages/embla-carousel/audit/test-classifications.json');
 	const config = JSON.parse(await readFile(path, 'utf8'));
@@ -65,5 +69,5 @@ test('rejects octane-only dispositions for required type-lane probes', async fun
 test('accepts the committed classification ledger', function acceptsCommitted() {
 	const root = join(import.meta.dirname, '../..');
 	const result = verifyEmblaCarouselTestClassifications(root);
-	assert.ok(result.tests >= 8);
+	assert.ok(result.tests >= 9);
 });

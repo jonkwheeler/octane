@@ -81,7 +81,7 @@
         {
           "path": "packages/embla-carousel/tests/differential/react-adapter.test.ts",
           "role": "test",
-          "sha256": "8947f910688dfd408fb882b295976dce350b03754aa3253fb2c5de918b96d7d8",
+          "sha256": "d36e936421ce3c96667ed4383938495aaf1bc23dd09c3d91686c82b35747a2ef",
           "cases": [
             {
               "id": "embla:differential:oracle-versions",
@@ -109,6 +109,16 @@
               "fullName": "@octanejs/embla-carousel React differential matches global option application against the pinned React adapter"
             }
           ]
+        },
+        {
+          "path": "packages/embla-carousel/tests/_fixtures/carousel.tsrx",
+          "role": "support",
+          "sha256": "dc47b556a648ec72913e7dd78dc1a956c87e55a85a48f02b08efbfb4cb59dbbe"
+        },
+        {
+          "path": "packages/embla-carousel/tests/test-support/mock-embla.ts",
+          "role": "support",
+          "sha256": "3c9fbfc971919f7fdea41c765834cefd083c59c3347071911355b79fc0c5f377"
         }
       ]
     },

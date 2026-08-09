@@ -40,6 +40,11 @@
       "path": "packages/embla-carousel/typetests/public.test-d.ts",
       "disposition": "repo-authored-type-oracle",
       "oracle": "Repo-authored adapted Octane declaration consumer matrix; required adapted-types lane evidence (paired with pristine.test-d.ts)."
+    },
+    {
+      "path": "scripts/react-parity/embla-carousel-classifications-lib.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Negative-control suite for the Embla port-test classification ledger; not React-parity ownership."
     }
   ]
 }

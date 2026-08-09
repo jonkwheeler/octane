@@ -96,33 +96,36 @@ function harnessProps(
 	};
 }
 
-function readOctaneApiDefined(result: ReturnType<typeof mount>): boolean {
-	return result.find('[data-api]').getAttribute('data-api') === 'ready';
-}
-
 function applyOctaneStep(
 	result: ReturnType<typeof mount>,
 	props: ReactHarnessProps,
 	onApi: (api: EmblaCarouselType | undefined) => void,
+	apiProbe: ApiProbe,
 ): boolean {
 	result.update(CarouselHarness, harnessProps(props, onApi));
 	settleEffects();
-	return readOctaneApiDefined(result);
+	return apiProbe.current;
 }
 
 function renderOctane(sequence: ReactHarnessProps[]): RenderResult {
 	const observation = beginObservation();
 	const apiDefined: boolean[] = [];
-	const onApi = function onApi(_api: EmblaCarouselType | undefined) {};
+	const apiProbe: ApiProbe = { current: false };
+	// Observe the published tuple member through onApi, not the fixture's
+	// data-api attribute — otherwise a harness that derives readiness from
+	// `attached` can stay green while the Octane API is never published.
+	const onApi = function onApi(api: EmblaCarouselType | undefined) {
+		apiProbe.current = api !== undefined;
+	};
 	const first = sequence[0];
 	const result = mount(CarouselHarness, harnessProps(first, onApi));
 	settleEffects();
 	// One external render per sequence item, matching React's single root.render
 	// per step. Construction publishes through setState inside an effect; settle
 	// that update before observing — do not issue another same-props root render.
-	apiDefined.push(readOctaneApiDefined(result));
+	apiDefined.push(apiProbe.current);
 	for (const props of sequence.slice(1)) {
-		apiDefined.push(applyOctaneStep(result, props, onApi));
+		apiDefined.push(applyOctaneStep(result, props, onApi, apiProbe));
 	}
 	result.unmount();
 	settleEffects();
