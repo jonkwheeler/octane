@@ -8,7 +8,7 @@
     "testRoot": "packages/react-pdf/src",
     "license": "MIT",
     "integrity": "sha256:afc69e121c7f845dbc6bf88e584c5a7a74154c3e2b89c35ce42b3b3bb93d86ce",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
