@@ -17,23 +17,26 @@ manifest's explicit `files` list.
 Run `pnpm --dir packages/alien-signals upstream:verify` to reject removed or modified pinned
 evidence. The checksum ledger covers the source, complete upstream test file, and license.
 
+Parity ownership, inventories, and lane registration live in
+[`audit/react-parity.json`](./audit/react-parity.json).
+
 ## Export crosswalk
 
 The pinned package has one public entry point, `react-alien-signals`.
 
 | Upstream export | Octane disposition | Evidence |
 | --- | --- | --- |
-| `WritableSignal` | Ported | [`core.test.ts`](./tests/core.test.ts), [`public-api.test-d.ts`](./typetests/public-api.test-d.ts) |
-| `createSignal` | Ported over the unchanged core; the wrapper makes the advertised functional setter contract real | [`core.test.ts`](./tests/core.test.ts), [`hooks.test.ts`](./tests/hooks.test.ts) |
-| `createComputed` | Ported over the unchanged core | [`core.test.ts`](./tests/core.test.ts) |
-| `createEffect` | Ported over the unchanged core | [`core.test.ts`](./tests/core.test.ts), [`lifecycle.test.ts`](./tests/lifecycle.test.ts) |
-| `createSignalScope` | Ported over the unchanged core | [`core.test.ts`](./tests/core.test.ts), [`lifecycle.test.ts`](./tests/lifecycle.test.ts) |
-| `useSignal` | Ported with Octane manual slot forwarding | [`hooks.test.ts`](./tests/hooks.test.ts), `packages/octane/tests/external-hook-slot.test.ts` |
-| `useSignalValue` | Ported; accepts readable computed signals as the upstream docs and runtime intend | [`hooks.test.ts`](./tests/hooks.test.ts), [`public-api.test-d.ts`](./typetests/public-api.test-d.ts) |
-| `useSetSignal` | Ported with stable identity and signal replacement | [`hooks.test.ts`](./tests/hooks.test.ts) |
-| `useSignalEffect` | Ported with post-commit ownership and deterministic cleanup | [`lifecycle.test.ts`](./tests/lifecycle.test.ts), [`render-safety.test.ts`](./tests/ssr/render-safety.test.ts) |
-| `useSignalScope` | Ported with a cancellation-safe controller and post-commit ownership | [`lifecycle.test.ts`](./tests/lifecycle.test.ts), [`render-safety.test.ts`](./tests/ssr/render-safety.test.ts) |
-| `useComputed` | Ported; the caller's dependency list is passed directly to memoization | [`hooks.test.ts`](./tests/hooks.test.ts) |
+| `WritableSignal` | Ported | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts), [`public-api.test-d.ts`](./typetests/public-api.test-d.ts) |
+| `createSignal` | Ported over the unchanged core; the wrapper makes the advertised functional setter contract real | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| `createComputed` | Ported over the unchanged core | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| `createEffect` | Ported over the unchanged core | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| `createSignalScope` | Ported over the unchanged core | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| `useSignal` | Ported with Octane manual slot forwarding | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts), `packages/octane/tests/external-hook-slot.test.ts` |
+| `useSignalValue` | Ported; accepts readable computed signals as the upstream docs and runtime intend | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts), [`public-api.test-d.ts`](./typetests/public-api.test-d.ts) |
+| `useSetSignal` | Ported with stable identity and signal replacement | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts), [`octane-contracts.test.ts`](./tests/octane-contracts.test.ts) |
+| `useSignalEffect` | Ported with post-commit ownership and deterministic cleanup | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts), [`render-safety.test.ts`](./tests/ssr/render-safety.test.ts) |
+| `useSignalScope` | Ported with a cancellation-safe controller and post-commit ownership | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts), [`octane-contracts.test.ts`](./tests/octane-contracts.test.ts) |
+| `useComputed` | Ported; the caller's dependency list is passed directly to memoization | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
 
 `ReadableSignal` and `DependencyList` are explicit Octane type exports. They describe public call
 shapes that the upstream implementation documents but does not name as exports.
@@ -41,24 +44,43 @@ shapes that the upstream implementation documents but does not name as exports.
 ## Test disposition
 
 The pinned repository contains one runtime test file, `src/index.test.ts`. It is vendored unchanged
-at [`upstream/src/index.test.ts`](./upstream/src/index.test.ts). Its observable cases are adapted as
-follows; React renderer mechanics (`renderHook`, `act`, batching) are replaced by compiled TSRX and
-the Octane testing library.
+at [`upstream/src/index.test.ts`](./upstream/src/index.test.ts) and executes byte-exact in the
+`alien-signals-pristine` lane via bun. Each adapted case keeps the upstream title and cites
+`// Per src/index.test.ts:<line>` in [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts).
 
-| Upstream cases | Octane evidence |
-| --- | --- |
-| writable, computed, nested computed, computed dependencies, signal updates in effects | [`core.test.ts`](./tests/core.test.ts) |
-| effect creation, scope creation, stopped-scope cleanup | [`core.test.ts`](./tests/core.test.ts), [`lifecycle.test.ts`](./tests/lifecycle.test.ts) |
-| `useSignal`, `useSignalValue`, `useSetSignal`, functional and multiple updates | [`hooks.test.ts`](./tests/hooks.test.ts) |
-| `useComputed` updates, stable dependencies, changed dependencies, and render-loop regression | [`hooks.test.ts`](./tests/hooks.test.ts) |
-| effect cleanup, subscription cleanup, repeated mount/unmount | [`lifecycle.test.ts`](./tests/lifecycle.test.ts) |
-| scope cleanup plus cancellation before commit and after manual stop | [`lifecycle.test.ts`](./tests/lifecycle.test.ts) |
-| undefined/null values and signal identity replacement | [`hooks.test.ts`](./tests/hooks.test.ts) |
-| concurrent/batched updates | Covered as sequential core notifications; React scheduler batching itself is not applicable to Octane |
+| Upstream case | Line | Octane evidence |
+| --- | --- | --- |
+| should create a writable signal | 31 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should create and update a computed signal | 39 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should create and run an effect | 56 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should create a signal scope | 70 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSignal should return [value, setter] | 87 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSignalValue should return read-only value from a signal | 97 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSetSignal should return setter only | 106 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSignalEffect should register an effect in React | 122 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSignalScope should create and manage an effect scope in React | 135 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useComputed should return a computed value | 141 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle nested signal updates correctly | 155 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle signal updates within effects | 169 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should properly cleanup effects when scope is stopped | 185 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSignal should handle functional updates correctly | 214 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useComputed should update when dependencies change | 226 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useComputed should not enter a render loop after a dependency update | 247 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useComputed should reuse the computed across re-renders when deps are unchanged | 271 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useComputed should rebuild the computed when deps change | 296 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| useSignalEffect should handle cleanup correctly | 318 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle signal updates correctly | 341 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle multiple signal updates | 359 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle undefined/null signal values | 385 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle computed dependencies correctly | 401 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should cleanup all subscriptions on unmount | 422 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle multiple mount/unmount cycles | 449 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) |
+| should handle concurrent updates correctly | 477 | [`upstream-adapted.test.ts`](./tests/upstream-adapted.test.ts) (final value; React `act` batching itself is not applicable) |
 
-Octane-only framework contracts are classified separately: SSR render safety in
+Octane-only framework contracts stay outside parity ownership: SSR render safety in
 [`render-safety.test.ts`](./tests/ssr/render-safety.test.ts), hydration adoption in
-[`hydration.test.ts`](./tests/hydration.test.ts), manual slot isolation in
+[`hydration.test.ts`](./tests/hydration.test.ts), cancellation/identity contracts in
+[`octane-contracts.test.ts`](./tests/octane-contracts.test.ts), manual slot isolation in
 `packages/octane/tests/external-hook-slot.test.ts`, and central playground registration in
 `playground/octane/src/demos/AlienSignals.test.ts`.
 
@@ -70,3 +92,5 @@ Octane-only framework contracts are classified separately: SSR render safety in
   writable-only narrowing.
 - Octane hooks carry compiler slots internally; this is invisible to consumers and required for
   stable composition outside `.tsrx` modules.
+- Concurrent/batched React updates are covered by sequential notifications that still settle on the
+  same final signal value.

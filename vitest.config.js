@@ -450,12 +450,27 @@ export default defineConfig({
 				plugins: [octane({ hmr: false, profile: true })],
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'alien-signals-pristine',
+					include: ['packages/alien-signals/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+				},
+			},
+			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/alien-signals/tests/upstream-adapted.test.ts'],
+				},
 				test: {
 					name: 'alien-signals',
 					include: [
 						'packages/alien-signals/tests/**/*.test.ts',
 						'playground/octane/src/demos/AlienSignals.test.ts',
 						'!packages/alien-signals/tests/ssr/**/*.test.ts',
+						'!packages/alien-signals/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,

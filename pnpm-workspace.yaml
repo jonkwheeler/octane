@@ -82,6 +82,8 @@ allowBuilds:
   # LiveStore's test-only telemetry closure uses protobufjs; its postinstall
   # prints a donation notice and does not generate runtime artifacts.
   protobufjs: false
+  # Alien Signals pristine lane shells out to the pinned upstream bun:test suite.
+  bun: true
 
 # Variables
 esrap_common: &esrap_common ^2.3.0

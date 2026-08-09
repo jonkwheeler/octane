@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "allowedTransformations": [
+    "Import root changes from react-alien-signals / relative upstream path to @octanejs/alien-signals",
+    "ReadableSignal / DependencyList type aliases that document public call shapes"
+  ],
+  "notes": "Upstream ships no dedicated typetest suite; both lanes are repo-authored probes over the pinned runtime surface."
+}
