@@ -74,8 +74,9 @@ export function ThinkingOrb({
 		const dpr = Math.min(2, typeof devicePixelRatio !== 'undefined' && devicePixelRatio || 1);
 		canvas.width = Math.round(size * dpr);
 		canvas.height = Math.round(size * dpr);
-		const ctx = canvas.getContext('2d');
-		if (!ctx) return;
+		const maybeCtx = canvas.getContext('2d');
+		if (!maybeCtx) return;
+		const ctx: CanvasRenderingContext2D = maybeCtx;
 
 		const { mode, speed: baseSpeed, opts } = resolvePreset(state, size);
 		const draw = MODE_DRAWS[mode];
