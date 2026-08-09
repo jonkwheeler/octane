@@ -18,38 +18,54 @@ function expectHotkeyProgress(
 	if (expected.sequence !== undefined) expect(html).toContain(`sequence:${expected.sequence}`);
 }
 
-describe('differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys', () => {
+async function pressBoth(
+	octane: DiffMount,
+	react: DiffMount,
+	key: string,
+	init: KeyboardEventInit,
+): Promise<void> {
+	await octane.keydown('#hotkeys-parity', key, init);
+	await react.keydown('#hotkeys-parity', key, init);
+}
+
+describe('differential: @octanejs/tanstack-hotkeys vs @tanstack/react-hotkeys', function () {
 	// @parity-case differential:tanstack-hotkeys-keyboard-lifecycle
-	it('matches registration, shortcuts, sequences, enabled updates, and cleanup', async () => {
+	it('matches registration, shortcuts, sequences, enabled updates, and cleanup', async function () {
 		const differential = await mountDifferential(fixture, 'HotkeysParity', undefined, cache);
-		await differential.step('mount', () => {
+		await differential.step('mount', function () {
 			expect(HotkeyManager.getInstance().registrations.state.size).toBeGreaterThan(0);
 		});
-		await differential.step('single shortcut', async (octane, react) => {
-			await react.keydown('#hotkeys-parity', 'k', { code: 'KeyK', ctrlKey: true });
+		await differential.step('single shortcut', async function (octane, react) {
+			await pressBoth(octane, react, 'k', { code: 'KeyK', ctrlKey: true });
 			expectHotkeyProgress(octane, { single: 1 });
+			expectHotkeyProgress(react, { single: 1 });
 		});
-		await differential.step('first multi-shortcut definition', async (octane, react) => {
-			await react.keydown('#hotkeys-parity', 'l', { code: 'KeyL', ctrlKey: true });
+		await differential.step('first multi-shortcut definition', async function (octane, react) {
+			await pressBoth(octane, react, 'l', { code: 'KeyL', ctrlKey: true });
 			expectHotkeyProgress(octane, { single: 1, first: 1 });
+			expectHotkeyProgress(react, { single: 1, first: 1 });
 		});
-		await differential.step('second multi-shortcut definition', async (octane, react) => {
-			await react.keydown('#hotkeys-parity', 'x', { code: 'KeyX', altKey: true });
+		await differential.step('second multi-shortcut definition', async function (octane, react) {
+			await pressBoth(octane, react, 'x', { code: 'KeyX', altKey: true });
 			expectHotkeyProgress(octane, { single: 1, first: 1, second: 1 });
+			expectHotkeyProgress(react, { single: 1, first: 1, second: 1 });
 		});
-		await differential.step('complete sequence', async (octane, react) => {
-			await react.keydown('#hotkeys-parity', 'g', { code: 'KeyG' });
-			await react.keydown('#hotkeys-parity', 'g', { code: 'KeyG' });
+		await differential.step('complete sequence', async function (octane, react) {
+			await pressBoth(octane, react, 'g', { code: 'KeyG' });
+			await pressBoth(octane, react, 'g', { code: 'KeyG' });
 			expectHotkeyProgress(octane, { single: 1, first: 1, second: 1, sequence: 1 });
+			expectHotkeyProgress(react, { single: 1, first: 1, second: 1, sequence: 1 });
 		});
-		await differential.step('disable shortcut', async (octane, react) => {
+		await differential.step('disable shortcut', async function (octane, react) {
 			await octane.click('#toggle');
 			await react.click('#toggle');
 		});
-		await differential.step('disabled shortcut is inert', async (octane, react) => {
-			await react.keydown('#hotkeys-parity', 'k', { code: 'KeyK', ctrlKey: true });
+		await differential.step('disabled shortcut is inert', async function (octane, react) {
+			await pressBoth(octane, react, 'k', { code: 'KeyK', ctrlKey: true });
 			expectHotkeyProgress(octane, { single: 1, first: 1, second: 1, sequence: 1 });
+			expectHotkeyProgress(react, { single: 1, first: 1, second: 1, sequence: 1 });
 			expect(octane.container.innerHTML).toContain('enabled:false');
+			expect(react.container.innerHTML).toContain('enabled:false');
 		});
 		differential.unmount();
 		drainPassiveEffects();

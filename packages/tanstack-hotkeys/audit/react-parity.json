@@ -207,7 +207,7 @@
         {
           "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "ee914f27e247c63c26c7518d39188ef0f5595fe6b61c500cee7fd3dd0c2bd5a5",
+          "sha256": "53ff1ec34139b367d5c0ad01f70e27ceed40c74846287a9d4536b378d6d51a4f",
           "cases": [
             {
               "id": "differential:tanstack-hotkeys-keyboard-lifecycle",
@@ -224,7 +224,7 @@
         {
           "path": "packages/tanstack-hotkeys/tests/_fixtures/hotkeys-diff.tsrx",
           "role": "support",
-          "sha256": "d9ba292af73fe953be23fcea122942a8c3e48adfb1a02c00d3fe8f4518d5afbc"
+          "sha256": "1dbacd017f141037898426eac4f644cbd1b284f743be091f1ab2517dc4af7e11"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",

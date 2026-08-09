@@ -4,7 +4,7 @@
     {
       "path": "packages/tanstack-hotkeys/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
-      "oracle": "Runs the same authored keyboard fixture and event sequence against @octanejs/tanstack-hotkeys and pinned @tanstack/react-hotkeys."
+      "oracle": "Runs the same authored keyboard fixture against both adapters with target-local registrations and independent per-runtime keydown drives."
     },
     {
       "path": "packages/tanstack-hotkeys/tests/hotkeys.test.ts",
