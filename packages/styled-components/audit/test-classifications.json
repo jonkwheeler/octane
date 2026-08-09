@@ -74,7 +74,7 @@
     {
       "path": "packages/styled-components/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
-      "oracle": "Runs six exact same-fixture cases against styled-components 6.4.3 on React."
+      "oracle": "Runs six exact same-fixture cases against styled-components 6.4.3 on React with per-engine stylesheet isolation, comparing container HTML and sheet output after every step."
     },
     {
       "path": "packages/styled-components/tests/divergences.test.ts",

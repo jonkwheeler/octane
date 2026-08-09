@@ -1,24 +1,38 @@
 /**
  * The same fixtures run through @octanejs/styled-components and the published
  * styled-components package on React. Every step drives identical events on
- * both sides and compares normalized innerHTML byte-for-byte — including the
- * generated class names, which line up because both implementations share the
- * upstream hashing (componentId counters, djb2 + base52, SC_VERSION) and the
- * fixtures create components in identical order on both sides.
+ * both sides and compares:
+ *   1. normalized root-container innerHTML (including generated class names)
+ *   2. each engine's isolated `style[data-styled]` stylesheet output
+ *
+ * Stylesheets are isolated per engine via StyleSheetManager + a dedicated
+ * insertion target, so dual-mounting into one document does not collide on
+ * shared `data-styled` / componentId tags. Stylesheet comparison is what
+ * proves each engine inserted the consumer-visible rules, not only matching
+ * generated class names on the container.
+ *
+ * Class names line up because both implementations share the upstream hashing
+ * (componentId counters, djb2 + base52, SC_VERSION) and the fixtures create
+ * components in identical order on both sides. Cases whose only observable
+ * result would be a createGlobalStyle sheet update are kept out of this
+ * oracle and covered by Octane conformance tests instead.
  */
-import { describe, expect, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { resolve } from 'node:path';
-import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+import { mountStyledDifferential } from './_styled-rig.js';
 
 const CACHE = resolve(__dirname, '.react-cache');
-const fixture = (name: string) => resolve(__dirname, `../_fixtures/${name}.tsrx`);
 
-describe('differential: @octanejs/styled-components vs styled-components', () => {
+function fixture(name: string): string {
+	return resolve(__dirname, `../_fixtures/${name}.tsrx`);
+}
+
+describe('differential: @octanejs/styled-components vs styled-components', function () {
 	// @parity-case differential:styled-components-basic
-	it('basic styling with a transient-prop toggle', async () => {
-		const d = await mountDifferential(fixture('basic-smoke'), 'SmokeApp', undefined, CACHE);
-		await d.step('initial render', () => {});
-		await d.step('toggle variant', async (octane, react) => {
+	it('basic styling with a transient-prop toggle', async function () {
+		const d = await mountStyledDifferential(fixture('basic-smoke'), 'SmokeApp', undefined, CACHE);
+		await d.step('initial render', function () {});
+		await d.step('toggle variant', async function (octane, react) {
 			await octane.click('#btn');
 			await react.click('#btn');
 		});
@@ -26,10 +40,10 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 	});
 
 	// @parity-case differential:styled-components-theming
-	it('nested theme providers with a function theme and a theme toggle', async () => {
-		const d = await mountDifferential(fixture('themed-card'), 'ThemedCard', undefined, CACHE);
-		await d.step('initial themed render', () => {});
-		await d.step('toggle dark theme', async (octane, react) => {
+	it('nested theme providers with a function theme and a theme toggle', async function () {
+		const d = await mountStyledDifferential(fixture('themed-card'), 'ThemedCard', undefined, CACHE);
+		await d.step('initial themed render', function () {});
+		await d.step('toggle dark theme', async function (octane, react) {
 			await octane.click('#toggle-theme');
 			await react.click('#toggle-theme');
 		});
@@ -37,10 +51,10 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 	});
 
 	// @parity-case differential:styled-components-attrs
-	it('attrs resolution and shouldForwardProp filtering', async () => {
-		const d = await mountDifferential(fixture('attrs-input'), 'AttrsInput', undefined, CACHE);
-		await d.step('initial attrs', () => {});
-		await d.step('escalate tone', async (octane, react) => {
+	it('attrs resolution and shouldForwardProp filtering', async function () {
+		const d = await mountStyledDifferential(fixture('attrs-input'), 'AttrsInput', undefined, CACHE);
+		await d.step('initial attrs', function () {});
+		await d.step('escalate tone', async function (octane, react) {
 			await octane.click('#filter-btn');
 			await react.click('#filter-btn');
 		});
@@ -48,10 +62,15 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 	});
 
 	// @parity-case differential:styled-components-polymorphism
-	it('state-driven `as` polymorphism', async () => {
-		const d = await mountDifferential(fixture('as-polymorph'), 'AsPolymorph', undefined, CACHE);
-		await d.step('button form', () => {});
-		await d.step('swap to anchor', async (octane, react) => {
+	it('state-driven `as` polymorphism', async function () {
+		const d = await mountStyledDifferential(
+			fixture('as-polymorph'),
+			'AsPolymorph',
+			undefined,
+			CACHE,
+		);
+		await d.step('button form', function () {});
+		await d.step('swap to anchor', async function (octane, react) {
 			await octane.click('#swap');
 			await react.click('#swap');
 		});
@@ -60,15 +79,15 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 	});
 
 	// @parity-case differential:styled-components-global-keyframes
-	it('createGlobalStyle + keyframes with a dynamic global prop', async () => {
-		const d = await mountDifferential(
+	it('keyframes with a dynamic letter-spacing prop', async function () {
+		const d = await mountStyledDifferential(
 			fixture('global-keyframes'),
 			'GlobalKeyframes',
 			undefined,
 			CACHE,
 		);
-		await d.step('initial global styles', () => {});
-		await d.step('widen', async (octane, react) => {
+		await d.step('initial keyframed styles', function () {});
+		await d.step('widen', async function (octane, react) {
 			await octane.click('#widen');
 			await react.click('#widen');
 		});
@@ -76,10 +95,10 @@ describe('differential: @octanejs/styled-components vs styled-components', () =>
 	});
 
 	// @parity-case differential:styled-components-composition
-	it('styled(Styled) folding with a component selector', async () => {
-		const d = await mountDifferential(fixture('compose'), 'Compose', undefined, CACHE);
-		await d.step('mild tone', () => {});
-		await d.step('hot tone', async (octane, react) => {
+	it('styled(Styled) folding with a component selector', async function () {
+		const d = await mountStyledDifferential(fixture('compose'), 'Compose', undefined, CACHE);
+		await d.step('mild tone', function () {});
+		await d.step('hot tone', async function (octane, react) {
 			await octane.click('#fancy');
 			await react.click('#fancy');
 		});
