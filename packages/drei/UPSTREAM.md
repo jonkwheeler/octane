@@ -57,9 +57,15 @@ are Octane-only and execute in the ordinary `drei-guards` project outside
 
 `audit/runtime-evidence.json` hashes every test file and every collected assertion
 inventory. `audit/upstream-test-artifacts.json` records the out-of-scope Playwright
-gallery and an empty transformation ledger. The audit guard includes negative
-controls for a skipped test file, deleted assertion, removed upstream
-`@ts-expect-error` inventory entry, and fabricated upstream type suite.
+gallery and an empty transformation ledger. The package checker
+(`scripts/check-react-parity.mjs`) is invoked from the generic
+`scripts/react-parity/check.mjs` path via `drei-parity-lib.mjs`, so omitting that
+wiring fails the shared audit. Type lanes are fail-closed: `drei-types-lib.mjs`
+compares assertion-group inventories and an allowed import-root transformation
+between the pristine and adapted public-api probes, with negative controls for a
+deleted assertion or removed `@ts-expect-error`. The audit guard also covers a
+skipped test file, removed upstream `@ts-expect-error` inventory entry, and
+fabricated upstream type suite.
 
 ## Completeness contract
 

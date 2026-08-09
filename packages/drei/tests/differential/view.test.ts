@@ -172,6 +172,7 @@ describe('View', () => {
 		await act(async () => pair.reactRoot.unmount());
 	});
 
+	// @parity-case differential:view-visibility
 	it('matches invisible and offscreen clear/render boundaries and event connection cleanup', async () => {
 		const invisible = await mountPair({ visible: false }, rect());
 		await act(async () => reactAdvance(1 / 60, true, invisible.reactState));
@@ -188,12 +189,14 @@ describe('View', () => {
 		await act(async () => offscreen.reactRoot.unmount());
 	});
 
+	// @parity-case differential:view-port-surface
 	it('preserves the View.Port static surface', () => {
 		expect(View.Port).toBeTypeOf('function');
 		expect(ReactView.Port).toBeTypeOf('function');
 	});
 
-	// OCTANE DIVERGENCE[view-renderer-boundary][differential:view-rendering]
+	// @parity-case differential:view-renderer-boundary
+	// OCTANE DIVERGENCE[view-renderer-boundary][differential:view-renderer-boundary]
 	it('documents the outside-DOM renderer boundary while keeping View.Port callable', () => {
 		const root = createOctaneDomRoot(document.createElement('div'));
 		expect(() => root.render(ViewDomBoundary, {})).toThrow(

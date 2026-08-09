@@ -154,7 +154,7 @@
     },
     {
       "path": "packages/drei/tests/differential/view.test.ts",
-      "sha256": "84950fe5d6b3673a0d67d30cc80eea524b8a4d48608ec0831db23164876491c9",
+      "sha256": "bef4f777d857efc53ca5f9b4cb1340ca3a280d3797ae0ac85d5f9f0168f7c3d6",
       "assertionCount": 4,
       "assertionInventorySha256": "0576e2b48d92551f80f498426d3aaddb486612e69000a42a133bb469d395e0e4"
     },

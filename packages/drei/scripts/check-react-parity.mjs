@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyDreiTypes } from '../../../scripts/react-parity/drei-types-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const override = process.env.OCTANE_DREI_PARITY_AUDIT;
@@ -73,7 +74,9 @@ for (const file of evidence.files) {
 	const assertions = inventory.tests.filter((test) => test.file === file.path);
 	if (inventoried.includes(file.path)) {
 		if (assertions.length !== file.assertionCount) fail(`${file.path} lost or gained an assertion`);
-		if (digest(assertions.map((test) => test.fullName).join('\n')) !== file.assertionInventorySha256)
+		if (
+			digest(assertions.map((test) => test.fullName).join('\n')) !== file.assertionInventorySha256
+		)
 			fail(`${file.path} assertion inventory drifted`);
 	}
 }
@@ -134,6 +137,14 @@ if (JSON.stringify(actualExpectErrors) !== JSON.stringify(upstream.upstreamSourc
 	fail('an upstream source @ts-expect-error directive was removed, added, or changed');
 if (upstream.allowedTransformations.length !== 0)
 	fail('Drei has no adapted upstream suite, so its transformation ledger must be empty');
+
+if (!override) {
+	try {
+		verifyDreiTypes(root);
+	} catch (error) {
+		fail(error.message);
+	}
+}
 
 console.log(
 	`Drei parity evidence is current (${inventory.tests.length} adapted assertions in ${inventory.files.length} files; ${differential.length} differential file(s); ${guards.length} Octane-only guards).`,

@@ -231,10 +231,34 @@ manifest.environments['workspace-node'].lockfileSha256 = digest(
 	readFileSync(resolve(root, manifest.environments['workspace-node'].lockfile)),
 );
 
-const viewCase = differentialTests.find((test) =>
-	test.fullName.includes('matches tracked rect, viewport/scissor/render restoration, frames and refs'),
-);
-if (!viewCase) throw new Error('differential canary case missing from drei-differential project');
+const differentialCases = [
+	{
+		id: 'differential:view-rendering',
+		match: 'matches tracked rect, viewport/scissor/render restoration, frames and refs',
+	},
+	{
+		id: 'differential:view-visibility',
+		match: 'matches invisible and offscreen clear/render boundaries and event connection cleanup',
+	},
+	{
+		id: 'differential:view-port-surface',
+		match: 'preserves the View.Port static surface',
+	},
+	{
+		id: 'differential:view-renderer-boundary',
+		match: 'documents the outside-DOM renderer boundary while keeping View.Port callable',
+	},
+].map(function toCase(entry) {
+	const test = differentialTests.find(function findTest(candidate) {
+		return candidate.fullName.includes(entry.match);
+	});
+	if (!test) throw new Error(`differential canary case missing: ${entry.match}`);
+	return {
+		id: entry.id,
+		testName: entry.match,
+		fullName: test.fullName,
+	};
+});
 
 manifest.lanes = [
 	{
@@ -264,7 +288,9 @@ manifest.lanes = [
 			{
 				path: 'packages/drei/audit/test-classifications.json',
 				role: 'support',
-				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/test-classifications.json'))),
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/audit/test-classifications.json')),
+				),
 			},
 			{
 				path: 'packages/drei/audit/upstream-test-artifacts.json',
@@ -277,6 +303,11 @@ manifest.lanes = [
 				path: 'packages/drei/scripts/check-react-parity.mjs',
 				role: 'support',
 				sha256: digest(readFileSync(resolve(root, 'packages/drei/scripts/check-react-parity.mjs'))),
+			},
+			{
+				path: 'scripts/react-parity/drei-parity-lib.mjs',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'scripts/react-parity/drei-parity-lib.mjs'))),
 			},
 		],
 	},
@@ -296,13 +327,7 @@ manifest.lanes = [
 				sha256: digest(
 					readFileSync(resolve(root, 'packages/drei/tests/differential/view.test.ts')),
 				),
-				cases: [
-					{
-						id: 'differential:view-rendering',
-						testName: 'matches tracked rect, viewport/scissor/render restoration, frames and refs',
-						fullName: viewCase.fullName,
-					},
-				],
+				cases: differentialCases,
 			},
 		],
 	},
@@ -313,7 +338,8 @@ manifest.lanes = [
 		environment: 'workspace-node',
 		project: 'drei-pristine-types',
 		evidenceOrigin: 'repo-authored',
-		notes: 'Repo-authored public-surface type assertions against pinned @react-three/drei with tsc.',
+		notes:
+			'Repo-authored public-surface type assertions against pinned @react-three/drei with tsc. Group hashes and import-root structural comparison are enforced by scripts/react-parity/drei-types-lib.mjs.',
 		execution: {
 			kind: 'typescript',
 			compiler: 'tsc',
@@ -341,6 +367,21 @@ manifest.lanes = [
 					readFileSync(resolve(root, 'packages/drei/typetests/pristine/tsconfig.json')),
 				),
 			},
+			{
+				path: 'packages/drei/audit/type-parity.json',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/type-parity.json'))),
+			},
+			{
+				path: 'packages/drei/audit/pristine-types.json',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/pristine-types.json'))),
+			},
+			{
+				path: 'scripts/react-parity/drei-types-lib.mjs',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'scripts/react-parity/drei-types-lib.mjs'))),
+			},
 		],
 	},
 	{
@@ -350,7 +391,8 @@ manifest.lanes = [
 		environment: 'workspace-node',
 		project: 'drei-adapted-types',
 		evidenceOrigin: 'repo-authored',
-		notes: 'The same assertion groups against @octanejs/drei with tsrx-tsc.',
+		notes:
+			'The same assertion groups against @octanejs/drei with tsrx-tsc. Fail-closed against deleted assertions and non-import-root edits via drei-types-lib.',
 		execution: {
 			kind: 'typescript',
 			compiler: 'tsrx-tsc',
@@ -377,6 +419,11 @@ manifest.lanes = [
 				sha256: digest(
 					readFileSync(resolve(root, 'packages/drei/typetests/adapted/tsconfig.json')),
 				),
+			},
+			{
+				path: 'packages/drei/audit/adapted-types.json',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/adapted-types.json'))),
 			},
 		],
 	},
