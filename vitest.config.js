@@ -832,8 +832,17 @@ export default defineConfig({
 			{
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-colorful/tests/runtime/**/*.test.ts'],
+					include: ['packages/react-colorful/tests/upstream/**/*.test.ts'],
 				},
+				test: {
+					name: 'react-colorful-upstream',
+					include: ['packages/react-colorful/tests/upstream/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
 				test: {
 					name: 'react-colorful',
 					include: ['packages/react-colorful/tests/runtime/**/*.test.ts'],
@@ -854,7 +863,6 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-colorful-hydration',
 					include: ['packages/react-colorful/tests/hydration/**/*.test.ts'],
@@ -864,7 +872,6 @@ export default defineConfig({
 				plugins: [octane()],
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-colorful-ssr',
 					include: ['packages/react-colorful/tests/ssr/**/*.test.ts'],
@@ -882,7 +889,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-colorful-browser',
 					include: ['packages/react-colorful/tests/browser/**/*.test.ts'],

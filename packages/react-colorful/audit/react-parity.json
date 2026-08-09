@@ -26,20 +26,17 @@
     },
     "tests": {
       "roots": [
-        "packages/react-colorful/tests",
-        "packages/react-colorful/typetests"
+        "packages/react-colorful/tests/upstream"
       ],
       "include": [
         "\\.test\\.(?:ts|tsx)$"
       ],
-      "exclude": [
-        "/audit/"
-      ]
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 64,
+    "uniqueIdentities": 64,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -50,28 +47,69 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b6b6e4c80f4b3b1bf909eec393d1aed0537e2a4df93138702715075d41732ebe"
+      "lockfileSha256": "a36607e604ab0238192075da7a7624328c5caba42800fd08a17e2c13a249b816"
     }
   },
   "lanes": [
     {
-      "id": "react-colorful-runtime",
+      "id": "react-colorful-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-colorful-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-colorful 5.8.0 Jest suite against its original React binding.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/react-colorful/tests/upstream-jest.config.cjs",
+        "root": "packages/react-colorful/upstream/tag",
+        "inventory": "packages/react-colorful/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-colorful/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "845d940e44b9678648d12c9405ca76f9cbc28bf9b0a6f6f32a0647ddf902ecde"
+        },
+        {
+          "path": "packages/react-colorful/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "196bc7f577e50cdbf954dd1a904a74b4abec69426e1b4f1d980d0e6105f9bf4d"
+        },
+        {
+          "path": "packages/react-colorful/tests/upstream-jest.setup.cjs",
+          "role": "support",
+          "sha256": "c18854095cfd8299c7b53ae100012f00680808b67f200aaccc0d178aaaf6ac96"
+        },
+        {
+          "path": "packages/react-colorful/tests/upstream-jest.snapshot.cjs",
+          "role": "support",
+          "sha256": "ed97d44778c35b0db19f86f4821e880f87822b22080c6950decc7a1914f08ff7"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
+        }
+      ]
+    },
+    {
+      "id": "react-colorful-adapted-upstream",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-colorful",
+      "project": "react-colorful-upstream",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one adapted upstream suite with exact titles for components, utils, CSP, and Shadow DOM.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-colorful/audit/adapted-runtime.json"
+      },
       "files": [
         {
-          "path": "packages/react-colorful/tests/runtime/components.test.ts",
-          "role": "test",
-          "sha256": "8c065abfcdf27f9f37ee0cd43c64fe34bf7a0ba9f7b73ed04d1b35028accdbe2",
-          "cases": [
-            {
-              "id": "adapted:react-colorful-runtime",
-              "testName": "exports the exact upstream runtime surface",
-              "fullName": "@octanejs/react-colorful \u2014 public components exports the exact upstream runtime surface"
-            }
-          ]
+          "path": "packages/react-colorful/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "6f4a56a0d2198927212002c67be970eb701c1c69e15be1c78f1b87b89dd8e782"
         }
       ]
     },
@@ -98,80 +136,13 @@
       ]
     },
     {
-      "id": "react-colorful-ssr",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-colorful-ssr",
-      "files": [
-        {
-          "path": "packages/react-colorful/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "fe55352e491a82e42ebe58f1b397095b32876189602b75e28554a96bdca0bd33",
-          "cases": [
-            {
-              "id": "adapted:react-colorful-ssr",
-              "testName": "renders deterministic picker and input markup without browser globals",
-              "fullName": "@octanejs/react-colorful \u2014 server rendering renders deterministic picker and input markup without browser globals"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-colorful-hydration",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-colorful-hydration",
-      "files": [
-        {
-          "path": "packages/react-colorful/tests/hydration/hydration.test.ts",
-          "role": "test",
-          "sha256": "97ffc343e407560e5daaef7e369d52c4763ca64bef9a8f4eb2b88d8e297e8927",
-          "cases": [
-            {
-              "id": "adapted:react-colorful-hydration",
-              "testName": "adopts server nodes, injects styles after mount, and becomes interactive",
-              "fullName": "@octanejs/react-colorful \u2014 hydration adopts server nodes, injects styles after mount, and becomes interactive"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "react-colorful-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "react-colorful-browser",
-      "files": [
-        {
-          "path": "packages/react-colorful/tests/browser/parity.browser.test.ts",
-          "role": "test",
-          "sha256": "182e5ca671a8133e7b847fb9255ea222f7e1b5777b626f664f834a9375c77ab4",
-          "cases": [
-            {
-              "id": "browser:react-colorful-chromium",
-              "testName": "chromium: drives native interaction and closest-root styles",
-              "fullName": "@octanejs/react-colorful real-browser parity chromium: drives native interaction and closest-root styles"
-            },
-            {
-              "id": "browser:react-colorful-firefox",
-              "testName": "firefox: drives native interaction and closest-root styles",
-              "fullName": "@octanejs/react-colorful real-browser parity firefox: drives native interaction and closest-root styles"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "react-colorful-pristine-types",
       "type": "pristine-types",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-colorful-pristine-types",
       "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the pinned upstream check-types program (tsc --noEmit on tag/src).",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -179,14 +150,14 @@
       },
       "files": [
         {
-          "path": "packages/react-colorful/typetests/pristine.test.tsx",
+          "path": "packages/react-colorful/typetests/tsconfig.pristine.json",
           "role": "test",
-          "sha256": "877d6e9df2fea7c3380c474391e3ceb28244b3f7653f2b9816916f5b6bc06043",
+          "sha256": "17e1136b24f9fae724061f469cdd061aa27ef1fdeb7f8ac4c4bb19fa6387b0d5",
           "cases": [
             {
               "id": "types:react-colorful-pristine",
-              "testName": "published declaration consumer",
-              "fullName": "react-colorful 5.8.0 published declaration consumer"
+              "testName": "upstream check-types program",
+              "fullName": "react-colorful 5.8.0 upstream check-types program"
             }
           ]
         }
@@ -198,7 +169,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-colorful-adapted-types",
-      "evidenceOrigin": "repo-authored",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Compiles the Octane binding source plus shared public API assertions with tsrx-tsc.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -216,6 +188,11 @@
               "fullName": "@octanejs/react-colorful complete Octane public type contract"
             }
           ]
+        },
+        {
+          "path": "packages/react-colorful/typetests/tsconfig.adapted.json",
+          "role": "support",
+          "sha256": "f29e4ff2d2173485b201052bab773cf86faa44f3510ccfffe741279891ff95e5"
         }
       ]
     }

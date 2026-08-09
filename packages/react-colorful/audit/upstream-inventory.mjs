@@ -60,13 +60,6 @@ export async function buildInventory(root = packageRoot) {
 	const caseMap = Object.fromEntries(
 		cases.map((entry) => {
 			if (explicitCaseMap[entry.id]) return [entry.id, explicitCaseMap[entry.id]];
-			if (entry.file === 'tag/tests/utils.test.js')
-				return [entry.id, `tests/runtime/upstream-utils.test.ts::${entry.name}`];
-			if (entry.file === 'tag/tests/csp.test.js' || entry.file === 'tag/tests/shadowDom.test.js')
-				return [
-					entry.id,
-					'tests/runtime/styles.test.ts::injects one stylesheet into the closest ShadowRoot and applies a CSP nonce',
-				];
 			throw new Error(`missing executable mapping for ${entry.id}`);
 		}),
 	);
@@ -76,8 +69,8 @@ export async function buildInventory(root = packageRoot) {
 		'upstream case identities must be unique',
 	);
 	assert(
-		Object.keys(explicitCaseMap).length === 35,
-		`component case map count ${Object.keys(explicitCaseMap).length} does not match 35`,
+		Object.keys(explicitCaseMap).length === cases.length,
+		`case map count ${Object.keys(explicitCaseMap).length} does not match ${cases.length}`,
 	);
 	for (const id of upstreamIds) assert(caseMap[id], `missing executable mapping for ${id}`);
 	for (const id of Object.keys(explicitCaseMap))

@@ -28,8 +28,17 @@
       "RgbaStringColorPicker",
       "setNonce"
     ],
-    "typeExports": ["HslColor", "HslaColor", "HsvColor", "HsvaColor", "RgbColor", "RgbaColor"],
-    "subpaths": ["."]
+    "typeExports": [
+      "HslColor",
+      "HslaColor",
+      "HsvColor",
+      "HsvaColor",
+      "RgbColor",
+      "RgbaColor"
+    ],
+    "subpaths": [
+      "."
+    ]
   },
   "artifacts": [
     {
@@ -359,8 +368,8 @@
     },
     {
       "path": "tag/tests/__snapshots__/components.test.js.snap",
-      "bytes": 5629,
-      "sha256": "67df8af4c7b44375f8f56df99ee487aafb909fc3ed1e7fb44b2937fd7961ab9e"
+      "bytes": 5647,
+      "sha256": "54106de8733048f4344689f4f0a53f58bc69c60529d0ee60d876deb894c800ff"
     },
     {
       "path": "tag/tests/components.test.js",
@@ -783,322 +792,322 @@
     {
       "upstream": "tag/tests/components.test.js::Renders proper color picker markup",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::renders every picker variant with the upstream structure and defaults"
+      "evidence": "tests/upstream/components.test.ts::Renders proper color picker markup"
     },
     {
       "upstream": "tag/tests/components.test.js::Renders proper alpha color picker markup",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::renders every picker variant with the upstream structure and defaults"
+      "evidence": "tests/upstream/components.test.ts::Renders proper alpha color picker markup"
     },
     {
       "upstream": "tag/tests/components.test.js::Works with no props",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::renders every picker variant with the upstream structure and defaults"
+      "evidence": "tests/upstream/components.test.ts::Works with no props"
     },
     {
       "upstream": "tag/tests/components.test.js::Accepts an additional `className`",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::forwards div attributes, className, and native events"
+      "evidence": "tests/upstream/components.test.ts::Accepts an additional `className`"
     },
     {
       "upstream": "tag/tests/components.test.js::Doesn't trigger `onChange` after mounting",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::does not emit on mount, equivalent grayscale hue changes, or controlled rerender"
+      "evidence": "tests/upstream/components.test.ts::Doesn't trigger `onChange` after mounting"
     },
     {
       "upstream": "tag/tests/components.test.js::Doesn't trigger `onChange` after controlled rerender",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::does not emit on mount, equivalent grayscale hue changes, or controlled rerender"
+      "evidence": "tests/upstream/components.test.ts::Doesn't trigger `onChange` after controlled rerender"
     },
     {
       "upstream": "tag/tests/components.test.js::Doesn't call `onChange` when user changes a hue of a grayscale color",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::does not emit on mount, equivalent grayscale hue changes, or controlled rerender"
+      "evidence": "tests/upstream/components.test.ts::Doesn't call `onChange` when user changes a hue of a grayscale color"
     },
     {
       "upstream": "tag/tests/components.test.js::Triggers `onChange` after a mouse interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::emits changed and committed colors for mouse interaction"
+      "evidence": "tests/upstream/components.test.ts::Triggers `onChange` after a mouse interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` after a mouse interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::emits changed and committed colors for mouse interaction"
+      "evidence": "tests/upstream/components.test.ts::Triggers `onChangeEnd` after a mouse interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` after a touch interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+      "evidence": "tests/upstream/components.test.ts::Triggers `onChangeEnd` after a touch interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` after a keyboard interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+      "evidence": "tests/upstream/components.test.ts::Triggers `onChangeEnd` after a keyboard interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Doesn't trigger `onChangeEnd` if the color didn't change",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::does not commit unchanged input or a drag superseded by controlled color"
+      "evidence": "tests/upstream/components.test.ts::Doesn't trigger `onChangeEnd` if the color didn't change"
     },
     {
       "upstream": "tag/tests/components.test.js::Triggers `onChangeEnd` when the pointer is released outside of the window",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::commits release-outside movement but ignores later buttonless moves"
+      "evidence": "tests/upstream/components.test.ts::Triggers `onChangeEnd` when the pointer is released outside of the window"
     },
     {
       "upstream": "tag/tests/components.test.js::Doesn't trigger `onChangeEnd` if the color prop was updated mid-drag",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::does not commit unchanged input or a drag superseded by controlled color"
+      "evidence": "tests/upstream/components.test.ts::Doesn't trigger `onChangeEnd` if the color prop was updated mid-drag"
     },
     {
       "upstream": "tag/tests/components.test.js::Triggers `onChange` after a touch interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+      "evidence": "tests/upstream/components.test.ts::Triggers `onChange` after a touch interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Supports multitouch",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+      "evidence": "tests/upstream/components.test.ts::Supports multitouch"
     },
     {
       "upstream": "tag/tests/components.test.js::Pointer doesn't follow the mouse if it was released outside of the document bounds",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::commits release-outside movement but ignores later buttonless moves"
+      "evidence": "tests/upstream/components.test.ts::Pointer doesn't follow the mouse if it was released outside of the document bounds"
     },
     {
       "upstream": "tag/tests/components.test.js::Changes alpha channel value after an interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::updates alpha and exposes matching ARIA state"
+      "evidence": "tests/upstream/components.test.ts::Changes alpha channel value after an interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Uses #rrggbbaa format if alpha channel value is less than 1",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::updates alpha and exposes matching ARIA state"
+      "evidence": "tests/upstream/components.test.ts::Uses #rrggbbaa format if alpha channel value is less than 1"
     },
     {
       "upstream": "tag/tests/components.test.js::Doesn't react on mouse events after a touch interaction",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/browser/parity.browser.test.ts::chromium: drives native interaction and closest-root styles"
+      "evidence": "tests/upstream/components.test.ts::Doesn't react on mouse events after a touch interaction"
     },
     {
       "upstream": "tag/tests/components.test.js::Captures arrow keys only",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+      "evidence": "tests/upstream/components.test.ts::Captures arrow keys only"
     },
     {
       "upstream": "tag/tests/components.test.js::Changes saturation with arrow keys",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::covers saturation, alpha, edge clamping, and detailed ARIA keyboard state"
+      "evidence": "tests/upstream/components.test.ts::Changes saturation with arrow keys"
     },
     {
       "upstream": "tag/tests/components.test.js::Changes hue with arrow keys",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+      "evidence": "tests/upstream/components.test.ts::Changes hue with arrow keys"
     },
     {
       "upstream": "tag/tests/components.test.js::Changes alpha with arrow keys",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::covers saturation, alpha, edge clamping, and detailed ARIA keyboard state"
+      "evidence": "tests/upstream/components.test.ts::Changes alpha with arrow keys"
     },
     {
       "upstream": "tag/tests/components.test.js::Ignores keyboard commands if the pointer is already on a saturation edge",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+      "evidence": "tests/upstream/components.test.ts::Ignores keyboard commands if the pointer is already on a saturation edge"
     },
     {
       "upstream": "tag/tests/components.test.js::Ignores keyboard commands if the pointer is already on a alpha edge",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports arrow-key movement, clamping, and commit-on-keyup"
+      "evidence": "tests/upstream/components.test.ts::Ignores keyboard commands if the pointer is already on a alpha edge"
     },
     {
       "upstream": "tag/tests/components.test.js::Sets proper `aria-valuetext` attribute value",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::updates alpha and exposes matching ARIA state"
+      "evidence": "tests/upstream/components.test.ts::Sets proper `aria-valuetext` attribute value"
     },
     {
       "upstream": "tag/tests/components.test.js::Accepts any valid `div` attributes",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::forwards div attributes, className, and native events"
+      "evidence": "tests/upstream/components.test.ts::Accepts any valid `div` attributes"
     },
     {
       "upstream": "tag/tests/components.test.js::Supports any event that a regular div does",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::forwards div attributes, className, and native events"
+      "evidence": "tests/upstream/components.test.ts::Supports any event that a regular div does"
     },
     {
       "upstream": "tag/tests/components.test.js::Renders `HexColorInput` component properly",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+      "evidence": "tests/upstream/components.test.ts::Renders `HexColorInput` component properly"
     },
     {
       "upstream": "tag/tests/components.test.js::Fires `onChange` when user changes `HexColorInput` value",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+      "evidence": "tests/upstream/components.test.ts::Fires `onChange` when user changes `HexColorInput` value"
     },
     {
       "upstream": "tag/tests/components.test.js::Fires custom `onBlur` when `HexColorInput` has lost focus",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports alpha forms and restores invalid values on blur"
+      "evidence": "tests/upstream/components.test.ts::Fires custom `onBlur` when `HexColorInput` has lost focus"
     },
     {
       "upstream": "tag/tests/components.test.js::Displays `#` prefix in `HexColorInput` if `prefixed` is turned on",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+      "evidence": "tests/upstream/components.test.ts::Displays `#` prefix in `HexColorInput` if `prefixed` is turned on"
     },
     {
       "upstream": "tag/tests/components.test.js::Allows to enter `#rgba` and `#rrggbbaa` in `HexColorInput` if `alpha` is turned on",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::supports alpha forms and restores invalid values on blur"
+      "evidence": "tests/upstream/components.test.ts::Allows to enter `#rgba` and `#rrggbbaa` in `HexColorInput` if `alpha` is turned on"
     },
     {
       "upstream": "tag/tests/components.test.js::Does not allow to enter `#rrggbbaa` in `HexColorInput` if `alpha` is turned off",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/components.test.ts::filters edits and emits valid colors through native input events"
+      "evidence": "tests/upstream/components.test.ts::Does not allow to enter `#rrggbbaa` in `HexColorInput` if `alpha` is turned off"
     },
     {
       "upstream": "tag/tests/csp.test.js::Signs the `style` element with a nonce",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/styles.test.ts::injects one stylesheet into the closest ShadowRoot and applies a CSP nonce"
+      "evidence": "tests/upstream/csp.test.ts::Signs the `style` element with a nonce"
     },
     {
       "upstream": "tag/tests/shadowDom.test.js::Injects styles into the closest ShadowRoot when mounted inside one",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/styles.test.ts::injects one stylesheet into the closest ShadowRoot and applies a CSP nonce"
+      "evidence": "tests/upstream/shadowDom.test.ts::Injects styles into the closest ShadowRoot when mounted inside one"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HEX to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HEX to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HEX to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts shorthand HEX to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts shorthand HEX to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts shorthand HEX to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to HEX",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HEX"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to HEX"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to HSLA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSLA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to HSLA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSLA to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSLA to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSLA to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to HSL string",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSL string"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to HSL string"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSL string to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSL string to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSL string to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSLA string to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSLA string to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSLA string to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to RGBA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to RGBA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to RGBA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts RGBA to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts RGBA to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts RGBA to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts RGB string to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts RGB string to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts RGB string to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to RGB string",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to RGB string"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to RGB string"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to RGBA string",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to RGBA string"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to RGBA string"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts RGBA string to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts RGBA string to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts RGBA string to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to HSVA string",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSVA string"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to HSVA string"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA to HSV string",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA to HSV string"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA to HSV string"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSV string to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSV string to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSV string to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Converts HSVA string to HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Converts HSVA string to HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Converts HSVA string to HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Rounds HSVA",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Rounds HSVA"
+      "evidence": "tests/upstream/utils.test.ts::Rounds HSVA"
     },
     {
       "upstream": "tag/tests/utils.test.js::Trims alpha-channel",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Trims alpha-channel"
+      "evidence": "tests/upstream/utils.test.ts::Trims alpha-channel"
     },
     {
       "upstream": "tag/tests/utils.test.js::Compares two HEX colors",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Compares two HEX colors"
+      "evidence": "tests/upstream/utils.test.ts::Compares two HEX colors"
     },
     {
       "upstream": "tag/tests/utils.test.js::Compares two object colors",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Compares two object colors"
+      "evidence": "tests/upstream/utils.test.ts::Compares two object colors"
     },
     {
       "upstream": "tag/tests/utils.test.js::Compares two string colors",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Compares two string colors"
+      "evidence": "tests/upstream/utils.test.ts::Compares two string colors"
     },
     {
       "upstream": "tag/tests/utils.test.js::Validates HEX colors",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Validates HEX colors"
+      "evidence": "tests/upstream/utils.test.ts::Validates HEX colors"
     },
     {
       "upstream": "tag/tests/utils.test.js::Formats a class name",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Formats a class name"
+      "evidence": "tests/upstream/utils.test.ts::Formats a class name"
     },
     {
       "upstream": "tag/tests/utils.test.js::Rounds a number",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Rounds a number"
+      "evidence": "tests/upstream/utils.test.ts::Rounds a number"
     },
     {
       "upstream": "tag/tests/utils.test.js::Clamps a number between bounds",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/upstream-utils.test.ts::Clamps a number between bounds"
+      "evidence": "tests/upstream/utils.test.ts::Clamps a number between bounds"
     }
   ]
 }

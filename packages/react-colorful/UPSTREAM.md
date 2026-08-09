@@ -19,3 +19,26 @@ hooks, JSX, synthetic event wrappers, and DOM prop types are adapted to Octane
 components, hooks, `.tsrx`, native events, and Octane intrinsic prop types.
 The public component callback named `onChange` remains unchanged; only the
 internal text-input host wiring uses Octane's native `onInput`.
+
+## Test-suite disposition
+
+| Upstream artifact | Disposition | Evidence |
+| --- | --- | --- |
+| `tag/tests/components.test.js` (35 cases) | **ported** one-for-one titles → `tests/upstream/components.test.ts` | adapted-octane lane |
+| `tag/tests/utils.test.js` (27 cases) | **ported** one-for-one titles → `tests/upstream/utils.test.ts` | adapted-octane lane |
+| `tag/tests/csp.test.js` (1 case) | **ported** → `tests/upstream/csp.test.ts` | adapted-octane lane |
+| `tag/tests/shadowDom.test.js` (1 case) | **ported** → `tests/upstream/shadowDom.test.ts` | adapted-octane lane |
+| `tag/tests/__snapshots__/*` | **pristine-only** (Jest snapshots); adapted asserts structure | pristine-upstream lane |
+| Upstream `check-types` (`tsc --noEmit` on `src`) | **pristine** via `typetests/tsconfig.pristine.json` | pristine-types lane |
+| Octane source + public API assertions | **adapted types** via `typetests/tsconfig.adapted.json` | adapted-types lane |
+
+### Port-authored (not parity ownership)
+
+| File | Classification |
+| --- | --- |
+| `tests/runtime/exports.test.ts` | octane-only public-export smoke |
+| `tests/runtime/owner-document.test.ts` | octane-only ownerDocument contract |
+| `tests/hydration/**` | octane-only hydration conformance |
+| `tests/ssr/**` | octane-only SSR conformance |
+| `tests/browser/**` | octane-only real-browser conformance |
+| `tests/differential/**` | repo-authored React/Octane differential |
