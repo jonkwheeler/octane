@@ -118,3 +118,27 @@ test('rejects an Octane-only classification that claims an oracle', async functi
 		verifyAlienSignalsTestClassifications(root);
 	}, /must not claim React parity/);
 });
+
+test('rejects classifying type probes as unmodified upstream wrappers', async function rejectsTypeProbeUnmodified(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const path = join(root, 'packages/alien-signals/audit/test-classifications.json');
+	const config = JSON.parse(await readFile(path, 'utf8'));
+	config.tests.find(function findTypeProbe(entry) {
+		return entry.path === 'packages/alien-signals/audit/type-probes/public-api.test-d.ts';
+	}).disposition = 'unmodified-upstream-suite-wrapper';
+	await writeFile(path, `${JSON.stringify(config)}\n`);
+	assert.throws(function run() {
+		verifyAlienSignalsTestClassifications(root);
+	}, /paired-repo-authored-react-type-oracle/);
+});
+
+test('accepts the committed paired type-oracle classification', async function acceptsPairedTypeOracle(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	assert.deepEqual(verifyAlienSignalsTestClassifications(root), { tests: 8 });
+});

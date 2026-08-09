@@ -3,8 +3,8 @@
   "tests": [
     {
       "path": "packages/alien-signals/audit/type-probes/public-api.test-d.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
-      "oracle": "Repo-authored pristine React declaration probes against the vendored react-alien-signals 0.3.0 public surface (alien-signals-pristine-types lane)."
+      "disposition": "paired-repo-authored-react-type-oracle",
+      "oracle": "Repo-authored pristine React declaration/type-oracle probes against the vendored react-alien-signals 0.3.0 public surface, paired with packages/alien-signals/typetests/public-api.test-d.ts (alien-signals-pristine-types lane)."
     },
     {
       "path": "packages/alien-signals/tests/hydration.test.ts",

@@ -302,3 +302,59 @@ test('rejects fake setter aliases from stub arrays without push', function rejec
 		});
 	}, /bypasses .* hook-surface transition/);
 });
+
+test('rejects discard-and-substitute record pushes of the source signal', function rejectsSubstitutedRecordPush() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const substituted = adaptedSource.replace(
+		'const record = function recordSetter(\n\t\t\tsetter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(setter);\n\t\t};',
+		'const record = function recordSetter(\n\t\t\t_setter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(signal);\n\t\t};',
+	);
+	assert.notEqual(substituted, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: substituted,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
+test('rejects record pushes of a no-op in place of the hook setter', function rejectsNoopRecordPush() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const substituted = adaptedSource.replace(
+		'const record = function recordSetter(\n\t\t\tsetter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(setter);\n\t\t};',
+		'const record = function recordSetter(\n\t\t\t_setter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(function noop() {});\n\t\t};',
+	);
+	assert.notEqual(substituted, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: substituted,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});

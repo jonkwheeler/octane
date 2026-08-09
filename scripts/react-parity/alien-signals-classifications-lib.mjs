@@ -24,9 +24,11 @@ const DISCOVERY_ROOTS = [
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
+	'paired-repo-authored-react-type-oracle',
 	'octane-only-divergence',
 	'octane-only-framework-contract',
 ]);
+const TYPE_PROBE_PREFIX = 'packages/alien-signals/audit/type-probes/';
 
 function discoverPortAuthoredTests(root) {
 	const discovered = [];
@@ -68,6 +70,17 @@ export function verifyAlienSignalsTestClassifications(root) {
 	for (const entry of config.tests) {
 		if (!DISPOSITIONS.has(entry.disposition))
 			throw new Error(`${entry.path}: unknown test disposition`);
+		if (entry.path.startsWith(TYPE_PROBE_PREFIX)) {
+			if (entry.disposition !== 'paired-repo-authored-react-type-oracle') {
+				throw new Error(
+					`${entry.path}: type-probe files are repo-authored React declaration/type-oracle evidence and must use paired-repo-authored-react-type-oracle (not unmodified-upstream-suite-wrapper)`,
+				);
+			}
+		} else if (entry.disposition === 'paired-repo-authored-react-type-oracle') {
+			throw new Error(
+				`${entry.path}: paired-repo-authored-react-type-oracle is reserved for audit/type-probes`,
+			);
+		}
 		if (entry.disposition.startsWith('octane-only-')) {
 			if (!entry.reason)
 				throw new Error(`${entry.path}: Octane-only tests require an explicit reason`);

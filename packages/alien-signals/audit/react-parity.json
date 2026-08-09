@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/alien-signals/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/alien-signals/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/alien-signals/tests"
-      ],
-      "include": [
-        "upstream-adapted\\.test\\.ts$"
-      ],
+      "roots": ["packages/alien-signals/tests"],
+      "include": ["upstream-adapted\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -133,7 +125,7 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "37d869da462d7aa569ce24f3ec3e7e83943adcb41a8fbb8b9b88aa44a21c9e70"
+          "sha256": "3c4436287f5f0f3f20e4ce329595bdbc36bb841a76cb87194bb3b1e9a6ef536e"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
@@ -143,12 +135,12 @@
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
           "role": "support",
-          "sha256": "45812ac0672126f0a698d9adda3a9edeceead744b3e7416c1b7f43c746b9f195"
+          "sha256": "c780821392277cbb8e236c178e32b322d0a43b17b1a3cc3ead6eef32e212eebe"
         },
         {
           "path": "packages/alien-signals/audit/test-classifications.json",
           "role": "support",
-          "sha256": "c5059f3a558c8ed17d0bf874bb46058ee268634773cc23fc922845a7c124baf1"
+          "sha256": "2ea484c52500ddea22127bb41d0cf754465ad14d9a538be2f01aa896e16af80c"
         },
         {
           "path": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
@@ -158,7 +150,7 @@
         {
           "path": "scripts/react-parity/alien-signals-classifications-lib.mjs",
           "role": "support",
-          "sha256": "47dbe1587007440a20b1e981662c01bcd9aa8be84f918d460db98f69c38e39bc"
+          "sha256": "5106c279b97ebbeb44b54ae071c4eaf171b22db1ca821725478ff656964467ee"
         }
       ]
     },

@@ -340,8 +340,8 @@ function isResultCurrentAccess(node) {
 }
 
 /**
- * SetterProbe-style lookup from an array that received `.push(...)`:
- * `setters.at(-1)` or `setters[i]`. Empty stub arrays do not qualify.
+ * SetterProbe-style lookup from an array that received an authentic
+ * record-callback `.push(param)`: `setters.at(-1)` or `setters[i]`.
  */
 function isRecordedSetterLookup(node, pushedArrays) {
 	let arrayName = null;
@@ -357,6 +357,145 @@ function isRecordedSetterLookup(node, pushedArrays) {
 		arrayName = node.expression.expression.text;
 	}
 	return arrayName !== null && pushedArrays.has(arrayName);
+}
+
+function functionLikeOf(node) {
+	if (ts.isFunctionExpression(node) || ts.isArrowFunction(node) || ts.isFunctionDeclaration(node)) {
+		return node;
+	}
+	return null;
+}
+
+function firstParameterName(fn) {
+	if (fn === null || fn.parameters.length === 0) return null;
+	const name = fn.parameters[0].name;
+	return ts.isIdentifier(name) ? name.text : null;
+}
+
+/**
+ * Fixtures that call `props.record(<useSignal setter>)` — the SetterProbe /
+ * EffectAndSignal handler path. Only these may authenticate recorded setters.
+ */
+export function extractFixturesThatRecordHookSetters(fixtureSource) {
+	const names = new Set();
+	const parts = fixtureSource.split(/^export\s+function\s+/m);
+	for (const part of parts.slice(1)) {
+		const nameMatch = /^([A-Za-z0-9_]+)/.exec(part);
+		if (nameMatch === null) continue;
+		const setters = new Set();
+		for (const match of part.matchAll(/const\s*\[([^\]]+)\]\s*=\s*useSignal\b/g)) {
+			const elements = match[1].split(',').map(function trimElement(element) {
+				return element.trim();
+			});
+			if (elements[1]) setters.add(elements[1]);
+		}
+		if (setters.size === 0) continue;
+		for (const match of part.matchAll(/props\.record\(\s*([A-Za-z0-9_]+)\s*\)/g)) {
+			if (setters.has(match[1])) {
+				names.add(nameMatch[1]);
+				break;
+			}
+		}
+	}
+	return names;
+}
+
+function collectFunctionBindings(body) {
+	const bindings = new Map();
+	function visit(node) {
+		if (ts.isFunctionDeclaration(node) && node.name) {
+			bindings.set(node.name.text, node);
+		}
+		if (
+			ts.isVariableDeclaration(node) &&
+			node.name &&
+			ts.isIdentifier(node.name) &&
+			node.initializer
+		) {
+			const fn = functionLikeOf(node.initializer);
+			if (fn !== null) bindings.set(node.name.text, fn);
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(body);
+	return bindings;
+}
+
+function recordPropFromMount(call) {
+	if (call.arguments.length < 2 || !ts.isObjectLiteralExpression(call.arguments[1])) {
+		return null;
+	}
+	for (const prop of call.arguments[1].properties) {
+		if (ts.isShorthandPropertyAssignment(prop) && prop.name.text === 'record') {
+			return { kind: 'ref', name: prop.name.text };
+		}
+		if (
+			ts.isPropertyAssignment(prop) &&
+			ts.isIdentifier(prop.name) &&
+			prop.name.text === 'record'
+		) {
+			if (ts.isIdentifier(prop.initializer)) {
+				return { kind: 'ref', name: prop.initializer.text };
+			}
+			const fn = functionLikeOf(prop.initializer);
+			if (fn !== null) return { kind: 'inline', fn };
+		}
+	}
+	return null;
+}
+
+/**
+ * Arrays that received `.push(<record-callback-param>)` inside a `record`
+ * handler passed to a fixture that records the useSignal setter. Pushing the
+ * source signal, a no-op, or any other value does not qualify.
+ */
+function collectAuthenticRecordedSetterArrays(caseBody, recordSetterFixtures) {
+	const arrays = new Set();
+	const bindings = collectFunctionBindings(caseBody);
+
+	function markPushesOfParam(fn, paramName) {
+		if (fn.body === undefined) return;
+		function visitFn(node) {
+			const call = callExpressionOf(node);
+			if (
+				call !== null &&
+				ts.isPropertyAccessExpression(call.expression) &&
+				ts.isIdentifier(call.expression.expression) &&
+				ts.isIdentifier(call.expression.name) &&
+				call.expression.name.text === 'push' &&
+				call.arguments.length > 0 &&
+				ts.isIdentifier(call.arguments[0]) &&
+				call.arguments[0].text === paramName
+			) {
+				arrays.add(call.expression.expression.text);
+			}
+			ts.forEachChild(node, visitFn);
+		}
+		visitFn(fn.body);
+	}
+
+	function visit(node) {
+		const call = callExpressionOf(node);
+		if (
+			call !== null &&
+			ts.isIdentifier(call.expression) &&
+			call.expression.text === 'mount' &&
+			call.arguments[0] &&
+			ts.isIdentifier(call.arguments[0]) &&
+			recordSetterFixtures.has(call.arguments[0].text)
+		) {
+			const recordProp = recordPropFromMount(call);
+			if (recordProp !== null) {
+				const fn =
+					recordProp.kind === 'inline' ? recordProp.fn : (bindings.get(recordProp.name) ?? null);
+				const paramName = firstParameterName(fn);
+				if (fn !== null && paramName !== null) markPushesOfParam(fn, paramName);
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(caseBody);
+	return arrays;
 }
 
 function collectBindingNames(nameNode, into) {
@@ -404,8 +543,16 @@ function calleeRootIdentifier(expression) {
  * pristine hook-surface setter writes (result.current / aliases) must remain
  * hook-path transitions in adapted (result.click or recorded setter calls),
  * not silent direct createSignal writes.
+ *
+ * When `recordSetterFixtures` is provided, recorded-setter aliases count only
+ * for arrays that received `.push(<record-callback-param>)` from a `record`
+ * handler mounted on one of those fixtures.
  */
-export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
+export function extractCaseTransitionStructure(
+	source,
+	fileName = 'suite.ts',
+	{ recordSetterFixtures = null } = {},
+) {
 	const sourceFile = ts.createSourceFile(
 		fileName,
 		source,
@@ -419,7 +566,10 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 		if (titled !== null && titled.body) {
 			const signalBindings = new Set();
 			const hookAliases = new Set();
-			const pushedArrays = new Set();
+			const pushedArrays =
+				recordSetterFixtures === null
+					? new Set()
+					: collectAuthenticRecordedSetterArrays(titled.body, recordSetterFixtures);
 			const recordedSetterAliases = new Set();
 			let hookSurfaceWrites = 0;
 			let fixtureClicks = 0;
@@ -447,14 +597,6 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 				if (call !== null) {
 					const expression = call.expression;
 					if (
-						ts.isPropertyAccessExpression(expression) &&
-						ts.isIdentifier(expression.expression) &&
-						ts.isIdentifier(expression.name) &&
-						expression.name.text === 'push' &&
-						call.arguments.length > 0
-					) {
-						pushedArrays.add(expression.expression.text);
-					} else if (
 						ts.isPropertyAccessExpression(expression) &&
 						ts.isIdentifier(expression.expression) &&
 						expression.expression.text === 'result' &&
@@ -496,9 +638,12 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 	return cases;
 }
 
-export function assertPerCaseTransitionStructure(pristineSource, adaptedSource) {
+export function assertPerCaseTransitionStructure(pristineSource, adaptedSource, fixtureSource) {
+	const recordSetterFixtures = extractFixturesThatRecordHookSetters(fixtureSource ?? '');
 	const pristineCases = extractCaseTransitionStructure(pristineSource, 'pristine.ts');
-	const adaptedCases = extractCaseTransitionStructure(adaptedSource, 'adapted.ts');
+	const adaptedCases = extractCaseTransitionStructure(adaptedSource, 'adapted.ts', {
+		recordSetterFixtures,
+	});
 	const adaptedByTitle = new Map(
 		adaptedCases.map(function entryOf(caseEntry) {
 			return [caseEntry.title, caseEntry];
@@ -649,7 +794,11 @@ export function assertRuntimeStructureCrosswalk({
 			);
 		}
 	}
-	const transitions = assertPerCaseTransitionStructure(pristineSource, adaptedSource);
+	const transitions = assertPerCaseTransitionStructure(
+		pristineSource,
+		adaptedSource,
+		fixtureSource,
+	);
 	const mounted = extractMountedFixtures(adaptedSource);
 	const exports = new Set(fixtureExportNames(fixtureSource));
 	for (const fixtureName of mounted) {
