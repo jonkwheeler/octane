@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/inertia/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/inertia/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/inertia/tests/adapted"],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/inertia/tests/adapted"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "e8e139c7d33a948ad914236e662293864634f765f21042a11af0dd9306c3b13c"
+      "lockfileSha256": "c23595dc62284dbfb4c4097d8d9ad913e6627388b5139a877fe67e1b9163902b"
     }
   },
   "lanes": [
@@ -75,7 +83,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
+          "sha256": "63c94eb7633ee516f502c1f9828c2255467d83b74c7ed927473adaae4a0bc92b"
         }
       ]
     },
@@ -118,7 +126,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
+          "sha256": "63c94eb7633ee516f502c1f9828c2255467d83b74c7ed927473adaae4a0bc92b"
         }
       ]
     },
