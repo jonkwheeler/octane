@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync, cpSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
@@ -10,6 +11,7 @@ import {
 	normalizedIdentityKey,
 	verifyZagRuntimeCrosswalk,
 } from './zag-runtime-crosswalk.mjs';
+import { assertZagAdaptedSourceCrosswalk } from '../../packages/zag/scripts/verify-upstream.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -101,4 +103,36 @@ test('dropping a StrictMode disposition fails the crosswalk', () => {
 			dispositions: { ...dispositions, cases: dispositions.cases.slice(1) },
 		});
 	}, /missing one-for-one counterparts/);
+});
+
+test('committed adapted sources match pristine after allowed transforms', function sourceCrosswalk() {
+	const summary = assertZagAdaptedSourceCrosswalk(resolve(REPO, 'packages/zag'));
+	assert.equal(summary.pairs, 3);
+});
+
+test('deleting an adapted assertion fails the source crosswalk', function assertionDriftRejected() {
+	const root = mkdtempSync(join(tmpdir(), 'zag-adapted-source-'));
+	try {
+		cpSync(resolve(REPO, 'packages/zag/upstream'), join(root, 'upstream'), { recursive: true });
+		cpSync(resolve(REPO, 'packages/zag/tests/upstream'), join(root, 'tests/upstream'), {
+			recursive: true,
+		});
+		cpSync(
+			resolve(REPO, 'packages/zag/audit/adapted-transformations.json'),
+			join(root, 'audit/adapted-transformations.json'),
+		);
+		const adaptedPath = join(root, 'tests/upstream/machine.test.ts');
+		const source = readFileSync(adaptedPath, 'utf8');
+		const mutated = source.replace(
+			/expect\(result\.current\.state\.get\(\)\)\.toBe\('foo'\);/,
+			'expect(true).toBe(true);',
+		);
+		assert.notEqual(mutated, source);
+		writeFileSync(adaptedPath, mutated);
+		assert.throws(function alteredAssertion() {
+			assertZagAdaptedSourceCrosswalk(root);
+		}, /assertion\/fixture hash mismatch/);
+	} finally {
+		rmSync(root, { recursive: true, force: true });
+	}
 });

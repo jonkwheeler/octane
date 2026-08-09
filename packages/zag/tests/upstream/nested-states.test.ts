@@ -4,6 +4,7 @@ import { createMachine } from '@zag-js/core';
 import { renderMachine } from './render';
 
 describe('nested states', () => {
+	// Per tests/nested-states.test.ts:5
 	test('basic nested transitions and actions', async () => {
 		const order: string[] = [];
 		const record = (value: string) => () => order.push(value);
@@ -78,6 +79,7 @@ describe('nested states', () => {
 		]);
 	});
 
+	// Per tests/nested-states.test.ts:79
 	test('effects run per nested state', async () => {
 		const cleanup = vi.fn();
 		const enter = vi.fn();
@@ -131,6 +133,7 @@ describe('nested states', () => {
 		expect(cleanup).toHaveBeenCalledTimes(1);
 	});
 
+	// Per tests/nested-states.test.ts:132
 	test('ancestor matches and parent transition fallback', async () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -159,6 +162,7 @@ describe('nested states', () => {
 		expect(result.current.state.matches('dialog')).toBe(true);
 	});
 
+	// Per tests/nested-states.test.ts:160
 	test('exit/enter order for deep sibling transition', async () => {
 		const order: string[] = [];
 		const record = (val: string) => () => order.push(val);
@@ -215,6 +219,7 @@ describe('nested states', () => {
 		expect(order).toEqual(['exit-leaf1', 'exit-left', 'enter-right', 'enter-leaf2']);
 	});
 
+	// Per tests/nested-states.test.ts:216
 	test('supports relative nested targets from the transition source state', async () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -275,6 +280,7 @@ describe('nested states', () => {
 		expect(result.current.state.get()).toBe('dialog.closed');
 	});
 
+	// Per tests/nested-states.test.ts:276
 	test('supports #id targets for explicit cross-level transitions', async () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -317,6 +323,7 @@ describe('nested states', () => {
 		expect(result.current.state.get()).toBe('dialog.open.idle');
 	});
 
+	// Per tests/nested-states.test.ts:318
 	test('deeply nested state smoke (3 levels)', async () => {
 		const visited: string[] = [];
 		const record = (value: string) => () => visited.push(value);

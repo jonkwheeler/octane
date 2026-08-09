@@ -8,7 +8,9 @@
 | Version | `1.42.0` |
 | Canonical tag commit | `df65e4c87c75a1c84eb6eb08a8e30dac0e1bb77f` |
 | Supported upstream range | exactly `1.42.0` |
-| React oracle | `19.2.7` |
+| React oracle | `19.2.7` with `@types/react@19.2.7` and `@types/react-dom@19.2.3` (`catalog:zag-react-oracle`) |
+| Testing Library oracle | `@testing-library/react@16.3.2` (`catalog:zag-react-oracle`; satisfies upstream `^16.3.2`) |
+| jsdom oracle | `29.0.1` (`catalog:zag-react-oracle`; satisfies upstream `^29.0.1`) |
 | Vendored tree integrity | `sha256:037f857d00462559b9790acc2214c818678eb9d61970d6c394dc26dcfcd1516d` (`packages/zag/upstream/SHA256SUMS`) |
 | License | MIT, © Chakra UI |
 

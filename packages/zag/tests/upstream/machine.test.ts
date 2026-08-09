@@ -6,6 +6,7 @@ import { useMachine } from '@octanejs/zag';
 import { renderMachine } from './render';
 
 describe('basic', () => {
+	// Per tests/machine.test.ts:7
 	test('initial state', () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -26,6 +27,7 @@ describe('basic', () => {
 		expect(result.current.state.get()).toBe('foo');
 	});
 
+	// Per tests/machine.test.ts:27
 	test('initial entry action', async () => {
 		const fooEntry = vi.fn();
 		const rootEntry = vi.fn();
@@ -55,6 +57,7 @@ describe('basic', () => {
 		expect(rootEntry).toHaveBeenCalledOnce();
 	});
 
+	// Per tests/machine.test.ts:56
 	test('current state and context', () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -74,6 +77,7 @@ describe('basic', () => {
 		expect(result.current.context.get('foo')).toEqual('bar');
 	});
 
+	// Per tests/machine.test.ts:75
 	test('send event', async () => {
 		let done = vi.fn();
 		const machine = createMachine<any>({
@@ -107,6 +111,7 @@ describe('basic', () => {
 		expect(done).toHaveBeenCalledOnce();
 	});
 
+	// Per tests/machine.test.ts:108
 	test('state tags', async () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -149,6 +154,7 @@ describe('basic', () => {
 		expect(result.current.state.hasTag('go')).toBeFalsy();
 	});
 
+	// Per tests/machine.test.ts:150
 	test('reenter transition', async () => {
 		const entryAction = vi.fn();
 
@@ -186,6 +192,7 @@ describe('basic', () => {
 		expect(entryAction).toHaveBeenCalledTimes(2);
 	});
 
+	// Per tests/machine.test.ts:187
 	test('action order', async () => {
 		const order = new Set<string>();
 		const call = (key: string) => () => order.add(key);
@@ -220,6 +227,7 @@ describe('basic', () => {
 		expect([...order]).toEqual(['exit1', 'transition', 'entry2']);
 	});
 
+	// Per tests/machine.test.ts:221
 	test('computed', async () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -256,6 +264,7 @@ describe('basic', () => {
 		expect(result.current.computed('length')).toEqual(5);
 	});
 
+	// Per tests/machine.test.ts:257
 	test('watch', async () => {
 		const notify = vi.fn();
 		const machine = createMachine<any>({
@@ -295,6 +304,7 @@ describe('basic', () => {
 		expect(notify).toHaveBeenCalledOnce();
 	});
 
+	// Per tests/machine.test.ts:296
 	test('guard: basic', async () => {
 		const machine = createMachine<any>({
 			props() {
@@ -339,6 +349,7 @@ describe('basic', () => {
 		expect(result.current.context.get('count')).toEqual(1);
 	});
 
+	// Per tests/machine.test.ts:340
 	test('guard: composition', async () => {
 		const { and } = createGuards<any>();
 		const machine = createMachine<any>({
@@ -391,6 +402,7 @@ describe('basic', () => {
 		expect(result.current.context.get('count')).toEqual(3);
 	});
 
+	// Per tests/machine.test.ts:392
 	test('context: controlled', async () => {
 		const machine = createMachine<any>({
 			props() {
@@ -434,6 +446,7 @@ describe('basic', () => {
 		expect(result.current.context.get('value')).toEqual('foo');
 	});
 
+	// Per tests/machine.test.ts:435
 	test('effects', async () => {
 		vi.useFakeTimers();
 
@@ -480,6 +493,7 @@ describe('basic', () => {
 });
 
 describe('edge cases', () => {
+	// Per tests/machine.test.ts:481
 	test('reactive props updates', async () => {
 		const actionSpy = vi.fn();
 
@@ -528,6 +542,7 @@ describe('edge cases', () => {
 		expect(actionSpy).toHaveBeenCalledTimes(1);
 	});
 
+	// Per tests/machine.test.ts:529
 	test('state.matches() helper', async () => {
 		const machine = createMachine<any>({
 			initialState() {
@@ -565,6 +580,7 @@ describe('edge cases', () => {
 		expect(result.current.state.matches('idle', 'loading')).toBe(false);
 	});
 
+	// Per tests/machine.test.ts:566
 	test('same-state transitions with actions', async () => {
 		const actionSpy = vi.fn();
 		const entrySpy = vi.fn();
@@ -609,6 +625,7 @@ describe('edge cases', () => {
 		expect(entrySpy).toHaveBeenCalledTimes(1);
 	});
 
+	// Per tests/machine.test.ts:610
 	test('reenter transition action order', async () => {
 		const order: string[] = [];
 
@@ -648,6 +665,7 @@ describe('edge cases', () => {
 		expect(order).toEqual(['exit', 'transition', 'entry']);
 	});
 
+	// Per tests/machine.test.ts:649
 	test('event previous/current tracking', async () => {
 		let capturedPrevious: any = null;
 		let capturedCurrent: any = null;
@@ -696,6 +714,7 @@ describe('edge cases', () => {
 });
 
 describe('uniform coverage', () => {
+	// Per tests/machine.test.ts:697
 	test('root lifecycle runs entry, exit and effect cleanup', async () => {
 		const rootEntry = vi.fn();
 		const rootExit = vi.fn();
@@ -735,6 +754,7 @@ describe('uniform coverage', () => {
 		expect(rootCleanup).toHaveBeenCalledOnce();
 	});
 
+	// Per tests/machine.test.ts:736
 	test('internal transition without target runs actions without reentry', async () => {
 		const onEntry = vi.fn();
 		const onInternal = vi.fn();
@@ -773,6 +793,7 @@ describe('uniform coverage', () => {
 		expect(onEntry).toHaveBeenCalledOnce();
 	});
 
+	// Per tests/machine.test.ts:774
 	test('guard fallback selects the next passing transition', async () => {
 		const blocked = vi.fn();
 		const allowed = vi.fn();
@@ -812,6 +833,7 @@ describe('uniform coverage', () => {
 		expect(blocked).not.toHaveBeenCalled();
 	});
 
+	// Per tests/machine.test.ts:813
 	test('reenter transition works without explicit target', async () => {
 		const order: string[] = [];
 
@@ -848,6 +870,7 @@ describe('uniform coverage', () => {
 		expect(order).toEqual(['exit', 'transition', 'entry']);
 	});
 
+	// Per tests/machine.test.ts:849
 	test('unknown events are no-ops', async () => {
 		const actionSpy = vi.fn();
 		const machine = createMachine<any>({
@@ -880,6 +903,7 @@ describe('uniform coverage', () => {
 		expect(actionSpy).toHaveBeenCalledOnce();
 	});
 
+	// Per tests/machine.test.ts:881
 	test('effect setup and cleanup stay balanced during state churn', async () => {
 		const setupSpy = vi.fn();
 		const cleanupSpy = vi.fn();
@@ -925,6 +949,7 @@ describe('uniform coverage', () => {
 		expect(cleanupSpy).toHaveBeenCalledTimes(setupSpy.mock.calls.length);
 	});
 
+	// Per tests/machine.test.ts:926
 	test('reenter restarts state effects exactly once per reenter', async () => {
 		const setupSpy = vi.fn();
 		const cleanupSpy = vi.fn();
@@ -973,6 +998,7 @@ describe('uniform coverage', () => {
 		expect(cleanupSpy).toHaveBeenCalledTimes(3);
 	});
 
+	// Per tests/machine.test.ts:974
 	test('event baseline before first send', async () => {
 		let currentType = 'unset';
 		let previousEvent: any = 'unset';
@@ -1002,6 +1028,7 @@ describe('uniform coverage', () => {
 		expect(previousEvent == null || previousEvent.type === '').toBe(true);
 	});
 
+	// Per tests/machine.test.ts:1003
 	test('multi-action transition order is deterministic', async () => {
 		const order: string[] = [];
 
@@ -1037,6 +1064,7 @@ describe('uniform coverage', () => {
 		expect(order).toEqual(['exit', 'a1', 'a2', 'a3', 'entry']);
 	});
 
+	// Per tests/machine.test.ts:1038
 	test('all guards false results in no transition and no actions', async () => {
 		const actionSpy = vi.fn();
 		const machine = createMachine<any>({
@@ -1073,6 +1101,7 @@ describe('uniform coverage', () => {
 		expect(actionSpy).not.toHaveBeenCalled();
 	});
 
+	// Per tests/machine.test.ts:1074
 	test('rapid sends in same tick are processed deterministically', async () => {
 		const seen: string[] = [];
 		const machine = createMachine<any>({

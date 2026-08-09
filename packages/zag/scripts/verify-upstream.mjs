@@ -6,12 +6,99 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const upstreamRoot = join(packageRoot, 'upstream');
 const sumsFile = join(upstreamRoot, 'SHA256SUMS');
+const TRANSFORM_LEDGER = 'audit/adapted-transformations.json';
+
+const ADAPTED_PAIRS = [
+	['tests/machine.test.ts', 'tests/upstream/machine.test.ts'],
+	['tests/nested-states.test.ts', 'tests/upstream/nested-states.test.ts'],
+	['tests/render.ts', 'tests/upstream/render.ts'],
+];
 
 function walk(directory) {
 	return readdirSync(directory, { withFileTypes: true }).flatMap(function flatten(entry) {
 		const path = join(directory, entry.name);
 		return entry.isDirectory() ? walk(path) : [path];
 	});
+}
+
+/**
+ * Inverse of the allowed adapted-suite transforms in
+ * audit/adapted-transformations.json. The resulting text is hashed against the
+ * pristine original so assertion/fixture drift cannot hide behind titles alone.
+ */
+export function normalizeZagParitySource(source) {
+	let text = source.replace(/\r\n/g, '\n');
+	text = text
+		.split('\n')
+		.filter(function keepLine(line) {
+			const trimmed = line.trim();
+			if (/^\/\/\s*Adapted from\b/u.test(trimmed)) return false;
+			if (/^\/\/\s*Per\s+tests\//u.test(trimmed)) return false;
+			return true;
+		})
+		.join('\n');
+	text = text.replace(/^import\s*\{[^}]*\}\s*from\s*['"]vitest['"];?\s*\n/gmu, '');
+	text = text.split("from '@octanejs/testing-library'").join('from "@testing-library/react"');
+	text = text.split('from "@octanejs/testing-library"').join('from "@testing-library/react"');
+	text = text.split("from '@octanejs/zag'").join('from "../src"');
+	text = text.split('from "@octanejs/zag"').join('from "../src"');
+	text = text.replace(/\t/gu, '  ');
+	text = text
+		.split('\n')
+		.map(function normalizeLine(line) {
+			let out = line.replace(/\s+$/u, '');
+			if (out.endsWith(';')) out = out.slice(0, -1);
+			if (!out.trim().startsWith('//')) out = out.replace(/'/gu, '"');
+			return out;
+		})
+		.filter(function dropBlank(line) {
+			return line.trim().length > 0;
+		})
+		.join('\n');
+	return `${text}\n`;
+}
+
+export function zagParitySourceDigest(source) {
+	return createHash('sha256').update(normalizeZagParitySource(source)).digest('hex');
+}
+
+/**
+ * Structurally hash-checks adapted suite files (and render.ts) against the
+ * pristine originals under the allowed-transformation ledger.
+ */
+export function assertZagAdaptedSourceCrosswalk(root = packageRoot) {
+	const ledgerPath = join(root, TRANSFORM_LEDGER);
+	if (!existsSync(ledgerPath)) {
+		throw new Error(`Missing adapted transformation ledger: ${TRANSFORM_LEDGER}`);
+	}
+	const ledger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
+	if (
+		ledger.schemaVersion !== 1 ||
+		!Array.isArray(ledger.transforms) ||
+		ledger.transforms.length === 0
+	) {
+		throw new Error(
+			`${TRANSFORM_LEDGER}: schemaVersion 1 with a non-empty transforms list is required`,
+		);
+	}
+
+	const pairs = [];
+	for (const [upstreamFile, adaptedFile] of ADAPTED_PAIRS) {
+		const upstreamPath = join(root, 'upstream', upstreamFile);
+		const adaptedPath = join(root, adaptedFile);
+		if (!existsSync(adaptedPath)) {
+			throw new Error(`Missing adapted counterpart for ${upstreamFile}: ${adaptedFile}`);
+		}
+		const upstreamDigest = zagParitySourceDigest(readFileSync(upstreamPath, 'utf8'));
+		const adaptedDigest = zagParitySourceDigest(readFileSync(adaptedPath, 'utf8'));
+		if (upstreamDigest !== adaptedDigest) {
+			throw new Error(
+				`Adapted source drifted from ${upstreamFile} after allowed transforms (assertion/fixture hash mismatch)`,
+			);
+		}
+		pairs.push({ upstreamFile, adaptedFile, digest: adaptedDigest });
+	}
+	return { pairs: pairs.length, transforms: ledger.transforms.length };
 }
 
 /**
@@ -65,8 +152,8 @@ export function verifyZagUpstream(root = packageRoot) {
 			throw new Error(`Missing upstream test artifact: ${required}`);
 	}
 
-	// Negative control: every portable upstream runtime case (excluding
-	// StrictMode-only evidence) must have a one-for-one adapted counterpart.
+	// Title-level one-for-one check stays as a fast inventory guard; the
+	// structural hash below is the assertion/fixture integrity gate.
 	const adaptedPairs = [
 		['tests/machine.test.ts', 'tests/upstream/machine.test.ts'],
 		['tests/nested-states.test.ts', 'tests/upstream/nested-states.test.ts'],
@@ -87,12 +174,14 @@ export function verifyZagUpstream(root = packageRoot) {
 		throw new Error('Missing pristine wrapper packages/zag/tests/upstream-original.test.ts');
 	}
 
-	return { files: actualFiles.length };
+	const crosswalk = assertZagAdaptedSourceCrosswalk(root);
+
+	return { files: actualFiles.length, adaptedSourcePairs: crosswalk.pairs };
 }
 
 function testTitles(source) {
 	const titles = [];
-	for (const match of source.matchAll(/^\s*test\(\s*(['"`])([\s\S]*?)\1/gm)) {
+	for (const match of source.matchAll(/^\s*test\(\s*(['"`])([\s\S]*?)\1/gmu)) {
 		titles.push(match[2]);
 	}
 	return titles;
@@ -103,5 +192,7 @@ const isMain =
 
 if (isMain) {
 	const result = verifyZagUpstream();
-	console.log(`Zag upstream evidence is current (${result.files} byte-exact files).`);
+	console.log(
+		`Zag upstream evidence is current (${result.files} byte-exact files, ${result.adaptedSourcePairs} adapted source pairs).`,
+	);
 }

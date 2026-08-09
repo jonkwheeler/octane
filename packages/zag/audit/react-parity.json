@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "16ef5becdea215d22f2965967fd71e7ea21f3ed2c4f64406b90329a492e3b2f6"
+      "lockfileSha256": "49020c453911afecf2f6b2238111d912b054db186519c1f439f000715936a6aa"
     }
   },
   "lanes": [
@@ -100,7 +100,7 @@
         {
           "path": "packages/zag/scripts/verify-upstream.mjs",
           "role": "support",
-          "sha256": "6f0ff6e0d610a04f9c1ca29eed4f43fda8b80b96ebd5e0f0f53f602900c23e55"
+          "sha256": "15845612c0d55117aaf84da53413dceb46d28a8ff71fca1e28dbce6e908b3b06"
         },
         {
           "path": "packages/zag/upstream/SHA256SUMS",

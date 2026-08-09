@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { relative, resolve, sep } from 'node:path';
 
 const CONFIG = 'packages/zag/audit/test-classifications.json';
 
@@ -16,7 +16,23 @@ const ALLOWED = new Set([
  * and that adapted/pristine ownership matches the React parity roots.
  */
 export function verifyZagTestClassifications(root) {
+	const testsRoot = resolve(root, 'packages/zag/tests');
+	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
+		.filter(function keepTestFiles(entry) {
+			return entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/u.test(entry.name);
+		})
+		.map(function toPortablePath(entry) {
+			return relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
+				.split(sep)
+				.join('/');
+		})
+		.filter(function excludeTempCopies(path) {
+			return !path.includes('/.pristine-upstream-');
+		})
+		.sort();
+
 	const path = resolve(root, CONFIG);
+	if (!existsSync(path)) throw new Error(`missing port-test classifications: ${CONFIG}`);
 	const config = JSON.parse(readFileSync(path, 'utf8'));
 	if (config.schemaVersion !== 1) throw new Error(`${CONFIG}: schemaVersion must be 1`);
 	if (!Array.isArray(config.tests) || config.tests.length === 0)
@@ -41,18 +57,10 @@ export function verifyZagTestClassifications(root) {
 		}
 	}
 
-	const required = [
-		'packages/zag/tests/upstream/machine.test.ts',
-		'packages/zag/tests/upstream/nested-states.test.ts',
-		'packages/zag/tests/upstream-original.test.ts',
-		'packages/zag/tests/differential/machine.test.ts',
-		'packages/zag/tests/conformance/machine.test.ts',
-		'packages/zag/tests/conformance/upstream-surface.test.ts',
-		'packages/zag/tests/ssr/server.test.ts',
-	];
-	for (const path of required) {
-		if (!seen.has(path)) throw new Error(`${CONFIG}: missing classification for ${path}`);
+	const declared = [...seen].sort();
+	if (JSON.stringify(discovered) !== JSON.stringify(declared)) {
+		throw new Error('every port-authored zag test must have exactly one classification');
 	}
 
-	return { files: seen.size };
+	return { files: discovered.length };
 }
