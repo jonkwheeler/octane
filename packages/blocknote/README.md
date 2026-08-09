@@ -34,8 +34,9 @@ None documented yet.
 
 ## Tests
 
-Organized per the hook-form / react-parity contract:
+M1 ships Octane-only evidence — not a react-parity claim:
 
-- `tests/conformance/` — package-authored contract tests (ordinary CI shards)
-- `tests/differential/` — Octane vs React oracle (dedicated project + `globalSetup`)
-- Vitest projects declare `testExecution.group: 'react-parity'` on parity-owned lanes
+- `tests/conformance/` — package export contract tests
+- `tests/unit/` — Octane port regressions
+
+A React differential lane (dedicated vitest project, `globalSetup`, fixtures, and `packages/blocknote/audit/react-parity.json`) is deferred until there is real comparison evidence to run.

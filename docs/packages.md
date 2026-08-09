@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**69 publishable package(s), including 55 framework binding(s) and 3 framework integration(s).**
+**71 publishable package(s), including 57 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -14,11 +14,13 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | --- | --- | --- | --- | --- |
 | `@octanejs/adapter-cloudflare` | [`packages/adapter-cloudflare`](../packages/adapter-cloudflare) | deployment adapter | `0.0.21` | 1 |
 | `@octanejs/adapter-vercel` | [`packages/adapter-vercel`](../packages/adapter-vercel) | deployment adapter | `0.0.28` | 1 |
+| `@octanejs/animejs` | [`packages/animejs`](../packages/animejs) | framework binding | `0.0.1` | 2 |
 | `@octanejs/apollo-client` | [`packages/apollo-client`](../packages/apollo-client) | framework binding | `0.1.26` | 6 |
 | `@octanejs/app-core` | [`packages/app-core`](../packages/app-core) | metaframework core | `0.0.27` | 9 |
 | `@octanejs/aria` | [`packages/aria`](../packages/aria) | framework binding | `0.0.25` | 3 |
 | `@octanejs/astro` | [`packages/astro`](../packages/astro) | framework integration | `0.0.10` | 5 |
 | `@octanejs/base-ui` | [`packages/base-ui`](../packages/base-ui) | framework binding | `0.1.29` | 2 |
+| `@octanejs/blocknote` | [`packages/blocknote`](../packages/blocknote) | framework binding | `0.1.0` | 1 |
 | `@octanejs/cli` | [`packages/cli`](../packages/cli) | developer tooling | `0.0.6` | 2 |
 | `@octanejs/cmdk` | [`packages/cmdk`](../packages/cmdk) | framework binding | `0.1.14` | 1 |
 | `@octanejs/devtools` | [`packages/devtools`](../packages/devtools) | framework binding | `0.0.19` | 1 |
