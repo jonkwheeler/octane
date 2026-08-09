@@ -232,13 +232,40 @@
   ],
   "assets": [
     {
-      "id": "procedural-visual-audio",
+      "id": "procedural-audio",
       "path": "playground/octane/src/demos/doom/assets.ts",
-      "sha256": "5263057279fbe972332489c50716e9dfab646b59fa87f34b60d8920c426fd5dd",
+      "sha256": "34f7be50229470546985a112181d6d9dd8f345e8f461ae1838a4c2cb8c4282ae",
       "kind": "source-authored",
       "license": "MIT",
       "creator": "Octane contributors",
-      "role": "All textures, sprites, weapon art, decorative art, and synthesized audio cues are generated from original numeric/color data at runtime."
+      "role": "Synthesized audio cues generated from original oscillator parameters at runtime."
+    },
+    {
+      "id": "procedural-visual-shell",
+      "path": "playground/octane/src/demos/doom/Doom.tsrx",
+      "sha256": "dc838f7de4ad105249a5060da0608c2e78783dc0074a333bdf1d4b3b6a914414",
+      "kind": "source-authored",
+      "license": "MIT",
+      "creator": "Octane contributors",
+      "role": "DOM/HUD weapon chrome, decorative overlays, and CSS-authored visual presentation."
+    },
+    {
+      "id": "procedural-visual-three",
+      "path": "playground/octane/src/demos/doom/Doom.three.tsrx",
+      "sha256": "1e81953068259e30d22397e1c20cdea1c301879f2d4cff0905b87f0bc453196b",
+      "kind": "source-authored",
+      "license": "MIT",
+      "creator": "Octane contributors",
+      "role": "Three-scene textures, materials, and sprite-like mesh presentation authored as source."
+    },
+    {
+      "id": "procedural-visual-model",
+      "path": "playground/octane/src/demos/doom/model.ts",
+      "sha256": "7310315473deff5e7418820a2942e15d08abe4c2f5a67a56f482e8b0087bf500",
+      "kind": "source-authored",
+      "license": "MIT",
+      "creator": "Octane contributors",
+      "role": "Game-model numeric constants that drive procedural layout and visual state."
     }
   ]
 }

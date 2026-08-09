@@ -71,7 +71,7 @@
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "92d74b414305bd9bd1fb076c10aa6904548993ccb2e66c4302732dc984191d4c"
+          "sha256": "a17268fa92f4ac8d0167f285787fa809337901d8ab5a1d096dbfa54a565289f3"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
@@ -133,7 +133,7 @@
         {
           "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
           "role": "test",
-          "sha256": "ea050d2e37980ed6972dea2fd02aa17efd227467d6372b6f0235676f040bcfc2",
+          "sha256": "473eff7870f15294bd36692ba6293cf4e920d6ae0a2a44d1ae2927c198211dcf",
           "cases": [
             {
               "id": "upstream:e2e-snapshot",

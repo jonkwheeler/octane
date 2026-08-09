@@ -33,13 +33,22 @@ const complete = {
 	],
 	assets: [
 		{
-			id: 'procedural-visuals',
+			id: 'procedural-audio',
 			path: 'playground/octane/src/demos/doom/assets.ts',
-			sha256: '5263057279fbe972332489c50716e9dfab646b59fa87f34b60d8920c426fd5dd',
+			sha256: '34f7be50229470546985a112181d6d9dd8f345e8f461ae1838a4c2cb8c4282ae',
 			kind: 'source-authored',
 			license: 'MIT',
 			creator: 'Octane contributors',
-			role: 'All game visuals and synthesized audio',
+			role: 'Synthesized audio cues',
+		},
+		{
+			id: 'procedural-visual-shell',
+			path: 'playground/octane/src/demos/doom/Doom.tsrx',
+			sha256: 'dc838f7de4ad105249a5060da0608c2e78783dc0074a333bdf1d4b3b6a914414',
+			kind: 'source-authored',
+			license: 'MIT',
+			creator: 'Octane contributors',
+			role: 'DOM/HUD visual presentation',
 		},
 	],
 };
@@ -80,7 +89,7 @@ test('rejects unclassified constructs and unlicensed assets', () => {
 				...complete,
 				assets: [{ ...complete.assets[0], license: 'NOASSERTION' }],
 			}),
-		/asset procedural-visuals lacks redistribution permission/,
+		/asset procedural-audio lacks redistribution permission/,
 	);
 	assert.throws(
 		() =>
