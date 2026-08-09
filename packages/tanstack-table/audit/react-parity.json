@@ -22,7 +22,7 @@
       "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": ["packages/tanstack-table/tests"],
+      "roots": ["packages/tanstack-table/tests/differential"],
       "include": ["\\.test\\.ts$"],
       "exclude": []
     }
@@ -172,7 +172,7 @@
         {
           "path": "packages/tanstack-table/typetests/pristine/types.test-d.ts",
           "role": "support",
-          "sha256": "8dc82294f9b16dc3057a0722f88a3285b97178a9e7efeb561da9f90d93503af8"
+          "sha256": "c293e132f44058c8247be40904783a5cfbef93047b1cf389b3d33ce184c48ffc"
         },
         {
           "path": "packages/tanstack-table/typetests/pristine/tsconfig.json",
@@ -216,7 +216,7 @@
         {
           "path": "packages/tanstack-table/typetests/adapted/types.test-d.ts",
           "role": "support",
-          "sha256": "aa56790559f127ba86348727faa232d26cf70805aae95046f80b47bf2d89f6d8"
+          "sha256": "eb1e9eb220da2212501ddb7b2fe2f7e82417eac1c0703b4ba607dd768197f237"
         },
         {
           "path": "packages/tanstack-table/typetests/adapted/tsconfig.json",

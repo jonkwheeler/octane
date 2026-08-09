@@ -15,6 +15,7 @@ type Equal<Left, Right> =
 		? true
 		: false;
 type Expect<Value extends true> = Value;
+type IsErasedAny<T> = 0 extends 1 & T ? true : false;
 
 type Person = { name: string; age: number };
 
@@ -51,7 +52,7 @@ function Label(props: { text: string }) {
 	return props.text;
 }
 const rendered = flexRender(Label, { text: 'x' });
-void rendered;
+type _RenderedNotAny = Expect<Equal<IsErasedAny<typeof rendered>, false>>;
 
 // 5. createTableHookContexts exposes useTableContext.
 const contexts = createTableHookContexts<typeof features>();
