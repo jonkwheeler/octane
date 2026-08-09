@@ -16,14 +16,24 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-transition-group/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-transition-group/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-transition-group/tests"],
-      "include": ["\\.test\\.ts$"],
-      "exclude": []
+      "roots": [
+        "packages/react-transition-group/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
+      "exclude": [
+        "/tests/upstream-original\\.test\\.ts$"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -39,10 +49,87 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0330a37bc8a8490beac28e7819f6b4d54a5758ae207a5c7b7d5a7bb50f12391c"
+      "lockfileSha256": "618167c70d72c69fcc5cc10f0652dd9190d2fa50bb031e692538e3dea8b569a4"
     }
   },
   "lanes": [
+    {
+      "id": "react-transition-group-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-transition-group 4.4.5 Jest suite against React 18 with the original setup, checks every executed identity against the committed inventory, and verifies every upstream test artifact disposition and case count.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/react-transition-group/tests/upstream-jest.config.cjs",
+        "root": "packages/react-transition-group/upstream",
+        "inventory": "packages/react-transition-group/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "00025b26f511fb4629ea5c4fae4404c8ba18dbe162cc1a7b9709811a815877cd"
+        },
+        {
+          "path": "packages/react-transition-group/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "4d2ff8fcad9788e2361bed7f40d2e036887bc17c36788c35d7596700c3b35101"
+        },
+        {
+          "path": "packages/react-transition-group/audit/upstream-test-dispositions.json",
+          "role": "support",
+          "sha256": "4921594628ebd2a4482f965e2558ba9247f52073ca450f40c607a96bd7ad2a7e"
+        },
+        {
+          "path": "packages/react-transition-group/audit/SHA256SUMS",
+          "role": "support",
+          "sha256": "3d7afd4e95d7ac4fdbbc105c1775556da892de229363736659957ed3c3de40de"
+        },
+        {
+          "path": "packages/react-transition-group/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "c67e0a2c233bcd8c8ee264168f3b2e9d9c1b4c5c61d4ee0e56b6a2103095ed12"
+        },
+        {
+          "path": "packages/react-transition-group/tests/upstream-jest.setup.cjs",
+          "role": "support",
+          "sha256": "cd5e1a3c783cfb213335758f567591cb6f3d55f32fc7b7d8cc530cab92e646ee"
+        },
+        {
+          "path": "packages/react-transition-group/tests/upstream-jest-transform.cjs",
+          "role": "support",
+          "sha256": "1dab2771e816d5bce064484d385f6c0049c15322e3c60902e0e58aa7790a0cda"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "56beddb188c49466130c0377dde4e7bd4d2880c65262d5648820bf16a07767d8"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-upstream-lib.mjs",
+          "role": "support",
+          "sha256": "72f7aaea6d174cf9b0b254aed485cb237f071a78060900507583ef6656008181"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-upstream.mjs",
+          "role": "support",
+          "sha256": "f244f62e17300f22d1fa6cc0941c7da8c9627d22fad5c00186bf1d0f57a1dc30"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-upstream-lib.test.mjs",
+          "role": "support",
+          "sha256": "6b5c579a420ca1fd7fd30401177b18e689497d09c207b2df1fce7208d92d4052"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
+        }
+      ]
+    },
     {
       "id": "react-transition-group-adapted-full-suite",
       "type": "adapted-octane",

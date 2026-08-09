@@ -3386,11 +3386,23 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-transition-group-pristine',
+					include: ['packages/react-transition-group/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-transition-group',
 					include: [
 						'packages/react-transition-group/tests/**/*.test.ts',
 						'!packages/react-transition-group/tests/ssr/**/*.test.ts',
+						'!packages/react-transition-group/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -3409,6 +3421,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-transition-group-ssr',
 					include: ['packages/react-transition-group/tests/ssr/**/*.test.ts'],

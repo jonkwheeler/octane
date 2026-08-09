@@ -705,6 +705,9 @@ catalogs:
     react-stately:
       specifier: 3.48.0
       version: 3.48.0
+    react-transition-group:
+      specifier: 4.4.5
+      version: 4.4.5
     recharts:
       specifier: 3.9.2
       version: 3.9.2
@@ -3449,7 +3452,7 @@ importers:
         version: 1.2.1(supports-color@10.2.2)
       lighthouse:
         specifier: catalog:default
-        version: 13.4.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)
+        version: 13.4.1(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)
       playwright:
         specifier: catalog:default
         version: 1.61.1
@@ -4463,7 +4466,7 @@ importers:
         version: 0.28.1
       jest:
         specifier: 30.4.2
-        version: 30.4.2(@types/node@25.9.5)(supports-color@10.2.2)
+        version: 30.4.2(@types/node@26.1.1)(supports-color@10.2.2)
       jest-environment-jsdom:
         specifier: 30.4.1
         version: 30.4.1(supports-color@10.2.2)
@@ -4484,7 +4487,7 @@ importers:
         version: 7.81.0(react@19.2.7)
       vitest:
         specifier: catalog:default
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@26.1.0(supports-color@10.2.2))(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
       whatwg-fetch:
         specifier: 3.6.20
         version: 3.6.20
@@ -4640,26 +4643,26 @@ importers:
     dependencies:
       '@livestore/common':
         specifier: catalog:default
-        version: 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+        version: 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@livestore/framework-toolkit':
         specifier: catalog:default
-        version: 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+        version: 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@livestore/livestore':
         specifier: catalog:default
-        version: 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+        version: 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@livestore/utils':
         specifier: catalog:default
-        version: 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+        version: 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api':
         specifier: catalog:default
         version: 1.9.0
     devDependencies:
       '@livestore/adapter-web':
         specifier: catalog:default
-        version: 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+        version: 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@livestore/utils-dev':
         specifier: catalog:livestore-react-oracle
-        version: 0.4.0(0b8e62da871916b7166b5c09eaf72266)
+        version: 0.4.0(18cd16d63c65fa052b2bd08aa8c079e6)
       '@opentelemetry/sdk-trace-base':
         specifier: catalog:livestore-react-oracle
         version: 2.2.0(@opentelemetry/api@1.9.0)
@@ -5120,6 +5123,75 @@ importers:
       vitest:
         specifier: catalog:default
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  packages/react-transition-group:
+    devDependencies:
+      '@babel/core':
+        specifier: ^7.28.0
+        version: 7.29.7(supports-color@10.2.2)
+      '@babel/preset-env':
+        specifier: ^7.28.0
+        version: 7.29.7(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
+      '@babel/preset-react':
+        specifier: ^7.27.1
+        version: 7.29.7(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
+      '@octanejs/testing-library':
+        specifier: workspace:*
+        version: link:../testing-library
+      '@testing-library/react':
+        specifier: ^14.3.1
+        version: 14.3.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@tsrx/react':
+        specifier: catalog:default
+        version: 0.2.56(react@19.2.7)
+      '@types/react':
+        specifier: catalog:default
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: catalog:default
+        version: 19.2.3(@types/react@19.2.17)
+      babel-jest:
+        specifier: 30.4.1
+        version: 30.4.1(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
+      babel-plugin-add-module-exports:
+        specifier: ^1.0.4
+        version: 1.0.4
+      dom-helpers:
+        specifier: ^5.2.1
+        version: 5.2.1
+      jest:
+        specifier: 30.4.2
+        version: 30.4.2(@types/node@25.9.5)(supports-color@10.2.2)
+      jest-environment-jsdom:
+        specifier: 30.4.1
+        version: 30.4.1(supports-color@10.2.2)
+      octane:
+        specifier: workspace:*
+        version: link:../octane
+      prop-types:
+        specifier: ^15.8.1
+        version: 15.8.1
+      react:
+        specifier: catalog:default
+        version: 19.2.7
+      react-dom:
+        specifier: catalog:default
+        version: 19.2.7(react@19.2.7)
+      react-dom18:
+        specifier: npm:react-dom@18.3.1
+        version: react-dom@18.3.1(react@19.2.7)
+      react-transition-group:
+        specifier: catalog:default
+        version: 4.4.5(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      react18:
+        specifier: npm:react@18.3.1
+        version: react@18.3.1
+      typescript:
+        specifier: catalog:default
+        version: 5.9.3
+      vitest:
+        specifier: catalog:default
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@26.1.0(supports-color@10.2.2))(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/recharts:
     dependencies:
@@ -6581,16 +6653,16 @@ importers:
     dependencies:
       '@livestore/adapter-web':
         specifier: catalog:default
-        version: 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+        version: 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@livestore/common':
         specifier: catalog:default
-        version: 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+        version: 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@livestore/livestore':
         specifier: catalog:default
-        version: 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+        version: 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@livestore/utils':
         specifier: catalog:default
-        version: 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+        version: 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@octanejs/aria':
         specifier: workspace:*
         version: link:../../packages/aria
@@ -13308,9 +13380,20 @@ packages:
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
     engines: {node: '>=18'}
 
+  '@testing-library/dom@9.3.4':
+    resolution: {integrity: sha512-FlS4ZWlp97iiNWig0Muq8p+3rVDjRiYE+YKGbAqXOu9nwJFFOdL00kFpz42M+4huzYi86vAK1sOOfyOG45muIQ==}
+    engines: {node: '>=14'}
+
   '@testing-library/jest-dom@6.9.1':
     resolution: {integrity: sha512-zIcONa+hVtVSSep9UT3jZ5rizo2BsxgyDYU7WFD5eICBE7no3881HGeb/QkGfsJs6JTkY1aQhT7rIPC7e+0nnA==}
     engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
+
+  '@testing-library/react@14.3.1':
+    resolution: {integrity: sha512-H99XjUhWQw0lTgyMN05W3xQG1Nh4lq574D8keFf1dDoNTJgp66VbJozRaczoF+wsiaPJNt/TcnfpLGufGxSrZQ==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   '@testing-library/react@16.3.1':
     resolution: {integrity: sha512-gr4KtAWqIOQoucWYD/f6ki+j5chXfcPc74Col/6poTyqTmn7zRmodWahWRCp8tYd+GMqBonw6hstNzqjbs6gjw==}
@@ -13870,6 +13953,11 @@ packages:
 
   '@types/range-parser@1.2.7':
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
+
+  '@types/react-dom@18.3.7':
+    resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
+    peerDependencies:
+      '@types/react': ^18.0.0
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -14907,6 +14995,9 @@ packages:
     resolution: {integrity: sha512-ik3ZgC9dY/lYVVM++OISsaYDeg1tb0VtP5uL3ouh1koGOaUMDPpbFIei4JkFimWUFPn90sbMNMXQAIVOlnYKJA==}
     engines: {node: '>=10'}
 
+  aria-query@5.1.3:
+    resolution: {integrity: sha512-R5iJ5lkuHybztUfuOAznmboyjWq8O6sqNqtK7CLOqdydi54VNbORp49mb14KbWgG1QD3JFO9hJdZ+y4KutfdOQ==}
+
   aria-query@5.3.0:
     resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
 
@@ -15022,6 +15113,9 @@ packages:
     peerDependencies:
       '@babel/core': ^7.12.0
       webpack: '>=5'
+
+  babel-plugin-add-module-exports@1.0.4:
+    resolution: {integrity: sha512-g+8yxHUZ60RcyaUpfNzy56OtWW+x9cyEe9j+CranqLiqbju2yf/Cy6ZtYK40EZxtrdHllzlVZgLmcOUCTlJ7Jg==}
 
   babel-plugin-dynamic-import-node@2.3.3:
     resolution: {integrity: sha512-jZVI+s9Zg3IqA/kdi0i6UDCybUI3aSBLnglhYbSSjKlV7yF1F/5LWv8MakQmvYpnbJDS6fcBL2KzHSxNCMtWSQ==}
@@ -16184,6 +16278,10 @@ packages:
   deep-equal@1.0.1:
     resolution: {integrity: sha512-bHtC0iYvWhyaTzvV3CZgPeZQqCOBGyGsVV7v4eevpdkLHfiSrXUdBG+qAuSz4RI70sszvjQ1QSZ98An1yNwpSw==}
 
+  deep-equal@2.2.3:
+    resolution: {integrity: sha512-ZIwpnevOurS8bpT4192sqAowWM76JDKSHYzMLty3BZGSswgq6pBaH3DhCSW5xVAZICZyKdOBPjwww5wfgT/6PA==}
+    engines: {node: '>= 0.4'}
+
   deep-extend@0.6.0:
     resolution: {integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==}
     engines: {node: '>=4.0.0'}
@@ -16329,6 +16427,9 @@ packages:
 
   dom-converter@0.2.0:
     resolution: {integrity: sha512-gd3ypIPfOMr9h5jIKq8E3sHOTCjeirnl0WK5ZdS1AW0Odt0b1PaWaHdJ4Qk4klv+YB9aJBS7mESXjFoDQPu6DA==}
+
+  dom-helpers@5.2.1:
+    resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
   dom-serializer@1.4.1:
     resolution: {integrity: sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==}
@@ -16534,6 +16635,9 @@ packages:
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
+
+  es-get-iterator@1.1.3:
+    resolution: {integrity: sha512-sPZmqHBe6JIiTfN5q2pEi//TwxmAFHwj/XEuYjTuse78i8KxaqMTTzxPoFKuzRpDpTJ+0NAbpfenkmH2rePtuw==}
 
   es-module-lexer@1.7.0:
     resolution: {integrity: sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==}
@@ -17584,6 +17688,10 @@ packages:
 
   is-alphanumerical@2.0.1:
     resolution: {integrity: sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==}
+
+  is-arguments@1.2.0:
+    resolution: {integrity: sha512-7bVbi0huj/wrIAOzb8U1aszg9kdi3KN/CyU19CTI7tAoZYEZoL9yCDXpbXN+uPsuWnP02cyug1gleqq+TU+YCA==}
+    engines: {node: '>= 0.4'}
 
   is-array-buffer@3.0.5:
     resolution: {integrity: sha512-DDfANUiiG2wC1qawP66qlTugJeL5HyzMpfr8lLK+jMQirGzNod0B12cFB/9q838Ru27sBwfw78/rdoU7RERz6A==}
@@ -19305,6 +19413,10 @@ packages:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
 
+  object-is@1.1.6:
+    resolution: {integrity: sha512-F8cZ+KfGlSGi09lJT7/Nd6KJZ9ygtvYC0/UYYLI9nmQKLMnydpB9yvbv9K1uSkEu7FU9vYPmVwLg328tX+ot3Q==}
+    engines: {node: '>= 0.4'}
+
   object-keys@1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
@@ -20555,6 +20667,11 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
+  react-dom@18.3.1:
+    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+    peerDependencies:
+      react: ^18.3.1
+
   react-dom@19.2.3:
     resolution: {integrity: sha512-yELu4WmLPw5Mr/lmeEpox5rw3RETacE++JgHqQzd2dg+YbJuat3jH4ingc+WPZhxaoFzdv9y33G+F7Nl5O0GBg==}
     peerDependencies:
@@ -20697,6 +20814,12 @@ packages:
       '@types/react':
         optional: true
 
+  react-transition-group@4.4.5:
+    resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
+    peerDependencies:
+      react: '>=16.6.0'
+      react-dom: '>=16.6.0'
+
   react-use-measure@2.1.7:
     resolution: {integrity: sha512-KrvcAo13I/60HpwGO5jpW7E9DfusKyLPLvuHlUyP5zqnmAPhNc6qTRjUQrdTADl0lpPpDVU2/Gg51UlOGHXbdg==}
     peerDependencies:
@@ -20712,6 +20835,10 @@ packages:
     peerDependencies:
       react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  react@18.3.1:
+    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
+    engines: {node: '>=0.10.0'}
 
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
@@ -21113,6 +21240,9 @@ packages:
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
+
+  scheduler@0.23.2:
+    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
@@ -25374,27 +25504,27 @@ snapshots:
       effect: 3.21.3
       uuid: 11.1.1
 
-  '@effect/opentelemetry@0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)':
+  '@effect/opentelemetry@0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)':
     dependencies:
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-logs': 0.208.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.2.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-base': 2.2.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-trace-base': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-node': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-web': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.43.0
       effect: 3.21.3
 
-  '@effect/opentelemetry@0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)':
+  '@effect/opentelemetry@0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)':
     dependencies:
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-logs': 0.208.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.2.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-trace-base': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-node': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-web': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.43.0
@@ -26794,13 +26924,13 @@ snapshots:
     dependencies:
       '@lezer/common': 1.5.2
 
-  '@livestore/adapter-web@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/adapter-web@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26811,23 +26941,23 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/devtools-web-common': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/sqlite-wasm': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/webmesh': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/common': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/devtools-web-common': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/sqlite-wasm': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/webmesh': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/adapter-web@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/adapter-web@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26838,24 +26968,24 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/devtools-web-common': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/sqlite-wasm': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/webmesh': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/common': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/devtools-web-common': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/sqlite-wasm': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/webmesh': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/common-cf@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/common-cf@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@cloudflare/workers-types': 4.20251118.0
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26866,20 +26996,20 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/common-cf@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/common-cf@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@cloudflare/workers-types': 4.20251118.0
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26890,19 +27020,19 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/common@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/common@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26913,20 +27043,20 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/webmesh': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/webmesh': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/common@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/common@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26937,20 +27067,20 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/webmesh': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/webmesh': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/devtools-web-common@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/devtools-web-common@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26961,21 +27091,21 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/webmesh': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/common': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/webmesh': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/devtools-web-common@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/devtools-web-common@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -26986,21 +27116,21 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/webmesh': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/common': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/webmesh': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/framework-toolkit@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/framework-toolkit@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27011,22 +27141,22 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/adapter-web': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/common': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/livestore': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/adapter-web': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/common': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/livestore': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/livestore@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/livestore@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27037,20 +27167,20 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/common': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/livestore@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/livestore@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27061,21 +27191,21 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/common': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/sqlite-wasm@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/sqlite-wasm@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@cloudflare/workers-types': 4.20251118.0
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27086,23 +27216,23 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/common-cf': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/common': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/common-cf': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@livestore/wa-sqlite': 0.4.0
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/sqlite-wasm@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/sqlite-wasm@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@cloudflare/workers-types': 4.20251118.0
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27113,22 +27243,22 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/common': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/common-cf': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/common': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/common-cf': 0.4.0(bbde908284d7a34108f17f67142c2315)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@livestore/wa-sqlite': 0.4.0
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/utils-dev@0.4.0(0b8e62da871916b7166b5c09eaf72266)':
+  '@livestore/utils-dev@0.4.0(18cd16d63c65fa052b2bd08aa8c079e6)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27140,11 +27270,11 @@ snapshots:
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
       '@iarna/toml': 3.0.0
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/exporter-metrics-otlp-http': 0.208.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/exporter-trace-otlp-http': 0.208.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-node': 2.2.0(@opentelemetry/api@1.9.0)
@@ -27156,13 +27286,13 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@livestore/utils@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/utils@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27174,20 +27304,20 @@ snapshots:
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
       nanoid: 5.0.9
       pretty-bytes: 7.0.1
       qrcode-generator: 2.0.4
 
-  '@livestore/utils@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/utils@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27199,7 +27329,7 @@ snapshots:
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
       nanoid: 5.0.9
@@ -27208,13 +27338,13 @@ snapshots:
 
   '@livestore/wa-sqlite@0.4.0': {}
 
-  '@livestore/webmesh@0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)':
+  '@livestore/webmesh@0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27225,19 +27355,19 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/utils': 0.4.0(63345b1f437bd31f8b3d7223d3dcd0ec)
+      '@livestore/utils': 0.4.0(57d346e1a34f85a6d26fc3d4e61767fc)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
-  '@livestore/webmesh@0.4.0(8f0456876e34fb2c5d456eca6780ab35)':
+  '@livestore/webmesh@0.4.0(bbde908284d7a34108f17f67142c2315)':
     dependencies:
       '@effect/ai': 0.35.0(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cli': 0.75.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/printer-ansi@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(@effect/printer@0.49.0(@effect/typeclass@0.40.0(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/cluster': 0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
       '@effect/experimental': 0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
-      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
+      '@effect/opentelemetry': 0.63.0(@effect/platform@0.96.3(effect@3.21.3))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.208.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.10.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.43.0)(effect@3.21.3)
       '@effect/platform': 0.96.3(effect@3.21.3)
       '@effect/platform-browser': 0.76.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/platform-bun': 0.89.0(@effect/cluster@0.58.2(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/workflow@0.18.2(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(@effect/rpc@0.75.1(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/sql@0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(effect@3.21.3)
@@ -27248,9 +27378,9 @@ snapshots:
       '@effect/sql': 0.51.1(@effect/experimental@0.60.0(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3))(@effect/platform@0.96.3(effect@3.21.3))(effect@3.21.3)
       '@effect/typeclass': 0.40.0(effect@3.21.3)
       '@effect/vitest': 0.29.0(effect@3.21.3)(vitest@4.1.10)
-      '@livestore/utils': 0.4.0(8f0456876e34fb2c5d456eca6780ab35)
+      '@livestore/utils': 0.4.0(bbde908284d7a34108f17f67142c2315)
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
       '@standard-schema/spec': 1.1.0
       effect: 3.21.3
 
@@ -27681,6 +27811,11 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/semantic-conventions': 1.43.0
 
+  '@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/semantic-conventions': 1.43.0
+
   '@opentelemetry/core@2.2.0(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -27691,11 +27826,6 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/semantic-conventions': 1.43.0
     optional: true
-
-  '@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.0)':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/semantic-conventions': 1.43.0
 
   '@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1)':
     dependencies:
@@ -27794,12 +27924,6 @@ snapshots:
       '@opentelemetry/semantic-conventions': 1.43.0
     optional: true
 
-  '@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.0)':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.43.0
-
   '@opentelemetry/resources@2.9.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
@@ -27857,14 +27981,6 @@ snapshots:
       '@opentelemetry/semantic-conventions': 1.43.0
     optional: true
 
-  '@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.0)':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace': 2.9.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.43.0
-
   '@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
@@ -27891,13 +28007,6 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/resources': 2.10.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.43.0
-
-  '@opentelemetry/sdk-trace@2.9.0(@opentelemetry/api@1.9.0)':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources': 2.9.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.43.0
 
   '@opentelemetry/sdk-trace@2.9.0(@opentelemetry/api@1.9.1)':
@@ -29940,28 +30049,28 @@ snapshots:
     dependencies:
       '@sentry/conventions': 0.16.0
 
-  '@sentry/node-core@10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))':
+  '@sentry/node-core@10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))':
     dependencies:
       '@sentry/conventions': 0.16.0
       '@sentry/core': 10.67.0
-      '@sentry/opentelemetry': 10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
+      '@sentry/opentelemetry': 10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
       import-in-the-middle: 3.3.1
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/exporter-trace-otlp-http': 0.208.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2)
       '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.1)
 
-  '@sentry/node@10.67.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)':
+  '@sentry/node@10.67.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)':
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/instrumentation': 0.220.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2)
       '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.1)
       '@sentry/conventions': 0.16.0
       '@sentry/core': 10.67.0
-      '@sentry/node-core': 10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
-      '@sentry/opentelemetry': 10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
+      '@sentry/node-core': 10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(@opentelemetry/instrumentation@0.220.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
+      '@sentry/opentelemetry': 10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))
       '@sentry/server-utils': 10.67.0(supports-color@10.2.2)
       import-in-the-middle: 3.3.1
     transitivePeerDependencies:
@@ -29969,10 +30078,10 @@ snapshots:
       - '@opentelemetry/exporter-trace-otlp-http'
       - supports-color
 
-  '@sentry/opentelemetry@10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))':
+  '@sentry/opentelemetry@10.67.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))':
     dependencies:
       '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/core': 2.10.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-trace-base': 2.9.0(@opentelemetry/api@1.9.1)
       '@sentry/conventions': 0.16.0
       '@sentry/core': 10.67.0
@@ -31184,6 +31293,17 @@ snapshots:
       picocolors: 1.1.1
       pretty-format: 27.5.1
 
+  '@testing-library/dom@9.3.4':
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      '@babel/runtime': 7.29.7
+      '@types/aria-query': 5.0.4
+      aria-query: 5.1.3
+      chalk: 4.1.2
+      dom-accessibility-api: 0.5.16
+      lz-string: 1.5.0
+      pretty-format: 27.5.1
+
   '@testing-library/jest-dom@6.9.1':
     dependencies:
       '@adobe/css-tools': 4.5.0
@@ -31192,6 +31312,16 @@ snapshots:
       dom-accessibility-api: 0.6.3
       picocolors: 1.1.1
       redent: 3.0.0
+
+  '@testing-library/react@14.3.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@testing-library/dom': 9.3.4
+      '@types/react-dom': 18.3.7(@types/react@19.2.17)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+    transitivePeerDependencies:
+      - '@types/react'
 
   '@testing-library/react@16.3.1(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -31862,6 +31992,10 @@ snapshots:
   '@types/qs@6.15.1': {}
 
   '@types/range-parser@1.2.7': {}
+
+  '@types/react-dom@18.3.7(@types/react@19.2.17)':
+    dependencies:
+      '@types/react': 19.2.17
 
   '@types/react-dom@19.2.3(@types/react@19.2.17)':
     dependencies:
@@ -32570,7 +32704,7 @@ snapshots:
       magicast: 0.5.3
       obug: 2.1.4
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@26.1.0(supports-color@10.2.2))(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -32586,7 +32720,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@26.1.0(supports-color@10.2.2))(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -33034,6 +33168,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  aria-query@5.1.3:
+    dependencies:
+      deep-equal: 2.2.3
+
   aria-query@5.3.0:
     dependencies:
       dequal: 2.0.3
@@ -33357,6 +33495,8 @@ snapshots:
       find-cache-dir: 4.0.0
       schema-utils: 4.3.3
       webpack: 5.108.4(@swc/core@1.15.41(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.20))(csso@5.0.5)(esbuild@0.28.1)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.20)
+
+  babel-plugin-add-module-exports@1.0.4: {}
 
   babel-plugin-dynamic-import-node@2.3.3:
     dependencies:
@@ -34614,6 +34754,27 @@ snapshots:
 
   deep-equal@1.0.1: {}
 
+  deep-equal@2.2.3:
+    dependencies:
+      array-buffer-byte-length: 1.0.2
+      call-bind: 1.0.9
+      es-get-iterator: 1.1.3
+      get-intrinsic: 1.3.0
+      is-arguments: 1.2.0
+      is-array-buffer: 3.0.5
+      is-date-object: 1.1.0
+      is-regex: 1.2.1
+      is-shared-array-buffer: 1.0.4
+      isarray: 2.0.5
+      object-is: 1.1.6
+      object-keys: 1.1.1
+      object.assign: 4.1.7
+      regexp.prototype.flags: 1.5.4
+      side-channel: 1.1.1
+      which-boxed-primitive: 1.1.1
+      which-collection: 1.0.2
+      which-typed-array: 1.1.22
+
   deep-extend@0.6.0: {}
 
   deepmerge@4.3.1: {}
@@ -34726,6 +34887,11 @@ snapshots:
   dom-converter@0.2.0:
     dependencies:
       utila: 0.4.0
+
+  dom-helpers@5.2.1:
+    dependencies:
+      '@babel/runtime': 7.29.7
+      csstype: 3.2.3
 
   dom-serializer@1.4.1:
     dependencies:
@@ -34972,6 +35138,18 @@ snapshots:
   es-define-property@1.0.1: {}
 
   es-errors@1.3.0: {}
+
+  es-get-iterator@1.1.3:
+    dependencies:
+      call-bind: 1.0.9
+      get-intrinsic: 1.3.0
+      has-symbols: 1.1.0
+      is-arguments: 1.2.0
+      is-map: 2.0.3
+      is-set: 2.0.3
+      is-string: 1.1.1
+      isarray: 2.0.5
+      stop-iteration-iterator: 1.1.0
 
   es-module-lexer@1.7.0: {}
 
@@ -36329,6 +36507,11 @@ snapshots:
       is-alphabetical: 2.0.1
       is-decimal: 2.0.1
 
+  is-arguments@1.2.0:
+    dependencies:
+      call-bound: 1.0.4
+      has-tostringtag: 1.0.2
+
   is-array-buffer@3.0.5:
     dependencies:
       call-bind: 1.0.9
@@ -36674,6 +36857,25 @@ snapshots:
       - supports-color
       - ts-node
 
+  jest-cli@30.4.2(@types/node@26.1.1)(supports-color@10.2.2):
+    dependencies:
+      '@jest/core': 30.4.2(supports-color@10.2.2)
+      '@jest/test-result': 30.4.1
+      '@jest/types': 30.4.1
+      chalk: 4.1.2
+      exit-x: 0.2.2
+      import-local: 3.2.0
+      jest-config: 30.4.2(@types/node@26.1.1)(supports-color@10.2.2)
+      jest-util: 30.4.1
+      jest-validate: 30.4.1
+      yargs: 17.7.3
+    transitivePeerDependencies:
+      - '@types/node'
+      - babel-plugin-macros
+      - esbuild-register
+      - supports-color
+      - ts-node
+
   jest-config@30.4.2(@types/node@25.9.5)(supports-color@10.2.2):
     dependencies:
       '@babel/core': 7.29.7(supports-color@10.2.2)
@@ -36701,6 +36903,37 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 25.9.5
+    transitivePeerDependencies:
+      - babel-plugin-macros
+      - supports-color
+
+  jest-config@30.4.2(@types/node@26.1.1)(supports-color@10.2.2):
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.2.2)
+      '@jest/get-type': 30.1.0
+      '@jest/pattern': 30.4.0
+      '@jest/test-sequencer': 30.4.1
+      '@jest/types': 30.4.1
+      babel-jest: 30.4.1(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
+      chalk: 4.1.2
+      ci-info: 4.4.0
+      deepmerge: 4.3.1
+      glob: 10.5.0
+      graceful-fs: 4.2.11
+      jest-circus: 30.4.2(supports-color@10.2.2)
+      jest-docblock: 30.4.0
+      jest-environment-node: 30.4.1
+      jest-regex-util: 30.4.0
+      jest-resolve: 30.4.1
+      jest-runner: 30.4.2(supports-color@10.2.2)
+      jest-util: 30.4.1
+      jest-validate: 30.4.1
+      parse-json: 5.2.0
+      pretty-format: 30.4.1
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+    optionalDependencies:
+      '@types/node': 26.1.1
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -36970,6 +37203,19 @@ snapshots:
       - supports-color
       - ts-node
 
+  jest@30.4.2(@types/node@26.1.1)(supports-color@10.2.2):
+    dependencies:
+      '@jest/core': 30.4.2(supports-color@10.2.2)
+      '@jest/types': 30.4.1
+      import-local: 3.2.0
+      jest-cli: 30.4.2(@types/node@26.1.1)(supports-color@10.2.2)
+    transitivePeerDependencies:
+      - '@types/node'
+      - babel-plugin-macros
+      - esbuild-register
+      - supports-color
+      - ts-node
+
   jiti@1.21.7: {}
 
   jiti@2.7.0: {}
@@ -37209,10 +37455,10 @@ snapshots:
 
   lighthouse-stack-packs@1.12.3: {}
 
-  lighthouse@13.4.1(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2):
+  lighthouse@13.4.1(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2):
     dependencies:
       '@paulirish/trace_engine': 0.0.65
-      '@sentry/node': 10.67.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)
+      '@sentry/node': 10.67.0(@opentelemetry/core@2.10.0(@opentelemetry/api@1.9.1))(@opentelemetry/exporter-trace-otlp-http@0.208.0(@opentelemetry/api@1.9.1))(supports-color@10.2.2)
       axe-core: 4.12.1
       chrome-launcher: 1.2.1(supports-color@10.2.2)
       configstore: 7.1.0
@@ -38641,6 +38887,11 @@ snapshots:
 
   object-inspect@1.13.4: {}
 
+  object-is@1.1.6:
+    dependencies:
+      call-bind: 1.0.9
+      define-properties: 1.2.1
+
   object-keys@1.1.1: {}
 
   object-treeify@1.1.33: {}
@@ -40040,6 +40291,12 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
+  react-dom@18.3.1(react@19.2.7):
+    dependencies:
+      loose-envify: 1.4.0
+      react: 19.2.7
+      scheduler: 0.23.2
+
   react-dom@19.2.3(react@19.2.3):
     dependencies:
       react: 19.2.3
@@ -40204,6 +40461,15 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
+  react-transition-group@4.4.5(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      dom-helpers: 5.2.1
+      loose-envify: 1.4.0
+      prop-types: 15.8.1
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+
   react-use-measure@2.1.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       react: 19.2.3
@@ -40222,6 +40488,10 @@ snapshots:
       memoize-one: 5.2.1
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
+
+  react@18.3.1:
+    dependencies:
+      loose-envify: 1.4.0
 
   react@19.2.3: {}
 
@@ -40853,6 +41123,10 @@ snapshots:
   saxes@6.0.0:
     dependencies:
       xmlchars: 2.2.0
+
+  scheduler@0.23.2:
+    dependencies:
+      loose-envify: 1.4.0
 
   scheduler@0.27.0: {}
 
@@ -42679,6 +42953,38 @@ snapshots:
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
       happy-dom: 20.11.0
       jsdom: 26.1.0(supports-color@10.2.2)
+    transitivePeerDependencies:
+      - msw
+
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)):
+    dependencies:
+      '@vitest/expect': 4.1.10
+      '@vitest/mocker': 4.1.10(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      '@vitest/pretty-format': 4.1.10
+      '@vitest/runner': 4.1.10
+      '@vitest/snapshot': 4.1.10
+      '@vitest/spy': 4.1.10
+      '@vitest/utils': 4.1.10
+      es-module-lexer: 2.3.1
+      expect-type: 1.4.0
+      magic-string: 0.30.21
+      obug: 2.1.4
+      pathe: 2.0.3
+      picomatch: 4.0.5
+      std-env: 4.2.0
+      tinybench: 2.9.0
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.1.0
+      vite: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.1
+      '@types/node': 25.9.5
+      '@vitest/coverage-istanbul': 4.1.10(supports-color@10.2.2)(vitest@4.1.10)
+      '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
+      happy-dom: 20.11.0
+      jsdom: 30.0.1(@noble/hashes@2.2.0)
     transitivePeerDependencies:
       - msw
 

@@ -1,14 +1,29 @@
 # Upstream provenance
 
-This binding is pinned to [`react-transition-group` v4.4.5](https://github.com/reactjs/react-transition-group/tree/v4.4.5), commit `4cb51a9be0ebf508cb8f6506452097f7ebb874fe`.
+This binding is pinned to [`react-transition-group` v4.4.5](https://github.com/reactjs/react-transition-group/tree/v4.4.5), commit `4cb51a9be0ebf508cb8f6506452097f7ebb874fe`. The pristine runtime oracle uses React 18.3.1 (upstream's supported peer range and the last React that still exposes `findDOMNode`); Octane package tests continue to use the workspace React 19 oracle.
 
 The upstream project and this adapted package are licensed under BSD-3-Clause. The upstream notice is retained in `LICENSE` and `upstream/LICENSE`.
 
 ## Vendored evidence
 
-`upstream/src` and `upstream/test` are byte-exact copies of the source and tests at the pinned tag. `audit/SHA256SUMS` records every retained artifact and `pnpm upstream:check` rejects drift.
+`upstream/src` and `upstream/test` are byte-exact copies of the source and tests at the pinned tag. `audit/SHA256SUMS` records every retained artifact and `pnpm upstream:check` rejects drift. `pnpm upstream:verify` also checks `audit/upstream-test-dispositions.json` so every upstream test artifact and case count stays accounted for.
 
-The vendored JavaScript is audit evidence only and is not published or executed by the Octane package. The maintained implementation is under `src`; adapted tests are under `tests`.
+The vendored JavaScript is not published. The maintained implementation is under `src`. Adapted Octane tests are under `tests`. The strongest runtime oracle is the pristine Jest lane: `pnpm test:upstream` / Vitest project `react-transition-group-pristine` runs the pinned suite unchanged against React and checks every identity against `audit/pristine-runtime.json`.
+
+## Test-suite disposition
+
+The pinned repository contains seven runtime suites plus four support files under `upstream/test`. Every artifact has a disposition in `audit/upstream-test-dispositions.json` (56 executable cases total). Negative controls in `scripts/react-parity/react-transition-group-upstream-lib.test.mjs` reject a missing artifact disposition, a stale `caseCount`, a deleted suite, and a removed case.
+
+| Upstream artifact | Disposition |
+| --- | --- |
+| `test/Transition-test.js` | Pristine oracle; partial Octane coverage in `tests/transition.test.ts` |
+| `test/CSSTransition-test.js` | Pristine oracle; partial Octane coverage in `tests/transition.test.ts` |
+| `test/CSSTransitionGroup-test.js` | Pristine oracle; partial Octane coverage in `tests/transition.test.ts` |
+| `test/TransitionGroup-test.js` | Pristine oracle; partial Octane coverage in `tests/transition.test.ts` |
+| `test/SwitchTransition-test.js` | Pristine oracle; partial Octane coverage in `tests/transition.test.ts` |
+| `test/ChildMapping-test.js` | Pristine oracle; helpers covered indirectly by adapted group tests |
+| `test/SSR-test.js` | Pristine oracle; Octane SSR coverage in `tests/ssr/server.test.ts` |
+| `test/setup.js`, `setupAfterEnv.js`, `utils.js`, `.eslintrc.yml` | Support artifacts for the pristine Jest runner |
 
 ## Public surface
 
