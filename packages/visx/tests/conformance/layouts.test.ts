@@ -9,8 +9,6 @@ afterEach(() => {
 });
 
 describe('@octanejs/visx representative layout families', () => {
-	// OCTANE DIVERGENCE[visx-animation-adapter][adapted:visx-animation-adapter]
-	// @parity-case adapted:visx-animation-adapter
 	it('renders chord, delaunay, geo, heatmap, hierarchy, legend, network, sankey, stats, threshold, and animated axis output', () => {
 		view = mount(LayoutFamiliesFixture);
 		expect(Number(view.find('#chord-count').textContent)).toBeGreaterThan(0);

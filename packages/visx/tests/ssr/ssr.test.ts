@@ -9,7 +9,6 @@ function withoutMarkers(html: string): string {
 }
 
 describe('@octanejs/visx SSR', () => {
-	// @parity-case adapted:visx-ssr-complete-svg
 	it('renders fixed primitives, definitions, axes, text, XYChart series, responsive fallback, and wordcloud content', () => {
 		expect(typeof document).toBe('undefined');
 		const { html, css } = renderToString(ServerFamilies, {});
@@ -41,7 +40,6 @@ describe('@octanejs/visx SSR', () => {
 		expect(css).toBe('');
 	});
 
-	// @parity-case adapted:visx-ssr-stable-ids
 	it('generates stable sanitized ids when definition ids are omitted', () => {
 		const first = renderToString(ServerFamilies, {}).html;
 		const second = renderToString(ServerFamilies, {}).html;
@@ -49,7 +47,6 @@ describe('@octanejs/visx SSR', () => {
 		expect(first).not.toMatch(/id="[^"]*:[^"]*"/);
 	});
 
-	// @parity-case adapted:visx-ssr-wordcloud
 	it('server-renders a deterministic placed wordcloud instead of an empty shell', () => {
 		const first = renderToString(WordcloudFamilies).html;
 		const second = renderToString(WordcloudFamilies).html;
@@ -63,7 +60,6 @@ describe('@octanejs/visx SSR', () => {
 		expect(new Set(positions).size).toBe(3);
 	});
 
-	// @parity-case adapted:visx-ssr-hydration-fixture
 	it('renders the hydration fixture as complete deterministic SVG', () => {
 		const first = renderToString(HydrationFixture).html;
 		const second = renderToString(HydrationFixture).html;

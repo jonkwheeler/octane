@@ -1948,22 +1948,13 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: [
-						'packages/visx/tests/conformance/behavior-parity.test.ts',
-						'packages/visx/tests/conformance/layouts.test.ts',
-						'packages/visx/tests/conformance/type-exports.test.ts',
-						'packages/visx/tests/conformance/wordcloud-parity.test.ts',
-						'packages/visx/tests/hydration/**/*.test.ts',
-					],
-				},
 				test: {
 					name: 'visx',
 					include: [
 						'packages/visx/tests/conformance/**/*.test.ts',
 						'packages/visx/tests/hydration/**/*.test.ts',
 					],
+					exclude: ['packages/visx/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 					testTimeout: 30_000,
@@ -1990,7 +1981,6 @@ export default defineConfig({
 				resolve: { alias: VISX_ALIASES },
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'visx-ssr',
 					include: ['packages/visx/tests/ssr/**/*.test.ts'],

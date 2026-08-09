@@ -37,7 +37,6 @@ afterEach(() => {
 });
 
 describe('@octanejs/visx hydration', () => {
-	// @parity-case adapted:visx-hydration
 	it('adopts fixed SVG, generated definitions, axes, text, and XYChart nodes in place', () => {
 		const main = container.querySelector('#visx-hydration-fixture');
 		const svg = container.querySelector('#visx-hydration-svg');

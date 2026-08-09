@@ -3,14 +3,13 @@
   "tests": [
     {
       "path": "packages/visx/tests/conformance/behavior-parity.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceIds": ["visx-native-events", "visx-functional-refs"],
-      "reason": "Authenticates native events and functional ref/lifecycle adapters."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks native events and functional ref/lifecycle adapters outside the bounded differential lane."
     },
     {
       "path": "packages/visx/tests/conformance/behavior.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Checks remaining Octane-owned stateful Visx behavior outside the parity divergence inventory."
+      "reason": "Checks remaining Octane-owned stateful Visx behavior outside the bounded differential lane."
     },
     {
       "path": "packages/visx/tests/conformance/exports.test.ts",
@@ -19,15 +18,13 @@
     },
     {
       "path": "packages/visx/tests/conformance/layouts.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "visx-animation-adapter",
-      "reason": "Authenticates deterministic animation adapter output alongside representative layout families."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks deterministic animation adapter output alongside representative layout families."
     },
     {
       "path": "packages/visx/tests/conformance/type-exports.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "visx-octane-renderables",
-      "reason": "Authenticates the exhaustive public type surface including Octane renderables."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the exhaustive public type surface including Octane renderables."
     },
     {
       "path": "packages/visx/tests/conformance/utilities.test.ts",
@@ -36,14 +33,13 @@
     },
     {
       "path": "packages/visx/tests/conformance/wordcloud-parity.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "visx-deterministic-measurement",
-      "reason": "Authenticates deterministic collision-aware wordcloud measurement."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks deterministic collision-aware wordcloud measurement outside the bounded differential lane."
     },
     {
       "path": "packages/visx/tests/conformance/wordcloud.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Checks remaining deterministic wordcloud helpers outside the parity divergence inventory."
+      "reason": "Checks remaining deterministic wordcloud helpers outside the bounded differential lane."
     },
     {
       "path": "packages/visx/tests/differential/parity.test.ts",

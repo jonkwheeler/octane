@@ -60,9 +60,12 @@ refs-as-props, and animation/measurement adapters are recorded in
 ## Test-suite disposition
 
 The Visx monorepo contains package-local runtime and type suites across the
-feature packages. The Octane package does not claim those many React-owned suites
-as executed unchanged. Its bounded differential lane instead runs three exact
-representative public scenarios against the released React packages, while
-adapted divergence, SSR, hydration, and exhaustive export/type lanes authenticate
-the broader Octane-specific surface. Upstream runtime and type suites are both
-therefore recorded as present and the retrofit remains `recorded-unverified`.
+feature packages. Those tagged suites have not been vendored and adapted
+one-for-one, so the parity manifest remains `recorded-unverified` with upstream
+runtime and type suites recorded as present.
+
+The bounded harness keeps a single repo-authored differential lane: three exact
+representative public scenarios against `@visx/visx@4.0.0`. Package-authored
+conformance, SSR, and hydration tests stay in ordinary shards and are classified
+as Octane-only framework contracts; they are not claimed as adapted React
+evidence.
