@@ -2,10 +2,15 @@
   "schemaVersion": 1,
   "tests": [
     {
-      "path": "packages/visx/tests/conformance/behavior.test.ts",
+      "path": "packages/visx/tests/conformance/behavior-parity.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceIds": ["visx-native-events", "visx-functional-refs"],
       "reason": "Authenticates native events and functional ref/lifecycle adapters."
+    },
+    {
+      "path": "packages/visx/tests/conformance/behavior.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks remaining Octane-owned stateful Visx behavior outside the parity divergence inventory."
     },
     {
       "path": "packages/visx/tests/conformance/exports.test.ts",
@@ -30,10 +35,15 @@
       "reason": "Checks framework-neutral utilities reused by the Octane package."
     },
     {
-      "path": "packages/visx/tests/conformance/wordcloud.test.ts",
+      "path": "packages/visx/tests/conformance/wordcloud-parity.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "visx-deterministic-measurement",
       "reason": "Authenticates deterministic collision-aware wordcloud measurement."
+    },
+    {
+      "path": "packages/visx/tests/conformance/wordcloud.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks remaining deterministic wordcloud helpers outside the parity divergence inventory."
     },
     {
       "path": "packages/visx/tests/differential/parity.test.ts",

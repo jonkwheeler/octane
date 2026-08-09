@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/visx/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/visx/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/visx/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/visx/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -50,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b8eaa6c08932302a5170a93e5b32ce91b19443896cd56cc66997d920a823c12f"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -111,9 +101,9 @@
       "notes": "Authenticates native events, functional refs, deterministic measurement and animation, and Octane renderable types.",
       "files": [
         {
-          "path": "packages/visx/tests/conformance/behavior.test.ts",
+          "path": "packages/visx/tests/conformance/behavior-parity.test.ts",
           "role": "test",
-          "sha256": "6de3c6e39c2d86cf36abaa1aa6be0f160e1f8b550f9a04cfc1689aee6ce544c1",
+          "sha256": "d4199314d8a745b2906491e9090feee2366c4974dffd33db6600d6f338b05788",
           "cases": [
             {
               "id": "adapted:visx-native-events",
@@ -140,9 +130,9 @@
           ]
         },
         {
-          "path": "packages/visx/tests/conformance/wordcloud.test.ts",
+          "path": "packages/visx/tests/conformance/wordcloud-parity.test.ts",
           "role": "test",
-          "sha256": "aa8d30c2cda4487cff98924bd8ad8660d4d9625c792f097d2803b87bef6193d6",
+          "sha256": "aeda3997742b45df31d6b44aaf84050470f46d0d422734110a89a98e235bbdf0",
           "cases": [
             {
               "id": "adapted:visx-deterministic-measurement",
@@ -326,9 +316,7 @@
   "divergences": [
     {
       "id": "visx-native-events",
-      "caseIds": [
-        "adapted:visx-native-events"
-      ],
+      "caseIds": ["adapted:visx-native-events"],
       "upstreamResult": "React Visx callbacks receive React synthetic events.",
       "octaneResult": "Octane Visx callbacks receive native DOM events.",
       "rationale": "Octane delegates native browser events without a synthetic wrapper.",
@@ -340,9 +328,7 @@
     },
     {
       "id": "visx-functional-refs",
-      "caseIds": [
-        "adapted:visx-functional-refs"
-      ],
+      "caseIds": ["adapted:visx-functional-refs"],
       "upstreamResult": "Several upstream controllers are React classes and Brush exposes a legacy innerRef instance.",
       "octaneResult": "Controllers and measurement lifecycles are functional hooks; Brush omits the legacy instance handle.",
       "rationale": "Octane does not expose React class instances.",
@@ -354,9 +340,7 @@
     },
     {
       "id": "visx-deterministic-measurement",
-      "caseIds": [
-        "adapted:visx-deterministic-measurement"
-      ],
+      "caseIds": ["adapted:visx-deterministic-measurement"],
       "upstreamResult": "Text, annotation, path, and wordcloud layouts may depend on browser measurement or canvas packing.",
       "octaneResult": "Fixed-size layouts use deterministic estimates, SVG sampling, and collision-aware rectangles.",
       "rationale": "Deterministic output enables complete SSR and exact hydration adoption.",
@@ -368,9 +352,7 @@
     },
     {
       "id": "visx-animation-adapter",
-      "caseIds": [
-        "adapted:visx-animation-adapter"
-      ],
+      "caseIds": ["adapted:visx-animation-adapter"],
       "upstreamResult": "The react-spring entry uses @react-spring/web and Zoom uses @use-gesture/react.",
       "octaneResult": "Animation uses deterministic requestAnimationFrame interpolation and Zoom uses native listeners.",
       "rationale": "React-owned animation and gesture runtimes cannot execute inside Octane components.",
@@ -382,9 +364,7 @@
     },
     {
       "id": "visx-octane-renderables",
-      "caseIds": [
-        "adapted:visx-octane-renderables"
-      ],
+      "caseIds": ["adapted:visx-octane-renderables"],
       "upstreamResult": "Renderable props use React.ReactNode.",
       "octaneResult": "Renderable props accept Octane renderables while preserving render-prop parameter shapes.",
       "rationale": "Octane elements are nominal and are not assignable to React.ReactNode.",
