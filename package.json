@@ -94,8 +94,8 @@
 	},
 	"devDependencies": {
 		"@babel/core": "catalog:default",
-		"@changesets/changelog-github": "catalog:default",
 		"@changesets/changelog-git": "catalog:default",
+		"@changesets/changelog-github": "catalog:default",
 		"@changesets/cli": "catalog:default",
 		"@octanejs/rainbowkit": "workspace:*",
 		"@octanejs/tanstack-query": "workspace:*",
@@ -106,15 +106,16 @@
 		"@types/node": "catalog:default",
 		"@typescript/native-preview": "7.0.0-dev.20260707.2",
 		"@vitejs/plugin-react": "catalog:default",
+		"@vitest/browser-playwright": "4.1.10",
 		"babel-plugin-react-compiler": "catalog:default",
+		"esbuild": "catalog:default",
+		"happy-dom": "catalog:default",
+		"jsdom": "catalog:default",
 		"prettier": "catalog:default",
 		"prettier-plugin-svelte": "catalog:default",
 		"rulesync": "catalog:default",
 		"svelte-check": "catalog:default",
 		"typescript": "catalog:default",
-		"vitest": "catalog:default",
-		"jsdom": "catalog:default",
-		"happy-dom": "catalog:default",
-		"esbuild": "catalog:default"
+		"vitest": "catalog:default"
 	}
 }

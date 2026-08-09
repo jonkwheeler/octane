@@ -38,10 +38,7 @@ export function pristineTestIdentities(report, repoRoot = resolve(packageRoot, '
 	return identities.sort(compareTestIdentities);
 }
 
-export function runPristineUpstreamSuite({
-	repoRoot = resolve(packageRoot, '../..'),
-	reportPath = join(tmpdir(), `octane-intersection-observer-pristine-${process.pid}.json`),
-} = {}) {
+function runPristineSuite({ repoRoot, reportPath, configRelativePath, project }) {
 	verifyIntersectionObserverUpstream(packageRoot);
 	const runRoot = mkdtempSync(join(packageRoot, '.pristine-upstream-'));
 	try {
@@ -65,7 +62,7 @@ export function runPristineUpstreamSuite({
 			[
 				'run',
 				'--config',
-				join(packageRoot, 'tests/upstream-vitest.config.ts'),
+				join(packageRoot, configRelativePath),
 				'--reporter=json',
 				`--outputFile=${reportPath}`,
 			],
@@ -86,13 +83,38 @@ export function runPristineUpstreamSuite({
 			stderr: result.stderr ?? '',
 			report,
 			identities: pristineTestIdentities(report, repoRoot),
+			project,
 		};
 	} finally {
 		rmSync(runRoot, { recursive: true, force: true });
 	}
 }
 
-export function inventoryFromIdentities(identities) {
+export function runPristineUpstreamSuite({
+	repoRoot = resolve(packageRoot, '../..'),
+	reportPath = join(tmpdir(), `octane-intersection-observer-pristine-${process.pid}.json`),
+} = {}) {
+	return runPristineSuite({
+		repoRoot,
+		reportPath,
+		configRelativePath: 'tests/upstream-vitest.config.ts',
+		project: 'intersection-observer-pristine',
+	});
+}
+
+export function runPristineBrowserSuite({
+	repoRoot = resolve(packageRoot, '../..'),
+	reportPath = join(tmpdir(), `octane-intersection-observer-pristine-browser-${process.pid}.json`),
+} = {}) {
+	return runPristineSuite({
+		repoRoot,
+		reportPath,
+		configRelativePath: 'tests/upstream-browser-vitest.config.ts',
+		project: 'intersection-observer-pristine-browser',
+	});
+}
+
+export function inventoryFromIdentities(identities, project = 'intersection-observer-pristine') {
 	const idOccurrences = new Map();
 	const tests = identities
 		.filter(function keepPassed(test) {
@@ -114,7 +136,7 @@ export function inventoryFromIdentities(identities) {
 		.sort(compareTestIdentities);
 	return {
 		schemaVersion: 1,
-		project: 'intersection-observer-pristine',
+		project,
 		roots: ['packages/intersection-observer/upstream'],
 		files: [
 			...new Set(

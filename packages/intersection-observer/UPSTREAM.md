@@ -41,9 +41,11 @@ It is development evidence and is excluded from the published `files`.
 | `src/__tests__/useOnInView.test.tsx` | Adapted one-for-one in `tests/upstream/useOnInView.test.tsx`. |
 | `src/__tests__/InView.test.tsx` | Adapted one-for-one in `tests/upstream/InView.test.tsx`. |
 | `src/__tests__/setup.test.ts` | Adapted one-for-one in `tests/upstream/setup.test.ts`. |
-| `src/__tests__/browser.test.tsx` | Gap: requires Vitest browser/Playwright provider; excluded from the jsdom pristine/adapted lanes. |
+| `src/__tests__/browser.test.tsx` | Pristine browser lane `intersection-observer-pristine-browser` runs the vendored suite under Vitest browser/Playwright; adapted one-for-one in `tests/upstream/browser.test.tsx` via `intersection-observer-adapted-browser`. |
 
 Ordinary Octane-only contract tests remain in `tests/intersection-observer.test.ts`
 outside `testExecution`. Parity evidence is owned by the
-`intersection-observer-pristine` and `intersection-observer-adapted` projects and
+`intersection-observer-pristine`, `intersection-observer-adapted`,
+`intersection-observer-pristine-browser`, and
+`intersection-observer-adapted-browser` projects and
 `packages/intersection-observer/audit/react-parity.json`.

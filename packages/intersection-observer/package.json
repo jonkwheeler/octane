@@ -47,6 +47,7 @@
     "@testing-library/react": "16.3.2",
     "@types/react": "catalog:default",
     "@types/react-dom": "catalog:default",
+    "@vitest/browser-playwright": "4.1.10",
     "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default",

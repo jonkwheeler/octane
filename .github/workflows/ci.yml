@@ -484,6 +484,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
 
+      # Binding browser parity lanes (Vitest browser / Playwright) share this
+      # job with the jsdom and type oracles. Install Chromium once for the
+      # whole React parity suite rather than enumerating packages here.
+      - name: Install Playwright Chromium
+        run: pnpm --filter website exec playwright install --with-deps chromium
+
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
       # pre-execution Vitest collection pass.
