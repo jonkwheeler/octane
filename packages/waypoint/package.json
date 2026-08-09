@@ -36,13 +36,25 @@
   },
   "scripts": {
     "test": "vitest run --root ../.. --config vitest.config.js --project waypoint",
-    "typecheck": "tsrx-tsc --noEmit"
+    "typecheck": "tsrx-tsc --noEmit",
+    "parity:inventory": "node ../../scripts/react-parity/waypoint-runtime-inventory.mjs",
+    "parity:verify-upstream": "node ./scripts/verify-upstream.mjs"
   },
   "peerDependencies": {
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@babel/runtime": "7.28.4",
+    "@swc/core": "1.15.41",
+    "@swc/jest": "0.2.39",
+    "@types/react": "catalog:default",
+    "consolidated-events": "2.0.2",
+    "jest": "30.4.2",
     "octane": "workspace:*",
+    "prop-types": "15.8.1",
+    "react": "catalog:default",
+    "react-is": "19.2.3",
+    "react-test-renderer": "19.2.3",
     "react-waypoint": "10.3.0",
     "vitest": "catalog:default"
   }

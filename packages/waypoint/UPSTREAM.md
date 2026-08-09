@@ -17,7 +17,7 @@ tag. It is development evidence and is excluded from the published `files`.
 
 | Upstream export | Octane status | Evidence / divergence |
 | --- | --- | --- |
-| `Waypoint` | Ported | `tests/waypoint.test.ts`; class lifecycles are expressed with Octane hooks and refs-as-props in `src/Waypoint.tsrx`. |
+| `Waypoint` | Ported | `tests/waypoint.test.ts` and adapted `tests/upstream/waypoint.test.ts`; class lifecycles are expressed with Octane hooks and refs-as-props in `src/Waypoint.tsrx`. |
 | `Waypoint.above` | Ported as `Waypoint.above` and `ABOVE` | `tests/waypoint.test.ts` |
 | `Waypoint.below` | Ported as `Waypoint.below` and `BELOW` | `tests/waypoint.test.ts` |
 | `Waypoint.inside` | Ported as `Waypoint.inside` and `INSIDE` | `tests/waypoint.test.ts` |
@@ -25,22 +25,24 @@ tag. It is development evidence and is excluded from the published `files`.
 | default export | Ported | `src/index.ts` aliases the Octane `Waypoint`. |
 | `CallbackArgs` / `WaypointProps` declarations | Ported | `WaypointCallbackArgs` / `WaypointProps` use structural Octane/DOM types and intentionally do not import React. |
 
-`findScrollableAncestor`, `getBounds`, `getCurrentPosition`, `parseOffset`, and
-the named constants are Octane extensions that expose the framework-neutral
-geometry used by the component; they are not upstream entry-point exports.
+`findScrollableAncestor`, `getBounds`, `getCurrentPosition`, `parseOffset`,
+`resolveScrollableAncestorProp`, `onNextTick`, and the named constants are
+Octane modules that mirror the framework-neutral geometry/helpers used by the
+component; only `resolveScrollableAncestorProp` and the position constants are
+public package exports alongside `Waypoint`.
 
 ## Upstream test disposition
 
 | Upstream artifact | Disposition |
 | --- | --- |
-| `test/node/onNextTick.test.js` | Gap: the behavior is exercised indirectly by the component suite, but the original case has not yet been adapted one-for-one. |
-| `test/node/resolveScrollableAncestorProp.test.js` | Partially adapted in `tests/waypoint.test.ts` (`resolveScrollableAncestorProp` and `scrollableAncestor="window"`); remaining upstream case inventory still required before parity can be claimed. |
-| `test/node/waypoint.test.jsx` | Partially adapted in `tests/waypoint.test.ts`; a case-level inventory and remaining cases are still required before parity can be claimed. |
+| `test/node/onNextTick.test.js` | Adapted one-for-one in `tests/upstream/onNextTick.test.ts`; pristine Jest lane runs the vendored file. |
+| `test/node/resolveScrollableAncestorProp.test.js` | Adapted one-for-one in `tests/upstream/resolveScrollableAncestorProp.test.ts`; pristine Jest lane runs the vendored file. |
+| `test/node/waypoint.test.jsx` | Adapted one-for-one in `tests/upstream/waypoint.test.ts` via `octane/server` `renderToStaticMarkup`; pristine Jest lane runs the vendored `react-test-renderer` case. |
 | `test/browser/waypoint_test.jsx` | Gap: requires browser geometry/scroll execution in the playground or browser CI lane. |
 | `test/performance-test.*` | Not a conformance test; retained as upstream benchmark/demo evidence. |
 
-The current suite is classified as Octane-only framework/contract evidence.
-It does not yet satisfy the repository's pristine/adapted runtime and type-parity
-lanes, inventories, or negative controls. Until those gaps are closed and wired
-into `react-parity:check`, this package must remain a draft and its status must
-not be read as a complete React-parity claim.
+Executable React-parity evidence for the node suite is registered in
+`audit/react-parity.json` (`waypoint-pristine`, `waypoint-adapted`, and
+repo-authored type probes). `tests/waypoint.test.ts` remains Octane-only
+framework/contract evidence outside `testExecution`. The Karma browser suite is
+still required before scroll-geometry parity can be claimed complete.

@@ -14,6 +14,7 @@ import {
 	getCurrentPosition,
 	resolveScrollableAncestorProp,
 } from './geometry.js';
+import { onNextTick } from './onNextTick.js';
 import {
 	ABOVE,
 	BELOW,
@@ -84,8 +85,9 @@ function WaypointComponent(props: WaypointProps) {
 
 	useEffect(() => {
 		if (typeof window === 'undefined' || !node) return;
-		const timeout = window.setTimeout(() => measure(null), 0);
-		return () => window.clearTimeout(timeout);
+		return onNextTick(function measureOnNextTick() {
+			measure(null);
+		});
 	}, null);
 
 	if (props.children && isValidElement(props.children)) {

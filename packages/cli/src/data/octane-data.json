@@ -802,12 +802,12 @@
         "source": "https://github.com/civiccc/react-waypoint/tree/v10.3.0",
         "license": "MIT"
       },
-      "surface": "Waypoint component and position constants at react-waypoint 10.3.0, with vertical/horizontal geometry, offsets, ancestor selection, and rapid-crossing callbacks. Upstream case-by-case runtime and type parity evidence remains incomplete.",
+      "surface": "Waypoint component and position constants at react-waypoint 10.3.0, with vertical/horizontal geometry, offsets, ancestor selection, and rapid-crossing callbacks. Node-suite pristine/adapted runtime and repo-authored type lanes are registered with react-parity:check; the Karma browser suite remains deferred.",
       "divergences": [
         "Public node and prop types use Octane structural types and do not import React.",
         "Octane's ref-as-prop model removes the upstream forwardRef detection branch.",
         "A custom child must be supplied through the children prop so it remains an inspectable element descriptor; nested TSRX children compile to an opaque render block.",
-        "The vendored upstream runtime and type suites are not yet fully adapted or registered with react-parity:check; see UPSTREAM.md."
+        "Upstream browser Karma suite is not yet adapted; scroll-geometry parity remains incomplete until that lane lands. See UPSTREAM.md."
       ],
       "ssr": "Supported. The marker renders on the server and measurement/listeners begin after client mount.",
       "verified": "2026-07-30"

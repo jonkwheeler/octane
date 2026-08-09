@@ -830,10 +830,46 @@ export default defineConfig({
 				},
 			},
 			{
+				// Octane-only framework/contract suite. Pristine/adapted parity evidence
+				// lives in separate wholly-owned projects below — keep this outside
+				// testExecution until those lanes back a React-parity claim.
 				test: {
 					name: 'waypoint',
 					include: ['packages/waypoint/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/waypoint/tests/upstream-original.test.ts',
+						'packages/waypoint/tests/upstream/**/*.test.ts',
+					],
 					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/waypoint$/,
+							replacement: resolve(import.meta.dirname, 'packages/waypoint/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'waypoint-pristine',
+					include: ['packages/waypoint/tests/upstream-original.test.ts'],
+					environment: 'node',
+					sequence: { groupOrder: 1 },
+					globals: false,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'waypoint-adapted',
+					include: ['packages/waypoint/tests/upstream/**/*.test.ts'],
+					environment: 'node',
 					globals: false,
 				},
 				plugins: [octane()],

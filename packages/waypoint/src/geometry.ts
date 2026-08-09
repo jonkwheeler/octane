@@ -12,9 +12,10 @@ export function resolveScrollableAncestorProp(
 	scrollableAncestor: Window | Element | 'window',
 ): Window | Element {
 	// Upstream accepts the string form so SSR can force the window without
-	// referencing `window` during render.
+	// referencing `window` during render. Resolve through `globalThis.window`
+	// (same as upstream `global.window`) so node tests can stub it.
 	if (scrollableAncestor === 'window') {
-		return window;
+		return globalThis.window;
 	}
 	return scrollableAncestor;
 }

@@ -1,0 +1,202 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/civiccc/react-waypoint.git",
+    "version": "10.3.0",
+    "commit": "0905ac5a073131147c96dd0694bd6f1b6ee8bc97",
+    "sourceRoot": "src",
+    "testRoot": "test",
+    "license": "MIT",
+    "integrity": "sha256:a23d5961a8c28de2233bed3f9dc41a74d8bf35dd870e85bb4f208e5e3f29c372",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/waypoint/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/waypoint/tests/upstream"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 8,
+    "uniqueIdentities": 8,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "7da90390c816db4a969fdf36e772e1f5563e7eca9462b40bde11dade5bb0765c"
+    }
+  },
+  "lanes": [
+    {
+      "id": "waypoint-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "waypoint-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the byte-exact react-waypoint 10.3.0 Jest node suite against the vendored React binding and checks every passed identity against the committed inventory. The Karma browser suite remains deferred.",
+      "execution": {
+        "kind": "jest-full",
+        "config": "packages/waypoint/tests/upstream-jest.config.cjs",
+        "root": "packages/waypoint/upstream",
+        "inventory": "packages/waypoint/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/waypoint/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "c6317426b96d57d4197902967da497131cc48d475e036de056f415613272c77f"
+        },
+        {
+          "path": "packages/waypoint/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "d872ec33b12dc259464f3803f966b13b56a63fcac981c0590f6b8f5f923870f7"
+        },
+        {
+          "path": "scripts/react-parity/waypoint-pristine-runtime.mjs",
+          "role": "support",
+          "sha256": "e201ac126b65d0b309b2a1e0eb3340583928c329e3a97ffc2729335c56acf708"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
+        },
+        {
+          "path": "packages/waypoint/upstream/SHA256SUMS",
+          "role": "support",
+          "sha256": "a23d5961a8c28de2233bed3f9dc41a74d8bf35dd870e85bb4f208e5e3f29c372"
+        },
+        {
+          "path": "packages/waypoint/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "9879eb7c70121b05a9293e9532e34d41fbd6bbd6fd7985ca750b41c6b54f0981"
+        },
+        {
+          "path": "packages/waypoint/scripts/verify-upstream.mjs",
+          "role": "support",
+          "sha256": "ca109317ff47124917c50dda28cb559e246dc6395c338d488a8bc41c96e4b844"
+        }
+      ]
+    },
+    {
+      "id": "waypoint-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "waypoint-adapted",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "One-for-one adapted node suite for onNextTick, resolveScrollableAncestorProp, and the no-window SSR case.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/waypoint/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/waypoint/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "f745bddf60b4e47dc08504f30e7e603b9de82281c7971dfa7401f11abaeb7004"
+        },
+        {
+          "path": "scripts/react-parity/waypoint-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "507788c859de47a56e7c57b09e1df214a46f50fad4ae4b2ce96070c2781a6307"
+        }
+      ]
+    },
+    {
+      "id": "waypoint-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "waypoint-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored React declaration probes against pinned react-waypoint 10.3.0 typings (matching vendored index.d.ts).",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/waypoint/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/waypoint/typetests/pristine/types.test-d.ts",
+          "role": "test",
+          "sha256": "8cc043f94ed01f6ac1f9884c10eeedfc13edccd6a30185ee42b94b6313bee2e1",
+          "cases": [
+            {
+              "id": "types:pristine",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/waypoint/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "4b3c38ad9dd8d888746e8eca32528b468397a97f7270e51c1a9cde1646c63bcd"
+        },
+        {
+          "path": "packages/waypoint/typetests/assertions.md",
+          "role": "support",
+          "sha256": "7a9380418dec05dded332bee122a243a8f2c0dd14fdedfa4aac432b7f3913a0f"
+        }
+      ]
+    },
+    {
+      "id": "waypoint-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "waypoint-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Matching Octane public probes with tsrx-tsc. Permitted transforms are listed in typetests/assertions.md.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/waypoint/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/waypoint/typetests/adapted/types.test-d.ts",
+          "role": "test",
+          "sha256": "e9528eb4acb29c9afa8e6bab361036a1a10dfbb67a27b3652c9d1c1e0485e400",
+          "cases": [
+            {
+              "id": "types:adapted",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/waypoint/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "07991511dbac3e195cc97e9de2873980dcad5508d508b4ef1835e9e99678b361"
+        },
+        {
+          "path": "packages/waypoint/typetests/assertions.md",
+          "role": "support",
+          "sha256": "7a9380418dec05dded332bee122a243a8f2c0dd14fdedfa4aac432b7f3913a0f"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}
