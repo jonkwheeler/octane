@@ -53,9 +53,7 @@ describe('TransitionGroup', function transitionGroupSuite() {
 		await act(function flushAppear() {
 			vi.runAllTimers();
 		});
-		// Octane flips TransitionGroupContext.isMounting before child appear
-		// effects run, so the first mount reports enter rather than appear.
-		expect(log).toEqual(['enter', 'entering', 'entered']);
+		expect(log).toEqual(['appear', 'appearing', 'appeared']);
 		log.length = 0;
 		await act(function add() {
 			view.update(TransitionGroupCountProbe, { count: 2, log });

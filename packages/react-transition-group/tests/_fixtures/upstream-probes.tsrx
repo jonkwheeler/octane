@@ -202,14 +202,15 @@ export function TransitionGroupCountProbe(props: GroupChildProbeProps) @{
 				key={String(i)}
 				nodeRef={nodeRef}
 				timeout={0}
-				onEnter={function onEnter(_node?: Element, isAppearing?: boolean) {
-					props.log.push(isAppearing ? 'appear' : 'enter');
+				onEnter={function onEnter(isAppearing?: Element | boolean) {
+					// nodeRef callback shape: first argument is isAppearing.
+					props.log.push(isAppearing === true ? 'appear' : 'enter');
 				}}
-				onEntering={function onEntering(_node?: Element, isAppearing?: boolean) {
-					props.log.push(isAppearing ? 'appearing' : 'entering');
+				onEntering={function onEntering(isAppearing?: Element | boolean) {
+					props.log.push(isAppearing === true ? 'appearing' : 'entering');
 				}}
-				onEntered={function onEntered(_node?: Element, isAppearing?: boolean) {
-					props.log.push(isAppearing ? 'appeared' : 'entered');
+				onEntered={function onEntered(isAppearing?: Element | boolean) {
+					props.log.push(isAppearing === true ? 'appeared' : 'entered');
 				}}
 				onExit={function onExit() {
 					props.log.push('exit');

@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "react-transition-group",
-  "roots": ["packages/react-transition-group/tests"],
+  "roots": [
+    "packages/react-transition-group/tests"
+  ],
   "files": [
     "packages/react-transition-group/tests/exports.test.ts",
     "packages/react-transition-group/tests/transition.test.ts",
