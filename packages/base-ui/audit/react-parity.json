@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/base-ui/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/base-ui/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/base-ui/tests/upstream"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/base-ui/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b15d435c782fc2341f66e1969fa10aee4751e227f793128b7857053f4cf5550d"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -123,8 +115,8 @@
             },
             {
               "id": "differential:base-ui-switch-native-input",
-              "testName": "Switch: uncontrolled — click toggles aria-checked + data-checked (native input adaptation)",
-              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Switch: uncontrolled — click toggles aria-checked + data-checked (native input adaptation)"
+              "testName": "Switch: uncontrolled \u2014 click toggles aria-checked + data-checked (native input adaptation)",
+              "fullName": "differential: @octanejs/base-ui vs real Base UI on React Switch: uncontrolled \u2014 click toggles aria-checked + data-checked (native input adaptation)"
             },
             {
               "id": "differential:base-ui-number-field",
@@ -190,8 +182,8 @@
             },
             {
               "id": "adapted:base-ui-accordion-default-value",
-              "testName": "prop: defaultValue — custom item value",
-              "fullName": "<Accordion.Root /> uncontrolled prop: defaultValue — custom item value"
+              "testName": "prop: defaultValue \u2014 custom item value",
+              "fullName": "<Accordion.Root /> uncontrolled prop: defaultValue \u2014 custom item value"
             }
           ]
         },
@@ -242,7 +234,7 @@
         {
           "path": "packages/base-ui/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "baaaad53d34a9037d7e9d02bab8099e5b4c263e1c54e8bd81736022c5be45cb0"
+          "sha256": "0470a1d4da4d49f0eb41b073424ef6214449bd10ea8797f6011f95a9a23efb79"
         },
         {
           "path": "packages/base-ui/scripts/build-upstream-crosswalk.mjs",
@@ -257,7 +249,7 @@
         {
           "path": "packages/base-ui/scripts/upstream-crosswalk-lib.mjs",
           "role": "support",
-          "sha256": "1f03128462670c85ea7a6303754318bf903e948e6c338dd019f5a70663fe7553"
+          "sha256": "72b5918fd7af585b61d6f6b650e904d9f770d7c3aeaae8e3a6323273bcecf74c"
         },
         {
           "path": "packages/base-ui/scripts/build-vendor-checksums.mjs",
@@ -272,7 +264,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f600e6efcc1352adceca19236aaf34e235f7cf3aa4c62d1506f7216da76b8473"
+          "sha256": "a02c3398de7455cd462ba11c1c0728e7d22b63c258c01c2edfafc8e24f1f8e16"
         }
       ]
     }
@@ -280,9 +272,7 @@
   "divergences": [
     {
       "id": "native-event-semantics",
-      "caseIds": [
-        "differential:base-ui-switch-native-input"
-      ],
+      "caseIds": ["differential:base-ui-switch-native-input"],
       "upstreamResult": "Base UI integrates with React synthetic handlers while preserving native input behavior.",
       "octaneResult": "The Octane binding integrates directly with native input events.",
       "rationale": "Octane intentionally uses the browser event model rather than React's synthetic event layer.",
@@ -294,9 +284,7 @@
     },
     {
       "id": "ref-as-prop-class-composition",
-      "caseIds": [
-        "differential:base-ui-render-element"
-      ],
+      "caseIds": ["differential:base-ui-render-element"],
       "upstreamResult": "React composes render-element refs and class names through React element cloning semantics.",
       "octaneResult": "Octane reproduces the rendered result through its native ref-as-prop and class composition model.",
       "rationale": "The frameworks expose different internal element and ref composition primitives.",
@@ -308,9 +296,7 @@
     },
     {
       "id": "unported-internal-hover",
-      "caseIds": [
-        "adapted:base-ui-upstream-crosswalk"
-      ],
+      "caseIds": ["adapted:base-ui-upstream-crosswalk"],
       "upstreamResult": "Base UI includes private hover infrastructure used by upstream components.",
       "octaneResult": "The private hover helper is not exposed or independently ported; public supported components use Octane-native behavior.",
       "rationale": "Private upstream internals are not a public compatibility surface.",
@@ -322,9 +308,7 @@
     },
     {
       "id": "number-field-interaction-gaps",
-      "caseIds": [
-        "adapted:base-ui-number-field-gaps"
-      ],
+      "caseIds": ["adapted:base-ui-number-field-gaps"],
       "upstreamResult": "Base UI NumberField includes ScrubArea and additional pointer and keyboard interaction behavior.",
       "octaneResult": "The current Octane NumberField supports formatting and step controls but not ScrubArea or the complete interaction matrix.",
       "rationale": "Those interaction surfaces have not yet been ported and must remain explicit gaps.",
