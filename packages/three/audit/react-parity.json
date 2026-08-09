@@ -29,7 +29,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1d9827e3c696174116d097eacaceba3bb1f43e4b4a48968e38140166306f1866"
+      "lockfileSha256": "ea91902b85a9d84d844bcd87430eedc99fecc910f1f2832c06cea3882c60bf9a"
     }
   },
   "lanes": [
@@ -137,7 +137,7 @@
         {
           "path": "packages/three/tests/hooks.test.ts",
           "role": "test",
-          "sha256": "257d454d4b50e9438b3a7bf6455af9735acaa2a5d7c875af74d4209b4cb2481a",
+          "sha256": "4a8b86de71e2efb52e380be2ef481f6ae16f0d1aebd0ce654961b5871d7cb967",
           "cases": [
             {
               "id": "adapted:three-build-graph",
@@ -154,7 +154,7 @@
         {
           "path": "packages/three/tests/catalogue-props.test.ts",
           "role": "test",
-          "sha256": "90f6a48dfa3abc8185d5fb3b24b34a15378a9232ea5fd3641575686ea29a0261",
+          "sha256": "cd60e9825f00ad496b57697a98f4c723c98e698316657c71bbe373ddda4af79c",
           "cases": [
             {
               "id": "adapted:three-pierced-reset",
@@ -166,7 +166,7 @@
         {
           "path": "packages/three/tests/events.test.ts",
           "role": "test",
-          "sha256": "24efcfc5c7bd03ab172dd0c93287edbc7dc640f4cf7976bf973d70f80856455a",
+          "sha256": "556d46dc5c319a1ec9f3a0dd1b3d556528c5bca94373ffd6a2749521d4a81976",
           "cases": [
             {
               "id": "adapted:three-hidden-activity-raycast",
