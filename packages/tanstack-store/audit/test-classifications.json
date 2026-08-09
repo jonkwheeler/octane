@@ -19,8 +19,8 @@
     },
     {
       "path": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
-      "oracle": "Adapts packages/react-store/tests/index.test.tsx from the pinned repository into the TSRX fixture."
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapts packages/react-store/tests/index.test.tsx from the pinned repository into the TSRX fixture, omitting the experimental _useStore describe block."
     },
     {
       "path": "packages/tanstack-store/tests/differential/parity.test.ts",
@@ -36,6 +36,11 @@
       "path": "packages/tanstack-store/tests/ssr/server.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks Octane server rendering without a DOM; it is not compared with React SSR."
+    },
+    {
+      "path": "packages/tanstack-store/tests/upstream-original.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Runs the byte-exact pinned @tanstack/react-store@0.11.0 Vitest suite against React after vendored-byte verification."
     }
   ]
 }

@@ -15,6 +15,8 @@ import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
+import { verifyTanstackStoreTypes } from './tanstack-store-types-lib.mjs';
+import { verifyTanstackStoreUpstreamEvidence } from './tanstack-store-upstream-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import {
 	loadManifest,
@@ -54,6 +56,16 @@ try {
 	verifyLivestoreTypes(REPO);
 } catch (error) {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyTanstackStoreTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/tanstack-store type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyTanstackStoreUpstreamEvidence(REPO);
+} catch (error) {
+	errors.push(`@octanejs/tanstack-store upstream evidence is invalid: ${error.message}`);
 }
 try {
 	verifySolanaReactTypes(REPO);

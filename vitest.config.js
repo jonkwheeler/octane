@@ -1207,6 +1207,15 @@ export default defineConfig({
 				},
 			},
 			{
+				test: {
+					name: 'tanstack-store-pristine',
+					include: ['packages/tanstack-store/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
+					sequence: { groupOrder: 1 },
+				},
+			},
+			{
 				testExecution: {
 					group: 'react-parity',
 					include: ['packages/tanstack-store/tests/conformance/upstream-index.test.ts'],
@@ -1216,6 +1225,10 @@ export default defineConfig({
 					include: [
 						'packages/tanstack-store/tests/conformance/**/*.test.ts',
 						'packages/tanstack-store/tests/differential/setup.test.ts',
+					],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/tanstack-store/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					setupFiles: ['packages/tanstack-store/tests/conformance/test-setup.ts'],

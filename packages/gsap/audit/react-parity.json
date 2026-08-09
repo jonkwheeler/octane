@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/gsap/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/gsap/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/gsap/tests/differential"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/gsap/tests/differential"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0b4a5bea698fd3a647289216d5b617a96340d5daa252200c5132c6b3c3b93987"
+      "lockfileSha256": "1f409982ce94eb3b36c86390ce91f0d36f9543499d68e163139ce47b067bdbaa"
     }
   },
   "lanes": [
@@ -180,7 +188,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
+          "sha256": "6dbc1e332952c4b3ca1b378b7e7a8e169359fa9c0c8b2b5fa66ecf0a6e950bdf"
         }
       ]
     }

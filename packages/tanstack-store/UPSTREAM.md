@@ -1,37 +1,55 @@
 # Upstream
 
-- Repository: https://github.com/TanStack/store
-- Release tag: `@tanstack/react-store@0.11.0`
-- Commit: `83e2978f627ec53616249b2bda1037749b18b6ab`
-- Package: `@tanstack/react-store@0.11.0`
-- Source root: `packages/react-store/src`
-- Test root: `packages/react-store/tests`
-- License: MIT
-- npm tarball SHA-256: `00e8fa1891d1b70a83838b15aec65ea5817c7b88aa737ead07dea9dbce14897f`
+## Pin and oracle boundary
 
-The tagged repository contains the upstream runtime and compile-time suites.
-The published npm artifact contains source and declarations but omits those
-tests, so provenance remains `recorded-unverified`. `upstreamSuites.runtime`
-and `upstreamSuites.types` remain `present` because the repository pin has
-those suites; promoting them into pristine runtime/type lanes with complete
-dispositions is open follow-up work before provenance can move to `verified`.
+| Field | Value |
+|---|---|
+| Repository | https://github.com/TanStack/store |
+| Release tag | `@tanstack/react-store@0.11.0` |
+| Commit | `83e2978f627ec53616249b2bda1037749b18b6ab` |
+| Supported upstream range | exactly `@tanstack/react-store@0.11.0` |
+| React oracle | `react@19.2.3`, `react-dom@19.2.3`, `@types/react@19.2.7` |
+| npm tarball SHA-256 | `00e8fa1891d1b70a83838b15aec65ea5817c7b88aa737ead07dea9dbce14897f` |
+| Source root | `packages/react-store/src` |
+| Test root | `packages/react-store/tests` |
+| License | MIT |
 
-The pinned repository suite is vendored under `packages/tanstack-store/upstream/`
-and adapted one-for-one into
-`packages/tanstack-store/tests/_fixtures/upstream/index.tsrx`.
+The tagged repository contains the upstream runtime and compile-time suites. The
+published npm artifact contains source and declarations but omits those tests, so
+the repository pin is vendored under `packages/tanstack-store/upstream/` with
+`packages/react-store/src` and `packages/react-store/tests` locked file-by-file
+by `upstream/SHA256SUMS`.
 
-This bounded harness currently executes:
+Run `pnpm --dir packages/tanstack-store upstream:verify` to verify every vendored
+byte. The pristine React-parity lanes run that same verifier before copying or
+executing the upstream suite.
 
-- the one-for-one adapted upstream runtime suite through the `tanstack-store`
-  Vitest project (`testExecution.include` lists only that wrapper);
-- one exact shared React/Octane differential interaction fixture;
-- the repository-authored adapted type contract.
+## React-parity lanes
 
-The upstream `_useStore` describe block (actions + setState cases) is not
-applicable in the adapted suite: `@octanejs/tanstack-store` intentionally omits
-that experimental export. Those identities are classified outside adapted parity
-evidence; `tests/conformance/experimental-use-store.parity.test.ts` records the
-omission as an ordinary package divergence test.
+Paired pristine and adapted lanes are required evidence; bounded differential and
+adapted-only lanes are supplementary.
 
-Documented Octane-only divergences and SSR stay ordinary package tests outside
-React-parity ownership until pristine upstream suites land.
+| Lane | Disposition |
+|---|---|
+| `tanstack-store-pristine-upstream` | Runs the byte-exact `packages/react-store/tests/index.test.tsx` suite against `@tanstack/react-store@0.11.0` after vendored-byte verification. |
+| `tanstack-store-adapted-upstream` | Runs the one-for-one Octane adaptation in `tests/_fixtures/upstream/index.tsrx` through `tests/conformance/upstream-index.test.ts`. Omits the upstream `_useStore` describe block by design. |
+| `tanstack-store-pristine-types` | Runs vendored `upstream/tests/test.test-d.ts` with `tsc` against the pinned React binding, including `_useStore` typetests. |
+| `tanstack-store-adapted-types` | Runs the structurally equivalent Octane typetest in `typetests/test.test-d.ts` with `tsrx-tsc`. `_useStore` typetests are pristine-only; `typetests/_useStore-omission.test-d.ts` records the intentional export omission. |
+| `tanstack-store-runtime-differential` | Supplementary exact shared React/Octane interaction fixture. |
+
+## Runtime suite disposition
+
+| Upstream artifact | Disposition |
+|---|---|
+| `tests/index.test.tsx` | Pristine lane runs unchanged. Adapted one-for-one in `tests/_fixtures/upstream/index.tsrx` except the `_useStore` describe block (`returns selected state and actions for stores with actions`, `returns selected state and setState for plain stores`), which is classified outside adapted parity evidence. |
+| `tests/test-setup.ts` | Shared cleanup setup used by the pristine lane unchanged. |
+| `tests/test.test-d.ts` | Pristine types lane runs unchanged. Adapted types mirror every assertion group except the `_useStore` blocks. |
+| `src/*` | Vendored for pristine runtime/type execution because the upstream suite imports `../src/index`. |
+
+## Intentional divergences
+
+- `@octanejs/tanstack-store` intentionally omits the experimental `_useStore` export.
+  Runtime omission evidence: `tests/conformance/experimental-use-store.parity.test.ts`.
+  Type omission evidence: `typetests/_useStore-omission.test-d.ts`.
+- Documented Octane-only divergences and SSR stay ordinary package tests outside
+  React-parity ownership.
