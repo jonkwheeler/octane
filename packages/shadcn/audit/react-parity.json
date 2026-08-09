@@ -6,13 +6,13 @@
     "version": "4baadbc6517070ae8f8feb2c97037adc2b305544 + shadcn@4.14.1",
     "commit": "4baadbc6517070ae8f8feb2c97037adc2b305544",
     "sourceRoot": "apps/v4/registry",
-    "testRoot": "apps/v4/registry/__tests__",
+    "testRoot": "apps/v4/registry (calendar.test.ts, config.test.ts); packages/shadcn/src; packages/shadcn/test/fixtures",
     "license": "MIT",
     "integrity": "sha256:015a8c4972120e794fa648ef6604fdd0ff94d4748c9308b0cfe147c177b5df4a",
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "present",
+    "runtime": "insufficient",
     "types": "absent"
   },
   "adaptedRoots": {
