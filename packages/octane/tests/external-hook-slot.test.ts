@@ -660,6 +660,7 @@ describe('manifest-declared manual hook slots', () => {
 			'floating-ui',
 			'gsap',
 			'i18next',
+			'inertia',
 			'jotai',
 			'lexical',
 			'livestore',
