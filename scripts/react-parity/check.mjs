@@ -15,7 +15,12 @@ import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
 import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
-import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
+import {
+	loadManifest,
+	requiredExecutableLanes,
+	verifyLaneEnvironment,
+	verifyManifestFiles,
+} from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
@@ -151,7 +156,9 @@ for (const relativeFile of BINDING_MANIFESTS) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
 		if (!validateOnly) {
-			const action = manifest.provenance.verification === 'verified' ? 'run-required' : 'validate';
+			// Required lanes must execute even when provenance is still
+			// recorded-unverified; verification completeness must not suppress them.
+			const action = requiredExecutableLanes(manifest).length > 0 ? 'run-required' : 'validate';
 			execFileSync(process.execPath, [HARNESS_PATH, action, '--manifest', relativeFile], {
 				cwd: REPO,
 				stdio: 'inherit',

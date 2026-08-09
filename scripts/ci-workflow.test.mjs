@@ -284,9 +284,10 @@ describe('CI workflow aggregation', () => {
 
 		// The manifest runner owns all required lanes in one process. Execution
 		// reports prove exact identities, so only explicit validation collects.
+		// Provenance completeness must not suppress required-lane execution.
 		assert.match(
 			reactParityCheck,
-			/manifest\.provenance\.verification === 'verified' \? 'run-required' : 'validate'/,
+			/requiredExecutableLanes\(manifest\)\.length > 0 \? 'run-required' : 'validate'/,
 		);
 		assert.match(
 			reactParityCheck,
