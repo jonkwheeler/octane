@@ -1865,6 +1865,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'recharts-differential',
 					include: ['packages/recharts/tests/differential/**/*.test.ts'],
