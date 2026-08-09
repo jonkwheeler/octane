@@ -1044,11 +1044,17 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Manifest lane owns only divergences.test.ts; remaining conformance
+				// files stay in the ordinary shards.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/tanstack-form/tests/conformance/divergences.test.ts'],
+				},
 				test: {
 					name: 'tanstack-form',
-					include: [
-						'packages/tanstack-form/tests/conformance/**/*.test.ts',
+					include: ['packages/tanstack-form/tests/conformance/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
 						'packages/tanstack-form/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
