@@ -49,6 +49,7 @@ function hasWebGL(): boolean {
 
 export function DoomDemo() @{
 	const shellRef = useRef<HTMLDivElement | null>(null);
+	const aimRef = useRef<HTMLDivElement | null>(null);
 	const stateRef = useRef<GameState>(createGameState());
 	const inputRef = useRef<InputState>(emptyInput());
 	const phaseRef = useRef<Phase>('landing');
@@ -99,7 +100,24 @@ export function DoomDemo() @{
 			audioRef.current ??= createProceduralAudio();
 			await audioRef.current.unlock();
 			if (enterSessionRef.current !== session) return;
-			const result = shellRef.current?.requestPointerLock();
+			// Aim mounts with the level branch; wait until it exists so lock targets
+			// the viewport, not the whole shell (safety controls must stay clickable).
+			let aim = aimRef.current;
+			for (let attempt = 0; aim == null && attempt < 30; attempt += 1) {
+				await new Promise<void>(function waitForAimFrame(resolve) {
+					requestAnimationFrame(function onFrame() {
+						resolve();
+					});
+				});
+				if (enterSessionRef.current !== session) return;
+				aim = aimRef.current;
+			}
+			if (enterSessionRef.current !== session) return;
+			if (aim == null) {
+				setPermissionError('Aim surface was not ready for pointer lock.');
+				return;
+			}
+			const result = aim.requestPointerLock();
 			if (result && 'then' in result) await result;
 			if (enterSessionRef.current !== session) return;
 		} catch (error) {
@@ -126,15 +144,12 @@ export function DoomDemo() @{
 		history.pushState({ ...history.state, octaneDoom: true }, '', location.href);
 		await requestPermissions(session);
 		if (enterSessionRef.current !== session) return;
-		loadingTimeoutRef.current = window.setTimeout(
-			function startPlaying() {
-				loadingTimeoutRef.current = null;
-				if (enterSessionRef.current !== session) return;
-				if (phaseRef.current !== 'loading') return;
-				setPhaseNow('playing');
-			},
-			420,
-		);
+		loadingTimeoutRef.current = window.setTimeout(function startPlaying() {
+			loadingTimeoutRef.current = null;
+			if (enterSessionRef.current !== session) return;
+			if (phaseRef.current !== 'loading') return;
+			setPhaseNow('playing');
+		}, 420);
 	}, [requestPermissions, reset]);
 
 	const retryPermissions = useCallback(function retryPermissions() {
@@ -152,7 +167,7 @@ export function DoomDemo() @{
 
 	useEffect(() => {
 		const updatePointerLock = () => setPointerLocked(
-			document.pointerLockElement === shellRef.current,
+			document.pointerLockElement === aimRef.current,
 		);
 		const onPointerError = () => setPermissionError('Pointer lock was rejected. Click Retry aim.');
 		const onPopState = function onPopState() {
@@ -189,7 +204,7 @@ export function DoomDemo() @{
 		const keyup = (event: KeyboardEvent) => setKey(event, false);
 		const mousemove = (event: MouseEvent) => {
 			if (
-				document.pointerLockElement !== shellRef.current || phaseRef.current !== 'playing' ||
+				document.pointerLockElement !== aimRef.current || phaseRef.current !== 'playing' ||
 					pausedRef.current
 			) return;
 			stateRef.current = turnPlayer(stateRef.current, -event.movementX * 0.0022);
@@ -257,10 +272,31 @@ export function DoomDemo() @{
 			inputRef.current = emptyInput();
 			audioRef.current?.stop();
 			audioRef.current = null;
-			if (document.pointerLockElement === shellRef.current) document.exitPointerLock?.();
+			if (document.pointerLockElement === aimRef.current) document.exitPointerLock?.();
 		},
 		[],
 	);
+
+	function unlockAim(): void {
+		if (document.pointerLockElement === aimRef.current) document.exitPointerLock?.();
+	}
+
+	function togglePaused(): void {
+		unlockAim();
+		setPaused(function nextPaused(value) {
+			return !value;
+		});
+	}
+
+	function resetFromSafety(): void {
+		unlockAim();
+		reset();
+	}
+
+	function exitFromSafety(): void {
+		unlockAim();
+		exit();
+	}
 
 	<div
 		ref={shellRef}
@@ -340,108 +376,114 @@ export function DoomDemo() @{
 				<div>
 					<h2>{'WebGL unavailable'}</h2>
 					<p>{'Enable hardware acceleration or try a WebGL-capable browser.'}</p>
-					<button onClick={function returnToLanding() { setPhaseNow('landing'); }}>{'Return'}</button>
+					<button
+						onClick={function returnToLanding() {
+							setPhaseNow('landing');
+						}}
+					>{'Return'}</button>
 				</div>
 			</div>
 		} @else {
 			<div data-doom-level="active" style={{ position: 'absolute', inset: 0 }}>
-				<Canvas camera={{ position: [2, 1, 2], fov: 72, near: 0.05, far: 60 }} dpr={[1, 1.5]}>
-					<DoomScene state={game} />
-				</Canvas>
-				@if (phase === 'loading') {
+				<div ref={aimRef} data-doom-aim="true" style={{ position: 'absolute', inset: 0 }}>
+					<Canvas camera={{ position: [2, 1, 2], fov: 72, near: 0.05, far: 60 }} dpr={[1, 1.5]}>
+						<DoomScene state={game} />
+					</Canvas>
+					@if (phase === 'loading') {
+						<div
+							data-doom-loading="true"
+							style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}
+						>
+							@try {
+								<div
+									data-doom-loading-indicator="true"
+									style={{
+										position: 'absolute',
+										left: '50%',
+										top: '50%',
+										transform: 'translate(-50%, -50%)',
+										color: '#ff6b35',
+										fontWeight: 900,
+									}}
+								>{'BUILDING SECTOR'}</div>
+							} @pending {
+								<div style={{ position: 'absolute', inset: 0, background: '#171717' }}></div>
+							}
+						</div>
+					}
 					<div
-						data-doom-loading="true"
-						style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}
+						data-doom-crosshair="true"
+						style={{
+							position: 'absolute',
+							left: '50%',
+							top: '50%',
+							width: '22px',
+							height: '22px',
+							transform: 'translate(-50%, -50%)',
+							pointerEvents: 'none',
+							zIndex: 8,
+						}}
 					>
-						@try {
-							<div
-								data-doom-loading-indicator="true"
-								style={{
-									position: 'absolute',
-									left: '50%',
-									top: '50%',
-									transform: 'translate(-50%, -50%)',
-									color: '#ff6b35',
-									fontWeight: 900,
-								}}
-							>{'BUILDING SECTOR'}</div>
-						} @pending {
-							<div style={{ position: 'absolute', inset: 0, background: '#171717' }}></div>
-						}
+						<span
+							style={{
+								position: 'absolute',
+								left: 0,
+								top: '10px',
+								width: '8px',
+								height: '2px',
+								background: '#fff3ce',
+							}}
+						></span>
+						<span
+							style={{
+								position: 'absolute',
+								right: 0,
+								top: '10px',
+								width: '8px',
+								height: '2px',
+								background: '#fff3ce',
+							}}
+						></span>
+						<span
+							style={{
+								position: 'absolute',
+								left: '10px',
+								top: 0,
+								width: '2px',
+								height: '8px',
+								background: '#fff3ce',
+							}}
+						></span>
+						<span
+							style={{
+								position: 'absolute',
+								left: '10px',
+								bottom: 0,
+								width: '2px',
+								height: '8px',
+								background: '#fff3ce',
+							}}
+						></span>
 					</div>
-				}
-				<div
-					data-doom-crosshair="true"
-					style={{
-						position: 'absolute',
-						left: '50%',
-						top: '50%',
-						width: '22px',
-						height: '22px',
-						transform: 'translate(-50%, -50%)',
-						pointerEvents: 'none',
-						zIndex: 8,
-					}}
-				>
-					<span
+					<div
+						data-doom-weapon={game.now < game.weaponUntil ? 'firing' : 'idle'}
 						style={{
 							position: 'absolute',
-							left: 0,
-							top: '10px',
-							width: '8px',
-							height: '2px',
-							background: '#fff3ce',
+							width: game.now < game.weaponUntil ? '210px' : '190px',
+							height: game.now < game.weaponUntil ? '170px' : '150px',
+							left: '50%',
+							bottom: '-25px',
+							transform: 'translateX(-50%)',
+							clipPath: 'polygon(23% 100%, 15% 36%, 32% 20%, 42% 0, 58% 0, 68% 20%, 85% 36%, 77% 100%)',
+							background: game.now < game.weaponUntil
+								? 'linear-gradient(90deg,#23150d,#fff091 48%,#3a1b0d)'
+								: 'linear-gradient(90deg,#171717,#625444 48%,#201a16)',
+							border: '5px solid #090807',
+							pointerEvents: 'none',
+							zIndex: 7,
 						}}
-					></span>
-					<span
-						style={{
-							position: 'absolute',
-							right: 0,
-							top: '10px',
-							width: '8px',
-							height: '2px',
-							background: '#fff3ce',
-						}}
-					></span>
-					<span
-						style={{
-							position: 'absolute',
-							left: '10px',
-							top: 0,
-							width: '2px',
-							height: '8px',
-							background: '#fff3ce',
-						}}
-					></span>
-					<span
-						style={{
-							position: 'absolute',
-							left: '10px',
-							bottom: 0,
-							width: '2px',
-							height: '8px',
-							background: '#fff3ce',
-						}}
-					></span>
+					></div>
 				</div>
-				<div
-					data-doom-weapon={game.now < game.weaponUntil ? 'firing' : 'idle'}
-					style={{
-						position: 'absolute',
-						width: game.now < game.weaponUntil ? '210px' : '190px',
-						height: game.now < game.weaponUntil ? '170px' : '150px',
-						left: '50%',
-						bottom: '-25px',
-						transform: 'translateX(-50%)',
-						clipPath: 'polygon(23% 100%, 15% 36%, 32% 20%, 42% 0, 58% 0, 68% 20%, 85% 36%, 77% 100%)',
-						background: game.now < game.weaponUntil
-							? 'linear-gradient(90deg,#23150d,#fff091 48%,#3a1b0d)'
-							: 'linear-gradient(90deg,#171717,#625444 48%,#201a16)',
-						border: '5px solid #090807',
-						pointerEvents: 'none',
-						zIndex: 7,
-					}}
-				></div>
 				<div
 					data-doom-safety-controls="octane"
 					style={{
@@ -453,11 +495,11 @@ export function DoomDemo() @{
 						gap: '6px',
 					}}
 				>
-					<button onClick={() => setPaused((value) => !value)}>
+					<button onClick={togglePaused}>
 						{paused ? 'Resume (Octane safety)' : 'Pause (Octane safety)'}
 					</button>
-					<button onClick={reset}>{'Reset (Octane safety)'}</button>
-					<button onClick={exit}>{'Exit (Octane safety)'}</button>
+					<button onClick={resetFromSafety}>{'Reset (Octane safety)'}</button>
+					<button onClick={exitFromSafety}>{'Exit (Octane safety)'}</button>
 				</div>
 				@if (!pointerLocked && phase === 'playing') {
 					<div
@@ -487,6 +529,7 @@ export function DoomDemo() @{
 							background: '#0008',
 							fontSize: '2rem',
 							fontWeight: 900,
+							pointerEvents: 'none',
 						}}
 					>{'OCTANE SAFETY PAUSE'}</div>
 				}
