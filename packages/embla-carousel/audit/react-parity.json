@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/embla-carousel/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/embla-carousel/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/embla-carousel/tests/differential"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/embla-carousel/tests/differential"],
+      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
@@ -121,43 +113,6 @@
       ]
     },
     {
-      "id": "embla-parity-audit",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "embla-carousel-audit",
-      "notes": "Executes the package-specific type-parity verifier and mutation negative controls through the React-parity harness.",
-      "files": [
-        {
-          "path": "packages/embla-carousel/tests/audit/parity-negative-controls.test.ts",
-          "role": "test",
-          "sha256": "8e4be9af41dbf0a352368880e51c70e8b98a0f9af09bf2c4cab794ab0a8bd841",
-          "cases": [
-            {
-              "id": "embla:audit:stale-hash",
-              "testName": "rejects a stale evidence hash",
-              "fullName": "@octanejs/embla-carousel parity negative controls rejects a stale evidence hash"
-            },
-            {
-              "id": "embla:audit:removed-runtime-case",
-              "testName": "rejects a removed runtime inventory case",
-              "fullName": "@octanejs/embla-carousel parity negative controls rejects a removed runtime inventory case"
-            },
-            {
-              "id": "embla:audit:deleted-type-assertion",
-              "testName": "rejects a deleted type assertion and removed expect-error directive",
-              "fullName": "@octanejs/embla-carousel parity negative controls rejects a deleted type assertion and removed expect-error directive"
-            },
-            {
-              "id": "embla:audit:mutated-assertion-body",
-              "testName": "rejects a mutated assertion body that keeps the marker",
-              "fullName": "@octanejs/embla-carousel parity negative controls rejects a mutated assertion body that keeps the marker"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "embla-pristine-types",
       "type": "pristine-types",
       "oracle": "required",
@@ -219,7 +174,7 @@
         {
           "path": "packages/embla-carousel/typetests/tsconfig.json",
           "role": "support",
-          "sha256": "8dd585aac58fa2bd20b53179e9e8595062dee0c8e7c7316b9c57cdd3aa1d557c"
+          "sha256": "17eeb6a489a1668259343b12b1bf5ef25f5d312e4db5ce621b556bde3fe64ce9"
         }
       ]
     }

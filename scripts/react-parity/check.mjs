@@ -71,6 +71,31 @@ try {
 } catch (error) {
 	errors.push(`embla-carousel test classifications are invalid: ${error.message}`);
 }
+try {
+	const { verifyCommittedTypeParity } = await import(
+		path.join(REPO, 'packages/embla-carousel/audit/type-parity.mjs')
+	);
+	await verifyCommittedTypeParity();
+} catch (error) {
+	errors.push(`embla-carousel type parity is invalid: ${error.message}`);
+}
+if (!validateOnly) {
+	try {
+		execFileSync(
+			process.execPath,
+			[
+				'node_modules/vitest/vitest.mjs',
+				'run',
+				'--project',
+				'embla-carousel-audit',
+				'packages/embla-carousel/tests/audit/parity-negative-controls.test.ts',
+			],
+			{ cwd: REPO, stdio: 'inherit' },
+		);
+	} catch (error) {
+		errors.push(`embla-carousel parity negative controls failed: ${error.message}`);
+	}
+}
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
 // (BenchmarkExplorer, BenchBars, …). Scan both trees so a misleading claim can't

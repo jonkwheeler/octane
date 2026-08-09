@@ -9,11 +9,17 @@ import { verifyEmblaCarouselTestClassifications } from '../../../../scripts/reac
 import manifest from '../../audit/react-parity.json';
 import pristineInventory from '../../audit/pristine-utils-runtime.json';
 import ledger from '../../audit/type-parity.json';
-import { verifyTypeParity } from '../../audit/type-parity.mjs';
+import { verifyCommittedTypeParity, verifyTypeParity } from '../../audit/type-parity.mjs';
 
 const root = resolve(import.meta.dirname, '../../../..');
 
 describe('@octanejs/embla-carousel parity negative controls', () => {
+	it('accepts the committed pristine/adapted type suite', async function acceptsCommittedTypeParity() {
+		const summary = await verifyCommittedTypeParity();
+		expect(summary.assertions).toBeGreaterThan(0);
+		expect(summary.assertionGroups).toBe(summary.assertions);
+	});
+
 	// @parity-case embla:audit:stale-hash
 	it('rejects a stale evidence hash', async () => {
 		const changed = structuredClone(manifest);

@@ -14,5 +14,5 @@
       "@octanejs/embla-carousel": ["../src/index.ts"]
     }
   },
-  "include": ["./**/*.test-d.ts"]
+  "include": ["./public.test-d.ts"]
 }
