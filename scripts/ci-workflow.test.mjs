@@ -209,6 +209,7 @@ describe('CI workflow aggregation', () => {
 			'node scripts/react-parity/check.mjs --validate-only',
 		);
 		assert.doesNotMatch(workflow, /hook-form/);
+		assert.doesNotMatch(workflow, /floating-ui/);
 
 		assert.match(jobSource('release_change'), /"React parity checks"/);
 		assert.match(
@@ -355,15 +356,41 @@ describe('CI workflow aggregation', () => {
 		assert.equal(projects[1].testExecution, undefined);
 	});
 
-	test('runs Floating UI browser parity only in Chromium-capable jobs', () => {
-		assert.match(
-			jobSource('test_shard'),
-			/--exclude "packages\/floating-ui\/tests\/browser\/\*\*\/\*\.test\.ts"/,
+	test('keeps Floating UI parity ownership package-agnostic in CI', () => {
+		const baseProjects = new Map(
+			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
 		);
-		assert.match(jobSource('heavy_integration'), /packages\/floating-ui\/tests\/browser/);
-		assert.match(jobSource('heavy_integration'), /playwright install --with-deps chromium/);
-		assert.match(jobSource('react_parity_checks'), /playwright install --with-deps chromium/);
-		assert.doesNotMatch(jobSource('lint_checks'), /playwright install --with-deps chromium/);
+		const shardedProjects = new Map(
+			shardedVitestConfig.test.projects.map((project) => [project.test?.name, project]),
+		);
+
+		assert.equal(baseProjects.get('floating-ui').testExecution, undefined);
+		assert.deepEqual(baseProjects.get('floating-ui').test.exclude, [
+			'packages/floating-ui/tests/browser/**/*.test.ts',
+			'packages/floating-ui/tests/differential/**/*.test.ts',
+		]);
+		assert.deepEqual(baseProjects.get('floating-ui-differential').testExecution, {
+			group: 'react-parity',
+			include: ['packages/floating-ui/tests/differential/parity.test.ts'],
+		});
+		assert.equal(baseProjects.get('floating-ui-browser').testExecution.group, 'react-parity');
+		assert.equal(baseProjects.get('floating-ui-browser').testExecution.include, undefined);
+
+		assert.equal(shardedProjects.has('floating-ui'), true);
+		assert.equal(shardedProjects.has('floating-ui-browser'), false);
+		assert.equal(shardedProjects.has('floating-ui-differential'), true);
+		assert.equal(
+			shardedProjects
+				.get('floating-ui-differential')
+				.test.exclude.includes('packages/floating-ui/tests/differential/parity.test.ts'),
+			true,
+		);
+
+		assert.doesNotMatch(jobSource('test_shard'), /floating-ui/);
+		assert.doesNotMatch(jobSource('heavy_integration'), /floating-ui/);
+		assert.doesNotMatch(jobSource('react_parity_checks'), /floating-ui/);
+		assert.doesNotMatch(jobSource('react_parity_checks'), /playwright install/);
+		assert.match(reactParityHarness, /ensureBrowserLaneRuntimes/);
 	});
 });
 

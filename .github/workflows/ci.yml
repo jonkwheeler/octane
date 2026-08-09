@@ -455,7 +455,6 @@ jobs:
           --exclude "packages/vite-plugin-octane/tests/production.test.ts"
           --exclude "packages/octane/tests/browser/**/*.test.ts"
           --exclude "packages/dexie/tests/browser/**/*.test.ts"
-          --exclude "packages/floating-ui/tests/browser/**/*.test.ts"
           --exclude "packages/tiptap/tests/browser/**/*.test.ts"
           --exclude "packages/three/tests/browser/**/*.test.ts"
           --exclude "$ASTRO_E2E_SPEC"
@@ -485,14 +484,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
 
-      # react-parity:check executes every available required lane, including
-      # Floating UI's real-layout browser evidence.
-      - name: Install Playwright Chromium
-        run: pnpm --filter @octanejs/floating-ui exec playwright install --with-deps chromium
-
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
-      # pre-execution Vitest collection pass.
+      # pre-execution Vitest collection pass. Browser lanes install Chromium
+      # through the generic harness, not package-specific workflow steps.
       - name: Check React parity inventories and execute required lanes
         run: pnpm react-parity:check
 
@@ -607,7 +602,6 @@ jobs:
             specs: >-
               packages/octane/tests/browser
               packages/dexie/tests/browser
-              packages/floating-ui/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
           - lane: astro

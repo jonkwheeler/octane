@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 import {
+	browserLanePackageNames,
 	buildLaneArgv,
 	buildTypeScriptCompilerArgv,
 	compareTestIdentities,
@@ -211,6 +212,25 @@ test('accepts distinct lane types and builds deterministic argv without a shell'
 		'packages/hook-form/tests/upstream/example.test.ts',
 		'--reporter=json',
 	]);
+});
+
+test('derives browser-lane package names from evidence paths', () => {
+	assert.deepEqual(
+		browserLanePackageNames([
+			{
+				id: 'browser-a',
+				type: 'browser',
+				files: [{ path: 'packages/floating-ui/tests/browser/positioning.browser.test.ts' }],
+			},
+			{
+				id: 'differential',
+				type: 'differential',
+				files: [{ path: 'packages/floating-ui/tests/differential/parity.test.ts' }],
+			},
+		]),
+		['@octanejs/floating-ui'],
+	);
+	assert.deepEqual(browserLanePackageNames([{ id: 'diff', type: 'differential', files: [] }]), []);
 });
 
 test('validates exact focused Vitest identities from the execution report', () => {

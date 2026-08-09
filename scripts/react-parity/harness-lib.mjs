@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { execFile } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { isAbsolute, relative, resolve } from 'node:path';
@@ -892,4 +892,40 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 
 export function requiredExecutableLanes(manifest) {
 	return manifest.lanes.filter((lane) => lane.oracle === 'required' && lane.available !== false);
+}
+
+/**
+ * Derive package names that own browser-lane evidence so Chromium can be
+ * installed without hard-coding bindings in the shared CI workflow.
+ */
+export function browserLanePackageNames(lanes, root = process.cwd()) {
+	const names = new Set();
+	for (const lane of lanes) {
+		if (lane.type !== 'browser') continue;
+		for (const file of lane.files) {
+			const match = /^packages\/([^/]+)\//.exec(file.path);
+			if (!match) {
+				throw new Error(`browser lane ${lane.id} file ${file.path} is not under packages/<name>/`);
+			}
+			const packageJsonPath = resolve(root, 'packages', match[1], 'package.json');
+			const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+			if (typeof packageJson.name !== 'string' || packageJson.name.length === 0) {
+				throw new Error(`packages/${match[1]}/package.json is missing a name`);
+			}
+			names.add(packageJson.name);
+		}
+	}
+	return [...names].sort();
+}
+
+export function ensureBrowserLaneRuntimes(lanes, root = process.cwd()) {
+	const packageNames = browserLanePackageNames(lanes, root);
+	for (const packageName of packageNames) {
+		execFileSync(
+			'pnpm',
+			['--filter', packageName, 'exec', 'playwright', 'install', '--with-deps', 'chromium'],
+			{ cwd: root, stdio: 'inherit' },
+		);
+	}
+	return packageNames;
 }

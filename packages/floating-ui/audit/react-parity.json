@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/floating-ui/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
+      "roots": ["packages/floating-ui/src"],
+      "include": ["\\.ts$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/floating-ui/tests"
-      ],
-      "include": [
-        "\\.test\\.(?:ts|tsx)$"
-      ],
+      "roots": ["packages/floating-ui/tests"],
+      "include": ["\\.test\\.(?:ts|tsx)$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8307f87937e1441ae2c05b48f2b330e10f0e10ade92ebe9255957176ad6470d1"
+      "lockfileSha256": "4cc864672fd5af0e6ac9ac4700440009c86ad5cfb3897e404ecf55e75a71526e"
     }
   },
   "lanes": [
@@ -57,7 +49,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "floating-ui",
+      "project": "floating-ui-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Compiles the existing TwoTooltips fixture for both adapters and compares independent hook placement output.",
       "files": [
@@ -159,9 +151,7 @@
   "divergences": [
     {
       "id": "ref-as-prop",
-      "caseIds": [
-        "differential:floating-ui-hook-isolation"
-      ],
+      "caseIds": ["differential:floating-ui-hook-isolation"],
       "upstreamResult": "React component refs use React's ref channel and forwardRef where components forward a ref.",
       "octaneResult": "Octane component APIs receive and forward ref as an ordinary prop.",
       "rationale": "Octane implements ref-as-prop natively and does not require React's forwardRef wrapper.",

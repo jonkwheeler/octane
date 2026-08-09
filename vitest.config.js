@@ -2405,14 +2405,16 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'floating-ui',
 					include: [
 						'packages/floating-ui/tests/**/*.test.ts',
 						'packages/floating-ui/tests/**/*.test.tsx',
 					],
-					exclude: ['packages/floating-ui/tests/browser/**/*.test.ts'],
+					exclude: [
+						'packages/floating-ui/tests/browser/**/*.test.ts',
+						'packages/floating-ui/tests/differential/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -2435,7 +2437,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/floating-ui/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'floating-ui-differential',
 					include: ['packages/floating-ui/tests/differential/**/*.test.ts'],
