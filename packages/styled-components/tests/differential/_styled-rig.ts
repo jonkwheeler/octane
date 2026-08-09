@@ -68,6 +68,44 @@ function readSheetCSS(sheet: { toString(): string }): string {
 	return String(sheet);
 }
 
+function assertSheetParity(name: string, octaneCss: string, reactCss: string): void {
+	// Empty sheets compare equal; require the React oracle to have inserted
+	// consumer-visible rules for this scenario before treating parity as evidence.
+	if (!reactCss.includes('{')) {
+		throw new Error(
+			`Differential stylesheet empty on React at step "${name}" ` +
+				`(stylesheet oracle captured no rules)`,
+		);
+	}
+	if (octaneCss !== reactCss) {
+		throw new Error(
+			`Differential stylesheet divergence at step "${name}":\n` +
+				`  octane: ${octaneCss}\n` +
+				`  styled-components: ${reactCss}`,
+		);
+	}
+	expect(octaneCss).toBe(reactCss);
+}
+
+function assertSheetParityRejects(
+	name: string,
+	octaneCss: string,
+	reactCss: string,
+	reason: string,
+): void {
+	let rejected = false;
+	try {
+		assertSheetParity(name, octaneCss, reactCss);
+	} catch {
+		rejected = true;
+	}
+	if (!rejected) {
+		throw new Error(
+			`Differential stylesheet negative control did not reject ${reason} at step "${name}"`,
+		);
+	}
+}
+
 function mkMount(container: HTMLElement, isReact: boolean): DiffMount {
 	return {
 		container,
@@ -294,24 +332,15 @@ export async function mountStyledDifferential(
 
 		const octaneCss = readSheetCSS(octaneSheet);
 		const reactCss = readSheetCSS(reactSheet);
-		// Empty sheets compare equal; require the React oracle to have inserted
-		// consumer-visible rules for this scenario before treating parity as evidence.
-		if (!reactCss.includes('{')) {
-			throw new Error(
-				`Differential stylesheet empty on React at step "${name}" ` +
-					`(stylesheet oracle captured no rules)`,
-			);
-		}
-		if (octaneCss !== reactCss) {
-			throw new Error(
-				`Differential stylesheet divergence at step "${name}":\n` +
-					`  octane: ${octaneCss}\n` +
-					`  styled-components: ${reactCss}`,
-			);
-		}
-		expect(octaneCss).toBe(reactCss);
-		// Negative control: altering one side must fail the equality check.
-		expect(octaneCss).not.toBe(`${reactCss}/*parity-probe*/`);
+		assertSheetParity(name, octaneCss, reactCss);
+		// Negative controls: the same oracle path must reject empty/altered sheets.
+		assertSheetParityRejects(`${name} (empty react sheet)`, octaneCss, '', 'an empty React sheet');
+		assertSheetParityRejects(
+			`${name} (altered react sheet)`,
+			octaneCss,
+			`${reactCss}/*parity-probe*/`,
+			'an altered React sheet',
+		);
 		if (options?.expectSheetChange) {
 			if (previousReactCss === null) {
 				throw new Error(
