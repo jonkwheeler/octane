@@ -326,23 +326,6 @@ export function extractReferencedFixtureIds(adaptedSource) {
 	return [...ids].sort();
 }
 
-const TRANSITION_CALLEE_EXCLUDE = new Set([
-	'act',
-	'cleanup',
-	'createComputed',
-	'createEffect',
-	'createSignal',
-	'createSignalScope',
-	'describe',
-	'expect',
-	'it',
-	'mount',
-	'nextPaint',
-	'renderHook',
-	'test',
-	'vi',
-]);
-
 function isResultCurrentAccess(node) {
 	if (ts.isElementAccessExpression(node)) {
 		return isResultCurrentAccess(node.expression);
@@ -354,6 +337,26 @@ function isResultCurrentAccess(node) {
 		ts.isIdentifier(node.name) &&
 		node.name.text === 'current'
 	);
+}
+
+/**
+ * SetterProbe-style lookup: `setters.at(-1)` or `setters[i]`.
+ * Only aliases bound from these forms count as recorded hook-path setters.
+ */
+function isRecordedSetterLookup(node) {
+	if (ts.isElementAccessExpression(node) && ts.isIdentifier(node.expression)) {
+		return true;
+	}
+	if (
+		ts.isCallExpression(node) &&
+		ts.isPropertyAccessExpression(node.expression) &&
+		ts.isIdentifier(node.expression.expression) &&
+		ts.isIdentifier(node.expression.name) &&
+		node.expression.name.text === 'at'
+	) {
+		return true;
+	}
+	return false;
 }
 
 function collectBindingNames(nameNode, into) {
@@ -416,10 +419,11 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 		if (titled !== null && titled.body) {
 			const signalBindings = new Set();
 			const hookAliases = new Set();
+			const recordedSetterAliases = new Set();
 			let hookSurfaceWrites = 0;
 			let fixtureClicks = 0;
 			let directSourceWrites = 0;
-			let otherSetterWrites = 0;
+			let recordedSetterWrites = 0;
 
 			function visitBody(bodyNode) {
 				if (ts.isVariableDeclaration(bodyNode) && bodyNode.initializer && bodyNode.name) {
@@ -432,6 +436,9 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 					}
 					if (isResultCurrentAccess(bodyNode.initializer)) {
 						collectBindingNames(bodyNode.name, hookAliases);
+					}
+					if (isRecordedSetterLookup(bodyNode.initializer)) {
+						collectBindingNames(bodyNode.name, recordedSetterAliases);
 					}
 				}
 
@@ -455,8 +462,8 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 								hookSurfaceWrites += 1;
 							} else if (signalBindings.has(root)) {
 								directSourceWrites += 1;
-							} else if (!TRANSITION_CALLEE_EXCLUDE.has(root)) {
-								otherSetterWrites += 1;
+							} else if (recordedSetterAliases.has(root)) {
+								recordedSetterWrites += 1;
 							}
 						}
 					}
@@ -469,8 +476,8 @@ export function extractCaseTransitionStructure(source, fileName = 'suite.ts') {
 				hookSurfaceWrites,
 				fixtureClicks,
 				directSourceWrites,
-				otherSetterWrites,
-				hookPathWrites: fixtureClicks + otherSetterWrites,
+				recordedSetterWrites,
+				hookPathWrites: fixtureClicks + recordedSetterWrites,
 			});
 			return;
 		}
@@ -496,9 +503,15 @@ export function assertPerCaseTransitionStructure(pristineSource, adaptedSource) 
 				`alien-signals runtime transition crosswalk missing adapted case: ${pristineCase.title}`,
 			);
 		}
-		if (adaptedCase.hookPathWrites < pristineCase.hookSurfaceWrites) {
+		// Fixture clicks may batch multiple pristine setter writes (e.g. #inc-twice).
+		// Reject only when the adapted case has no hook-path coverage, or pads a
+		// shortfall with direct createSignal writes / incidental non-setter calls.
+		const underCovered = adaptedCase.hookPathWrites < pristineCase.hookSurfaceWrites;
+		const bypassed =
+			adaptedCase.hookPathWrites === 0 || (underCovered && adaptedCase.directSourceWrites > 0);
+		if (bypassed) {
 			throw new Error(
-				`alien-signals adapted case "${pristineCase.title}" bypasses ${pristineCase.hookSurfaceWrites} hook-surface transition(s) with direct source mutation (${adaptedCase.directSourceWrites} direct write(s), ${adaptedCase.fixtureClicks} fixture click(s), ${adaptedCase.otherSetterWrites} recorded setter write(s)); keep hook-driven interactions under the transformation ledger`,
+				`alien-signals adapted case "${pristineCase.title}" bypasses ${pristineCase.hookSurfaceWrites} hook-surface transition(s) with direct source mutation (${adaptedCase.directSourceWrites} direct write(s), ${adaptedCase.fixtureClicks} fixture click(s), ${adaptedCase.recordedSetterWrites} recorded setter write(s)); keep hook-driven interactions under the transformation ledger`,
 			);
 		}
 	}
