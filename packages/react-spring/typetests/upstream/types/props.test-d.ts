@@ -1,7 +1,7 @@
 import { it, expectTypeOf } from 'vitest';
 import { assert, _ } from 'spec.ts';
 
-import { Lookup } from '../../../src/types/index.ts';
+import { Lookup } from '../../../src/types/index';
 import { useSpring } from '@octanejs/react-spring';
 import { SpringValue } from '@octanejs/react-spring';
 import { SpringUpdateFn } from '@octanejs/react-spring';

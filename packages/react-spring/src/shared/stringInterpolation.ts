@@ -8,7 +8,7 @@ const rgbaRegex = /rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+
 
 export function createStringInterpolator(
 	config: InterpolatorConfig<string>,
-): InterpolatorFn<string> {
+): InterpolatorFn<number, string> {
 	const output = config.output.slice();
 	// Number-less outputs (e.g. `none`) yield `[]` rather than throwing on a
 	// null match — see https://github.com/pmndrs/react-spring/issues/2327.
@@ -33,7 +33,7 @@ export function createStringInterpolator(
 		});
 		return counts.every((count) => count === counts[0]) && counts[0]! > 0 ? counts[0]! : null;
 	});
-	return (input) => {
+	return ((input: number) => {
 		const keyframe = inputRange.indexOf(input);
 		if (keyframe >= 0) return output[keyframe]!;
 		const missingUnit = !unitRegex.test(output[0]!)
@@ -52,5 +52,5 @@ export function createStringInterpolator(
 				(_, r, g, b, alpha) =>
 					`rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${alpha})`,
 			);
-	};
+	}) as unknown as InterpolatorFn<number, string>;
 }

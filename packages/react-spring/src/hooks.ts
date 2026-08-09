@@ -2,38 +2,63 @@
 import { useLayoutEffect, useRef, useState } from 'octane';
 import {
 	Controller,
-	type ControllerUpdate,
+	type ControllerUpdate as RuntimeControllerUpdate,
 	SpringRef,
 	SpringValue,
 	type SpringUpdate,
 } from './engine';
 import { inferTo } from './upstream-compat';
 import { type SpringContextValue, useSpringContext } from './context';
+import type { Valid } from './types/common';
+import type { SpringValues } from './types/objects';
+import type { ControllerUpdate, Lookup, PickAnimated, Remap } from './types/index';
 
 export type TransitionPhase = 'mount' | 'enter' | 'update' | 'leave';
 
-export interface UseTransitionProps<
-	Item,
-	State extends Record<string, any>,
-> extends ControllerUpdate<State> {
-	keys?: ((item: Item) => string | number) | Array<string | number>;
-	initial?: Partial<State> | null;
-	enter?: Partial<State> | ((item: Item) => Partial<State>);
-	update?: Partial<State> | ((item: Item) => Partial<State>);
-	leave?: Partial<State> | ((item: Item) => Partial<State>);
+export type UseSpringProps<Props extends object = any> = unknown &
+	PickAnimated<Props> extends infer State
+	? State extends Lookup
+		? Remap<
+				ControllerUpdate<State> & {
+					ref?: SpringRef<State>;
+				}
+			>
+		: never
+	: never;
+
+export type UseTransitionProps<Item = any, State extends Lookup = Lookup> = Omit<
+	ControllerUpdate<State, Item>,
+	'from' | 'onResolve'
+> & {
+	keys?: ((item: Item) => string | number) | Array<string | number> | null;
+	from?:
+		| Partial<State>
+		| null
+		| false
+		| ((item: Item, index: number) => Partial<State> | null | false | undefined)
+		| Function;
+	initial?:
+		| Partial<State>
+		| null
+		| false
+		| ((item: Item, index: number) => Partial<State> | null | false | undefined);
+	enter?: Partial<State> | ((item: Item, index: number) => Partial<State> | undefined) | Function;
+	update?: Partial<State> | ((item: Item, index: number) => Partial<State> | undefined) | Function;
+	leave?: Partial<State> | ((item: Item, index: number) => Partial<State> | undefined) | Function;
 	sort?: (a: Item, b: Item) => number;
-	expires?: boolean | number;
+	expires?: boolean | number | ((item: Item) => boolean | number);
 	exitBeforeEnter?: boolean;
 	trail?: number;
 	reverse?: boolean;
-}
+	onDestroyed?: (item: Item, key: string | number) => void;
+};
 
 interface TransitionRecord<Item, State extends Record<string, any>> {
 	key: string | number;
 	item: Item;
 	phase: TransitionPhase;
 	controller: Controller<State>;
-	lastUpdate?: ControllerUpdate<State>;
+	lastUpdate?: RuntimeControllerUpdate<State>;
 	expiration?: ReturnType<typeof setTimeout>;
 }
 
@@ -84,16 +109,16 @@ function trailingSlot(args: any[]): symbol | undefined {
 }
 
 function updateFrom<State extends Record<string, any>>(
-	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
-): ControllerUpdate<State> {
+	props: RuntimeControllerUpdate<State> | (() => RuntimeControllerUpdate<State>),
+): RuntimeControllerUpdate<State> {
 	return typeof props === 'function' ? props() : props;
 }
 
 function withContext<State extends Record<string, any>>(
-	update: ControllerUpdate<State>,
+	update: RuntimeControllerUpdate<State>,
 	context: SpringContextValue,
-): ControllerUpdate<State> {
-	return { ...update, ...context } as ControllerUpdate<State>;
+): RuntimeControllerUpdate<State> {
+	return { ...update, ...context } as RuntimeControllerUpdate<State>;
 }
 
 function sameLookup(left: unknown, right: unknown): boolean {
@@ -119,7 +144,10 @@ function sameLookup(left: unknown, right: unknown): boolean {
 	});
 }
 
-function sameSpringUpdate(left: ControllerUpdate<any>, right: ControllerUpdate<any>): boolean {
+function sameSpringUpdate(
+	left: RuntimeControllerUpdate<any>,
+	right: RuntimeControllerUpdate<any>,
+): boolean {
 	return (
 		sameLookup(left.to, right.to) &&
 		sameLookup(left.from, right.from) &&
@@ -134,30 +162,41 @@ function sameSpringUpdate(left: ControllerUpdate<any>, right: ControllerUpdate<a
 }
 
 export function useSpring<State extends Record<string, any>>(
-	props: ControllerUpdate<State>,
+	props: RuntimeControllerUpdate<State>,
 ): { [Key in keyof State]: SpringValue<State[Key]> };
 export function useSpring<State extends Record<string, any>>(
-	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
-	deps: any[],
+	props: RuntimeControllerUpdate<State> | (() => RuntimeControllerUpdate<State>),
+	deps: readonly any[] | undefined,
 ): [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>];
-export function useSpring<State extends Record<string, any>>(
-	props: () => ControllerUpdate<State>,
-): [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>];
-export function useSpring<State extends Record<string, any>>(
-	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
-	...args: any[]
-):
-	| { [Key in keyof State]: SpringValue<State[Key]> }
-	| [{ [Key in keyof State]: SpringValue<State[Key]> }, Controller<State>] {
+export function useSpring<Props extends object>(
+	props: Function | (() => (Props & Valid<Props, UseSpringProps<Props>>) | UseSpringProps),
+	deps?: readonly any[] | undefined,
+): PickAnimated<Props> extends infer State
+	? State extends Lookup
+		? [SpringValues<State>, Controller<State>]
+		: never
+	: never;
+export function useSpring<Props extends object>(
+	props: (Props & Valid<Props, UseSpringProps<Props>>) | UseSpringProps,
+): SpringValues<PickAnimated<Props>>;
+export function useSpring<Props extends object>(
+	props: (Props & Valid<Props, UseSpringProps<Props>>) | UseSpringProps,
+	deps: readonly any[] | undefined,
+): PickAnimated<Props> extends infer State
+	? State extends Lookup
+		? [SpringValues<State>, Controller<State>]
+		: never
+	: never;
+export function useSpring(props: any, ...args: any[]): any {
 	const slot = trailingSlot(args);
 	const context = useSpringContext();
 	const update = withContext(
-		inferTo(updateFrom(props) as object) as ControllerUpdate<State>,
+		inferTo(updateFrom(props) as object) as RuntimeControllerUpdate<any>,
 		context,
 	);
 	const [controller] = useState(
 		function createController() {
-			return new Controller<State>(update as never);
+			return new Controller(update as never);
 		},
 		sub(slot, 'controller'),
 	);
@@ -213,8 +252,8 @@ export function useSpringValue<T>(
 export function useSprings<State extends Record<string, any>>(
 	length: number,
 	props:
-		| ControllerUpdate<State>[]
-		| ((index: number, controller: Controller<State>) => ControllerUpdate<State>),
+		| RuntimeControllerUpdate<State>[]
+		| ((index: number, controller: Controller<State>) => RuntimeControllerUpdate<State>),
 	...args: any[]
 ): [{ [Key in keyof State]: SpringValue<State[Key]> }[], SpringRef<State>] {
 	const slot = trailingSlot(args);
@@ -223,7 +262,7 @@ export function useSprings<State extends Record<string, any>>(
 		() => ({
 			controllers: [] as Controller<State>[],
 			ref: new SpringRef<State>(),
-			updates: [] as ControllerUpdate<State>[],
+			updates: [] as RuntimeControllerUpdate<State>[],
 			deps: undefined as any[] | undefined,
 		}),
 		sub(slot, 'state'),
@@ -271,20 +310,20 @@ export function useSprings<State extends Record<string, any>>(
 
 export function useTrail<State extends Record<string, any>>(
 	length: number,
-	props: ControllerUpdate<State>,
+	props: RuntimeControllerUpdate<State>,
 ): Array<{ [Key in keyof State]: SpringValue<State[Key]> }>;
 export function useTrail<State extends Record<string, any>>(
 	length: number,
-	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
+	props: RuntimeControllerUpdate<State> | (() => RuntimeControllerUpdate<State>),
 	deps: any[],
 ): [Array<{ [Key in keyof State]: SpringValue<State[Key]> }>, SpringRef<State>];
 export function useTrail<State extends Record<string, any>>(
 	length: number,
-	props: () => ControllerUpdate<State>,
+	props: () => RuntimeControllerUpdate<State>,
 ): [Array<{ [Key in keyof State]: SpringValue<State[Key]> }>, SpringRef<State>];
 export function useTrail<State extends Record<string, any>>(
 	length: number,
-	props: ControllerUpdate<State> | (() => ControllerUpdate<State>),
+	props: RuntimeControllerUpdate<State> | (() => RuntimeControllerUpdate<State>),
 	...args: any[]
 ):
 	| Array<{ [Key in keyof State]: SpringValue<State[Key]> }>
@@ -322,15 +361,18 @@ export function useSpringRef<State extends Record<string, any>>(...args: any[]):
 }
 
 function resolveTransitionValue<Item, State extends Record<string, any>>(
-	value: Partial<State> | ((item: Item) => Partial<State>) | undefined,
+	value: Partial<State> | ((item: Item, index?: number) => Partial<State>) | Function | undefined,
 	item: Item,
+	index = 0,
 ): Partial<State> | undefined {
-	return typeof value === 'function' ? value(item) : value;
+	return typeof value === 'function'
+		? (value as (item: Item, index: number) => Partial<State>)(item, index)
+		: value;
 }
 
 function transitionTarget<State extends Record<string, any>>(
 	value: Partial<State> | undefined,
-): { to: Partial<State> | undefined; update: Partial<ControllerUpdate<State>> } {
+): { to: Partial<State> | undefined; update: Partial<RuntimeControllerUpdate<State>> } {
 	if (value === undefined) return { to: undefined, update: {} };
 	const to: Record<string, any> = {};
 	const update: Record<string, any> = {};
@@ -352,18 +394,27 @@ function transitionTarget<State extends Record<string, any>>(
 	return { to: to as Partial<State>, update };
 }
 
-export function useTransition<Item, State extends Record<string, any>>(
-	items: Item | Item[],
-	props: UseTransitionProps<Item, State>,
+export function useTransition<Item, Props extends object>(
+	items: Item | readonly Item[],
+	props: UseTransitionProps<Item> | (Props & Valid<Props, UseTransitionProps<Item>>),
 	...args: any[]
-): (
-	render: (
-		values: { [Key in keyof State]: SpringValue<State[Key]> },
-		item: Item,
-		transition: { key: string | number; phase: TransitionPhase },
-		index: number,
-	) => unknown,
-) => unknown[] {
+): PickAnimated<Props> extends infer State
+	? State extends Lookup
+		? (
+				render: (
+					values: SpringValues<State>,
+					item: Item,
+					transition: { key: string | number; phase: TransitionPhase },
+					index: number,
+				) => unknown,
+			) => unknown[]
+		: never
+	: never;
+export function useTransition<Item = any, State extends Lookup = Lookup>(
+	items: any,
+	props: any,
+	...args: any[]
+): any {
 	const slot = trailingSlot(args);
 	const context = useSpringContext();
 	const list = (Array.isArray(items) ? items : [items]).filter(
@@ -467,15 +518,19 @@ export function useTransition<Item, State extends Record<string, any>>(
 					},
 					context,
 				);
-				if (equalValue(record.lastUpdate, update)) continue;
-				record.lastUpdate = update;
-				void record.controller.start(update).then(() => {
+				if (equalValue(record.lastUpdate, update as RuntimeControllerUpdate<State>)) continue;
+				record.lastUpdate = update as RuntimeControllerUpdate<State>;
+				void record.controller.start(update as RuntimeControllerUpdate<State>).then(() => {
 					if (!active || phase !== 'leave' || record.phase !== 'leave') return;
-					const expiration = props.expires ?? true;
+					const expiration =
+						typeof props.expires === 'function'
+							? props.expires(record.item)
+							: (props.expires ?? true);
 					const remove = () => {
 						const index = records.indexOf(record);
 						if (index >= 0) {
 							records.splice(index, 1);
+							props.onDestroyed?.(record.item, record.key);
 							forceUpdate((value) => value + 1);
 						}
 					};
@@ -503,15 +558,23 @@ export function useTransition<Item, State extends Record<string, any>>(
 		sub(slot, 'transition-cleanup'),
 	);
 
-	return (render) =>
-		records.map((record, index) =>
+	return function renderTransitions(
+		render: (
+			values: SpringValues<State>,
+			item: Item,
+			transition: { key: string | number; phase: TransitionPhase },
+			index: number,
+		) => unknown,
+	) {
+		return records.map((record, index) =>
 			render(
-				record.controller.springs,
+				record.controller.springs as SpringValues<State>,
 				record.item,
 				{ key: record.key, phase: record.phase },
 				index,
 			),
 		);
+	};
 }
 
 export function useChain(refs: SpringRef<any>[], ...args: any[]): void {

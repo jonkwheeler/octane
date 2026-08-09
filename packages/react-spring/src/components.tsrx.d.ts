@@ -1,44 +1,34 @@
 import type { SpringContextValue } from './context';
-import type { ControllerUpdate, SpringValue } from './engine';
 import type { UseTransitionProps } from './hooks';
+import type { SpringValues } from './types/objects';
+import type { ControllerUpdate, Lookup } from './types/index';
 
-type SpringValues<State extends Record<string, unknown>> = {
-	[Key in keyof State]: SpringValue<State[Key]>;
-};
-
-export interface SpringProps<
-	State extends Record<string, unknown>,
-> extends ControllerUpdate<State> {
-	children?: ((styles: SpringValues<State>) => unknown) | unknown;
-}
-
-export interface TrailProps<
-	Item,
-	State extends Record<string, unknown>,
-> extends ControllerUpdate<State> {
+export type TrailProps<Item = any, State extends Lookup = Lookup> = ControllerUpdate<State> & {
 	items?: Item[];
 	children?:
-		((item: Item, index: number) => (styles: SpringValues<State> | undefined) => unknown) | unknown;
-}
+		| ((item: Item, index: number) => (styles: SpringValues<State> | undefined) => unknown)
+		| unknown;
+};
 
-export interface TransitionProps<
+export type TransitionProps<Item = any, State extends Lookup = Lookup> = UseTransitionProps<
 	Item,
-	State extends Record<string, unknown>,
-> extends UseTransitionProps<Item, State> {
+	State
+> & {
 	items?: Item | Item[];
 	children?: ((item: Item, index: number) => (styles: SpringValues<State>) => unknown) | unknown;
-}
+};
 
 export declare function SpringContext(
 	props: SpringContextValue & { children?: unknown },
 	scope?: unknown,
 ): void;
-export declare function Spring<State extends Record<string, unknown>>(
-	props: SpringProps<State>,
-): void;
-export declare function Trail<Item, State extends Record<string, unknown>>(
+
+/** Implementation export; public typed overloads live in `spring-component.ts`. */
+export declare function Spring(props: Record<string, unknown> & { children?: unknown }): unknown;
+
+export declare function Trail<Item, State extends Lookup = Lookup>(
 	props: TrailProps<Item, State>,
 ): void;
-export declare function Transition<Item, State extends Record<string, unknown>>(
+export declare function Transition<Item, State extends Lookup = Lookup>(
 	props: TransitionProps<Item, State>,
 ): void;

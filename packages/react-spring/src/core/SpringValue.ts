@@ -40,7 +40,7 @@ export interface SpringUpdate<T> {
 	cancel?: boolean;
 	loop?: LoopProp<T>;
 	onStart?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
-	onChange?: (value: T, valueRef: SpringValue<T>) => void;
+	onChange?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 	onPause?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 	onResume?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
 	onRest?: (result: AnimationResult<T>, value: SpringValue<T>) => void;
@@ -72,9 +72,15 @@ export class SpringValue<T = number> extends FrameValue<T> {
 	private paused = false;
 	private hasAnimated = false;
 
-	constructor(value: T) {
+	constructor(from: T, props?: Omit<SpringUpdate<T>, 'to'> & { to?: T | FrameValue<T> });
+	constructor(props?: SpringUpdate<T>);
+	constructor(arg1?: any, arg2?: any) {
 		super();
-		this.value = value;
+		if (typeof arg1 === 'object' && arg1 !== null && !Array.isArray(arg1) && arg2 === undefined) {
+			this.value = ((arg1 as SpringUpdate<T>).from ?? (arg1 as SpringUpdate<T>).to) as T;
+		} else {
+			this.value = arg1 as T;
+		}
 	}
 	get(): T {
 		return this.value;
@@ -173,7 +179,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 		);
 		if (immediate) {
 			this.setValue(target);
-			props.onChange?.(this.value, this);
+			props.onChange?.(getFinishedResult(this.value, false), this);
 			void this.completeIteration(active);
 			return;
 		}
@@ -228,7 +234,7 @@ export class SpringValue<T = number> extends FrameValue<T> {
 					shaped = (Math.round(shaped / options.round) * options.round) as T;
 				this.setValue(done ? currentTarget : shaped);
 			}
-			props.onChange?.(this.value, this);
+			props.onChange?.(getFinishedResult(this.value, false), this);
 			if (done) {
 				void this.completeIteration(active);
 				return false;

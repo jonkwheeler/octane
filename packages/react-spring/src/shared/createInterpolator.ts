@@ -44,7 +44,7 @@ export function createInterpolator<Output>(
 			config.extrapolateRight ?? config.extrapolate ?? 'extend',
 			config.map,
 		);
-	}) as InterpolatorFn<Output>;
+	}) as unknown as InterpolatorFn<Output>;
 }
 
 function interpolate(

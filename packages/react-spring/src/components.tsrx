@@ -21,7 +21,7 @@ export function SpringContext(props: SpringContextValue & { children?: unknown }
 	<SpringContextObject value={{ ...inherited, ...value }}>{children}</SpringContextObject>
 }
 
-export function Spring(props: any) @{
+export function Spring(props: Record<string, unknown> & { children?: unknown }) @{
 	const { children, ...update } = props;
 	const styles = useSpring(update);
 	<>
