@@ -11,12 +11,14 @@ function dependencies(compile: (source: string, path: string) => any) {
 }
 
 describe('TanStack Virtual differential setup', () => {
+	// @parity-case differential:tanstack-virtual-setup-compile-errors
 	it('fails closed when TSRX compilation reports errors', () => {
 		const deps = dependencies(() => ({ code: '', errors: [{ message: 'invalid' }] }));
 		expect(() => compileFixture('/fixture/broken.tsrx', '/cache', deps)).toThrow(/invalid/);
 		expect(deps.writeFile).not.toHaveBeenCalled();
 	});
 
+	// @parity-case differential:tanstack-virtual-setup-transform-exceptions
 	it('propagates transform exceptions without writing cache output', () => {
 		const deps = dependencies(() => ({ code: 'compiled' }));
 		deps.transform.mockImplementation(() => {

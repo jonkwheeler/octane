@@ -1329,19 +1329,22 @@ export default defineConfig({
 				},
 			},
 			{
+				// Mixed project: only the dedicated nested-flush divergence file is
+				// parity-owned; the rest of conformance/window/dynamic stays ordinary.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/tanstack-virtual/tests/conformance/nested-flush.test.ts'],
+				},
 				test: {
 					name: 'tanstack-virtual',
 					include: ['packages/tanstack-virtual/tests/**/*.test.ts'],
 					environment: 'jsdom',
-					exclude: ['packages/tanstack-virtual/tests/differential/**/*.test.ts'],
-					// Same differential precompile, but for virtualizer fixtures: also
-					// rewrites `@octanejs/tanstack-virtual` → `@tanstack/react-virtual` so
-					// the React side runs the real react-virtual adapter over the SAME
-					// virtual-core.
+					exclude: [
+						'packages/tanstack-virtual/tests/differential/**/*.test.ts',
+						'packages/tanstack-virtual/tests/ssr/**/*.test.ts',
+					],
 					// jsdom affordances virtual-core needs (no-op ResizeObserver,
-					// Element.scrollTo shim, MAX_SAFE_INTEGER scroll dimensions) —
-					// installed once for the whole project so BOTH differential sides
-					// share them.
+					// Element.scrollTo shim, MAX_SAFE_INTEGER scroll dimensions).
 					setupFiles: ['packages/tanstack-virtual/tests/_setup.ts'],
 					globals: false,
 				},
@@ -1364,6 +1367,33 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'tanstack-virtual-ssr',
+					include: ['packages/tanstack-virtual/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-virtual$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-virtual/src/index.ts'),
+						},
+						{
+							find: /^@octanejs\/tanstack-virtual\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-virtual/src') + '/$1.ts',
+						},
+					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'tanstack-virtual-differential',
 					include: ['packages/tanstack-virtual/tests/differential/**/*.test.ts'],
