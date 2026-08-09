@@ -15,6 +15,7 @@ export const KNOWN_BINDINGS = {
 	'mobx-react-lite': '@octanejs/mobx',
 	'mobx-react': '@octanejs/mobx',
 	'@apollo/client': '@octanejs/apollo-client',
+	'@solana/react': '@octanejs/solana-react',
 	'@tanstack/ai-react': '@octanejs/tanstack-ai',
 	'@tanstack/react-devtools': '@octanejs/tanstack-devtools',
 	'@tanstack/react-form': '@octanejs/tanstack-form',
@@ -120,6 +121,7 @@ export const KNOWN_BINDINGS = {
 	'@react-rxjs/utils': '@octanejs/rxjs',
 	'@testing-library/react': '@octanejs/testing-library',
 	'react-i18next': '@octanejs/i18next',
+	'@inertiajs/react': '@octanejs/inertia',
 	'@mdx-js/react': '@octanejs/mdx',
 	'dexie-react-hooks': '@octanejs/dexie',
 	'@livestore/react': '@octanejs/livestore',
@@ -145,6 +147,7 @@ export const KNOWN_BINDING_PACKAGE_DIRS = new Set(
 
 export const KNOWN_VANILLA_CORES = {
 	'@apollo/client': '@apollo/client',
+	'@solana/react': '@solana/kit',
 	'@tanstack/react-query': '@tanstack/query-core',
 	wagmi: '@wagmi/core',
 	'@tanstack/react-table': '@tanstack/table-core',
