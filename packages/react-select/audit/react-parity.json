@@ -16,28 +16,19 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-select/src",
-        "packages/react-select/typetests"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx|mjs)$"
-      ],
+      "roots": ["packages/react-select/src", "packages/react-select/typetests"],
+      "include": ["\\.(?:ts|tsrx|mjs)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-select/tests/upstream"
-      ],
-      "include": [
-        "\\.test\\.(?:ts|mjs)$"
-      ],
+      "roots": ["packages/react-select/tests/upstream"],
+      "include": ["\\.test\\.(?:ts|mjs)$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 38,
+    "uniqueIdentities": 38,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -121,6 +112,51 @@
           "path": "packages/react-select/tests/upstream-emotion-serializer.cjs",
           "role": "support",
           "sha256": "f05297f58037be355c988f4eed0149cacbd1e08fde2039981029fafaaba1de9a"
+        }
+      ]
+    },
+    {
+      "id": "react-select-adapted-upstream",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-select",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the started one-for-one Octane adaptation lane. Thirty-eight cases from the four smaller upstream suites are ported; the exhaustive disposition ledger accounts for all 217 remaining pristine identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-select/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-select/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "71ae169c5a4ad111e2e80b66ee5403fbde1dbdadc054e97e6e4ce2233cbe98a8"
+        },
+        {
+          "path": "packages/react-select/audit/adaptation.json",
+          "role": "support",
+          "sha256": "8150f2ab4a704caaeb88ae4a1e164999c006745832e52b2a47a18a1bb02defbf"
+        },
+        {
+          "path": "packages/react-select/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "b53ff709f766e16374e624c6e417015aa19fa62950414e41505596e92f50c336"
+        },
+        {
+          "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "6749098d6a71af8d9dd9b02d797dc079e69d7038336dd02e9ec49a16f185df96"
+        },
+        {
+          "path": "scripts/react-parity/react-select-adaptation.mjs",
+          "role": "support",
+          "sha256": "b430ef33db2caa59f23677fd7fab8939d6dd84d68474adafa24b9962aca9a065"
+        },
+        {
+          "path": "scripts/react-parity/react-select-adaptation.test.mjs",
+          "role": "support",
+          "sha256": "a94e386c63b78d2f6c978e7db9f0ca5e101565c1699dc978ac684c8100c06a2a"
         }
       ]
     },
@@ -262,9 +298,7 @@
   "divergences": [
     {
       "id": "react-select-octane-node",
-      "caseIds": [
-        "types:octane-node-adaptation"
-      ],
+      "caseIds": ["types:octane-node-adaptation"],
       "upstreamResult": "Renderable callbacks and component contracts use ReactNode.",
       "octaneResult": "Renderable callbacks and component contracts use OctaneNode.",
       "rationale": "Octane components render Octane nodes without a React runtime dependency.",
@@ -276,9 +310,7 @@
     },
     {
       "id": "react-select-native-events",
-      "caseIds": [
-        "types:native-event-adaptation"
-      ],
+      "caseIds": ["types:native-event-adaptation"],
       "upstreamResult": "Event-bearing contracts expose React synthetic events.",
       "octaneResult": "Event-bearing contracts expose native DOM events.",
       "rationale": "Octane delivers native DOM events rather than React synthetic events.",
@@ -290,9 +322,7 @@
     },
     {
       "id": "react-select-octane-styles",
-      "caseIds": [
-        "types:octane-style-adaptation"
-      ],
+      "caseIds": ["types:octane-style-adaptation"],
       "upstreamResult": "Renderer-owned style contracts expose Emotion CSSObjectWithLabel values.",
       "octaneResult": "Renderer-owned style contracts expose Octane style objects.",
       "rationale": "Octane owns style serialization and does not require Emotion at runtime.",

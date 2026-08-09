@@ -47,14 +47,14 @@ The paired fixtures in `typetests/` compile the same consumer-shaped public type
 
 ## Upstream test disposition
 
-The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The `react-select-pristine` project executes them unchanged against the vendored React source with the pinned upstream React, Jest, Testing Library, and Emotion stack. It verifies 255 passing Jest identities and five snapshots; the three skips are present in the upstream suite itself. The separate Octane lanes provide selected adapted, differential, SSR, and browser evidence:
+The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The `react-select-pristine` project executes them unchanged against the vendored React source with the pinned upstream React, Jest, Testing Library, and Emotion stack. It verifies 255 passing Jest identities and five snapshots; the three skips are present in the upstream suite itself. The `react-select` project's narrowly owned `tests/upstream/**` lane currently runs 38 one-for-one adaptations from the four smaller suites. `audit/adaptation.json` gives every pristine identity an `adapted`, `pending`, or `n/a` disposition. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
 
 | Retained suite | Executable Octane evidence |
 | --- | --- |
 | `Select.test.tsx` | Full Select SSR and Chromium behavior, styles/components, accessibility, forms, keyboard, mouse, touch, focus, placement, portals, and multi-value navigation |
-| `StateManaged.test.tsx` | Controlled/uncontrolled precedence, transitions, and callbacks in SSR and Chromium |
-| `Async.test.tsx` | Initial SSR state plus loading, caching, stale requests, resolution, and clearing in Chromium |
-| `Creatable.test.tsx` | Creation metadata, delegated creation, option placement, and suppression differentials |
-| `AsyncCreatable.test.tsx` | Composed async/creatable public contract and export coverage |
+| `StateManaged.test.tsx` | 12 adapted cases plus controlled/uncontrolled precedence, transitions, and callbacks in SSR and Chromium |
+| `Async.test.tsx` | 8 adapted cases plus initial SSR state and broader async behavior in Chromium |
+| `Creatable.test.tsx` | 14 adapted cases plus creation metadata, delegated creation, option placement, and suppression differentials |
+| `AsyncCreatable.test.tsx` | 4 adapted cases plus composed async/creatable public contract and export coverage |
 
-The mixed inventory in `audit/adapted-runtime.json` records the current Octane runtime evidence; it is not a one-for-one adaptation of the upstream Jest inventory. Run `pnpm --filter @octanejs/react-select test` to verify the vendored pin, fail-closed export crosswalk, pristine upstream suite, and Octane runtime lanes; run `pnpm --filter @octanejs/react-select typecheck` for paired type evidence.
+`audit/adapted-runtime.json` inventories only the adapted upstream lane. `audit/test-classifications.json` keeps every repo-authored test outside that parity claim. Run `pnpm --filter @octanejs/react-select test` to verify the vendored pin, fail-closed export crosswalk, pristine upstream suite, and Octane runtime lanes; run `pnpm --filter @octanejs/react-select typecheck` for paired type evidence.

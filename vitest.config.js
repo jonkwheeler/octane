@@ -3521,8 +3521,12 @@ export default defineConfig({
 			},
 			{
 				// Repo-authored SSR/Chromium/verifier/crosswalk coverage stays in the
-				// ordinary shards. Upstream-suite adapted evidence will use a narrow
-				// testExecution.include once packages/react-select/tests/upstream/** exists.
+				// ordinary shards. Only one-for-one upstream adaptations belong to the
+				// dedicated parity execution group.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-select/tests/upstream/**/*.test.ts'],
+				},
 				test: {
 					name: 'react-select',
 					include: [
@@ -3537,6 +3541,10 @@ export default defineConfig({
 				plugins: [octane()],
 				resolve: {
 					alias: [
+						{
+							find: /^@octanejs\/testing-library$/,
+							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
+						},
 						{
 							find: /^@octanejs\/react-select$/,
 							replacement: resolve(import.meta.dirname, 'packages/react-select/src/index.ts'),

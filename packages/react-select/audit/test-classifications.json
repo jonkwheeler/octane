@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/react-select/tests/upstream/Async.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports eight cases one-for-one from upstream/src/__tests__/Async.test.tsx with unchanged titles."
+    },
+    {
+      "path": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports four cases one-for-one from upstream/src/__tests__/AsyncCreatable.test.tsx with unchanged titles."
+    },
+    {
+      "path": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports fourteen cases one-for-one from upstream/src/__tests__/Creatable.test.tsx with unchanged titles."
+    },
+    {
+      "path": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports twelve cases one-for-one from upstream/src/__tests__/StateManaged.test.tsx with unchanged titles."
+    },
+    {
+      "path": "packages/react-select/tests/upstream-original.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Runs all 255 pinned upstream Jest cases byte-exact against React."
+    },
+    {
+      "path": "packages/react-select/tests/animated.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored animated-component coverage is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/async.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Repo-authored SSR comparison against the published React implementation."
+    },
+    {
+      "path": "packages/react-select/tests/browser.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored Chromium integration coverage is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/client.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored package-foundation verifier is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/creatable.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Repo-authored SSR comparison against the published React implementation."
+    },
+    {
+      "path": "packages/react-select/tests/default-styles.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Repo-authored style crosswalk comparison against pinned upstream source."
+    },
+    {
+      "path": "packages/react-select/tests/leaf-components.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Repo-authored leaf-component comparison against the published React implementation."
+    },
+    {
+      "path": "packages/react-select/tests/local-crosswalk.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Verifies the repo-authored source crosswalk rather than an upstream runtime case."
+    },
+    {
+      "path": "packages/react-select/tests/nonce-provider.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored nonce-provider coverage is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/octane-server.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored Octane server coverage is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/production-foundation.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored production foundation coverage is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/react-select-contract.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored package contract verifier is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/select-ssr.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Repo-authored SSR comparison against the published React implementation."
+    },
+    {
+      "path": "packages/react-select/tests/server.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored package-foundation server verifier is not counted as adapted upstream evidence."
+    },
+    {
+      "path": "packages/react-select/tests/state-manager.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Repo-authored SSR comparison against the published React implementation."
+    },
+    {
+      "path": "packages/react-select/tests/verifier-negative.test.mjs",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Negative controls for the package verifier are not adapted upstream behavior."
+    }
+  ]
+}
