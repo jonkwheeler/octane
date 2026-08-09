@@ -24,13 +24,12 @@
     {
       "path": "packages/shadcn/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
-      "oracle": "Runs five exact same-fixture scenarios against curated React references derived from the pinned upstream component shapes."
+      "oracle": "Same-fixture runtime comparison citing pinned shadcn-ui/ui@4baadbc6517070ae8f8feb2c97037adc2b305544 sources apps/v4/registry/bases/radix/ui/{badge,button,tabs,dialog,dropdown-menu}.tsx; dialog/dropdown-menu keep import-path-only transforms, while badge/button/tabs document port-selected class-hook adaptations. The local React references are not themselves the pinned oracle."
     },
     {
       "path": "packages/shadcn/tests/divergences.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "shadcn-native-input-events",
-      "reason": "Authenticates the native onInput event contract across all three Octane component bases."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates documented Octane runtime divergences (native onInput, descriptor asChild, Lucide icon resolution) outside the React-parity lane."
     },
     {
       "path": "packages/shadcn/tests/exports.test.ts",
@@ -89,9 +88,8 @@
     },
     {
       "path": "packages/shadcn/tests/sonner.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "shadcn-sonner-theme",
-      "reason": "Authenticates the documented Sonner theme and wrapper adaptation."
+      "disposition": "octane-only-framework-contract",
+      "reason": "Authenticates the documented Sonner theme/wrapper adaptation outside the React-parity lane; not counted as React-parity evidence."
     },
     {
       "path": "packages/shadcn/tests/ssr/server-tier2.test.ts",

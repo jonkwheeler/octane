@@ -1,16 +1,18 @@
 /**
  * Differential parity: the SAME `.tsrx` fixture runs through @octanejs/shadcn
- * (octane) AND a curated React reference (the setup rewrites
+ * (octane) AND a React reference rewritten from
  * `@octanejs/shadcn` → the precompiled upstream barrel and `octane` →
- * `react`). octane's `mountDifferential` mounts both, drives identical events,
+ * `react`. octane's `mountDifferential` mounts both, drives identical events,
  * and asserts byte-identical innerHTML after each step (useId/radix-id tokens
  * canonicalised — see the rig).
  *
- * WHAT EACH FIXTURE PROVES — the references differ in provenance:
- * All references are derived from the pinned upstream shapes but include
- * port-selected class hooks and icon resolution. They prove RUNTIME
- * EQUIVALENCE (Octane and React agree given the curated reference), not
- * byte-identical upstream source fidelity.
+ * ORACLE LINEAGE — each React reference cites a pinned upstream source at
+ * shadcn-ui/ui@4baadbc6517070ae8f8feb2c97037adc2b305544 under
+ * apps/v4/registry/bases/radix/ui/. dialog/dropdown-menu keep import-path-only
+ * transforms; badge/button/tabs document port-selected class-hook adaptations
+ * plus local icon-placeholder resolution. The local React files are not
+ * themselves the pinned oracle; they are lineage evidence for same-fixture
+ * runtime equivalence under those cited transforms.
  *
  * Portal'd content (dialog content/overlay, dropdown menu content) lands on
  * document.body on BOTH runtimes, so — exactly like radix's parity suite — the

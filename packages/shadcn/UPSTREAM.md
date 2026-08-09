@@ -45,13 +45,25 @@ their snapshots/fixtures. Those suites exercise registry and CLI behavior; they
 are inventoried but not treated as React component parity.
 
 The bounded `shadcn-runtime-differential` lane selects five exact cases from one
-shared fixture. Its curated React references are derived from the pinned
-upstream component shapes but include port-selected class hooks and local icon
-resolution. The lane therefore establishes React/Octane runtime equivalence for
-all five cases, not byte-identical upstream source fidelity. A second required
-adapted-contract lane authenticates the package's structured native-input,
-descriptor-`asChild`, icon-resolution, and Sonner-theme divergences. All other
-local tests are classified as Octane framework contracts.
+shared fixture and cites these pinned upstream sources at
+`4baadbc6517070ae8f8feb2c97037adc2b305544`:
+
+| Local React reference | Cited upstream source | Allowed transform |
+| --- | --- | --- |
+| `tests/differential/upstream/badge.tsx` | `apps/v4/registry/bases/radix/ui/badge.tsx` | Port-selected class hooks for the package's default-Tailwind flavor |
+| `tests/differential/upstream/button.tsx` | `apps/v4/registry/bases/radix/ui/button.tsx` | Port-selected class hooks; plain `<button>` host matching the Octane port |
+| `tests/differential/upstream/tabs.tsx` | `apps/v4/registry/bases/radix/ui/tabs.tsx` | Port-selected class hooks; local `utils` import rewrite |
+| `tests/differential/upstream/dialog.tsx` | `apps/v4/registry/bases/radix/ui/dialog.tsx` | Import-path rewrite only |
+| `tests/differential/upstream/dropdown-menu.tsx` | `apps/v4/registry/bases/radix/ui/dropdown-menu.tsx` | Import-path rewrite only |
+| `tests/differential/upstream/icon-placeholder.tsx` | CLI `iconLibrary: "lucide"` resolution | Local lucide-react shim used by vendored references |
+
+Those local React references are lineage evidence with the transforms above; they
+are not themselves the pinned upstream oracle. The lane proves same-fixture
+React/Octane runtime equivalence under that cited lineage. Structured
+native-input, descriptor-`asChild`, icon-resolution, and Sonner-theme
+divergences remain authenticated by ordinary-shard Octane-only tests and are
+not counted as React-parity evidence. All other local tests are classified as
+Octane framework contracts.
 
 ## Monitoring
 

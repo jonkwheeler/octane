@@ -45,11 +45,6 @@ try {
 	errors.push(`react-hook-form type evidence is invalid: ${error.message}`);
 }
 try {
-	verifyPortTestClassifications(REPO);
-} catch (error) {
-	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
-}
-try {
 	verifyLivestoreTypes(REPO);
 } catch (error) {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);
@@ -136,7 +131,11 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))) {
+		// Livestore uses a dedicated classifier with different dispositions.
+		if (
+			binding !== 'livestore' &&
+			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
+		) {
 			verifyPortTestClassifications(REPO, binding);
 		}
 		await verifyManifestFiles(manifest, REPO);
@@ -145,8 +144,10 @@ for (const relativeFile of BINDING_MANIFESTS) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
 		if (!validateOnly) {
-			const action = manifest.provenance.verification === 'verified' ? 'run-required' : 'validate';
-			execFileSync(process.execPath, [HARNESS_PATH, action, '--manifest', relativeFile], {
+			// Execute every available required lane regardless of verification
+			// status. recorded-unverified means incomplete upstream evidence, not
+			// "skip registered oracles" — otherwise a failing required lane is inert.
+			execFileSync(process.execPath, [HARNESS_PATH, 'run-required', '--manifest', relativeFile], {
 				cwd: REPO,
 				stdio: 'inherit',
 			});

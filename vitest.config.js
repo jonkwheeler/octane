@@ -2510,15 +2510,8 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					// Manifest lane `project: "shadcn"` owns only these two files; the rest of
-					// the local suite stays on ordinary shards as Octane framework contracts.
-					include: [
-						'packages/shadcn/tests/divergences.test.ts',
-						'packages/shadcn/tests/sonner.test.ts',
-					],
-				},
+				// No react-parity lane owns project "shadcn". Divergence/Sonner
+				// authentication stays on ordinary shards as octane-only evidence.
 				test: {
 					name: 'shadcn',
 					include: [
