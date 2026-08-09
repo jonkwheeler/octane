@@ -18,6 +18,7 @@
     "description": "Streaming AI, GraphQL, server state, live IndexedDB data, type-safe routes, and React Router-style APIs.",
     "packages": [
       "@octanejs/apollo-client",
+      "@octanejs/livestore",
       "@octanejs/dexie",
       "@octanejs/nuqs",
       "@octanejs/remix-router",
