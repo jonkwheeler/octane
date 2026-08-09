@@ -94,6 +94,16 @@
           "path": "packages/valtio/tests/_fixtures/store.tsrx",
           "role": "support",
           "sha256": "a4ce7f3e535cd5c28698b688fbdf6c967e1649b19f39ef9b10b96fcf196335d2"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "be57f6f9b3dfa0dcaee6a79cfc5a477154ec07ab96f34260a718e3a1c909237f"
         }
       ]
     },
