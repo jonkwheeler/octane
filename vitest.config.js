@@ -1283,6 +1283,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'remix-router-differential',
 					include: ['packages/remix-router/tests/differential/**/*.test.ts'],
@@ -1318,6 +1319,7 @@ export default defineConfig({
 				// the binding's plain-.ts hooks run against the server runtime.
 				// Node environment; the React side renders via react-dom/server over
 				// an isolated SSR cache so concurrent client setup cannot delete it.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'remix-router-ssr',
 					include: ['packages/remix-router/tests/ssr/**/*.test.ts'],
