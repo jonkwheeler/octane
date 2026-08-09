@@ -7,7 +7,7 @@ import {
 	mockIsIntersecting,
 	setupIntersectionMocking,
 } from '../src/test-utils';
-import { observe } from '../src/observe';
+import { defaultFallbackInView, observe } from '../src/observe';
 import {
 	ComponentProbe,
 	EffectPoolProbe,
@@ -285,5 +285,25 @@ describe('Octane binding', () => {
 		expect(onChange).toHaveBeenCalledWith(false, expect.objectContaining({ target }));
 		cleanup?.();
 		result.unmount();
+	});
+
+	it('survives sync defaultFallbackInView with triggerOnce without TDZ', () => {
+		const original = window.IntersectionObserver;
+		// @ts-expect-error intentional unsupported environment
+		delete window.IntersectionObserver;
+		defaultFallbackInView(true);
+		try {
+			const onChange = vi.fn();
+			const result = mount(EffectProbe, {
+				onChange,
+				triggerOnce: true,
+			});
+			expect(onChange).toHaveBeenCalledOnce();
+			expect(onChange).toHaveBeenCalledWith(true, expect.anything());
+			result.unmount();
+		} finally {
+			defaultFallbackInView(undefined);
+			window.IntersectionObserver = original;
+		}
 	});
 });

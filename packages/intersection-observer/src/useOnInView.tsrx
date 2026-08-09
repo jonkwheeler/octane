@@ -35,8 +35,21 @@ export function useOnInView(
 		cleanupExisting();
 		observedElement.current = node;
 		let destroyed = false;
+		// `let` (not `const`) so a synchronous observe callback from
+		// defaultFallbackInView can call stopObserving without hitting TDZ.
+		let destroyObserver: (() => void) | undefined;
 
-		const destroyObserver = observe(node, (inView, entry) => {
+		function stopObserving() {
+			if (destroyed) return;
+			destroyed = true;
+			destroyObserver?.();
+			destroyObserver = undefined;
+			observedElement.current = null;
+			observerCleanup.current = undefined;
+			lastInView.current = undefined;
+		}
+
+		destroyObserver = observe(node, (inView, entry) => {
 			const previousInView = lastInView.current;
 			lastInView.current = inView;
 			if (previousInView === undefined && !inView) return;
@@ -53,13 +66,11 @@ export function useOnInView(
 			scrollMargin: options.scrollMargin,
 		});
 
-		function stopObserving() {
-			if (destroyed) return;
-			destroyed = true;
+		if (destroyed) {
+			// Sync triggerOnce already requested stop before observe returned.
 			destroyObserver();
-			observedElement.current = null;
-			observerCleanup.current = undefined;
-			lastInView.current = undefined;
+			destroyObserver = undefined;
+			return;
 		}
 
 		observerCleanup.current = stopObserving;
