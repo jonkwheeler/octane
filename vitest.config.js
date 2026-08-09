@@ -1308,6 +1308,8 @@ export default defineConfig({
 					name: 'formisch-differential',
 					include: ['packages/formisch/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
+					// Rewrites the fixture imports so the React side runs real @formisch/react.
+					globalSetup: ['packages/formisch/tests/differential/_setup.ts'],
 					setupFiles: ['packages/formisch/tests/conformance/test-setup.ts'],
 					globals: false,
 				},

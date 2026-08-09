@@ -16,8 +16,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/formisch/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/formisch/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
@@ -27,7 +31,9 @@
         "packages/formisch/tests/upstream/frameworks/react/src",
         "packages/formisch/audit/resolver-canary"
       ],
-      "include": ["\\.test\\.(?:ts|tsrx)$"],
+      "include": [
+        "\\.test\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -84,7 +90,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -139,7 +145,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -194,7 +200,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -249,7 +255,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -304,7 +310,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -359,7 +365,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -385,34 +391,39 @@
       "environment": "workspace-node",
       "project": "formisch-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "The same Formisch field-update fixture runs against Octane and the real @formisch/react adapter.",
+      "notes": "The same Formisch field-update fixture runs through Octane and real @formisch/react via the shared differential rig.",
       "files": [
         {
-          "path": "packages/formisch/tests/_fixtures/differential.test.tsrx",
+          "path": "packages/formisch/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "fc2b2b2456764989448e0d2a5a3f42e7e436cfe54db516d6e35ba3692bd54056",
+          "sha256": "6ed01ee2a68dc8b6b24a366af4b8b9767c9112e3ce8bf75d11ed1d0742c627bd",
           "cases": [
             {
               "id": "differential:field-update",
-              "testName": "matches the real React adapter across a programmatic field update",
-              "fullName": "Formisch differential parity matches the real React adapter across a programmatic field update"
+              "testName": "field update: programmatic onChange renders byte-identical",
+              "fullName": "differential: @octanejs/formisch vs @formisch/react field update: programmatic onChange renders byte-identical"
             }
           ]
         },
         {
-          "path": "packages/formisch/tests/differential/parity.test.ts",
-          "role": "support",
-          "sha256": "5c1e558ceb6526a917f3eed3f4ea018a1ff8c96e2380868ce2352135999dd3ae"
-        },
-        {
           "path": "packages/formisch/tests/_fixtures/differential.tsrx",
           "role": "support",
-          "sha256": "e16bc568b8309d07a9d64f96f6782196f78b9f00a90c7c8b3445e2f336e4a262"
+          "sha256": "42e018d92e9ea0120f9ffd5969a9f85f42720eaaebde8b1f2961932940448c50"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+        },
+        {
+          "path": "packages/formisch/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "25a42f1f6a730f8eb5a8a8e7de0e6ea2f7b3fd6f2bd8e05843445e61a6b1b8d3"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c9bec9f0ba864e0fa39e807a84a51af04776d90277279dbaa520076a79875989"
+          "sha256": "a4167b3f1a9413d3e921886ba806360f04f893996769d67c5eb510b1f44eefeb"
         }
       ]
     },
@@ -592,7 +603,9 @@
   "divergences": [
     {
       "id": "formisch-no-strictmode-replay",
-      "caseIds": ["runtime:5457ff55c8742f8e"],
+      "caseIds": [
+        "runtime:5457ff55c8742f8e"
+      ],
       "upstreamResult": "React StrictMode replays effects while retaining a live signal subscription.",
       "octaneResult": "Octane has no StrictMode development replay; a committed subscription remains live normally.",
       "rationale": "Octane intentionally does not implement StrictMode double invocation.",

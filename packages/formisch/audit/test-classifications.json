@@ -2,12 +2,6 @@
   "schemaVersion": 1,
   "tests": [
     {
-      "path": "packages/formisch/tests/_fixtures/differential.test.tsrx",
-      "disposition": "react-octane-differential-fixture",
-      "reason": "The shared scenario is compiled for both real @formisch/react and @octanejs/formisch.",
-      "oracle": "Pinned @formisch/react renders the reference observable output."
-    },
-    {
       "path": "packages/formisch/tests/conformance/core.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks the integrated core surface through the Octane package boundary."
