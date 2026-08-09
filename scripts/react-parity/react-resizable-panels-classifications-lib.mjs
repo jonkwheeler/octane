@@ -5,6 +5,8 @@ const CONFIG = 'packages/react-resizable-panels/audit/test-classifications.json'
 const MANIFEST = 'packages/react-resizable-panels/audit/react-parity.json';
 const TEST_INVENTORY = 'packages/react-resizable-panels/audit/test-inventory.json';
 const PACKAGE_PREFIX = 'packages/react-resizable-panels/';
+const AUDIT_SCRIPT_TEST_ROOT = 'scripts/react-parity';
+const AUDIT_SCRIPT_TEST_PATTERN = /^react-resizable-panels-.+-lib\.test\.mjs$/;
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
@@ -28,17 +30,33 @@ function discoverTestFiles(testsRoot, root) {
 		.sort();
 }
 
+function discoverAuditScriptTests(root) {
+	const scriptRoot = resolve(root, AUDIT_SCRIPT_TEST_ROOT);
+	if (!existsSync(scriptRoot)) return [];
+	return readdirSync(scriptRoot, { withFileTypes: true })
+		.filter(function keepAuditTests(entry) {
+			return entry.isFile() && AUDIT_SCRIPT_TEST_PATTERN.test(entry.name);
+		})
+		.map(function toPortablePath(entry) {
+			return `${AUDIT_SCRIPT_TEST_ROOT}/${entry.name}`;
+		})
+		.sort();
+}
+
 /**
  * Port-authored tests stay in test-classifications.json. Adapted upstream copies
  * are exhaustively accounted for by equating the discovered tests/upstream/**
  * set to inventory adaptedPath entries (with an extra-file negative control).
+ * Port-authored audit verifiers under scripts/react-parity/ are classified too.
  */
 export function verifyReactResizablePanelsTestClassifications(root) {
 	const testsRoot = resolve(root, 'packages/react-resizable-panels/tests');
 	const discovered = discoverTestFiles(testsRoot, root);
-	const portAuthored = discovered.filter(function excludeUpstreamCopy(path) {
+	const packagePortAuthored = discovered.filter(function excludeUpstreamCopy(path) {
 		return !path.includes('/tests/upstream/');
 	});
+	const auditScriptTests = discoverAuditScriptTests(root);
+	const portAuthored = [...packagePortAuthored, ...auditScriptTests].sort();
 	const adaptedDiscovered = discovered
 		.filter(function keepUpstreamCopy(path) {
 			return path.includes('/tests/upstream/');
@@ -76,7 +94,7 @@ export function verifyReactResizablePanelsTestClassifications(root) {
 		.sort();
 	if (JSON.stringify(portAuthored) !== JSON.stringify(declared)) {
 		throw new Error(
-			'every port-authored react-resizable-panels test must have exactly one classification',
+			'every port-authored react-resizable-panels test (package + scripts/react-parity audit) must have exactly one classification',
 		);
 	}
 	for (const entry of config.tests) {

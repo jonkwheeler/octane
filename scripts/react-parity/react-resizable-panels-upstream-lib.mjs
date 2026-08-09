@@ -124,6 +124,24 @@ function isTestCall(expression) {
 	return ts.isIdentifier(expression) && (expression.text === 'it' || expression.text === 'test');
 }
 
+function isTestEachCall(expression) {
+	return (
+		ts.isCallExpression(expression) &&
+		ts.isPropertyAccessExpression(expression.expression) &&
+		ts.isIdentifier(expression.expression.expression) &&
+		(expression.expression.expression.text === 'it' ||
+			expression.expression.expression.text === 'test') &&
+		expression.expression.name.text === 'each'
+	);
+}
+
+function eachTableText(eachCall, printer, sourceFile) {
+	if (eachCall.arguments.length === 0) return null;
+	return normalizeAssertionText(
+		printer.printNode(ts.EmitHint.Unspecified, eachCall.arguments[0], sourceFile),
+	);
+}
+
 function callbackBody(call) {
 	for (const argument of call.arguments) {
 		if (ts.isArrowFunction(argument) || ts.isFunctionExpression(argument)) {
@@ -188,7 +206,7 @@ export function extractCaseLedger(source, fileName) {
 	const cases = [];
 	const occurrenceCounts = new Map();
 
-	function recordCase(stack, title, body) {
+	function recordCase(stack, title, body, parameterization) {
 		const fullName = [...stack, title].join(' ');
 		const occurrenceKey = fullName;
 		const occurrence = occurrenceCounts.get(occurrenceKey) ?? 0;
@@ -197,6 +215,7 @@ export function extractCaseLedger(source, fileName) {
 			fullName,
 			title,
 			occurrence,
+			parameterization: parameterization ?? null,
 			assertions: extractAssertionsFrom(body, printer, sourceFile),
 			scenarioSteps: extractScenarioSteps(body, printer, sourceFile),
 		});
@@ -214,7 +233,15 @@ export function extractCaseLedger(source, fileName) {
 					return;
 				}
 				if (isTestCall(node.expression)) {
-					recordCase(stack, title, body);
+					recordCase(stack, title, body, null);
+					return;
+				}
+				if (isTestEachCall(node.expression)) {
+					const table = eachTableText(node.expression, printer, sourceFile);
+					if (table === null) {
+						throw new Error(`${fileName}: test.each/it.each registration is missing a data table`);
+					}
+					recordCase(stack, title, body, { kind: 'test.each', table: table });
 					return;
 				}
 			}
@@ -371,6 +398,7 @@ export function expectedAdaptedCaseLedger(upstreamRelative, upstreamSource) {
 			fullName: entry.fullName,
 			title: entry.title,
 			occurrence: entry.occurrence,
+			parameterization: entry.parameterization,
 			assertions: transformCaseAssertions(upstreamRelative, entry.fullName, entry.assertions),
 			scenarioSteps: transformCaseScenarioSteps(
 				upstreamRelative,
@@ -379,6 +407,56 @@ export function expectedAdaptedCaseLedger(upstreamRelative, upstreamSource) {
 			),
 		};
 	});
+}
+
+const USE_ID_FALLBACK_FULL_NAME = 'useId should fallback ot React useId';
+const USE_ID_FALLBACK_UPSTREAM_ASSERTION = "expect(result.current).toBe(':r123:')";
+const USE_ID_FALLBACK_ADAPTED_ASSERTIONS = [
+	'expect(result.current).toEqual(expect.any(String))',
+	'expect(result.current.length).toBeGreaterThan(0)',
+];
+
+/**
+ * Apply only the known useId mock/exact-id divergence transform. Unrelated
+ * assertions and scenario steps continue to be compared against the adapted case.
+ */
+export function applyUseIdFallbackDivergence(entry) {
+	if (entry.fullName !== USE_ID_FALLBACK_FULL_NAME) {
+		throw new Error(`no divergence-specific transform for case "${entry.fullName}"`);
+	}
+	const assertions = [];
+	let expandedExactId = false;
+	for (const assertion of entry.assertions) {
+		if (assertion === USE_ID_FALLBACK_UPSTREAM_ASSERTION) {
+			assertions.push(...USE_ID_FALLBACK_ADAPTED_ASSERTIONS);
+			expandedExactId = true;
+			continue;
+		}
+		assertions.push(assertion);
+	}
+	if (!expandedExactId) {
+		throw new Error(
+			`useId fallback divergence expected upstream assertion ${USE_ID_FALLBACK_UPSTREAM_ASSERTION}`,
+		);
+	}
+	const scenarioSteps = [];
+	let insertedExtraAssertion = false;
+	for (const step of entry.scenarioSteps) {
+		if (step.includes('vi.mock')) continue;
+		scenarioSteps.push(step);
+		if (step === '__ASSERTION__' && !insertedExtraAssertion) {
+			scenarioSteps.push('__ASSERTION__');
+			insertedExtraAssertion = true;
+		}
+	}
+	return {
+		fullName: entry.fullName,
+		title: entry.title,
+		occurrence: entry.occurrence,
+		parameterization: entry.parameterization,
+		assertions: assertions,
+		scenarioSteps: scenarioSteps,
+	};
 }
 
 export function expectedAdaptedAssertionGroups(upstreamRelative, upstreamSource) {
@@ -541,19 +619,39 @@ export function verifyReactResizablePanelsUpstream(repoRoot) {
 				expectedCase.occurrence,
 			);
 			const caseIsDiverged = caseId !== null && diverged.has(caseId);
-			if (!caseIsDiverged) {
-				if (JSON.stringify(expectedCase.assertions) !== JSON.stringify(actualCase.assertions)) {
-					throw new Error(
-						`${adaptedRelative}: assertion groups for "${expectedCase.fullName}" differ from pristine after permitted transformations`,
-					);
-				}
+			let expectedForCompare = expectedCase;
+			if (caseIsDiverged) {
 				if (
-					JSON.stringify(expectedCase.scenarioSteps) !== JSON.stringify(actualCase.scenarioSteps)
+					artifact.path === 'hooks/useId.test.ts' &&
+					expectedCase.fullName === USE_ID_FALLBACK_FULL_NAME
 				) {
+					expectedForCompare = applyUseIdFallbackDivergence(expectedCase);
+				} else {
 					throw new Error(
-						`${adaptedRelative}: scenario structure for "${expectedCase.fullName}" differs from pristine after permitted transformations`,
+						`${adaptedRelative}: diverged case "${expectedCase.fullName}" (${caseId}) has no divergence-specific transform`,
 					);
 				}
+			}
+			if (
+				JSON.stringify(expectedForCompare.parameterization) !==
+				JSON.stringify(actualCase.parameterization)
+			) {
+				throw new Error(
+					`${adaptedRelative}: parameterization for "${expectedCase.fullName}" differs from pristine`,
+				);
+			}
+			if (JSON.stringify(expectedForCompare.assertions) !== JSON.stringify(actualCase.assertions)) {
+				throw new Error(
+					`${adaptedRelative}: assertion groups for "${expectedCase.fullName}" differ from pristine after permitted transformations`,
+				);
+			}
+			if (
+				JSON.stringify(expectedForCompare.scenarioSteps) !==
+				JSON.stringify(actualCase.scenarioSteps)
+			) {
+				throw new Error(
+					`${adaptedRelative}: scenario structure for "${expectedCase.fullName}" differs from pristine after permitted transformations`,
+				);
 			}
 			assertionGroups += actualCase.assertions.length;
 		}
@@ -565,9 +663,15 @@ export function verifyReactResizablePanelsUpstream(repoRoot) {
 			}
 		}
 
-		const leafTitles = expectedLedger.map(function titleOf(entry) {
-			return entry.title;
-		});
+		// Direct test()/it() titles are recorded in test-inventory.json. Parameterized
+		// test.each/it.each registrations are verified via the case ledger table/body.
+		const leafTitles = expectedLedger
+			.filter(function keepDirect(entry) {
+				return entry.parameterization === null;
+			})
+			.map(function titleOf(entry) {
+				return entry.title;
+			});
 		if (JSON.stringify([...artifact.identities]) !== JSON.stringify(leafTitles)) {
 			throw new Error(`${artifact.path}: inventory identities drifted from upstream source cases`);
 		}

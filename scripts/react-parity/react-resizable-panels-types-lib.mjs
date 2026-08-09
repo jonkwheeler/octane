@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/react-resizable-panels/audit/type-parity.json';
@@ -141,6 +141,54 @@ function structuralSource(source, fileName) {
 		.trim();
 }
 
+/**
+ * Resolve a lane's declared tsconfig project and return inventoried probe paths
+ * that the TypeScript program actually includes (relative to probeRoot).
+ */
+export function projectIncludedProbes(repoRoot, projectPath, probeRoot) {
+	const absoluteProject = resolve(repoRoot, projectPath);
+	if (!existsSync(absoluteProject)) {
+		throw new Error(`missing TypeScript project: ${projectPath}`);
+	}
+	const configFile = ts.readConfigFile(absoluteProject, function read(path) {
+		return ts.sys.readFile(path);
+	});
+	if (configFile.error) {
+		throw new Error(
+			`failed to read TypeScript project ${projectPath}: ${ts.flattenDiagnosticMessageText(configFile.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(configFile.config, ts.sys, dirname(absoluteProject));
+	// TS6053 / 18003: empty include is a valid "includes nothing" outcome for this check.
+	const fatalErrors = parsed.errors.filter(function keepFatal(error) {
+		return error.code !== 18003;
+	});
+	if (fatalErrors.length > 0) {
+		throw new Error(
+			`failed to parse TypeScript project ${projectPath}: ${ts.flattenDiagnosticMessageText(fatalErrors[0].messageText, '\n')}`,
+		);
+	}
+	const absoluteProbeRoot = resolve(repoRoot, probeRoot);
+	const included = [];
+	for (const fileName of parsed.fileNames) {
+		const relativePath = posix(relative(absoluteProbeRoot, fileName));
+		if (relativePath.startsWith('..') || relativePath.includes('node_modules')) continue;
+		if (!/(?:\.test-d\.ts|\.ts)$/.test(relativePath) || relativePath.endsWith('tsconfig.json')) {
+			continue;
+		}
+		if (
+			relativePath.includes('tsconfig') ||
+			relativePath === 'pristine.ts' ||
+			relativePath === 'expressibility.ts' ||
+			relativePath === 'proposed-public-types.ts'
+		) {
+			continue;
+		}
+		included.push(relativePath);
+	}
+	return included.sort();
+}
+
 export function buildTypeInventory(root, config) {
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
@@ -180,6 +228,35 @@ export function buildTypeInventory(root, config) {
 	return { upstream, adapted };
 }
 
+export function verifyLaneProjectsIncludeProbes(root, config, inventory) {
+	const laneRoots = {
+		pristine: config.upstreamRoot,
+		adapted: config.adaptedRoot,
+	};
+	const laneInventories = {
+		pristine: inventory.upstream,
+		adapted: inventory.adapted,
+	};
+	for (const [laneName, lane] of Object.entries(config.lanes ?? {})) {
+		if (!lane.project) {
+			throw new Error(`type-parity lane ${laneName} is missing a compiler project`);
+		}
+		const probeRoot = laneRoots[laneName];
+		if (!probeRoot) {
+			throw new Error(`type-parity lane ${laneName} has no mapped probe root`);
+		}
+		const included = projectIncludedProbes(root, lane.project, probeRoot);
+		const inventoried = laneInventories[laneName].map(function pathOf(entry) {
+			return entry.path;
+		});
+		if (JSON.stringify(included) !== JSON.stringify(inventoried)) {
+			throw new Error(
+				`${laneName} TypeScript project must include exactly the inventoried probes (and no unintended probe); included=[${included.join(', ')}] inventoried=[${inventoried.join(', ')}]`,
+			);
+		}
+	}
+}
+
 export function verifyReactResizablePanelsTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) {
 	const absoluteConfig = resolve(root, configPath);
 	if (!existsSync(absoluteConfig)) throw new Error(`missing type parity config: ${configPath}`);
@@ -196,6 +273,7 @@ export function verifyReactResizablePanelsTypes(root, { configPath = TYPE_PARITY
 			);
 		}
 	}
+	verifyLaneProjectsIncludeProbes(root, config, inventory);
 	return {
 		files: inventory.upstream.length,
 		assertions: inventory.upstream.reduce(function sumAssertions(sum, file) {

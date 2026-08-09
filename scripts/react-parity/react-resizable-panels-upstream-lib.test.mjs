@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 import {
+	applyUseIdFallbackDivergence,
 	compareRuntimeIdentityMultisets,
 	expectedAdaptedAssertionGroups,
 	expectedAdaptedCaseLedger,
@@ -137,4 +138,86 @@ test('replacing an interaction with direct state mutation fails scenario structu
 			return step.includes('result.current =');
 		}),
 	);
+});
+
+test('test.each bodies enter the case ledger with table, title, and assertions', function recordsEach() {
+	const upstream = readRepo(
+		'packages/react-resizable-panels/upstream/source/lib/global/utils/objectsEqual.test.ts',
+	);
+	const adapted = readRepo(
+		'packages/react-resizable-panels/tests/upstream/global/utils/objectsEqual.test.ts',
+	);
+	const expected = expectedAdaptedCaseLedger('global/utils/objectsEqual.test.ts', upstream);
+	const actual = extractCaseLedger(adapted, 'global/utils/objectsEqual.test.ts');
+	assert.equal(expected.length, 1);
+	assert.equal(actual.length, 1);
+	assert.equal(expected[0].parameterization.kind, 'test.each');
+	assert.ok(expected[0].parameterization.table.includes('EMPTY'));
+	assert.equal(expected[0].title, 'objectsEqual: %o, %o -> %o');
+	assert.deepEqual(expected[0].assertions, actual[0].assertions);
+	assert.deepEqual(expected[0].scenarioSteps, actual[0].scenarioSteps);
+	assert.deepEqual(expected[0].parameterization, actual[0].parameterization);
+});
+
+test('weakening a test.each body fails while expanded runtime identities stay intact', function rejectsWeakenedEach() {
+	const upstream = readRepo(
+		'packages/react-resizable-panels/upstream/source/lib/global/utils/objectsEqual.test.ts',
+	);
+	const adapted = readRepo(
+		'packages/react-resizable-panels/tests/upstream/global/utils/objectsEqual.test.ts',
+	);
+	const expected = expectedAdaptedCaseLedger('global/utils/objectsEqual.test.ts', upstream);
+	const weakened = adapted.replace(
+		'expect(objectsEqual(a, b)).toBe(expected);',
+		'expect(true).toBe(true);',
+	);
+	const actual = extractCaseLedger(weakened, 'global/utils/objectsEqual.test.ts');
+	assert.equal(actual.length, expected.length);
+	assert.deepEqual(actual[0].parameterization, expected[0].parameterization);
+	assert.equal(actual[0].title, expected[0].title);
+	assert.notDeepEqual(actual[0].assertions, expected[0].assertions);
+	const pristine = JSON.parse(
+		readRepo('packages/react-resizable-panels/audit/pristine-runtime.json'),
+	);
+	const adaptedRuntime = JSON.parse(
+		readRepo('packages/react-resizable-panels/audit/adapted-runtime.json'),
+	);
+	const identityDiff = compareRuntimeIdentityMultisets(
+		runtimeIdentityMultiset(pristine, mapPristineFileToAdapted),
+		runtimeIdentityMultiset(adaptedRuntime, function identity(file) {
+			return file;
+		}),
+	);
+	assert.deepEqual(identityDiff.missing, []);
+	assert.deepEqual(identityDiff.unexpected, []);
+});
+
+test('useId divergence transform keeps unrelated weakening fail-closed', function rejectsUnrelatedDivergedWeakening() {
+	const upstream = readRepo(
+		'packages/react-resizable-panels/upstream/source/lib/hooks/useId.test.ts',
+	);
+	const adapted = readRepo('packages/react-resizable-panels/tests/upstream/hooks/useId.test.ts');
+	const expected = expectedAdaptedCaseLedger('hooks/useId.test.ts', upstream);
+	const fallbackExpected = expected.find(function find(entry) {
+		return entry.fullName === 'useId should fallback ot React useId';
+	});
+	assert.ok(fallbackExpected);
+	const transformed = applyUseIdFallbackDivergence(fallbackExpected);
+	const actual = extractCaseLedger(adapted, 'hooks/useId.test.ts');
+	const fallbackActual = actual.find(function find(entry) {
+		return entry.fullName === 'useId should fallback ot React useId';
+	});
+	assert.ok(fallbackActual);
+	assert.deepEqual(fallbackActual.assertions, transformed.assertions);
+	assert.deepEqual(fallbackActual.scenarioSteps, transformed.scenarioSteps);
+	const weakened = adapted.replace(
+		'expect(result.current.length).toBeGreaterThan(0);',
+		'expect(true).toBe(true);',
+	);
+	const weakenedLedger = extractCaseLedger(weakened, 'hooks/useId.test.ts');
+	const weakenedFallback = weakenedLedger.find(function find(entry) {
+		return entry.fullName === 'useId should fallback ot React useId';
+	});
+	assert.ok(weakenedFallback);
+	assert.notDeepEqual(weakenedFallback.assertions, transformed.assertions);
 });
