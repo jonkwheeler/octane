@@ -12,9 +12,9 @@ import { createRoot as createOctaneRoot } from '@octanejs/three';
 import { createRoot as createOctaneDomRoot } from 'octane';
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { View } from '../src/web/View.three.tsrx';
-import { ViewDomBoundary } from './_fixtures/view-dom-boundary.tsrx';
-import { ViewPortScene, ViewScene } from './_fixtures/view.three.tsrx';
+import { View } from '../../src/web/View.three.tsrx';
+import { ViewDomBoundary } from '../_fixtures/view-dom-boundary.tsrx';
+import { ViewPortScene, ViewScene } from '../_fixtures/view.three.tsrx';
 
 beforeAll(() => {
 	(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -193,7 +193,7 @@ describe('View', () => {
 		expect(ReactView.Port).toBeTypeOf('function');
 	});
 
-	// OCTANE DIVERGENCE[view-renderer-boundary][runtime:74a010948a1b6d68]
+	// OCTANE DIVERGENCE[view-renderer-boundary][differential:view-rendering]
 	it('documents the outside-DOM renderer boundary while keeping View.Port callable', () => {
 		const root = createOctaneDomRoot(document.createElement('div'));
 		expect(() => root.render(ViewDomBoundary, {})).toThrow(

@@ -11,7 +11,7 @@
     "verification": "verified"
   },
   "upstreamSuites": {
-    "runtime": "insufficient",
+    "runtime": "absent",
     "types": "absent"
   },
   "adaptedRoots": {
@@ -23,12 +23,17 @@
     "tests": {
       "roots": ["packages/drei/tests"],
       "include": ["\\.test\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-      "exclude": []
+      "exclude": [
+        "tests/config\\.test\\.ts$",
+        "tests/crosswalk-guard\\.test\\.ts$",
+        "tests/react-parity-guard\\.test\\.ts$",
+        "tests/differential/"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 299,
-    "uniqueIdentities": 299,
+    "inventoryEntries": 284,
+    "uniqueIdentities": 284,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -39,7 +44,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b3fdd1f99d41b1e1cb9ac4e0eefa1dfc03c27e36a11df2e1c9e6263fe7e953fa"
+      "lockfileSha256": "469220e8697de9430a72891ba87d8bb224c4faa8eef1cb07fe43e943f0a7f962"
     }
   },
   "lanes": [
@@ -50,7 +55,7 @@
       "environment": "workspace-node",
       "project": "drei",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs all repository-authored Drei tests. 101 of 104 files execute paired scenarios against the pinned React implementation; three files validate Octane-only renderer and audit contracts.",
+      "notes": "Runs the 100 paired React/Octane characterization files. Octane-only guards stay in drei-guards; the View canary lives in drei-differential.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/drei/audit/adapted-runtime.json"
@@ -59,27 +64,27 @@
         {
           "path": "packages/drei/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "498fe1c2f23f33969df8dcb2c89f831537de82354f38a25551144a6939ec5188"
+          "sha256": "432dfed848a872c3886ea9982554154222314e57416f851f6dfb2bf973bdcc67"
         },
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "e5cf30e0e2bbd136946ef798e5cd59540cd4e7a8a136bc1e69712a29e42b5a56"
+          "sha256": "681b85024ac2b7af94065fd16a4714f41a5ceb90954e2d3ba37c3376321a41bb"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "c42fc99e0e3aa718b313f25c41360659f8e8527e9530a0d3e8732ec273d3bfab"
+          "sha256": "1207635fb6ab8addb97394de470984015d293df577a75fc5c115cc2bb56128be"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
           "role": "support",
-          "sha256": "b5ba695aa025061b55b62a4cbadf8dfd654c82ef8e3ed960c245a4544ea51441"
+          "sha256": "9e88401f6d60bce151ab106b8e41ad4cbe30501218a6899e6f79e263b9409236"
         },
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "c709f4aa05b8c6e0326ffaec038b736c23f5b3e2978de8f5173d6e19693191c8"
+          "sha256": "43134d441350880596c79370b03bad7befc2c671b7d101e4bd624c4de6bc278d"
         }
       ]
     },
@@ -88,14 +93,14 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "drei",
+      "project": "drei-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "A focused canary proving that parity selection resolves and executes a paired React/Octane Three-renderer scenario.",
+      "notes": "Isolated View canary proving paired React/Octane Three-renderer selection outside the full adapted suite.",
       "files": [
         {
-          "path": "packages/drei/tests/view.test.ts",
+          "path": "packages/drei/tests/differential/view.test.ts",
           "role": "test",
-          "sha256": "41fb1410383cba251f72ccbafdce87e2ce30fdb9b150b4a6cabfe3118218e9b0",
+          "sha256": "84950fe5d6b3673a0d67d30cc80eea524b8a4d48608ec0831db23164876491c9",
           "cases": [
             {
               "id": "differential:view-rendering",
@@ -105,12 +110,78 @@
           ]
         }
       ]
+    },
+    {
+      "id": "drei-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Repo-authored public-surface type assertions against pinned @react-three/drei with tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/drei/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/drei/typetests/pristine/public-api.test-d.ts",
+          "role": "test",
+          "sha256": "fdf17cddfdc52e8cb630da6d412b1f2b0b6b293813e992f2bc2311a934fcc1b4",
+          "cases": [
+            {
+              "id": "types:pristine",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/drei/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "346135592efdf66be1fa1978bb6a1c79256fbbbe10d6e0e6ae28200524fed97c"
+        }
+      ]
+    },
+    {
+      "id": "drei-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same assertion groups against @octanejs/drei with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/drei/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/drei/typetests/adapted/public-api.test-d.ts",
+          "role": "test",
+          "sha256": "8819e2eee6d8bbd7d078f75de1964ca834da515dff49c9375de62da348b92ba5",
+          "cases": [
+            {
+              "id": "types:adapted",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/drei/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "e367114dd3ea6ac51e879cbdb14a440e3043d00cca2d45824ffadc047c4de5c1"
+        }
+      ]
     }
   ],
   "divergences": [
     {
       "id": "view-renderer-boundary",
-      "caseIds": ["runtime:74a010948a1b6d68"],
+      "caseIds": ["differential:view-rendering"],
       "upstreamResult": "React Drei can move View children between DOM and Three roots through tunnel-rat.",
       "octaneResult": "Inline Canvas View works, while a DOM-root View reports Octane's renderer-boundary diagnostic and View.Port remains callable as a no-op.",
       "rationale": "Octane components are statically owned by one renderer.",

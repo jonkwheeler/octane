@@ -26,30 +26,39 @@ real-browser observation boundary.
 The complete tagged test tree contains exactly four artifacts, all under
 `test/e2e/`: `App.tsx`, `e2e.sh`, `snapshot.test.ts`, and its Linux PNG snapshot.
 They form one whole-gallery Playwright screenshot case. Their byte hashes and
-individual dispositions are recorded in `audit/upstream-test-artifacts.json`.
-That single visual smoke test is retained as upstream evidence but is
-insufficient as an export-level runtime suite, so it is not mislabeled as a
-one-for-one adapted lane.
+dispositions are recorded in `audit/upstream-test-artifacts.json`.
+
+That gallery runner is **out of scope** for the Vitest/Jest React-parity harness:
+`e2e.sh` packs a release tarball and boots temporary Vite/Next apps before
+Playwright compares a whole-canvas screenshot. Octane's parity execution kinds
+are `vitest-full` and `jest-full`, so the pin treats the upstream runtime suite
+as `absent` for harness purposes while still vendoring the four artifacts with
+an explicit `out-of-scope` reason. Export-level behavior is covered by
+repo-authored paired React/Octane Vitest tests instead.
 
 The tag contains no upstream type-test suite. The upstream `tsconfig.json`
 compiles package source, while the `@ts-expect-error` comments in that source are
 inventoried separately so removing one makes the audit fail. The port's
-`typetests/` are repository-authored API checks and continue to run in package
-typecheck; they are not represented as adapted upstream type parity.
+`typetests/` remain repository-authored API checks. Paired pristine/adapted
+public-surface type lanes under `typetests/{pristine,adapted}/` run through
+`react-parity:check`; the broader `typetests/*.test-d.ts` suite continues in
+package typecheck.
 
 ## Executable parity evidence
 
-`audit/react-parity.json` registers the complete repository-authored Vitest suite
-and a focused paired React/Octane canary with the global `react-parity:check`
-harness. `audit/test-classifications.json` gives every port-authored test file
-exactly one disposition. Paired files import the pinned React Drei oracle in the
-test body; renderer-configuration and audit-guard files are explicitly
-Octane-only and do not count as React-parity evidence.
+`audit/react-parity.json` registers the adapted `drei` Vitest project (paired
+files only), an isolated `drei-differential` View canary, and repo-authored
+pristine/adapted type lanes with the global `react-parity:check` harness.
+`audit/test-classifications.json` gives every port-authored test file exactly
+one disposition. Paired files import the pinned React Drei oracle in the test
+body; `config.test.ts`, `crosswalk-guard.test.ts`, and `react-parity-guard.test.ts`
+are Octane-only and execute in the ordinary `drei-guards` project outside
+`testExecution`.
 
 `audit/runtime-evidence.json` hashes every test file and every collected assertion
-inventory. `audit/upstream-test-artifacts.json` is the empty transformation
-ledger: no upstream test or type suite was adapted. The audit guard includes
-negative controls for a skipped test file, deleted assertion, removed upstream
+inventory. `audit/upstream-test-artifacts.json` records the out-of-scope Playwright
+gallery and an empty transformation ledger. The audit guard includes negative
+controls for a skipped test file, deleted assertion, removed upstream
 `@ts-expect-error` inventory entry, and fabricated upstream type suite.
 
 ## Completeness contract

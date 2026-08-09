@@ -1913,6 +1913,7 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'doom',
 					include: ['playground/octane/src/demos/doom/**/*.test.ts'],
@@ -1929,9 +1930,62 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'drei',
 					include: ['packages/drei/tests/**/*.test.ts'],
+					exclude: [
+						...configDefaults.exclude,
+						'packages/drei/tests/config.test.ts',
+						'packages/drei/tests/crosswalk-guard.test.ts',
+						'packages/drei/tests/react-parity-guard.test.ts',
+						'packages/drei/tests/differential/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },
+				},
+				plugins: [octane({ renderers: DREI_RENDERERS })],
+				resolve: {
+					alias: [
+						...THREE_ALIASES,
+						{
+							find: /^@octanejs\/drei$/,
+							replacement: resolve(import.meta.dirname, 'packages/drei/src/index.ts'),
+						},
+					],
+					dedupe: ['react', 'react-dom', 'three'],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'drei-differential',
+					include: ['packages/drei/tests/differential/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },
+				},
+				plugins: [octane({ renderers: DREI_RENDERERS })],
+				resolve: {
+					alias: [
+						...THREE_ALIASES,
+						{
+							find: /^@octanejs\/drei$/,
+							replacement: resolve(import.meta.dirname, 'packages/drei/src/index.ts'),
+						},
+					],
+					dedupe: ['react', 'react-dom', 'three'],
+				},
+			},
+			{
+				test: {
+					name: 'drei-guards',
+					include: [
+						'packages/drei/tests/config.test.ts',
+						'packages/drei/tests/crosswalk-guard.test.ts',
+						'packages/drei/tests/react-parity-guard.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },

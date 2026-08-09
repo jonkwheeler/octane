@@ -127,6 +127,11 @@
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
     },
     {
+      "path": "packages/drei/tests/differential/view.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
+    },
+    {
       "path": "packages/drei/tests/drag-controls.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
@@ -508,11 +513,6 @@
     },
     {
       "path": "packages/drei/tests/video-textures.test.ts",
-      "disposition": "react-octane-differential",
-      "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
-    },
-    {
-      "path": "packages/drei/tests/view.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
     },

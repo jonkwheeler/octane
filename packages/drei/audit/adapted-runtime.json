@@ -18,11 +18,9 @@
     "packages/drei/tests/center.test.ts",
     "packages/drei/tests/clone.test.ts",
     "packages/drei/tests/cloud.test.ts",
-    "packages/drei/tests/config.test.ts",
     "packages/drei/tests/contact-shadows.test.ts",
     "packages/drei/tests/context-bridge.test.ts",
     "packages/drei/tests/core-utilities.test.ts",
-    "packages/drei/tests/crosswalk-guard.test.ts",
     "packages/drei/tests/curve-modifier.test.ts",
     "packages/drei/tests/cycle-raycast.test.ts",
     "packages/drei/tests/decal.test.ts",
@@ -70,7 +68,6 @@
     "packages/drei/tests/preload.test.ts",
     "packages/drei/tests/presentation-controls.test.ts",
     "packages/drei/tests/progress.test.ts",
-    "packages/drei/tests/react-parity-guard.test.ts",
     "packages/drei/tests/render-textures.test.ts",
     "packages/drei/tests/resize.test.ts",
     "packages/drei/tests/rounded-box.test.ts",
@@ -105,7 +102,6 @@
     "packages/drei/tests/use-animations.test.ts",
     "packages/drei/tests/use-cursor.test.ts",
     "packages/drei/tests/video-textures.test.ts",
-    "packages/drei/tests/view.test.ts",
     "packages/drei/tests/wireframe.test.ts"
   ],
   "tests": [
@@ -345,11 +341,6 @@
       "fullName": "Clouds wraps a standalone Cloud in an implicit Clouds provider"
     },
     {
-      "id": "runtime:5d66c99c5968461f",
-      "file": "packages/drei/tests/config.test.ts",
-      "fullName": "@octanejs/drei renderer preset composes Three and declares the Html DOM child boundary"
-    },
-    {
       "id": "runtime:fe03de0ad719bb7e",
       "file": "packages/drei/tests/contact-shadows.test.ts",
       "fullName": "ContactShadows matches React geometry, camera, material, finite rendering, blur passes, and scene restoration"
@@ -383,36 +374,6 @@
       "id": "runtime:fd082be7c6f9046d",
       "file": "packages/drei/tests/core-utilities.test.ts",
       "fullName": "framework-neutral core utilities matches Drei shader uniforms, cloning, accessors, parameters, and initialization"
-    },
-    {
-      "id": "runtime:cb7a984fdaa434f8",
-      "file": "packages/drei/tests/crosswalk-guard.test.ts",
-      "fullName": "Drei crosswalk guard accepts the committed inventory while work remains explicitly classified as gaps"
-    },
-    {
-      "id": "runtime:9d7d196ffa7eff55",
-      "file": "packages/drei/tests/crosswalk-guard.test.ts",
-      "fullName": "Drei crosswalk guard rejects a same-count export identity mutation"
-    },
-    {
-      "id": "runtime:87644161336bc636",
-      "file": "packages/drei/tests/crosswalk-guard.test.ts",
-      "fullName": "Drei crosswalk guard rejects an inventory digest mismatch"
-    },
-    {
-      "id": "runtime:26607b144f1fd603",
-      "file": "packages/drei/tests/crosswalk-guard.test.ts",
-      "fullName": "Drei crosswalk guard rejects classified exports whose evidence disappeared"
-    },
-    {
-      "id": "runtime:b9293ce2d478c8af",
-      "file": "packages/drei/tests/crosswalk-guard.test.ts",
-      "fullName": "Drei crosswalk guard rejects duplicate upstream exports"
-    },
-    {
-      "id": "runtime:a77fb7a5c687eda6",
-      "file": "packages/drei/tests/crosswalk-guard.test.ts",
-      "fullName": "Drei crosswalk guard rejects readiness while any public export remains a gap"
     },
     {
       "id": "runtime:8df153386fe27453",
@@ -1005,26 +966,6 @@
       "fullName": "Progress and useProgress renders natural TSRX block children without invoking them as render props"
     },
     {
-      "id": "runtime:ea39846ba1a55ada",
-      "file": "packages/drei/tests/react-parity-guard.test.ts",
-      "fullName": "Drei React-parity guard rejects a deleted assertion identity"
-    },
-    {
-      "id": "runtime:9abf29ed369ff13d",
-      "file": "packages/drei/tests/react-parity-guard.test.ts",
-      "fullName": "Drei React-parity guard rejects a fabricated upstream type-test suite"
-    },
-    {
-      "id": "runtime:53a6eeda38c31188",
-      "file": "packages/drei/tests/react-parity-guard.test.ts",
-      "fullName": "Drei React-parity guard rejects a removed upstream @ts-expect-error inventory entry"
-    },
-    {
-      "id": "runtime:c21f895c86aa15e8",
-      "file": "packages/drei/tests/react-parity-guard.test.ts",
-      "fullName": "Drei React-parity guard rejects a skipped runtime file"
-    },
-    {
       "id": "runtime:275c48d6f1d16a54",
       "file": "packages/drei/tests/render-textures.test.ts",
       "fullName": "render textures matches RenderCubeTexture API, target flags, camera transform, portal, and frame budget"
@@ -1573,26 +1514,6 @@
       "id": "runtime:179691ca6aead243",
       "file": "packages/drei/tests/video-textures.test.ts",
       "fullName": "screen and webcam video textures matches media acquisition options/defaults and stops every track on cleanup"
-    },
-    {
-      "id": "runtime:74a010948a1b6d68",
-      "file": "packages/drei/tests/view.test.ts",
-      "fullName": "View documents the outside-DOM renderer boundary while keeping View.Port callable"
-    },
-    {
-      "id": "runtime:9e6cbfd49e8691c4",
-      "file": "packages/drei/tests/view.test.ts",
-      "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
-    },
-    {
-      "id": "runtime:549994d41789f2e6",
-      "file": "packages/drei/tests/view.test.ts",
-      "fullName": "View matches tracked rect, viewport/scissor/render restoration, frames and refs"
-    },
-    {
-      "id": "runtime:4392e608fd23391c",
-      "file": "packages/drei/tests/view.test.ts",
-      "fullName": "View preserves the View.Port static surface"
     },
     {
       "id": "runtime:9a5f4a7016199ddd",
