@@ -17,7 +17,7 @@ This port is **explicitly incomplete** for React-parity evidence. Upstream ships
 Still missing before this binding can claim a parity suite:
 
 - pristine runtime lane that runs the unchanged pinned upstream suite with case/assertion negative controls
-- adapted one-for-one upstream runtime inventory (today's leftover `adapted-runtime*.json` files are provisional repo-authored smoke only and are not parity evidence)
+- adapted one-for-one upstream runtime inventory for the pinned suite
 - pristine type lane and one-for-one adapted type inventory with accept/reject negative controls
 - exhaustive upstream-test disposition for every vendored test artifact
 
