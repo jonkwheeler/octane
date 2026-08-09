@@ -1218,3 +1218,878 @@ upstreamTest(
 		expect(onMenuClose).not.toHaveBeenCalled();
 	},
 );
+
+interface NavigationCase {
+	readonly event: { readonly key: string; readonly keyCode: number };
+	readonly expectedIndex: number;
+	readonly fullName: string;
+	readonly isMulti: boolean;
+	readonly pageSize?: number;
+	readonly startIndex: number;
+}
+
+function focusedOption(container: HTMLElement): HTMLElement {
+	const option = container.querySelector<HTMLElement>('.react-select__option--is-focused');
+	if (!option) throw new Error('Expected focused option');
+	return option;
+}
+
+function focusOptionAt(container: HTMLElement, index: number): void {
+	const menuElement = menu(container);
+	if (!menuElement) throw new Error('Expected select menu');
+	for (let current = 0; current < index; current += 1) {
+		fireEvent.keyDown(menuElement, { key: 'ArrowDown', keyCode: 40 });
+	}
+	expect(focusedOption(container).textContent).toBe(OPTIONS[index].label);
+}
+
+function assertNavigation(testCase: NavigationCase): void {
+	const result =
+		testCase.pageSize === undefined
+			? renderSelect({ isMulti: testCase.isMulti, menuIsOpen: true })
+			: renderSelect({
+					isMulti: testCase.isMulti,
+					menuIsOpen: true,
+					pageSize: testCase.pageSize,
+				});
+	focusOptionAt(result.container, testCase.startIndex);
+	const menuElement = menu(result.container);
+	if (!menuElement) throw new Error('Expected select menu');
+	fireEvent.keyDown(menuElement, testCase.event);
+	expect(focusedOption(result.container).textContent).toBe(OPTIONS[testCase.expectedIndex].label);
+}
+
+const NAVIGATION_CASES: readonly NavigationCase[] = [
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > ArrowDown key on first option should focus second option',
+		isMulti: false,
+		startIndex: 0,
+		event: { keyCode: 40, key: 'ArrowDown' },
+		expectedIndex: 1,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > ArrowDown key on last option should focus first option',
+		isMulti: false,
+		startIndex: 16,
+		event: { keyCode: 40, key: 'ArrowDown' },
+		expectedIndex: 0,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > ArrowUp key on first option should focus last option',
+		isMulti: false,
+		startIndex: 0,
+		event: { keyCode: 38, key: 'ArrowUp' },
+		expectedIndex: 16,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > ArrowUp key on last option should focus second last option',
+		isMulti: false,
+		startIndex: 16,
+		event: { keyCode: 38, key: 'ArrowUp' },
+		expectedIndex: 15,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > PageDown key takes us to next page with default page size of 5',
+		isMulti: false,
+		startIndex: 0,
+		event: { keyCode: 34, key: 'PageDown' },
+		expectedIndex: 5,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > PageDown key takes us to next page with custom pageSize 7',
+		isMulti: false,
+		pageSize: 7,
+		startIndex: 0,
+		event: { keyCode: 34, key: 'PageDown' },
+		expectedIndex: 7,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > PageDown key takes to the last option is options below is less then page size',
+		isMulti: false,
+		startIndex: 14,
+		event: { keyCode: 34, key: 'PageDown' },
+		expectedIndex: 16,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > PageUp key takes us to previous page with default page size of 5',
+		isMulti: false,
+		startIndex: 6,
+		event: { keyCode: 33, key: 'PageUp' },
+		expectedIndex: 1,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > PageUp key takes us to previous page with custom pageSize of 7',
+		isMulti: false,
+		pageSize: 7,
+		startIndex: 9,
+		event: { keyCode: 33, key: 'PageUp' },
+		expectedIndex: 2,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > PageUp key takes us to first option - (previous options < pageSize)',
+		isMulti: false,
+		startIndex: 1,
+		event: { keyCode: 33, key: 'PageUp' },
+		expectedIndex: 0,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > Home key takes up to the first option',
+		isMulti: false,
+		startIndex: 14,
+		event: { keyCode: 36, key: 'Home' },
+		expectedIndex: 0,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu single select > End key takes down to the last option',
+		isMulti: false,
+		startIndex: 2,
+		event: { keyCode: 35, key: 'End' },
+		expectedIndex: 16,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > ArrowDown key on first option should focus second option',
+		isMulti: true,
+		startIndex: 0,
+		event: { keyCode: 40, key: 'ArrowDown' },
+		expectedIndex: 1,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > ArrowDown key on last option should focus first option',
+		isMulti: true,
+		startIndex: 16,
+		event: { keyCode: 40, key: 'ArrowDown' },
+		expectedIndex: 0,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > ArrowUp key on first option should focus last option',
+		isMulti: true,
+		startIndex: 0,
+		event: { keyCode: 38, key: 'ArrowUp' },
+		expectedIndex: 16,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > ArrowUp key on last option should focus second last option',
+		isMulti: true,
+		startIndex: 16,
+		event: { keyCode: 38, key: 'ArrowUp' },
+		expectedIndex: 15,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > PageDown key takes us to next page with default page size of 5',
+		isMulti: true,
+		startIndex: 0,
+		event: { keyCode: 34, key: 'PageDown' },
+		expectedIndex: 5,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > PageDown key takes us to next page with custom pageSize of 8',
+		isMulti: true,
+		pageSize: 8,
+		startIndex: 0,
+		event: { keyCode: 34, key: 'PageDown' },
+		expectedIndex: 8,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > PageDown key takes to the last option is options below is less then page size',
+		isMulti: true,
+		startIndex: 14,
+		event: { keyCode: 34, key: 'PageDown' },
+		expectedIndex: 16,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > PageUp key takes us to previous page with default page size of 5',
+		isMulti: true,
+		startIndex: 6,
+		event: { keyCode: 33, key: 'PageUp' },
+		expectedIndex: 1,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > PageUp key takes us to previous page with default page size of 9',
+		isMulti: true,
+		pageSize: 9,
+		startIndex: 10,
+		event: { keyCode: 33, key: 'PageUp' },
+		expectedIndex: 1,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > PageUp key takes us to first option - previous options < pageSize',
+		isMulti: true,
+		startIndex: 1,
+		event: { keyCode: 33, key: 'PageUp' },
+		expectedIndex: 0,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > Home key takes up to the first option',
+		isMulti: true,
+		startIndex: 14,
+		event: { keyCode: 36, key: 'Home' },
+		expectedIndex: 0,
+	},
+	{
+		fullName:
+			'focus on options > keyboard interaction with Menu multi select > End key takes down to the last option',
+		isMulti: true,
+		startIndex: 2,
+		event: { keyCode: 35, key: 'End' },
+		expectedIndex: 16,
+	},
+];
+
+for (const navigationCase of NAVIGATION_CASES) {
+	upstreamTest(navigationCase.fullName, function navigatesOptions() {
+		assertNavigation(navigationCase);
+	});
+}
+
+interface KeyboardSelectionCase {
+	readonly fullName: string;
+	readonly index: number;
+	readonly isMulti: boolean;
+	readonly key: string;
+	readonly keyCode: number;
+}
+
+function assertKeyboardSelection(testCase: KeyboardSelectionCase): void {
+	const onChange = vi.fn();
+	const result = renderSelect({ isMulti: testCase.isMulti, menuIsOpen: true, onChange });
+	focusOptionAt(result.container, testCase.index);
+	const selected = OPTIONS[testCase.index];
+	fireEvent.keyDown(optionWithText(result.container, selected.label), {
+		key: testCase.key,
+		keyCode: testCase.keyCode,
+	});
+	expect(onChange).toHaveBeenCalledWith(testCase.isMulti ? [selected] : selected, {
+		action: 'select-option',
+		name: 'test-input-name',
+		...(testCase.isMulti ? { option: selected } : {}),
+	});
+}
+
+const KEYBOARD_SELECTION_CASES: readonly KeyboardSelectionCase[] = [
+	{
+		fullName:
+			'calls onChange on selecting an option single select > tab key is pressed while focusing option > should call onChange() prop with selected option',
+		isMulti: false,
+		index: 1,
+		keyCode: 9,
+		key: 'Tab',
+	},
+	{
+		fullName:
+			'calls onChange on selecting an option single select > enter key is pressed while focusing option > should call onChange() prop with selected option',
+		isMulti: false,
+		index: 3,
+		keyCode: 13,
+		key: 'Enter',
+	},
+	{
+		fullName:
+			'calls onChange on selecting an option single select > space key is pressed while focusing option > should call onChange() prop with selected option',
+		isMulti: false,
+		index: 1,
+		keyCode: 32,
+		key: ' ',
+	},
+	{
+		fullName:
+			'calls onChange on selecting an option multi select > tab key is pressed while focusing option > should call onChange() prop with selected option',
+		isMulti: true,
+		index: 1,
+		keyCode: 9,
+		key: 'Tab',
+	},
+	{
+		fullName:
+			'calls onChange on selecting an option multi select > enter key is pressed while focusing option > should call onChange() prop with selected option',
+		isMulti: true,
+		index: 3,
+		keyCode: 13,
+		key: 'Enter',
+	},
+	{
+		fullName:
+			'calls onChange on selecting an option multi select > space key is pressed while focusing option > should call onChange() prop with selected option',
+		isMulti: true,
+		index: 1,
+		keyCode: 32,
+		key: ' ',
+	},
+];
+
+for (const selectionCase of KEYBOARD_SELECTION_CASES) {
+	upstreamTest(selectionCase.fullName, function selectsByKeyboard() {
+		assertKeyboardSelection(selectionCase);
+	});
+}
+
+function assertEscapeOption(isMulti: boolean): void {
+	const onChange = vi.fn();
+	const result = renderSelect({ isMulti, menuIsOpen: true, onChange });
+	focusOptionAt(result.container, 1);
+	fireEvent.keyDown(optionWithText(result.container, '1'), { key: 'Escape', keyCode: 27 });
+	expect(onChange).not.toHaveBeenCalled();
+}
+
+upstreamTest(
+	'hitting escape on select option single select > should not call onChange prop',
+	function ignoresSingleOptionEscape() {
+		assertEscapeOption(false);
+	},
+);
+
+upstreamTest(
+	'hitting escape on select option multi select > should not call onChange prop',
+	function ignoresMultiOptionEscape() {
+		assertEscapeOption(true);
+	},
+);
+
+function assertInputEscape(isMulti: boolean): void {
+	const onInputChange = vi.fn();
+	const result = renderSelect({
+		inputValue: 'test',
+		isMulti,
+		menuIsOpen: true,
+		onInputChange,
+		value: OPTIONS[0],
+	});
+	const root = result.container.querySelector<HTMLElement>('.react-select');
+	if (!root) throw new Error('Expected select root');
+	fireEvent.keyDown(root, { key: 'Escape', keyCode: 27 });
+	expect(onInputChange).toHaveBeenCalledWith('', {
+		action: 'menu-close',
+		prevInputValue: 'test',
+	});
+}
+
+upstreamTest(
+	'hitting escape with inputValue in select single select > should call onInputChange prop with empty string as inputValue',
+	function clearsSingleInputOnEscape() {
+		assertInputEscape(false);
+	},
+);
+
+upstreamTest(
+	'hitting escape with inputValue in select multi select > should call onInputChange prop with empty string as inputValue',
+	function clearsMultiInputOnEscape() {
+		assertInputEscape(true);
+	},
+);
+
+upstreamTest(
+	'hitting Enter on option should not call onChange if the event comes from IME',
+	function ignoresImeEnter() {
+		const onChange = vi.fn();
+		const result = renderSelect({ menuIsOpen: true, onChange, tabSelectsValue: false });
+		focusOptionAt(result.container, 1);
+		fireEvent.keyDown(optionWithText(result.container, '0'), { key: 'Enter', keyCode: 229 });
+		expect(onChange).not.toHaveBeenCalled();
+	},
+);
+
+upstreamTest(
+	'hitting tab on option should not call onChange if tabSelectsValue is false',
+	function ignoresDisabledTabSelection() {
+		const onChange = vi.fn();
+		const result = renderSelect({ menuIsOpen: true, onChange, tabSelectsValue: false });
+		focusOptionAt(result.container, 1);
+		fireEvent.keyDown(optionWithText(result.container, '0'), { key: 'Tab', keyCode: 9 });
+		expect(onChange).not.toHaveBeenCalled();
+	},
+);
+
+function assertRequiredInputAbsent(isMulti: boolean): void {
+	const result = renderSelect({ isMulti });
+	expect(inputFor(result.container).required).toBe(false);
+}
+
+upstreamTest(
+	'required on input is not there by default single select > should not have required attribute',
+	function omitsSingleRequiredInput() {
+		assertRequiredInputAbsent(false);
+	},
+);
+
+upstreamTest(
+	'required on input is not there by default multi select > should not have required attribute',
+	function omitsMultiRequiredInput() {
+		assertRequiredInputAbsent(true);
+	},
+);
+
+upstreamTest(
+	'clicking when focused does not open select when openMenuOnClick=false',
+	function ignoresInputClickWhenDisabled() {
+		const onMenuOpen = vi.fn();
+		const result = renderSelect({ onMenuOpen, openMenuOnClick: false });
+		fireEvent.click(inputFor(result.container));
+		expect(onMenuOpen).not.toHaveBeenCalled();
+	},
+);
+
+upstreamTest(
+	'clear select by clicking on clear button > should not call onMenuOpen',
+	function clearsWithoutOpeningMenu() {
+		const onChange = vi.fn();
+		const result = renderSelect({ isMulti: true, onChange, value: [OPTIONS[0]] });
+		const clear = result.container.querySelector<HTMLElement>('.react-select__clear-indicator');
+		if (!clear) throw new Error('Expected clear indicator');
+		fireEvent.mouseDown(clear, { button: 0 });
+		expect(onChange).toHaveBeenCalledWith([], {
+			action: 'clear',
+			name: 'test-input-name',
+			removedValues: [OPTIONS[0]],
+		});
+	},
+);
+
+upstreamTest(
+	'clearing select using clear button to not call onMenuOpen or onMenuClose',
+	function clearsWithoutMenuCallbacks() {
+		const onMenuClose = vi.fn();
+		const onMenuOpen = vi.fn();
+		const result = renderSelect({
+			isMulti: true,
+			onMenuClose,
+			onMenuOpen,
+			value: [OPTIONS[0]],
+		});
+		const clear = result.container.querySelector<HTMLElement>('.react-select__clear-indicator');
+		if (!clear) throw new Error('Expected clear indicator');
+		fireEvent.mouseDown(clear, { button: 0 });
+		expect(onMenuOpen).not.toHaveBeenCalled();
+		expect(onMenuClose).not.toHaveBeenCalled();
+	},
+);
+
+upstreamTest(
+	'multi select > clicking on X next to option will call onChange with all options other that the clicked option',
+	function removesClickedMultiValue() {
+		const onChange = vi.fn();
+		const result = renderSelect({
+			isMulti: true,
+			onChange,
+			value: [OPTIONS[0], OPTIONS[2], OPTIONS[4]],
+		});
+		const value = Array.from(
+			result.container.querySelectorAll<HTMLElement>('.react-select__multi-value'),
+		).find(function matchesValue(candidate) {
+			return candidate.textContent === '4';
+		});
+		const remove = value?.querySelector<HTMLElement>('.react-select__multi-value__remove');
+		if (!remove) throw new Error('Expected multi-value remove button');
+		fireEvent.click(remove);
+		expect(onChange).toHaveBeenCalledWith([OPTIONS[0], OPTIONS[2]], {
+			action: 'remove-value',
+			name: 'test-input-name',
+			removedValue: OPTIONS[4],
+		});
+	},
+);
+
+interface KeyboardDeselectionCase {
+	readonly fullName: string;
+	readonly index: number;
+	readonly key: string;
+	readonly keyCode: number;
+}
+
+function assertKeyboardDeselection(testCase: KeyboardDeselectionCase): void {
+	const onChange = vi.fn();
+	const selected = OPTIONS[testCase.index];
+	const result = renderSelect({
+		hideSelectedOptions: false,
+		isMulti: true,
+		menuIsOpen: true,
+		onChange,
+		value: [selected],
+	});
+	focusOptionAt(result.container, testCase.index);
+	fireEvent.keyDown(optionWithText(result.container, selected.label), {
+		key: testCase.key,
+		keyCode: testCase.keyCode,
+	});
+	expect(onChange).toHaveBeenCalledWith([], {
+		action: 'deselect-option',
+		name: 'test-input-name',
+		option: selected,
+	});
+}
+
+const KEYBOARD_DESELECTION_CASES: readonly KeyboardDeselectionCase[] = [
+	{
+		fullName:
+			'calls onChange on de-selecting an option in multi select tab key is pressed while focusing option > should call onChange() prop with selected option',
+		index: 1,
+		keyCode: 9,
+		key: 'Tab',
+	},
+	{
+		fullName:
+			'calls onChange on de-selecting an option in multi select enter key is pressed while focusing option > should call onChange() prop with selected option',
+		index: 3,
+		keyCode: 13,
+		key: 'Enter',
+	},
+	{
+		fullName:
+			'calls onChange on de-selecting an option in multi select space key is pressed while focusing option > should call onChange() prop with selected option',
+		index: 1,
+		keyCode: 32,
+		key: ' ',
+	},
+];
+
+for (const deselectionCase of KEYBOARD_DESELECTION_CASES) {
+	upstreamTest(deselectionCase.fullName, function deselectsByKeyboard() {
+		assertKeyboardDeselection(deselectionCase);
+	});
+}
+
+upstreamTest(
+	'focus on options > keyboard interaction with Menu single select > disabled options should be focusable',
+	function focusesDisabledOption() {
+		const options = [
+			{ label: 'option 0', value: 'zero' },
+			{ label: 'option 1', value: 'one', isDisabled: true },
+			{ label: 'option 2', value: 'two' },
+		];
+		const result = renderSelect({ menuIsOpen: true, options });
+		const menuElement = menu(result.container);
+		if (!menuElement) throw new Error('Expected select menu');
+		fireEvent.keyDown(menuElement, { key: 'ArrowDown', keyCode: 40 });
+		expect(focusedOption(result.container).textContent).toBe('option 1');
+	},
+);
+
+upstreamTest(
+	'hitting escape does not call onChange if menu is Open',
+	function ignoresOpenMenuEscape() {
+		const onChange = vi.fn();
+		const result = renderSelect({
+			escapeClearsValue: true,
+			isClearable: true,
+			menuIsOpen: true,
+			onChange,
+		});
+		const menuElement = menu(result.container);
+		if (!menuElement) throw new Error('Expected select menu');
+		fireEvent.keyDown(menuElement, { key: 'ArrowDown', keyCode: 40 });
+		expect(onChange).not.toHaveBeenCalled();
+	},
+);
+
+upstreamTest(
+	'multi select >  calls onChange when option is selected and isSearchable is false',
+	function selectsNonSearchableMultiOption() {
+		const onChange = vi.fn();
+		const result = renderSelect({
+			delimiter: ',',
+			isMulti: true,
+			isSearchable: false,
+			menuIsOpen: true,
+			onChange,
+		});
+		fireEvent.click(optionWithText(result.container, '0'));
+		expect(onChange).toHaveBeenCalledWith([OPTIONS[0]], {
+			action: 'select-option',
+			name: 'test-input-name',
+			option: OPTIONS[0],
+		});
+	},
+);
+
+upstreamTest(
+	'does not select anything when a disabled option is the only item in the list after a search',
+	function ignoresOnlyDisabledSearchResult() {
+		const onChange = vi.fn();
+		const options = [{ label: 'opt', value: 'opt1', isDisabled: true }, ...OPTIONS];
+		const result = renderSelect({
+			inputValue: 'opt',
+			menuIsOpen: true,
+			onChange,
+			options,
+		});
+		const menuElement = menu(result.container);
+		if (!menuElement) throw new Error('Expected select menu');
+		fireEvent.keyDown(menuElement, { key: 'Enter', keyCode: 13 });
+		expect(onChange).not.toHaveBeenCalled();
+		expect(optionTexts(result.container)).toEqual(['opt']);
+	},
+);
+
+function CustomInput() {
+	return createElement('div', { className: 'my-input-component' });
+}
+
+upstreamTest('render custom Input Component', function rendersCustomInput() {
+	const result = renderSelect({ components: { Input: CustomInput } });
+	expect(result.container.querySelector('input.react-select__input')).toBeNull();
+	expect(result.container.querySelector('.my-input-component')).toBeTruthy();
+});
+
+function CustomMenu() {
+	return createElement('div', { className: 'my-menu-component' });
+}
+
+upstreamTest('render custom Menu Component', function rendersCustomMenu() {
+	const result = renderSelect({ components: { Menu: CustomMenu }, menuIsOpen: true });
+	expect(result.container.querySelector('.react-select__menu')).toBeNull();
+	expect(result.container.querySelector('.my-menu-component')).toBeTruthy();
+});
+
+function CustomOption() {
+	return createElement('div', { className: 'my-option-component' });
+}
+
+upstreamTest('render custom Option Component', function rendersCustomOption() {
+	const result = renderSelect({ components: { Option: CustomOption }, menuIsOpen: true });
+	expect(result.container.querySelector('.react-select__option')).toBeNull();
+	expect(result.container.querySelector('.my-option-component')).toBeTruthy();
+});
+
+interface ControlProbe {
+	getValue(): readonly unknown[];
+}
+
+function assertSelectValue(value: unknown, isMulti: boolean, expected: readonly unknown[]): void {
+	let captured: readonly unknown[] = [];
+	function Control(props: ControlProbe): null {
+		captured = props.getValue();
+		return null;
+	}
+	renderSelect({ components: { Control }, isMulti, value });
+	expect(captured).toEqual(expected);
+}
+
+upstreamTest(
+	'value prop single select > should set it as initial value',
+	function exposesSingleValue() {
+		assertSelectValue(OPTIONS[2], false, [OPTIONS[2]]);
+	},
+);
+
+upstreamTest(
+	'value prop single select > with option values as number > should set it as initial value',
+	function exposesSingleNumericValue() {
+		assertSelectValue(NUMBER_OPTIONS[2], false, [NUMBER_OPTIONS[2]]);
+	},
+);
+
+upstreamTest(
+	'value prop multi select > should set it as initial value',
+	function exposesMultiValue() {
+		assertSelectValue(OPTIONS[1], true, [OPTIONS[1]]);
+	},
+);
+
+upstreamTest(
+	'value prop multi select > with option values as number > should set it as initial value',
+	function exposesMultiNumericValue() {
+		assertSelectValue(NUMBER_OPTIONS[1], true, [NUMBER_OPTIONS[1]]);
+	},
+);
+
+upstreamTest(
+	'accessibility > to show the number of options available in A11yText when the menu is Open',
+	function announcesAvailableOptions() {
+		const result = renderSelect({ autoFocus: true, menuIsOpen: true });
+		fireEvent.focus(inputFor(result.container));
+		expect(result.container.querySelector('#aria-results')?.textContent).toMatch(
+			/17 results available/,
+		);
+		result.rerender({
+			props: basicProps({ autoFocus: true, inputValue: '10', menuIsOpen: true }),
+		});
+		expect(result.container.querySelector('#aria-results')?.textContent).toMatch(
+			/1 result available/,
+		);
+	},
+);
+
+upstreamTest(
+	'accessibility > screenReaderStatus function prop > to pass custom text to A11yText',
+	function announcesCustomStatus() {
+		function screenReaderStatus(value: { count: number }): string {
+			return `There are ${value.count} options available`;
+		}
+		const result = renderSelect({ menuIsOpen: true, screenReaderStatus });
+		fireEvent.focus(inputFor(result.container));
+		expect(result.container.querySelector('#aria-results')?.textContent).toMatch(
+			'There are 17 options available',
+		);
+		result.rerender({
+			props: basicProps({ inputValue: '10', menuIsOpen: true, screenReaderStatus }),
+		});
+		expect(result.container.querySelector('#aria-results')?.textContent).toMatch(
+			'There are 1 options available',
+		);
+	},
+);
+
+upstreamTest(
+	'accessibility > announces already selected values when focused',
+	function announcesSelectedValue() {
+		const result = renderSelect({ value: OPTIONS[0] });
+		expect(result.container.querySelector('#aria-selection')).toBeNull();
+		fireEvent.focus(inputFor(result.container));
+		expect(result.container.querySelector('#aria-selection')?.textContent).toMatch(
+			'option 0, selected.',
+		);
+	},
+);
+
+upstreamTest('accessibility > announces cleared values', function announcesClearedValue() {
+	const result = renderSelect({ isClearable: true, value: OPTIONS[0] });
+	fireEvent.focus(inputFor(result.container));
+	const clear = result.container.querySelector<HTMLElement>('.react-select__clear-indicator');
+	if (!clear) throw new Error('Expected clear indicator');
+	fireEvent.mouseDown(clear);
+	expect(result.container.querySelector('#aria-selection')?.textContent).toMatch(
+		'All selected options have been cleared.',
+	);
+});
+
+interface RequiredFixtureProps {
+	readonly isMulti: boolean;
+	readonly isSearchable: boolean;
+	readonly value: unknown;
+}
+
+function RequiredFixture(props: RequiredFixtureProps) {
+	return createElement(
+		'form',
+		{ id: 'formTest' },
+		createElement(Select, basicProps({ ...props, required: true })),
+	);
+}
+
+function assertRequiredValidation(isMulti: boolean, isSearchable: boolean): void {
+	const result = render(RequiredFixture, {
+		props: { isMulti, isSearchable, value: null },
+	});
+	const form = result.container.querySelector<HTMLFormElement>('#formTest');
+	if (!form) throw new Error('Expected required form');
+	expect(form.checkValidity()).toBe(false);
+	result.rerender({
+		props: { isMulti, isSearchable, value: OPTIONS[0] },
+	});
+	expect(form.checkValidity()).toBe(true);
+}
+
+upstreamTest(
+	'`required` prop single select > should validate with value',
+	function validatesRequiredSingle() {
+		assertRequiredValidation(false, true);
+	},
+);
+
+upstreamTest(
+	'`required` prop single select (isSearchable is false) > should validate with value',
+	function validatesRequiredNonSearchableSingle() {
+		assertRequiredValidation(false, false);
+	},
+);
+
+upstreamTest(
+	'`required` prop multi select > should validate with value',
+	function validatesRequiredMulti() {
+		assertRequiredValidation(true, true);
+	},
+);
+
+interface AriaMessageProps {
+	readonly action: string;
+	readonly isDisabled?: boolean;
+	readonly label?: string;
+}
+
+upstreamTest(
+	'accessibility > A11yTexts can be provided through ariaLiveMessages prop',
+	function announcesCustomAriaMessage() {
+		function onChange(props: AriaMessageProps): string {
+			if (props.action === 'select-option' && !props.isDisabled) {
+				return `CUSTOM: option ${props.label} is selected.`;
+			}
+			return '';
+		}
+		const result = renderSelect({
+			ariaLiveMessages: { onChange },
+			menuIsOpen: true,
+		});
+		expect(result.container.querySelector('#aria-selection')).toBeNull();
+		fireEvent.focus(inputFor(result.container));
+		const menuElement = menu(result.container);
+		if (!menuElement) throw new Error('Expected select menu');
+		fireEvent.keyDown(menuElement, { key: 'Enter', keyCode: 13 });
+		expect(result.container.querySelector('#aria-selection')?.textContent).toMatch(
+			'CUSTOM: option 0 is selected.',
+		);
+	},
+);
+
+upstreamTest(
+	'to clear value when hitting escape if escapeClearsValue and isClearable are true',
+	function clearsValueOnEscape() {
+		const onChange = vi.fn();
+		const result = renderSelect({
+			escapeClearsValue: true,
+			isClearable: true,
+			onChange,
+			value: OPTIONS[0],
+		});
+		const root = result.container.querySelector<HTMLElement>('.react-select');
+		if (!root) throw new Error('Expected select root');
+		fireEvent.keyDown(root, { key: 'Escape', keyCode: 27 });
+		expect(onChange).toHaveBeenCalledWith(null, {
+			action: 'clear',
+			name: 'test-input-name',
+			removedValues: [OPTIONS[0]],
+		});
+	},
+);
+
+interface ThemeShape {
+	readonly borderRadius: number;
+	readonly colors: Readonly<Record<string, string>>;
+}
+
+upstreamTest('renders with custom theme', function rendersCustomTheme() {
+	const primary = 'rgb(255, 164, 83)';
+	function theme(current: ThemeShape): ThemeShape {
+		return {
+			...current,
+			borderRadius: 180,
+			colors: { ...current.colors, primary },
+		};
+	}
+	const result = renderSelect({ menuIsOpen: true, theme, value: OPTIONS[0] });
+	const menuElement = result.container.querySelector<HTMLElement>('.react-select__menu');
+	const firstOption = result.container.querySelector<HTMLElement>('.react-select__option');
+	if (!menuElement || !firstOption) throw new Error('Expected themed menu');
+	expect(window.getComputedStyle(menuElement).borderRadius).toBe('180px');
+	expect(window.getComputedStyle(firstOption).backgroundColor).toBe(primary);
+});

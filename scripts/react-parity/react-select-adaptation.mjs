@@ -8,7 +8,7 @@ const pristinePath = resolve(root, 'packages/react-select/audit/pristine-runtime
 const adaptedPath = resolve(root, 'packages/react-select/audit/adapted-runtime.json');
 const destination = resolve(root, 'packages/react-select/audit/adaptation.json');
 const expectedPristineCases = 255;
-const expectedAdaptedCases = 140;
+const expectedAdaptedCases = 206;
 
 function upstreamFileFor(adaptedFile) {
 	const adaptedBasename = basename(adaptedFile);

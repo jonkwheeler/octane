@@ -47,11 +47,11 @@ The paired fixtures in `typetests/` compile the same consumer-shaped public type
 
 ## Upstream test disposition
 
-The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The `react-select-pristine` project executes them unchanged against the vendored React source with the pinned upstream React, Jest, Testing Library, and Emotion stack. It verifies 255 passing Jest identities and five snapshots; the three skips are present in the upstream suite itself. The `react-select` project's narrowly owned `tests/upstream/**` lane currently runs 140 one-for-one adaptations: all 38 cases from the four smaller suites and 102 cases from `Select.test.tsx`. `audit/adaptation.json` gives every pristine identity an `adapted`, `pending`, or `n/a` disposition. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
+The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The `react-select-pristine` project executes them unchanged against the vendored React source with the pinned upstream React, Jest, Testing Library, and Emotion stack. It verifies 255 passing Jest identities and five snapshots; the three skips are present in the upstream suite itself. The `react-select` project's narrowly owned `tests/upstream/**` lane currently runs 206 one-for-one adaptations: all 38 cases from the four smaller suites and 168 cases from `Select.test.tsx`. `audit/adaptation.json` gives every pristine identity an `adapted`, `pending`, or `n/a` disposition. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
 
 | Retained suite | Executable Octane evidence |
 | --- | --- |
-| `Select.test.tsx` | 102 adapted cases plus full Select SSR and Chromium behavior, styles/components, accessibility, forms, keyboard, mouse, touch, focus, placement, portals, and multi-value navigation |
+| `Select.test.tsx` | 168 adapted cases plus full Select SSR and Chromium behavior, styles/components, accessibility, forms, keyboard, mouse, touch, focus, placement, portals, and multi-value navigation |
 | `StateManaged.test.tsx` | 12 adapted cases plus controlled/uncontrolled precedence, transitions, and callbacks in SSR and Chromium |
 | `Async.test.tsx` | 8 adapted cases plus initial SSR state and broader async behavior in Chromium |
 | `Creatable.test.tsx` | 14 adapted cases plus creation metadata, delegated creation, option placement, and suppression differentials |

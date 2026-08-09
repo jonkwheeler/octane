@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "upstreamCases": 255,
-  "adaptedCases": 140,
+  "adaptedCases": 206,
   "notApplicableCases": 0,
-  "pendingCases": 115,
+  "pendingCases": 49,
   "permittedTransforms": [
     "import React APIs from Octane equivalents",
     "re-author JSX component fixtures as compiled .tsrx components",
@@ -283,43 +283,43 @@
       "id": "src/__tests__/Select.test.tsx\u0000`required` prop multi select > should validate with value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "`required` prop multi select > should validate with value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000`required` prop single select (isSearchable is false) > should validate with value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "`required` prop single select (isSearchable is false) > should validate with value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000`required` prop single select > should validate with value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "`required` prop single select > should validate with value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > A11yTexts can be provided through ariaLiveMessages prop",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > A11yTexts can be provided through ariaLiveMessages prop",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > announces already selected values when focused",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > announces already selected values when focused",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > announces cleared values",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > announces cleared values",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > aria-activedescendant for basic options test-input-name",
@@ -430,15 +430,15 @@
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > screenReaderStatus function prop > to pass custom text to A11yText",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > screenReaderStatus function prop > to pass custom text to A11yText",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000accessibility > to show the number of options available in A11yText when the menu is Open",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "accessibility > to show the number of options available in A11yText when the menu is Open",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000autoFocus multi select > should focus select on mount",
@@ -458,8 +458,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on de-selecting an option in multi select enter key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on de-selecting an option in multi select enter key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on de-selecting an option in multi select option is clicked > should call onChange() prop with correct selected options and meta",
@@ -486,22 +486,22 @@
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on de-selecting an option in multi select space key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on de-selecting an option in multi select space key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on de-selecting an option in multi select tab key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on de-selecting an option in multi select tab key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option multi select > enter key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on selecting an option multi select > enter key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option multi select > option is clicked > should call onChange() prop with selected option",
@@ -528,22 +528,22 @@
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option multi select > space key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on selecting an option multi select > space key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option multi select > tab key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on selecting an option multi select > tab key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option single select > enter key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on selecting an option single select > enter key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option single select > option is clicked > should call onChange() prop with selected option",
@@ -570,29 +570,29 @@
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option single select > space key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on selecting an option single select > space key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000calls onChange on selecting an option single select > tab key is pressed while focusing option > should call onChange() prop with selected option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "calls onChange on selecting an option single select > tab key is pressed while focusing option > should call onChange() prop with selected option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000clear select by clicking on clear button > should not call onMenuOpen",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "clear select by clicking on clear button > should not call onMenuOpen",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000clearing select using clear button to not call onMenuOpen or onMenuClose",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "clearing select using clear button to not call onMenuOpen or onMenuClose",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000click to open select multi select > should focus the first option",
@@ -626,8 +626,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000clicking when focused does not open select when openMenuOnClick=false",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "clicking when focused does not open select when openMenuOnClick=false",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000close menu on hitting escape and clear input value if menu is open even if escapeClearsValue and isClearable are true",
@@ -661,8 +661,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000does not select anything when a disabled option is the only item in the list after a search",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "does not select anything when a disabled option is the only item in the list after a search",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000filterOption prop is null multi select > should show all the options other than selected options",
@@ -710,176 +710,176 @@
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > ArrowDown key on first option should focus second option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > ArrowDown key on first option should focus second option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > ArrowDown key on last option should focus first option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > ArrowDown key on last option should focus first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > ArrowUp key on first option should focus last option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > ArrowUp key on first option should focus last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > ArrowUp key on last option should focus second last option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > ArrowUp key on last option should focus second last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > End key takes down to the last option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > End key takes down to the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > Home key takes up to the first option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > Home key takes up to the first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > PageDown key takes to the last option is options below is less then page size",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > PageDown key takes to the last option is options below is less then page size",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > PageDown key takes us to next page with custom pageSize of 8",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > PageDown key takes us to next page with custom pageSize of 8",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > PageDown key takes us to next page with default page size of 5",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > PageDown key takes us to next page with default page size of 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > PageUp key takes us to first option - previous options < pageSize",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > PageUp key takes us to first option - previous options < pageSize",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > PageUp key takes us to previous page with default page size of 5",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > PageUp key takes us to previous page with default page size of 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu multi select > PageUp key takes us to previous page with default page size of 9",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu multi select > PageUp key takes us to previous page with default page size of 9",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > ArrowDown key on first option should focus second option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > ArrowDown key on first option should focus second option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > ArrowDown key on last option should focus first option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > ArrowDown key on last option should focus first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > ArrowUp key on first option should focus last option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > ArrowUp key on first option should focus last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > ArrowUp key on last option should focus second last option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > ArrowUp key on last option should focus second last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > End key takes down to the last option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > End key takes down to the last option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > Home key takes up to the first option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > Home key takes up to the first option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > PageDown key takes to the last option is options below is less then page size",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > PageDown key takes to the last option is options below is less then page size",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > PageDown key takes us to next page with custom pageSize 7",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > PageDown key takes us to next page with custom pageSize 7",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > PageDown key takes us to next page with default page size of 5",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > PageDown key takes us to next page with default page size of 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > PageUp key takes us to first option - (previous options < pageSize)",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > PageUp key takes us to first option - (previous options < pageSize)",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > PageUp key takes us to previous page with custom pageSize of 7",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > PageUp key takes us to previous page with custom pageSize of 7",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > PageUp key takes us to previous page with default page size of 5",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > PageUp key takes us to previous page with default page size of 5",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000focus on options > keyboard interaction with Menu single select > disabled options should be focusable",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "focus on options > keyboard interaction with Menu single select > disabled options should be focusable",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000formatGroupLabel function prop > to format Group label",
@@ -934,43 +934,43 @@
       "id": "src/__tests__/Select.test.tsx\u0000hitting Enter on option should not call onChange if the event comes from IME",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting Enter on option should not call onChange if the event comes from IME",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting escape does not call onChange if menu is Open",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting escape does not call onChange if menu is Open",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting escape on select option multi select > should not call onChange prop",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting escape on select option multi select > should not call onChange prop",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting escape on select option single select > should not call onChange prop",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting escape on select option single select > should not call onChange prop",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting escape with inputValue in select multi select > should call onInputChange prop with empty string as inputValue",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting escape with inputValue in select multi select > should call onInputChange prop with empty string as inputValue",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting escape with inputValue in select single select > should call onInputChange prop with empty string as inputValue",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting escape with inputValue in select single select > should call onInputChange prop with empty string as inputValue",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000hitting spacebar should not select option if isSearchable is true (default)",
@@ -990,8 +990,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000hitting tab on option should not call onChange if tabSelectsValue is false",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "hitting tab on option should not call onChange if tabSelectsValue is false",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000instanceId prop > to have instanceId as id prefix for the select components",
@@ -1081,8 +1081,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000multi select >  calls onChange when option is selected and isSearchable is false",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "multi select >  calls onChange when option is selected and isSearchable is false",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000multi select > call onChange with all values but last selected value and remove event on hitting backspace",
@@ -1095,8 +1095,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000multi select > clicking on X next to option will call onChange with all options other that the clicked option",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "multi select > clicking on X next to option will call onChange with all options other that the clicked option",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000multi select > have default value delimiter seperated",
@@ -1291,43 +1291,43 @@
       "id": "src/__tests__/Select.test.tsx\u0000render custom Input Component",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "render custom Input Component",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000render custom Menu Component",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "render custom Menu Component",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000render custom Option Component",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "render custom Option Component",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000renders with custom theme",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "renders with custom theme",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000required on input is not there by default multi select > should not have required attribute",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "required on input is not there by default multi select > should not have required attribute",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000required on input is not there by default single select > should not have required attribute",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "required on input is not there by default single select > should not have required attribute",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000sets inputMode=\"none\" when isSearchable is false",
@@ -1389,8 +1389,8 @@
       "id": "src/__tests__/Select.test.tsx\u0000to clear value when hitting escape if escapeClearsValue and isClearable are true",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "to clear value when hitting escape if escapeClearsValue and isClearable are true",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000to not clear value when hitting escape if escapeClearsValue is false (default) and isClearable is false",
@@ -1515,29 +1515,29 @@
       "id": "src/__tests__/Select.test.tsx\u0000value prop multi select > should set it as initial value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "value prop multi select > should set it as initial value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000value prop multi select > with option values as number > should set it as initial value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "value prop multi select > with option values as number > should set it as initial value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000value prop single select > should set it as initial value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "value prop single select > should set it as initial value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000value prop single select > with option values as number > should set it as initial value",
       "upstreamFile": "src/__tests__/Select.test.tsx",
       "fullName": "value prop single select > with option values as number > should set it as initial value",
-      "disposition": "pending",
-      "reason": "Not yet ported one-for-one in the adapted Octane lane."
+      "disposition": "adapted",
+      "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
     },
     {
       "id": "src/__tests__/StateManaged.test.tsx\u0000If menuIsOpen prop is passed Menu should not close on clicking Dropdown Indicator",
