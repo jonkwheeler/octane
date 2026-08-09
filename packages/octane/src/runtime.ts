@@ -577,6 +577,14 @@ export interface Block extends Scope {
 	 * (the host-element-with-component-children renderer). Null for every other Block.
 	 */
 	deoptNode: Node | null;
+	/**
+	 * True when a de-opt descriptor carrying a `ref` was stamped anywhere in this
+	 * block's subtree. Set at stamp time and propagated up the parentBlock chain
+	 * (monotone — never cleared). Gates the teardown ref-detach walk over
+	 * `deoptNode`: a region that never stamped a ref has nothing to detach, so
+	 * the per-DOM-node descriptor scan is skipped entirely.
+	 */
+	deoptRefs: boolean;
 	/** Set on item Blocks: pointer to the enclosing for-block's slot. */
 	forSlot: ForSlot | null;
 	/** Item position within the enclosing for-block. 0 for non-item blocks. */
@@ -2924,6 +2932,245 @@ function flush(): void {
 	flushWork();
 }
 
+interface FocusSelectionSnapshot {
+	focused: HTMLElement;
+	start: number;
+	end: number;
+	contentEditable: boolean;
+}
+
+/** Resolve the focused element in the root's own document and same-origin frames. */
+function activeElementForDocument(doc: Document): Element | null {
+	try {
+		let focused = doc.activeElement;
+		while (focused !== null && focused.localName === 'iframe') {
+			let nested: Document | null;
+			try {
+				nested = (focused as HTMLIFrameElement).contentDocument;
+			} catch {
+				break;
+			}
+			if (nested === null) break;
+			const inner = nested.activeElement;
+			if (inner === null) break;
+			focused = inner;
+		}
+		return focused;
+	} catch {
+		// Reading activeElement on a torn-down document can throw.
+		return null;
+	}
+}
+
+function hasTextSelection(element: HTMLElement): boolean {
+	if (element.localName === 'textarea') return true;
+	if (element.localName !== 'input') return false;
+	switch ((element as HTMLInputElement).type) {
+		case 'text':
+		case 'search':
+		case 'tel':
+		case 'url':
+		case 'password':
+			return true;
+	}
+	return false;
+}
+
+/** Resolve editable selection offsets without materializing its text every commit. */
+function captureContentEditableSelection(
+	focused: HTMLElement,
+	anchorNode: Node,
+	anchorOffset: number,
+	focusNode: Node,
+	focusOffset: number,
+): FocusSelectionSnapshot | null {
+	let node: Node = focused;
+	let parent: Node | null = null;
+	let length = 0;
+	let start = -1;
+	let end = -1;
+	let anchorChildIndex = 0;
+	let focusChildIndex = 0;
+
+	selection: for (;;) {
+		for (;;) {
+			if (node === anchorNode && (anchorOffset === 0 || node.nodeType === 3)) {
+				start = length + anchorOffset;
+			}
+			if (node === focusNode && (focusOffset === 0 || node.nodeType === 3)) {
+				end = length + focusOffset;
+			}
+			if (start !== -1 && end !== -1) break selection;
+			if (node.nodeType === 3) length += node.nodeValue!.length;
+			const child = node.firstChild;
+			if (child === null) break;
+			parent = node;
+			node = child;
+		}
+		for (;;) {
+			if (node === focused) break selection;
+			if (parent === anchorNode && ++anchorChildIndex === anchorOffset) start = length;
+			if (parent === focusNode && ++focusChildIndex === focusOffset) end = length;
+			if (start !== -1 && end !== -1) break selection;
+			const sibling = node.nextSibling;
+			if (sibling !== null) {
+				node = sibling;
+				break;
+			}
+			node = parent!;
+			parent = node.parentNode;
+		}
+	}
+
+	return start === -1 || end === -1 ? null : { focused, start, end, contentEditable: true };
+}
+
+/** Capture selection only when a render pass could actually mutate focused DOM. */
+function captureFocusSelection(doc: Document): FocusSelectionSnapshot | null {
+	const focused = activeElementForDocument(doc) as HTMLElement | null;
+	if (focused === null || focused === focused.ownerDocument.body) return null;
+	if (hasTextSelection(focused)) {
+		const input = focused as HTMLInputElement | HTMLTextAreaElement;
+		return {
+			focused,
+			start: input.selectionStart ?? 0,
+			end: input.selectionEnd ?? 0,
+			contentEditable: false,
+		};
+	}
+	if (focused.contentEditable === 'true' || focused.getAttribute('contenteditable') === 'true') {
+		const selection = focused.ownerDocument.getSelection();
+		if (
+			selection !== null &&
+			selection.anchorNode !== null &&
+			selection.focusNode !== null &&
+			focused.contains(selection.anchorNode) &&
+			focused.contains(selection.focusNode)
+		) {
+			const anchorNode = selection.anchorNode;
+			const focusNode = selection.focusNode;
+			if (anchorNode === focusNode && anchorNode.nodeType === 3) {
+				// A direct first text child has no preceding text to count.
+				if (anchorNode === focused.firstChild) {
+					return {
+						focused,
+						start: selection.anchorOffset,
+						end: selection.focusOffset,
+						contentEditable: true,
+					};
+				}
+				// Below 256 UTF-16 code units, one native prefix walk beats JS traversal;
+				// shared-node offset arithmetic also preserves selection direction.
+				if (anchorNode.nodeValue!.length < 256) {
+					const range = focused.ownerDocument.createRange();
+					range.selectNodeContents(focused);
+					range.setEnd(anchorNode, selection.anchorOffset);
+					const start = range.toString().length;
+					return {
+						focused,
+						start,
+						end: start + selection.focusOffset - selection.anchorOffset,
+						contentEditable: true,
+					};
+				}
+			}
+			const snapshot = captureContentEditableSelection(
+				focused,
+				anchorNode,
+				selection.anchorOffset,
+				focusNode,
+				selection.focusOffset,
+			);
+			if (snapshot !== null) return snapshot;
+		}
+	}
+	return { focused, start: -1, end: -1, contentEditable: false };
+}
+
+/** Convert a content-editable text offset back into its current text-node position. */
+function contentEditablePosition(element: HTMLElement, offset: number): [Node, number] {
+	const walker = element.ownerDocument.createTreeWalker(element, 4 /* SHOW_TEXT */);
+	let node = walker.nextNode();
+	let last: Node | null = null;
+	while (node !== null) {
+		const length = node.textContent?.length ?? 0;
+		if (offset <= length) return [node, offset];
+		offset -= length;
+		last = node;
+		node = walker.nextNode();
+	}
+	return last === null ? [element, 0] : [last, last.textContent?.length ?? 0];
+}
+
+function restoreFocusSelection(snapshot: FocusSelectionSnapshot | null): void {
+	if (snapshot === null) return;
+	const { focused } = snapshot;
+	const doc = focused.ownerDocument;
+	if (activeElementForDocument(doc) === focused || !doc.documentElement.contains(focused)) return;
+	if (snapshot.start !== -1) {
+		if (snapshot.contentEditable) {
+			const selection = doc.getSelection();
+			if (selection !== null) {
+				const [anchorNode, anchorOffset] = contentEditablePosition(focused, snapshot.start);
+				const [focusNode, focusOffset] = contentEditablePosition(focused, snapshot.end);
+				const range = doc.createRange();
+				range.setStart(anchorNode, anchorOffset);
+				range.collapse(true);
+				selection.removeAllRanges();
+				selection.addRange(range);
+				selection.extend(focusNode, focusOffset);
+			}
+		} else {
+			const input = focused as HTMLInputElement | HTMLTextAreaElement;
+			input.setSelectionRange(snapshot.start, Math.min(snapshot.end, input.value.length));
+		}
+	}
+	// Refocusing a moved control may scroll every containing element. Preserve
+	// those positions only on this cold, focus-was-actually-lost branch.
+	const ancestors: Array<{ element: HTMLElement; left: number; top: number }> = [];
+	let parent = focused.parentElement;
+	while (parent !== null) {
+		ancestors.push({ element: parent, left: parent.scrollLeft, top: parent.scrollTop });
+		parent = parent.parentElement;
+	}
+	focused.focus();
+	for (let i = 0; i < ancestors.length; i++) {
+		const ancestor = ancestors[i];
+		ancestor.element.scrollLeft = ancestor.left;
+		ancestor.element.scrollTop = ancestor.top;
+	}
+}
+
+type FocusSelectionBatch = FocusSelectionSnapshot | FocusSelectionSnapshot[] | null;
+
+/** A global scheduler drain may contain independently focused documents. */
+function captureQueuedFocusSelection(): FocusSelectionBatch {
+	if (QUEUE.length === 0) return null;
+	const firstDocument = QUEUE[0].parentNode.ownerDocument;
+	if (firstDocument === null) return null;
+	let snapshots: FocusSelectionBatch = captureFocusSelection(firstDocument);
+	let documents: Document[] | null = null;
+	for (let i = 1; i < QUEUE.length; i++) {
+		const doc = QUEUE[i].parentNode.ownerDocument;
+		if (doc === null || doc === firstDocument || documents?.includes(doc)) continue;
+		(documents ??= [firstDocument]).push(doc);
+		const snapshot = captureFocusSelection(doc);
+		if (snapshot === null) continue;
+		if (snapshots === null) snapshots = snapshot;
+		else if (Array.isArray(snapshots)) snapshots.push(snapshot);
+		else snapshots = [snapshots, snapshot];
+	}
+	return snapshots;
+}
+
+function restoreQueuedFocusSelection(snapshots: FocusSelectionBatch): void {
+	if (Array.isArray(snapshots)) {
+		for (let i = 0; i < snapshots.length; i++) restoreFocusSelection(snapshots[i]);
+	} else {
+		restoreFocusSelection(snapshots);
+	}
+}
+
 /**
  * The flush body proper — render+mutate drain plus the effect commit. Shared
  * verbatim by the plain flush() path and the view-transition update callback
@@ -2949,7 +3196,9 @@ function flushWork(): void {
 		// drain as the new children's listener-attach effects — re-ordering them child-first
 		// and letting a child observe an event announcing its own mount.
 		if (QUEUE.length > 0) drainPassivesBeforeRender();
+		const focused = QUEUE.length === 0 ? null : captureQueuedFocusSelection();
 		const pendingError = drainQueue();
+		if (focused !== null) restoreQueuedFocusSelection(focused);
 		commitEffects();
 		if (pendingError !== null) throw pendingError.err;
 	} finally {
@@ -3244,7 +3493,9 @@ export function flushSync<T>(fn: () => T): T {
 			// passive effects (useEffect) still fire AFTER paint via the regular scheduler —
 			// exactly what commitEffects already does.
 			if (QUEUE.length > 0) drainPassivesBeforeRender();
+			const focused = QUEUE.length === 0 ? null : captureQueuedFocusSelection();
 			pendingError = drainQueue();
+			if (focused !== null) restoreQueuedFocusSelection(focused);
 			commitEffects();
 			// A sync-committed effect (a LAYOUT effect calling setState) can schedule MORE
 			// renders. While `syncFlush` is set, scheduleRender pushes to QUEUE without arming a
@@ -3268,7 +3519,9 @@ export function flushSync<T>(fn: () => T): T {
 					// Each convergence iteration is a new render pass — flush pending passives
 					// first (React's rule; see flush()).
 					drainPassivesBeforeRender();
+					const focused = QUEUE.length === 0 ? null : captureQueuedFocusSelection();
 					const err = drainQueue();
+					if (focused !== null) restoreQueuedFocusSelection(focused);
 					if (err !== null && pendingError === null) pendingError = err;
 					commitEffects();
 					for (let i = 0; i < QUEUE.length; i++) {
@@ -4124,6 +4377,8 @@ class BlockImpl {
 	// De-opt host node managed by this Block (deoptItemBody / hostElementBody), reused
 	// across renders. Null for all other blocks; declared so the shape stays monomorphic.
 	deoptNode: Node | null;
+	// A de-opt descriptor with a `ref` was stamped in this subtree (see Block).
+	deoptRefs: boolean;
 	// Per-scope dense slot array (binding bag + control-flow/component/child slots),
 	// indexed by compile-time slot index. Keeps the scope shape monomorphic.
 	slots: any[];
@@ -4196,6 +4451,7 @@ class BlockImpl {
 		this.effectEventRenderVersion = 0;
 		this.effectEventCompletedVersion = 0;
 		this.deoptNode = null;
+		this.deoptRefs = false;
 		this.slots = [];
 		this.forSlot = null;
 		this.prevSibling = null;
@@ -4833,10 +5089,28 @@ function unmountBlockInner(block: Block, detachDom: boolean): void {
 	// (batchClearItems, clearChildContent) remove the DOM themselves, but the
 	// teardown is just as permanent. Before unmountScope: a deleted host's ref
 	// detaches before its component descendants' cleanups (React's pre-order
-	// deletion walk).
-	if (block.deoptNode !== null) detachDeoptTreeRefs(block.deoptNode, null);
+	// deletion walk). `deoptRefs` gates the walk: it is set (and propagated up
+	// the parentBlock chain) whenever a descriptor carrying a ref is stamped
+	// anywhere in this block's subtree, so a ref-free region skips the
+	// whole-DOM descriptor scan.
+	if (block.deoptNode !== null && block.deoptRefs) detachDeoptTreeRefs(block.deoptNode, null);
+	// When THIS call removes the block's entire DOM range below, descendants must
+	// not detach their own ranges first: every non-portal descendant's DOM lies
+	// inside this range (portals always self-detach — unmountScopeChildrenAndSlotsOnly
+	// forces their flag), so one wholesale removal replaces O(nodes) removeChild
+	// calls, and every deletion cleanup observes the subtree still attached —
+	// React's commitDeletionEffects order, which runs all destroys before it
+	// detaches the single host. A cleanup that itself moves or removes the
+	// block's markers forfeits the removal (the loop below guards on the live
+	// parent), exactly as it would have forfeited its own range before.
+	const removesOwnDom =
+		detachDom &&
+		(block.kind === 'root' ||
+			(block.startMarker !== null &&
+				block.endMarker !== null &&
+				block.startMarker.parentNode !== null));
 	// Depth-first cleanup of all scopes reachable from this block.
-	unmountScope(block, detachDom);
+	unmountScope(block, detachDom && !removesOwnDom);
 	if (!detachDom) return;
 	// Remove DOM range.
 	if (block.startMarker && block.endMarker) {
@@ -12038,6 +12312,9 @@ export function setSpread(
 		// reassert every commit (the DOM may have drifted; the helper's own
 		// DOM-diff makes the call cheap).
 		if (v === pv && !isControlledHostProp(el, k)) continue;
+		// React only honors autoFocus from the final props of the element's mount.
+		// An absent initial spread must not turn a later update into a mount.
+		if (prev !== undefined && k === 'autoFocus' && !isHtmlCustomElement(el)) continue;
 		setAttribute(el, k, v);
 	}
 	if (process.env.NODE_ENV !== 'production') queueDevFormDiagnostic(el, mountScope);
@@ -12051,9 +12328,10 @@ export function setSpread(
 const _injectedStyles = new Set<string>();
 
 // ---------------------------------------------------------------------------
-// Hoisted document metadata (React-19-shape) — `<title>`, `<meta>`, `<link>`
-// rendered ANYWHERE in a component are lifted to <document.head> by the compiler
-// emitting one `headBlock(scope, slot, key, tag, attrs, text)` call per element
+// Hoisted document metadata (React-19-shape) — `<title>`, `<meta>`, and `<link>`
+// are lifted to <document.head>, except links with explicit `onLoad`/`onError`
+// handlers, which stay inline. The compiler emits one
+// `headBlock(scope, slot, key, tag, attrs, text)` call per hoisted element
 // (instead of placing it in the body template). Because octane re-invokes a
 // component body on every render, this call recurs each render: the element is
 // created/adopted ONCE (held in `scope.slots[slot]`; `key` is the content hash for
@@ -12067,8 +12345,19 @@ const _injectedStyles = new Set<string>();
 
 interface HeadSlot {
 	el: Element;
-	/** Direct listeners for on* props — head elements sit outside delegation roots. */
+	/** Direct listeners keyed by prop name so capture and bubble phases stay independent. */
 	handlers?: Map<string, EventListener>;
+}
+
+function removeHeadEventListeners(state: HeadSlot, attrs: Record<string, any> | null): void {
+	const handlers = state.handlers;
+	if (handlers === undefined) return;
+	for (const [name, listener] of handlers) {
+		if (attrs !== null && name in attrs) continue;
+		const event = eventSlot(name)!;
+		state.el.removeEventListener(event.type, listener, event.capture);
+		handlers.delete(name);
+	}
 }
 
 // Find the server-rendered `tag` inside `key`'s paired marker interval in <head>,
@@ -12142,11 +12431,13 @@ export function headBlock(
 		// Removed once, on the owning scope's unmount (NOT between re-renders) —
 		// scope.cleanups fire only on teardown, mirroring the spread-ref cleanup.
 		(scope.cleanups ??= []).push(() => {
+			removeHeadEventListeners(state!, null);
 			state!.el.remove();
 			scope.slots[slot] = undefined;
 		});
 	}
 	const el = state.el;
+	if (state.handlers !== undefined) removeHeadEventListeners(state, attrs);
 	if (attrs !== null) {
 		for (const k in attrs) {
 			// Hoisted head elements live in document.head — OUTSIDE every delegation
@@ -12156,14 +12447,18 @@ export function headBlock(
 			if (ev !== null) {
 				const v = attrs[k];
 				const listener = process.env.NODE_ENV !== 'production' ? devEventListener(k, v) : v;
-				const hs = (state.handlers ??= new Map<string, EventListener>());
-				const prevH = hs.get(ev.type);
-				if (prevH) el.removeEventListener(ev.type, prevH, ev.capture);
+				const hs = state.handlers;
+				const prevH = hs?.get(k);
+				if (prevH === listener) continue;
+				if (prevH !== undefined) el.removeEventListener(ev.type, prevH, ev.capture);
 				if (typeof listener === 'function') {
 					el.addEventListener(ev.type, listener as EventListener, ev.capture);
-					hs.set(ev.type, listener as EventListener);
+					(hs ?? (state.handlers = new Map<string, EventListener>())).set(
+						k,
+						listener as EventListener,
+					);
 				} else {
-					hs.delete(ev.type);
+					hs?.delete(k);
 				}
 				continue;
 			}
@@ -12203,6 +12498,7 @@ export function namespaceHead(props: NamespaceHeadProps, scope: Scope): ElementD
 		// before returning the inline descriptor for this pass.
 		const state = scope.slots[slot] as HeadSlot | undefined;
 		if (state !== undefined) {
+			removeHeadEventListeners(state, null);
 			state.el.remove();
 			scope.slots[slot] = undefined;
 		}
@@ -13337,16 +13633,27 @@ function hasControlledSyncs(): boolean {
 }
 
 /**
- * Compiler-emitted binding for `autoFocus` (React parity): never an
- * attribute — the element is focused ONCE, in the commit phase of its mount
- * (after the render pass built the tree, before layout effects — so a layout
- * effect that moves focus still wins, like React's commitMount ordering).
- * Later updates are ignored (React treats autoFocus as mount-only).
+ * Compiler-emitted binding for `autoFocus` (React parity): client mounts never
+ * write an attribute and focus supported controls once, before layout effects.
+ * Server-rendered controls keep their existing autofocus attribute but are
+ * never refocused during hydration; later updates are likewise ignored.
  */
 export function setAutoFocus(el: Element, value: unknown): void {
 	if ((el as any).$$afSeen !== undefined) return; // mount-only
 	(el as any).$$afSeen = true;
-	if (value) AUTOFOCUS_QUEUE.push(el);
+	if (!value) return;
+	switch (el.localName) {
+		case 'button':
+		case 'input':
+		case 'select':
+		case 'textarea':
+			break;
+		default:
+			return;
+	}
+	const hydration = activeHydration();
+	if (hydration !== null && !hydration.isFresh(el)) return;
+	AUTOFOCUS_QUEUE.push(el);
 }
 
 /** Text-entry controls (IME-capable; their diagnostic specifically requires onInput). */
@@ -16093,11 +16400,32 @@ export function positionalChildren(children: any[]): any[] {
 	return children;
 }
 
+// Whether ANY de-opt descriptor carrying a `ref` was ever stamped (monotone).
+// Gates every detachDeoptTreeRefs walk: an app that never puts a ref on a
+// de-opt element never pays the per-DOM-node descriptor scan on teardown.
+let DEOPT_REFS_STAMPED = false;
+
+// Record a stamped de-opt ref on its owner block and every ancestor, so the
+// teardown walk over any enclosing `deoptNode` region knows refs may be below.
+// The early exit bounds repeat stamping: the chain above the first flagged
+// block is already flagged.
+function noteDeoptRef(block: Block): void {
+	DEOPT_REFS_STAMPED = true;
+	let b: Block | null = block;
+	while (b !== null && !b.deoptRefs) {
+		b.deoptRefs = true;
+		b = b.parentBlock;
+	}
+}
+
 // Apply ONE host prop, reusing the same helpers the compiler emits (className/style/
 // setAttribute + `$$type` delegated-event slots + deferred ref attach).
 function applyDeoptProp(el: Element, name: string, v: any, ownerBlock: Block): void {
 	if (name === 'ref') {
-		if (v != null) queueRefAttach(ownerBlock, v, el);
+		if (v != null) {
+			noteDeoptRef(ownerBlock);
+			queueRefAttach(ownerBlock, v, el);
+		}
 	} else if (name === 'className' || name === 'class') {
 		setDeoptClass(el, v);
 	} else if (name === 'style') {
@@ -16185,6 +16513,8 @@ function patchDeoptProps(el: Element, prevProps: any, nextProps: any, ownerBlock
 			// Controlled `value`/`checked` bypass the prev-diff skip (reassert
 			// on every commit; the helper's DOM-diff keeps the call cheap).
 			if (prevProps == null || prevProps[name] !== nv || isControlledHostProp(el, name)) {
+				// This path always reuses an existing host; autoFocus is mount-only.
+				if (name === 'autoFocus' && !isHtmlCustomElement(el)) continue;
 				// `applyDeoptProp` is the FRESH-element helper — its style arm passes
 				// prev=undefined, which on a REUSED element leaves declarations dropped
 				// from the style object stale (applyStyleValue can only remove keys it
@@ -16342,7 +16672,7 @@ function applyHostProps(el: Element, props: any, scope: Scope, state: HostCompon
 					delegateEvents([ev.type]);
 				}
 				(el as any)[ev.key] = process.env.NODE_ENV !== 'production' ? devEventListener(name, v) : v;
-			} else {
+			} else if (prev === undefined || name !== 'autoFocus' || isHtmlCustomElement(el)) {
 				setAttribute(el, name, v);
 			}
 		}
@@ -22932,6 +23262,9 @@ function detachDeoptTreeRefs(
 	ownerScope?: Scope,
 	uncommitted: UncommittedRefAttaches | null = null,
 ): void {
+	// No de-opt descriptor ref was ever stamped → nothing to detach or collect
+	// anywhere; skip the subtree scan. (Monotone flag — see noteDeoptRef.)
+	if (!DEOPT_REFS_STAMPED) return;
 	const ref = getDeoptDesc(node)?.props?.ref;
 	if (ref != null) {
 		if (out !== null) {
@@ -24539,8 +24872,9 @@ function batchClearItems(state: ForSlot, oldItems: Map<any, Block>): void {
 			// Pure-host de-opt item (deoptItemBody with no component descendants):
 			// nothing to unmount scope-wise, but its subtree may carry stamped refs
 			// that must not keep pointing at the batch-removed DOM. Guarded so the
-			// common template-row clear stays a single null check.
-			if (b.deoptNode !== null) detachDeoptTreeRefs(b.deoptNode, null);
+			// common template-row clear stays a single null check; `deoptRefs`
+			// additionally skips the subtree scan for ref-free items.
+			if (b.deoptNode !== null && b.deoptRefs) detachDeoptTreeRefs(b.deoptNode, null);
 			b.disposed = true;
 		}
 	}
