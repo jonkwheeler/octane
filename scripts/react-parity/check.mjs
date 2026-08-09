@@ -136,8 +136,11 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
+		// hook-form and livestore have dedicated verifiers above with their own
+		// disposition sets; the shared helper only covers lucide-style ledgers.
 		if (
 			binding !== 'hook-form' &&
+			binding !== 'livestore' &&
 			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
 		) {
 			verifyPortTestClassifications(REPO, binding);
