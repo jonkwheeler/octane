@@ -8,14 +8,13 @@
     "noEmit": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "noEmitOnError": true,
-    "noErrorTruncation": true,
     "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "types": ["node"],
-    "strict": true
+    "strict": true,
+    "paths": {
+      "@octanejs/gsap": ["../../src/index.ts"]
+    }
   },
-  "include": ["./src/", "./typetests/adapted/"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": ["./types.test-d.ts"]
 }

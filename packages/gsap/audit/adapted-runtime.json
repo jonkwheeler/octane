@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "project": "gsap-adapted",
+  "roots": ["packages/gsap/tests/parity"],
+  "files": ["packages/gsap/tests/parity/lifecycle.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:fa211b07646068ff",
+      "file": "packages/gsap/tests/parity/lifecycle.test.ts",
+      "fullName": "adapted parity: useGSAP lifecycle defers context cleanup until unmount when revertOnUpdate is disabled"
+    },
+    {
+      "id": "runtime:e3b788750097974f",
+      "file": "packages/gsap/tests/parity/lifecycle.test.ts",
+      "fullName": "adapted parity: useGSAP lifecycle exposes the upstream static registration contract"
+    },
+    {
+      "id": "runtime:d607bb75eebaa776",
+      "file": "packages/gsap/tests/parity/lifecycle.test.ts",
+      "fullName": "adapted parity: useGSAP lifecycle reverts before dependency updates when revertOnUpdate is enabled"
+    }
+  ]
+}

@@ -40,15 +40,22 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project gsap --project gsap-ssr"
+    "test": "vitest run --root ../.. --project gsap --project gsap-ssr --project gsap-adapted --project gsap-differential"
   },
   "peerDependencies": {
     "gsap": "^3.12.5",
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@gsap/react": "catalog:default",
+    "@tsrx/react": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "esbuild": "catalog:default",
     "gsap": "catalog:default",
     "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
     "vitest": "catalog:default"
   }
 }
