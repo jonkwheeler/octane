@@ -41,12 +41,12 @@
   },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
-    "@types/react": "catalog:default",
+    "@types/react": "19.2.17",
     "embla-carousel-react": "8.6.0",
     "octane": "workspace:*",
     "playwright": "catalog:default",
-    "react": "catalog:default",
-    "react-dom": "catalog:default",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "vite": "catalog:default",
     "vitest": "catalog:default"
   }

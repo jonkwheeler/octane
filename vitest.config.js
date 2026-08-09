@@ -420,6 +420,7 @@ export default defineConfig({
 				],
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'octane-events-browser',
 					include: ['packages/octane/tests/browser/**/*.test.ts'],
@@ -554,6 +555,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'dexie-browser',
 					include: ['packages/dexie/tests/browser/**/*.test.ts'],
@@ -2094,6 +2096,7 @@ export default defineConfig({
 				resolve: { alias: THREE_ALIASES, dedupe: ['react', 'react-dom', 'three'] },
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'three-browser',
 					include:
@@ -2576,6 +2579,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'tiptap-browser',
 					include: ['packages/tiptap/tests/browser/**/*.test.ts'],
@@ -3711,8 +3715,10 @@ export default defineConfig({
 				},
 			},
 			{
-				// Unpaired Octane browser harness: ordinary project, heavy_integration
-				// Chromium lane (same shape as dexie/tiptap browser suites).
+				// Unpaired Octane browser harness. Owned by heavy-browser metadata so
+				// ordinary shards omit it and heavy_integration discovers it without a
+				// package-specific ci.yml path.
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'embla-carousel-browser',
 					include: ['packages/embla-carousel/tests/browser/**/*.test.ts'],

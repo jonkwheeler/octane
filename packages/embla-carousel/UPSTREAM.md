@@ -7,6 +7,8 @@ This port targets the immutable `embla-carousel-react@8.6.0` release.
 - npm integrity: `sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==`
 - Runtime/core oracle: `embla-carousel@8.6.0`
 - Reactive utility oracle: `embla-carousel-reactive-utils@8.6.0`
+- React oracle: `react@19.2.7` / `react-dom@19.2.7` (exact; required differential lane)
+- React types: `@types/react@19.2.17` (exact; declaration consumer matrix)
 - Advertised compatibility: exactly the 8.6.0 React adapter surface
 
 The MIT-licensed tag supplied the byte-exact files in `upstream/`. The npm
@@ -42,7 +44,14 @@ published tuple contract.
 
 Real pointer physics and layout remain owned by the unchanged Embla core. The
 adapter suite uses a controlled constructor boundary because jsdom has no
-layout. An unpaired Octane browser harness under `tests/browser` runs in
-Chromium (heavy integration) and verifies nonzero layout, scrolling, selection
+layout. An unpaired Octane browser harness under `tests/browser` opts into
+`testExecution.group: heavy-browser` and runs in Chromium via the generic
+heavy-browser discovery lane. It verifies nonzero layout, scrolling, selection
 updates, and destroy cleanup. Browser behavior is not simulated with jsdom
 geometry mocks.
+
+Every port-authored runtime test and repo-authored type probe is classified in
+`audit/test-classifications.json`. Unpaired conformance/browser/hydration/SSR
+cases stay Octane-only and outside React-parity ownership; the required
+differential lane is the React oracle evidence and rejects React/ReactDOM
+version drift from the pins above.

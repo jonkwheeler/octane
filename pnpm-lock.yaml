@@ -4466,7 +4466,7 @@ importers:
         specifier: workspace:*
         version: link:../testing-library
       '@types/react':
-        specifier: catalog:default
+        specifier: 19.2.17
         version: 19.2.17
       embla-carousel-react:
         specifier: 8.6.0
@@ -4478,10 +4478,10 @@ importers:
         specifier: catalog:default
         version: 1.61.1
       react:
-        specifier: catalog:default
+        specifier: 19.2.7
         version: 19.2.7
       react-dom:
-        specifier: catalog:default
+        specifier: 19.2.7
         version: 19.2.7(react@19.2.7)
       vite:
         specifier: catalog:default

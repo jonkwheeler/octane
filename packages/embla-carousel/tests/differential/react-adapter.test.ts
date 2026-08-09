@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import type { EmblaCarouselType, EmblaOptionsType, EmblaPluginType } from 'embla-carousel';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -8,6 +9,14 @@ import useEmblaCarousel from '@octanejs/embla-carousel';
 import { mount } from '../_helpers';
 import { CarouselHarness } from '../_fixtures/carousel.tsrx';
 import { beginObservation, type Observation } from '../test-support/mock-embla';
+
+const require = createRequire(import.meta.url);
+const PINNED_REACT = '19.2.7';
+const PINNED_REACT_DOM = '19.2.7';
+
+function resolvedPackageVersion(name: string): string {
+	return require(`${name}/package.json`).version as string;
+}
 
 type ReactHarnessProps = {
 	options: EmblaOptionsType;
@@ -135,6 +144,13 @@ beforeEach(function resetGlobals() {
 });
 
 describe('@octanejs/embla-carousel React differential', () => {
+	// @parity-case embla:differential:oracle-versions
+	it('rejects React oracle version drift', () => {
+		expect(resolvedPackageVersion('react')).toBe(PINNED_REACT);
+		expect(resolvedPackageVersion('react-dom')).toBe(PINNED_REACT_DOM);
+		expect(React.version).toBe(PINNED_REACT);
+	});
+
 	// @parity-case embla:differential:lifecycle
 	it('matches the pinned React adapter lifecycle across attachment, updates, and cleanup', async () => {
 		const sequence = [
