@@ -4,17 +4,32 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { BlockNoteContext } from '../../src/editor/BlockNoteContext.ts';
 import { getContentComponent, Portals } from '../../src/editor/EditorContent.tsrx';
+import { useActiveStyles } from '../../src/hooks/useActiveStyles.ts';
 import { useEditorChange } from '../../src/hooks/useEditorChange.ts';
 import { useEditorDOMElement } from '../../src/hooks/useEditorDomElement.ts';
+import { useEditorSelectionBoundingBox } from '../../src/hooks/useEditorSelectionBoundingBox.ts';
 import { useFocusWithin } from '../../src/hooks/useFocusWithin.ts';
+import { useSelectedBlocks } from '../../src/hooks/useSelectedBlocks.ts';
 import { useUploadLoading } from '../../src/hooks/useUploadLoading.ts';
 import { withoutSlot } from '../../src/hooks/without-slot.ts';
 import { flushEffects, mount } from '../../../octane/tests/_helpers';
 
-vi.mock('../../src/hooks/useEditorState.ts', () => ({
-	useEditorState: ({ editor, selector }: { editor: unknown; selector: (snapshot: { editor: unknown }) => unknown }) =>
-		selector({ editor }),
-}));
+let lastUseEditorStateOptions: { editor: unknown } | undefined;
+
+vi.mock('../../src/hooks/useEditorState.ts', function () {
+	return {
+		useEditorState: function (options: {
+			editor: unknown;
+			selector: (snapshot: { editor: unknown }) => unknown;
+		}) {
+			lastUseEditorStateOptions = { editor: options.editor };
+			if (options.editor == null || typeof options.editor === 'symbol') {
+				return undefined;
+			}
+			return options.selector({ editor: options.editor });
+		},
+	};
+});
 
 let uploadStartCallback: ((blockId?: string) => void) | undefined;
 let uploadEndCallback: ((blockId?: string) => void) | undefined;
@@ -41,6 +56,7 @@ afterEach(function () {
 	document.body.replaceChildren();
 	uploadStartCallback = undefined;
 	uploadEndCallback = undefined;
+	lastUseEditorStateOptions = undefined;
 });
 
 describe('@octanejs/blocknote Octane port regressions', function () {
@@ -59,15 +75,60 @@ describe('@octanejs/blocknote Octane port regressions', function () {
 		}
 
 		mount(function Wrapper() {
+			return createElement(BlockNoteContext.Provider, { value: { editor } }, createElement(Probe));
+		});
+		settle();
+
+		expect(observed).toBe(domElement);
+	});
+
+	it('useActiveStyles ignores compiler slot symbols and reads context editor', function () {
+		const contextEditor = {
+			getActiveStyles: function () {
+				return { bold: true };
+			},
+		};
+		let styles: unknown;
+
+		function Probe() {
+			styles = useActiveStyles(Symbol('slot') as never);
+			return createElement('div', { 'data-probe': true });
+		}
+
+		mount(function Wrapper() {
 			return createElement(
 				BlockNoteContext.Provider,
-				{ value: { editor } },
+				{ value: { editor: contextEditor } },
 				createElement(Probe),
 			);
 		});
 		settle();
 
-		expect(observed).toBe(domElement);
+		expect(styles).toEqual({ bold: true });
+	});
+
+	it('useSelectedBlocks strips compiler slots before useEditorState', function () {
+		function Probe() {
+			useSelectedBlocks(Symbol('slot') as never);
+			return createElement('div', { 'data-probe': true });
+		}
+
+		mount(Probe);
+		settle();
+
+		expect(lastUseEditorStateOptions?.editor).toBeUndefined();
+	});
+
+	it('useEditorSelectionBoundingBox strips slot from one-arg enabled calls', function () {
+		function Probe() {
+			useEditorSelectionBoundingBox(true, Symbol('slot') as never);
+			return createElement('div', { 'data-probe': true });
+		}
+
+		mount(Probe);
+		settle();
+
+		expect(lastUseEditorStateOptions?.editor).toBeUndefined();
 	});
 
 	it('useEditorChange ignores compiler slot symbols and reads context editor', function () {

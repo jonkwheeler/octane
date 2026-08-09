@@ -2875,7 +2875,7 @@ export default defineConfig({
 						...STREAMDOWN_ALIASES,
 					],
 				},
-			},,
+			},
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
