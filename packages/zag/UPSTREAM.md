@@ -26,10 +26,25 @@ version are reused unchanged and are not reimplemented here.
 | Upstream export | Octane disposition | Evidence |
 |---|---|---|
 | `useMachine` | Ported to Octane hooks in `src/machine.ts` | `tests/upstream/machine.test.ts`, `tests/upstream/nested-states.test.ts`, `tests/differential/machine.test.ts` |
-| `normalizeProps` | Ported in `src/normalize-props.ts` | `tests/conformance/upstream-surface.test.ts` |
-| `Portal` | Ported in `src/portal.ts` | `tests/conformance/machine.test.ts`, `tests/ssr/server.test.ts` |
-| `mergeProps` | Re-exported from `@zag-js/core` | `tests/conformance/upstream-surface.test.ts` |
-| `useSyncExternalStore` | Re-exported from Octane | `tests/conformance/upstream-surface.test.ts` |
+| `normalizeProps` | Ported in `src/normalize-props.ts` with documented text-host event rewrite | Framework-contract: `tests/conformance/upstream-surface.test.ts`. Not an upstream-suite identity; see Intentional divergences. |
+| `Portal` | Ported in `src/portal.ts` | Differential: `tests/differential/portal.test.ts`. Framework-contract / SSR pins: `tests/conformance/machine.test.ts`, `tests/ssr/server.test.ts` (not counted as React-parity identities). |
+| `mergeProps` | Re-exported from `@zag-js/core` | Structural export inventory in `tests/conformance/upstream-surface.test.ts` |
+| `useSyncExternalStore` | Re-exported from Octane | Structural export inventory in `tests/conformance/upstream-surface.test.ts` |
+
+## Intentional divergences
+
+- **Text-host `onChange` → `onInput`.** Upstream `normalizeProps` is an identity
+  normalizer. Octane rewrites React-style text-entry `onChange` to native
+  `onInput` for `normalizeProps.input` (non-checkbox/radio) and
+  `normalizeProps.textarea`. `<select>` and checkbox/radio hosts keep native
+  `onChange`. Upstream has no cases for this export; the rewrite is pinned by
+  `tests/conformance/upstream-surface.test.ts` and recorded in `status.json`.
+- **Portal ref / children shape.** Container refs use Octane's structural
+  `{ current: HTMLElement | null }` rather than `React.RefObject`. Compiled
+  Octane children blocks portal as one unit so component scope is preserved;
+  ordinary value children keep upstream's per-child portal behavior. Mount /
+  disabled / root-node behavior is compared against `@zag-js/react@1.42.0` in
+  `tests/differential/portal.test.ts`.
 
 ## Test-suite disposition
 
@@ -50,7 +65,7 @@ Parity evidence:
 
 - pristine full suite: `zag-pristine` Vitest project / `tests/upstream-original.test.ts`
 - adapted full suite: `zag` Vitest project / `tests/upstream/**/*.test.ts`
-- differential (supplementary): `zag-differential` / `tests/differential/machine.test.ts`
+- differential (supplementary): `zag-differential` / `tests/differential/*.test.ts`
 - pristine types: `packages/zag/audit/type-probes` via `tsc`
 - adapted types: `packages/zag/typetests` via `tsrx-tsc`
 

@@ -19,19 +19,39 @@ describe('@zag-js/react public surface', () => {
 		expect(manifest.dependencies).not.toHaveProperty('react-dom');
 
 		const source = readdirSync(join(packageRoot, 'src'))
-			.filter((file) => file.endsWith('.ts'))
-			.map((file) => readFileSync(join(packageRoot, 'src', file), 'utf8'))
+			.filter(function keepTs(file) {
+				return file.endsWith('.ts');
+			})
+			.map(function readSource(file) {
+				return readFileSync(join(packageRoot, 'src', file), 'utf8');
+			})
 			.join('\n');
 		expect(source).not.toMatch(/from ['"]react(?:-dom)?(?:\/[^'"]*)?['"]/);
 	});
 
-	it('maps React-style change handlers to Octane input handlers', () => {
-		const onChange = () => {};
-		const ref = () => {};
+	it('maps React-style change handlers to Octane input handlers for text hosts', () => {
+		const onChange = function onChange() {};
+		const ref = function ref() {};
 		const normalized = zag.normalizeProps.input({ onChange, ref });
 
 		expect(normalized).not.toHaveProperty('onChange');
 		expect(normalized.onInput).toBe(onChange);
 		expect(normalized.ref).toBe(ref);
+	});
+
+	it('preserves native onChange for select and checkable inputs', () => {
+		const onChange = function onChange() {};
+
+		const selectProps = zag.normalizeProps.select({ onChange });
+		expect(selectProps.onChange).toBe(onChange);
+		expect(selectProps).not.toHaveProperty('onInput');
+
+		const checkboxProps = zag.normalizeProps.input({ type: 'checkbox', onChange });
+		expect(checkboxProps.onChange).toBe(onChange);
+		expect(checkboxProps).not.toHaveProperty('onInput');
+
+		const radioProps = zag.normalizeProps.input({ type: 'radio', onChange });
+		expect(radioProps.onChange).toBe(onChange);
+		expect(radioProps).not.toHaveProperty('onInput');
 	});
 });

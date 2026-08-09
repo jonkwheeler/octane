@@ -145,7 +145,7 @@
         {
           "path": "packages/zag/audit/test-classifications.json",
           "role": "support",
-          "sha256": "93abeae86788e444c342d286161de0d74e8bb65915534f1bab346a6d5c22dab2"
+          "sha256": "8097add882252cae7fff541f68cf49c1ad7917b4c9f3d022534aec8eb4563855"
         }
       ]
     },
@@ -156,7 +156,7 @@
       "environment": "workspace-node",
       "project": "zag-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Supplementary differential oracle: one machine fixture through Octane and published @zag-js/react@1.42.0 on React 19.2.7, comparing transition and bindable-context traces.",
+      "notes": "Supplementary differential oracle: machine and Portal fixtures through Octane and published @zag-js/react@1.42.0 on React 19.2.7.",
       "files": [
         {
           "path": "packages/zag/tests/differential/machine.test.ts",
@@ -167,6 +167,23 @@
               "id": "differential:machine-trace",
               "testName": "matches @zag-js/react@1.42.0 for transitions and bindable context",
               "fullName": "upstream differential parity matches @zag-js/react@1.42.0 for transitions and bindable context"
+            }
+          ]
+        },
+        {
+          "path": "packages/zag/tests/differential/portal.test.ts",
+          "role": "test",
+          "sha256": "98743176203cbaf0b679354b304f642dcb142ae2ee2a9f8f1b0edfc923301ff4",
+          "cases": [
+            {
+              "id": "differential:portal-container",
+              "testName": "matches @zag-js/react@1.42.0 when portalling into a container",
+              "fullName": "Portal differential parity matches @zag-js/react@1.42.0 when portalling into a container"
+            },
+            {
+              "id": "differential:portal-disabled",
+              "testName": "matches @zag-js/react@1.42.0 when Portal is disabled",
+              "fullName": "Portal differential parity matches @zag-js/react@1.42.0 when Portal is disabled"
             }
           ]
         },
@@ -204,7 +221,7 @@
         {
           "path": "packages/zag/audit/pristine-types.json",
           "role": "test",
-          "sha256": "7c0c9e541267df391b8a96daf7242b7e359f01890f7c3e51f8aaf3d99ca273f1",
+          "sha256": "7051cd12c1413eff165016fefd9860fc4de5c62f46197bb26c3615ee5db5b3c9",
           "cases": [
             {
               "id": "types:zag-pristine",
@@ -216,7 +233,7 @@
         {
           "path": "packages/zag/audit/type-probes/public-api.test-d.ts",
           "role": "support",
-          "sha256": "952cd942d9dc9238721a42d3d8b7b53db430ae7126b710d81566ee1d1005b938"
+          "sha256": "f151611a7ccd78042dcb7eab2dc97a86b05895ca7f04742e13a81ba5bb7c5af8"
         },
         {
           "path": "packages/zag/audit/type-probes/tsconfig.pristine.json",
@@ -247,7 +264,7 @@
         {
           "path": "packages/zag/audit/adapted-types.json",
           "role": "test",
-          "sha256": "ea39b0f64ce1dd59d4de7b3fd907a9aef00c5551bb813583565e368ae8e7140e",
+          "sha256": "16cdeae2b85d4a7472c11a44de04ca685c2dd2da7a265e72bfaa5c94df42e2a2",
           "cases": [
             {
               "id": "types:zag-adapted",
@@ -259,7 +276,7 @@
         {
           "path": "packages/zag/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "9a892dc8d2beb8436c93d3b7cbd3c3e9e02a6840058d6695da54171f8d7e9e25"
+          "sha256": "9a958391746e88fead6f5f30877c0a410ae759f642d18215208fedac29964feb"
         },
         {
           "path": "packages/zag/typetests/tsconfig.json",

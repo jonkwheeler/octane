@@ -5,6 +5,7 @@
   },
   "surface": "Complete port of the @zag-js/react@1.42.0 public adapter surface: useMachine, normalizeProps, Portal, the @zag-js/core mergeProps re-export, and the framework useSyncExternalStore re-export. The framework-agnostic @zag-js/core, @zag-js/store, @zag-js/types, and @zag-js/utils packages are reused unchanged.",
   "divergences": [
+    "normalizeProps rewrites React-style text-entry onChange to native onInput for input (non-checkbox/radio) and textarea hosts; select and checkbox/radio keep native onChange. Upstream normalizeProps is an identity transform and has no suite coverage for this export.",
     "Portal container refs use Octane's structural `{ current: HTMLElement | null }` ref shape rather than React.RefObject; runtime behavior is unchanged.",
     "Compiled Octane children are portalled as one lazy children block so their component scope is preserved; ordinary value children retain upstream's per-child portal behavior.",
     "React StrictMode double-invoke suite cases stay pristine-only; Octane does not double-invoke effects, so those identities are not adapted one-for-one."
