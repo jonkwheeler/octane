@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "pristineSource": "packages/alien-signals/upstream/src/index.test.ts",
+  "adaptedSource": "packages/alien-signals/tests/upstream-adapted.test.ts",
+  "fixtureSource": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
+  "fixtureFileSha256": "2b9e4f46bfe6a46007e808364e92558f49c8a33aac736fa0b617bf46417f917f",
+  "permittedTransformations": [
+    {
+      "kind": "runner",
+      "rule": "bun:test + jest.fn become vitest + vi.fn"
+    },
+    {
+      "kind": "harness",
+      "rule": "renderHook/act/cleanup become mount/nextPaint/click/update against .tsrx fixtures"
+    },
+    {
+      "kind": "fixture-extraction",
+      "rule": "React hook bodies from renderHook callbacks live in tests/_fixtures/hooks.tsrx exports mounted by name"
+    },
+    {
+      "kind": "assertion-surface",
+      "rule": "result.current / result.current[0] / toEqual object receivers may become DOM textContent string forms of the same observable value; matcher contracts (toBe/toEqual/toHaveBeenCalledTimes/toBeDefined/toBeGreaterThan) must still cover every pristine assertion value"
+    },
+    {
+      "kind": "async-flush",
+      "rule": "act(...) may become await nextPaint() around the same state transition"
+    },
+    {
+      "kind": "divergence",
+      "rule": "Concurrent React act batching may be replaced by sequential notifications that still settle on the same final signal value (documented in UPSTREAM.md)"
+    }
+  ],
+  "notes": "Title identity remains one-for-one. This ledger is enforced by scripts/react-parity/alien-signals-runtime-lib.mjs, which compares normalized assertion contracts and fixture-export fingerprints rather than titles alone."
+}

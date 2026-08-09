@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import {
+	cpSync,
+	existsSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	symlinkSync,
+	writeFileSync,
+} from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -15,7 +23,39 @@ const packageRoot = resolve(
 	'../../packages/alien-signals',
 );
 const upstreamRoot = join(packageRoot, 'upstream');
+const oracleEnvironmentPath = join(packageRoot, 'audit/pristine-oracle-environment.json');
 const require = createRequire(import.meta.url);
+
+export function resolveInstalledPackageVersion(packageName, fromPath = packageRoot) {
+	const packageJsonPath = require.resolve(`${packageName}/package.json`, { paths: [fromPath] });
+	return JSON.parse(readFileSync(packageJsonPath, 'utf8')).version;
+}
+
+export function assertPristineOracleEnvironment({
+	environmentPath = oracleEnvironmentPath,
+	fromPath = packageRoot,
+} = {}) {
+	if (!existsSync(environmentPath)) {
+		throw new Error(
+			`missing pristine oracle environment record: ${relative(resolve(packageRoot, '../..'), environmentPath)}`,
+		);
+	}
+	const recorded = JSON.parse(readFileSync(environmentPath, 'utf8'));
+	if (!recorded.packages || typeof recorded.packages !== 'object') {
+		throw new Error('pristine oracle environment must declare packages');
+	}
+	const actual = {};
+	for (const [packageName, expectedVersion] of Object.entries(recorded.packages)) {
+		const version = resolveInstalledPackageVersion(packageName, fromPath);
+		actual[packageName] = version;
+		if (version !== expectedVersion) {
+			throw new Error(
+				`pristine oracle environment drift for ${packageName}: expected ${expectedVersion} (recorded intentional workspace oracle) but node_modules resolved ${version}`,
+			);
+		}
+	}
+	return { policy: recorded.policy, packages: actual };
+}
 
 function resolveBunBinary() {
 	try {
@@ -88,6 +128,7 @@ export function inventoryFromIdentities(identities, project = 'alien-signals-pri
 
 export function runPristineUpstreamSuite({ repoRoot = resolve(packageRoot, '../..') } = {}) {
 	verifyAlienSignalsUpstream(packageRoot);
+	const oracleEnvironment = assertPristineOracleEnvironment();
 	const runRoot = mkdtempSync(join(tmpdir(), 'octane-alien-signals-pristine-'));
 	try {
 		cpSync(join(upstreamRoot, 'src'), join(runRoot, 'src'), { recursive: true });
@@ -98,6 +139,7 @@ export function runPristineUpstreamSuite({ repoRoot = resolve(packageRoot, '../.
 					name: 'alien-signals-pristine-run',
 					private: true,
 					type: 'module',
+					octanePristineOracle: oracleEnvironment,
 				},
 				null,
 				'\t',

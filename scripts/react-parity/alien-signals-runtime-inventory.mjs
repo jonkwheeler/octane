@@ -17,6 +17,7 @@ import {
 import {
 	assertAdaptedSourceExecutable,
 	assertRuntimeCrosswalk,
+	fixtureFileFingerprint,
 } from './alien-signals-runtime-lib.mjs';
 import { renderTypeInventories } from './alien-signals-types-lib.mjs';
 
@@ -113,7 +114,29 @@ const adaptedInventory = {
 	files: adaptedFiles,
 	tests: adaptedTests,
 };
-assertRuntimeCrosswalk(pristineInventory, adaptedInventory);
+const pristineSource = readFileSync(
+	resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+	'utf8',
+);
+const adaptedSource = readFileSync(
+	resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+	'utf8',
+);
+const fixtureSource = readFileSync(
+	resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+	'utf8',
+);
+const ledgerPath = resolve(root, 'packages/alien-signals/audit/runtime-transformation-ledger.json');
+const ledger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
+ledger.fixtureFileSha256 = fixtureFileFingerprint(fixtureSource);
+writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, '\t')}\n`);
+assertRuntimeCrosswalk(pristineInventory, adaptedInventory, {
+	pristineSource,
+	adaptedSource,
+	fixtureSource,
+	repoRoot: root,
+	expectedFixtureSha256: ledger.fixtureFileSha256,
+});
 writeInventory('packages/alien-signals/audit/adapted-runtime.json', adaptedInventory);
 
 const { config: typeConfig, inventory: typeInventory } = renderTypeInventories(root);
@@ -132,10 +155,15 @@ const supportPaths = [
 	'packages/alien-signals/audit/pristine-types.json',
 	'packages/alien-signals/audit/adapted-types.json',
 	'packages/alien-signals/audit/type-parity.json',
+	'packages/alien-signals/audit/pristine-oracle-environment.json',
+	'packages/alien-signals/audit/runtime-transformation-ledger.json',
+	'packages/alien-signals/audit/test-classifications.json',
 	'packages/alien-signals/tests/upstream-original.test.ts',
+	'packages/alien-signals/tests/_fixtures/hooks.tsrx',
 	'scripts/react-parity/alien-signals-pristine-runtime.mjs',
 	'scripts/react-parity/alien-signals-runtime-lib.mjs',
 	'scripts/react-parity/alien-signals-types-lib.mjs',
+	'scripts/react-parity/alien-signals-classifications-lib.mjs',
 	'scripts/react-parity/alien-signals-runtime-inventory.mjs',
 	'packages/alien-signals/scripts/run-pristine-upstream.mjs',
 	'packages/alien-signals/scripts/verify-upstream.mjs',

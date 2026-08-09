@@ -15,21 +15,41 @@ import {
 declare function expectType<T>(value: T): void;
 
 const count: WritableSignal<number> = createSignal(1);
-const doubled = createComputed(() => count() * 2);
+const doubled = createComputed(function double() {
+	return count() * 2;
+});
 
 count(2);
-count((previous) => previous + 1);
-createEffect(() => count());
-createSignalScope(() => createEffect(() => count()));
+count(function increment(previous) {
+	return previous + 1;
+});
+createEffect(function track() {
+	count();
+});
+createSignalScope(function scoped() {
+	createEffect(function track() {
+		count();
+	});
+});
 
 const tuple: [number, (value: number | ((previous: number) => number)) => void] = useSignal(count);
 const value: number = useSignalValue(doubled);
 const setValue = useSetSignal(count);
 setValue(3);
-setValue((previous) => previous + 1);
-useSignalEffect(() => () => {});
-const stop: () => void = useSignalScope(() => createEffect(() => count()));
-const computedValue: number = useComputed(() => count() * 3, []);
+setValue(function increment(previous) {
+	return previous + 1;
+});
+useSignalEffect(function effect() {
+	return function cleanup() {};
+});
+const stop: () => void = useSignalScope(function scoped() {
+	createEffect(function track() {
+		count();
+	});
+});
+const computedValue: number = useComputed(function compute() {
+	return count() * 3;
+}, []);
 
 expectType<typeof createSignal>(createSignal);
 expectType<typeof useSignal>(useSignal);
@@ -37,6 +57,7 @@ void tuple;
 void value;
 void stop;
 void computedValue;
+void doubled;
 
 // @ts-expect-error computed signals are read-only
 doubled(3);

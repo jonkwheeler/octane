@@ -16,6 +16,9 @@ import { verifyPortTestClassifications } from './hook-form-classifications-lib.m
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifyAlienSignalsTypes } from './alien-signals-types-lib.mjs';
+import { verifyAlienSignalsTestClassifications } from './alien-signals-classifications-lib.mjs';
+import { verifyAlienSignalsRuntimeStructure } from './alien-signals-runtime-lib.mjs';
+import { assertPristineOracleEnvironment } from './alien-signals-pristine-runtime.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -59,6 +62,27 @@ try {
 	verifyAlienSignalsTypes(REPO);
 } catch (error) {
 	errors.push(`alien-signals type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyAlienSignalsRuntimeStructure(REPO);
+} catch (error) {
+	errors.push(`alien-signals runtime structure evidence is invalid: ${error.message}`);
+}
+try {
+	assertPristineOracleEnvironment({
+		environmentPath: path.join(
+			REPO,
+			'packages/alien-signals/audit/pristine-oracle-environment.json',
+		),
+		fromPath: path.join(REPO, 'packages/alien-signals'),
+	});
+} catch (error) {
+	errors.push(`alien-signals pristine oracle environment is invalid: ${error.message}`);
+}
+try {
+	verifyAlienSignalsTestClassifications(REPO);
+} catch (error) {
+	errors.push(`alien-signals test classifications are invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);

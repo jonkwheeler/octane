@@ -83,7 +83,7 @@
         {
           "path": "scripts/react-parity/alien-signals-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "f501050c59fc3632812e508cc8a614daa67be176dcecc9d4192a06c2e04027d4"
+          "sha256": "8c4c7ac51ca2946f5094d7754c7a7b3eb7cf52aba083ac75aad2e7768fb3c4ac"
         },
         {
           "path": "packages/alien-signals/scripts/run-pristine-upstream.mjs",
@@ -99,6 +99,11 @@
           "path": "packages/alien-signals/upstream/SHA256SUMS",
           "role": "support",
           "sha256": "6cd8b2e5d49973e75033f66cd74024918c8e635621dc5f18aaa556dcfccda06c"
+        },
+        {
+          "path": "packages/alien-signals/audit/pristine-oracle-environment.json",
+          "role": "support",
+          "sha256": "66a9082b9644aa8db0f7257d4c082880b5be7d6f901bdc79cccfc6ce25a4d1b3"
         }
       ]
     },
@@ -123,17 +128,37 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "2439cd46e7086853497bbc97372f74aab1a9ea2025b8513a5f6b8d59b647a9df"
+          "sha256": "f27c15393c38f7a60643d27d8841755f567d9f741d7863c7eaa6502eed114610"
         },
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "a2652974576933802b0f197617057d631343c6fd861962af59f230d3bd47eb41"
+          "sha256": "200669350307abbe5081a964644d4f4abeb51e8191bef6eab5df5029b5b71038"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
           "role": "support",
-          "sha256": "3766079393c5f94cd0405550491bc6ae1f5892c44df89af5984a59974172c9d7"
+          "sha256": "4083ade90ad428f3a3d95194090cbe74fcc645e1c7df862e6dbe20fb936c1e5b"
+        },
+        {
+          "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
+          "role": "support",
+          "sha256": "ce52c1441545e46abd77266fcb8f0020a66e82a00facba454ae6edd89d3e6243"
+        },
+        {
+          "path": "packages/alien-signals/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "d0a8828ecf11535a48f48926e3bb9f901b957cf18a477a7aea2a9b7f879657d6"
+        },
+        {
+          "path": "packages/alien-signals/tests/_fixtures/hooks.tsrx",
+          "role": "support",
+          "sha256": "2b9e4f46bfe6a46007e808364e92558f49c8a33aac736fa0b617bf46417f917f"
+        },
+        {
+          "path": "scripts/react-parity/alien-signals-classifications-lib.mjs",
+          "role": "support",
+          "sha256": "1c26404e4f355654144c05c7e6df76ac97837cfaa210440718ae31652183d4d5"
         }
       ]
     },
@@ -197,7 +222,7 @@
         {
           "path": "packages/alien-signals/audit/adapted-types.json",
           "role": "test",
-          "sha256": "5361bef35a16a7355ccc6a104ff2b5f9ae1f44c9e04bc2612f656cb0057f3d55",
+          "sha256": "e15da6cae158eea65cffe9be12a8bff8c5d9f7c1387cfce8cb740ed19d73b131",
           "cases": [
             {
               "id": "types:alien-signals-adapted",
@@ -209,7 +234,7 @@
         {
           "path": "packages/alien-signals/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "2a3aed74be8dafa3300f61b30d53d2b5d3ecc070674bfa9da0bfb15834794d22"
+          "sha256": "8a1d31373974c07842eae3cd4347c5dfd0194fecbf858a5a1f41a278cd1fe79a"
         },
         {
           "path": "packages/alien-signals/typetests/tsconfig.json",

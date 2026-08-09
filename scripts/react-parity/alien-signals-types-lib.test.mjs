@@ -65,3 +65,16 @@ test('rejects removing an adapted @ts-expect-error', async function rejectsRemov
 		buildTypeInventory(value.root, value.config);
 	}, /assertion groups differ/);
 });
+
+test('rejects an unauthorized non-assertion structural change', async function rejectsStructuralChange(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.adaptedRoot, 'public-api.test-d.ts');
+	const source = await readFile(file, 'utf8');
+	await writeFile(file, source.replace('const count:', 'const countSignal:'));
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /change outside the permitted transformations/);
+});

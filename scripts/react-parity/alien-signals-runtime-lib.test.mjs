@@ -1,10 +1,17 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import {
 	assertAdaptedSourceExecutable,
 	assertRuntimeCrosswalk,
+	assertRuntimeStructureCrosswalk,
+	fixtureFileFingerprint,
 } from './alien-signals-runtime-lib.mjs';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 function inventory(titles) {
 	return {
@@ -21,6 +28,7 @@ test('accepts matching pristine and adapted titles', function acceptsMatchingTit
 	];
 	assert.deepEqual(assertRuntimeCrosswalk(inventory(titles), inventory(titles)), {
 		titles: 2,
+		structure: null,
 	});
 });
 
@@ -52,4 +60,80 @@ test('rejects Vitest it.fails adapted registrations', function rejectsFailsRegis
 	assert.throws(function run() {
 		assertAdaptedSourceExecutable("it.fails('suite case a', function () {});\n");
 	}, /failing\/fails, skip, or todo markers/);
+});
+
+test('accepts the committed adapted assertion and fixture structure', function acceptsCommittedStructure() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const result = assertRuntimeStructureCrosswalk({
+		pristineSource,
+		adaptedSource,
+		fixtureSource,
+		repoRoot: root,
+	});
+	assert.equal(result.cases > 0, true);
+	assert.equal(result.fixtures > 0, true);
+});
+
+test('rejects deleting an adapted expect assertion', function rejectsDeletedAssertion() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const weakened = adaptedSource.replace(
+		'expect(mySignal()).toBe(0);\n\t\tmySignal(10);\n\t\texpect(mySignal()).toBe(10);',
+		'mySignal(10);\n\t\texpect(mySignal()).toBe(10);',
+	);
+	assert.notEqual(weakened, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: weakened,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /runtime assertion drift/);
+});
+
+test('rejects fixture file drift against the transformation ledger', function rejectsFixtureDrift() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const drifted = `${fixtureSource}\n`;
+	assert.notEqual(fixtureFileFingerprint(drifted), fixtureFileFingerprint(fixtureSource));
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: drifted,
+			repoRoot: root,
+		});
+	}, /fixture drift/);
 });

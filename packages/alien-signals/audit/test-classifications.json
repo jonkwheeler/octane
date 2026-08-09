@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    {
+      "path": "packages/alien-signals/tests/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Hydration adoption for signal-backed views is an Octane SSR/hydration contract unpaired against the upstream bun React suite."
+    },
+    {
+      "path": "packages/alien-signals/tests/octane-contracts.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Cancellation-safe scope controllers, setter identity, and post-commit ownership are Octane lifecycle contracts outside the adapted upstream titles."
+    },
+    {
+      "path": "packages/alien-signals/tests/ssr/render-safety.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "SSR render-safety for effects/scopes is an Octane server contract; the upstream suite is client-only bun:test."
+    },
+    {
+      "path": "packages/alien-signals/tests/upstream-adapted.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "One-for-one adapted cases from pinned react-alien-signals 0.3.0 src/index.test.ts with Per-line citations and assertion/fixture crosswalk."
+    },
+    {
+      "path": "packages/alien-signals/tests/upstream-original.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Runs the byte-exact pinned react-alien-signals 0.3.0 bun:test suite against the recorded workspace React oracle after vendored-byte verification."
+    }
+  ]
+}

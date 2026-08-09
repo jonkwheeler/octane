@@ -7,7 +7,17 @@
 - Immutable commit: `6d883959ddf25a3f486451ff8abff60eb989671c`
 - Advertised compatibility: `react-alien-signals@0.3.0`
 - Reused core: `alien-signals@1.0.4` (the upstream peer range is `~1.0.4`)
-- React oracle: the pinned repository's `src/index.test.ts`, authored for React 18+
+- React oracle suite: the pinned repository's `src/index.test.ts`, authored for React 18+
+- Pristine oracle environment (intentional workspace pin, enforced at run time by
+  [`audit/pristine-oracle-environment.json`](./audit/pristine-oracle-environment.json)):
+  - `react@19.2.7` / `react-dom@19.2.7`
+  - `@testing-library/react@16.3.2`
+  - `@happy-dom/global-registrator@20.11.2`
+  - `@testing-library/jest-dom@6.9.1`
+- Upstream `package.json` at the pin declares looser ranges (`react-dom@^19.0.0`,
+  `@testing-library/react@^16.2.0`, `@happy-dom/global-registrator@^17.1.3`). The pristine lane does
+  **not** silently inherit whatever happens to sit in `node_modules`; it records and verifies the
+  workspace-selected oracle versions above before executing the suite.
 
 The published tarball supplies the built single-entry package. The canonical repository at the
 commit above supplies the TypeScript source, test suite, and MIT license. Those files are vendored

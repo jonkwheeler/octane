@@ -60,6 +60,66 @@ export function assertionGroups(source, fileName) {
 	return groups;
 }
 
+function normalizeSpecifier(specifier) {
+	if (
+		specifier === '../../upstream/src/index.ts' ||
+		specifier === '../src/index.ts' ||
+		specifier === '@octanejs/alien-signals'
+	) {
+		return '#alien-signals-public';
+	}
+	return specifier;
+}
+
+function normalizeReadableSignalCall(source) {
+	// permittedTransformations.readable-signal: adapted probes may read a computed.
+	return source
+		.replace(/useSignalValue\(\s*count\s*\)/g, 'useSignalValue(#readable#)')
+		.replace(/useSignalValue\(\s*doubled\s*\)/g, 'useSignalValue(#readable#)');
+}
+
+function structuralSource(source, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const replacements = [];
+	for (const statement of sourceFile.statements) {
+		if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
+			continue;
+		const specifier = statement.moduleSpecifier.text;
+		const normalized = normalizeSpecifier(specifier);
+		if (normalized === specifier) continue;
+		replacements.push({
+			start: statement.moduleSpecifier.getStart(sourceFile) + 1,
+			end: statement.moduleSpecifier.getEnd() - 1,
+			value: normalized,
+		});
+	}
+	let transformed = source;
+	for (const replacement of replacements.sort(function byStartDesc(a, b) {
+		return b.start - a.start;
+	})) {
+		transformed = `${transformed.slice(0, replacement.start)}${replacement.value}${transformed.slice(replacement.end)}`;
+	}
+	transformed = normalizeReadableSignalCall(transformed);
+	const normalizedFile = ts.createSourceFile(
+		fileName,
+		transformed,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	return ts
+		.createPrinter({ removeComments: true })
+		.printFile(normalizedFile)
+		.replace(/\s+/g, ' ')
+		.trim();
+}
+
 export function buildTypeInventory(root, config) {
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
@@ -79,6 +139,11 @@ export function buildTypeInventory(root, config) {
 		const adaptedGroups = assertionGroups(adaptedSource, file);
 		if (JSON.stringify(upstreamGroups) !== JSON.stringify(adaptedGroups)) {
 			throw new Error(`${file}: assertion groups differ between pristine and adapted type suites`);
+		}
+		if (structuralSource(upstreamSource, file) !== structuralSource(adaptedSource, file)) {
+			throw new Error(
+				`${file}: adapted type test contains a change outside the permitted transformations`,
+			);
 		}
 		upstream.push({
 			path: file,
