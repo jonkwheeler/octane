@@ -4,7 +4,6 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import ts from 'typescript';
 
 import {
 	compareTestIdentities,
@@ -15,6 +14,11 @@ import {
 	inventoryFromIdentities,
 	runPristineUpstreamSuite,
 } from './alien-signals-pristine-runtime.mjs';
+import {
+	assertAdaptedSourceExecutable,
+	assertRuntimeCrosswalk,
+} from './alien-signals-runtime-lib.mjs';
+import { renderTypeInventories } from './alien-signals-types-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -29,7 +33,7 @@ function sha256File(path) {
 function writeInventory(destination, inventory) {
 	const absolute = resolve(root, destination);
 	mkdirSync(dirname(absolute), { recursive: true });
-	writeFileSync(absolute, `${JSON.stringify(inventory, null, '\t')}\n`);
+	writeFileSync(absolute, `${JSON.stringify(inventory, null, 2)}\n`);
 	const count = Array.isArray(inventory)
 		? `${inventory.length} files`
 		: Array.isArray(inventory.tests)
@@ -38,59 +42,17 @@ function writeInventory(destination, inventory) {
 	console.log(`${destination}: ${count}`);
 }
 
-function assertionGroups(source, fileName) {
-	const sourceFile = ts.createSourceFile(
-		fileName,
-		source,
-		ts.ScriptTarget.Latest,
-		true,
-		ts.ScriptKind.TS,
-	);
-	const printer = ts.createPrinter({ removeComments: true });
-	const groups = [];
-	for (const match of source.matchAll(/\/\/\s*@ts-expect-error([^\n]*)\n\s*([^\n]+)/g)) {
-		groups.push(`expect-error:${match[1].trim()}:${match[2].replace(/\s+/g, ' ').trim()}`);
-	}
-	function visit(node) {
-		if (
-			ts.isCallExpression(node) &&
-			ts.isIdentifier(node.expression) &&
-			node.expression.text === 'expectType'
-		) {
-			groups.push(
-				`expectType:${printer
-					.printNode(ts.EmitHint.Unspecified, node, sourceFile)
-					.replace(/\s+/g, ' ')
-					.trim()}`,
-			);
-		}
-		ts.forEachChild(node, visit);
-	}
-	visit(sourceFile);
-	return groups;
-}
-
-function typeInventoryFor(relativePath) {
-	const source = readFileSync(resolve(root, relativePath), 'utf8');
-	return [
-		{
-			path: relativePath.split('/').pop(),
-			sha256: sha256Text(source),
-			assertionGroups: assertionGroups(source, relativePath).map(sha256Text),
-		},
-	];
-}
-
 const pristine = runPristineUpstreamSuite({ repoRoot: root });
 if (pristine.status !== 0) {
 	process.stderr.write(pristine.stdout);
 	process.stderr.write(pristine.stderr);
 	throw new Error('Alien Signals pristine upstream suite failed while generating inventory');
 }
-writeInventory(
-	'packages/alien-signals/audit/pristine-runtime.json',
-	inventoryFromIdentities(pristine.identities, 'alien-signals-pristine-inner'),
+const pristineInventory = inventoryFromIdentities(
+	pristine.identities,
+	'alien-signals-pristine-inner',
 );
+writeInventory('packages/alien-signals/audit/pristine-runtime.json', pristineInventory);
 
 const wrapperFullName = 'runs the pinned react-alien-signals 0.3.0 suite unchanged';
 const wrapperFile = 'packages/alien-signals/tests/upstream-original.test.ts';
@@ -110,6 +72,9 @@ const wrapperInventory = {
 writeInventory('packages/alien-signals/audit/pristine-wrapper-runtime.json', wrapperInventory);
 
 const adaptedFiles = ['packages/alien-signals/tests/upstream-adapted.test.ts'];
+for (const adaptedFile of adaptedFiles) {
+	assertAdaptedSourceExecutable(readFileSync(resolve(root, adaptedFile), 'utf8'), adaptedFile);
+}
 const idOccurrences = new Map();
 const listed = JSON.parse(
 	execFileSync(
@@ -148,15 +113,14 @@ const adaptedInventory = {
 	files: adaptedFiles,
 	tests: adaptedTests,
 };
+assertRuntimeCrosswalk(pristineInventory, adaptedInventory);
 writeInventory('packages/alien-signals/audit/adapted-runtime.json', adaptedInventory);
-writeInventory(
-	'packages/alien-signals/audit/pristine-types.json',
-	typeInventoryFor('packages/alien-signals/audit/type-probes/public-api.test-d.ts'),
-);
-writeInventory(
-	'packages/alien-signals/audit/adapted-types.json',
-	typeInventoryFor('packages/alien-signals/typetests/public-api.test-d.ts'),
-);
+
+const { config: typeConfig, inventory: typeInventory } = renderTypeInventories(root);
+for (const side of ['upstream', 'adapted']) {
+	const destination = typeConfig.inventories[side];
+	writeInventory(destination, typeInventory[side]);
+}
 
 const summary = summarizeRuntimeInventories([adaptedInventory]);
 console.log('adaptedRuntimeSummary', JSON.stringify(summary));
@@ -170,6 +134,9 @@ const supportPaths = [
 	'packages/alien-signals/audit/type-parity.json',
 	'packages/alien-signals/tests/upstream-original.test.ts',
 	'scripts/react-parity/alien-signals-pristine-runtime.mjs',
+	'scripts/react-parity/alien-signals-runtime-lib.mjs',
+	'scripts/react-parity/alien-signals-types-lib.mjs',
+	'scripts/react-parity/alien-signals-runtime-inventory.mjs',
 	'packages/alien-signals/scripts/run-pristine-upstream.mjs',
 	'packages/alien-signals/scripts/verify-upstream.mjs',
 	'packages/alien-signals/upstream/SHA256SUMS',

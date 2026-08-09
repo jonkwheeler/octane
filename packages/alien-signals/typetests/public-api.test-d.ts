@@ -12,6 +12,8 @@ import {
 	type WritableSignal,
 } from '@octanejs/alien-signals';
 
+declare function expectType<T>(value: T): void;
+
 const count: WritableSignal<number> = createSignal(1);
 const doubled = createComputed(() => count() * 2);
 
@@ -29,6 +31,8 @@ useSignalEffect(() => () => {});
 const stop: () => void = useSignalScope(() => createEffect(() => count()));
 const computedValue: number = useComputed(() => count() * 3, []);
 
+expectType<typeof createSignal>(createSignal);
+expectType<typeof useSignal>(useSignal);
 void tuple;
 void value;
 void stop;

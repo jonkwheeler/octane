@@ -1,8 +1,37 @@
 {
   "schemaVersion": 1,
-  "allowedTransformations": [
-    "Import root changes from react-alien-signals / relative upstream path to @octanejs/alien-signals",
-    "ReadableSignal / DependencyList type aliases that document public call shapes"
+  "upstreamRoot": "packages/alien-signals/audit/type-probes",
+  "adaptedRoot": "packages/alien-signals/typetests",
+  "inventories": {
+    "upstream": "packages/alien-signals/audit/pristine-types.json",
+    "adapted": "packages/alien-signals/audit/adapted-types.json"
+  },
+  "lanes": {
+    "pristine": {
+      "compiler": "tsc",
+      "project": "packages/alien-signals/audit/type-probes/tsconfig.pristine.json",
+      "sourcePolicy": "Repo-authored React declaration probes against the vendored react-alien-signals 0.3.0 surface, including negative controls."
+    },
+    "adapted": {
+      "compiler": "tsrx-tsc",
+      "project": "packages/alien-signals/typetests/tsconfig.json",
+      "sourcePolicy": "Octane public type probes with matching assertion groups for the @octanejs/alien-signals surface."
+    }
+  },
+  "permittedTransformations": [
+    {
+      "kind": "import-root",
+      "rule": "React probes import vendored upstream/src; Octane probes import @octanejs/alien-signals"
+    },
+    {
+      "kind": "readable-signal",
+      "rule": "Adapted probes may exercise useSignalValue on readable computed signals, matching the documented Octane surface"
+    },
+    {
+      "kind": "negative-control",
+      "rule": "Matching @ts-expect-error and expectType groups must reject or accept the same shapes on both sides"
+    }
   ],
-  "notes": "Upstream ships no dedicated typetest suite; both lanes are repo-authored probes over the pinned runtime surface."
+  "notes": "Upstream ships no dedicated typetest suite; both lanes are repo-authored probes over the pinned runtime surface. Assertion groups are compared one-for-one.",
+  "divergences": []
 }
