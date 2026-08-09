@@ -1569,7 +1569,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Kept on ordinary shards while provenance is recorded-unverified:
+				// react-parity:check only validates metadata until verification, so
+				// react-parity ownership would drop these cases from CI entirely.
 				test: {
 					name: 'tanstack-query-differential',
 					include: ['packages/tanstack-query/tests/differential/**/*.test.ts'],

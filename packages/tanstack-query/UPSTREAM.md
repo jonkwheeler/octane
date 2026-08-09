@@ -16,8 +16,9 @@ fetched from the canonical tag, registered as pristine/adapted lanes, and
 verification is established. Until then, `pnpm react-parity:check` only
 validates manifest metadata for this binding (it does not `run-required`).
 
-Current executable React-parity evidence is the three same-fixture React/Octane
-differential scenarios. The Octane suspense adaptation and DOM-free SSR contract
-remain ordinary package tests (octane-only divergence / framework contract); they
-are not counted as React-parity evidence. A repository-authored public type
-contract lane is recorded as optional until pristine/adapted type suites land.
+While unverified, no TanStack Query Vitest project is `react-parity`-owned.
+The three same-fixture React/Octane differential scenarios still run on
+ordinary shards and are recorded as an optional differential lane. The Octane
+suspense adaptation and DOM-free SSR contract remain ordinary package tests
+(octane-only framework contracts). A repository-authored public type contract
+lane is also optional until pristine/adapted type suites land.

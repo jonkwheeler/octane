@@ -47,11 +47,11 @@
     {
       "id": "tanstack-query-runtime-differential",
       "type": "differential",
-      "oracle": "required",
+      "oracle": "optional",
       "environment": "workspace-node",
       "project": "tanstack-query-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact cached query, asynchronous query, and mutation scenarios against @tanstack/react-query@5.101.3.",
+      "notes": "Runs exact cached query, asynchronous query, and mutation scenarios against @tanstack/react-query@5.101.3. Optional and ordinary-shard executed while provenance remains recorded-unverified; promote to required react-parity ownership after tag suites are fetched and verification is established.",
       "files": [
         {
           "path": "packages/tanstack-query/tests/differential/parity.test.ts",
