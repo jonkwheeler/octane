@@ -1,10 +1,12 @@
-import { Children, cloneElement, type ElementDescriptor, type OctaneNode } from 'octane';
+import { Children, attachRef, cloneElement, type ElementDescriptor, type OctaneNode } from 'octane';
 
-export type StructuralRef<T> = { current: T | null } | ((value: T | null) => void);
+export type StructuralRef<T> =
+	| { current: T | null }
+	| ((value: T | null) => void | (() => void))
+	| ReadonlyArray<StructuralRef<T>>;
 
 export function assignRef<T>(ref: StructuralRef<T> | null | undefined, value: T | null): void {
-	if (typeof ref === 'function') ref(value);
-	else if (ref) ref.current = value;
+	attachRef(ref, value as Element | null);
 }
 
 export function cloneCoreChild(

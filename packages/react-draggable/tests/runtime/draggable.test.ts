@@ -4,6 +4,7 @@ import { flushEffects } from '../../../octane/tests/_helpers.ts';
 import Draggable, { DraggableCore } from '@octanejs/react-draggable';
 import {
 	BareDraggableHarness,
+	ChildRefDraggableHarness,
 	DraggableHarness,
 	SvgDraggableHarness,
 } from './_fixtures/DraggableHarness.tsrx';
@@ -196,6 +197,42 @@ describe('Draggable visual contract', () => {
 		expect(nodeRef.current?.style.transform).toBe('');
 		expect(nodeRef.current?.style.fill).toBe('red');
 		root.unmount();
+		container.remove();
+	});
+
+	// @parity-case adapted:draggable-child-ref-forms
+	it('forwards array child refs and callback-ref cleanups through the clone', () => {
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const nodeRef = { current: null as HTMLDivElement | null };
+		const objectRef = { current: null as HTMLDivElement | null };
+		const seen: Array<HTMLDivElement | null> = [];
+		const cleanups: string[] = [];
+		function callbackRef(value: HTMLDivElement | null) {
+			seen.push(value);
+			if (value) {
+				return function cleanup() {
+					cleanups.push('cleanup');
+				};
+			}
+		}
+		root.render(ChildRefDraggableHarness, {
+			nodeRef,
+			childRef: [objectRef, callbackRef],
+			enableUserSelectHack: false,
+		});
+		flushSync(() => {});
+		flushEffects();
+		expect(nodeRef.current).toBeInstanceOf(HTMLDivElement);
+		expect(objectRef.current).toBe(nodeRef.current);
+		expect(seen).toEqual([nodeRef.current]);
+		const attached = nodeRef.current;
+		root.unmount();
+		expect(objectRef.current).toBeNull();
+		// React-19 cleanup path runs the returned cleanup instead of ref(null).
+		expect(seen).toEqual([attached]);
+		expect(cleanups).toEqual(['cleanup']);
 		container.remove();
 	});
 });

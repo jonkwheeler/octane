@@ -32,3 +32,18 @@ export function BareDraggableHarness(props: DraggableProps) @{
 		<div class="bare">drag</div>
 	</Draggable>
 }
+
+export function ChildRefDraggableHarness(props: DraggableProps & {
+	nodeRef: { current: HTMLDivElement | null };
+	childRef: | { current: HTMLDivElement | null }
+	| ((value: HTMLDivElement | null) => void | (() => void))
+	| ReadonlyArray<
+			{ current: HTMLDivElement | null } | ((value: HTMLDivElement | null) => void | (() => void))
+	  >;
+}) @{
+	<Draggable {...props}>
+		<div ref={props.childRef} class="child" data-kept="yes">
+			drag
+		</div>
+	</Draggable>
+}
