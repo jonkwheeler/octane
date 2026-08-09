@@ -29,6 +29,7 @@ surface and evidence.
 | `@octanejs/intersection-observer` | 0 |
 | `@octanejs/jotai` | 0 |
 | `@octanejs/lexical` | 0 |
+| `@octanejs/livestore` | 0 |
 | `@octanejs/lucide` | 0 |
 | `@octanejs/mantine-hooks` | 0 |
 | `@octanejs/mdx` | 0 |

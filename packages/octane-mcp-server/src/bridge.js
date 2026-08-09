@@ -122,6 +122,7 @@ export const KNOWN_BINDINGS = {
 	'react-intersection-observer': '@octanejs/intersection-observer',
 	'@mdx-js/react': '@octanejs/mdx',
 	'dexie-react-hooks': '@octanejs/dexie',
+	'@livestore/react': '@octanejs/livestore',
 };
 
 // Octane-specific ecosystem packages that have no React import to rewrite.
@@ -161,6 +162,7 @@ export const KNOWN_VANILLA_CORES = {
 	jotai: 'jotai/vanilla',
 	'@lexical/react': 'lexical',
 	'@tiptap/react': '@tiptap/core',
+	'@livestore/react': '@livestore/livestore',
 };
 
 export const REACT_API_MAP = {

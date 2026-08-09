@@ -661,6 +661,7 @@ describe('manifest-declared manual hook slots', () => {
 			'intersection-observer',
 			'jotai',
 			'lexical',
+			'livestore',
 			'lucide',
 			'mdx',
 			'mobx',
