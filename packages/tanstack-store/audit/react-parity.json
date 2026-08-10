@@ -209,7 +209,7 @@
       "environment": "workspace-node",
       "project": "tanstack-store-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the structurally equivalent Octane typetest after permitted import-root transformation via parity-only tsconfig.adapted.json. Authenticated _useStore omission artifacts are inventoried as divergence cases here but stay outside this parity compiler project (ordinary package typecheck + ordinary shards).",
+      "notes": "Runs the structurally equivalent Octane typetest after permitted import-root transformation via parity-only tsconfig.adapted.json. The _useStore omission typetest is executed by tanstack-store-useStore-omission-types, not this lane.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -225,30 +225,6 @@
               "id": "types:tanstack-store-adapted-upstream",
               "testName": "packages/react-store/tests/test.test-d.ts adapted contract",
               "fullName": "packages/react-store/tests/test.test-d.ts adapted contract"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-store/typetests/_useStore-omission.test-d.ts",
-          "role": "test",
-          "sha256": "fdcc64ae88377f5b802a6429efb94ccf88d7e182f1b26d191bcadd226e2900ba",
-          "cases": [
-            {
-              "id": "types:tanstack-store-useStore-omission",
-              "testName": "omits the upstream experimental _useStore hook",
-              "fullName": "omits the upstream experimental _useStore hook"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-store/tests/conformance/experimental-use-store.parity.test.ts",
-          "role": "test",
-          "sha256": "6500864ad63689adf4fd0ebf08ccf19e8d82b51f765d5a8ba01134875beb433a",
-          "cases": [
-            {
-              "id": "ported:tanstack-store-experimental-use-store",
-              "testName": "matches the supported @tanstack/react-store runtime exports",
-              "fullName": "export surface matches the supported @tanstack/react-store runtime exports"
             }
           ]
         },
@@ -271,6 +247,49 @@
           "path": "packages/tanstack-store/audit/pristine-types.json",
           "role": "support",
           "sha256": "c28643e83a20c9e8c9580aa37dc324b3b50fd98abf21097a854797b16baaa1e7"
+        }
+      ]
+    },
+    {
+      "id": "tanstack-store-useStore-omission-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "tanstack-store-useStore-omission-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the authenticated Octane-only _useStore omission typetest with tsrx-tsc. Paired ordinary runtime evidence stays in experimental-use-store.parity.test.ts outside react-parity ownership.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/tanstack-store/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/tanstack-store/typetests/_useStore-omission.test-d.ts",
+          "role": "test",
+          "sha256": "fdcc64ae88377f5b802a6429efb94ccf88d7e182f1b26d191bcadd226e2900ba",
+          "cases": [
+            {
+              "id": "types:tanstack-store-useStore-omission",
+              "testName": "omits the upstream experimental _useStore hook",
+              "fullName": "omits the upstream experimental _useStore hook"
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-store/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "c045d177e942c1dc1ec3b5bc8ebc1718a976f23c888171fc01764cfbb606fa67"
+        },
+        {
+          "path": "packages/tanstack-store/audit/type-parity.json",
+          "role": "support",
+          "sha256": "a760aeb5dede692fff87767aba80ceeb3ac4d926cd56fa4447e33e25b98920d8"
+        },
+        {
+          "path": "packages/tanstack-store/audit/adapted-types.json",
+          "role": "support",
+          "sha256": "7c60fde11c510f1de2218f7c150a6c2311908834522fbb25cffbaf7969a80618"
         }
       ]
     },
@@ -331,10 +350,7 @@
   "divergences": [
     {
       "id": "tanstack-store-experimental-use-store",
-      "caseIds": [
-        "types:tanstack-store-useStore-omission",
-        "ported:tanstack-store-experimental-use-store"
-      ],
+      "caseIds": ["types:tanstack-store-useStore-omission"],
       "upstreamResult": "@tanstack/react-store exports the experimental _useStore hook.",
       "octaneResult": "@octanejs/tanstack-store intentionally omits _useStore while retaining the stable useSelector and useStore APIs.",
       "rationale": "The experimental hook is not part of the supported stable binding surface.",

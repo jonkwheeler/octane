@@ -1,13 +1,12 @@
 /**
- * Parity evidence for the intentional omission of upstream's experimental
- * `_useStore` export. Kept in its own file so file-granular react-parity
- * ownership does not hide the ordinary module-identity case in parity.test.ts.
+ * Ordinary Octane-only divergence evidence for the intentional omission of
+ * upstream's experimental `_useStore` export. Kept outside react-parity
+ * ownership; the structured divergence cites the required omission-types lane.
  */
 import { describe, expect, it } from 'vitest';
 import * as binding from '@octanejs/tanstack-store';
 
 describe('export surface', function () {
-	// @parity-case ported:tanstack-store-experimental-use-store
 	it('matches the supported @tanstack/react-store runtime exports', async function () {
 		const real = await import('@tanstack/react-store');
 		const expected = Object.keys(real)
