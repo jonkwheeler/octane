@@ -26,6 +26,7 @@ beforeEach(() => {
 });
 
 describe('state wiring + scrolling', () => {
+	// @parity-case conformance:nested-flush-sync-scroll
 	it('sync scroll update inside a discrete-event flush still lands (flushSync degradation)', async () => {
 		// #scroll-500's onClick dispatches the scroll event synchronously INSIDE
 		// octane's click flush → core notifies sync=true → the adapter's

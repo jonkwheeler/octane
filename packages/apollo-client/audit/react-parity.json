@@ -115,7 +115,7 @@
         {
           "path": "packages/apollo-client/audit/test-classifications.json",
           "role": "support",
-          "sha256": "61a7e95b273ad8f7eb7d53bfeb8ce66f2dd0fa03157ce60364847bd2eca5fb6b"
+          "sha256": "118ca56781ad444a1782e54090deeb3ec3e6543641a564e626f79df9d55bde16"
         }
       ]
     },

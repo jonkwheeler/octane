@@ -22,8 +22,11 @@ function discoverAuthoredTests(root, binding) {
 			discovered.push(path);
 		}
 	}
+	// Type-parity ledgers already inventory adapted typetests; discover
+	// `*.test-d.ts` only when that separate ledger is absent so they cannot
+	// silently enter a parity compiler lane later.
 	const typetestsRoot = resolve(packageRoot, 'typetests');
-	if (existsSync(typetestsRoot)) {
+	if (existsSync(typetestsRoot) && !existsSync(resolve(packageRoot, 'audit/type-parity.json'))) {
 		for (const entry of readdirSync(typetestsRoot, { recursive: true, withFileTypes: true })) {
 			if (!entry.isFile() || !/\.test-d\.ts$/.test(entry.name)) continue;
 			discovered.push(
