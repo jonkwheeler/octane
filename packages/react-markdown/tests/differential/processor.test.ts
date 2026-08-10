@@ -33,9 +33,9 @@ it('matches pinned raw handling and filtering order', () => {
 	});
 });
 
-it('passes exact element index and parent to allowElement', () => {
+it('passes exact element index and parent to allowElement', function () {
 	const seen: Array<[string, number, string]> = [];
-	processSync({
+	const tree = processSync({
 		children: 'one\n\n## two',
 		allowElement(node, index, parent) {
 			seen.push([node.tagName, index, parent?.type || 'none']);
@@ -46,4 +46,9 @@ it('passes exact element index and parent to allowElement', () => {
 		['p', 0, 'root'],
 		['h2', 2, 'root'],
 	]);
+	expect(
+		tree.children.map(function (node) {
+			return node.type === 'element' ? node.tagName : node.type;
+		}),
+	).toEqual(['p', 'text']);
 });

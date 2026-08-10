@@ -2,7 +2,17 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, it } from 'vitest';
 
-it('keeps the binding public surface free of React imports and types', () => {
+it('exposes the public api', async function () {
+	expect(Object.keys(await import('../../src/index')).sort()).toEqual([
+		'Markdown',
+		'MarkdownAsync',
+		'MarkdownHooks',
+		'default',
+		'defaultUrlTransform',
+	]);
+});
+
+it('keeps the binding public surface free of React imports and types', function () {
 	for (const file of [
 		'index.ts',
 		'markdown-async.ts',

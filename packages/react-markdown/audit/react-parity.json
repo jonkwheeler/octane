@@ -34,8 +34,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 87,
-    "uniqueIdentities": 87,
+    "inventoryEntries": 88,
+    "uniqueIdentities": 88,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -114,12 +114,12 @@
         {
           "path": "packages/react-markdown/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "ada51b141853c75d612a211b00f07a7d0e8f4b84c9a2a7fea21fe6200faaa76a"
+          "sha256": "bcbd9ca3a646f6da36a0459fa92be088d138e6541ee369a34b7d0042490be3a1"
         },
         {
           "path": "packages/react-markdown/audit/adapted-case-crosswalk.json",
           "role": "support",
-          "sha256": "fc547b885f19cebcf71627e4c83975c68c9b3f772da6dfea41bdff96da9c0bce"
+          "sha256": "32109ad8db0697405ee044a301bd71f29a80caf1008137569dbdae0857c86472"
         },
         {
           "path": "scripts/react-parity/react-markdown-runtime-inventory.mjs",
@@ -134,7 +134,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "7206ddcb12289638ada9c593989942e0dcf73f389c40f4734cb5d1622f2051c1"
+          "sha256": "a4015d27b565be51d8fda4ecfe11eb7c0d20d116f21189f39fba359ac56631f2"
         }
       ]
     },
@@ -248,6 +248,18 @@
       "migrationGuidance": "Add an explicit preload hint when an above-the-fold Markdown image requires one.",
       "owner": "octane",
       "reviewCondition": "Review if Octane adds renderer-managed image resource hints."
+    },
+    {
+      "id": "react-markdown-async-sync-render",
+      "caseIds": ["runtime:090a6b90380b5935"],
+      "upstreamResult": "React's synchronous renderer throws when MarkdownAsync suspends during renderToStaticMarkup.",
+      "octaneResult": "MarkdownAsync returns a Promise<ElementDescriptor> that resolves to ordinary Octane output.",
+      "rationale": "Octane has no React Suspense boundary for sync render of an async Markdown entry; the public call site is awaitable instead.",
+      "classification": "execution-model",
+      "consumerImpact": "Callers must await MarkdownAsync rather than treating it as a sync React element that suspends.",
+      "migrationGuidance": "Await MarkdownAsync (or stream through Octane SSR) instead of renderToStaticMarkup.",
+      "owner": "octane",
+      "reviewCondition": "Review if Octane adds a sync Suspense path for async Markdown."
     }
   ]
 }

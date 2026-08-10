@@ -207,6 +207,23 @@ const manifest = {
 			owner: 'octane',
 			reviewCondition: 'Review if Octane adds renderer-managed image resource hints.',
 		},
+		{
+			id: 'react-markdown-async-sync-render',
+			caseIds: ['runtime:090a6b90380b5935'],
+			upstreamResult:
+				"React's synchronous renderer throws when MarkdownAsync suspends during renderToStaticMarkup.",
+			octaneResult:
+				'MarkdownAsync returns a Promise<ElementDescriptor> that resolves to ordinary Octane output.',
+			rationale:
+				'Octane has no React Suspense boundary for sync render of an async Markdown entry; the public call site is awaitable instead.',
+			classification: 'execution-model',
+			consumerImpact:
+				'Callers must await MarkdownAsync rather than treating it as a sync React element that suspends.',
+			migrationGuidance:
+				'Await MarkdownAsync (or stream through Octane SSR) instead of renderToStaticMarkup.',
+			owner: 'octane',
+			reviewCondition: 'Review if Octane adds a sync Suspense path for async Markdown.',
+		},
 	],
 };
 

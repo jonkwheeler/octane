@@ -28,6 +28,11 @@
       "fullName": "MarkdownAsync matches the upstream pipeable-stream output fixture"
     },
     {
+      "id": "runtime:cf81bb17d3865b81",
+      "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
+      "fullName": "exposes the public api"
+    },
+    {
       "id": "runtime:648b865f39a56fb4",
       "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
       "fullName": "keeps the binding public surface free of React imports and types"

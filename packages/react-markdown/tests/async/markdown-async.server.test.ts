@@ -21,11 +21,14 @@ async function renderOctane(element: ElementDescriptor): Promise<string> {
 	return normalize((await prerender(Root, {})).html);
 }
 
-describe('MarkdownAsync', () => {
-	it('documents the synchronous-render framework divergence with the upstream fixture', async () => {
-		expect(() =>
-			renderToStaticMarkup(createReactElement(ReactMarkdownAsync, { children: 'a' })),
-		).toThrow(/A component suspended while responding to synchronous input/);
+describe('MarkdownAsync', function () {
+	it('documents the synchronous-render framework divergence with the upstream fixture', async function () {
+		// OCTANE DIVERGENCE[react-markdown-async-sync-render][runtime:090a6b90380b5935]
+		// React's synchronous renderer throws when MarkdownAsync suspends; Octane returns an
+		// awaitable ElementDescriptor from the same call site.
+		expect(function () {
+			renderToStaticMarkup(createReactElement(ReactMarkdownAsync, { children: 'a' }));
+		}).toThrow(/A component suspended while responding to synchronous input/);
 		const pending = MarkdownAsync({ children: 'a' });
 		expect(pending).toBeInstanceOf(Promise);
 		expect(await renderOctane(await pending)).toBe('<p>a</p>');

@@ -1,5 +1,5 @@
 {
-  "test.jsx:37:should expose the public api": "runtime:648b865f39a56fb4",
+  "test.jsx:37:should expose the public api": "runtime:cf81bb17d3865b81",
   "test.jsx:48:should work": "runtime:8405d9e64b10e579",
   "test.jsx:52:should throw w/ `source`": "runtime:8ebf28c5aad28f21",
   "test.jsx:59:should throw w/ non-string children (number)": "runtime:03ff8e5ea27a65b7",
