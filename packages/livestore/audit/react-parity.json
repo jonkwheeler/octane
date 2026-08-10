@@ -16,21 +16,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/livestore/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/livestore/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/livestore/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/livestore/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": [
         "/tests/ssr/",
         "/tests/conformance/",
@@ -52,7 +44,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4800c8e2801f0faafb4c585e62340db66d9ff29492c13ef57b5a118e4749eb67"
+      "lockfileSha256": "9bfa66384d7cd40cb59b589c777f176cc5f8dc6a3f17a865039e902402bea226"
     }
   },
   "lanes": [
@@ -186,7 +178,7 @@
       "environment": "workspace-node",
       "project": "livestore-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Octane public type probes with matching negative controls after the permitted ReactNode\u2192OctaneNode transformation.",
+      "notes": "Octane public type probes with matching negative controls after the permitted ReactNode→OctaneNode transformation.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",

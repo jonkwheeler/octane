@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-hotkeys/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/tanstack-hotkeys/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-hotkeys/tests/upstream"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-hotkeys/tests/upstream"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4800c8e2801f0faafb4c585e62340db66d9ff29492c13ef57b5a118e4749eb67"
+      "lockfileSha256": "9bfa66384d7cd40cb59b589c777f176cc5f8dc6a3f17a865039e902402bea226"
     }
   },
   "lanes": [
@@ -242,7 +234,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6e13c896d443fc0488997ef687bf7766ce6fb39398a2bb8759655290930b5073"
+          "sha256": "22270530e881b4664083d76b2986943e9e469047966c51db4f409bac146b779a"
         }
       ]
     }
@@ -250,9 +242,7 @@
   "divergences": [
     {
       "id": "plain-ref-target",
-      "caseIds": [
-        "types:adapted-octane"
-      ],
+      "caseIds": ["types:adapted-octane"],
       "upstreamResult": "Target options use React.RefObject<EventTarget | null>.",
       "octaneResult": "Target options use a plain { current: EventTarget | null } object.",
       "rationale": "Octane has no React.RefObject type, while the runtime ref shape is framework-neutral.",
