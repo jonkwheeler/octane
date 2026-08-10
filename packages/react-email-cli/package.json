@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-		"node": ">=22.22.2"
+    "node": ">=22.22.2"
   },
   "description": "Compile, preview, and export Octane email templates.",
   "publishConfig": {
