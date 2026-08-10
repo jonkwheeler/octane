@@ -130,6 +130,7 @@ export function CommandRoot(props: CommandProps) @{
 					}
 					ids.current.set(id, { value: itemValue ?? '', keywords });
 					state.current.filtered.items.set(id, score(itemValue ?? '', keywords));
+					// OCTANE DIVERGENCE[value-change-filter-refresh][differential:cmdk-value-change-filter]:
 					// Re-derive the aggregate before sorting. Scoring this one item
 					// updates `filtered.items` but leaves `filtered.count` and
 					// `filtered.groups` describing the previous values, and those two
@@ -164,6 +165,7 @@ export function CommandRoot(props: CommandProps) @{
 				return () => {
 					releaseValue(id);
 					allItems.current.delete(id);
+					// OCTANE DIVERGENCE[group-membership-cleanup][differential:cmdk-group-membership]:
 					// An item leaving its group has to be dropped from that group's member
 					// set too, or the set accumulates dead ids for the Command's lifetime
 					// (unbounded growth in a menu whose results churn) and filterItems()
@@ -200,6 +202,7 @@ export function CommandRoot(props: CommandProps) @{
 					releaseValue(id);
 					allForceMounted.current.delete(id);
 					state.current.forceMountedCount = allForceMounted.current.size;
+					// OCTANE DIVERGENCE[selected-force-mount-teardown][differential:cmdk-selected-force-mount]:
 					// A force-mounted item is selectable like any other, so losing the
 					// selected one has to move the selection on — exactly as the plain
 					// item teardown does. Without this the value stays pointing at a node
@@ -253,6 +256,8 @@ export function CommandRoot(props: CommandProps) @{
 		const owners = (valueOwners.current.get(next) ?? 0) + 1;
 		valueOwners.current.set(next, owners);
 		if (owners > 1) {
+			// OCTANE DIVERGENCE[duplicate-value-warning][differential:cmdk-duplicate-value]:
+			// Development builds report duplicate values; upstream accepts them silently.
 			console.warn(
 				`[@octanejs/cmdk] ${owners} items share the value ${JSON.stringify(next)}. ` +
 					`Selection is keyed by value, so they will all appear selected at once and ` +
@@ -422,7 +427,8 @@ export function CommandRoot(props: CommandProps) @{
  * The cost is that the sizer and each group's item container become flex
  * columns while a filter is active, so a consumer who relies on physical DOM
  * order (`:nth-child` styling, drag handles) or on a custom container
- * `display` sees a divergence from upstream. Recorded in status.json.
+ * `display` sees a divergence from upstream. This marker authenticates ranking
+ * and aria wiring only; event/ref adaptations are out of scope for this case.
  */
 	function sort() {
 		if (!state.current.search || propsRef.current.shouldFilter === false) {

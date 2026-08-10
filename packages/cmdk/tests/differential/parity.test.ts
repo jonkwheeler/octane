@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { resolve } from 'node:path';
 import { act } from 'react';
 import { mountDifferential, normaliseHtml } from '../../../octane/tests/differential/_rig.js';
+import { clearConsoleErrors, consoleErrorCalls } from '../_setup.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/cmdk-diff.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
@@ -112,15 +113,12 @@ function visibleGroupHeadings(mount: {
  */
 /**
  * OCTANE DIVERGENCE[runtime-adaptation-divergences][differential:cmdk-filter-selection-empty]
- * Upstream ranks matches by physically relocating item nodes;
- * the port assigns CSS `order` inside a flex container instead, because moving a
- * node carries it out of the comment-fenced ranges octane tracks and orphans it
- * (see `sort()` in command.tsrx). The rendered result is the same list in the
- * same visible order, but the port's markup carries the ranking declarations and
- * upstream's does not.
+ * This case authenticates CSS-vs-DOM ranking and aria-activedescendant wiring
+ * only. Upstream ranks by relocating nodes; the port assigns CSS `order`.
+ * Upstream also drops nested aria wiring from inside its layout-effect flush.
  *
- * Only those exact declarations are removed — any other inline style, and every
- * other attribute and node, still has to match byte-for-byte.
+ * Only ranking declarations are stripped for byte-compare — any other inline
+ * style, and every other attribute and node, still has to match byte-for-byte.
  */
 function stripRankingStyles(html: string): string {
 	return html
@@ -417,6 +415,280 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 		);
 
 		warn.mockRestore();
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-batcher-isolation
+	it('documents batcher isolation when onValueChange throws', async function () {
+		// Arm the throw only after mount: React rethrows from the initial
+		// selectFirstItem layout effect and would otherwise fail the harness.
+		let armThrow = false;
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffBatcherIsolation',
+			{
+				value: '',
+				onValueChange: function throwOnChange() {
+					if (armThrow) throw new Error('boom from onValueChange');
+				},
+			},
+			CACHE,
+		);
+		armThrow = true;
+
+		try {
+			// OCTANE DIVERGENCE[batcher-isolation][differential:cmdk-batcher-isolation]
+			await differential.observe(
+				'throwing onValueChange still finishes sibling filter work on Octane',
+				async function (octane, react) {
+					await octane.input('[cmdk-input]', 'app');
+					let reactThrew = false;
+					try {
+						await react.input('[cmdk-input]', 'app');
+					} catch (error) {
+						reactThrew = true;
+						// Upstream's layout-effect flush rethrows the user callback; the
+						// isolation divergence is that Octane reports and continues.
+						expect(String(error)).toContain('boom from onValueChange');
+					}
+					await settle();
+
+					expect(itemTexts(octane)).toEqual(['Apple']);
+					expect(
+						consoleErrorCalls().some(function hasBoom(message) {
+							return message.includes('boom from onValueChange');
+						}),
+					).toBe(true);
+					expect(reactThrew).toBe(true);
+				},
+			);
+		} finally {
+			clearConsoleErrors();
+			differential.unmount();
+		}
+	});
+
+	// @parity-case differential:cmdk-duplicate-value
+	it('documents development duplicate-value warnings', async function () {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(function noop() {});
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffDuplicateValue',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[duplicate-value-warning][differential:cmdk-duplicate-value]
+		await differential.observe(
+			'duplicate values warn only on Octane',
+			async function (octane, react) {
+				await settle();
+				expect(itemTexts(octane)).toEqual(['Apple', 'Apple']);
+				expect(itemTexts(react)).toEqual(['Apple', 'Apple']);
+				const messages = warn.mock.calls.map(function toMessage(call) {
+					return String(call[0]);
+				});
+				expect(
+					messages.some(function isDuplicate(message) {
+						return message.includes('share the value') && message.includes('Apple');
+					}),
+				).toBe(true);
+			},
+		);
+
+		warn.mockRestore();
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-selected-force-mount
+	it('documents selection move when the selected forceMount item is removed', async function () {
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffSelectedForceMount',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[selected-force-mount-teardown][differential:cmdk-selected-force-mount]
+		await differential.observe(
+			'removing the selected forceMount item reselects on Octane only',
+			async function (octane, react) {
+				await settle();
+				expect(selectedText(octane)).toBe('Apple');
+				expect(selectedText(react)).toBe('Apple');
+
+				await octane.click('#remove-forced');
+				await react.click('#remove-forced');
+				await settle();
+
+				expect(itemTexts(octane)).toEqual(['Banana']);
+				expect(itemTexts(react)).toEqual(['Banana']);
+				expect(selectedText(octane)).toBe('Banana');
+				expect(octane.container.querySelector('[cmdk-item][aria-selected="true"]')).not.toBeNull();
+				// Upstream never registered the forceMount item, so teardown leaves
+				// the selected value pointing at a removed node.
+				expect(react.container.querySelector('[cmdk-item][aria-selected="true"]')).toBeNull();
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-unscored-arrival
+	it('documents unscored arrivals during an active search', async function () {
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffUnscoredArrival',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[unscored-arrival-inference][differential:cmdk-unscored-arrival]
+		await differential.observe(
+			'items arriving mid-search infer values and stay visible',
+			async function (octane, react) {
+				await settle();
+				await octane.input('[cmdk-input]', 'ap');
+				await react.input('[cmdk-input]', 'ap');
+				await settle();
+				expect(visibleItemTexts(octane)).toEqual(['Apple']);
+				expect(visibleItemTexts(react)).toEqual(['Apple']);
+
+				await octane.click('#add-apricot');
+				await react.click('#add-apricot');
+				await settle();
+
+				// Upstream reads string children synchronously; Octane infers from
+				// textContent on a first render of unscored items. Both keep the
+				// arrival visible and ranked for the active search.
+				expect(visibleItemTexts(octane)).toEqual(['Apple', 'Apricot']);
+				expect(visibleItemTexts(react)).toEqual(['Apple', 'Apricot']);
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-value-change-filter
+	it('documents filter-aggregate refresh when an item value changes', async function () {
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffValueChangeFilter',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[value-change-filter-refresh][differential:cmdk-value-change-filter]
+		await differential.observe(
+			'value change during search refreshes Empty/group visibility on Octane',
+			async function (octane, react) {
+				await settle();
+				await octane.input('[cmdk-input]', 'zzz');
+				await react.input('[cmdk-input]', 'zzz');
+				await settle();
+				expect(octane.findAll('[cmdk-item]')).toHaveLength(0);
+				expect(react.findAll('[cmdk-item]')).toHaveLength(0);
+				expect(octane.find('[cmdk-empty]')).toBeTruthy();
+				expect(react.find('[cmdk-empty]')).toBeTruthy();
+
+				await octane.click('#match-search');
+				await react.click('#match-search');
+				await settle();
+
+				expect(itemTexts(octane)).toEqual(['Fruit']);
+				expect(octane.container.querySelector('[cmdk-empty]')).toBeNull();
+				expect(octane.find('[cmdk-group]').hasAttribute('hidden')).toBe(false);
+				// Upstream re-scores the item but leaves filtered.count/groups stale.
+				expect(react.container.querySelector('[cmdk-empty]')).not.toBeNull();
+				expect(itemTexts(react)).toEqual(['Fruit']);
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-as-child
+	it('documents asChild host-element divergence', async function () {
+		const differential = await mountDifferential(FIXTURE, 'CmdkDiffAsChild', undefined, CACHE);
+
+		// OCTANE DIVERGENCE[as-child-unsupported][differential:cmdk-as-child]
+		await differential.observe(
+			'asChild merges into the child only on React',
+			async function (octane, react) {
+				await settle();
+				expect(octane.find('[cmdk-item]').tagName).toBe('DIV');
+				expect(octane.find('[cmdk-item] a').getAttribute('href')).toBe('#apple');
+				expect(react.find('[cmdk-item]').tagName).toBe('A');
+				expect(react.find('[cmdk-item]').getAttribute('href')).toBe('#apple');
+				// Octane has no Slot/asChild sink, so the boolean lands on the host and
+				// the attribute writer reports it; acknowledge that expected signal.
+				clearConsoleErrors();
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-dialog-default-open
+	it('documents Dialog defaultOpen forwarding', async function () {
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffDialogDefaultOpen',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[dialog-default-open][differential:cmdk-dialog-default-open]
+		await differential.observe(
+			'defaultOpen opens the dialog on Octane only',
+			async function (_octane, _react) {
+				await settle();
+				const dialogs = document.querySelectorAll('[cmdk-dialog]');
+				// Dialog portals to document.body; Octane forwards defaultOpen while
+				// upstream only wires open/onOpenChange, so React stays closed.
+				expect(dialogs.length).toBe(1);
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-group-membership
+	it('documents group membership cleanup across item churn', async function () {
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffGroupMembership',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[group-membership-cleanup][differential:cmdk-group-membership]
+		await differential.observe(
+			'churned group members stay filter-correct on both runtimes',
+			async function (octane, react) {
+				await settle();
+				await octane.click('#drop-apple');
+				await react.click('#drop-apple');
+				await settle();
+				await octane.input('[cmdk-input]', 'app');
+				await react.input('[cmdk-input]', 'app');
+				await settle();
+				expect(itemTexts(octane)).toEqual([]);
+				expect(itemTexts(react)).toEqual([]);
+				expect(octane.find('[cmdk-empty]')).toBeTruthy();
+				expect(react.find('[cmdk-empty]')).toBeTruthy();
+
+				await octane.click('#restore-cherry');
+				await react.click('#restore-cherry');
+				await settle();
+				await octane.input('[cmdk-input]', 'che');
+				await react.input('[cmdk-input]', 'che');
+				await settle();
+				expect(itemTexts(octane)).toEqual(['Cherry']);
+				expect(itemTexts(react)).toEqual(['Cherry']);
+			},
+		);
+
 		differential.unmount();
 	});
 });

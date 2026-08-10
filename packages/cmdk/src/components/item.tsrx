@@ -35,7 +35,8 @@ export function Item(props: ItemProps) @{
 				? true
 				: !s.search
 					? true
-					: // An item with no entry in `filtered.items` has never been
+					: // OCTANE DIVERGENCE[unscored-arrival-inference][differential:cmdk-unscored-arrival]:
+					// An item with no entry in `filtered.items` has never been
 					// scored — that is not the same as having scored zero, and
 					// treating it as zero deadlocks: the item renders null, so
 					// `ref.current` stays null, so `useValue` has no textContent to

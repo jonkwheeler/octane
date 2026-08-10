@@ -56,7 +56,7 @@
         {
           "path": "packages/cmdk/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "bda73d079c8728d277c0bde4eb72f589f1aa13e8d99cd194636256c8db120b55",
+          "sha256": "8b76c55d180756e2f347f8c2b07ab8fdf92c1ae5ce7030e8b18a998245bd182c",
           "cases": [
             {
               "id": "differential:cmdk-filter-selection-empty",
@@ -82,18 +82,58 @@
               "id": "differential:cmdk-registration-teardown",
               "testName": "documents forceMount registration release across remounts",
               "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents forceMount registration release across remounts"
+            },
+            {
+              "id": "differential:cmdk-batcher-isolation",
+              "testName": "documents batcher isolation when onValueChange throws",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents batcher isolation when onValueChange throws"
+            },
+            {
+              "id": "differential:cmdk-duplicate-value",
+              "testName": "documents development duplicate-value warnings",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents development duplicate-value warnings"
+            },
+            {
+              "id": "differential:cmdk-selected-force-mount",
+              "testName": "documents selection move when the selected forceMount item is removed",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents selection move when the selected forceMount item is removed"
+            },
+            {
+              "id": "differential:cmdk-unscored-arrival",
+              "testName": "documents unscored arrivals during an active search",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents unscored arrivals during an active search"
+            },
+            {
+              "id": "differential:cmdk-value-change-filter",
+              "testName": "documents filter-aggregate refresh when an item value changes",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents filter-aggregate refresh when an item value changes"
+            },
+            {
+              "id": "differential:cmdk-as-child",
+              "testName": "documents asChild host-element divergence",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents asChild host-element divergence"
+            },
+            {
+              "id": "differential:cmdk-dialog-default-open",
+              "testName": "documents Dialog defaultOpen forwarding",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents Dialog defaultOpen forwarding"
+            },
+            {
+              "id": "differential:cmdk-group-membership",
+              "testName": "documents group membership cleanup across item churn",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents group membership cleanup across item churn"
             }
           ]
         },
         {
           "path": "packages/cmdk/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "c10b455144ed441b49304af3963957e23f3cf726239acaf1dbe6ba875cb09f77"
+          "sha256": "01ff91932128f703b81e10f7dc5a55a2b47ee9dcca3925ce02ed06a83de785ce"
         },
         {
           "path": "packages/cmdk/tests/_fixtures/cmdk-diff.tsrx",
           "role": "support",
-          "sha256": "86d580a2d330e1c9e370d79f50d107d9860da4b108401fe1b4ada704547fa0cc"
+          "sha256": "6cf7bccff8b50166fc81b399c5045f163e9217ad3288d9bd2bfa3891b5042bc5"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -108,7 +148,7 @@
         {
           "path": "packages/cmdk/audit/test-classifications.json",
           "role": "support",
-          "sha256": "8ad81def1144092ed80c5e06238639a5197cb18712c553799d5c1704046d7ec3"
+          "sha256": "3d05d9b2b05ab8e29a4f1a6b81b5840f5d411ff0d11c9ecb1aaa22a4d1c58e2f"
         },
         {
           "path": "packages/cmdk/scripts/check-upstream-ledger.mjs",
@@ -124,6 +164,31 @@
           "path": "vitest.config.js",
           "role": "support",
           "sha256": "49d70e93848d1afbe0ca65efdbe805976fac579bf17f85b31060ee3d1781d68f"
+        },
+        {
+          "path": "packages/cmdk/src/components/command.tsrx",
+          "role": "support",
+          "sha256": "7dcc5229b314c7b2ec7619b89842474f2ef5c3b4ffaa735b2a6da4b373e0fa70"
+        },
+        {
+          "path": "packages/cmdk/src/components/item.tsrx",
+          "role": "support",
+          "sha256": "99a03d65ac5e191a0321df3fe81fe191f055eca64e81851a85623a7356b0c286"
+        },
+        {
+          "path": "packages/cmdk/src/components/dialog.tsrx",
+          "role": "support",
+          "sha256": "60549b1ee78b5b80ec239f340bad329657e57e98e9c01f642178d7c009ee9255"
+        },
+        {
+          "path": "packages/cmdk/src/cmdk.tsrx",
+          "role": "support",
+          "sha256": "f35554387d79b75d3cdfdcbb3d42155ef307d2661b6533ec7200588a449fe068"
+        },
+        {
+          "path": "packages/cmdk/src/hooks.tsrx",
+          "role": "support",
+          "sha256": "9f7dd112c18ed2e6d06193af675f55bb79729edabbac07463a430bc9c4b9cabf"
         }
       ]
     },
@@ -155,14 +220,14 @@
     {
       "id": "runtime-adaptation-divergences",
       "caseIds": ["differential:cmdk-filter-selection-empty"],
-      "upstreamResult": "cmdk uses React synthetic handlers and forwardRef wrappers, physically relocates ranked nodes, and drops nested initial aria wiring.",
-      "octaneResult": "The binding uses native events and ref props, expresses ranking with CSS order, and keeps aria-activedescendant wired while preserving the observed selection and filtering behavior.",
-      "rationale": "Octane's event/ref model differs from React and renderer-owned DOM cannot be moved across compiled range markers.",
+      "upstreamResult": "Upstream ranks matches by physically relocating item nodes and drops nested aria-activedescendant wiring from inside its layout-effect flush.",
+      "octaneResult": "The binding expresses ranking with CSS order and keeps aria-activedescendant wired while preserving the observed selection and filtering behavior.",
+      "rationale": "Renderer-owned DOM cannot be moved across compiled range markers, and the port batcher keeps nested selection work that upstream discards.",
       "classification": "rendering",
-      "consumerImpact": "React-only event fields are unavailable and DOM-order selectors can differ from visual order while filtering.",
-      "migrationGuidance": "Use native event fields, pass refs as props, and rely on cmdk state and accessibility attributes rather than nth-child selectors.",
+      "consumerImpact": "DOM-order selectors can differ from visual order while filtering, and assistive tech sees aria-activedescendant earlier than on upstream.",
+      "migrationGuidance": "Rely on cmdk state and accessibility attributes rather than nth-child selectors; do not assume aria-activedescendant is absent until a user-driven selection.",
       "owner": "@octanejs/cmdk",
-      "reviewCondition": "Review if Octane gains a synthetic event layer or safe renderer-owned node relocation."
+      "reviewCondition": "Review if Octane gains safe renderer-owned node relocation or changes layout-effect batching."
     },
     {
       "id": "corrected-group-ordering",
@@ -211,6 +276,102 @@
       "migrationGuidance": "Treat duplicate-value warnings as live-item collisions only; remount cycles should stay quiet.",
       "owner": "@octanejs/cmdk",
       "reviewCondition": "Review if upstream releases forceMount and group values symmetrically."
+    },
+    {
+      "id": "batcher-isolation",
+      "caseIds": ["differential:cmdk-batcher-isolation"],
+      "upstreamResult": "A throwing queued layout-effect callback aborts the remainder of the flush, so sibling filter/selection work never runs.",
+      "octaneResult": "Each queued callback is isolated: the throw is reported through console.error and remaining callbacks still run.",
+      "rationale": "Octane reports effect exceptions without failing the flush; a user onValueChange must not cancel unrelated scheduled cmdk work.",
+      "classification": "scheduling",
+      "consumerImpact": "A throwing onValueChange still leaves filtering and sibling scheduled work intact on Octane.",
+      "migrationGuidance": "Handle onValueChange errors in user code; do not rely on one throw aborting later cmdk flush work.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if Octane changes effect-exception isolation."
+    },
+    {
+      "id": "duplicate-value-warning",
+      "caseIds": ["differential:cmdk-duplicate-value"],
+      "upstreamResult": "Duplicate item values are silent; both options can render aria-selected.",
+      "octaneResult": "Development builds warn when two live items share a value.",
+      "rationale": "Selection is value-keyed, so duplicates produce an invalid single-select listbox; the runtime cannot pick a winner.",
+      "classification": "diagnostics",
+      "consumerImpact": "Authors see a development warning for colliding item values.",
+      "migrationGuidance": "Keep item values unique within a Command.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if upstream adds equivalent duplicate-value diagnostics."
+    },
+    {
+      "id": "selected-force-mount-teardown",
+      "caseIds": ["differential:cmdk-selected-force-mount"],
+      "upstreamResult": "Removing the selected force-mounted item leaves the selected value pointing at a removed node because forceMount items are never registered.",
+      "octaneResult": "Force-mount teardown reselects like the plain item path, so aria-selected and aria-activedescendant move to a live item.",
+      "rationale": "A selectable force-mounted item must release selection when it leaves the tree.",
+      "classification": "state",
+      "consumerImpact": "Removing a selected force-mounted item no longer strands keyboard activation on a missing node.",
+      "migrationGuidance": "Expect selection to move when a selected force-mounted item unmounts.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if upstream registers and tears down forceMount items."
+    },
+    {
+      "id": "unscored-arrival-inference",
+      "caseIds": ["differential:cmdk-unscored-arrival"],
+      "upstreamResult": "Upstream infers values from string children synchronously, so items arriving mid-search register immediately.",
+      "octaneResult": "Compiled children are opaque, so unscored items render once for textContent inference and then participate in filtering.",
+      "rationale": "Treating never-scored items as score zero deadlocks inference on Octane; one visible pass is required.",
+      "classification": "filtering",
+      "consumerImpact": "Async results without explicit value props remain visible during an active search.",
+      "migrationGuidance": "Prefer stable value props for dynamic items; textContent inference still covers the common upstream examples.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if Octane gains synchronous string-child inspection."
+    },
+    {
+      "id": "value-change-filter-refresh",
+      "caseIds": ["differential:cmdk-value-change-filter"],
+      "upstreamResult": "Re-registering an item value during a search re-sorts but leaves filtered.count/groups stale, so Empty can remain over a newly matching item.",
+      "octaneResult": "Value re-registration refreshes the whole filter aggregate, so Empty and group visibility match the new scores.",
+      "rationale": "Upstream item registration already re-derives the aggregate; the value-change path should too.",
+      "classification": "filtering",
+      "consumerImpact": "Changing an item value under an active search no longer shows Empty beside a visible match.",
+      "migrationGuidance": "Expect Empty and group hidden state to track live scores when item values change.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if upstream refreshes filtered aggregates on value change."
+    },
+    {
+      "id": "as-child-unsupported",
+      "caseIds": ["differential:cmdk-as-child"],
+      "upstreamResult": "asChild merges the cmdk item host into the child element.",
+      "octaneResult": "Components always render their own host element; asChild has no Slot sink.",
+      "rationale": "SlottableWithNestedChildren clones React elements; Octane compiled children are opaque.",
+      "classification": "api-surface",
+      "consumerImpact": "asChild cannot replace the cmdk host element on Octane.",
+      "migrationGuidance": "Wrap cmdk hosts instead of using asChild, or style the host element directly.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if Octane gains a faithful Slot/asChild equivalent."
+    },
+    {
+      "id": "dialog-default-open",
+      "caseIds": ["differential:cmdk-dialog-default-open"],
+      "upstreamResult": "Command.Dialog only forwards open/onOpenChange, so defaultOpen and modal never reach Radix Root.",
+      "octaneResult": "Command.Dialog forwards defaultOpen and modal to @octanejs/radix Dialog.Root.",
+      "rationale": "Uncontrolled open state and non-modal dialogs are part of the Radix Dialog surface consumers expect.",
+      "classification": "api-surface",
+      "consumerImpact": "defaultOpen can show the menu without controlled open state on Octane.",
+      "migrationGuidance": "Use controlled open on upstream cmdk; Octane may also use defaultOpen/modal.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if upstream starts forwarding defaultOpen/modal."
+    },
+    {
+      "id": "group-membership-cleanup",
+      "caseIds": ["differential:cmdk-group-membership"],
+      "upstreamResult": "Item teardown deletes from ids/allItems but leaves the id in allGroups for the Command lifetime.",
+      "octaneResult": "Item teardown also deletes the id from its group member set, so churn does not accumulate dead members.",
+      "rationale": "Group membership must track live items or filter passes walk unbounded stale ids.",
+      "classification": "state",
+      "consumerImpact": "Menus whose grouped results churn no longer retain dead member ids across updates.",
+      "migrationGuidance": "Treat group membership as live-item state; do not rely on stale member retention.",
+      "owner": "@octanejs/cmdk",
+      "reviewCondition": "Review if upstream removes leaving items from allGroups."
     },
     {
       "id": "ssr-empty-suppressed",

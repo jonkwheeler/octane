@@ -91,3 +91,151 @@ export function CmdkDiffForceMountSwap() @{
 		</Command.List>
 	</Command>
 }
+
+// Controlled selection with a throwing onValueChange — pins batcher isolation.
+export function CmdkDiffBatcherIsolation(props: {
+	value: string;
+	onValueChange: (value: string) => void;
+}) @{
+	<Command label="Command Menu" value={props.value} onValueChange={props.onValueChange}>
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Item>Apple</Command.Item>
+			<Command.Item>Banana</Command.Item>
+		</Command.List>
+	</Command>
+}
+
+// Two items sharing a value — pins the development duplicate-value warning.
+export function CmdkDiffDuplicateValue() @{
+	<Command label="Command Menu">
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Item>Apple</Command.Item>
+			<Command.Item>Apple</Command.Item>
+		</Command.List>
+	</Command>
+}
+
+// Selected force-mounted item removed while a sibling remains — pins reselection.
+export function CmdkDiffSelectedForceMount() @{
+	const [showForced, setShowForced] = useState(true);
+	<Command label="Command Menu">
+		<button
+			type="button"
+			id="remove-forced"
+			onClick={function onRemove() {
+				setShowForced(false);
+			}}
+		>
+			remove
+		</button>
+		<Command.List>
+			@if (showForced) {
+				<Command.Item forceMount value="Apple">Apple</Command.Item>
+			}
+			<Command.Item value="Banana">Banana</Command.Item>
+		</Command.List>
+	</Command>
+}
+
+// Async results without explicit value props — pins unscored arrival inference.
+export function CmdkDiffUnscoredArrival() @{
+	const [items, setItems] = useState(['Apple']);
+	<Command label="Command Menu">
+		<button
+			type="button"
+			id="add-apricot"
+			onClick={function onAdd() {
+				setItems(['Apple', 'Apricot']);
+			}}
+		>
+			add
+		</button>
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Empty>No results found.</Command.Empty>
+			@for (const label of items; key label) {
+				<Command.Item>{label as string}</Command.Item>
+			}
+		</Command.List>
+	</Command>
+}
+
+// Item value changes under an active search — pins aggregate filter refresh.
+export function CmdkDiffValueChangeFilter() @{
+	const [itemValue, setItemValue] = useState('apple');
+	<Command label="Command Menu">
+		<button
+			type="button"
+			id="match-search"
+			onClick={function onMatch() {
+				setItemValue('zzz');
+			}}
+		>
+			match
+		</button>
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Empty>No results found.</Command.Empty>
+			<Command.Group heading="Fruits">
+				<Command.Item value={itemValue}>Fruit</Command.Item>
+			</Command.Group>
+		</Command.List>
+	</Command>
+}
+
+// asChild merges into the child on React; Octane always keeps its host element.
+export function CmdkDiffAsChild() @{
+	<Command label="Command Menu">
+		<Command.List>
+			<Command.Item {...{ asChild: true } as object}>
+				<a href="#apple">Apple</a>
+			</Command.Item>
+		</Command.List>
+	</Command>
+}
+
+// defaultOpen is forwarded on Octane Dialog; upstream only wires open/onOpenChange.
+export function CmdkDiffDialogDefaultOpen() @{
+	<Command.Dialog defaultOpen label="Command Menu">
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Item>Apple</Command.Item>
+		</Command.List>
+	</Command.Dialog>
+}
+
+// Churn items through a group — pins group membership cleanup on leave.
+export function CmdkDiffGroupMembership() @{
+	const [items, setItems] = useState(['Apple', 'Banana']);
+	<Command label="Command Menu">
+		<button
+			type="button"
+			id="drop-apple"
+			onClick={function onDrop() {
+				setItems(['Banana']);
+			}}
+		>
+			drop
+		</button>
+		<button
+			type="button"
+			id="restore-cherry"
+			onClick={function onRestore() {
+				setItems(['Banana', 'Cherry']);
+			}}
+		>
+			restore
+		</button>
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Empty>No results found.</Command.Empty>
+			<Command.Group heading="Fruits">
+				@for (const label of items; key label) {
+					<Command.Item>{label as string}</Command.Item>
+				}
+			</Command.Group>
+		</Command.List>
+	</Command>
+}

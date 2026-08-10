@@ -8,8 +8,9 @@
     },
     {
       "path": "packages/cmdk/tests/command.batcher-isolation.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Inventories batcher isolation for throwing onValueChange callbacks; structured divergence promotion waits on a React-comparing case id."
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises batcher isolation for throwing onValueChange callbacks without a same-case React oracle.",
+      "divergenceIds": ["batcher-isolation"]
     },
     {
       "path": "packages/cmdk/tests/command.css-order-ranking.test.ts",
@@ -19,8 +20,9 @@
     },
     {
       "path": "packages/cmdk/tests/command.duplicate-value.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Inventories development duplicate-value warnings; structured divergence promotion waits on a React-comparing case id."
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises development duplicate-value warnings without a same-case React oracle.",
+      "divergenceIds": ["duplicate-value-warning"]
     },
     {
       "path": "packages/cmdk/tests/command.force-mount-empty.test.ts",
@@ -47,9 +49,15 @@
       "divergenceIds": ["registration-teardown-release"]
     },
     {
+      "path": "packages/cmdk/tests/command.selected-force-mount.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises selection move when the selected forceMount item is removed without a same-case React oracle.",
+      "divergenceIds": ["selected-force-mount-teardown"]
+    },
+    {
       "path": "packages/cmdk/tests/command.selection-teardown.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Inventories multi-item teardown reselection; structured divergence promotion waits on a React-comparing case id."
+      "reason": "Inventories multi-item teardown reselection for the Octane batcher key collision; not a React incompatibility ledger entry."
     },
     {
       "path": "packages/cmdk/tests/command.test.ts",
@@ -58,13 +66,15 @@
     },
     {
       "path": "packages/cmdk/tests/command.unscored-arrival.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Inventories inferred-value arrivals during an active search; structured divergence promotion waits on a React-comparing case id."
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises inferred-value arrivals during an active search without a same-case React oracle.",
+      "divergenceIds": ["unscored-arrival-inference"]
     },
     {
       "path": "packages/cmdk/tests/command.value-change-filter.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Inventories filter-aggregate refresh when an item value changes during a search; structured divergence promotion waits on a React-comparing case id."
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises filter-aggregate refresh when an item value changes during a search without a same-case React oracle.",
+      "divergenceIds": ["value-change-filter-refresh"]
     },
     {
       "path": "packages/cmdk/tests/differential/parity.test.ts",
