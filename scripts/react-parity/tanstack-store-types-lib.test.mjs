@@ -6,8 +6,8 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import {
-	buildTypeInventory,
 	TYPE_PARITY_CONFIG,
+	buildTypeInventory,
 	verifyTanstackStoreTypes,
 } from './tanstack-store-types-lib.mjs';
 
@@ -48,9 +48,7 @@ test('committed tanstack-store type inventories verify', function committedInven
 	});
 });
 
-test('assertion group compare ignores @ts-expect-error inside pristine-only _useStore blocks', async function ignoresOmittedExpectError(
-	t,
-) {
+test('assertion group compare ignores @ts-expect-error inside pristine-only _useStore blocks', async function ignoresOmittedExpectError(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
@@ -72,9 +70,7 @@ test('assertion group compare ignores @ts-expect-error inside pristine-only _use
 	});
 });
 
-test('assertion group compare still rejects adapted @ts-expect-error drift', async function rejectsAdaptedExpectErrorDrift(
-	t,
-) {
+test('assertion group compare still rejects adapted @ts-expect-error drift', async function rejectsAdaptedExpectErrorDrift(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });

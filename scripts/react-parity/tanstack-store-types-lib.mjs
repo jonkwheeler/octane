@@ -134,7 +134,10 @@ function structuralSource(source, fileName) {
 			return ts.isImportDeclaration(statement);
 		})
 		.map(function printImport(statement) {
-			return printer.printNode(ts.EmitHint.Unspecified, statement, normalizedFile).replace(/\s+/g, ' ').trim();
+			return printer
+				.printNode(ts.EmitHint.Unspecified, statement, normalizedFile)
+				.replace(/\s+/g, ' ')
+				.trim();
 		})
 		.sort();
 	const body = normalizedFile.statements
@@ -142,7 +145,10 @@ function structuralSource(source, fileName) {
 			return !ts.isImportDeclaration(statement);
 		})
 		.map(function printStatement(statement) {
-			return printer.printNode(ts.EmitHint.Unspecified, statement, normalizedFile).replace(/\s+/g, ' ').trim();
+			return printer
+				.printNode(ts.EmitHint.Unspecified, statement, normalizedFile)
+				.replace(/\s+/g, ' ')
+				.trim();
 		})
 		.join(' ');
 	return `${sortedImports.join(' ')} ${body}`.replace(/\s+/g, ' ').trim();
