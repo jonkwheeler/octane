@@ -252,6 +252,14 @@ export function removeTransformFn(node: HTMLElement, key: string): void {
 	if (!current || current === 'none') return;
 	const range = findTransformFnRange(current, fn);
 	if (!range) return;
+	// Style `scale` shares the `scale(` token with layout FLIP's compound
+	// `scale(sx, sy)`. Only remove single-arg style-owned forms; leave compounds
+	// for layout (mirrors patchTransformFn's asymmetric-scale guard on bind).
+	if (key === 'scale') {
+		const inner = current.slice(range.start + 'scale('.length, range.end - 1);
+		const args = splitTransformArgs(inner);
+		if (args.length >= 2) return;
+	}
 	const before = current.slice(0, range.start).trimEnd();
 	const after = current.slice(range.end).trimStart();
 	node.style.transform = before && after ? `${before} ${after}` : before || after;

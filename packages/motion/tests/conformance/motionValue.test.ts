@@ -115,6 +115,19 @@ describe('useMotionValue', function useMotionValueSuite() {
 		expect(div.style.transform).toBe('scale(2)');
 	});
 
+	it('leaves layout FLIP compound scale alone when unbinding scale', function leavesLayoutCompoundScaleOnUnbind() {
+		const div = document.createElement('div');
+		div.style.transform = 'translate(-50px, -50px) scale(1.2, 0.8)';
+		removeTransformFn(div, 'scale');
+		expect(div.style.transform).toBe('translate(-50px, -50px) scale(1.2, 0.8)');
+		div.style.transform = 'translate(-50px, -50px) scale(1, 1)';
+		removeTransformFn(div, 'scale');
+		expect(div.style.transform).toBe('translate(-50px, -50px) scale(1, 1)');
+		div.style.transform = 'translateX(40px) scale(2)';
+		removeTransformFn(div, 'scale');
+		expect(div.style.transform).toBe('translateX(40px)');
+	});
+
 	it('keeps plain static styles when a MotionValue style key becomes static', async function keepsStaticAfterMotionValue() {
 		const opacity = motionValue(0.2);
 		const r = mount(StyleOpacity, { style: { opacity } });
