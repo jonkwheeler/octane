@@ -44,7 +44,10 @@ function findMarkedRange(editor: Editor): { from: number; to: number } {
 }
 
 describe('@octanejs/tiptap ReactMarkView portal cleanup', function () {
-	// Extra conformance; required divergence marker is on src/ReactMarkViewRenderer.ts.
+	// Authenticates destroy-driven portal teardown (lifecycle cleanup), not mere
+	// ProseMirror host detachment. Required divergence marker is on
+	// src/ReactMarkViewRenderer.ts.
+	// @parity-case differential:tiptap-mark-view-portal-cleanup
 	it('tears down the mark-view portal when ProseMirror destroys the mark', async function () {
 		let editor: Editor | undefined;
 		const markLifecycle: string[] = [];

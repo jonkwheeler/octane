@@ -171,7 +171,7 @@
 				{
 					"path": "packages/tiptap/tests/differential/parity.test.ts",
 					"role": "test",
-					"sha256": "91894eaa0b199da6054a800e8f6160e567f14620ba6f020a4a370b342edca61f",
+					"sha256": "598cae705e31aaadc6ef5206b98cd8f6c77c7fc3f8951165d7b195dc91c77023",
 					"cases": [
 						{
 							"id": "differential:tiptap-editor",
@@ -187,11 +187,6 @@
 							"id": "differential:tiptap-node-view-as-prop",
 							"testName": "consumes NodeViewWrapper as without forwarding the attribute",
 							"fullName": "differential: @octanejs/tiptap vs @tiptap/react consumes NodeViewWrapper as without forwarding the attribute"
-						},
-						{
-							"id": "differential:tiptap-mark-view-portal-cleanup",
-							"testName": "cleans mark-view portals when the mark is removed",
-							"fullName": "differential: @octanejs/tiptap vs @tiptap/react cleans mark-view portals when the mark is removed"
 						}
 					]
 				},
@@ -219,6 +214,18 @@
 					"path": "packages/tiptap/tests/_fixtures/custom-views-as-prop-parity.tsrx",
 					"role": "support",
 					"sha256": "a2642672fd79f9fa4caa9df2d51b2b56fd0898219f775227d286faf7a9210b93"
+				},
+				{
+					"path": "packages/tiptap/tests/differential/mark-view-portal-cleanup.test.ts",
+					"role": "test",
+					"sha256": "3730a8068bc5d8255d9bbce3cc2d587508a9e1e2fdc8698645b66ace4c5d7f7b",
+					"cases": [
+						{
+							"id": "differential:tiptap-mark-view-portal-cleanup",
+							"testName": "tears down the mark-view portal when ProseMirror destroys the mark",
+							"fullName": "@octanejs/tiptap ReactMarkView portal cleanup tears down the mark-view portal when ProseMirror destroys the mark"
+						}
+					]
 				}
 			]
 		},

@@ -229,34 +229,4 @@ describe('differential: @octanejs/tiptap vs @tiptap/react', () => {
 
 		differential.unmount();
 	});
-
-	// @parity-case differential:tiptap-mark-view-portal-cleanup
-	it('cleans mark-view portals when the mark is removed', async function () {
-		const differential = await mountDifferential(
-			customViewsFixture,
-			'CustomViewsParity',
-			{ onLifecycle: function onLifecycle() {} },
-			cache,
-		);
-
-		await differential.step('mount mark portals', function () {});
-		flushEffects();
-		expect(differential.octane.find('[data-parity-mark-view]')).toBeTruthy();
-
-		await differential.step(
-			'remove the mark and require Octane portal teardown',
-			async function (octane, react) {
-				await octane.click('[data-parity-mark-remove]');
-				await react.click('[data-parity-mark-remove]');
-			},
-		);
-		flushEffects();
-		expect(differential.octane.container.querySelector('[data-parity-mark-view]')).toBe(null);
-		expect(differential.octane.container.querySelector('[data-mark-view-content]')).toBe(null);
-		expect(differential.octane.find('[data-parity-editor-text]').textContent).toContain(
-			'Marked text',
-		);
-
-		differential.unmount();
-	});
 });

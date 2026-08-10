@@ -52,10 +52,10 @@
       "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
     },
     {
-      "path": "packages/tiptap/tests/unit/mark-view-portal-cleanup.test.ts",
+      "path": "packages/tiptap/tests/differential/mark-view-portal-cleanup.test.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tiptap-mark-view-portal-cleanup",
-      "reason": "Extra conformance for mark-view portal teardown; the required differential case authenticates the divergence."
+      "reason": "Authenticates destroy-driven mark-view portal teardown via lifecycle cleanup; the required differential case binds the divergence ledger."
     },
     {
       "path": "packages/tiptap/tests/unit/menus.test.ts",
