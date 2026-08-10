@@ -22,12 +22,12 @@
   },
   "adapted": {
     "file": "tests/adapted/index-u3.spec.ts",
-    "sha256": "0ce5d54ddeb531b2be07763f71e22e020fd7d44da215dc49e94ce25a0ae77a11",
-    "cases": 12
+    "sha256": "91dff80e14eccf7d46c6194a64f22e061aa5f1e61aef6b70f49db1f42977fd03",
+    "cases": 10
   },
   "differential": {
     "file": "tests/differential/root-u3.test.ts",
-    "sha256": "066a3375a3165b952e0c36ae0d20d69a8ddc97fa94849d082d15cbb73ab4bad5",
+    "sha256": "7f4b11cb8ca0a75f1a4a582e5b574a59b7da45dd0f648e862dcefc0e6c65b631",
     "cases": 3,
     "oracle": "react-dropzone@20.0.0 with React 19.2.8"
   },

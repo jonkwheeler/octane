@@ -1,8 +1,52 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, waitFor } from '@octanejs/testing-library';
-import { HookProbe } from './dropzone.tsrx';
+import {
+	BlockChildrenProbe,
+	ComponentProbe,
+	HookProbe,
+	OptionsCallProbe,
+	ZeroArgProbe,
+} from './dropzone.tsrx';
 
 afterEach(cleanup);
+
+describe('react-dropzone Octane-only compiler contracts', () => {
+	it('distinguishes idiomatic block children from upstream render props', () => {
+		const block = render(BlockChildrenProbe);
+		expect(block.container.querySelector('[data-probe=block-child]')?.textContent).toBe(
+			'idiomatic block child',
+		);
+
+		const renderProp = render(ComponentProbe, {
+			props: { options: {}, dropzoneRef: { current: null } },
+		});
+		expect(renderProp.container.querySelector('[data-probe=root]')).not.toBeNull();
+	});
+
+	it('strips compiler slots from zero-argument and explicit-options hook calls', async () => {
+		const zeroCapture = vi.fn();
+		const zero = render(ZeroArgProbe, { props: { capture: zeroCapture } });
+		await waitFor(() => expect(zeroCapture).toHaveBeenCalled());
+		const firstZero = zeroCapture.mock.calls.at(-1)![0];
+		expect(firstZero.getRootProps()).toMatchObject({ role: 'presentation' });
+		zero.rerender({ props: { capture: zeroCapture } });
+		await waitFor(() => expect(zeroCapture.mock.calls.length).toBeGreaterThan(1));
+		expect(zeroCapture.mock.calls.at(-1)![0].open).toBe(firstZero.open);
+
+		const optionsCapture = vi.fn();
+		const options = render(OptionsCallProbe, { props: { capture: optionsCapture } });
+		await waitFor(() => expect(optionsCapture).toHaveBeenCalled());
+		const state = optionsCapture.mock.calls.at(-1)![0];
+		const input = document.createElement('input');
+		state.inputRef.current = input;
+		const click = vi.spyOn(input, 'click');
+		state.getRootProps().onClick(new MouseEvent('click'));
+		expect(click).not.toHaveBeenCalled();
+		options.rerender({ props: { capture: optionsCapture } });
+		await waitFor(() => expect(optionsCapture.mock.calls.length).toBeGreaterThan(1));
+		expect(optionsCapture.mock.calls.at(-1)![0].open).toBe(state.open);
+	});
+});
 
 describe('react-dropzone U1 architecture gate', () => {
 	it('spreads public prop getters, composes refs, opens input, and delivers selected files', async () => {

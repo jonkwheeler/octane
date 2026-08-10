@@ -76,6 +76,12 @@ describe('react-dropzone U3 React/Octane differential', () => {
 		).toBe('true|false');
 		octaneFireEvent.blur(octaneRoot);
 		reactFireEvent.blur(reactRoot);
+		await vi.waitFor(() =>
+			expect(react.container.querySelector('output')?.textContent).toBe('false|false'),
+		);
+		expect(
+			octane.container.querySelector('output')?.textContent?.split('|').slice(0, 2).join('|'),
+		).toBe('false|false');
 		octaneFireEvent.keyDown(octaneRoot, { key: 'Enter' });
 		reactFireEvent.keyDown(reactRoot, { key: 'Enter' });
 		expect(onFileDialogOpenOctane.mock.calls.length).toBe(onFileDialogOpenReact.mock.calls.length);

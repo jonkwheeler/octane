@@ -17,27 +17,19 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-dropzone/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/react-dropzone/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-dropzone/tests/adapted"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:ts|tsx)$"
-      ],
+      "roots": ["packages/react-dropzone/tests/adapted"],
+      "include": ["\\.(?:test|spec)\\.(?:ts|tsx)$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 93,
-    "uniqueIdentities": 93,
+    "inventoryEntries": 91,
+    "uniqueIdentities": 91,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7197f3e0d5509ad99f0f18b45536bfb3fca68c958f9d8c11010732d7c727a324"
+      "lockfileSha256": "5966e99698b5f8099e3ef2e62625cc31f3a3e60305f1def8d4066c6cd9f98824"
     }
   },
   "lanes": [
@@ -91,10 +83,10 @@
       },
       "files": [
         {
-          "path": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json",
-          "role": "support",
-          "sha256": "627a7c4b52f3a757601cf81d534da31af2de38d66730811c9a1441b54d612efd"
-        },
+					"path": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json",
+					"role": "support",
+					"sha256": "4ae3de44cfca8b5461c6af399de586c3b1932f9edd3508e55066997817f9a710"
+				},
         {
           "path": "packages/react-dropzone/audit/test-classifications.json",
           "role": "support",
@@ -247,7 +239,7 @@
         {
           "path": "packages/react-dropzone/tests/differential/root-u3.test.ts",
           "role": "test",
-          "sha256": "066a3375a3165b952e0c36ae0d20d69a8ddc97fa94849d082d15cbb73ab4bad5",
+          "sha256": "7f4b11cb8ca0a75f1a4a582e5b574a59b7da45dd0f648e862dcefc0e6c65b631",
           "cases": [
             {
               "id": "differential:root-getters",

@@ -28,5 +28,5 @@ if (cases(manifest.adapted.file).length !== manifest.adapted.cases)
 if (cases(manifest.differential.file).length !== manifest.differential.cases)
 	throw new Error('U3 differential case inventory drifted');
 console.log(
-	'react-dropzone U3 parity verified: 12 adapted cases, 3 live differential cases, 4 type programs',
+	'react-dropzone U3 parity verified: 10 adapted cases, 3 live differential cases, 4 type programs',
 );
