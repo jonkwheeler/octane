@@ -18,8 +18,14 @@
     },
     {
       "path": "packages/motion/tests/conformance/exit.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Documents cleanup-before-detach exit animations versus React deferred deletion.",
+      "divergenceIds": ["motion-exit-cleanup-before-detach"]
+    },
+    {
+      "path": "packages/motion/tests/conformance/fixture-compiler.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Checks cleanup-before-detach exit behavior."
+      "reason": "Checks fail-closed React fixture compilation."
     },
     {
       "path": "packages/motion/tests/conformance/inView.test.ts",
@@ -27,14 +33,22 @@
       "reason": "Checks IntersectionObserver integration."
     },
     {
+      "path": "packages/motion/tests/conformance/initial-only.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Documents that an initial-only target does not materialize inline styles on Octane.",
+      "divergenceIds": ["motion-initial-only-no-style-materialization"]
+    },
+    {
       "path": "packages/motion/tests/conformance/layout.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks bounded single-element FLIP behavior."
+      "disposition": "octane-only-divergence",
+      "reason": "Documents bounded single-element FLIP versus React's full projection tree.",
+      "divergenceIds": ["motion-bounded-layout-flip"]
     },
     {
       "path": "packages/motion/tests/conformance/layoutId.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks bounded shared-element crossfade behavior."
+      "disposition": "octane-only-divergence",
+      "reason": "Documents bounded shared-element crossfade versus React's full projection tree.",
+      "divergenceIds": ["motion-bounded-layoutId"]
     },
     {
       "path": "packages/motion/tests/conformance/motionValue.test.ts",
@@ -102,14 +116,24 @@
       "oracle": "Runs the same host-rendering and child-update fixture against motion/react@12.42.2 and @octanejs/motion."
     },
     {
-      "path": "packages/motion/tests/conformance/fixture-compiler.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks fail-closed React fixture compilation."
-    },
-    {
       "path": "packages/motion/tests/production-bundle.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks production-bundle reachability for the public motion entry."
+    },
+    {
+      "path": "packages/motion/tests/upstream/use-motion-value.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "One-for-one Octane adaptation of the curated useMotionValue upstream cases from motion@12.42.2."
+    },
+    {
+      "path": "packages/motion/typetests/adapted/types.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored adapted public-surface type probes against @octanejs/motion."
+    },
+    {
+      "path": "packages/motion/typetests/pristine/types.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored pristine public-surface type probes against motion/react@12.42.2."
     }
   ]
 }

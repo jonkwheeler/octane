@@ -33,7 +33,7 @@ test('rejects an unclassified port-authored test', async (t) => {
 test('verifies an arbitrary binding classification ledger', () => {
 	const root = fileURLToPath(new URL('../..', import.meta.url));
 	assert.deepEqual(verifyPortTestClassifications(root, 'apollo-client'), { tests: 8 });
-	assert.deepEqual(verifyPortTestClassifications(root, 'motion'), { tests: 22 });
+	assert.deepEqual(verifyPortTestClassifications(root, 'motion'), { tests: 26 });
 });
 
 test('rejects a parity classification without an oracle', async (t) => {

@@ -9,7 +9,7 @@
     "testRoot": "packages/framer-motion/src and packages/framer-motion/cypress",
     "license": "MIT",
     "integrity": "sha256:d99821507dace914ef6924e95c25beb2d618438fc925517569dd6b083a4df793",
-    "verification": "verified"
+    "verification": "recorded-unverified"
   },
   "upstreamSuites": {
     "runtime": "insufficient",
@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3a182f6a9f209e25cb84876a6cbdc24a1f0cab6d3acc6e13938922a1c59ec6fd"
+      "lockfileSha256": "bd025dbbac0f3d7fe716d023daeaeeda97315e9d8afec7a290cc3852461d2272"
     }
   },
   "lanes": [
@@ -60,7 +60,7 @@
         {
           "path": "packages/motion/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "dad5d8bc632ef0ec2966bec4a1cf3172e507faedd9e6c5c9585f8eab5cea7ccb"
+          "sha256": "47a6c96b1d1cd8ab02b018cfa4fa088c46d2f0be2ad4fc85459c279f95fffe81"
         },
         {
           "path": "packages/motion/upstream/SHA256SUMS",
@@ -115,7 +115,7 @@
         {
           "path": "packages/motion/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "da1378c1976427ab83129db50348b04d64b219c9ad3b0ae05bc07dac1caa76d8"
+          "sha256": "88d92b799525defa937b9fd480ca2f3e554cf3574834e0a936d4ee9afb11e600"
         },
         {
           "path": "packages/motion/tests/upstream/use-motion-value.test.ts",
@@ -136,7 +136,7 @@
       "environment": "workspace-node",
       "project": "motion-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored public surface probes against motion/react@12.42.2 with tsc.",
+      "notes": "Repo-authored public surface probes with assertion-group inventory, permitted import-root transformation, compiler-program membership, and negative controls via scripts/react-parity/motion-types-lib.mjs.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -146,19 +146,64 @@
         {
           "path": "packages/motion/typetests/pristine/types.test-d.ts",
           "role": "test",
-          "sha256": "27395db724f168022fa10b9fb45543928ad5bc37dfe30d18398b2ca9262593a2",
+          "sha256": "5239bb5a6ae177eb7227626194192293d4c34f310b3ac225b7cb24376a37aa0b",
           "cases": [
             {
-              "id": "types:motion-pristine",
-              "testName": "public surface type assertions",
-              "fullName": "public surface type assertions"
+              "id": "types:pristine:motion-div",
+              "testName": "motion.div host factory is accepted",
+              "fullName": "motion.div host factory is accepted"
+            },
+            {
+              "id": "types:pristine:animate-presence",
+              "testName": "AnimatePresence is accepted",
+              "fullName": "AnimatePresence is accepted"
+            },
+            {
+              "id": "types:pristine:motion-config",
+              "testName": "MotionConfig is accepted",
+              "fullName": "MotionConfig is accepted"
+            },
+            {
+              "id": "types:pristine:use-motion-value",
+              "testName": "useMotionValue returns a readable MotionValue",
+              "fullName": "useMotionValue returns a readable MotionValue"
+            },
+            {
+              "id": "types:pristine:use-transform",
+              "testName": "useTransform mapping form is accepted",
+              "fullName": "useTransform mapping form is accepted"
+            },
+            {
+              "id": "types:pristine:use-spring",
+              "testName": "useSpring is accepted",
+              "fullName": "useSpring is accepted"
+            },
+            {
+              "id": "types:pristine:use-animate",
+              "testName": "useAnimate is accepted",
+              "fullName": "useAnimate is accepted"
+            },
+            {
+              "id": "types:pristine:reject-number-as-string",
+              "testName": "Rejected assertion: number is not a string",
+              "fullName": "Rejected assertion: number is not a string"
+            },
+            {
+              "id": "types:pristine:reject-string-as-number",
+              "testName": "Rejected assertion: string is not a number",
+              "fullName": "Rejected assertion: string is not a number"
             }
           ]
         },
         {
           "path": "packages/motion/typetests/pristine/tsconfig.json",
           "role": "support",
-          "sha256": "3dc38e3ee0bcb2422f93b22e8e05a7d81373966ce72404a94060a065c3068c38"
+          "sha256": "9e2609fe8c7e8b7e2cf83e8f2dc88cec3991512f6a97c97976adf306af79257c"
+        },
+        {
+          "path": "packages/motion/typetests/assertions.md",
+          "role": "support",
+          "sha256": "1c76ffad0f2d8eee4f88000bf4bb8aecaa0bdd88339ee3ac50f6cd26f3af98b6"
         }
       ]
     },
@@ -169,7 +214,7 @@
       "environment": "workspace-node",
       "project": "motion-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored public surface probes against @octanejs/motion with tsrx-tsc.",
+      "notes": "Repo-authored public surface probes with assertion-group inventory, permitted import-root transformation, compiler-program membership, and negative controls via scripts/react-parity/motion-types-lib.mjs.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -179,19 +224,64 @@
         {
           "path": "packages/motion/typetests/adapted/types.test-d.ts",
           "role": "test",
-          "sha256": "e248814c171a5117ee33a31d0de5f9d3071b1def69c8614d65b4b90eaec6e0be",
+          "sha256": "82650d97b14dc12aedb6767380f94473fb3451a1ced4364e2f6e056716c0c138",
           "cases": [
             {
-              "id": "types:motion-adapted",
-              "testName": "public surface type assertions",
-              "fullName": "public surface type assertions"
+              "id": "types:adapted:motion-div",
+              "testName": "motion.div host factory is accepted",
+              "fullName": "motion.div host factory is accepted"
+            },
+            {
+              "id": "types:adapted:animate-presence",
+              "testName": "AnimatePresence is accepted",
+              "fullName": "AnimatePresence is accepted"
+            },
+            {
+              "id": "types:adapted:motion-config",
+              "testName": "MotionConfig is accepted",
+              "fullName": "MotionConfig is accepted"
+            },
+            {
+              "id": "types:adapted:use-motion-value",
+              "testName": "useMotionValue returns a readable MotionValue",
+              "fullName": "useMotionValue returns a readable MotionValue"
+            },
+            {
+              "id": "types:adapted:use-transform",
+              "testName": "useTransform mapping form is accepted",
+              "fullName": "useTransform mapping form is accepted"
+            },
+            {
+              "id": "types:adapted:use-spring",
+              "testName": "useSpring is accepted",
+              "fullName": "useSpring is accepted"
+            },
+            {
+              "id": "types:adapted:use-animate",
+              "testName": "useAnimate is accepted",
+              "fullName": "useAnimate is accepted"
+            },
+            {
+              "id": "types:adapted:reject-number-as-string",
+              "testName": "Rejected assertion: number is not a string",
+              "fullName": "Rejected assertion: number is not a string"
+            },
+            {
+              "id": "types:adapted:reject-string-as-number",
+              "testName": "Rejected assertion: string is not a number",
+              "fullName": "Rejected assertion: string is not a number"
             }
           ]
         },
         {
           "path": "packages/motion/typetests/adapted/tsconfig.json",
           "role": "support",
-          "sha256": "7ba9dc4219148b59df19e5b944ca527bf348d67200612d4fbf671605b43be89d"
+          "sha256": "2844f6b3d81a8db42f39ed4eb089dd5c3fa04da59ca11a0874974cfed4beaf07"
+        },
+        {
+          "path": "packages/motion/typetests/assertions.md",
+          "role": "support",
+          "sha256": "1c76ffad0f2d8eee4f88000bf4bb8aecaa0bdd88339ee3ac50f6cd26f3af98b6"
         }
       ]
     },
@@ -230,11 +320,107 @@
           "path": "packages/motion/tests/_fixtures/render-diff.tsrx",
           "role": "support",
           "sha256": "8ba1063957f73ac5383fc83ed4032a144d3f64fb6f70fb3afd58711eac0794fb"
+        },
+        {
+          "path": "packages/motion/tests/conformance/exit.test.ts",
+          "role": "test",
+          "cases": [
+            {
+              "id": "conformance:exit-cleanup-before-detach",
+              "testName": "animates a clone of the leaving element, removing it when the exit finishes",
+              "fullName": "animates a clone of the leaving element, removing it when the exit finishes"
+            }
+          ],
+          "sha256": "0b27f6d201fe78402600854568860e1e53863f22d8777e957a21c32ad9a12b17"
+        },
+        {
+          "path": "packages/motion/tests/conformance/layout.test.ts",
+          "role": "test",
+          "cases": [
+            {
+              "id": "conformance:bounded-layout-flip",
+              "testName": "FLIPs from the old box to the new when layout changes between renders",
+              "fullName": "FLIPs from the old box to the new when layout changes between renders"
+            }
+          ],
+          "sha256": "1258b56384f10bd387f840d6e0df6cfd89a95a36607fa17ad50df05f00b7be92"
+        },
+        {
+          "path": "packages/motion/tests/conformance/layoutId.test.ts",
+          "role": "test",
+          "cases": [
+            {
+              "id": "conformance:bounded-layoutId",
+              "testName": "FLIPs a newly-mounted element from a same-id element that just unmounted",
+              "fullName": "FLIPs a newly-mounted element from a same-id element that just unmounted"
+            }
+          ],
+          "sha256": "6ef0e171db01be11c1ed973c2fcd5527468eacc893900b25587c6eff9cfa8bc8"
+        },
+        {
+          "path": "packages/motion/tests/conformance/initial-only.test.ts",
+          "role": "test",
+          "cases": [
+            {
+              "id": "conformance:initial-only-no-style-materialization",
+              "testName": "does not materialize inline styles for an initial target without animate",
+              "fullName": "does not materialize inline styles for an initial target without animate"
+            }
+          ],
+          "sha256": "1754773467e3cbe7cd48880f641fa59f8a7ebb0da6e0c589c8fe022a03638571"
         }
       ]
     }
   ],
   "divergences": [
+    {
+      "id": "motion-exit-cleanup-before-detach",
+      "caseIds": ["conformance:exit-cleanup-before-detach"],
+      "upstreamResult": "React Motion keeps exiting nodes attached until exit animations finish via deferred deletion.",
+      "octaneResult": "AnimatePresence clones the leaving node, detaches the original immediately, and removes the clone when exit completes.",
+      "rationale": "Octane has no React deferred-deletion machinery; exit uses cleanup-before-detach.",
+      "classification": "framework-integration",
+      "consumerImpact": "Observers of live child counts during exit see the original node leave earlier than on React.",
+      "migrationGuidance": "Prefer AnimatePresence completion callbacks over counting live DOM children mid-exit.",
+      "owner": "@octanejs/motion",
+      "reviewCondition": "Review if Octane gains deferred-deletion semantics equivalent to React."
+    },
+    {
+      "id": "motion-bounded-layout-flip",
+      "caseIds": ["conformance:bounded-layout-flip"],
+      "upstreamResult": "React Motion layout animations participate in the full projection tree with nested scale correction.",
+      "octaneResult": "layout uses single-element FLIP from getBoundingClientRect deltas only.",
+      "rationale": "The port ships a bounded FLIP path rather than Motion's projection tree.",
+      "classification": "framework-integration",
+      "consumerImpact": "Nested layout/scale correction and shared-layout-during-drag cases diverge from React Motion.",
+      "migrationGuidance": "Keep layout animations to single-element size/position changes; avoid nested projection-dependent layouts.",
+      "owner": "@octanejs/motion",
+      "reviewCondition": "Review if a projection-tree layout port lands."
+    },
+    {
+      "id": "motion-bounded-layoutId",
+      "caseIds": ["conformance:bounded-layoutId"],
+      "upstreamResult": "React Motion layoutId shared-element transitions use the projection tree.",
+      "octaneResult": "layoutId uses a bounded single-element crossfade/FLIP path.",
+      "rationale": "Shared-element transitions are intentionally bounded with the FLIP implementation.",
+      "classification": "framework-integration",
+      "consumerImpact": "Complex shared-layout graphs may not match React Motion pixel-for-pixel.",
+      "migrationGuidance": "Use layoutId for simple shared-element pairs; avoid nested projection-dependent shared layouts.",
+      "owner": "@octanejs/motion",
+      "reviewCondition": "Review if full shared-layout projection lands."
+    },
+    {
+      "id": "motion-initial-only-no-style-materialization",
+      "caseIds": ["conformance:initial-only-no-style-materialization"],
+      "upstreamResult": "React Motion materializes inline styles for an initial target even without an animate target.",
+      "octaneResult": "An initial-only target leaves inline styles unset until an animation target exists.",
+      "rationale": "Octane only materializes animated style targets; initial-only is not applied as static inline style.",
+      "classification": "framework-integration",
+      "consumerImpact": "Components that rely on initial-only inline styles for first paint look unstyled on Octane.",
+      "migrationGuidance": "Set the starting style explicitly or provide an animate target; differential fixtures use initial={false}.",
+      "owner": "@octanejs/motion",
+      "reviewCondition": "Review if Octane materializes initial-only styles like React Motion."
+    },
     {
       "id": "motion-zero-transform-serialization",
       "caseIds": ["runtime:a6edd8704002ab6c"],

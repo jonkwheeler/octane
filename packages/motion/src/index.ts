@@ -212,6 +212,7 @@ function createMotionComponent(tag: string) {
 		latest.onDragEnd = props.onDragEnd;
 
 		// `initial`: apply instantly on mount (before the animate effect runs).
+		// OCTANE DIVERGENCE[motion-initial-only-no-style-materialization][conformance:initial-only-no-style-materialization]
 		useLayoutEffect(
 			() => {
 				if (resolvedInitial) animate(node, resolvedInitial, { duration: 0 });
@@ -439,6 +440,7 @@ function createMotionComponent(tag: string) {
 		// moved/resized vs the previous commit, apply the inverse transform instantly
 		// then animate it back to identity. (A single-element FLIP; the full projection
 		// tree — nested/shared layout, scale correction — is out of scope.)
+		// OCTANE DIVERGENCE[motion-bounded-layout-flip][conformance:bounded-layout-flip]
 		useLayoutEffect(
 			() => {
 				if (!props.layout) return;
@@ -467,6 +469,7 @@ function createMotionComponent(tag: string) {
 		// `layoutId`: shared-element crossfade. On mount, if a same-id element recently
 		// unmounted, FLIP from its recorded box to ours; on unmount, record our box for
 		// the next same-id element (the cleanup runs while still in the DOM).
+		// OCTANE DIVERGENCE[motion-bounded-layoutId][conformance:bounded-layoutId]
 		useLayoutEffect(
 			() => {
 				const id = props.layoutId;
@@ -497,6 +500,7 @@ function createMotionComponent(tag: string) {
 		// DOM (octane fires cleanups before detaching). We clone the leaving node
 		// OUTSIDE the block's range (so octane's removal doesn't take the clone),
 		// animate the exit on the clone, and remove the clone when it finishes.
+		// OCTANE DIVERGENCE[motion-exit-cleanup-before-detach][conformance:exit-cleanup-before-detach]
 		useLayoutEffect(
 			() => () => {
 				const n: HTMLElement | null = latest.node;

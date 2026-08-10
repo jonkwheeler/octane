@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/wagmi/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/wagmi/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/wagmi/tests/differential"],
-      "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/wagmi/tests/differential"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3a182f6a9f209e25cb84876a6cbdc24a1f0cab6d3acc6e13938922a1c59ec6fd"
+      "lockfileSha256": "bd025dbbac0f3d7fe716d023daeaeeda97315e9d8afec7a290cc3852461d2272"
     }
   },
   "lanes": [
@@ -83,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "a76cb81fca53f916a486122f1063b4386385dac92e2d97cbb0ad0940b3651791"
         }
       ]
     }

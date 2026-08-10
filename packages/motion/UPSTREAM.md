@@ -29,13 +29,13 @@ The binding reuses Motion's framework-neutral animation engine and ports a bound
 
 Upstream ships an extensive Jest client suite plus Cypress and embedded type tests under `packages/framer-motion`. The npm tarball does not include those tests; they are taken from the git pin.
 
-This package records `upstreamSuites.runtime/types` as **insufficient** and executes a curated, verified subset:
+This package records `upstreamSuites.runtime/types` as **insufficient** and provenance as **recorded-unverified** until every pin artifact receives an adapted or supported-exclusion disposition. The current curated subset still runs:
 
 - pristine: byte-exact `useMotionValue` cases from the pin, run against `motion/react@12.42.2`
 - adapted: one-for-one Octane ports of those cases
-- repo-authored pristine/adapted type probes
+- repo-authored pristine/adapted type probes with structural assertion inventory
 - repo-authored differential host-rendering lane
 
 The remaining upstream React/SSR/Cypress cases are present at the pin but not yet preserved or adapted here. `packages/motion/upstream/` holds the curated pin artifacts (`upstream:verify`).
 
-React materializes styles for an `initial`-only target while the current Octane binding does not. The bounded differential fixture therefore uses `initial={false}` and the package continues to avoid claiming complete React Motion parity. A zero MotionValue bound through `style.x` serializes as `translateX(0px)` on Octane versus `none` on React (see `motion-zero-transform-serialization`).
+React materializes styles for an `initial`-only target while the current Octane binding does not. The bounded differential fixture therefore uses `initial={false}` and the package continues to avoid claiming complete React Motion parity. Known incompatibilities are recorded in `audit/react-parity.json` divergences (`motion-exit-cleanup-before-detach`, `motion-bounded-layout-flip`, `motion-bounded-layoutId`, `motion-initial-only-no-style-materialization`, `motion-zero-transform-serialization`).
