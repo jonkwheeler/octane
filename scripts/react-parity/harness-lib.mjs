@@ -63,6 +63,7 @@ const LANE_KEYS = new Set([
 const EXECUTION_KEYS = new Set([
 	'kind',
 	'compiler',
+	'compilerBins',
 	'project',
 	'inventory',
 	'config',
@@ -72,7 +73,7 @@ const EXECUTION_KEYS = new Set([
 ]);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
 const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
-const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full', 'node-full']);
+const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full', 'playwright-full', 'node-full']);
 const ADAPTED_ROOT_KEYS = new Set(['source', 'tests']);
 const ADAPTED_SCAN_KEYS = new Set(['roots', 'include', 'exclude']);
 const ADAPTED_RUNTIME_SUMMARY_KEYS = new Set([
@@ -320,7 +321,15 @@ export function validateManifest(manifest) {
 		if (lane.execution !== undefined) {
 			for (const key of Object.keys(lane.execution))
 				if (!EXECUTION_KEYS.has(key)) fail(`lane ${lane.id} execution has unknown key "${key}"`);
-			if (!['typescript', 'vitest-full', 'jest-full', 'node-full'].includes(lane.execution.kind))
+			if (
+				![
+					'typescript',
+					'vitest-full',
+					'jest-full',
+					'playwright-full',
+					'node-full',
+				].includes(lane.execution.kind)
+			)
 				fail(`lane ${lane.id} execution kind is unsupported`);
 			if (lane.execution.kind === 'typescript') {
 				if (!['tsc', 'tsgo', 'tsrx-tsc'].includes(lane.execution.compiler))
@@ -329,25 +338,47 @@ export function validateManifest(manifest) {
 				if (lane.execution.inventory !== undefined)
 					fail(`lane ${lane.id} TypeScript execution must not declare an inventory`);
 				if (lane.execution.config !== undefined || lane.execution.root !== undefined)
-					fail(`lane ${lane.id} TypeScript execution only accepts compiler and project`);
+					fail(`lane ${lane.id} TypeScript execution must not declare config or root`);
+				if (lane.execution.compilerBins !== undefined) {
+					if (
+						!Array.isArray(lane.execution.compilerBins) ||
+						lane.execution.compilerBins.length === 0
+					) {
+						fail(`lane ${lane.id} compilerBins must be a non-empty array`);
+					}
+					for (const bin of lane.execution.compilerBins) {
+						exactPath(bin, `lane ${lane.id} compilerBins entry`);
+					}
+				}
 			} else if (lane.execution.kind === 'vitest-full') {
 				if (
 					lane.execution.compiler !== undefined ||
+					lane.execution.compilerBins !== undefined ||
 					lane.execution.project !== undefined ||
 					lane.execution.config !== undefined ||
 					lane.execution.root !== undefined
 				)
 					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
 				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
-			} else if (lane.execution.kind === 'jest-full') {
-				if (lane.execution.compiler !== undefined || lane.execution.project !== undefined)
-					fail(`lane ${lane.id} Jest execution must not declare a compiler or project`);
+			} else if (
+				lane.execution.kind === 'jest-full' ||
+				lane.execution.kind === 'playwright-full'
+			) {
+				if (
+					lane.execution.compiler !== undefined ||
+					lane.execution.compilerBins !== undefined ||
+					lane.execution.project !== undefined
+				)
+					fail(
+						`lane ${lane.id} ${lane.execution.kind} execution must not declare a compiler or project`,
+					);
 				exactPath(lane.execution.config, `lane ${lane.id} execution config`);
 				exactPath(lane.execution.root, `lane ${lane.id} execution root`);
 				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
 			} else {
 				if (
 					lane.execution.compiler !== undefined ||
+					lane.execution.compilerBins !== undefined ||
 					lane.execution.project !== undefined ||
 					lane.execution.config !== undefined
 				)
@@ -376,7 +407,7 @@ export function validateManifest(manifest) {
 			fail(`lane ${lane.id} non-type lane must not declare evidenceOrigin`);
 		}
 		if (
-			['jest-full', 'node-full'].includes(lane.execution?.kind) &&
+			['jest-full', 'playwright-full', 'node-full'].includes(lane.execution?.kind) &&
 			lane.type !== 'pristine-upstream'
 		)
 			fail(
@@ -522,7 +553,7 @@ export async function verifyManifestFiles(manifest, root) {
 		} else if (
 			lane.oracle === 'required' &&
 			lane.available !== false &&
-			['jest-full', 'node-full'].includes(lane.execution?.kind)
+			['jest-full', 'playwright-full', 'node-full'].includes(lane.execution?.kind)
 		) {
 			const inventory = JSON.parse(
 				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
@@ -757,7 +788,7 @@ export async function verifyManifestTestSelections(manifest, root) {
 	for (const lane of manifest.lanes.filter(
 		(candidate) =>
 			candidate.available !== false &&
-			!['typescript', 'jest-full', 'node-full'].includes(candidate.execution?.kind),
+			!['typescript', 'jest-full', 'playwright-full', 'node-full'].includes(candidate.execution?.kind),
 	)) {
 		let collectedTests = testsByProject.get(lane.project);
 		if (!collectedTests) {
@@ -797,12 +828,28 @@ export function buildTypeScriptCompilerArgv(compiler, project) {
 	return [process.execPath, compilerEntrypoints[compiler], '--noEmit', '-p', project];
 }
 
+export function buildTypeScriptCompilerRuns(lane) {
+	const project = lane.execution.project;
+	if (Array.isArray(lane.execution.compilerBins) && lane.execution.compilerBins.length > 0) {
+		return lane.execution.compilerBins.map(function toArgv(bin) {
+			return [process.execPath, bin, '--noEmit', '-p', project];
+		});
+	}
+	return [buildTypeScriptCompilerArgv(lane.execution.compiler, project)];
+}
+
 export function buildLaneArgv(lane, root = process.cwd()) {
 	if (lane.available === false) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
 	if (lane.execution?.kind === 'typescript') {
-		return buildTypeScriptCompilerArgv(lane.execution.compiler, lane.execution.project);
+		const runs = buildTypeScriptCompilerRuns(lane);
+		if (runs.length !== 1) {
+			throw new Error(
+				`lane ${lane.id} declares ${runs.length} TypeScript compiler runs; use buildTypeScriptCompilerRuns`,
+			);
+		}
+		return runs[0];
 	}
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
@@ -838,6 +885,16 @@ export function buildLaneArgv(lane, root = process.cwd()) {
 			lane.execution.loader,
 			'--inventory',
 			lane.execution.inventory,
+		];
+	}
+	if (lane.execution?.kind === 'playwright-full') {
+		return [
+			process.execPath,
+			'scripts/react-parity/playwright-full-runner.mjs',
+			'--config',
+			lane.execution.config,
+			'--root',
+			lane.execution.root,
 		];
 	}
 	const fullNames = lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.fullName));
@@ -892,15 +949,16 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 			);
 		return true;
 	}
-	if (lane.execution?.kind === 'jest-full') {
+	if (lane.execution?.kind === 'jest-full' || lane.execution?.kind === 'playwright-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
+		const label = lane.execution.kind === 'playwright-full' ? 'Playwright' : 'Jest';
 		if (result?.schemaVersion !== 1 || !Array.isArray(result.tests))
-			throw new Error(`lane ${lane.id} returned an invalid Jest full-suite result`);
+			throw new Error(`lane ${lane.id} returned an invalid ${label} full-suite result`);
 		const executed = result.tests.sort(compareTestIdentities);
 		const expected = inventory.tests.sort(compareTestIdentities);
 		if (JSON.stringify(executed) !== JSON.stringify(expected))
 			throw new Error(
-				`lane ${lane.id} did not execute every inventoried Jest identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
+				`lane ${lane.id} did not execute every inventoried ${label} identity exactly once:\n  ${describeTestIdentityMismatch(expected, executed)}`,
 			);
 		if (result.snapshots !== inventory.snapshots)
 			throw new Error(
@@ -943,4 +1001,12 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 
 export function requiredExecutableLanes(manifest) {
 	return manifest.lanes.filter((lane) => lane.oracle === 'required' && lane.available !== false);
+}
+
+/**
+ * Generic parity-job routing: execute every available required lane. Provenance
+ * completeness gates public claims elsewhere; it must not skip harness execution.
+ */
+export function selectHarnessAction(manifest) {
+	return requiredExecutableLanes(manifest).length > 0 ? 'run-required' : 'validate';
 }
