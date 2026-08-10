@@ -194,7 +194,7 @@ export function CommandRoot(props: CommandProps) @{
 				schedule(8, () => store.emit());
 
 				return () => {
-					// OCTANE DIVERGENCE[force-mount-empty-count][octane:force-mount-empty-release]:
+					// OCTANE DIVERGENCE[force-mount-empty-count][differential:cmdk-force-mount-empty]:
 					// Releasing the force-mount count on unmount is required so Empty can
 					// reappear once no force-mounted item remains visible.
 					releaseValue(id);
@@ -282,7 +282,7 @@ export function CommandRoot(props: CommandProps) @{
 	}
 
 	/**
- * OCTANE DIVERGENCE[registration-teardown-release][octane:registration-force-mount-release]:
+ * OCTANE DIVERGENCE[registration-teardown-release][differential:cmdk-registration-teardown]:
  * Drop everything `context.value` registered for `id`. Items, force-mounted
  * items AND groups all register their value through the same `useValue` hook,
  * so all three teardown paths have to release through here. Releasing on only
@@ -290,8 +290,6 @@ export function CommandRoot(props: CommandProps) @{
  * count then reports a duplicate for a value just one live component holds
  * (re-showing a force-mounted item counts 2, then 3, ...), and `ids` /
  * `filtered.items` keep growing for the Command's lifetime.
- *
- * OCTANE DIVERGENCE[registration-teardown-release][octane:registration-group-release]
  */
 	function releaseValue(id: string) {
 		if (process.env.NODE_ENV !== 'production') {
@@ -459,7 +457,7 @@ export function CommandRoot(props: CommandProps) @{
 		// ranks below continue past them instead of tying.
 		let topLevel = 0;
 
-		// OCTANE DIVERGENCE[force-mount-rank-order][octane:force-mount-rank]:
+		// OCTANE DIVERGENCE[force-mount-rank-order][differential:cmdk-force-mount-rank]:
 		// EVERY valid item gets a rank, not just the matches. A non-match usually
 		// unmounts and never needs one, but a force-mounted item never scores and
 		// never unmounts — and an unranked child keeps the initial `order` of 0,

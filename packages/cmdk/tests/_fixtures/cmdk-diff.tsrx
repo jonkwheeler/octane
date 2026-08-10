@@ -39,3 +39,41 @@ export function CmdkDiffGroups() @{
 		</Command.List>
 	</Command>
 }
+
+// Force-mounted item stays visible through any search; Empty must consult it.
+export function CmdkDiffForceMount() @{
+	<Command label="Command Menu">
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Empty>No results found.</Command.Empty>
+			<Command.Item forceMount>Always Here</Command.Item>
+			<Command.Item>Apple</Command.Item>
+		</Command.List>
+	</Command>
+}
+
+// Force-mounted non-match after a real match: pins where unranked items land.
+export function CmdkDiffForceMountRank() @{
+	<Command label="Command Menu">
+		<Command.Input placeholder="Search…" />
+		<Command.List>
+			<Command.Item>Apple</Command.Item>
+			<Command.Item forceMount>Always Here</Command.Item>
+			<Command.Item>Apricot</Command.Item>
+		</Command.List>
+	</Command>
+}
+
+// Toggle a force-mounted item that shares a value with a plain replacement.
+export function CmdkDiffForceMountSwap(props: { forced: boolean }) @{
+	<Command label="Command Menu">
+		<Command.List>
+			@if (props.forced) {
+				<Command.Item forceMount value="Apple">Apple</Command.Item>
+			}
+			@if (!props.forced) {
+				<Command.Item value="Apple">Apple</Command.Item>
+			}
+		</Command.List>
+	</Command>
+}

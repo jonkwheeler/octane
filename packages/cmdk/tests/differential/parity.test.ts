@@ -3,13 +3,26 @@
  * Every `step` compares normalized innerHTML after driving identical events;
  * `observe` is used only where the port documents an intentional divergence.
  */
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { resolve } from 'node:path';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { basename, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
 import { act } from 'react';
+import * as React from 'react';
+import { renderToString as reactRenderToString } from 'react-dom/server';
 import { mountDifferential, normaliseHtml } from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/cmdk-diff.tsrx');
+const BASIC_FIXTURE = resolve(__dirname, '../_fixtures/basic.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
+
+function reactCachePath(srcPath: string): string {
+	let hash = 5381;
+	for (let index = 0; index < srcPath.length; index++) {
+		hash = ((hash << 5) + hash + srcPath.charCodeAt(index)) | 0;
+	}
+	const slug = basename(srcPath).replace(/\.tsrx$/, '');
+	return resolve(CACHE, `${slug}-${Math.abs(hash).toString(36)}.js`);
+}
 
 // Upstream cmdk's List constructs a ResizeObserver unguarded, which throws in
 // jsdom. Install an inert one for BOTH runtimes so neither side writes
@@ -321,5 +334,115 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 		);
 
 		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-force-mount-empty
+	it('documents Empty suppression while a force-mounted item is visible', async function () {
+		const differential = await mountDifferential(FIXTURE, 'CmdkDiffForceMount', undefined, CACHE);
+
+		// OCTANE DIVERGENCE[force-mount-empty-count][differential:cmdk-force-mount-empty]
+		await differential.observe(
+			'forceMount keeps Empty suppressed on a non-matching search',
+			async function (octane, react) {
+				await octane.input('[cmdk-input]', 'zzzzzz');
+				await react.input('[cmdk-input]', 'zzzzzz');
+				await settle();
+
+				expect(itemTexts(octane)).toEqual(['Always Here']);
+				expect(itemTexts(react)).toEqual(['Always Here']);
+				expect(octane.container.querySelector('[cmdk-empty]')).toBeNull();
+				// Upstream skips forceMount registration, so Empty can render over it.
+				expect(react.container.querySelector('[cmdk-empty]')).not.toBeNull();
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-force-mount-rank
+	it('documents force-mounted non-match ranking below scored matches', async function () {
+		const differential = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffForceMountRank',
+			undefined,
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[force-mount-rank-order][differential:cmdk-force-mount-rank]
+		await differential.observe(
+			'forceMount non-match stays below ranked matches',
+			async function (octane, react) {
+				await octane.input('[cmdk-input]', 'ap');
+				await react.input('[cmdk-input]', 'ap');
+				await settle();
+
+				// Octane assigns CSS order to every valid item so a zero-scoring
+				// forceMount stays below matches. Upstream's published sort leaves
+				// the forceMount first in DOM order for this fixture.
+				expect(visibleItemTexts(octane)).toEqual(['Apple', 'Apricot', 'Always Here']);
+				expect(itemTexts(react)).toEqual(['Always Here', 'Apple', 'Apricot']);
+			},
+		);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:cmdk-registration-teardown
+	it('documents forceMount registration release across remounts', async function () {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(function noop() {});
+
+		const first = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffForceMountSwap',
+			{ forced: true },
+			CACHE,
+		);
+		first.unmount();
+
+		const second = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffForceMountSwap',
+			{ forced: false },
+			CACHE,
+		);
+		second.unmount();
+
+		const third = await mountDifferential(
+			FIXTURE,
+			'CmdkDiffForceMountSwap',
+			{ forced: true },
+			CACHE,
+		);
+
+		// OCTANE DIVERGENCE[registration-teardown-release][differential:cmdk-registration-teardown]
+		const messages = warn.mock.calls.map(function toMessage(call) {
+			return String(call[0]);
+		});
+		warn.mockRestore();
+
+		expect(third.octane.findAll('[cmdk-item]')).toHaveLength(1);
+		expect(third.react.findAll('[cmdk-item]')).toHaveLength(1);
+		expect(
+			messages.filter(function isDuplicate(message) {
+				return message.includes('share the value');
+			}),
+		).toEqual([]);
+
+		third.unmount();
+	});
+
+	// @parity-case differential:cmdk-ssr-empty
+	it('documents Empty suppression in server markup', async function () {
+		// Octane's SSR Empty suppression is covered by the ordinary cmdk-ssr
+		// shard (`tests/ssr/server.test.ts`). This lane pins the upstream half:
+		// React cmdk ships cmdk-empty above a populated list during SSR.
+		const reactPath = reactCachePath(BASIC_FIXTURE);
+		expect(existsSync(reactPath)).toBe(true);
+		const reactMod = await import(/* @vite-ignore */ reactPath);
+		const reactHtml = reactRenderToString(React.createElement(reactMod.BasicMenu));
+
+		// OCTANE DIVERGENCE[ssr-empty-suppressed][differential:cmdk-ssr-empty]
+		expect(reactHtml).toContain('cmdk-item');
+		expect(reactHtml).toContain('cmdk-empty');
 	});
 });
