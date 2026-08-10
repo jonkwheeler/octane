@@ -67,21 +67,36 @@ test('support fixtures map to upstream after declared helper transforms', functi
 	for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
 		assert.ok(behavior.includes(required), `missing ${required}`);
 	}
-	const decoy =
+	const decoyBodies = [
 		"import { act } from '@octanejs/testing-library';\n" +
-		'async function pointer(steps) {\n' +
-		'\treturn;\n' +
-		"\tfalse && act(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-		"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-		'}\n' +
-		'async function type(element, text) {\n' +
-		'\treturn;\n' +
-		"\tfalse && act(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-		'}\n' +
-		'export default { pointer, type };\n';
-	const decoyBehavior = authoredUserEventBehavior(decoy, 'test/userEvent.ts');
-	for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
-		assert.equal(decoyBehavior.includes(required), false, `decoy must not satisfy ${required}`);
+			'async function pointer(steps) {\n' +
+			'\treturn;\n' +
+			"\tfalse && act(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
+			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
+			'}\n' +
+			'async function type(element, text) {\n' +
+			'\treturn;\n' +
+			"\tfalse && act(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
+			'}\n' +
+			'export default { pointer, type };\n',
+		"import { act } from '@octanejs/testing-library';\n" +
+			'async function pointer(steps) {\n' +
+			'\tif (true) return;\n' +
+			'\tconst type = "pointerdown";\n' +
+			"\tact(() => document.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
+			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
+			'}\n' +
+			'async function type(element, text) {\n' +
+			'\twhile (true) return;\n' +
+			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
+			'}\n' +
+			'export default { pointer, type };\n',
+	];
+	for (const decoy of decoyBodies) {
+		const decoyBehavior = authoredUserEventBehavior(decoy, 'test/userEvent.ts');
+		for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
+			assert.equal(decoyBehavior.includes(required), false, `decoy must not satisfy ${required}`);
+		}
 	}
 });
 

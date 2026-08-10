@@ -826,11 +826,46 @@ function isTerminalStatement(node) {
 	);
 }
 
+/** True when control never falls through to a following sibling statement. */
+function statementAlwaysExits(node) {
+	if (isTerminalStatement(node)) return true;
+	if (ts.isBlock(node)) {
+		for (const stmt of node.statements) {
+			if (statementAlwaysExits(stmt)) return true;
+		}
+		return false;
+	}
+	if (ts.isIfStatement(node)) {
+		if (isConstantTrue(node.expression)) {
+			return statementAlwaysExits(node.thenStatement);
+		}
+		if (isConstantFalse(node.expression)) {
+			return node.elseStatement ? statementAlwaysExits(node.elseStatement) : false;
+		}
+		return (
+			!!node.elseStatement &&
+			statementAlwaysExits(node.thenStatement) &&
+			statementAlwaysExits(node.elseStatement)
+		);
+	}
+	if (ts.isWhileStatement(node) && isConstantTrue(node.expression)) {
+		return statementAlwaysExits(node.statement);
+	}
+	if (ts.isDoStatement(node) && isConstantTrue(node.expression)) {
+		return statementAlwaysExits(node.statement);
+	}
+	if (ts.isForStatement(node) && (!node.condition || isConstantTrue(node.condition))) {
+		return statementAlwaysExits(node.statement);
+	}
+	return false;
+}
+
 /**
  * Walk reachable statements in pointer/type and record act-wrapped
  * construction→dispatchEvent dataflow. Compile-time dead code is skipped
  * (constant-false branches, short-circuit dead arms, and statements after
- * unconditional return/throw) so decoy tokens cannot satisfy the contract.
+ * proven exits including `if (true) return`) so decoy tokens cannot satisfy
+ * the contract.
  */
 export function authoredUserEventBehavior(source, fileName) {
 	const sourceFile = ts.createSourceFile(
@@ -1002,7 +1037,7 @@ export function authoredUserEventBehavior(source, fileName) {
 	function visitStatements(fnName, statements, bindings, insideAct) {
 		for (const statement of statements) {
 			visitStatement(fnName, statement, bindings, insideAct);
-			if (isTerminalStatement(statement)) break;
+			if (statementAlwaysExits(statement)) break;
 		}
 	}
 
