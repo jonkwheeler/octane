@@ -18,5 +18,19 @@
       "b90cacc964167adf22535e6b92b5cdd868830421bf240ccfe40554e5258817a5",
       "782585d6fb3be41e822bb7d45cf0816689ee4de2e82eb1a078a2fa555c606aa6"
     ]
+  },
+  {
+    "path": "test.test-d.ts",
+    "title": "_useStore returns actions for stores with actions",
+    "role": "pristine-only",
+    "sha256": "1fa472eaf908095ece3025b371391fda801e9f496da938cf215dc0fc28c30206",
+    "assertionGroups": ["4bc2c95dd08e5a693be8fe925185bdc9915d334d3f468dd9a002558baed37686"]
+  },
+  {
+    "path": "test.test-d.ts",
+    "title": "_useStore returns setState for plain stores",
+    "role": "pristine-only",
+    "sha256": "15fc373cd7efbedd3ad8025af0cfe6f91166ee551ff6f92f5dbc85dcc3e3f4ea",
+    "assertionGroups": ["436858594c9da91f78f6231b8de1ef73362cd4888b905646207590703add2d1e"]
   }
 ]

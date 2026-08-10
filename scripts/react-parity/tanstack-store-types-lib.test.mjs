@@ -83,6 +83,46 @@ test('assertion group compare still rejects adapted @ts-expect-error drift', asy
 	}, /assertion groups differ/);
 });
 
+test('rejects deleting a required upstream pristine-only _useStore case', async function rejectsDeletedPristineOnly(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const upstreamFile = join(value.upstreamRoot, 'test.test-d.ts');
+	const source = await readFile(upstreamFile, 'utf8');
+	const title = '_useStore returns setState for plain stores';
+	const pattern = new RegExp(
+		`test\\('${title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'[\\s\\S]*?\\n\\}\\)\\n`,
+	);
+	const mutated = source.replace(pattern, '');
+	assert.notEqual(mutated, source);
+	await writeFile(upstreamFile, mutated);
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /missing required pristine-only test/);
+});
+
+test('pristine inventory records each required pristine-only _useStore case', function inventoriesPristineOnly() {
+	const config = JSON.parse(readFileSync(join(REPO, TYPE_PARITY_CONFIG), 'utf8'));
+	const inventory = buildTypeInventory(REPO, config);
+	const pristineOnly = inventory.upstream.filter(function isPristineOnly(entry) {
+		return entry.role === 'pristine-only';
+	});
+	assert.deepEqual(
+		pristineOnly.map(function titleOf(entry) {
+			return entry.title;
+		}),
+		[
+			'_useStore returns actions for stores with actions',
+			'_useStore returns setState for plain stores',
+		],
+	);
+	for (const entry of pristineOnly) {
+		assert.ok(entry.assertionGroups.length >= 1);
+		assert.match(entry.sha256, /^[a-f0-9]{64}$/);
+	}
+});
+
 test('config still documents the intentional _useStore omission', function documentsOmission() {
 	const config = JSON.parse(readFileSync(join(REPO, TYPE_PARITY_CONFIG), 'utf8'));
 	assert.ok(
@@ -155,9 +195,7 @@ test('rejects emptying adaptedEvidence omission module', async function rejectsE
 	}, /must assert expectTypeOf/);
 });
 
-test('rejects hollow adaptedEvidence test shell without the omission assertion', async function rejectsHollowOmission(
-	t,
-) {
+test('rejects hollow adaptedEvidence test shell without the omission assertion', async function rejectsHollowOmission(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });

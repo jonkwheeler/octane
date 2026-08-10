@@ -171,7 +171,7 @@
         {
           "path": "packages/tanstack-store/audit/pristine-types.json",
           "role": "test",
-          "sha256": "3a530c5654f766623b8ff41ff79bedc6889d9cf214c1f6a56f9f6e93e90a199e",
+          "sha256": "c28643e83a20c9e8c9580aa37dc324b3b50fd98abf21097a854797b16baaa1e7",
           "cases": [
             {
               "id": "types:tanstack-store-pristine-upstream",
@@ -183,7 +183,7 @@
         {
           "path": "packages/tanstack-store/audit/type-parity.json",
           "role": "support",
-          "sha256": "71a7a3979f5855c72f2031878f707d8a3296454a696640a74695be455ba59295"
+          "sha256": "a760aeb5dede692fff87767aba80ceeb3ac4d926cd56fa4447e33e25b98920d8"
         },
         {
           "path": "packages/tanstack-store/audit/upstream-typetests/tsconfig.pristine.json",
@@ -209,11 +209,11 @@
       "environment": "workspace-node",
       "project": "tanstack-store-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the structurally equivalent Octane typetest after permitted import-root transformation, with inventoried paired _useStore omission divergence evidence.",
+      "notes": "Runs the structurally equivalent Octane typetest after permitted import-root transformation. The _useStore omission Octane-only divergence typetest stays outside this parity compiler project.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/tanstack-store/typetests/tsconfig.json"
+        "project": "packages/tanstack-store/typetests/tsconfig.adapted.json"
       },
       "files": [
         {
@@ -234,24 +234,19 @@
           "sha256": "62a83619637b787a44a2dadfa9cbb59c1c9e9df1c1acd8844a869e583cd5b3a9"
         },
         {
-          "path": "packages/tanstack-store/typetests/_useStore-omission.test-d.ts",
+          "path": "packages/tanstack-store/typetests/tsconfig.adapted.json",
           "role": "support",
-          "sha256": "fdcc64ae88377f5b802a6429efb94ccf88d7e182f1b26d191bcadd226e2900ba"
-        },
-        {
-          "path": "packages/tanstack-store/typetests/tsconfig.json",
-          "role": "support",
-          "sha256": "e26bb60e0685abfe077efd6c0e779ee06874a73aabf9e6ff07e5ec635cee32ee"
+          "sha256": "4985ef1a507c2d236fad7c923bff3655286b4667c789ea3ea212f54b119dccdf"
         },
         {
           "path": "packages/tanstack-store/audit/type-parity.json",
           "role": "support",
-          "sha256": "71a7a3979f5855c72f2031878f707d8a3296454a696640a74695be455ba59295"
+          "sha256": "a760aeb5dede692fff87767aba80ceeb3ac4d926cd56fa4447e33e25b98920d8"
         },
         {
           "path": "packages/tanstack-store/audit/pristine-types.json",
           "role": "support",
-          "sha256": "3a530c5654f766623b8ff41ff79bedc6889d9cf214c1f6a56f9f6e93e90a199e"
+          "sha256": "c28643e83a20c9e8c9580aa37dc324b3b50fd98abf21097a854797b16baaa1e7"
         }
       ]
     },

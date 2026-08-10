@@ -34,7 +34,7 @@ adapted-only lanes are supplementary.
 | `tanstack-store-pristine-upstream` | Runs the byte-exact `packages/react-store/tests/index.test.tsx` suite against `@tanstack/react-store@0.11.0` after vendored-byte verification. |
 | `tanstack-store-adapted-upstream` | Runs the one-for-one Octane adaptation in `tests/_fixtures/upstream/index.tsrx` through `tests/conformance/upstream-index.test.ts`. Omits the upstream `_useStore` describe block by design. |
 | `tanstack-store-pristine-types` | Runs vendored `upstream/tests/test.test-d.ts` with `tsc` against the pinned React binding, including `_useStore` typetests. |
-| `tanstack-store-adapted-types` | Runs the structurally equivalent Octane typetest in `typetests/test.test-d.ts` with `tsrx-tsc`. `_useStore` typetests are pristine-only; `typetests/_useStore-omission.test-d.ts` is inventoried paired divergence evidence for the intentional export omission. |
+| `tanstack-store-adapted-types` | Runs the structurally equivalent Octane typetest in `typetests/test.test-d.ts` with `tsrx-tsc` via `typetests/tsconfig.adapted.json`. `_useStore` typetests are pristine-only; `typetests/_useStore-omission.test-d.ts` is inventoried paired divergence evidence compiled only by ordinary package typecheck. |
 | `tanstack-store-runtime-differential` | Supplementary exact shared React/Octane interaction fixture. |
 
 ## Runtime suite disposition

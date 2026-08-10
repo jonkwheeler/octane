@@ -52,9 +52,7 @@ function assertionGroups(source, fileName) {
 	for (const match of source.matchAll(
 		/expectTypeOf\(([^)]+)\)\.not\.toHaveProperty\((['"])([^'"]+)\2\)/g,
 	)) {
-		groups.push(
-			`expect-type-of-not-property:${match[1].replace(/\s+/g, ' ').trim()}:${match[3]}`,
-		);
+		groups.push(`expect-type-of-not-property:${match[1].replace(/\s+/g, ' ').trim()}:${match[3]}`);
 	}
 	for (const match of source.matchAll(/test\((['"])((?:\\.|[^\\])*?)\1/g)) {
 		groups.push(`test:${match[2]}`);
@@ -105,14 +103,35 @@ function normalizeSpecifier(specifier) {
 	return specifier;
 }
 
+function pristineOnlyTestPattern(title) {
+	return new RegExp(
+		`test\\('${title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'[\\s\\S]*?\\n\\}\\)\\n`,
+	);
+}
+
+function inventoryPristineOnlyCases(source, fileName) {
+	const entries = [];
+	for (const title of PRISTINE_ONLY_TESTS) {
+		const match = source.match(pristineOnlyTestPattern(title));
+		if (!match) {
+			throw new Error(`upstream type suite missing required pristine-only test: ${title}`);
+		}
+		const block = match[0];
+		entries.push({
+			path: fileName,
+			title,
+			role: 'pristine-only',
+			sha256: sha256(block),
+			assertionGroups: assertionGroups(block, fileName).map(sha256),
+		});
+	}
+	return entries;
+}
+
 function stripPristineOnlyTests(source) {
 	let transformed = source;
 	for (const title of PRISTINE_ONLY_TESTS) {
-		const pattern = new RegExp(
-			`test\\('${title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'[\\s\\S]*?\\n\\}\\)\\n`,
-			'g',
-		);
-		transformed = transformed.replace(pattern, '');
+		transformed = transformed.replace(pristineOnlyTestPattern(title), '');
 	}
 	transformed = transformed.replace(/\n  _useStore,\n/, '\n');
 	transformed = transformed.replace(
@@ -208,9 +227,9 @@ export function buildTypeInventory(root, config) {
 	const file = config.file;
 	const upstreamSource = readFileSync(resolve(upstreamRoot, file), 'utf8');
 	const adaptedSource = readFileSync(resolve(adaptedRoot, file), 'utf8');
-	// Apply the intentional-omission ledger before comparing assertion groups so
-	// pristine-only `_useStore` blocks (and any `@ts-expect-error` inside them)
-	// are not required to appear on the adapted side.
+	// Inventory and require each pristine-only `_useStore` case before stripping so
+	// deleting those blocks cannot keep the comparison green after a hash refresh.
+	const pristineOnly = inventoryPristineOnlyCases(upstreamSource, file);
 	const comparableUpstreamSource = stripPristineOnlyTests(upstreamSource);
 	const upstreamGroups = assertionGroups(comparableUpstreamSource, file);
 	const adaptedGroups = assertionGroups(adaptedSource, file);
@@ -230,6 +249,7 @@ export function buildTypeInventory(root, config) {
 			sha256: sha256(upstreamSource),
 			assertionGroups: upstreamGroups.map(sha256),
 		},
+		...pristineOnly,
 	];
 	const adapted = [
 		{
@@ -261,10 +281,16 @@ export function verifyTanstackStoreTypes(root, { configPath = TYPE_PARITY_CONFIG
 		}
 	}
 	return {
-		files: inventory.upstream.length,
-		assertions: inventory.upstream.reduce(function sumAssertions(sum, entry) {
-			return sum + entry.assertionGroups.length;
-		}, 0),
+		files: inventory.upstream.filter(function isPrimaryFile(entry) {
+			return entry.role === undefined;
+		}).length,
+		assertions: inventory.upstream
+			.filter(function isPrimaryFile(entry) {
+				return entry.role === undefined;
+			})
+			.reduce(function sumAssertions(sum, entry) {
+				return sum + entry.assertionGroups.length;
+			}, 0),
 	};
 }
 

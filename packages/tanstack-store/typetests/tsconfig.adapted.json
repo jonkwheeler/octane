@@ -14,5 +14,5 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["./_useStore-omission.test-d.ts"]
+  "include": ["./test.test-d.ts"]
 }
