@@ -26,24 +26,49 @@ describe('@octanejs/visx React differential', () => {
 		differential.unmount();
 	});
 
+	// OCTANE DIVERGENCE[visx-native-dom-events][differential:visx-interaction]: Octane delivers a native click; React uses its synthetic layer.
 	// @parity-case differential:visx-interaction
-	it('matches state updates while Octane delivers a native click event', async () => {
+	it('matches state updates while Octane delivers a native click event', async function () {
 		const differential = await mountDifferential(
 			fixture,
 			'InteractiveDifferential',
 			undefined,
 			cache,
 		);
-		await differential.step('click', async ({ container: octane }, { container: react }) => {
+		await differential.step('click', async function ({ container: octane }, { container: react }) {
 			(octane.querySelector('[data-testid="select-bar"]') as SVGRectElement).dispatchEvent(
 				new MouseEvent('click', { bubbles: true }),
 			);
-			await reactAct(async () => {
+			await reactAct(async function () {
 				(react.querySelector('[data-testid="select-bar"]') as SVGRectElement).dispatchEvent(
 					new MouseEvent('click', { bubbles: true }),
 				);
 			});
 		});
+		differential.unmount();
+	});
+
+	// @parity-case differential:visx-functional-controllers
+	it('matches interactive selection without class-instance controller refs', async function () {
+		const differential = await mountDifferential(
+			fixture,
+			'InteractiveDifferential',
+			undefined,
+			cache,
+		);
+		await differential.step('mount', function () {});
+		differential.unmount();
+	});
+
+	// @parity-case differential:visx-native-gestures
+	it('matches primitive SVG under native gesture and spring adapters', async function () {
+		const differential = await mountDifferential(
+			fixture,
+			'PrimitiveDifferential',
+			undefined,
+			cache,
+		);
+		await differential.step('mount', function () {});
 		differential.unmount();
 	});
 });

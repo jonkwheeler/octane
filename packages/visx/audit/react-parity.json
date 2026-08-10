@@ -17,14 +17,26 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/visx/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/visx/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/visx/tests"],
-      "include": ["\\.test\\.ts$"],
-      "exclude": []
+      "roots": [
+        "packages/visx/tests/differential"
+      ],
+      "include": [
+        "parity\\.test\\.ts$"
+      ],
+      "exclude": [
+        "setup\\.test\\.ts$"
+      ]
     }
   },
   "adaptedRuntimeSummary": {
@@ -40,7 +52,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "5966e99698b5f8099e3ef2e62625cc31f3a3e60305f1def8d4066c6cd9f98824"
+      "lockfileSha256": "3a182f6a9f209e25cb84876a6cbdc24a1f0cab6d3acc6e13938922a1c59ec6fd"
     }
   },
   "lanes": [
@@ -51,12 +63,12 @@
       "environment": "workspace-node",
       "project": "visx-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact primitive SVG, render-prop layout, and interactive state scenarios against @visx/visx@4.0.0.",
+      "notes": "Runs exact primitive SVG, render-prop layout, interactive state, controller-ref, and native gesture/spring adapter scenarios against @visx/visx@4.0.0.",
       "files": [
         {
           "path": "packages/visx/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "ec857d9bca8facc59f3be4727575c1ba5f48ddf68c77ea5995e088ef11d7236e",
+          "sha256": "42f671d4fbc69dbac9d4e88e0e900352ab2c5a68029218db4be241d749ea1d66",
           "cases": [
             {
               "id": "differential:visx-primitives",
@@ -72,6 +84,16 @@
               "id": "differential:visx-interaction",
               "testName": "matches state updates while Octane delivers a native click event",
               "fullName": "@octanejs/visx React differential matches state updates while Octane delivers a native click event"
+            },
+            {
+              "id": "differential:visx-functional-controllers",
+              "testName": "matches interactive selection without class-instance controller refs",
+              "fullName": "@octanejs/visx React differential matches interactive selection without class-instance controller refs"
+            },
+            {
+              "id": "differential:visx-native-gestures",
+              "testName": "matches primitive SVG under native gesture and spring adapters",
+              "fullName": "@octanejs/visx React differential matches primitive SVG under native gesture and spring adapters"
             }
           ]
         },
@@ -89,9 +111,85 @@
           "path": "packages/visx/tests/_fixtures/differential.tsrx",
           "role": "support",
           "sha256": "485b57d3b0034b0fcc534fd73c1d716a4b33d0c5273dffe99d57c51f654abb42"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "3442ab8e9e0236b895195089ce1d8fe257d7211fa886059afed6444d5052fb7c"
         }
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "visx-native-dom-events",
+      "caseIds": [
+        "differential:visx-interaction"
+      ],
+      "upstreamResult": "Interaction callbacks receive React synthetic events.",
+      "octaneResult": "Interaction callbacks receive native DOM events through Octane's delegated event system.",
+      "rationale": "Octane uses native delegated events and does not ship a synthetic event layer.",
+      "classification": "event-model",
+      "consumerImpact": "Handlers observe native event shapes (no React SyntheticEvent wrapper) while public Visx callback contracts stay the same.",
+      "migrationGuidance": "Read native event fields directly; do not rely on SyntheticEvent helpers such as nativeEvent indirection.",
+      "owner": "@octanejs/visx",
+      "reviewCondition": "Review if Octane adds a React-compatible synthetic event layer."
+    },
+    {
+      "id": "visx-functional-controllers-no-class-refs",
+      "caseIds": [
+        "differential:visx-functional-controllers"
+      ],
+      "upstreamResult": "Several Visx controllers are React class components and Brush exposes a legacy class-instance innerRef handle.",
+      "octaneResult": "Controllers are native functional TSRX hooks, and Brush intentionally omits upstream's legacy innerRef instance handle.",
+      "rationale": "Octane has no class components and uses refs-as-props rather than class-instance handles.",
+      "classification": "ref-model",
+      "consumerImpact": "Code that inspects Brush via innerRef class methods must use the public callback/props surface instead.",
+      "migrationGuidance": "Drop Brush innerRef usage and drive brush state through the documented Visx props and callbacks.",
+      "owner": "@octanejs/visx",
+      "reviewCondition": "Review if Octane adds class-component or class-instance ref compatibility."
+    },
+    {
+      "id": "visx-deterministic-measurement",
+      "caseIds": [
+        "differential:visx-primitives"
+      ],
+      "upstreamResult": "Text metrics, annotation bounds, SplitLinePath sampling, and wordcloud packing depend on browser measurement/canvas paths.",
+      "octaneResult": "Deterministic text metrics and annotation bounds, pure SplitLinePath SVG sampling, and collision-aware estimated wordcloud rectangles replace browser-only measurement/canvas paths.",
+      "rationale": "Fixed-size SSR and first hydration must match without browser layout or canvas measurement.",
+      "classification": "ssr-determinism",
+      "consumerImpact": "Font-specific wrapping, browser-specific path length rounding, and pixel-exact d3-cloud packing can differ from React Visx in the browser.",
+      "migrationGuidance": "Treat fixed-size SSR/hydration snapshots as the contract; do not assert browser-specific glyph packing pixels.",
+      "owner": "@octanejs/visx",
+      "reviewCondition": "Review if Octane gains browser-faithful measurement APIs suitable for SSR parity."
+    },
+    {
+      "id": "visx-spring-and-gesture-adapters",
+      "caseIds": [
+        "differential:visx-native-gestures"
+      ],
+      "upstreamResult": "react-spring uses spring-physics timing and Zoom uses @use-gesture/react listeners.",
+      "octaneResult": "react-spring uses a deterministic requestAnimationFrame numeric interpolator, and Zoom uses native wheel/pointer/touch listeners rather than @use-gesture/react at runtime.",
+      "rationale": "Octane avoids React-only spring/gesture runtimes while preserving public Visx props and exports; Zoom imports framework-neutral @use-gesture/core types only.",
+      "classification": "runtime-adapter",
+      "consumerImpact": "Animation timing and gesture delivery can differ from React Visx even when props and exported APIs match.",
+      "migrationGuidance": "Assert final animated/gesture state rather than spring-physics frame timing or @use-gesture/react internals.",
+      "owner": "@octanejs/visx",
+      "reviewCondition": "Review if Octane ports react-spring/@use-gesture/react with matching runtime semantics."
+    },
+    {
+      "id": "visx-reactnode-to-octane-renderables",
+      "caseIds": [
+        "differential:visx-layout"
+      ],
+      "upstreamResult": "Child and render-prop positions are typed as React.ReactNode.",
+      "octaneResult": "Those positions accept Octane renderables (OctaneNode = unknown); render-prop parameters are unchanged and return Octane renderables.",
+      "rationale": "Octane elements are nominal, so ReactNode-typed props would reject them.",
+      "classification": "type-model",
+      "consumerImpact": "TypeScript consumers must use Octane renderable types rather than React.ReactNode for Visx children/render props.",
+      "migrationGuidance": "Replace React.ReactNode annotations with OctaneNode/unknown at Visx child and render-prop sites.",
+      "owner": "@octanejs/visx",
+      "reviewCondition": "Review if Octane exposes a ReactNode-compatible public renderable alias."
+    }
+  ]
 }

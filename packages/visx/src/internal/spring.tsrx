@@ -1,3 +1,5 @@
+// OCTANE DIVERGENCE[visx-spring-and-gesture-adapters][differential:visx-native-gestures]:
+// Deterministic numeric spring values replace react-spring physics timing while public Visx props stay.
 import { createElement, useEffect, useRef, useState } from 'octane';
 
 type AnyRecord = Record<string, any>;
