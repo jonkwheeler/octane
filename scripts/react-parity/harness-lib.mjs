@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
-import { readFileSync } from 'node:fs';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -493,7 +493,11 @@ export function validateManifest(manifest) {
 			fail(`divergence ${divergence.id} must match at least one case id`);
 		}
 		for (const caseId of divergence.caseIds) {
-			if (!caseIds.has(caseId) && !caseId.startsWith('runtime:'))
+			if (
+				!caseIds.has(caseId) &&
+				!caseId.startsWith('runtime:') &&
+				!caseId.startsWith('conformance:')
+			)
 				fail(`divergence ${divergence.id} references unknown case id "${caseId}"`);
 			if (divergentCases.has(caseId)) fail(`case id "${caseId}" has multiple divergences`);
 			divergentCases.add(caseId);
@@ -598,11 +602,18 @@ export async function verifyManifestFiles(manifest, root) {
 		throw new Error(
 			`adapted runtime inventory summary drifted: expected ${JSON.stringify(manifest.adaptedRuntimeSummary)}, received ${JSON.stringify(actualRuntimeSummary)}`,
 		);
+	const conformanceCaseIds = await discoverConformanceCaseIds(absoluteRoot, manifest);
 	for (const divergence of manifest.divergences) {
 		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('runtime:'))) {
 			if (!runtimeCaseIds.has(caseId))
 				throw new Error(
 					`divergence ${divergence.id} references unknown runtime case id "${caseId}"`,
+				);
+		}
+		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('conformance:'))) {
+			if (!conformanceCaseIds.has(caseId))
+				throw new Error(
+					`divergence ${divergence.id} references unknown conformance case id "${caseId}"`,
 				);
 		}
 	}
@@ -621,7 +632,9 @@ export async function verifyManifestFiles(manifest, root) {
 			const entry = manifest.divergences.find((candidate) => candidate.id === match[1]);
 			if (
 				!entry.caseIds.includes(match[2]) ||
-				(!runtimeCaseIds.has(match[2]) && !caseIdsForManifest(manifest).has(match[2]))
+				(!runtimeCaseIds.has(match[2]) &&
+					!caseIdsForManifest(manifest).has(match[2]) &&
+					!conformanceCaseIds.has(match[2]))
 			)
 				throw new Error(
 					`${path}: divergence marker "${match[1]}" is not bound to required executed case "${match[2]}"`,
@@ -644,6 +657,51 @@ function caseIdsForManifest(manifest) {
 			.filter((lane) => lane.oracle === 'required' && lane.available !== false)
 			.flatMap((lane) => lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.id))),
 	);
+}
+
+function packageRootsFromManifest(manifest) {
+	const roots = new Set();
+	for (const lane of manifest.lanes) {
+		for (const file of lane.files) {
+			const match = /^(packages\/[^/]+)\//.exec(file.path);
+			if (match) roots.add(match[1]);
+		}
+	}
+	for (const root of manifest.adaptedRoots?.source?.roots ?? []) {
+		const match = /^(packages\/[^/]+)\//.exec(`${root}/`);
+		if (match) roots.add(match[1]);
+	}
+	for (const root of manifest.adaptedRoots?.tests?.roots ?? []) {
+		const match = /^(packages\/[^/]+)\//.exec(`${root}/`);
+		if (match) roots.add(match[1]);
+	}
+	return [...roots];
+}
+
+async function discoverConformanceCaseIds(root, manifest) {
+	const found = new Map();
+	for (const packageRoot of packageRootsFromManifest(manifest)) {
+		const testsRoot = `${packageRoot}/tests`;
+		if (!existsSync(resolve(root, testsRoot))) continue;
+		const markers = await discoverAdaptedFiles(root, {
+			roots: [testsRoot],
+			include: ['\\.test\\.(?:ts|tsx)$'],
+			exclude: [],
+		});
+		for (const path of markers) {
+			const source = await readFile(resolve(root, path), 'utf8');
+			for (const match of source.matchAll(/^\s*\/\/\s*@parity-case\s+(conformance:\S+)\s*$/gm)) {
+				const caseId = match[1];
+				if (found.has(caseId) && found.get(caseId) !== path) {
+					throw new Error(
+						`duplicate conformance case id "${caseId}" in ${found.get(caseId)} and ${path}`,
+					);
+				}
+				found.set(caseId, path);
+			}
+		}
+	}
+	return new Set(found.keys());
 }
 
 function validateRuntimeInventory(inventory, lane, expectedRoots) {
