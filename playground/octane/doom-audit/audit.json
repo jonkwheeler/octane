@@ -320,7 +320,7 @@
       "evidence": [
         {
           "kind": "browser",
-          "target": "plays through permissions, input, combat, rendering, retry, and repeated cleanup"
+          "target": "browser back to landing"
         }
       ]
     },

@@ -568,6 +568,40 @@ describe('Doom production playground evidence', () => {
 		}
 	}, 60_000);
 
+	it('browser back to landing', async function browserBackToLanding() {
+		const { chromium } = await import('playwright');
+		const browser = await chromium.launch({
+			headless: true,
+			args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
+		});
+		const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+		try {
+			await installDoomProofShims(page);
+			await page.goto(`${origin}/#doom`, { waitUntil: 'load' });
+			await enterDoomLevel(page);
+			const active = await readDoomSnapshot(page);
+			await page.keyboard.down('KeyW');
+			await page.waitForTimeout(120);
+			await page.keyboard.up('KeyW');
+			const moved = await readDoomSnapshot(page);
+			expect(moved.player.z).toBeLessThan(active.player.z);
+			await page.goBack();
+			await page.waitForSelector('[data-doom-shell="landing"]');
+			expect(await page.evaluate(function proofStillMounted() {
+				return Boolean((globalThis as any).__OCTANE_DOOM_PROOF__);
+			})).toBe(true);
+			await page.click('[data-doom-start="true"]');
+			await page.waitForSelector('[data-doom-shell="playing"]');
+			const reset = await readDoomSnapshot(page);
+			expect(reset.enemies).toHaveLength(5);
+			expect(reset.collectibles).toHaveLength(11);
+			expect(reset.player.z).toBeCloseTo(active.player.z, 5);
+		} finally {
+			await page.close();
+			await browser.close();
+		}
+	}, 60_000);
+
 	it('WebGL failure recovery', async () => {
 		const { chromium } = await import('playwright');
 		const browser = await chromium.launch({
