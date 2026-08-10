@@ -13,6 +13,13 @@ const style = {
 	width: '120px',
 };
 
+// Octane SSR terminates every style declaration with `;`; React omits the final one.
+function normalizeServerMarkup(html: string): string {
+	return html.replace(/style="([^"]*)"/g, function (_match, css: string) {
+		return 'style="' + css.replace(/;+$/, '') + '"';
+	});
+}
+
 describe('@octanejs/react-textarea-autosize SSR React contract', () => {
 	// @parity-case ssr:react-contract
 	it('matches the pristine React server-visible contract', () => {
@@ -27,16 +34,6 @@ describe('@octanejs/react-textarea-autosize SSR React contract', () => {
 		const octane = renderToString(OctaneTextareaAutosize, props).html;
 		const react = renderToStaticMarkup(createElement(ReactTextareaAutosize, props));
 
-		for (const fragment of [
-			'aria-describedby="message-help"',
-			'name="message"',
-			'placeholder="Write something"',
-			'rows="3"',
-			'height:55px',
-			'hello',
-		]) {
-			expect(octane, fragment).toContain(fragment);
-			expect(react, fragment).toContain(fragment);
-		}
+		expect(normalizeServerMarkup(octane)).toBe(normalizeServerMarkup(react));
 	});
 });

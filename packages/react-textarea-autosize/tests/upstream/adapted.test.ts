@@ -10,6 +10,7 @@ beforeAll(() => {
 });
 
 describe('<TextareaAutosize /> adapted upstream inventory', () => {
+	// Per upstream/src/__tests__/index.test.js:17
 	it('renders ok', () => {
 		const app = mount(TextareaAutosize);
 		flushEffects();
@@ -18,6 +19,7 @@ describe('<TextareaAutosize /> adapted upstream inventory', () => {
 		app.unmount();
 	});
 
+	// Per upstream/src/__tests__/index.test.js:23
 	it('renders with initial height passed in style prop', () => {
 		const app = mount(TextareaAutosize, { style: { height: 55 } });
 		flushEffects();
