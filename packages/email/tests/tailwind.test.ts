@@ -12,7 +12,7 @@ describe('Tailwind email styling', () => {
 		expect(html).toContain('background-color:');
 		expect(html).toContain('font-size:14px');
 		expect(html).toContain('padding-top:99px');
-		expect(html).toContain('padding:32px');
+		expect(html).toContain('padding:32px !important');
 		expect(html).toContain('color:rebeccapurple');
 		expect(html).toContain('Price: $1');
 		expect(html).not.toContain('data-octane-email-tailwind');

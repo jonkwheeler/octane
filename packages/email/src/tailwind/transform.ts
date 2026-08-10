@@ -86,8 +86,10 @@ async function compileStyles(
 				visit: 'Declaration',
 				enter(declaration) {
 					const value = declaration as Declaration;
-					if (!value.property.startsWith('--'))
-						declarations += `${value.property}:${generate(value.value)};`;
+					if (!value.property.startsWith('--')) {
+						const important = value.important ? ' !important' : '';
+						declarations += `${value.property}:${generate(value.value)}${important};`;
+					}
 				},
 			});
 			if (declarations) inline.set(className, resolveCssVariables(declarations, customProperties));
