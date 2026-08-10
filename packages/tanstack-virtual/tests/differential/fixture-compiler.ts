@@ -14,6 +14,11 @@ function hashString(value: string): string {
 	return Math.abs(hash).toString(36);
 }
 
+/** Differential oracles only — conformance/SSR fixtures stay out of the React cache. */
+export function isOracleFixture(path: string): boolean {
+	return path.endsWith('-diff.tsrx');
+}
+
 export function compileFixture(path: string, cache: string, dependencies: Dependencies): void {
 	const compiled = dependencies.compile(dependencies.readFile(path, 'utf8'), path);
 	if (compiled.errors?.length)
