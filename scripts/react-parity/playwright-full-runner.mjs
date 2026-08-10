@@ -29,6 +29,17 @@ const zodVersion = typeof config.zodVersion === 'string' ? config.zodVersion : '
 const playwrightVersion =
 	typeof config.playwrightVersion === 'string' ? config.playwrightVersion : '1.49.1';
 const project = typeof config.project === 'string' ? config.project : 'chromium';
+const DEVICE_BY_PROJECT = {
+	chromium: 'Desktop Chrome',
+	firefox: 'Desktop Firefox',
+	webkit: 'Desktop Safari',
+};
+const deviceName = DEVICE_BY_PROJECT[project];
+if (!deviceName) {
+	throw new Error(
+		`playwright-full config project must be one of ${Object.keys(DEVICE_BY_PROJECT).join(', ')}; got ${JSON.stringify(project)}`,
+	);
+}
 
 if (!packageVersion) throw new Error('playwright-full config requires packageVersion');
 
@@ -131,7 +142,7 @@ try {
 		`projects: [
     {
       name: ${JSON.stringify(project)},
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices[${JSON.stringify(deviceName)}] },
     },
   ],`,
 	);

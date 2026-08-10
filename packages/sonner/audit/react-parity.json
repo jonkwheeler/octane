@@ -72,7 +72,7 @@
         {
           "path": "scripts/react-parity/playwright-full-runner.mjs",
           "role": "support",
-          "sha256": "be7bab5071063c3338c267168e777375c23ce7621163896aab859cd947f1d64f"
+          "sha256": "a3d66bf80ffa831a349334ba2ab40ca3e678660fb78f77d283b38b6b15fdb894"
         },
         {
           "path": "packages/sonner/upstream/playwright.config.ts",
@@ -92,7 +92,7 @@
         {
           "path": "packages/sonner/scripts/verify-upstream.mjs",
           "role": "support",
-          "sha256": "5723bdf4b868a31c122e42f533b092328f179be10019958c3936f57b1913ef71"
+          "sha256": "da188d16211d50dc37d85162fad7a4213fe55a240499eac56b9d27857c7c49f0"
         }
       ]
     },

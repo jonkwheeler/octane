@@ -34,7 +34,8 @@ export function verifySonnerUpstream(root = packageRoot) {
 
 	const actualFiles = walk(upstream)
 		.map(function toRelative(path) {
-			return relative(upstream, path);
+			// SHA256SUMS uses portable forward-slash paths; normalize Windows relatives.
+			return relative(upstream, path).replaceAll('\\', '/');
 		})
 		.filter(function keepSource(path) {
 			return path !== 'SHA256SUMS';
