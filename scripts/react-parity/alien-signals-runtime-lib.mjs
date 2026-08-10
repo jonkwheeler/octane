@@ -547,6 +547,131 @@ function isPromiseResolveCall(node) {
 	return !identifierHasLocalBinding(node.expression.expression);
 }
 
+const AUTHENTICATED_ACT_MODULES = new Set([
+	'@testing-library/react',
+	'@testing-library/react/pure',
+	'react',
+	'react-dom/test-utils',
+]);
+
+/**
+ * True when `identifier` is bound by a named import of the same spelling from
+ * one of `modules`. Any closer local binding (param, var/let/const, function,
+ * class) wins and fails authentication — so a no-op `const act = () => {}`
+ * cannot credit nested callbacks the way imported Testing Library `act` does.
+ */
+function identifierIsNamedImportFrom(identifier, modules) {
+	const name = identifier.text;
+
+	function importModuleIfNamed(statement) {
+		if (!ts.isImportDeclaration(statement) || !statement.importClause) return null;
+		const clause = statement.importClause;
+		let matched = false;
+		if (clause.name && clause.name.text === name) matched = true;
+		const bindings = clause.namedBindings;
+		if (bindings && ts.isNamespaceImport(bindings) && bindings.name.text === name) {
+			matched = true;
+		}
+		if (bindings && ts.isNamedImports(bindings)) {
+			for (const element of bindings.elements) {
+				if (element.name.text === name) matched = true;
+			}
+		}
+		if (!matched) return null;
+		if (!ts.isStringLiteral(statement.moduleSpecifier)) return '';
+		return statement.moduleSpecifier.text;
+	}
+
+	function bindingKindInStatementList(statements) {
+		for (const statement of statements) {
+			if (ts.isVariableStatement(statement)) {
+				if (!isVarDeclarationList(statement.declarationList)) {
+					for (const declaration of statement.declarationList.declarations) {
+						if (bindingNameDeclares(declaration.name, name)) return 'local';
+					}
+				}
+			}
+			if (ts.isFunctionDeclaration(statement) && statement.name && statement.name.text === name) {
+				return 'local';
+			}
+			if (ts.isClassDeclaration(statement) && statement.name && statement.name.text === name) {
+				return 'local';
+			}
+			const moduleName = importModuleIfNamed(statement);
+			if (moduleName !== null) {
+				return modules.has(moduleName) ? 'auth-import' : 'local';
+			}
+		}
+		return null;
+	}
+
+	let scriptScope = null;
+	let current = identifier.parent;
+	while (current !== undefined && current !== null) {
+		if (isFunctionLikeScope(current)) {
+			if (current.name && ts.isIdentifier(current.name) && current.name.text === name) {
+				return false;
+			}
+			for (const parameter of current.parameters) {
+				if (bindingNameDeclares(parameter.name, name)) return false;
+			}
+			const hoistedRoot = current.body !== undefined ? current.body : current;
+			if (hasHoistedNameBinding(hoistedRoot, name)) return false;
+		}
+
+		if (ts.isSourceFile(current)) scriptScope = current;
+
+		if (ts.isCatchClause(current) && current.variableDeclaration) {
+			if (bindingNameDeclares(current.variableDeclaration.name, name)) return false;
+		}
+
+		if (
+			ts.isForStatement(current) ||
+			ts.isForInStatement(current) ||
+			ts.isForOfStatement(current)
+		) {
+			const initializer = current.initializer;
+			if (initializer && ts.isVariableDeclarationList(initializer)) {
+				for (const declaration of initializer.declarations) {
+					if (bindingNameDeclares(declaration.name, name)) return false;
+				}
+			}
+		}
+
+		if (ts.isBlock(current) || ts.isSourceFile(current) || ts.isModuleBlock(current)) {
+			const kind = bindingKindInStatementList(current.statements);
+			if (kind === 'auth-import') return true;
+			if (kind === 'local') return false;
+		}
+
+		if (ts.isCaseClause(current) || ts.isDefaultClause(current)) {
+			for (const statement of current.statements) {
+				if (ts.isVariableStatement(statement) && !isVarDeclarationList(statement.declarationList)) {
+					for (const declaration of statement.declarationList.declarations) {
+						if (bindingNameDeclares(declaration.name, name)) return false;
+					}
+				}
+			}
+		}
+
+		current = current.parent;
+	}
+
+	if (scriptScope !== null && hasHoistedNameBinding(scriptScope, name)) return false;
+	return false;
+}
+
+/**
+ * `act(callback)` from Testing Library / React — only when `act` is a named
+ * import from a known module. A local no-op `act` (or import from elsewhere)
+ * does not authenticate nested writes.
+ */
+function isAuthenticatedActCall(call) {
+	if (!ts.isIdentifier(call.expression)) return false;
+	if (call.expression.text !== 'act') return false;
+	return identifierIsNamedImportFrom(call.expression, AUTHENTICATED_ACT_MODULES);
+}
+
 /**
  * Argument indexes whose function-valued callbacks are always executed for a
  * modeled callee. Unlisted callees (e.g. a no-op `sink(fn)` or
@@ -557,7 +682,7 @@ function isPromiseResolveCall(node) {
  *   (rejection and non-resolve receivers are not always-executed).
  * - `act(callback)` — React Testing Library / ReactDOM act runs the callback
  *   synchronously (or awaits an async callback); pristine hook-surface writes
- *   live inside these.
+ *   live inside these. Local lookalike `act` bindings do not authenticate.
  */
 function alwaysExecutedCallbackArgIndexes(call) {
 	if (
@@ -568,7 +693,7 @@ function alwaysExecutedCallbackArgIndexes(call) {
 	) {
 		return [0];
 	}
-	if (ts.isIdentifier(call.expression) && call.expression.text === 'act') {
+	if (isAuthenticatedActCall(call)) {
 		return [0];
 	}
 	return null;
@@ -580,9 +705,9 @@ function alwaysExecutedCallbackArgIndexes(call) {
  * Skips dead `if (false)` / `false &&` arms, statements after `return`/`throw`,
  * loop / switch / catch bodies (not proven to run), for-loop incrementors
  * (post-body only), and nested function bodies that are not IIFEs or explicitly
- * modeled callees (`act(fn)`, `Promise.resolve(...).then(fn)`). Arbitrary
- * `sink(fn)` / `map(fn)` / lookalike `.then(fn)` arguments are not treated as
- * always executed. A nested function's
+ * modeled callees (imported `act(fn)`, `Promise.resolve(...).then(fn)`).
+ * Arbitrary `sink(fn)` / `map(fn)` / lookalike `.then(fn)` / local `act(fn)`
+ * arguments are not treated as always executed. A nested function's
  * `return`/`throw` only stops that function body. Unknown statement shapes
  * authenticate nothing rather than recursively crediting every child.
  */
