@@ -28,9 +28,8 @@ export function verifyPortTestClassifications(root, binding = 'hook-form') {
 	const manifest = JSON.parse(readFileSync(resolve(root, manifestPath), 'utf8'));
 	const divergenceIds = new Set(manifest.divergences.map((entry) => entry.id));
 	const declared = config.tests.map((entry) => entry.path).sort();
-	if (JSON.stringify(discovered) !== JSON.stringify(declared)) {
+	if (JSON.stringify(discovered) !== JSON.stringify(declared))
 		throw new Error(`every port-authored ${binding} test must have exactly one classification`);
-	}
 	for (const entry of config.tests) {
 		if (!DISPOSITIONS.has(entry.disposition))
 			throw new Error(`${entry.path}: unknown test disposition`);
@@ -48,10 +47,9 @@ export function verifyPortTestClassifications(root, binding = 'hook-form') {
 			const classifiedDivergences = entry.divergenceIds ?? [entry.divergenceId].filter(Boolean);
 			if (!classifiedDivergences.length)
 				throw new Error(`${entry.path}: divergence tests require a manifest divergence id`);
-			for (const divergenceId of classifiedDivergences) {
+			for (const divergenceId of classifiedDivergences)
 				if (!divergenceIds.has(divergenceId))
 					throw new Error(`${entry.path}: divergence id is not present in the parity manifest`);
-			}
 		}
 	}
 	return { tests: discovered.length };
