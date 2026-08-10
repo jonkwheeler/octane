@@ -78,7 +78,7 @@
         {
           "path": "packages/nuqs/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "45113e4dc61781967a7091ab99e2712d1386e32ecb3f8a4e653eda4ab069ae4a"
+          "sha256": "9b1c002294a83e6155b2beedcb36265f004b9740624440fcee40d6c9d61f8ac7"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
