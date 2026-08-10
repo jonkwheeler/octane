@@ -43,7 +43,6 @@ surface and evidence.
 | `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/react-map-gl` | 0 |
-| `@octanejs/react-transition-group` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
 | `@octanejs/redux-toolkit` | 0 |
@@ -70,6 +69,7 @@ surface and evidence.
 | `@octanejs/testing-library` | 0 |
 | `@octanejs/three` | 0 |
 | `@octanejs/tiptap` | 0 |
+| `@octanejs/transition-group` | 0 |
 | `@octanejs/usehooks-ts` | 0 |
 | `@octanejs/valtio` | 0 |
 | `@octanejs/visx` | 0 |

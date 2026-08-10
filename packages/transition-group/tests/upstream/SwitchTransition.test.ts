@@ -14,7 +14,7 @@ describe('SwitchTransition', function switchSuite() {
 		vi.useRealTimers();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/SwitchTransition-test.js:46-60
+	// Per path: packages/transition-group/upstream/test/SwitchTransition-test.js:46-60
 	it('should have default status ENTERED', function defaultEntered() {
 		const view = mount(SwitchTransitionProbe, { keyId: 'first' });
 		expect(view.container.querySelector('#switch-status')?.textContent).toBe(
@@ -23,7 +23,7 @@ describe('SwitchTransition', function switchSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/SwitchTransition-test.js:61-86
+	// Per path: packages/transition-group/upstream/test/SwitchTransition-test.js:61-86
 	it('should have default mode: out-in', async function defaultOutIn() {
 		const view = mount(SwitchTransitionProbe, { keyId: 'first' });
 		await act(function switchKey() {
@@ -37,7 +37,7 @@ describe('SwitchTransition', function switchSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/SwitchTransition-test.js:87-99
+	// Per path: packages/transition-group/upstream/test/SwitchTransition-test.js:87-99
 	it('should work without childs', function withoutChilds() {
 		expect(function renderStaticChild() {
 			const view = mount(SwitchTransitionStaticChildProbe, {});
@@ -45,7 +45,7 @@ describe('SwitchTransition', function switchSuite() {
 		}).not.toThrow();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/SwitchTransition-test.js:100-122
+	// Per path: packages/transition-group/upstream/test/SwitchTransition-test.js:100-122
 	it('should switch between components on change state', async function switchComponents() {
 		const log: string[] = [];
 		function push(name: string) {
@@ -86,7 +86,7 @@ describe('SwitchTransition', function switchSuite() {
 		view.unmount();
 	});
 
-	// Per path: packages/react-transition-group/upstream/test/SwitchTransition-test.js:123-163
+	// Per path: packages/transition-group/upstream/test/SwitchTransition-test.js:123-163
 	it('should switch between null and component', async function nullAndComponent() {
 		const log: string[] = [];
 		function push(name: string) {

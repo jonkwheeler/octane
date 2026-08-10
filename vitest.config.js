@@ -4210,13 +4210,13 @@ export default defineConfig({
 				// ordinary shards.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-transition-group/tests/upstream/**/*.test.ts'],
+					include: ['packages/transition-group/tests/upstream/**/*.test.ts'],
 				},
 				test: {
-					name: 'react-transition-group',
+					name: 'transition-group',
 					include: [
-						'packages/react-transition-group/tests/**/*.test.ts',
-						'!packages/react-transition-group/tests/ssr/**/*.test.ts',
+						'packages/transition-group/tests/**/*.test.ts',
+						'!packages/transition-group/tests/ssr/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -4225,11 +4225,8 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-transition-group$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'packages/react-transition-group/src/index.ts',
-							),
+							find: /^@octanejs\/transition-group$/,
+							replacement: resolve(import.meta.dirname, 'packages/transition-group/src/index.ts'),
 						},
 					],
 				},
@@ -4239,11 +4236,11 @@ export default defineConfig({
 				// initial-state / wrapper rendering cases stay in ordinary shards.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-transition-group/tests/ssr/upstream-import.test.ts'],
+					include: ['packages/transition-group/tests/ssr/upstream-import.test.ts'],
 				},
 				test: {
-					name: 'react-transition-group-ssr',
-					include: ['packages/react-transition-group/tests/ssr/**/*.test.ts'],
+					name: 'transition-group-ssr',
+					include: ['packages/transition-group/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -4255,11 +4252,8 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-transition-group$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'packages/react-transition-group/src/index.ts',
-							),
+							find: /^@octanejs\/transition-group$/,
+							replacement: resolve(import.meta.dirname, 'packages/transition-group/src/index.ts'),
 						},
 					],
 				},

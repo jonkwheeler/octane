@@ -37,13 +37,13 @@ The published React package exposes six root modules and the Octane package pres
 
 | React import | Octane import |
 | --- | --- |
-| `react-transition-group` | `@octanejs/react-transition-group` |
-| `react-transition-group/Transition` | `@octanejs/react-transition-group/Transition` |
-| `react-transition-group/CSSTransition` | `@octanejs/react-transition-group/CSSTransition` |
-| `react-transition-group/TransitionGroup` | `@octanejs/react-transition-group/TransitionGroup` |
-| `react-transition-group/SwitchTransition` | `@octanejs/react-transition-group/SwitchTransition` |
-| `react-transition-group/ReplaceTransition` | `@octanejs/react-transition-group/ReplaceTransition` |
-| `react-transition-group/config` | `@octanejs/react-transition-group/config` |
+| `react-transition-group` | `@octanejs/transition-group` |
+| `react-transition-group/Transition` | `@octanejs/transition-group/Transition` |
+| `react-transition-group/CSSTransition` | `@octanejs/transition-group/CSSTransition` |
+| `react-transition-group/TransitionGroup` | `@octanejs/transition-group/TransitionGroup` |
+| `react-transition-group/SwitchTransition` | `@octanejs/transition-group/SwitchTransition` |
+| `react-transition-group/ReplaceTransition` | `@octanejs/transition-group/ReplaceTransition` |
+| `react-transition-group/config` | `@octanejs/transition-group/config` |
 
 ## Adaptation notes
 

@@ -3,7 +3,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
-export const TYPE_PARITY_CONFIG = 'packages/react-transition-group/audit/type-parity.json';
+export const TYPE_PARITY_CONFIG = 'packages/transition-group/audit/type-parity.json';
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');

@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 
-const CONFIG = 'packages/react-transition-group/audit/test-classifications.json';
-const MANIFEST = 'packages/react-transition-group/audit/react-parity.json';
+const CONFIG = 'packages/transition-group/audit/test-classifications.json';
+const MANIFEST = 'packages/transition-group/audit/react-parity.json';
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
@@ -28,17 +28,17 @@ function discoverUnder(root, relativeRoot, predicate) {
 
 export function verifyReactTransitionGroupTestClassifications(root) {
 	const discovered = [
-		...discoverUnder(root, 'packages/react-transition-group/tests', function isRuntimeTest(name) {
+		...discoverUnder(root, 'packages/transition-group/tests', function isRuntimeTest(name) {
 			return /\.test\.(?:ts|tsx|tsrx)$/.test(name);
 		}),
 		...discoverUnder(
 			root,
-			'packages/react-transition-group/upstream-types',
+			'packages/transition-group/upstream-types',
 			function isTypeProbe(name) {
 				return name.endsWith('-tests.tsx');
 			},
 		),
-		...discoverUnder(root, 'packages/react-transition-group/typetests', function isTypeProbe(name) {
+		...discoverUnder(root, 'packages/transition-group/typetests', function isTypeProbe(name) {
 			return name.endsWith('.test-d.ts') || name.endsWith('-tests.tsx');
 		}),
 		...discoverUnder(root, 'scripts/react-parity', function isVerifierTest(name) {

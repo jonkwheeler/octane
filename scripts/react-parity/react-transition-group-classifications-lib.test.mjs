@@ -8,18 +8,18 @@ import { verifyReactTransitionGroupTestClassifications } from './react-transitio
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'rtg-classifications-'));
 	await cp(
-		new URL('../../packages/react-transition-group/tests', import.meta.url),
-		join(root, 'packages/react-transition-group/tests'),
+		new URL('../../packages/transition-group/tests', import.meta.url),
+		join(root, 'packages/transition-group/tests'),
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-transition-group/upstream-types', import.meta.url),
-		join(root, 'packages/react-transition-group/upstream-types'),
+		new URL('../../packages/transition-group/upstream-types', import.meta.url),
+		join(root, 'packages/transition-group/upstream-types'),
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-transition-group/typetests', import.meta.url),
-		join(root, 'packages/react-transition-group/typetests'),
+		new URL('../../packages/transition-group/typetests', import.meta.url),
+		join(root, 'packages/transition-group/typetests'),
 		{ recursive: true },
 	);
 	await mkdir(join(root, 'scripts/react-parity'), { recursive: true });
@@ -31,10 +31,10 @@ async function fixture() {
 		await cp(new URL(`./${file}`, import.meta.url), join(root, `scripts/react-parity/${file}`));
 	}
 	for (const file of ['test-classifications.json', 'react-parity.json']) {
-		await mkdir(join(root, 'packages/react-transition-group/audit'), { recursive: true });
+		await mkdir(join(root, 'packages/transition-group/audit'), { recursive: true });
 		await cp(
-			new URL(`../../packages/react-transition-group/audit/${file}`, import.meta.url),
-			join(root, `packages/react-transition-group/audit/${file}`),
+			new URL(`../../packages/transition-group/audit/${file}`, import.meta.url),
+			join(root, `packages/transition-group/audit/${file}`),
 		);
 	}
 	return root;
@@ -45,7 +45,7 @@ test('rejects an unclassified port-authored test', async function rejectsUnclass
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	await writeFile(join(root, 'packages/react-transition-group/tests/new.test.ts'), 'export {};\n');
+	await writeFile(join(root, 'packages/transition-group/tests/new.test.ts'), 'export {};\n');
 	assert.throws(function run() {
 		verifyReactTransitionGroupTestClassifications(root);
 	}, /exactly one classification/);
@@ -57,7 +57,7 @@ test('rejects an unclassified type probe', async function rejectsUnclassifiedTyp
 		return rm(root, { recursive: true, force: true });
 	});
 	await writeFile(
-		join(root, 'packages/react-transition-group/typetests/extra.test-d.ts'),
+		join(root, 'packages/transition-group/typetests/extra.test-d.ts'),
 		'export {};\n',
 	);
 	assert.throws(function run() {
@@ -70,7 +70,7 @@ test('rejects a parity classification without an oracle', async function rejects
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/test-classifications.json');
+	const path = join(root, 'packages/transition-group/audit/test-classifications.json');
 	const config = JSON.parse(await readFile(path, 'utf8'));
 	delete config.tests.find(function findDifferential(entry) {
 		return entry.disposition === 'unmodified-upstream-suite-wrapper';
@@ -86,7 +86,7 @@ test('rejects an Octane-only classification that claims an oracle', async functi
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/test-classifications.json');
+	const path = join(root, 'packages/transition-group/audit/test-classifications.json');
 	const config = JSON.parse(await readFile(path, 'utf8'));
 	config.tests.find(function findOctaneOnly(entry) {
 		return entry.disposition === 'octane-only-framework-contract';

@@ -14,32 +14,32 @@ import {
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'rtg-upstream-'));
 	await cp(
-		new URL('../../packages/react-transition-group/upstream', import.meta.url),
-		join(root, 'packages/react-transition-group/upstream'),
+		new URL('../../packages/transition-group/upstream', import.meta.url),
+		join(root, 'packages/transition-group/upstream'),
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-transition-group/tests/upstream', import.meta.url),
-		join(root, 'packages/react-transition-group/tests/upstream'),
+		new URL('../../packages/transition-group/tests/upstream', import.meta.url),
+		join(root, 'packages/transition-group/tests/upstream'),
 		{ recursive: true },
 	);
-	await mkdir(join(root, 'packages/react-transition-group/tests/_fixtures'), {
+	await mkdir(join(root, 'packages/transition-group/tests/_fixtures'), {
 		recursive: true,
 	});
 	await cp(
 		new URL(
-			'../../packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx',
+			'../../packages/transition-group/tests/_fixtures/upstream-probes.tsrx',
 			import.meta.url,
 		),
-		join(root, 'packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx'),
+		join(root, 'packages/transition-group/tests/_fixtures/upstream-probes.tsrx'),
 	);
-	await mkdir(join(root, 'packages/react-transition-group/tests/ssr'), { recursive: true });
+	await mkdir(join(root, 'packages/transition-group/tests/ssr'), { recursive: true });
 	await cp(
 		new URL(
-			'../../packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+			'../../packages/transition-group/tests/ssr/upstream-import.test.ts',
 			import.meta.url,
 		),
-		join(root, 'packages/react-transition-group/tests/ssr/upstream-import.test.ts'),
+		join(root, 'packages/transition-group/tests/ssr/upstream-import.test.ts'),
 	);
 	for (const file of [
 		'SHA256SUMS',
@@ -51,8 +51,8 @@ async function fixture() {
 		'adapted-runtime-server.json',
 	]) {
 		await cp(
-			new URL(`../../packages/react-transition-group/audit/${file}`, import.meta.url),
-			join(root, `packages/react-transition-group/audit/${file}`),
+			new URL(`../../packages/transition-group/audit/${file}`, import.meta.url),
+			join(root, `packages/transition-group/audit/${file}`),
 		);
 	}
 	return root;
@@ -76,7 +76,7 @@ test('rejects a missing upstream test artifact disposition', async function reje
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/upstream-test-dispositions.json');
+	const path = join(root, 'packages/transition-group/audit/upstream-test-dispositions.json');
 	const config = JSON.parse(await readFile(path, 'utf8'));
 	config.artifacts = config.artifacts.filter(function keep(entry) {
 		return entry.path !== 'SSR-test.js';
@@ -92,7 +92,7 @@ test('rejects a stale caseCount for an upstream suite', async function rejectsSt
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/upstream-test-dispositions.json');
+	const path = join(root, 'packages/transition-group/audit/upstream-test-dispositions.json');
 	const config = JSON.parse(await readFile(path, 'utf8'));
 	config.artifacts.find(function findSsr(entry) {
 		return entry.path === 'SSR-test.js';
@@ -108,7 +108,7 @@ test('rejects removal of an upstream suite case', async function rejectsRemovedC
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const suitePath = join(root, 'packages/react-transition-group/upstream/test/SSR-test.js');
+	const suitePath = join(root, 'packages/transition-group/upstream/test/SSR-test.js');
 	await writeFile(
 		suitePath,
 		`/**
@@ -123,7 +123,7 @@ describe('SSR', () => {});
 	const { renderReactTransitionGroupUpstreamInventory } =
 		await import('./react-transition-group-upstream-lib.mjs');
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/SHA256SUMS'),
+		join(root, 'packages/transition-group/audit/SHA256SUMS'),
 		renderReactTransitionGroupUpstreamInventory(root),
 	);
 	assert.throws(function run() {
@@ -136,11 +136,11 @@ test('rejects a deleted upstream suite file', async function rejectsDeletedSuite
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	await rm(join(root, 'packages/react-transition-group/upstream/test/SSR-test.js'));
+	await rm(join(root, 'packages/transition-group/upstream/test/SSR-test.js'));
 	const { renderReactTransitionGroupUpstreamInventory } =
 		await import('./react-transition-group-upstream-lib.mjs');
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/SHA256SUMS'),
+		join(root, 'packages/transition-group/audit/SHA256SUMS'),
 		renderReactTransitionGroupUpstreamInventory(root),
 	);
 	assert.throws(function run() {
@@ -155,7 +155,7 @@ test('rejects adapted case drift against the crosswalk', async function rejectsA
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+		'packages/transition-group/tests/ssr/upstream-import.test.ts',
 	);
 	await writeFile(
 		adaptedPath,
@@ -163,7 +163,7 @@ test('rejects adapted case drift against the crosswalk', async function rejectsA
 import * as binding from '../../src/index.ts';
 
 describe('react-transition-group v4.4.5 server rendering', () => {
-	// Per path: packages/react-transition-group/upstream/test/SSR-test.js:8-10
+	// Per path: packages/transition-group/upstream/test/SSR-test.js:8-10
 	it('should import react-transition-group in node env', function importInNode() {
 		expect(binding.Transition).toBeTypeOf('function');
 	});
@@ -185,7 +185,7 @@ test('rejects a crosswalk entry with a missing citation', async function rejects
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/ssr/upstream-import.test.ts',
+		'packages/transition-group/tests/ssr/upstream-import.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(adaptedPath, source.replace(/\/\/\s*Per path:[^\n]*\n/, ''));
@@ -199,7 +199,7 @@ test('rejects omitting the findDOMNode not-applicable crosswalk entry', async fu
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/case-crosswalk.json');
+	const path = join(root, 'packages/transition-group/audit/case-crosswalk.json');
 	const crosswalk = JSON.parse(await readFile(path, 'utf8'));
 	crosswalk.cases = crosswalk.cases.filter(function keep(entry) {
 		return entry.disposition !== 'not-applicable';
@@ -215,23 +215,23 @@ test('rejects a citation range that targets a neighboring case', async function 
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/case-crosswalk.json');
+	const path = join(root, 'packages/transition-group/audit/case-crosswalk.json');
 	const crosswalk = JSON.parse(await readFile(path, 'utf8'));
 	const entry = crosswalk.cases.find(function findMount(item) {
 		return item.upstreamTitle === 'should not transition on mount';
 	});
-	entry.citation = 'packages/react-transition-group/upstream/test/Transition-test.js:48-75';
+	entry.citation = 'packages/transition-group/upstream/test/Transition-test.js:48-75';
 	await writeFile(path, `${JSON.stringify(crosswalk)}\n`);
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/upstream/Transition.test.ts',
+		'packages/transition-group/tests/upstream/Transition.test.ts',
 	);
 	const adapted = await readFile(adaptedPath, 'utf8');
 	await writeFile(
 		adaptedPath,
 		adapted.replace(
-			'// Per path: packages/react-transition-group/upstream/test/Transition-test.js:30-47',
-			'// Per path: packages/react-transition-group/upstream/test/Transition-test.js:48-75',
+			'// Per path: packages/transition-group/upstream/test/Transition-test.js:30-47',
+			'// Per path: packages/transition-group/upstream/test/Transition-test.js:48-75',
 		),
 	);
 	assert.throws(function run() {
@@ -244,7 +244,7 @@ test('rejects duplicate adapted titles sharing one inventory identity', async fu
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const path = join(root, 'packages/react-transition-group/audit/adapted-runtime.json');
+	const path = join(root, 'packages/transition-group/audit/adapted-runtime.json');
 	const inventory = JSON.parse(await readFile(path, 'utf8'));
 	inventory.tests = inventory.tests.filter(function dropOne(entry) {
 		return entry.fullName !== 'Transition exiting should fire callbacks';
@@ -262,7 +262,7 @@ test('rejects deleting assertions from an adapted case', async function rejectsD
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/upstream/TransitionGroup.test.ts',
+		'packages/transition-group/tests/upstream/TransitionGroup.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(
@@ -274,11 +274,11 @@ test('rejects deleting assertions from an adapted case', async function rejectsD
 	);
 	const evidencePath = join(
 		root,
-		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+		'packages/transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		join(root, 'packages/transition-group/audit/adapted-case-contracts.json'),
 		renderAdaptedCaseContracts(root),
 	);
 	assert.throws(function run() {
@@ -293,7 +293,7 @@ test('rejects deleting a required callback spy expectation', async function reje
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/upstream/Transition.test.ts',
+		'packages/transition-group/tests/upstream/Transition.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(
@@ -302,11 +302,11 @@ test('rejects deleting a required callback spy expectation', async function reje
 	);
 	const evidencePath = join(
 		root,
-		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+		'packages/transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		join(root, 'packages/transition-group/audit/adapted-case-contracts.json'),
 		renderAdaptedCaseContracts(root),
 	);
 	assert.throws(function run() {
@@ -321,7 +321,7 @@ test('rejects deleting an adapted absence observation', async function rejectsDe
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/upstream/SwitchTransition.test.ts',
+		'packages/transition-group/tests/upstream/SwitchTransition.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(
@@ -333,11 +333,11 @@ test('rejects deleting an adapted absence observation', async function rejectsDe
 	);
 	const evidencePath = join(
 		root,
-		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+		'packages/transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		join(root, 'packages/transition-group/audit/adapted-case-contracts.json'),
 		renderAdaptedCaseContracts(root),
 	);
 	assert.throws(function run() {
@@ -352,7 +352,7 @@ test('rejects deleting a repeated post-timeout cleanup observation', async funct
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/upstream/TransitionGroup.test.ts',
+		'packages/transition-group/tests/upstream/TransitionGroup.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(
@@ -364,11 +364,11 @@ test('rejects deleting a repeated post-timeout cleanup observation', async funct
 	);
 	const evidencePath = join(
 		root,
-		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+		'packages/transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		join(root, 'packages/transition-group/audit/adapted-case-contracts.json'),
 		renderAdaptedCaseContracts(root),
 	);
 	assert.throws(function run() {
@@ -383,7 +383,7 @@ test('rejects deleting a non-divergent exit sequence under a divergence marker',
 	});
 	const adaptedPath = join(
 		root,
-		'packages/react-transition-group/tests/upstream/TransitionGroup.test.ts',
+		'packages/transition-group/tests/upstream/TransitionGroup.test.ts',
 	);
 	const source = await readFile(adaptedPath, 'utf8');
 	await writeFile(
@@ -395,11 +395,11 @@ test('rejects deleting a non-divergent exit sequence under a divergence marker',
 	);
 	const evidencePath = join(
 		root,
-		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+		'packages/transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	await writeFile(
-		join(root, 'packages/react-transition-group/audit/adapted-case-contracts.json'),
+		join(root, 'packages/transition-group/audit/adapted-case-contracts.json'),
 		renderAdaptedCaseContracts(root),
 	);
 	assert.throws(function run() {
@@ -414,13 +414,13 @@ test('rejects fixture drift in adapted upstream probes', async function rejectsF
 	});
 	const fixturePath = join(
 		root,
-		'packages/react-transition-group/tests/_fixtures/upstream-probes.tsrx',
+		'packages/transition-group/tests/_fixtures/upstream-probes.tsrx',
 	);
 	const source = await readFile(fixturePath, 'utf8');
 	await writeFile(fixturePath, `${source}\nexport function DriftedFixture() { return null; }\n`);
 	const evidencePath = join(
 		root,
-		'packages/react-transition-group/audit/adapted-evidence.SHA256SUMS',
+		'packages/transition-group/audit/adapted-evidence.SHA256SUMS',
 	);
 	await writeFile(evidencePath, renderReactTransitionGroupAdaptedEvidenceInventory(root));
 	assert.throws(function run() {

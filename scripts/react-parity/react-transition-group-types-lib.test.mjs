@@ -13,12 +13,12 @@ async function fixture() {
 	const upstreamRoot = join(root, 'upstream');
 	const adaptedRoot = join(root, 'adapted');
 	await cp(
-		new URL('../../packages/react-transition-group/upstream-types', import.meta.url),
+		new URL('../../packages/transition-group/upstream-types', import.meta.url),
 		upstreamRoot,
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-transition-group/typetests', import.meta.url),
+		new URL('../../packages/transition-group/typetests', import.meta.url),
 		adaptedRoot,
 		{
 			recursive: true,
@@ -38,8 +38,8 @@ async function packageFixture() {
 	const root = await mkdtemp(join(tmpdir(), 'rtg-types-pkg-'));
 	for (const dir of ['upstream-types', 'typetests', 'audit']) {
 		await cp(
-			new URL(`../../packages/react-transition-group/${dir}`, import.meta.url),
-			join(root, `packages/react-transition-group/${dir}`),
+			new URL(`../../packages/transition-group/${dir}`, import.meta.url),
+			join(root, `packages/transition-group/${dir}`),
 			{ recursive: true },
 		);
 	}
@@ -111,8 +111,8 @@ test('rejects excluding a probe through tsconfig rather than deleting it', async
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const tsconfigPath = join(root, 'packages/react-transition-group/typetests/tsconfig.json');
-	const decoy = join(root, 'packages/react-transition-group/typetests/decoy.ts');
+	const tsconfigPath = join(root, 'packages/transition-group/typetests/tsconfig.json');
+	const decoy = join(root, 'packages/transition-group/typetests/decoy.ts');
 	await writeFile(decoy, 'export {};\n');
 	const tsconfig = JSON.parse(await readFile(tsconfigPath, 'utf8'));
 	tsconfig.files = ['decoy.ts'];

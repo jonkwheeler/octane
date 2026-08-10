@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as binding from '../src/index.ts';
 
-describe('@octanejs/react-transition-group exports', () => {
+describe('@octanejs/transition-group exports', () => {
 	it('matches the pinned upstream root entry', () => {
 		expect(Object.keys(binding).sort()).toEqual([
 			'CSSTransition',

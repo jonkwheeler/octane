@@ -8,22 +8,22 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const adaptedRoots = [
-	'packages/react-transition-group/tests/upstream',
-	'packages/react-transition-group/tests/ssr',
+	'packages/transition-group/tests/upstream',
+	'packages/transition-group/tests/ssr',
 ];
 const lanes = [
 	[
-		'react-transition-group',
-		'packages/react-transition-group/audit/adapted-runtime.json',
+		'transition-group',
+		'packages/transition-group/audit/adapted-runtime.json',
 		function isParityOwned(relativeFile) {
-			return relativeFile.startsWith('packages/react-transition-group/tests/upstream/');
+			return relativeFile.startsWith('packages/transition-group/tests/upstream/');
 		},
 	],
 	[
-		'react-transition-group-ssr',
-		'packages/react-transition-group/audit/adapted-runtime-server.json',
+		'transition-group-ssr',
+		'packages/transition-group/audit/adapted-runtime-server.json',
 		function isParityOwned(relativeFile) {
-			return relativeFile === 'packages/react-transition-group/tests/ssr/upstream-import.test.ts';
+			return relativeFile === 'packages/transition-group/tests/ssr/upstream-import.test.ts';
 		},
 	],
 ];

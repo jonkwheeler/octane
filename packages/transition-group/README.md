@@ -1,4 +1,4 @@
-# @octanejs/react-transition-group
+# @octanejs/transition-group
 
 An Octane binding for [`react-transition-group@4.4.5`](https://github.com/reactjs/react-transition-group/tree/v4.4.5).
 

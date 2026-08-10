@@ -14,7 +14,7 @@ const write = process.argv.includes('--write');
 if (write) {
 	const contractsPath = resolve(
 		root,
-		'packages/react-transition-group/audit/adapted-case-contracts.json',
+		'packages/transition-group/audit/adapted-case-contracts.json',
 	);
 	writeFileSync(contractsPath, renderAdaptedCaseContracts(root));
 	console.log(`wrote ${contractsPath}`);

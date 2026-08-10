@@ -4,7 +4,7 @@ import { relative, resolve, sep } from 'node:path';
 
 import { extractTestCases } from './inventory-lib.mjs';
 
-const PACKAGE_ROOT = 'packages/react-transition-group';
+const PACKAGE_ROOT = 'packages/transition-group';
 const UPSTREAM_ROOT = `${PACKAGE_ROOT}/upstream`;
 const UPSTREAM_TEST_ROOT = `${UPSTREAM_ROOT}/test`;
 const INVENTORY_PATH = `${PACKAGE_ROOT}/audit/SHA256SUMS`;

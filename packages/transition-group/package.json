@@ -1,5 +1,5 @@
 {
-  "name": "@octanejs/react-transition-group",
+  "name": "@octanejs/transition-group",
   "version": "0.1.0",
   "license": "BSD-3-Clause",
   "type": "module",
@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
-    "directory": "packages/react-transition-group"
+    "directory": "packages/transition-group"
   },
   "main": "src/index.ts",
   "module": "src/index.ts",
@@ -40,7 +40,7 @@
     "./config": "./src/config.ts"
   },
   "scripts": {
-    "test": "pnpm upstream:check && pnpm upstream:verify && pnpm test:upstream && vitest run --root ../.. --project react-transition-group --project react-transition-group-ssr",
+    "test": "pnpm upstream:check && pnpm upstream:verify && pnpm test:upstream && vitest run --root ../.. --project transition-group --project transition-group-ssr",
     "parity:inventory": "node ../../scripts/react-parity/react-transition-group-runtime-inventory.mjs",
     "test:upstream": "jest --config tests/upstream-jest.config.cjs --rootDir upstream --runInBand --no-watchman",
     "upstream:check": "node audit/check-upstream.mjs",

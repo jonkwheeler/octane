@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "root": "packages/react-transition-group/upstream",
+  "root": "packages/transition-group/upstream",
   "tests": [
     {
       "file": "test/CSSTransition-test.js",

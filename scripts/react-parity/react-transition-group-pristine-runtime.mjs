@@ -10,11 +10,11 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 import { verifyReactTransitionGroupUpstream } from './react-transition-group-upstream-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const upstreamRoot = resolve(root, 'packages/react-transition-group/upstream');
+const upstreamRoot = resolve(root, 'packages/transition-group/upstream');
 const report = join(tmpdir(), `octane-react-transition-group-pristine-${process.pid}.json`);
-const destination = resolve(root, 'packages/react-transition-group/audit/pristine-runtime.json');
+const destination = resolve(root, 'packages/transition-group/audit/pristine-runtime.json');
 const jestBin = createRequire(
-	resolve(root, 'packages/react-transition-group/package.json'),
+	resolve(root, 'packages/transition-group/package.json'),
 ).resolve('jest/bin/jest');
 
 export function pristineTestIdentities(result, repoRoot = root) {
@@ -23,7 +23,7 @@ export function pristineTestIdentities(result, repoRoot = root) {
 			return suite.assertionResults.map(function mapTest(test) {
 				return {
 					file: toPortablePath(
-						relative(resolve(repoRoot, 'packages/react-transition-group/upstream'), suite.name),
+						relative(resolve(repoRoot, 'packages/transition-group/upstream'), suite.name),
 					),
 					fullName: test.fullName,
 					status: test.status,
@@ -40,9 +40,9 @@ export function runPristineUpstreamSuite({ repoRoot = root, reportPath = report 
 		[
 			jestBin,
 			'--config',
-			resolve(repoRoot, 'packages/react-transition-group/tests/upstream-jest.config.cjs'),
+			resolve(repoRoot, 'packages/transition-group/tests/upstream-jest.config.cjs'),
 			'--rootDir',
-			resolve(repoRoot, 'packages/react-transition-group/upstream'),
+			resolve(repoRoot, 'packages/transition-group/upstream'),
 			'--runInBand',
 			'--no-watchman',
 			'--json',
@@ -72,7 +72,7 @@ if (process.argv.includes('--write')) {
 			`${JSON.stringify(
 				{
 					schemaVersion: 1,
-					root: 'packages/react-transition-group/upstream',
+					root: 'packages/transition-group/upstream',
 					tests,
 					snapshots: result.report.snapshot?.total ?? 0,
 				},
@@ -81,7 +81,7 @@ if (process.argv.includes('--write')) {
 			)}\n`,
 		);
 		console.log(
-			`packages/react-transition-group/audit/pristine-runtime.json: ${tests.length} tests`,
+			`packages/transition-group/audit/pristine-runtime.json: ${tests.length} tests`,
 		);
 	} finally {
 		rmSync(report, { force: true });
