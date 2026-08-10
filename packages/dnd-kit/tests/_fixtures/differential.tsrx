@@ -47,7 +47,8 @@ function Controls() @{
 	</nav>
 }
 
-export function KeyboardDragFixture() @{
+/** Programmatic manager.actions lifecycle — sensors=[]; no keyboard path. */
+export function ProgrammaticManagerDragFixture() @{
 	const [events, setEvents] = useState('idle');
 	<DragDropProvider
 		sensors={sensors}

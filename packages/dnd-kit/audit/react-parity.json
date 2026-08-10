@@ -51,15 +51,15 @@
       "environment": "workspace-node",
       "project": "dnd-kit-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs one identical authored keyboard drag lifecycle against @dnd-kit/react 0.5.0 and @octanejs/dnd-kit; this is bounded jsdom evidence, not browser-complete parity.",
+      "notes": "Runs one identical authored programmatic manager-action drag lifecycle against @dnd-kit/react 0.5.0 and @octanejs/dnd-kit (sensors=[], manager.actions start/move/stop); this is bounded jsdom evidence, not browser-complete or keyboard-sensor parity.",
       "files": [
         {
           "path": "packages/dnd-kit/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "14a5407a6fdb20783b3b926b11acf838b3f53c180cdb93a351ce7c590c699bb3",
+          "sha256": "bb5c0f5666c25306e7299d1a9c780d671f27646892c31da7a7c8b714ca8febba",
           "cases": [
             {
-              "id": "differential:dnd-kit-keyboard-lifecycle",
+              "id": "differential:dnd-kit-programmatic-manager-lifecycle",
               "testName": "matches mount, pickup, movement, overlay, and drop output",
               "fullName": "differential: @octanejs/dnd-kit vs @dnd-kit/react matches mount, pickup, movement, overlay, and drop output"
             }
@@ -68,12 +68,12 @@
         {
           "path": "packages/dnd-kit/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "4f4ccd1be1503de6c1600da7c90760827e4bfc3ffb265138a690693eafb648c0"
+          "sha256": "ff200f795962d57174f75bed5a4d5e6cbcd7ab1c9b35055264ac4dcc54053449"
         },
         {
           "path": "packages/dnd-kit/tests/_fixtures/differential.tsrx",
           "role": "support",
-          "sha256": "babbe9107fc8dc7350fb107f7304aec8647947f80c0167bdd5830b26d43e7cc4"
+          "sha256": "26f830f92269d9f7a36c9fc94caf5884651aa472bbdce017adda2b50f057d482"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -88,7 +88,7 @@
         {
           "path": "packages/dnd-kit/audit/test-classifications.json",
           "role": "support",
-          "sha256": "efd62691dfa80c2d80d6555da641e947927ce2669f423ba6ac6c1abd9aee210d"
+          "sha256": "d52f2d9403a986a6aaac78987f3c6398ffcf8d220470c6778d8bd927bc712984"
         },
         {
           "path": "packages/dnd-kit/scripts/check-upstream-ledger.mjs",

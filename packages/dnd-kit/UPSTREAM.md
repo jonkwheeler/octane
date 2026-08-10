@@ -24,7 +24,7 @@ repository-tree observation, not an inference from the published archive.
 
 | Entry point | Octane disposition | Evidence or gap |
 | --- | --- | --- |
-| `.` | Surface present, unverified | Runtime export contract plus one bounded keyboard-drag differential; pointer, layout, and browser lifecycle coverage is not exhaustive. |
+| `.` | Surface present, unverified | Runtime export contract plus one bounded programmatic manager-action differential; pointer, keyboard-sensor, layout, and browser lifecycle coverage is not exhaustive. |
 | `./hooks` | Surface present, unverified | Runtime export contract and Octane hook conformance tests. |
 | `./sortable` | Surface present, unverified | Runtime export contract and Octane sortable lifecycle tests. |
 | `./utilities` | Surface present, unverified | Runtime export contract and `currentValue` conformance tests. |
@@ -34,8 +34,9 @@ pristine/adapted upstream type pair because upstream publishes no dedicated type
 
 ## Executable evidence and gaps
 
-The repo-authored differential runs one identical `.tsrx` keyboard lifecycle against both adapters
-and compares mount, pickup, movement, overlay, and drop output. Audit contracts authenticate the
+The repo-authored differential runs one identical `.tsrx` programmatic manager-action lifecycle
+against both adapters (empty sensors; start/move/stop via `manager.actions`) and compares mount,
+pickup, movement, overlay, and drop output. Audit contracts authenticate the
 pin and keep the two known adaptations explicit: compiled-child handling in `DragOverlay`, and
 omission of the default optimistic sorting plugin because it can split renderer-owned keyed ranges.
 The binding remains `recorded-unverified`; jsdom equality is not evidence for real pointer geometry,

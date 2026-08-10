@@ -1,7 +1,8 @@
 /**
  * The same authored fixture runs through this adapter and the official
- * @dnd-kit/react@0.5.0 adapter. Each keyboard lifecycle step must leave the
- * rendered DOM byte-equivalent after the shared rig's normalization.
+ * @dnd-kit/react@0.5.0 adapter. Each programmatic manager-action lifecycle
+ * step must leave the rendered DOM byte-equivalent after the shared rig's
+ * normalization. Sensors are empty; transitions come from manager.actions.
  */
 import { describe, it, vi } from 'vitest';
 import { resolve } from 'node:path';
@@ -26,15 +27,22 @@ const rectangle = {
 } as DOMRect;
 
 function byId(mount: DiffMount, id: string): Element {
-	const element = mount.findAll('*').find((candidate) => candidate.id === id);
+	const element = mount.findAll('*').find(function (candidate) {
+		return candidate.id === id;
+	});
 	if (!element) throw new Error(`Missing #${id}`);
 	return element;
 }
 
 describe('differential: @octanejs/dnd-kit vs @dnd-kit/react', () => {
-	// @parity-case differential:dnd-kit-keyboard-lifecycle
+	// @parity-case differential:dnd-kit-programmatic-manager-lifecycle
 	it('matches mount, pickup, movement, overlay, and drop output', async () => {
-		const comparison = await mountDifferential(fixture, 'KeyboardDragFixture', undefined, cache);
+		const comparison = await mountDifferential(
+			fixture,
+			'ProgrammaticManagerDragFixture',
+			undefined,
+			cache,
+		);
 		await comparison.step('mount and measure', (octane, react) => {
 			for (const target of [
 				byId(octane, 'drag'),
