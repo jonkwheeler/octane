@@ -93,12 +93,12 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+          "sha256": "d7c4fe7f2a13353d3ed0f848b1182e528eaf946c32179430e3b0ff2f10254b6e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "22270530e881b4664083d76b2986943e9e469047966c51db4f409bac146b779a"
+          "sha256": "eb30b4a837c083a032c77def257431ab3fc2b5e93178cacf42b07e6f742afba0"
         }
       ]
     }
