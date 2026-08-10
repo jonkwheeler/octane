@@ -54,32 +54,17 @@
       "environment": "workspace-node",
       "project": "tanstack-devtools-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs one same-fixture adapter lifecycle against the Octane and pinned React sources; upstream provides no runtime suite.",
+      "notes": "Runs one same-fixture adapter lifecycle against the Octane and pinned React sources; upstream provides no runtime suite. Documented public-surface divergences live in the ordinary audit project.",
       "files": [
         {
           "path": "packages/tanstack-devtools/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "ec572986122d707c2ebb559b8d1351dcab9668d48b537bcb0dc3bafc6a7081c3",
+          "sha256": "66892a36ad1fa20f5666d5873c77b2f8d41662f31f83fcf61042dbc380957d5e",
           "cases": [
             {
               "id": "differential:tanstack-devtools-portal-lifecycle",
               "testName": "matches mount, plugin, title, trigger, config, and teardown behavior",
               "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools matches mount, plugin, title, trigger, config, and teardown behavior"
-            },
-            {
-              "id": "differential:tanstack-devtools-core-version",
-              "testName": "records the framework-neutral core version drift",
-              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools records the framework-neutral core version drift"
-            },
-            {
-              "id": "differential:tanstack-devtools-type-names",
-              "testName": "records the Octane-prefixed public adapter type names",
-              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools records the Octane-prefixed public adapter type names"
-            },
-            {
-              "id": "differential:tanstack-devtools-core-reexports",
-              "testName": "records the additional framework-neutral core re-exports",
-              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools records the additional framework-neutral core re-exports"
             }
           ]
         },
@@ -111,7 +96,7 @@
         {
           "path": "packages/tanstack-devtools/audit/test-classifications.json",
           "role": "support",
-          "sha256": "9704dcbadc8c73a28fcf7b96a5334c764b0d846f89b2fe66e224022f76330bcf"
+          "sha256": "f2a15c40ab9171c852f54fa0c9e8a5e12a246c669e11b3f6c370013de1d62103"
         },
         {
           "path": "packages/tanstack-devtools/scripts/check-upstream-ledger.mjs",
@@ -200,7 +185,7 @@
         {
           "path": "packages/tanstack-devtools/audit/adapted-types.json",
           "role": "test",
-          "sha256": "e5f2488355d2432c8ec328f0de782dbfb0b0ad8f8d582906756f5aef813e39cb",
+          "sha256": "3bac33cd0266e292f1b89b1ceff30fea0a8324fed000ea28f74d3cff1a475a95",
           "cases": [
             {
               "id": "types:adapted-octane",
@@ -227,7 +212,7 @@
         {
           "path": "packages/tanstack-devtools/src/index.ts",
           "role": "support",
-          "sha256": "a2ad511ab5800ba932db010571708a9a7108f9c7faed6427231149a3295841b7"
+          "sha256": "c5d0bab8e292a9ed4a34c443d9247d7573bc2e803dfcf4e6c2769a5177a3ab70"
         },
         {
           "path": "packages/tanstack-devtools/src/devtools.tsrx",
@@ -240,7 +225,7 @@
   "divergences": [
     {
       "id": "core-version",
-      "caseIds": ["differential:tanstack-devtools-core-version"],
+      "caseIds": ["differential:tanstack-devtools-portal-lifecycle"],
       "upstreamResult": "The pinned React adapter publishes with @tanstack/devtools 0.12.4.",
       "octaneResult": "The current Octane catalog resolves @tanstack/devtools 0.12.5.",
       "rationale": "The workspace catalog had advanced before this audit; silently downgrading the shared core is outside this harness PR.",
@@ -252,7 +237,7 @@
     },
     {
       "id": "octane-type-names",
-      "caseIds": ["differential:tanstack-devtools-type-names"],
+      "caseIds": ["types:adapted-octane"],
       "upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
       "octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",
       "rationale": "Framework-specific public type names identify the runtime they describe.",
@@ -264,7 +249,7 @@
     },
     {
       "id": "extra-core-reexports",
-      "caseIds": ["differential:tanstack-devtools-core-reexports"],
+      "caseIds": ["types:pristine-upstream"],
       "upstreamResult": "The React adapter exports only the component and React adapter types.",
       "octaneResult": "Octane additionally re-exports framework-neutral core values and types.",
       "rationale": "Existing Octane consumers use the binding as the plugin-authoring type boundary.",
