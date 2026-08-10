@@ -65,7 +65,7 @@
         {
           "path": "packages/motion/upstream/SHA256SUMS",
           "role": "support",
-          "sha256": "677c528699eee578a30a8c9e775c01cdc2ee59f5a7b3cbd7b73bf9f0210c6ede"
+          "sha256": "b8a0d2c797ad4e252fd1bba1ca255693057b204721f0ef2fe5c443ba0f610d3b"
         },
         {
           "path": "packages/motion/scripts/verify-upstream.mjs",
@@ -224,7 +224,7 @@
         {
           "path": "packages/motion/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "45113e4dc61781967a7091ab99e2712d1386e32ecb3f8a4e653eda4ab069ae4a"
+          "sha256": "6d1d3ab1d18c48f6597dc4637f8ac252fcf1ebf4b8667f80d26ef51978ee94fc"
         },
         {
           "path": "packages/motion/tests/_fixtures/render-diff.tsrx",

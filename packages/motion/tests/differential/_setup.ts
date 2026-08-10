@@ -4,7 +4,15 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync } from 'esbuild';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileFixture } from './fixture-compiler.mjs';
@@ -24,7 +32,8 @@ function walk(directory) {
 }
 
 export async function setup() {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
 	if (!existsSync(FIXTURE_DIR)) return;
 	const dependencies = {
 		readFile: readFileSync,
