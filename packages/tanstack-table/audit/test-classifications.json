@@ -33,8 +33,9 @@
     },
     {
       "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks omission of the React-only legacy migration subpath without a paired React observation."
+      "disposition": "octane-only-divergence",
+      "reason": "Records the intentional omission of React Table's ./legacy migration subpath as a known public-surface incompatibility.",
+      "divergenceId": "legacy-migration-subpath"
     },
     {
       "path": "packages/tanstack-table/tests/conformance/parity.test.ts",
@@ -45,6 +46,16 @@
       "path": "packages/tanstack-table/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Runs five exact table scenarios against @tanstack/react-table@9.0.0-beta.58."
+    },
+    {
+      "path": "packages/tanstack-table/typetests/adapted/types.test-d.ts",
+      "disposition": "adapted-types",
+      "oracle": "Adapted public-surface type probes compiled with tsrx-tsc against @octanejs/tanstack-table (tanstack-table-adapted-types lane)."
+    },
+    {
+      "path": "packages/tanstack-table/typetests/pristine/types.test-d.ts",
+      "disposition": "pristine-types",
+      "oracle": "Repo-authored pristine public-surface type probes compiled with tsc against @tanstack/react-table@9.0.0-beta.58 (tanstack-table-pristine-types lane)."
     }
   ]
 }

@@ -51,7 +51,7 @@
       "environment": "workspace-node",
       "project": "tanstack-table-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact rendering, sorting, filtering/pagination, selection, and visibility/expanding scenarios against @tanstack/react-table@9.0.0-beta.58. While provenance is recorded-unverified, this Vitest project stays outside testExecution.group react-parity so ordinary CI shards execute it; react-parity:check only validates the manifest.",
+      "notes": "Runs exact rendering, sorting, filtering/pagination, selection, and visibility/expanding scenarios against @tanstack/react-table@9.0.0-beta.58. Owned by testExecution.group react-parity so the five cases execute once via react-parity:check; recorded-unverified provenance still blocks a verified claim.",
       "files": [
         {
           "path": "packages/tanstack-table/tests/differential/parity.test.ts",
@@ -251,5 +251,18 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "legacy-migration-subpath",
+      "caseIds": ["types:tanstack-table-adapted"],
+      "upstreamResult": "@tanstack/react-table publishes a ./legacy migration subpath for React v8 codebases.",
+      "octaneResult": "@octanejs/tanstack-table omits ./legacy from package exports and does not port useLegacyTable.",
+      "rationale": "The legacy adapter exists only to migrate existing React v8 table apps; an Octane binding has no such migration surface and targets the v9 useTable API directly.",
+      "classification": "public-api",
+      "consumerImpact": "Imports of @octanejs/tanstack-table/legacy fail; consumers must use the v9 useTable surface.",
+      "migrationGuidance": "Replace any ./legacy or useLegacyTable usage with useTable and the shared @tanstack/table-core feature APIs.",
+      "owner": "@octanejs/tanstack-table",
+      "reviewCondition": "Review if Octane gains a React-table v8 migration audience that needs the legacy subpath."
+    }
+  ]
 }

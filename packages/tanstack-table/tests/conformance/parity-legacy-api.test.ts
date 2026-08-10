@@ -1,7 +1,7 @@
 /**
- * Ordinary framework-contract check: the Octane binding omits React Table's
- * ./legacy migration subpath. Kept outside react-parity ownership because it
- * has no paired same-scenario React observation.
+ * Known public-surface divergence: the Octane binding omits React Table's
+ * ./legacy migration subpath. Linked to audit/react-parity.json divergence
+ * `legacy-migration-subpath`.
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';

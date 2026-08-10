@@ -17,6 +17,7 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyTanstackTableTypes } from './tanstack-table-types-lib.mjs';
+import { verifyTanstackTableTestClassifications } from './tanstack-table-classifications-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -66,6 +67,11 @@ try {
 	verifyLivestoreTestClassifications(REPO);
 } catch (error) {
 	errors.push(`livestore test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyTanstackTableTestClassifications(REPO);
+} catch (error) {
+	errors.push(`tanstack-table test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
@@ -144,10 +150,11 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		// Livestore keeps a dedicated disposition set (adapted-upstream-suite)
-		// verified above; do not re-check it with the generic binding ledger.
+		// Livestore and tanstack-table keep dedicated disposition sets verified
+		// above; do not re-check them with the generic binding ledger.
 		if (
 			binding !== 'livestore' &&
+			binding !== 'tanstack-table' &&
 			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
 		)
 			verifyPortTestClassifications(REPO, binding);
