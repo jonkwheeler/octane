@@ -93,62 +93,6 @@
       ]
     },
     {
-      "id": "nuqs-adapted-divergences",
-      "type": "adapted-octane",
-      "oracle": "optional",
-      "environment": "workspace-node",
-      "project": "nuqs",
-      "notes": "Optional crosswalk of Octane-only divergence probes to structured manifest divergences. Probes remain ordinary nuqs Vitest coverage and are not required adapted-parity ownership; this lane is not executed by run-required.",
-      "files": [
-        {
-          "path": "packages/nuqs/tests/parity/rsc-cache.test.ts",
-          "role": "test",
-          "sha256": "6e131bf7b45922d161e926648017c1b56d198fa91829de661a0d00381fe66311",
-          "cases": [
-            {
-              "id": "adapted:nuqs-rsc-cache",
-              "testName": "does NOT ship createSearchParamsCache (RSC-only, see status.json)",
-              "fullName": "server entry does NOT ship createSearchParamsCache (RSC-only, see status.json)"
-            }
-          ]
-        },
-        {
-          "path": "packages/nuqs/tests/conformance/reset-queue.test.ts",
-          "role": "test",
-          "sha256": "e6af6b85c4b8e0c44fd55b78683fa9dc13fcdaf9c5d079114a4ed5af18f0c7aa",
-          "cases": [
-            {
-              "id": "adapted:nuqs-testing-reset",
-              "testName": "does not drop a pending debounced write when a re-render happens before it flushes",
-              "fullName": "NuqsTestingAdapter shared-queue reset does not drop a pending debounced write when a re-render happens before it flushes"
-            }
-          ]
-        },
-        {
-          "path": "packages/nuqs/tests/parity/divergences.test.ts",
-          "role": "test",
-          "sha256": "fb4b97162ce6adb9799d07545a59f23398fd6fd4098f3386b41b767f7bcfff6f",
-          "cases": [
-            {
-              "id": "adapted:nuqs-router-adapters",
-              "testName": "exports only the standalone, custom, and testing adapters",
-              "fullName": "@octanejs/nuqs documented integration divergences exports only the standalone, custom, and testing adapters"
-            },
-            {
-              "id": "adapted:nuqs-transition-type",
-              "testName": "declares TransitionStartFunction without a React type dependency",
-              "fullName": "@octanejs/nuqs documented integration divergences declares TransitionStartFunction without a React type dependency"
-            }
-          ]
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "2a74497a1fe4505908c32fab35ddd6e125e7812ff217d2f30110ec23e1c909dc"
-        }
-      ]
-    },
-    {
       "id": "nuqs-pristine-types",
       "type": "pristine-types",
       "oracle": "required",
@@ -239,7 +183,7 @@
   "divergences": [
     {
       "id": "router-adapters-unavailable",
-      "caseIds": ["adapted:nuqs-router-adapters"],
+      "caseIds": ["conformance:nuqs-router-adapters"],
       "upstreamResult": "Nuqs ships Next, Remix, React Router, and TanStack Router adapters.",
       "octaneResult": "The Octane binding ships standalone React-style, custom, and testing adapters only.",
       "rationale": "Router-specific adapters require renderer-specific ports and integration contracts.",
@@ -251,7 +195,7 @@
     },
     {
       "id": "rsc-cache-unavailable",
-      "caseIds": ["adapted:nuqs-rsc-cache"],
+      "caseIds": ["conformance:nuqs-rsc-cache"],
       "upstreamResult": "nuqs/server exports createSearchParamsCache backed by React.cache.",
       "octaneResult": "The server entry omits createSearchParamsCache.",
       "rationale": "Octane does not implement the React Server Components cache primitive.",
@@ -263,7 +207,7 @@
     },
     {
       "id": "local-transition-start-type",
-      "caseIds": ["adapted:nuqs-transition-type"],
+      "caseIds": ["conformance:nuqs-transition-type"],
       "upstreamResult": "Nuqs imports TransitionStartFunction from React's type declarations.",
       "octaneResult": "The binding declares the compatible function shape locally.",
       "rationale": "The Octane package intentionally carries no React type dependency.",
@@ -275,7 +219,7 @@
     },
     {
       "id": "testing-adapter-reset-once",
-      "caseIds": ["adapted:nuqs-testing-reset"],
+      "caseIds": ["conformance:nuqs-testing-reset"],
       "upstreamResult": "NuqsTestingAdapter resets the shared update queue during every render.",
       "octaneResult": "The Octane adapter resets the queue once per mount before child hooks consume it.",
       "rationale": "Repeated render-time resets abort pending debounced writes under Octane's update scheduling.",

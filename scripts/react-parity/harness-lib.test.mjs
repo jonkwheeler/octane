@@ -825,6 +825,11 @@ test('rejects stale divergences and accepts one divergence matching multiple kno
 	});
 	assert.throws(() => validateManifest(stale), /unknown case id "missing"/);
 
+	const ordinary = manifest({
+		divergences: [divergence({ caseIds: ['conformance:ordinary-contract'] })],
+	});
+	assert.deepEqual(validateManifest(ordinary), ordinary);
+
 	const broad = manifest();
 	broad.lanes[0].files[0].cases.push({
 		id: 'adapted:other',
@@ -1070,16 +1075,16 @@ test('an unavailable optional oracle is never reported as parity evidence', () =
 	);
 });
 
-test('optional available lanes can crosswalk structured divergences without required ownership', async () => {
-	const root = await mkdtemp(join(tmpdir(), 'react-parity-optional-divergence-'));
+test('conformance case ids authenticate structured divergences without a parity lane', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-conformance-divergence-'));
 	const probePath = 'packages/example/tests/optional/divergence.test.ts';
 	const requiredPath = 'packages/example/tests/required/required.test.ts';
 	await mkdir(join(root, 'packages/example/src'), { recursive: true });
 	await mkdir(join(root, 'packages/example/tests/optional'), { recursive: true });
 	await mkdir(join(root, 'packages/example/tests/required'), { recursive: true });
 	const probeSource =
-		'// OCTANE DIVERGENCE[example-divergence][adapted:example]\n' +
-		'// @parity-case adapted:example\n' +
+		'// OCTANE DIVERGENCE[example-divergence][conformance:example]\n' +
+		'// @parity-case conformance:example\n' +
 		'it("does the thing", () => {})\n';
 	const requiredSource =
 		'// @parity-case differential:required\n' + 'it("stays required", () => {})\n';
@@ -1120,28 +1125,8 @@ test('optional available lanes can crosswalk structured divergences without requ
 					},
 				],
 			},
-			{
-				...manifest().lanes[0],
-				id: 'optional-divergences',
-				type: 'adapted-octane',
-				oracle: 'optional',
-				files: [
-					{
-						path: probePath,
-						role: 'test',
-						sha256: sha256(probeSource),
-						cases: [
-							{
-								id: 'adapted:example',
-								testName: 'does the thing',
-								fullName: 'example suite does the thing',
-							},
-						],
-					},
-				],
-			},
 		],
-		divergences: [divergence({ id: 'example-divergence', caseIds: ['adapted:example'] })],
+		divergences: [divergence({ id: 'example-divergence', caseIds: ['conformance:example'] })],
 	});
 	assert.deepEqual(validateManifest(value), value);
 	assert.deepEqual(

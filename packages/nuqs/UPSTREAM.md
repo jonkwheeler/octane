@@ -25,7 +25,8 @@ Interim evidence that does run today:
 
 Repo-authored Octane-only divergence probes stay on the ordinary `nuqs` Vitest
 project and are classified as `octane-only-divergence` with structured
-`react-parity.json` divergence records. An optional crosswalk lane binds those
-probes to the records; it is not required adapted-parity ownership and is not
-executed by `run-required`. Do not claim verified parity until real
-one-for-one upstream paired case evidence exists.
+`react-parity.json` divergence records. Those records cite `conformance:` case
+ids authenticated by `@parity-case` markers in the ordinary test files; they are
+not adapted-parity ownership and are not executed by `run-required`. Do not
+claim verified parity until real one-for-one upstream paired case evidence
+exists.
