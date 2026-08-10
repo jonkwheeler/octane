@@ -1,6 +1,7 @@
 // Differential fixtures: the SAME source runs through @octanejs/cmdk (octane)
 // and the published cmdk@1.1.1 (React) — `_setup.ts` rewrites the import for the
 // React side. Keep these free of anything non-deterministic.
+import { useState } from 'octane';
 import { Command } from '@octanejs/cmdk';
 
 // Flat list: the byte-equal baseline (render, filter, keyboard, empty state).
@@ -64,14 +65,27 @@ export function CmdkDiffForceMountRank() @{
 	</Command>
 }
 
-// Toggle a force-mounted item that shares a value with a plain replacement.
-export function CmdkDiffForceMountSwap(props: { forced: boolean }) @{
+// Toggle a force-mounted item that shares a value with a plain replacement on
+// one live Command (not across remounts) so registration release is exercised.
+export function CmdkDiffForceMountSwap() @{
+	const [forced, setForced] = useState(true);
 	<Command label="Command Menu">
+		<button
+			type="button"
+			id="swap"
+			onClick={function onSwap() {
+				setForced(function toggle(previous) {
+					return !previous;
+				});
+			}}
+		>
+			swap
+		</button>
 		<Command.List>
-			@if (props.forced) {
+			@if (forced) {
 				<Command.Item forceMount value="Apple">Apple</Command.Item>
 			}
-			@if (!props.forced) {
+			@if (!forced) {
 				<Command.Item value="Apple">Apple</Command.Item>
 			}
 		</Command.List>

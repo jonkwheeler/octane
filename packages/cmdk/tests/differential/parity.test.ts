@@ -4,25 +4,12 @@
  * `observe` is used only where the port documents an intentional divergence.
  */
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { basename, resolve } from 'node:path';
-import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { act } from 'react';
-import * as React from 'react';
-import { renderToString as reactRenderToString } from 'react-dom/server';
 import { mountDifferential, normaliseHtml } from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/cmdk-diff.tsrx');
-const BASIC_FIXTURE = resolve(__dirname, '../_fixtures/basic.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
-
-function reactCachePath(srcPath: string): string {
-	let hash = 5381;
-	for (let index = 0; index < srcPath.length; index++) {
-		hash = ((hash << 5) + hash + srcPath.charCodeAt(index)) | 0;
-	}
-	const slug = basename(srcPath).replace(/\.tsrx$/, '');
-	return resolve(CACHE, `${slug}-${Math.abs(hash).toString(36)}.js`);
-}
 
 // Upstream cmdk's List constructs a ResizeObserver unguarded, which throws in
 // jsdom. Install an inert one for BOTH runtimes so neither side writes
@@ -390,59 +377,46 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 	// @parity-case differential:cmdk-registration-teardown
 	it('documents forceMount registration release across remounts', async function () {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(function noop() {});
-
-		const first = await mountDifferential(
+		const differential = await mountDifferential(
 			FIXTURE,
 			'CmdkDiffForceMountSwap',
-			{ forced: true },
-			CACHE,
-		);
-		first.unmount();
-
-		const second = await mountDifferential(
-			FIXTURE,
-			'CmdkDiffForceMountSwap',
-			{ forced: false },
-			CACHE,
-		);
-		second.unmount();
-
-		const third = await mountDifferential(
-			FIXTURE,
-			'CmdkDiffForceMountSwap',
-			{ forced: true },
+			undefined,
 			CACHE,
 		);
 
 		// OCTANE DIVERGENCE[registration-teardown-release][differential:cmdk-registration-teardown]
-		const messages = warn.mock.calls.map(function toMessage(call) {
-			return String(call[0]);
-		});
+		// Swap forceMount ↔ plain on ONE live Command so release (or the lack of
+		// it) is observable. Fresh mount/unmount trees cannot leak across stores.
+		await differential.observe(
+			'live forceMount/plain swap keeps a single Apple without duplicate warnings',
+			async function (octane, react) {
+				expect(itemTexts(octane)).toEqual(['Apple']);
+				expect(itemTexts(react)).toEqual(['Apple']);
+
+				await octane.click('#swap');
+				await react.click('#swap');
+				await settle();
+				expect(itemTexts(octane)).toEqual(['Apple']);
+				expect(itemTexts(react)).toEqual(['Apple']);
+
+				await octane.click('#swap');
+				await react.click('#swap');
+				await settle();
+				expect(itemTexts(octane)).toEqual(['Apple']);
+				expect(itemTexts(react)).toEqual(['Apple']);
+
+				const messages = warn.mock.calls.map(function toMessage(call) {
+					return String(call[0]);
+				});
+				expect(
+					messages.filter(function isDuplicate(message) {
+						return message.includes('share the value');
+					}),
+				).toEqual([]);
+			},
+		);
+
 		warn.mockRestore();
-
-		expect(third.octane.findAll('[cmdk-item]')).toHaveLength(1);
-		expect(third.react.findAll('[cmdk-item]')).toHaveLength(1);
-		expect(
-			messages.filter(function isDuplicate(message) {
-				return message.includes('share the value');
-			}),
-		).toEqual([]);
-
-		third.unmount();
-	});
-
-	// @parity-case differential:cmdk-ssr-empty
-	it('documents Empty suppression in server markup', async function () {
-		// Octane's SSR Empty suppression is covered by the ordinary cmdk-ssr
-		// shard (`tests/ssr/server.test.ts`). This lane pins the upstream half:
-		// React cmdk ships cmdk-empty above a populated list during SSR.
-		const reactPath = reactCachePath(BASIC_FIXTURE);
-		expect(existsSync(reactPath)).toBe(true);
-		const reactMod = await import(/* @vite-ignore */ reactPath);
-		const reactHtml = reactRenderToString(React.createElement(reactMod.BasicMenu));
-
-		// OCTANE DIVERGENCE[ssr-empty-suppressed][differential:cmdk-ssr-empty]
-		expect(reactHtml).toContain('cmdk-item');
-		expect(reactHtml).toContain('cmdk-empty');
+		differential.unmount();
 	});
 });

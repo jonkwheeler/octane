@@ -32,6 +32,11 @@
       "reason": "Authenticates vendored evidence and the bounded claim; it is not behavioral React parity."
     },
     {
+      "path": "packages/cmdk/tests/ssr/empty-differential.test.ts",
+      "disposition": "react-octane-differential",
+      "oracle": "Compares Command.Empty SSR markup for @octanejs/cmdk against published cmdk@1.1.1."
+    },
+    {
       "path": "packages/cmdk/tests/ssr/server.test.ts",
       "disposition": "octane-only-divergence",
       "reason": "Asserts Command.Empty stays suppressed during SSR where item registration cannot run.",

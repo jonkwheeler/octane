@@ -56,7 +56,7 @@
         {
           "path": "packages/cmdk/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "441bff875f2bafa5f50908cdc48587ef65d75185e8531541291551e1a978a28f",
+          "sha256": "bda73d079c8728d277c0bde4eb72f589f1aa13e8d99cd194636256c8db120b55",
           "cases": [
             {
               "id": "differential:cmdk-filter-selection-empty",
@@ -82,11 +82,6 @@
               "id": "differential:cmdk-registration-teardown",
               "testName": "documents forceMount registration release across remounts",
               "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents forceMount registration release across remounts"
-            },
-            {
-              "id": "differential:cmdk-ssr-empty",
-              "testName": "documents Empty suppression in server markup",
-              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents Empty suppression in server markup"
             }
           ]
         },
@@ -98,7 +93,7 @@
         {
           "path": "packages/cmdk/tests/_fixtures/cmdk-diff.tsrx",
           "role": "support",
-          "sha256": "64d645318df9a4fae1e73f62e50aff86ad636eb8f30f50cc4b1779e487d13b05"
+          "sha256": "86d580a2d330e1c9e370d79f50d107d9860da4b108401fe1b4ada704547fa0cc"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -113,7 +108,7 @@
         {
           "path": "packages/cmdk/audit/test-classifications.json",
           "role": "support",
-          "sha256": "0c7cea0876b92ed833ba19fe6faa767776d2e290c083b8c81788d8d452ffa0b0"
+          "sha256": "93b6bbcbd55adc42a4e1a5c560cdb0089046b67242974745b0cc3c441ac29926"
         },
         {
           "path": "packages/cmdk/scripts/check-upstream-ledger.mjs",
@@ -129,6 +124,29 @@
           "path": "vitest.config.js",
           "role": "support",
           "sha256": "9a77b3de29dd64b3d51878119ed45b1db23342047d3af900d23ad4579d1498f0"
+        }
+      ]
+    },
+    {
+      "id": "cmdk-ssr-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "cmdk-ssr",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compares Command.Empty server markup for @octanejs/cmdk against published cmdk@1.1.1 on React.",
+      "files": [
+        {
+          "path": "packages/cmdk/tests/ssr/empty-differential.test.ts",
+          "role": "test",
+          "sha256": "56d6857d9a4249f209d157e3435e227a8f7983c1167513cd873b6a0ca76f155a",
+          "cases": [
+            {
+              "id": "differential:cmdk-ssr-empty",
+              "testName": "documents Empty suppression in server markup",
+              "fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 SSR documents Empty suppression in server markup"
+            }
+          ]
         }
       ]
     }
