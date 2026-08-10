@@ -125,13 +125,13 @@
     "assertionGroups": []
   },
   {
-    "path": "provider/PacerProvider.tsx",
-    "sha256": "e66a6d6c039f9520e6cc5ba60096bcc9c03e785dab21d3f7ec5aec9e278eb9d0",
+    "path": "provider/index.ts",
+    "sha256": "51683c65d7cf6c56342e9c5bef90ada62c9dba71f0f4df1b7e20625a887a3d5f",
     "assertionGroups": []
   },
   {
-    "path": "provider/index.ts",
-    "sha256": "51683c65d7cf6c56342e9c5bef90ada62c9dba71f0f4df1b7e20625a887a3d5f",
+    "path": "provider/PacerProvider.tsx",
+    "sha256": "e66a6d6c039f9520e6cc5ba60096bcc9c03e785dab21d3f7ec5aec9e278eb9d0",
     "assertionGroups": []
   },
   {

@@ -48,7 +48,7 @@
 			"arch": "any",
 			"packageManager": "pnpm@11.15.1",
 			"lockfile": "pnpm-lock.yaml",
-			"lockfileSha256": "ca891191ec960e5720568455f9f3b6b3e0183f63158e323ba9b53e20448a9592"
+			"lockfileSha256": "b3f156cb7cab5e967741f68a59e2d2140d991d51100d6f1660022c725e74c2dc"
 		}
 	},
 	"lanes": [
@@ -141,7 +141,7 @@
 				{
 					"path": "packages/tanstack-pacer/audit/test-classifications.json",
 					"role": "support",
-					"sha256": "7fe5f9f2a56481e0bf0c43c6d96c3d3a610242c39bc4b63a39edaade73b6ac21"
+					"sha256": "1a4c2a9774ebd6e594e64ee65d88ac2b05f49f3a663b140fc64ed8e53495fcc4"
 				},
 				{
 					"path": "packages/tanstack-pacer/scripts/check-upstream-ledger.mjs",
@@ -151,7 +151,7 @@
 				{
 					"path": "scripts/react-parity/tanstack-pacer-controls.test.mjs",
 					"role": "support",
-					"sha256": "5ad58776c2fbe697816dc5713e17fed4c2324cb3ef9604e4bfa87c6f9fbb077c"
+					"sha256": "8b0b1360ad442e0962a6d3b80e695b6f730ea4f05734338b58cf0493d5e4f6e0"
 				},
 				{
 					"path": "vitest.config.js",
@@ -177,7 +177,7 @@
 				{
 					"path": "packages/tanstack-pacer/audit/upstream-types.json",
 					"role": "test",
-					"sha256": "cef2053cd299bc83bb81dd77e8a11a92473c27f849b36ddc6eb1a7ed2afdec49",
+					"sha256": "170bb8a48d32e209c2a666d02af6b1c6341e573b4524b15a2543ca3ffd1ac910",
 					"cases": [
 						{
 							"id": "types:pristine-upstream",
@@ -194,12 +194,12 @@
 				{
 					"path": "packages/tanstack-pacer/audit/type-parity.json",
 					"role": "support",
-					"sha256": "fde0c3b7e19dc0ca44fed35f106379156c38bd64b2ee58b1a229b266345b87c9"
+					"sha256": "b5213d0f3d8fade4477349ae27dad4adb570d2172c27eb031d63f6f3e6d58e4b"
 				},
 				{
 					"path": "packages/tanstack-pacer/typetests/assertions.md",
 					"role": "support",
-					"sha256": "3e71a8e56ae445e0a9c4935fece25a530b332374b2657cb8ef17d95103449bc4"
+					"sha256": "4f09bb483361059fe32a0f6f828ed0855e7e65730f25b6ce871716cc9fc00ef4"
 				}
 			]
 		},
@@ -210,7 +210,7 @@
 			"environment": "workspace-node",
 			"project": "tanstack-pacer-adapted-types",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Adapted compile accept/reject suite through tsrx-tsc, including structural-state-setter-types evidence.",
+			"notes": "Compiles the complete Octane adapter source through tsrx-tsc (one-for-one with upstream test:types) plus structural-state-setter-types probe evidence.",
 			"execution": {
 				"kind": "typescript",
 				"compiler": "tsrx-tsc",
@@ -220,7 +220,7 @@
 				{
 					"path": "packages/tanstack-pacer/audit/adapted-types.json",
 					"role": "test",
-					"sha256": "e32b3e3d6b431501d879df8372d9fdea460e117fc62d47ce00cccd865d1e711c",
+					"sha256": "936532e431317f5243610e37301b5bc2ac86b59e86f3c06694afe5199f68c5b7",
 					"cases": [
 						{
 							"id": "types:adapted-octane",
@@ -228,11 +228,6 @@
 							"fullName": "adapted Octane type suite"
 						}
 					]
-				},
-				{
-					"path": "packages/tanstack-pacer/typetests/adapted/compile.test-d.ts",
-					"role": "support",
-					"sha256": "50a18a6468aa505362d7fa2b68cd93848e892c29fe293af17b9079d1d45aaf0c"
 				},
 				{
 					"path": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
@@ -249,17 +244,17 @@
 				{
 					"path": "packages/tanstack-pacer/typetests/adapted/tsconfig.json",
 					"role": "support",
-					"sha256": "f606ff8255e0157ae0a91a94a2894adbea98512df29e4b17bcbef0f4bcf239ba"
+					"sha256": "fa2e50d081b653f5840f612ecc3b769f0439170f429d73022c1665a84c1e7396"
 				},
 				{
 					"path": "packages/tanstack-pacer/audit/type-parity.json",
 					"role": "support",
-					"sha256": "fde0c3b7e19dc0ca44fed35f106379156c38bd64b2ee58b1a229b266345b87c9"
+					"sha256": "b5213d0f3d8fade4477349ae27dad4adb570d2172c27eb031d63f6f3e6d58e4b"
 				},
 				{
 					"path": "packages/tanstack-pacer/typetests/assertions.md",
 					"role": "support",
-					"sha256": "3e71a8e56ae445e0a9c4935fece25a530b332374b2657cb8ef17d95103449bc4"
+					"sha256": "4f09bb483361059fe32a0f6f828ed0855e7e65730f25b6ce871716cc9fc00ef4"
 				}
 			]
 		}

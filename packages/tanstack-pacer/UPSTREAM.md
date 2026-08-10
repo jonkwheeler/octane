@@ -11,7 +11,7 @@
 - npm lock integrity: `sha512-CenQqK0GluSPIrnsG1yuD7w5uMSQ/4lI9AcGEFxBrRd66r260boWcYRIsS5+eHtXb238FoZYhKmJPGlhRzmHRw==`
 - Supported range: exactly `0.22.1`
 - License: MIT
-- React oracle: workspace-pinned React and React DOM
+- React oracle: exact `react@19.2.7`, `react-dom@19.2.7`, and `@types/react@19.2.17` via the `tanstack-pacer-react-oracle` catalog
 - Framework-neutral core: exact `@tanstack/pacer@0.21.1`, reused by both adapters
 
 ## Source, exports, and suites
@@ -31,9 +31,10 @@ provenance is `verified` via a repo-authored adapted-octane suite plus a React/O
 
 - Pristine: `typetests/pristine` runs `tsc` over the vendored React adapter source (upstream
   `test:types`) with pinned React types. Inventory: `audit/upstream-types.json`.
-- Adapted: `typetests/adapted` runs `tsrx-tsc` compile-accept coverage plus
-  `setter-types.test-d.ts` accept/reject evidence for `structural-state-setter-types`.
-  Inventory: `audit/adapted-types.json`. Permitted transforms: `typetests/assertions.md`.
+- Adapted: `typetests/adapted` compiles the complete Octane adapter source through
+  `tsrx-tsc` (one-for-one with upstream `test:types`) plus `setter-types.test-d.ts`
+  accept/reject evidence for `structural-state-setter-types`. Inventory:
+  `audit/adapted-types.json`. Permitted transforms: `typetests/assertions.md`.
 
 ## Executable evidence
 
