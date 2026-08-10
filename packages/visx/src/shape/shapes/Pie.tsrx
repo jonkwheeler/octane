@@ -5,8 +5,8 @@ import type { AddSVGProps, ArcPathConfig, PiePathConfig } from '../types';
 import usePie from '../react/usePie.tsrx';
 import type { PieArcDatum, UsePieResult } from '../react/usePie.tsrx';
 
-// OCTANE DIVERGENCE[visx-reactnode-to-octane-renderables][differential:visx-layout]:
-// children/render-prop positions are OctaneNode rather than React.ReactNode.
+// OCTANE DIVERGENCE[visx-reactnode-to-octane-renderables][types:adapted-reactnode]:
+// children/render-prop returns are OctaneNode rather than React.ReactNode.
 
 export type { PieArcDatum };
 

@@ -18,8 +18,9 @@
     },
     {
       "path": "packages/visx/tests/conformance/layouts.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks deterministic animation adapter output alongside representative layout families."
+      "disposition": "octane-only-divergence",
+      "reason": "Pins the RAF numeric react-spring interpolator output without claiming byte-identical React spring-physics timing.",
+      "divergenceId": "visx-react-spring-raf-interpolation"
     },
     {
       "path": "packages/visx/tests/conformance/type-exports.test.ts",
@@ -33,8 +34,9 @@
     },
     {
       "path": "packages/visx/tests/conformance/wordcloud-parity.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Checks deterministic collision-aware wordcloud measurement outside the bounded differential lane."
+      "disposition": "octane-only-divergence",
+      "reason": "Pins collision-aware estimated wordcloud rectangles without claiming browser/font/d3-cloud packing identity.",
+      "divergenceId": "visx-deterministic-measurement"
     },
     {
       "path": "packages/visx/tests/conformance/wordcloud.test.ts",
