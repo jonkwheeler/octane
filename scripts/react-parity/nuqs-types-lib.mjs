@@ -30,6 +30,72 @@ function listProbeFiles(root) {
 		.sort();
 }
 
+export function typeProjectFileNames(baseRoot, projectPath) {
+	const absoluteProject = resolve(baseRoot, projectPath);
+	const readResult = ts.readConfigFile(absoluteProject, ts.sys.readFile);
+	if (readResult.error) {
+		throw new Error(
+			`failed to read type project ${projectPath}: ${ts.flattenDiagnosticMessageText(readResult.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		readResult.config,
+		ts.sys,
+		resolve(absoluteProject, '..'),
+		undefined,
+		absoluteProject,
+	);
+	return parsed.fileNames
+		.map(function toPortable(fileName) {
+			return posix(relative(baseRoot, fileName));
+		})
+		.sort();
+}
+
+export function verifyTypeProjectMembership(baseRoot, config, inventory) {
+	const lanes = config.lanes;
+	if (!lanes?.pristine?.project || !lanes?.adapted?.project) {
+		throw new Error('type-parity.json must declare pristine and adapted compiler projects');
+	}
+	for (const [side, laneKey, rootKey] of [
+		['upstream', 'pristine', 'upstreamRoot'],
+		['adapted', 'adapted', 'adaptedRoot'],
+	]) {
+		const projectPath = lanes[laneKey].project;
+		const suiteRoot = posix(config[rootKey]);
+		const included = typeProjectFileNames(baseRoot, projectPath);
+		const expected = inventory[side]
+			.map(function toRepoPath(entry) {
+				return posix(`${suiteRoot}/${entry.path}`);
+			})
+			.sort();
+		const selectedProbes = included
+			.filter(function keepProbe(fileName) {
+				if (!fileName.startsWith(`${suiteRoot}/`) || !fileName.endsWith('.test-d.ts')) {
+					return false;
+				}
+				if (side === 'adapted') {
+					const rest = fileName.slice(suiteRoot.length + 1);
+					if (rest.startsWith('pristine/')) return false;
+				}
+				return true;
+			})
+			.sort();
+		if (JSON.stringify(selectedProbes) !== JSON.stringify(expected)) {
+			throw new Error(
+				`${side} type-test program membership drifted for ${projectPath}; expected exact probe set ${JSON.stringify(expected)} but compiler selected ${JSON.stringify(selectedProbes)}`,
+			);
+		}
+		for (const file of expected) {
+			if (!included.includes(file)) {
+				throw new Error(
+					`${side} type-test file ${file} is not included by compiler project ${projectPath}`,
+				);
+			}
+		}
+	}
+}
+
 function normalizeComment(comment) {
 	return comment
 		.replace(/^\/\*\*|\*\/$/g, '')
@@ -172,11 +238,16 @@ export function verifyNuqsTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) 
 			);
 		}
 	}
+	verifyTypeProjectMembership(root, config, inventory);
+	const assertions = inventory.upstream.reduce(function sumAssertions(sum, file) {
+		return sum + file.assertionGroups.length;
+	}, 0);
+	if (inventory.upstream.length === 0 || assertions === 0) {
+		throw new Error('type parity inventory compiled zero assertions; fail closed');
+	}
 	return {
 		files: inventory.upstream.length,
-		assertions: inventory.upstream.reduce(function sumAssertions(sum, file) {
-			return sum + file.assertionGroups.length;
-		}, 0),
+		assertions,
 	};
 }
 
