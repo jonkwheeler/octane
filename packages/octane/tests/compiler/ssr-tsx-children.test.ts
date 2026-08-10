@@ -229,4 +229,30 @@ describe('descriptorChildren component marker', () => {
 			expect(runtimeImports(code, ['positionalChildren']).size).toBe(1);
 		}
 	});
+
+	it('folds control-flow directives under marked template children on client and server', () => {
+		const source = `
+			import { descriptorChildren } from 'octane';
+			const Slot = descriptorChildren(function Slot(props) { return props.children; });
+			export function App(props) @{
+				<Slot>
+					@if (props.show) {
+						<button class="child">child</button>
+					}
+					<div>
+						@for (const item of props.items; key item) {
+							<li>{item as string}</li>
+						}
+					</div>
+				</Slot>
+			}`;
+		for (const code of [
+			compile(source, 'marked-directives.tsrx').code,
+			compile(source, 'marked-directives.tsrx', { mode: 'server' }).code,
+		]) {
+			expect(code).toContain('button');
+			expect(code).toContain('li');
+			expect(runtimeImports(code, ['markChildrenBlock']).size).toBe(0);
+		}
+	});
 });

@@ -28,6 +28,26 @@ export function DescriptorChildrenApp(props: Props) @{
 	</MarkedSlot>
 }
 
+interface DirectiveProps {
+	show: boolean;
+	inspect: (child: unknown) => void;
+}
+
+function DirectiveSlot(props: { children?: unknown; inspect: DirectiveProps['inspect'] }) {
+	props.inspect(props.children);
+	return props.children;
+}
+
+const MarkedDirectiveSlot = descriptorChildren(DirectiveSlot);
+
+export function DescriptorChildrenDirectiveApp(props: DirectiveProps) @{
+	<MarkedDirectiveSlot inspect={props.inspect}>
+		@if (props.show) {
+			<button class="gated">gated</button>
+		}
+	</MarkedDirectiveSlot>
+}
+
 export function descriptorIsElement(child: ElementDescriptor): boolean {
 	return isValidElement(child);
 }

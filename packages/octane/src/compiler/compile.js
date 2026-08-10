@@ -9717,7 +9717,7 @@ function ssrEmitComponent(node, ctx, name, inlinedSubs, parentNs, cssHash, compo
 			// matching the client's childSlot(descriptor). A `__children` render-fn would
 			// instead add a wrapping block (ssrChild wraps the fn), making the server one
 			// block deeper than the client and desyncing the hydration cursor.
-			const kids = children.map((c) => lowerJsxChild(c, ctx)).filter((e) => e != null);
+			const kids = children.map((c) => lowerInspectableJsxChild(c, ctx)).filter((e) => e != null);
 			if (kids.length > 0) {
 				// The children array shell maps to the authored component element.
 				let childrenExpr = kids[0];
@@ -15805,6 +15805,30 @@ function rewriteJsxValues(node, ctx, eagerMapCallbackRoots = false, eagerMapCall
 	});
 }
 
+// Lower one inspectable descriptor child (marked `descriptorChildren` calls and
+// value-position descriptor paths). Control-flow directives under that child
+// must fold through the owning body's setup-value pass first — bare
+// `lowerJsxChild` rejects them as unowned or drops the markup.
+function lowerInspectableJsxChild(child, ctx) {
+	const fold = ctx._valueDirectiveLowering;
+	if (fold == null) return lowerJsxChild(child, ctx);
+	const prepared = lowerSetupValueDirectives(child, fold);
+	const t = prepared && prepared.type;
+	if (
+		t === 'JSXText' ||
+		t === 'Text' ||
+		t === 'JSXExpressionContainer' ||
+		t === 'JSXElement' ||
+		t === 'Element' ||
+		t === 'JSXFragment' ||
+		t === 'Fragment'
+	) {
+		return lowerJsxChild(prepared, ctx);
+	}
+	// A bare directive / code-block folds to an ordinary expression.
+	return prepared;
+}
+
 // Lower one JSX child node to a `createElement` argument expression (or null to
 // drop it). Text → string literal (whitespace-only-with-newline indentation is
 // dropped, JSX rule); `{expr}` → the lowered inner expression; nested element →
@@ -15822,11 +15846,15 @@ function lowerJsxChild(child, ctx) {
 		return rewriteJsxValues(child.expression, ctx);
 	}
 	if (t === 'JSXElement' || t === 'Element') return jsxElementToCreateElement(child, ctx);
-	if (VALUE_DIRECTIVE_ARM_TYPES.has(t)) rejectUnownedValueDirective(child);
+	if (VALUE_DIRECTIVE_ARM_TYPES.has(t)) {
+		const fold = ctx._valueDirectiveLowering;
+		if (fold != null) return fold(child);
+		rejectUnownedValueDirective(child);
+	}
 	if (t === 'JSXFragment' || t === 'Fragment') {
 		const els = [];
 		for (const c of child.children || []) {
-			const e = lowerJsxChild(c, ctx);
+			const e = lowerInspectableJsxChild(c, ctx);
 			if (e !== null) els.push(e);
 		}
 		// A fragment's children are FIXED siblings (React's "static children" —
@@ -22058,7 +22086,7 @@ function makeCompCall(
 			!isActivityLongForm(node) && !isFragmentLongForm(node) ? 'opaque' : parentNs;
 		if (compName !== null && ctx.descriptorChildrenBindings?.has(compName)) {
 			const kids = children
-				.map((child) => lowerJsxChild(child, ctx))
+				.map((child) => lowerInspectableJsxChild(child, ctx))
 				.filter((child) => child != null);
 			if (kids.length > 0) {
 				hasChildrenProp = true;
