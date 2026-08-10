@@ -286,13 +286,71 @@
       ]
     },
     {
+      "id": "motion-divergence-contracts",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "motion",
+      "notes": "Ordinary Octane divergence contracts for exit/layout/layoutId/initial-only. Executed by the ordinary motion Vitest project and cited by the divergence ledger; not React differential evidence.",
+      "files": [
+        {
+          "path": "packages/motion/tests/conformance/exit.test.ts",
+          "role": "test",
+          "sha256": "0b27f6d201fe78402600854568860e1e53863f22d8777e957a21c32ad9a12b17",
+          "cases": [
+            {
+              "id": "conformance:exit-cleanup-before-detach",
+              "testName": "animates a clone of the leaving element, removing it when the exit finishes",
+              "fullName": "AnimatePresence exit animations animates a clone of the leaving element, removing it when the exit finishes"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/tests/conformance/layout.test.ts",
+          "role": "test",
+          "sha256": "1258b56384f10bd387f840d6e0df6cfd89a95a36607fa17ad50df05f00b7be92",
+          "cases": [
+            {
+              "id": "conformance:bounded-layout-flip",
+              "testName": "FLIPs from the old box to the new when layout changes between renders",
+              "fullName": "layout (FLIP) FLIPs from the old box to the new when layout changes between renders"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/tests/conformance/layoutId.test.ts",
+          "role": "test",
+          "sha256": "6ef0e171db01be11c1ed973c2fcd5527468eacc893900b25587c6eff9cfa8bc8",
+          "cases": [
+            {
+              "id": "conformance:bounded-layoutId",
+              "testName": "FLIPs a newly-mounted element from a same-id element that just unmounted",
+              "fullName": "layoutId (shared-element crossfade) FLIPs a newly-mounted element from a same-id element that just unmounted"
+            }
+          ]
+        },
+        {
+          "path": "packages/motion/tests/conformance/initial-only.test.ts",
+          "role": "test",
+          "sha256": "1754773467e3cbe7cd48880f641fa59f8a7ebb0da6e0c589c8fe022a03638571",
+          "cases": [
+            {
+              "id": "conformance:initial-only-no-style-materialization",
+              "testName": "does not materialize inline styles for an initial target without animate",
+              "fullName": "initial-only style materialization does not materialize inline styles for an initial target without animate"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "motion-runtime-differential",
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "motion-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact host rendering, Motion-only prop filtering, and child update behavior against motion/react@12.42.2.",
+      "notes": "Runs exact host rendering, Motion-only prop filtering, and child update behavior against motion/react@12.42.2. Exit/layout/layoutId/initial-only contracts live in the ordinary motion project and are cited through the divergence ledger.",
       "files": [
         {
           "path": "packages/motion/tests/differential/parity.test.ts",
@@ -320,54 +378,6 @@
           "path": "packages/motion/tests/_fixtures/render-diff.tsrx",
           "role": "support",
           "sha256": "8ba1063957f73ac5383fc83ed4032a144d3f64fb6f70fb3afd58711eac0794fb"
-        },
-        {
-          "path": "packages/motion/tests/conformance/exit.test.ts",
-          "role": "test",
-          "cases": [
-            {
-              "id": "conformance:exit-cleanup-before-detach",
-              "testName": "animates a clone of the leaving element, removing it when the exit finishes",
-              "fullName": "animates a clone of the leaving element, removing it when the exit finishes"
-            }
-          ],
-          "sha256": "0b27f6d201fe78402600854568860e1e53863f22d8777e957a21c32ad9a12b17"
-        },
-        {
-          "path": "packages/motion/tests/conformance/layout.test.ts",
-          "role": "test",
-          "cases": [
-            {
-              "id": "conformance:bounded-layout-flip",
-              "testName": "FLIPs from the old box to the new when layout changes between renders",
-              "fullName": "FLIPs from the old box to the new when layout changes between renders"
-            }
-          ],
-          "sha256": "1258b56384f10bd387f840d6e0df6cfd89a95a36607fa17ad50df05f00b7be92"
-        },
-        {
-          "path": "packages/motion/tests/conformance/layoutId.test.ts",
-          "role": "test",
-          "cases": [
-            {
-              "id": "conformance:bounded-layoutId",
-              "testName": "FLIPs a newly-mounted element from a same-id element that just unmounted",
-              "fullName": "FLIPs a newly-mounted element from a same-id element that just unmounted"
-            }
-          ],
-          "sha256": "6ef0e171db01be11c1ed973c2fcd5527468eacc893900b25587c6eff9cfa8bc8"
-        },
-        {
-          "path": "packages/motion/tests/conformance/initial-only.test.ts",
-          "role": "test",
-          "cases": [
-            {
-              "id": "conformance:initial-only-no-style-materialization",
-              "testName": "does not materialize inline styles for an initial target without animate",
-              "fullName": "does not materialize inline styles for an initial target without animate"
-            }
-          ],
-          "sha256": "1754773467e3cbe7cd48880f641fa59f8a7ebb0da6e0c589c8fe022a03638571"
         }
       ]
     }

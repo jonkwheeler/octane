@@ -127,13 +127,13 @@
     },
     {
       "path": "packages/motion/typetests/adapted/types.test-d.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Repo-authored adapted public-surface type probes against @octanejs/motion."
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Repo-authored adapted public-surface type probes against @octanejs/motion, paired one-for-one with the pristine type lane via packages/motion/typetests/assertions.md."
     },
     {
       "path": "packages/motion/typetests/pristine/types.test-d.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Repo-authored pristine public-surface type probes against motion/react@12.42.2."
+      "disposition": "pristine-upstream-suite",
+      "oracle": "Repo-authored pristine public-surface type probes against motion/react@12.42.2, paired one-for-one with the adapted type lane via packages/motion/typetests/assertions.md."
     }
   ]
 }
