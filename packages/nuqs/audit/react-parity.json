@@ -101,9 +101,9 @@
       "notes": "Optional crosswalk of Octane-only divergence probes to structured manifest divergences. Probes remain ordinary nuqs Vitest coverage and are not required adapted-parity ownership; this lane is not executed by run-required.",
       "files": [
         {
-          "path": "packages/nuqs/tests/conformance/core.test.ts",
+          "path": "packages/nuqs/tests/parity/rsc-cache.test.ts",
           "role": "test",
-          "sha256": "e45317036461928e2f37125bde37b05338a54c32e5d5150962833e0ccec19a9e",
+          "sha256": "6e131bf7b45922d161e926648017c1b56d198fa91829de661a0d00381fe66311",
           "cases": [
             {
               "id": "adapted:nuqs-rsc-cache",
