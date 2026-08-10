@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-dropzone/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/react-dropzone/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-dropzone/tests/adapted"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:ts|tsx)$"
-      ],
+      "roots": ["packages/react-dropzone/tests/adapted"],
+      "include": ["\\.(?:test|spec)\\.(?:ts|tsx)$"],
       "exclude": []
     }
   },
@@ -98,7 +90,7 @@
         {
           "path": "packages/react-dropzone/audit/test-classifications.json",
           "role": "support",
-          "sha256": "d8dc8d88a3d09943fe5ac61d2c9b5711067f8a7a9bf1f5e0ae8b8d6699ef2e71"
+          "sha256": "cb8fc1cdda2c27f8e67b5dcf6fa07390d8e9566a45da683b1a9d3f25cdc320c0"
         },
         {
           "path": "packages/react-dropzone/audit/transformation-ledger.json",
@@ -108,12 +100,12 @@
         {
           "path": "scripts/react-parity/react-dropzone-evidence.mjs",
           "role": "support",
-          "sha256": "e14a2d189fef5ec7351dacd835a5b38e9030c73d09c374d07458194baec01111"
+          "sha256": "253454eb51c7f0e0525073600f04f77e08cdca93e213aa208e2ec71c1b95cfe8"
         },
         {
           "path": "scripts/react-parity/react-dropzone-evidence-lib.mjs",
           "role": "support",
-          "sha256": "6a8548270fbeced3f57fc4cc47706832991bac4133bb3f8af0cff4319a41ac69"
+          "sha256": "531eabaadcc684473b41a7079362031d0684427d7f07e89998742724f2943e04"
         }
       ]
     },

@@ -1638,6 +1638,122 @@
     {
       "path": "packages/react-dropzone/tests/adapted/utils/index.spec.ts",
       "disposition": "adapted-octane-contract"
+    },
+    {
+      "path": "packages/react-dropzone/tests/adoption/package-contract.test.mjs",
+      "disposition": "octane-only-adoption"
+    },
+    {
+      "path": "packages/react-dropzone/tests/adoption/playground.browser.test.mjs",
+      "disposition": "octane-only-adoption"
+    },
+    {
+      "path": "packages/react-dropzone/tests/differential/acquisition-u4.test.ts",
+      "disposition": "react-octane-differential"
+    },
+    {
+      "path": "packages/react-dropzone/tests/differential/root-u3.test.ts",
+      "disposition": "react-octane-differential"
+    },
+    {
+      "path": "packages/react-dropzone/tests/differential/utils.test.ts",
+      "disposition": "react-octane-differential"
+    },
+    {
+      "path": "packages/react-dropzone/tests/pristine/upstream-runtime.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper"
+    },
+    {
+      "path": "packages/react-dropzone/tests/probes/architecture.test.ts",
+      "disposition": "octane-only-framework-contract"
+    },
+    {
+      "path": "packages/react-dropzone/tests/probes/browser/browser.test.ts",
+      "disposition": "octane-only-framework-contract"
+    },
+    {
+      "path": "packages/react-dropzone/tests/probes/hydration.test.ts",
+      "disposition": "octane-only-framework-contract"
+    },
+    {
+      "path": "packages/react-dropzone/tests/probes/packed-exports.test.mjs",
+      "disposition": "octane-only-framework-contract"
+    },
+    {
+      "path": "packages/react-dropzone/tests/probes/server.test.ts",
+      "disposition": "octane-only-framework-contract"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/accept.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/all.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/basic.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/events.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/file-dialog.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/hook.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/plugin.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/accept.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/all.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/basic.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/events.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/file-dialog.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/hook.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/plugin.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/refs.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/pristine/validator.tsx",
+      "disposition": "type-evidence-pristine-copy"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/refs.tsx",
+      "disposition": "type-evidence-adapted"
+    },
+    {
+      "path": "packages/react-dropzone/typetests/validator.tsx",
+      "disposition": "type-evidence-adapted"
     }
   ]
 }

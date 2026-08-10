@@ -1,9 +1,72 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { relative, resolve, sep } from 'node:path';
 
 const hash = (path) => createHash('sha256').update(readFileSync(path)).digest('hex');
 const load = (root, path) => JSON.parse(readFileSync(resolve(root, path), 'utf8'));
+const posix = (value) => value.split(sep).join('/');
+
+const PORT_AUTHORED_DISPOSITIONS = new Set([
+	'adapted-octane-contract',
+	'react-octane-differential',
+	'unmodified-upstream-suite-wrapper',
+	'octane-only-framework-contract',
+	'octane-only-package-contract',
+	'octane-only-adoption',
+	'type-evidence-pristine-copy',
+	'type-evidence-adapted',
+]);
+
+const RUNTIME_TEST_PATTERN = /\.(?:test|spec)\.(?:ts|tsx|mjs)$/;
+const TYPE_PROGRAM_PATTERN = /\.tsx$/;
+
+/**
+ * Discover every port-authored test root under the binding: Vitest specs,
+ * node:test adoption/packed probes, and both type-program trees.
+ */
+export function discoverReactDropzoneAuthoredTests(root) {
+	const prefix = 'packages/react-dropzone';
+	const discovered = [];
+
+	const walk = (relativeRoot, predicate) => {
+		const absolute = resolve(root, relativeRoot);
+		if (!existsSync(absolute)) return;
+		for (const entry of readdirSync(absolute, { recursive: true, withFileTypes: true })) {
+			if (!entry.isFile()) continue;
+			const absolutePath = resolve(entry.parentPath ?? entry.path, entry.name);
+			const portable = posix(relative(root, absolutePath));
+			if (!predicate(portable, entry.name)) continue;
+			discovered.push(portable);
+		}
+	};
+
+	walk(`${prefix}/tests`, (_portable, name) => RUNTIME_TEST_PATTERN.test(name));
+	walk(`${prefix}/typetests`, (_portable, name) => TYPE_PROGRAM_PATTERN.test(name));
+
+	return [...new Set(discovered)].sort();
+}
+
+export function classifyReactDropzoneAuthoredPath(path) {
+	if (path.startsWith('packages/react-dropzone/tests/adapted/'))
+		return { path, disposition: 'adapted-octane-contract' };
+	if (path.startsWith('packages/react-dropzone/tests/differential/'))
+		return { path, disposition: 'react-octane-differential' };
+	if (path === 'packages/react-dropzone/tests/pristine/upstream-runtime.test.ts')
+		return { path, disposition: 'unmodified-upstream-suite-wrapper' };
+	if (path.startsWith('packages/react-dropzone/tests/probes/'))
+		return { path, disposition: 'octane-only-framework-contract' };
+	if (path.startsWith('packages/react-dropzone/tests/adoption/'))
+		return { path, disposition: 'octane-only-adoption' };
+	if (path.startsWith('packages/react-dropzone/typetests/pristine/'))
+		return { path, disposition: 'type-evidence-pristine-copy' };
+	if (path.startsWith('packages/react-dropzone/typetests/'))
+		return { path, disposition: 'type-evidence-adapted' };
+	return { path, disposition: 'octane-only-package-contract' };
+}
+
+export function buildReactDropzonePortAuthored(root) {
+	return discoverReactDropzoneAuthoredTests(root).map(classifyReactDropzoneAuthoredPath);
+}
 
 export function verifyReactDropzoneEvidence(root) {
 	const prefix = 'packages/react-dropzone';
@@ -36,13 +99,16 @@ export function verifyReactDropzoneEvidence(root) {
 	)
 		throw new Error('non-title-matched upstream cases require a rationale');
 
-	const inventories = ['adapted-dom.json'].map((name) =>
-		load(root, `${prefix}/audit/runtime-inventories/${name}`),
-	);
-	const authored = inventories.flatMap(({ files }) => files).sort();
-	const classifiedAuthored = classifications.portAuthored.map(({ path }) => path).sort();
-	if (JSON.stringify(authored) !== JSON.stringify(classifiedAuthored))
-		throw new Error('every port-authored runtime test file must be classified exactly once');
+	const discovered = discoverReactDropzoneAuthoredTests(root);
+	const classifiedAuthored = (classifications.portAuthored ?? []).map(({ path }) => path).sort();
+	if (JSON.stringify(discovered) !== JSON.stringify(classifiedAuthored))
+		throw new Error(
+			'every port-authored runtime/type test must be classified exactly once (discovered all test roots)',
+		);
+	for (const entry of classifications.portAuthored ?? []) {
+		if (!PORT_AUTHORED_DISPOSITIONS.has(entry.disposition))
+			throw new Error(`${entry.path}: unknown port-authored disposition ${entry.disposition}`);
+	}
 
 	const types = load(root, `${prefix}/audit/type-inventories/parity.json`);
 	if (types.pristine.length !== 9 || types.adapted.length !== 9)

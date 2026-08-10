@@ -2,8 +2,9 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildReactDropzonePortAuthored } from './react-dropzone-evidence-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const read = (path) => readFileSync(resolve(root, path));
@@ -89,14 +90,11 @@ const upstreamCases = upstream.cases.map((entry) => {
 					: 'The byte-exact React oracle executes this state-machine case; adapted contract, acquisition, and differential lanes cover its observable Octane boundary.',
 			};
 });
-const authoredFiles = adaptedInventories.flatMap(({ files }) => files).sort();
+const portAuthored = buildReactDropzonePortAuthored(root);
 write('packages/react-dropzone/audit/test-classifications.json', {
 	schemaVersion: 1,
 	upstreamCases,
-	portAuthored: authoredFiles.map((path) => ({
-		path,
-		disposition: 'adapted-octane-contract',
-	})),
+	portAuthored,
 });
 
 execFileSync(
@@ -111,5 +109,5 @@ execFileSync(
 );
 
 console.log(
-	`react-dropzone evidence generated: ${upstreamCases.length} upstream cases, ${typeNames.length} type pairs, ${authoredFiles.length} authored tests`,
+	`react-dropzone evidence generated: ${upstreamCases.length} upstream cases, ${typeNames.length} type pairs, ${portAuthored.length} authored tests`,
 );
