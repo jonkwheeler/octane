@@ -18,7 +18,7 @@ export function subSlot(slot: symbol | undefined, tag: string): symbol {
 	if (slot === undefined) {
 		let bare = bareTagCache.get(tag);
 		if (bare === undefined) {
-			bare = Symbol.for(`@octanejs/react-window:${tag}`);
+			bare = Symbol.for(`@octanejs/window:${tag}`);
 			bareTagCache.set(tag, bare);
 		}
 		return bare;

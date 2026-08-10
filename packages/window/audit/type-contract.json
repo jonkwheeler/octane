@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "sharedProgram": "packages/react-window/typetests/parity.test-d.ts",
+  "sharedProgram": "packages/window/typetests/parity.test-d.ts",
   "transformationPolicy": {
     "allowedSourceTransformations": [],
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/react-window/typetests/tsconfig.pristine.json",
-      "moduleAlias": "packages/react-window/upstream/npm/dist/react-window.d.ts"
+      "project": "packages/window/typetests/tsconfig.pristine.json",
+      "moduleAlias": "packages/window/upstream/npm/dist/react-window.d.ts"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/react-window/typetests/tsconfig.adapted.json",
-      "moduleAlias": "packages/react-window/src/index.ts"
+      "project": "packages/window/typetests/tsconfig.adapted.json",
+      "moduleAlias": "packages/window/src/index.ts"
     }
   },
   "assertionGroups": [

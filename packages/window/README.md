@@ -1,4 +1,4 @@
-# @octanejs/react-window
+# @octanejs/window
 
 The exact [`react-window@2.3.0`](https://github.com/bvaughn/react-window) API for
 the [Octane](https://github.com/octanejs/octane) renderer. Change the package
@@ -7,11 +7,11 @@ imperative-scrolling contracts.
 
 ```diff
 -import { List } from 'react-window';
-+import { List } from '@octanejs/react-window';
++import { List } from '@octanejs/window';
 ```
 
 ```tsx
-import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/react-window';
+import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/window';
 
 function Row({ index, style, ariaAttributes }: RowComponentProps) {
 	return <div {...ariaAttributes} style={style}>{'Row ' + index}</div>;

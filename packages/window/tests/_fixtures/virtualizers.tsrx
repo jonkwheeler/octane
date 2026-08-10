@@ -1,9 +1,4 @@
-import {
-	Grid,
-	List,
-	type CellComponentProps,
-	type RowComponentProps,
-} from '@octanejs/react-window';
+import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/window';
 
 type RowData = { prefix: string };
 type CellData = { prefix: string };

@@ -28,7 +28,7 @@ function inventoryTypeGroups(source) {
 function auditTypeContract(source, contract) {
 	assert.deepEqual(inventoryTypeGroups(source), contract.assertionGroups);
 	assert.deepEqual(contract.transformationPolicy.allowedSourceTransformations, []);
-	assert.equal(contract.sharedProgram, 'packages/react-window/typetests/parity.test-d.ts');
+	assert.equal(contract.sharedProgram, 'packages/window/typetests/parity.test-d.ts');
 }
 
 function reject(compiler, project) {
@@ -48,11 +48,11 @@ function reject(compiler, project) {
 }
 
 test('the pristine declaration oracle rejects a missing Grid coordinate', () => {
-	reject('tsc', 'packages/react-window/typetests/tsconfig.negative-pristine.json');
+	reject('tsc', 'packages/window/typetests/tsconfig.negative-pristine.json');
 });
 
 test('the adapted declaration surface rejects the same missing Grid coordinate', () => {
-	reject('tsrx-tsc', 'packages/react-window/typetests/tsconfig.negative-adapted.json');
+	reject('tsrx-tsc', 'packages/window/typetests/tsconfig.negative-adapted.json');
 });
 
 test('every shared type assertion group is byte-accounted for both compilers', async () => {

@@ -18,11 +18,11 @@ beforeEach(() => {
 
 afterEach(() => restoreResizeObserver?.());
 
-describe('@octanejs/react-window hydration', () => {
+describe('@octanejs/window hydration', () => {
 	it('adopts server List and Grid nodes and keeps virtualization live', async () => {
 		const server = await renderHydrationFixture(
 			'react-window',
-			'packages/react-window/tests/ssr/_fixtures/server.tsx',
+			'packages/window/tests/ssr/_fixtures/server.tsx',
 			'ReactWindowServerFixture',
 		);
 		const container = document.createElement('div');

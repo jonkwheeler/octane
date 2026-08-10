@@ -1,5 +1,5 @@
 ---
-'@octanejs/react-window': patch
+'@octanejs/window': patch
 ---
 
 Add an exact Octane port of `react-window@2.3.0`, including `List`, `Grid`,

@@ -424,19 +424,6 @@
       "verified": "2026-08-06"
     },
     {
-      "name": "@octanejs/react-window",
-      "version": "0.0.1",
-      "category": "Data-heavy screens",
-      "upstream": { "package": "react-window", "version": "2.3.0" },
-      "surface": "Provisional complete exact port of the react-window 2.3.0 root surface: List, Grid, getScrollbarSize, useDynamicRowHeight, four imperative-ref hooks, and all eight public types. The byte-locked pristine React suite and generated Octane adaptation each execute all 14 upstream files and all 117 cases; shared differential, SSR, hydration, and assertion-level public type lanes are required by the React parity manifest. Final Chromium/Firefox browser and executable CommonJS package-condition evidence remain pending shared infrastructure PRs #548 and #550.",
-      "divergences": [
-        "Octane reserves the second raw function-component invocation argument for its internal block ABI; public props and rendered behavior match, so instrumentation should not assert React's undocumented undefined second argument.",
-        "Keyed state and DOM identity are preserved, but sibling effect-log order and equal-prop rerender counts may differ after reordering because Octane schedules moved blocks and memoizes unchanged children differently."
-      ],
-      "ssr": "Supported and tested — defaultHeight/defaultWidth produce deterministic bounded List and Grid markup without browser globals, and hydration adopts the server nodes before live scrolling and measurement.",
-      "verified": "2026-08-03"
-    },
-    {
       "name": "@octanejs/recharts",
       "version": "0.1.30",
       "category": "Data-heavy screens",
@@ -891,6 +878,19 @@
       "verified": "2026-08-02"
     },
     {
+      "name": "@octanejs/window",
+      "version": "0.0.1",
+      "category": "Data-heavy screens",
+      "upstream": { "package": "react-window", "version": "2.3.0" },
+      "surface": "Provisional complete exact port of the react-window 2.3.0 root surface: List, Grid, getScrollbarSize, useDynamicRowHeight, four imperative-ref hooks, and all eight public types. The byte-locked pristine React suite and generated Octane adaptation each execute all 14 upstream files and all 117 cases; shared differential, SSR, hydration, and assertion-level public type lanes are required by the React parity manifest. Final Chromium/Firefox browser and executable CommonJS package-condition evidence remain pending shared infrastructure PRs #548 and #550.",
+      "divergences": [
+        "Octane reserves the second raw function-component invocation argument for its internal block ABI; public props and rendered behavior match, so instrumentation should not assert React's undocumented undefined second argument.",
+        "Keyed state and DOM identity are preserved, but sibling effect-log order and equal-prop rerender counts may differ after reordering because Octane schedules moved blocks and memoizes unchanged children differently."
+      ],
+      "ssr": "Supported and tested — defaultHeight/defaultWidth produce deterministic bounded List and Grid markup without browser globals, and hydration adopts the server nodes before live scrolling and measurement.",
+      "verified": "2026-08-03"
+    },
+    {
       "name": "@octanejs/zustand",
       "version": "0.1.32",
       "category": "Shared state",
@@ -1012,7 +1012,7 @@
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
     "react-stately": "@octanejs/aria",
-    "react-window": "@octanejs/react-window",
+    "react-window": "@octanejs/window",
     "recharts": "@octanejs/recharts",
     "shadcn": "@octanejs/shadcn",
     "sonner": "@octanejs/sonner",

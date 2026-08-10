@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ReactWindowServerFixture } from './_fixtures/server';
 
-describe('@octanejs/react-window server rendering', () => {
+describe('@octanejs/window server rendering', () => {
 	it('uses default dimensions without accessing browser layout APIs', () => {
 		expect(typeof document).toBe('undefined');
 		expect(typeof ResizeObserver).toBe('undefined');

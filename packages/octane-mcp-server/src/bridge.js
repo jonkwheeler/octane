@@ -30,7 +30,7 @@ export const KNOWN_BINDINGS = {
 	'@tanstack/react-pacer': '@octanejs/tanstack-pacer',
 	'@tanstack/react-table': '@octanejs/tanstack-table',
 	'@tanstack/react-virtual': '@octanejs/tanstack-virtual',
-	'react-window': '@octanejs/react-window',
+	'react-window': '@octanejs/window',
 	'framer-motion': '@octanejs/motion',
 	motion: '@octanejs/motion',
 	'@stylexjs/stylex': '@octanejs/stylex',

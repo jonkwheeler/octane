@@ -20,7 +20,7 @@ package metadata, and license are vendored under `upstream/` for provenance and
 parity evidence. They are audit inputs only and must remain excluded from the
 published package.
 
-Run `pnpm --dir packages/react-window upstream:verify` to verify all 58 vendored
+Run `pnpm --dir packages/window upstream:verify` to verify all 58 vendored
 artifacts, the exact file set, the published declaration bundle, the 14 upstream
 test artifacts and their 117 test registrations, package metadata, and the
 complete root export inventory.

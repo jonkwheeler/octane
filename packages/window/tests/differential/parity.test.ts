@@ -18,7 +18,7 @@ function scroll(
 	element.dispatchEvent(new Event('scroll', { bubbles: true }));
 }
 
-describe('differential: @octanejs/react-window vs react-window', () => {
+describe('differential: @octanejs/window vs react-window', () => {
 	// @parity-case differential:react-window-list
 	it('List renders and scrolls through the same bounded rows', async () => {
 		const differential = await mountDifferential(fixture, 'ListFixture', undefined, cache);

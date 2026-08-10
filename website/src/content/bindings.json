@@ -78,7 +78,7 @@
     "packages": [
       "@octanejs/tanstack-table",
       "@octanejs/tanstack-virtual",
-      "@octanejs/react-window",
+      "@octanejs/window",
       "@octanejs/recharts",
       "@octanejs/visx",
       "@octanejs/react-map-gl"

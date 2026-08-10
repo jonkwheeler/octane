@@ -1738,7 +1738,7 @@ export default defineConfig({
 			{
 				test: {
 					name: 'react-window-feasibility',
-					include: ['packages/react-window/tests/feasibility/**/*.test.ts'],
+					include: ['packages/window/tests/feasibility/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1756,22 +1756,22 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-window-pristine',
-					include: ['packages/react-window/upstream/lib/**/*.test.{ts,tsx}'],
+					include: ['packages/window/upstream/lib/**/*.test.{ts,tsx}'],
 					environment: 'jsdom',
-					setupFiles: ['packages/react-window/upstream/vitest.setup.js'],
+					setupFiles: ['packages/window/upstream/vitest.setup.js'],
 					globals: false,
 				},
 			},
 			{
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-window/tests/upstream/**/*.test.{ts,tsx}'],
+					include: ['packages/window/tests/upstream/**/*.test.{ts,tsx}'],
 				},
 				test: {
 					name: 'react-window-adapted',
-					include: ['packages/react-window/tests/upstream/**/*.test.{ts,tsx}'],
+					include: ['packages/window/tests/upstream/**/*.test.{ts,tsx}'],
 					environment: 'jsdom',
-					setupFiles: ['packages/react-window/tests/upstream-setup.ts'],
+					setupFiles: ['packages/window/tests/upstream-setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
@@ -1792,8 +1792,8 @@ export default defineConfig({
 				test: {
 					name: 'react-window',
 					include: [
-						'packages/react-window/tests/runtime/**/*.test.ts',
-						'packages/react-window/tests/hydration.test.ts',
+						'packages/window/tests/runtime/**/*.test.ts',
+						'packages/window/tests/hydration.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -1812,10 +1812,10 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-window-differential',
-					include: ['packages/react-window/tests/differential/**/*.test.ts'],
+					include: ['packages/window/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
-					globalSetup: ['packages/react-window/tests/differential/_setup.ts'],
-					setupFiles: ['packages/react-window/tests/upstream-setup.ts'],
+					globalSetup: ['packages/window/tests/differential/_setup.ts'],
+					setupFiles: ['packages/window/tests/upstream-setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
@@ -1826,8 +1826,8 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-window$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-window/src/index.ts'),
+							find: /^@octanejs\/window$/,
+							replacement: resolve(import.meta.dirname, 'packages/window/src/index.ts'),
 						},
 						{
 							find: /^@octanejs\/testing-library$/,
@@ -1839,7 +1839,7 @@ export default defineConfig({
 			{
 				test: {
 					name: 'react-window-ssr',
-					include: ['packages/react-window/tests/ssr/**/*.test.ts'],
+					include: ['packages/window/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},

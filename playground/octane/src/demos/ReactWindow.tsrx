@@ -1,9 +1,4 @@
-import {
-	Grid,
-	List,
-	type CellComponentProps,
-	type RowComponentProps,
-} from '@octanejs/react-window';
+import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/window';
 
 function Row({ index, style, ariaAttributes }: RowComponentProps) {
 	return <div

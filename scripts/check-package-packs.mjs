@@ -393,7 +393,7 @@ async function validatePackedConsumer(tempRoot, archives) {
 					'@apollo/client': '4.2.6',
 					'@octanejs/apollo-client': `file:${requireArchive(archives, '@octanejs/apollo-client')}`,
 					'@octanejs/hook-form': `file:${requireArchive(archives, '@octanejs/hook-form')}`,
-					'@octanejs/react-window': `file:${requireArchive(archives, '@octanejs/react-window')}`,
+					'@octanejs/window': `file:${requireArchive(archives, '@octanejs/window')}`,
 					'@octanejs/three': `file:${requireArchive(archives, '@octanejs/three')}`,
 					'@types/three': '0.172.0',
 					graphql: '^16.11.0',
@@ -415,7 +415,7 @@ async function validatePackedConsumer(tempRoot, archives) {
 		`import { ApolloClient, InMemoryCache } from '@octanejs/apollo-client';
 import { ApolloProvider, useApolloClient } from '@octanejs/apollo-client/react';
 import { useForm } from '@octanejs/hook-form';
-import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/react-window';
+import { Grid, List, type CellComponentProps, type RowComponentProps } from '@octanejs/window';
 import { Canvas } from '@octanejs/three';
 import { ThreeScene } from './ThreeScene.three.tsrx';
 
@@ -504,7 +504,7 @@ import {
 	type ListImperativeAPI,
 	type ListProps,
 	type RowComponentProps,
-} from '@octanejs/react-window';
+} from '@octanejs/window';
 import config, { threeRenderers } from '@octanejs/three/config';
 import testing, { create, fireEvent } from '@octanejs/three/testing';
 import { map_iterable } from 'octane/tsrx-iterable';
@@ -693,7 +693,7 @@ process.stdout.write(JSON.stringify(result));`,
 			`binding resolved a second Octane runtime:\n  app: ${directRuntime}\n  binding: ${peerRuntime}`,
 		);
 	}
-	const reactWindowEntry = consumerRequire.resolve('@octanejs/react-window');
+	const reactWindowEntry = consumerRequire.resolve('@octanejs/window');
 	const reactWindowPeerRuntime = realpathSync(createRequire(reactWindowEntry).resolve('octane'));
 	if (reactWindowPeerRuntime !== directRuntime) {
 		throw new Error(

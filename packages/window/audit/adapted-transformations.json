@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "source": "packages/react-window/upstream/lib/**/*.test.{ts,tsx}",
-  "destination": "packages/react-window/tests/upstream/**/*.test.{ts,tsx}",
+  "source": "packages/window/upstream/lib/**/*.test.{ts,tsx}",
+  "destination": "packages/window/tests/upstream/**/*.test.{ts,tsx}",
   "caseInventory": {
     "registrations": 117,
     "sha256": "d9a7db848a6d2cdeac1268f8757e9563b06890958a04279b478b69bd7f1c570c"

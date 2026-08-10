@@ -30,7 +30,7 @@ export async function setup() {
 		sourcefile: fixture,
 	}).code;
 	const rewritten = transformed
-		.replace(/from\s+["']@octanejs\/react-window["']/g, 'from "react-window"')
+		.replace(/from\s+["']@octanejs\/window["']/g, 'from "react-window"')
 		.replace(/from\s+["']octane["']/g, 'from "react"');
 	const slug = basename(fixture).replace(/\.tsrx$/, '');
 	writeFileSync(join(cache, `${slug}-${hashString(fixture)}.js`), rewritten);

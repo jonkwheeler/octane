@@ -16,12 +16,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-window/src"],
+      "roots": ["packages/window/src"],
       "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-window/tests/upstream"],
+      "roots": ["packages/window/tests/upstream"],
       "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
@@ -39,7 +39,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "27733df9c39e7e266ccede2e007d361d99244a9ce3c389637f5c1503e192b3cf"
+      "lockfileSha256": "5863213178679d44030900647009b88871f52e05355b6e76a1537d622943f5f8"
     }
   },
   "lanes": [
@@ -53,16 +53,16 @@
       "notes": "Runs all 14 byte-exact upstream React test files and all 117 inventoried cases unchanged.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/react-window/audit/pristine-runtime.json"
+        "inventory": "packages/window/audit/pristine-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-window/audit/pristine-runtime.json",
+          "path": "packages/window/audit/pristine-runtime.json",
           "role": "support",
           "sha256": "3a2fc37af94500e7975d5faa0ffb5c2983739ad4b486d691cfb282bd5e4c3ed6"
         },
         {
-          "path": "packages/react-window/upstream/SHA256SUMS",
+          "path": "packages/window/upstream/SHA256SUMS",
           "role": "support",
           "sha256": "69d0a2e15466c0f44a6cd477835631f14f181eac149dbdbaa1ed0e01996c56ba"
         }
@@ -78,21 +78,21 @@
       "notes": "Runs all 117 adapted upstream cases against the source-correspondent Octane production modules, with every transformation generated and audited.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/react-window/audit/adapted-runtime.json"
+        "inventory": "packages/window/audit/adapted-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-window/audit/adapted-runtime.json",
+          "path": "packages/window/audit/adapted-runtime.json",
           "role": "support",
           "sha256": "fac9b17df1dd4ed40c11d2d37c1447ad9b4e0d6178f3fe8c46bf3a0aeb431a62"
         },
         {
-          "path": "packages/react-window/audit/adapted-transformations.json",
+          "path": "packages/window/audit/adapted-transformations.json",
           "role": "support",
           "sha256": "045249c61dc37184b40debe36317deb19c49e43fd92e32f90fdeac50c9910160"
         },
         {
-          "path": "packages/react-window/tests/generate-adapted-tests.mjs",
+          "path": "packages/window/tests/generate-adapted-tests.mjs",
           "role": "support",
           "sha256": "584515f956967578e1f4414bbf1b5d1b510f65316919d6ce5470aa79e9c22747"
         }
@@ -109,11 +109,11 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/react-window/typetests/tsconfig.pristine.json"
+        "project": "packages/window/typetests/tsconfig.pristine.json"
       },
       "files": [
         {
-          "path": "packages/react-window/typetests/parity.test-d.ts",
+          "path": "packages/window/typetests/parity.test-d.ts",
           "role": "test",
           "sha256": "05b1d2752a494c5abb84977bec12e9534af6333c5370ab341fc301fe76c6246c",
           "cases": [
@@ -170,7 +170,7 @@
           ]
         },
         {
-          "path": "packages/react-window/audit/type-contract.json",
+          "path": "packages/window/audit/type-contract.json",
           "role": "support",
           "sha256": "15fdc0bd2fc50105b8c4e42399ee6a47be49a3aa8a1e76ea05341c385ff344b0"
         }
@@ -187,11 +187,11 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/react-window/typetests/tsconfig.adapted.json"
+        "project": "packages/window/typetests/tsconfig.adapted.json"
       },
       "files": [
         {
-          "path": "packages/react-window/typetests/parity.test-d.ts",
+          "path": "packages/window/typetests/parity.test-d.ts",
           "role": "test",
           "sha256": "05b1d2752a494c5abb84977bec12e9534af6333c5370ab341fc301fe76c6246c",
           "cases": [
@@ -248,7 +248,7 @@
           ]
         },
         {
-          "path": "packages/react-window/audit/type-contract.json",
+          "path": "packages/window/audit/type-contract.json",
           "role": "support",
           "sha256": "15fdc0bd2fc50105b8c4e42399ee6a47be49a3aa8a1e76ea05341c385ff344b0"
         }
@@ -264,29 +264,29 @@
       "notes": "Compiles the same TSX fixture for Octane and React, then byte-compares List and Grid DOM after native scrolling.",
       "files": [
         {
-          "path": "packages/react-window/tests/differential/parity.test.ts",
+          "path": "packages/window/tests/differential/parity.test.ts",
           "role": "test",
           "sha256": "57634fa9ed0c0633d90d648fba9f247005262ee0ed2c099725a27e5bccc9d66e",
           "cases": [
             {
               "id": "differential:react-window-list",
               "testName": "List renders and scrolls through the same bounded rows",
-              "fullName": "differential: @octanejs/react-window vs react-window List renders and scrolls through the same bounded rows"
+              "fullName": "differential: @octanejs/window vs react-window List renders and scrolls through the same bounded rows"
             },
             {
               "id": "differential:react-window-grid",
               "testName": "Grid renders and scrolls through the same bounded cells",
-              "fullName": "differential: @octanejs/react-window vs react-window Grid renders and scrolls through the same bounded cells"
+              "fullName": "differential: @octanejs/window vs react-window Grid renders and scrolls through the same bounded cells"
             }
           ]
         },
         {
-          "path": "packages/react-window/tests/_fixtures/virtualizers.tsrx",
+          "path": "packages/window/tests/_fixtures/virtualizers.tsrx",
           "role": "support",
           "sha256": "4e9170dc2c43dde1832daf39d5297f924b06a192102978711829a21071cdfa86"
         },
         {
-          "path": "packages/react-window/tests/differential/_setup.ts",
+          "path": "packages/window/tests/differential/_setup.ts",
           "role": "support",
           "sha256": "6b6079402ebdd644af705f1b88a6302421f509c09355259d856e40bb7f4422e8"
         },
@@ -308,7 +308,7 @@
       "classification": "framework-abi",
       "consumerImpact": "Mocks that assert the complete raw component invocation tuple observe an Octane internal object as the second argument.",
       "migrationGuidance": "Assert component props or rendered behavior instead of React's undocumented second invocation argument.",
-      "owner": "@octanejs/react-window",
+      "owner": "@octanejs/window",
       "reviewCondition": "Review if Octane removes the internal component block argument or React changes its component invocation ABI."
     },
     {
@@ -320,7 +320,7 @@
       "classification": "scheduling",
       "consumerImpact": "Effect-log order and render-count assertions may differ after reversing keyed rows while visible content and state identity remain equal.",
       "migrationGuidance": "Do not depend on sibling effect ordering or rerenders of equal-prop keyed children; assert identity and final rendered state.",
-      "owner": "@octanejs/react-window",
+      "owner": "@octanejs/window",
       "reviewCondition": "Review if Octane changes keyed reconciliation or effect scheduling semantics."
     }
   ]
