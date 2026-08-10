@@ -817,10 +817,20 @@ function bindEventFromInitializer(name, initializer, bindings) {
 	else bindings.delete(name);
 }
 
+function isTerminalStatement(node) {
+	return (
+		ts.isReturnStatement(node) ||
+		ts.isThrowStatement(node) ||
+		ts.isBreakStatement(node) ||
+		ts.isContinueStatement(node)
+	);
+}
+
 /**
  * Walk reachable statements in pointer/type and record act-wrapped
- * construction→dispatchEvent dataflow. Constant-false branches are skipped so
- * decoy tokens in dead code cannot satisfy the contract.
+ * construction→dispatchEvent dataflow. Compile-time dead code is skipped
+ * (constant-false branches, short-circuit dead arms, and statements after
+ * unconditional return/throw) so decoy tokens cannot satisfy the contract.
  */
 export function authoredUserEventBehavior(source, fileName) {
 	const sourceFile = ts.createSourceFile(
@@ -843,69 +853,164 @@ export function authoredUserEventBehavior(source, fileName) {
 		behaviors.add(formatEventFact(fnName, target, construction));
 	}
 
-	function visit(fnName, node, bindings, insideAct) {
-		if (ts.isIfStatement(node)) {
-			const thenReachable = !isConstantFalse(node.expression);
-			const elseReachable = !isConstantTrue(node.expression);
-			if (thenReachable) visit(fnName, node.thenStatement, bindings, insideAct);
-			if (elseReachable && node.elseStatement) {
-				visit(fnName, node.elseStatement, bindings, insideAct);
+	function visitExpression(fnName, node, bindings, insideAct) {
+		if (!node) return;
+		if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node)) {
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			return;
+		}
+		if (ts.isBinaryExpression(node)) {
+			const op = node.operatorToken.kind;
+			if (op === ts.SyntaxKind.AmpersandAmpersandToken) {
+				visitExpression(fnName, node.left, bindings, insideAct);
+				if (!isConstantFalse(node.left)) {
+					visitExpression(fnName, node.right, bindings, insideAct);
+				}
+				return;
+			}
+			if (op === ts.SyntaxKind.BarBarToken) {
+				visitExpression(fnName, node.left, bindings, insideAct);
+				if (!isConstantTrue(node.left)) {
+					visitExpression(fnName, node.right, bindings, insideAct);
+				}
+				return;
+			}
+			if (op === ts.SyntaxKind.EqualsToken && ts.isIdentifier(node.left)) {
+				bindEventFromInitializer(node.left.text, node.right, bindings);
+				visitExpression(fnName, node.right, bindings, insideAct);
+				return;
+			}
+		}
+		if (ts.isConditionalExpression(node)) {
+			visitExpression(fnName, node.condition, bindings, insideAct);
+			if (!isConstantFalse(node.condition)) {
+				visitExpression(fnName, node.whenTrue, bindings, insideAct);
+			}
+			if (!isConstantTrue(node.condition)) {
+				visitExpression(fnName, node.whenFalse, bindings, insideAct);
 			}
 			return;
 		}
-		if ((ts.isWhileStatement(node) || ts.isDoStatement(node)) && isConstantFalse(node.expression)) {
+		if (ts.isCallExpression(node)) {
+			const target = callTargetText(node.expression);
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			if (target === 'act' && node.arguments.length > 0) {
+				const cb = node.arguments[0];
+				if ((ts.isArrowFunction(cb) || ts.isFunctionExpression(cb)) && cb.body) {
+					if (ts.isBlock(cb.body)) {
+						visitStatements(fnName, cb.body.statements, bindings, true);
+					} else {
+						visitExpression(fnName, cb.body, bindings, true);
+					}
+				}
+				for (let i = 1; i < node.arguments.length; i++) {
+					visitExpression(fnName, node.arguments[i], bindings, insideAct);
+				}
+			} else {
+				for (const arg of node.arguments ?? []) {
+					visitExpression(fnName, arg, bindings, insideAct);
+				}
+			}
+			recordDispatch(fnName, node, bindings, insideAct);
 			return;
 		}
-		if (ts.isForStatement(node) && node.condition && isConstantFalse(node.condition)) {
+		if (ts.isNewExpression(node)) {
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			for (const arg of node.arguments ?? []) {
+				visitExpression(fnName, arg, bindings, insideAct);
+			}
+			return;
+		}
+		ts.forEachChild(node, function eachChild(child) {
+			visitExpression(fnName, child, bindings, insideAct);
+		});
+	}
+
+	function visitStatement(fnName, node, bindings, insideAct) {
+		if (ts.isBlock(node)) {
+			visitStatements(fnName, node.statements, bindings, insideAct);
+			return;
+		}
+		if (ts.isIfStatement(node)) {
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			if (!isConstantFalse(node.expression)) {
+				visitStatement(fnName, node.thenStatement, bindings, insideAct);
+			}
+			if (node.elseStatement && !isConstantTrue(node.expression)) {
+				visitStatement(fnName, node.elseStatement, bindings, insideAct);
+			}
+			return;
+		}
+		if (ts.isWhileStatement(node) || ts.isDoStatement(node)) {
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			if (!isConstantFalse(node.expression)) {
+				visitStatement(fnName, node.statement, bindings, insideAct);
+			}
+			return;
+		}
+		if (ts.isForStatement(node)) {
+			if (node.initializer) {
+				if (ts.isVariableDeclarationList(node.initializer)) {
+					for (const decl of node.initializer.declarations) {
+						if (ts.isIdentifier(decl.name) && decl.initializer) {
+							bindEventFromInitializer(decl.name.text, decl.initializer, bindings);
+							visitExpression(fnName, decl.initializer, bindings, insideAct);
+						}
+					}
+				} else {
+					visitExpression(fnName, node.initializer, bindings, insideAct);
+				}
+			}
+			if (node.condition) visitExpression(fnName, node.condition, bindings, insideAct);
+			if (node.incrementor) visitExpression(fnName, node.incrementor, bindings, insideAct);
+			if (!(node.condition && isConstantFalse(node.condition))) {
+				visitStatement(fnName, node.statement, bindings, insideAct);
+			}
+			return;
+		}
+		if (ts.isForOfStatement(node) || ts.isForInStatement(node)) {
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			visitStatement(fnName, node.statement, bindings, insideAct);
 			return;
 		}
 		if (ts.isVariableStatement(node)) {
 			for (const decl of node.declarationList.declarations) {
 				if (ts.isIdentifier(decl.name) && decl.initializer) {
 					bindEventFromInitializer(decl.name.text, decl.initializer, bindings);
+					visitExpression(fnName, decl.initializer, bindings, insideAct);
 				}
 			}
+			return;
 		}
-		if (ts.isExpressionStatement(node) && ts.isBinaryExpression(node.expression)) {
-			const expr = node.expression;
-			if (expr.operatorToken.kind === ts.SyntaxKind.EqualsToken && ts.isIdentifier(expr.left)) {
-				bindEventFromInitializer(expr.left.text, expr.right, bindings);
-			}
+		if (ts.isExpressionStatement(node)) {
+			visitExpression(fnName, node.expression, bindings, insideAct);
+			return;
 		}
-		if (ts.isCallExpression(node)) {
-			const target = callTargetText(node.expression);
-			if (target === 'act' && node.arguments.length > 0) {
-				const cb = node.arguments[0];
-				if ((ts.isArrowFunction(cb) || ts.isFunctionExpression(cb)) && cb.body) {
-					visit(fnName, cb.body, bindings, true);
-				}
-			}
-			recordDispatch(fnName, node, bindings, insideAct);
+		if (ts.isReturnStatement(node) || ts.isThrowStatement(node)) {
+			if (node.expression) visitExpression(fnName, node.expression, bindings, insideAct);
+			return;
 		}
 		ts.forEachChild(node, function eachChild(child) {
-			// Variable/if/call handling above already recurses where needed;
-			// skip re-entering those roots via forEachChild to avoid double work
-			// and to keep if-false pruning intact.
-			if (
-				child === node.thenStatement ||
-				child === node.elseStatement ||
-				(ts.isCallExpression(node) &&
-					callTargetText(node.expression) === 'act' &&
-					node.arguments[0] &&
-					(ts.isArrowFunction(node.arguments[0]) || ts.isFunctionExpression(node.arguments[0])) &&
-					child === node.arguments[0])
-			) {
-				return;
+			if (ts.isStatement(child) || ts.isBlock(child)) {
+				visitStatement(fnName, child, bindings, insideAct);
+			} else {
+				visitExpression(fnName, child, bindings, insideAct);
 			}
-			visit(fnName, child, bindings, insideAct);
 		});
+	}
+
+	function visitStatements(fnName, statements, bindings, insideAct) {
+		for (const statement of statements) {
+			visitStatement(fnName, statement, bindings, insideAct);
+			if (isTerminalStatement(statement)) break;
+		}
 	}
 
 	for (const statement of sourceFile.statements) {
 		if (!ts.isFunctionDeclaration(statement) || !statement.name || !statement.body) continue;
 		const fnName = statement.name.text;
 		if (fnName !== 'pointer' && fnName !== 'type') continue;
-		visit(fnName, statement.body, new Map(), false);
+		visitStatements(fnName, statement.body.statements, new Map(), false);
 	}
 	return [...behaviors].sort();
 }
