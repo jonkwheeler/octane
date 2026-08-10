@@ -27,12 +27,12 @@
 			"TanStackDevtoolsPluginProps",
 			"TanStackDevtoolsTheme"
 		],
-		"structure": "fb80a1bf9ab79b0b1a22fa832b614e90a652aacdeca4726596c732be57512026",
+		"structure": "e715645c09989df82c933d66294c590f8cb119ea46ad0cd8be9871dad4096a20",
 		"pairedUpstream": "index.ts"
 	},
 	{
 		"path": "devtools.tsrx",
-		"sha256": "72b021a8559bc7dd2f543333eb0afc1acc7a41039ca81beeeabf7bcdea8d6fd9",
+		"sha256": "82ebccbce881e029d2e2190887d4434fa757c127aa926efbbbdbc0ea21a08218",
 		"exports": [
 			"TanStackDevtools",
 			"TanStackDevtoolsFrameworkInit",

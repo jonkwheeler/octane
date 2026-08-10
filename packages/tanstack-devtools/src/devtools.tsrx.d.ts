@@ -1,5 +1,4 @@
 // Declaration companion for devtools.tsrx.
-import type { OctaneNode } from 'octane';
 import type {
 	ClientEventBusConfig,
 	TanStackDevtoolsConfig,
@@ -8,17 +7,19 @@ import type {
 	TanStackDevtoolsTheme,
 } from '@tanstack/devtools';
 
+// `{} | null | undefined` rather than `unknown` so the `(el, props) => Renderable`
+// callback member of the render/name/trigger unions keeps its parameter inference.
+type Renderable = {} | null | undefined;
+
 type PluginRender =
-	| OctaneNode
-	| ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => OctaneNode);
+	| Renderable
+	| ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => Renderable);
 
 type TriggerProps = {
 	theme: TanStackDevtoolsTheme;
 };
 
-type TriggerRender =
-	| OctaneNode
-	| ((el: HTMLElement, props: TriggerProps) => OctaneNode);
+type TriggerRender = Renderable | ((el: HTMLElement, props: TriggerProps) => Renderable);
 
 export type TanStackDevtoolsOctanePlugin = Omit<TanStackDevtoolsPlugin, 'render' | 'name'> & {
 	render: PluginRender;
@@ -35,6 +36,6 @@ export interface TanStackDevtoolsOctaneInit {
 	eventBusConfig?: ClientEventBusConfig;
 }
 
-export declare const TanStackDevtools: (props: TanStackDevtoolsOctaneInit) => OctaneNode | null;
+export declare const TanStackDevtools: (props: TanStackDevtoolsOctaneInit) => Renderable;
 
 export {};

@@ -211,19 +211,22 @@ function canonicalizeAdapterSource(source, fileName) {
 			'',
 		)
 		.replace(
+			/<DevtoolsPortal\s+key=\{[^}]+\}\s+target=\{([^}]+)\}\s+content=\{([^}]+)\}\s*\/>/g,
+			'createPortal(<>{$2}</>, $1)',
+		)
+		.replace(
 			/<DevtoolsPortal\s+target=\{([^}]+)\}\s+content=\{([^}]+)\}\s*\/>/g,
 			'createPortal(<>{$2}</>, $1)',
+		)
+		.replace(
+			/Object\.entries\(([^)]+)\)\.map\(function map\w+\(\[key,\s*(\w+)\]\)\s*\{\s*return \(\s*createPortal\(<>\{([^}]+)\}<\/>,\s*\2\)\s*\);\s*\}\)/g,
+			'Object.entries($1).map(([key, $2]) => createPortal(<>{$3}</>, $2))',
 		)
 		.replace(
 			/Object\.entries\(([^)]+)\)\.map\(function map\w+\(\[key,\s*(\w+)\]\)\s*\{\s*return createPortal\(<>\{([^}]+)\}<\/>,\s*\2\);\s*\}\)/g,
 			'Object.entries($1).map(([key, $2]) => createPortal(<>{$3}</>, $2))',
 		)
-		.replace(/from '\.\/devtools(?:\.tsx|\.tsrx)?'/g, "from '#adapter-local'")
-		.replace(/from "\.\/devtools(?:\.tsx|\.tsrx)?"/g, 'from "#adapter-local"')
-		.replace(
-			/export type \{\s*TanStackDevtoolsFrameworkPlugin,\s*TanStackDevtoolsFrameworkInit,\s*\} from '#adapter-local'/g,
-			"export type { TanStackDevtoolsFrameworkPlugin, TanStackDevtoolsFrameworkInit } from '#adapter-local'",
-		)
+		.replace(/: RenderableNode =>/g, ': RenderableNode | null =>')
 		.replace(/useRef<HTMLDivElement>\(null\)/g, 'useRef<HTMLDivElement | null>(null)');
 	return text;
 }
@@ -279,8 +282,15 @@ function rewriteImportSpecifiers(source, fileName) {
 	);
 	const replacements = [];
 	for (const statement of sourceFile.statements) {
-		if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
+		if (
+			!(
+				(ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) &&
+				statement.moduleSpecifier &&
+				ts.isStringLiteral(statement.moduleSpecifier)
+			)
+		) {
 			continue;
+		}
 		const specifier = statement.moduleSpecifier.text;
 		const normalized = normalizeSpecifier(specifier);
 		if (normalized === specifier) continue;
