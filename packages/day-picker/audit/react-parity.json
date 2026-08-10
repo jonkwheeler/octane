@@ -16,12 +16,12 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-day-picker/src"],
+      "roots": ["packages/day-picker/src"],
       "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-day-picker/tests/differential"],
+      "roots": ["packages/day-picker/tests/differential"],
       "include": ["parity\\.test\\.ts$"],
       "exclude": []
     }
@@ -39,7 +39,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "af001fd7248c6edd426ec8d3a516c14a1b5026a6586f36bd3fcdd30983ef31bc"
+      "lockfileSha256": "bb615cddd133e60ba3711344d3021a556ef0e9de883e2566919d7217e6b6b76d"
     }
   },
   "lanes": [
@@ -53,11 +53,11 @@
       "notes": "Bounded React/Octane differential: Octane fixtures versus published react-day-picker 10.0.1 on real React for default calendar shape and month navigation.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/react-day-picker/audit/differential-runtime.json"
+        "inventory": "packages/day-picker/audit/differential-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-day-picker/audit/differential-runtime.json",
+          "path": "packages/day-picker/audit/differential-runtime.json",
           "role": "support",
           "sha256": "de615e7ae95e028eae74ccaa3fdd0b1a80daf2faeaddee85a072035ad4b97519"
         },
@@ -67,7 +67,7 @@
           "sha256": "cb89501a524eb8f308d892236bb8b4e467a07f7359cba7879e3e984a26ad86e0"
         },
         {
-          "path": "packages/react-day-picker/audit/upstream-integrity.json",
+          "path": "packages/day-picker/audit/upstream-integrity.json",
           "role": "support",
           "sha256": "89f6591d65ac0c3d42838b2c8c4e531eab7faa005e3978188eac99d9a3f6b263"
         }

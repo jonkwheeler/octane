@@ -1,5 +1,5 @@
 {
-  "name": "@octanejs/react-day-picker",
+  "name": "@octanejs/day-picker",
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
-    "directory": "packages/react-day-picker"
+    "directory": "packages/day-picker"
   },
   "main": "src/index.ts",
   "module": "src/index.ts",

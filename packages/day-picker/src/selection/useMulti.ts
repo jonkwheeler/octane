@@ -4,7 +4,7 @@ import type { DateLib } from '../classes/DateLib.js';
 import { useControlledValue } from '../helpers/useControlledValue.js';
 import type { DayPickerProps, Modifiers, PropsMulti, Selection } from '../types/index.js';
 
-const multiSelectionSlot = Symbol.for('@octanejs/react-day-picker/useMulti/selection');
+const multiSelectionSlot = Symbol.for('@octanejs/day-picker/useMulti/selection');
 
 /**
  * Hook to manage multiple-date selection in the DayPicker component.

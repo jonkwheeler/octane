@@ -6,7 +6,7 @@ import type { DayPickerProps, Modifiers, PropsRange, Selection } from '../types/
 import { addToRange, rangeContainsModifiers } from '../utils/index.js';
 import { rangeIncludesDate } from '../utils/rangeIncludesDate.js';
 
-const rangeSelectionSlot = Symbol.for('@octanejs/react-day-picker/useRange/selection');
+const rangeSelectionSlot = Symbol.for('@octanejs/day-picker/useRange/selection');
 
 /**
  * Hook to manage range selection in the DayPicker component.

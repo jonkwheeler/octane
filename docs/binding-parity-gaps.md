@@ -20,6 +20,7 @@ surface and evidence.
 | `@octanejs/aria` | 0 |
 | `@octanejs/base-ui` | 0 |
 | `@octanejs/cmdk` | 0 |
+| `@octanejs/day-picker` | 0 |
 | `@octanejs/devtools` | 0 |
 | `@octanejs/dexie` | 0 |
 | `@octanejs/dnd-kit` | 0 |
@@ -41,7 +42,6 @@ surface and evidence.
 | `@octanejs/phosphor-icons` | 0 |
 | `@octanejs/radix` | 0 |
 | `@octanejs/rainbowkit` | 0 |
-| `@octanejs/react-day-picker` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/react-map-gl` | 0 |
 | `@octanejs/recharts` | 0 |

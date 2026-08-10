@@ -11,7 +11,7 @@ import type {
 	Selection,
 } from '../types/index.js';
 
-const singleSelectionSlot = Symbol.for('@octanejs/react-day-picker/useSingle/selection');
+const singleSelectionSlot = Symbol.for('@octanejs/day-picker/useSingle/selection');
 
 export type UseSingle<T extends DayPickerProps> = {
 	select: SelectHandler<T>;

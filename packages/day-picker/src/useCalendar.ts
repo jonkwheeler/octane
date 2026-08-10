@@ -13,9 +13,9 @@ import { getWeeks } from './helpers/getWeeks.js';
 import { useControlledValue } from './helpers/useControlledValue.js';
 import type { DayPickerProps } from './types/props.js';
 
-const calendarStateSlot = Symbol.for('@octanejs/react-day-picker/useCalendar/state');
-const calendarTimeZoneEffectSlot = Symbol.for('@octanejs/react-day-picker/useCalendar/time-zone');
-const calendarMemoSlot = Symbol.for('@octanejs/react-day-picker/useCalendar/months');
+const calendarStateSlot = Symbol.for('@octanejs/day-picker/useCalendar/state');
+const calendarTimeZoneEffectSlot = Symbol.for('@octanejs/day-picker/useCalendar/time-zone');
+const calendarMemoSlot = Symbol.for('@octanejs/day-picker/useCalendar/months');
 
 /**
  * Returns the calendar object used by DayPicker custom components.

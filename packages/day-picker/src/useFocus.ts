@@ -6,8 +6,8 @@ import { getNextFocus } from './helpers/getNextFocus.js';
 import type { DayPickerProps, Modifiers, MoveFocusBy, MoveFocusDir } from './types/index.js';
 import type { Calendar } from './useCalendar.js';
 
-const lastFocusedSlot = Symbol.for('@octanejs/react-day-picker/useFocus/last-focused');
-const focusedDaySlot = Symbol.for('@octanejs/react-day-picker/useFocus/focused-day');
+const lastFocusedSlot = Symbol.for('@octanejs/day-picker/useFocus/last-focused');
+const focusedDaySlot = Symbol.for('@octanejs/day-picker/useFocus/focused-day');
 
 export type UseFocus = {
 	/** The date that is currently focused. */

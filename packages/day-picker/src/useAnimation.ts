@@ -6,10 +6,10 @@ import type { DateLib } from './classes/DateLib.js';
 import type { ClassNames } from './types/shared.js';
 import { Animation } from './UI.js';
 
-const previousRootSlot = Symbol.for('@octanejs/react-day-picker/useAnimation/root');
-const previousMonthsSlot = Symbol.for('@octanejs/react-day-picker/useAnimation/months');
-const animatingSlot = Symbol.for('@octanejs/react-day-picker/useAnimation/animating');
-const animationEffectSlot = Symbol.for('@octanejs/react-day-picker/useAnimation/effect');
+const previousRootSlot = Symbol.for('@octanejs/day-picker/useAnimation/root');
+const previousMonthsSlot = Symbol.for('@octanejs/day-picker/useAnimation/months');
+const animatingSlot = Symbol.for('@octanejs/day-picker/useAnimation/animating');
+const animationEffectSlot = Symbol.for('@octanejs/day-picker/useAnimation/effect');
 
 const asHtmlElement = (element: Element | null): HTMLElement | null => {
 	if (element instanceof HTMLElement) return element;

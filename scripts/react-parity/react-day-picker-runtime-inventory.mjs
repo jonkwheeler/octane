@@ -10,7 +10,7 @@ const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 // Only the bounded differential lane is React-parity evidence. Unpaired smoke,
 // SSR, and browser suites stay under ordinary Vitest ownership.
 const lanes = [
-	['react-day-picker-differential', 'packages/react-day-picker/audit/differential-runtime.json'],
+	['react-day-picker-differential', 'packages/day-picker/audit/differential-runtime.json'],
 ];
 
 for (const [project, destination] of lanes) {
@@ -22,7 +22,7 @@ for (const [project, destination] of lanes) {
 	);
 	const tests = JSON.parse(output)
 		.map((test) => ({ ...test, relativeFile: toPortablePath(relative(root, test.file)) }))
-		.filter((test) => test.relativeFile.startsWith('packages/react-day-picker/tests/'))
+		.filter((test) => test.relativeFile.startsWith('packages/day-picker/tests/'))
 		.map((test) => {
 			const fullName = test.name.replaceAll(' > ', ' ');
 			const baseId = `runtime:${createHash('sha256').update(`${test.relativeFile}\0${fullName}`).digest('hex').slice(0, 16)}`;
@@ -38,7 +38,7 @@ for (const [project, destination] of lanes) {
 	const inventory = {
 		schemaVersion: 1,
 		project,
-		roots: ['packages/react-day-picker/tests'],
+		roots: ['packages/day-picker/tests'],
 		files: [...new Set(tests.map((test) => test.file))],
 		tests,
 	};

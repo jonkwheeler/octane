@@ -4,7 +4,7 @@ import * as reactBinding from 'react-day-picker';
 import * as locales from '../src/locale.ts';
 import * as reactLocales from 'react-day-picker/locale';
 
-describe('@octanejs/react-day-picker exports', () => {
+describe('@octanejs/day-picker exports', () => {
 	it('matches the pinned upstream root runtime entry', () => {
 		expect(Object.keys(binding).sort()).toEqual(Object.keys(reactBinding).sort());
 	});

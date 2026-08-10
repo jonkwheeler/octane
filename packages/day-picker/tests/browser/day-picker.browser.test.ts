@@ -35,7 +35,7 @@ beforeAll(async () => {
 		plugins: [octane()],
 		resolve: {
 			alias: [
-				{ find: /^@octanejs\/react-day-picker$/, replacement: packageSrc },
+				{ find: /^@octanejs\/day-picker$/, replacement: packageSrc },
 				{ find: /^octane$/, replacement: octaneSrc },
 			],
 		},

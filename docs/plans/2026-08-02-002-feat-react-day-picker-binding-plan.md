@@ -9,7 +9,7 @@ date: 2026-08-02
 
 ## Goal
 
-Provide `@octanejs/react-day-picker` as the exact package-level migration target for `react-day-picker@10.0.1`, including its root API, locale and stylesheet entry points, selection modes, navigation, accessibility behavior, SSR, and customization hooks. This unblocks Octane's deferred shadcn date-picker surface.
+Provide `@octanejs/day-picker` as the exact package-level migration target for `react-day-picker@10.0.1`, including its root API, locale and stylesheet entry points, selection modes, navigation, accessibility behavior, SSR, and customization hooks. This unblocks Octane's deferred shadcn date-picker surface.
 
 ## Pinned upstream
 
@@ -21,7 +21,7 @@ Provide `@octanejs/react-day-picker` as the exact package-level migration target
 
 ## Public surface contract
 
-- Root exports from `packages/react-day-picker/src/index.ts`, including `DayPicker`, `useDayPicker`, calendar/date classes, helpers, formatters, labels, utilities, UI enums, and public types.
+- Root exports from `packages/day-picker/src/index.ts`, including `DayPicker`, `useDayPicker`, calendar/date classes, helpers, formatters, labels, utilities, UI enums, and public types.
 - `./locale` and `./locale/*` mappings.
 - `./style.css`, `./style.module.css`, and documented compatibility stylesheet paths.
 - `./package.json` metadata export.
@@ -29,7 +29,7 @@ Provide `@octanejs/react-day-picker` as the exact package-level migration target
 
 ## Implementation sequence
 
-1. Vendor the exact upstream package source, tests, license, and checksum manifest under `packages/react-day-picker/upstream/`.
+1. Vendor the exact upstream package source, tests, license, and checksum manifest under `packages/day-picker/upstream/`.
 2. Establish package metadata, workspace catalogs, changeset, binding status, CLI/website inventories, typecheck project, and export-surface tests.
 3. Reuse framework-neutral date classes, helpers, formatters, labels, utilities, locales, and styles with only import-extension adaptations required by the workspace.
 4. Port React hooks and context to Octane equivalents: controlled month/selection state, focus, navigation, range/multiple/single selection, and animation cleanup.

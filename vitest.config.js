@@ -4210,10 +4210,10 @@ export default defineConfig({
 				test: {
 					name: 'react-day-picker',
 					include: [
-						'packages/react-day-picker/tests/**/*.test.ts',
-						'!packages/react-day-picker/tests/ssr/**/*.test.ts',
-						'!packages/react-day-picker/tests/browser/**/*.test.ts',
-						'!packages/react-day-picker/tests/differential/**/*.test.ts',
+						'packages/day-picker/tests/**/*.test.ts',
+						'!packages/day-picker/tests/ssr/**/*.test.ts',
+						'!packages/day-picker/tests/browser/**/*.test.ts',
+						'!packages/day-picker/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -4222,8 +4222,8 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-day-picker$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-day-picker/src/index.ts'),
+							find: /^@octanejs\/day-picker$/,
+							replacement: resolve(import.meta.dirname, 'packages/day-picker/src/index.ts'),
 						},
 					],
 				},
@@ -4231,7 +4231,7 @@ export default defineConfig({
 			{
 				test: {
 					name: 'react-day-picker-ssr',
-					include: ['packages/react-day-picker/tests/ssr/**/*.test.ts'],
+					include: ['packages/day-picker/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -4243,8 +4243,8 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-day-picker$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-day-picker/src/index.ts'),
+							find: /^@octanejs\/day-picker$/,
+							replacement: resolve(import.meta.dirname, 'packages/day-picker/src/index.ts'),
 						},
 					],
 				},
@@ -4252,7 +4252,7 @@ export default defineConfig({
 			{
 				test: {
 					name: 'react-day-picker-browser',
-					include: ['packages/react-day-picker/tests/browser/**/*.test.ts'],
+					include: ['packages/day-picker/tests/browser/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 60_000,
@@ -4265,7 +4265,7 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-day-picker-differential',
-					include: ['packages/react-day-picker/tests/differential/**/*.test.ts'],
+					include: ['packages/day-picker/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -4273,8 +4273,8 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-day-picker$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-day-picker/src/index.ts'),
+							find: /^@octanejs\/day-picker$/,
+							replacement: resolve(import.meta.dirname, 'packages/day-picker/src/index.ts'),
 						},
 					],
 				},

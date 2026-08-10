@@ -1,5 +1,5 @@
 ---
-'@octanejs/react-day-picker': patch
+'@octanejs/day-picker': patch
 ---
 
 Add the React DayPicker-compatible calendar binding for Octane.

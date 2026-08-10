@@ -102,7 +102,7 @@ async function expectMatchingStep(
 	expect(semanticSnapshot(octaneContainer), stepName).toEqual(semanticSnapshot(reactContainer));
 }
 
-describe('differential: @octanejs/react-day-picker vs react-day-picker 10.0.1', () => {
+describe('differential: @octanejs/day-picker vs react-day-picker 10.0.1', () => {
 	it('matches the default calendar semantic shape and constraints', async () => {
 		const react = await mountReactDayPicker(defaultConstraintProps);
 		const octane = mount(DefaultConstraintsFixture);
