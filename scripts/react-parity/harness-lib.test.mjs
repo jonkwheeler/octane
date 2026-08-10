@@ -855,6 +855,71 @@ test('rejects stale divergences and accepts one divergence matching multiple kno
 	}
 });
 
+test('rejects ordinary @parity-case markers that do not precede an active test', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-ordinary-'));
+	const sourcePath = 'packages/example/src/mod.ts';
+	const testPath = 'packages/example/tests/ordinary.test.ts';
+	const lanePath = 'packages/example/tests/lane.test.ts';
+	await mkdir(join(root, 'packages/example/src'), { recursive: true });
+	await mkdir(join(root, 'packages/example/tests'), { recursive: true });
+	const laneSource = [
+		'// @parity-case adapted:example',
+		'test("does the thing", () => {})',
+		'',
+	].join('\n');
+	await writeFile(join(root, lanePath), laneSource);
+	await writeFile(
+		join(root, sourcePath),
+		'// OCTANE DIVERGENCE[native-input][adapted:ordinary-case]: ordinary binding\nexport {}\n',
+	);
+	await writeFile(
+		join(root, testPath),
+		[
+			'// @parity-case adapted:ordinary-case',
+			'it.skip("does the ordinary thing", () => {})',
+			'',
+		].join('\n'),
+	);
+	const value = manifest({
+		adaptedRoots: {
+			source: { roots: ['packages/example/src'], include: ['\\.ts$'], exclude: [] },
+			tests: {
+				roots: ['packages/example/tests'],
+				include: ['\\.test\\.ts$'],
+				exclude: [],
+			},
+		},
+		lanes: [
+			{
+				id: 'adapted',
+				type: 'adapted-octane',
+				oracle: 'required',
+				environment: 'local',
+				project: 'example',
+				files: [
+					{
+						path: lanePath,
+						role: 'test',
+						sha256: sha256(laneSource),
+						cases: [
+							{
+								id: 'adapted:example',
+								testName: 'does the thing',
+								fullName: 'does the thing',
+							},
+						],
+					},
+				],
+			},
+		],
+		divergences: [divergence({ caseIds: ['adapted:ordinary-case'] })],
+	});
+	await assert.rejects(
+		() => verifyManifestFiles(validateManifest(value), root),
+		/@parity-case adapted:ordinary-case must immediately precede one active it\/test/,
+	);
+});
+
 test('rejects missing and tampered evidence files', async () => {
 	const root = await mkdtemp(join(tmpdir(), 'react-parity-'));
 	const value = manifest();

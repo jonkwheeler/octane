@@ -609,6 +609,17 @@ export async function verifyManifestFiles(manifest, root) {
 	for (const path of markerFiles) {
 		const source = await readFile(resolve(absoluteRoot, path), 'utf8');
 		for (const match of source.matchAll(/^\s*\/\/\s*@parity-case\s+(\S+)\s*$/gm)) {
+			const markerEnd = match.index + match[0].length;
+			const tail = source.slice(markerEnd).trimStart();
+			const declaration = /^(?:it|test)(?:\.(skip|todo))?\s*\(\s*/.exec(tail);
+			if (!declaration || declaration[1]) {
+				throw new Error(
+					`${path}: @parity-case ${match[1]} must immediately precede one active it/test (not skip/todo)`,
+				);
+			}
+			if (ordinaryCaseIds.has(match[1])) {
+				throw new Error(`${path}: duplicate ordinary @parity-case ${match[1]}`);
+			}
 			ordinaryCaseIds.add(match[1]);
 		}
 	}
