@@ -192,11 +192,11 @@ export function DoomDemo() @{
 	useEffect(() => {
 		const setKey = (event: KeyboardEvent, down: boolean) => {
 			if (phaseRef.current !== 'playing') return;
+			const key = event.code;
+			if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(key)) event.preventDefault();
 			// Ignore presses while paused (mouse look already does); still honor
 			// keyup so held keys from before pause do not stick after resume.
 			if (pausedRef.current && down) return;
-			const key = event.code;
-			if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(key)) event.preventDefault();
 			if (key === 'KeyW') inputRef.current.forward = down;
 			else if (key === 'KeyS') inputRef.current.backward = down;
 			else if (key === 'KeyA') inputRef.current.left = down;
