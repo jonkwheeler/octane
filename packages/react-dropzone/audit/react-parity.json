@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-dropzone/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-dropzone/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-dropzone/tests/adapted"],
-      "include": ["\\.(?:test|spec)\\.(?:ts|tsx)$"],
+      "roots": [
+        "packages/react-dropzone/tests/adapted"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:ts|tsx)$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "5966e99698b5f8099e3ef2e62625cc31f3a3e60305f1def8d4066c6cd9f98824"
+      "lockfileSha256": "e2974922dbc2bbff01fca5ed31cc84fe56608fb83b36c7f3e0b2390a94c44cb0"
     }
   },
   "lanes": [
@@ -83,10 +91,10 @@
       },
       "files": [
         {
-					"path": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json",
-					"role": "support",
-					"sha256": "4ae3de44cfca8b5461c6af399de586c3b1932f9edd3508e55066997817f9a710"
-				},
+          "path": "packages/react-dropzone/audit/runtime-inventories/adapted-dom.json",
+          "role": "support",
+          "sha256": "4ae3de44cfca8b5461c6af399de586c3b1932f9edd3508e55066997817f9a710"
+        },
         {
           "path": "packages/react-dropzone/audit/test-classifications.json",
           "role": "support",
