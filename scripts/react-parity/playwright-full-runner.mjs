@@ -56,7 +56,26 @@ function waitForServer(port) {
 	});
 }
 
-function collectTests(suites) {
+function statusFromSpec(spec) {
+	// Do not use Playwright's aggregated `ok` flag: it is also true for skipped
+	// and expected-failure tests. Use the final result status after retries.
+	const entries = spec.tests ?? [];
+	if (entries.length === 0) return 'failed';
+	let sawSkipped = false;
+	for (const entry of entries) {
+		const results = entry.results ?? [];
+		const finalResult = results[results.length - 1];
+		const resultStatus = finalResult?.status;
+		if (resultStatus === 'skipped') {
+			sawSkipped = true;
+			continue;
+		}
+		if (resultStatus !== 'passed') return 'failed';
+	}
+	return sawSkipped ? 'skipped' : 'passed';
+}
+
+function collectTests(suites, fileFromSpec) {
 	const tests = [];
 	function visit(suite, ancestors, isRoot) {
 		const title = typeof suite.title === 'string' ? suite.title : '';
@@ -66,19 +85,24 @@ function collectTests(suites) {
 		for (const spec of suite.specs ?? []) {
 			const specTitle = typeof spec.title === 'string' ? spec.title : '';
 			const fullName = [...nextAncestors, specTitle].filter(Boolean).join(' ');
-			const file = toPortablePath(join('test/e2e', spec.file ?? 'snapshot.test.ts'));
-			const ok =
-				typeof spec.ok === 'boolean'
-					? spec.ok
-					: (spec.tests ?? []).every(function everyTest(entry) {
-							const results = entry.results ?? [];
-							return results[results.length - 1]?.status === 'passed';
-						});
-			tests.push({ file, fullName, status: ok ? 'passed' : 'failed' });
+			tests.push({
+				file: toPortablePath(fileFromSpec(spec, suite)),
+				fullName,
+				status: statusFromSpec(spec),
+			});
 		}
 	}
 	for (const suite of suites) visit(suite, [], true);
 	return tests.sort(compareTestIdentities);
+}
+
+function viteE2eFileFromSpec(spec) {
+	return join('test/e2e', spec.file ?? 'snapshot.test.ts');
+}
+
+function sonnerFileFromSpec(spec, suite) {
+	const relativeFile = typeof spec.file === 'string' ? spec.file : suite.file;
+	return join('test', relativeFile);
 }
 
 function writeViteE2eFiles(workRoot, suiteRoot, config, reportPath) {
@@ -154,7 +178,10 @@ async function runViteE2e(workRoot, suiteRoot, config, reportPath) {
 			JSON.stringify({
 				schemaVersion: 1,
 				root: toPortablePath(relative(repoRoot, suiteRoot)),
-				tests: collectTests(Array.isArray(report.suites) ? report.suites : []),
+				tests: collectTests(
+					Array.isArray(report.suites) ? report.suites : [],
+					viteE2eFileFromSpec,
+				),
 				snapshots: 1,
 			}),
 		);
@@ -164,25 +191,54 @@ async function runViteE2e(workRoot, suiteRoot, config, reportPath) {
 }
 
 function runSonner(workRoot, suiteRoot, config, reportPath) {
+	mkdirSync(workRoot, { recursive: true });
 	cpSync(join(suiteRoot, 'test'), join(workRoot, 'test'), { recursive: true });
 	cpSync(join(suiteRoot, 'playwright.config.ts'), join(workRoot, 'playwright.config.ts'));
+
 	const appPackagePath = join(workRoot, 'test', 'package.json');
 	const appPackage = JSON.parse(readFileSync(appPackagePath, 'utf8'));
 	appPackage.dependencies = appPackage.dependencies ?? {};
 	appPackage.dependencies[config.packageName] = config.packageVersion;
 	appPackage.dependencies.zod = config.zodVersion ?? '3.25.76';
 	writeJson(appPackagePath, appPackage);
+
 	writeJson(join(workRoot, 'package.json'), {
 		name: 'octane-playwright-full-runner',
 		private: true,
-		devDependencies: { '@playwright/test': config.playwrightVersion },
+		devDependencies: {
+			'@playwright/test': config.playwrightVersion,
+		},
 	});
+
+	const playwrightConfigPath = join(workRoot, 'playwright.config.ts');
+	let playwrightConfig = readFileSync(playwrightConfigPath, 'utf8');
+	playwrightConfig = playwrightConfig.replace(
+		/reporter:\s*'html'/,
+		`reporter: [['json', { outputFile: ${JSON.stringify(reportPath)} }], ['list']]`,
+	);
+	playwrightConfig = playwrightConfig.replace(
+		/projects:\s*\[[\s\S]*?\n\s*\],/,
+		`projects: [
+    {
+      name: ${JSON.stringify(config.project)},
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],`,
+	);
+	playwrightConfig = playwrightConfig.replace(
+		/workers:\s*process\.env\.CI \? 1 : undefined,/,
+		'workers: 1,',
+	);
+	writeFileSync(playwrightConfigPath, playwrightConfig);
+
 	run('npm', ['install', '--no-fund', '--no-audit'], workRoot);
 	run('npm', ['install', '--no-fund', '--no-audit', '--legacy-peer-deps'], join(workRoot, 'test'));
 	run('npx', ['playwright', 'install', config.project], workRoot);
+
 	const testResult = spawnSync('npx', ['playwright', 'test', `--project=${config.project}`], {
 		cwd: workRoot,
 		encoding: 'utf8',
+		// Match upstream CI settings: one worker and retries for timing-sensitive e2e.
 		env: { ...process.env, CI: '1' },
 	});
 	if (testResult.status !== 0) {
@@ -196,7 +252,7 @@ function runSonner(workRoot, suiteRoot, config, reportPath) {
 		JSON.stringify({
 			schemaVersion: 1,
 			root: toPortablePath(relative(repoRoot, suiteRoot)),
-			tests: collectTests(Array.isArray(report.suites) ? report.suites : []),
+			tests: collectTests(Array.isArray(report.suites) ? report.suites : [], sonnerFileFromSpec),
 			snapshots: 0,
 		}),
 	);

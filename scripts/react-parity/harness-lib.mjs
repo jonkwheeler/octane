@@ -60,7 +60,15 @@ const LANE_KEYS = new Set([
 	'execution',
 	'evidenceOrigin',
 ]);
-const EXECUTION_KEYS = new Set(['kind', 'compiler', 'project', 'inventory', 'config', 'root']);
+const EXECUTION_KEYS = new Set([
+	'kind',
+	'compiler',
+	'compilerBins',
+	'project',
+	'inventory',
+	'config',
+	'root',
+]);
 const SUITE_STATES = new Set(['present', 'absent', 'insufficient']);
 const TYPE_EVIDENCE_ORIGINS = new Set(['upstream-suite', 'repo-authored']);
 const FULL_RUNTIME_EXECUTIONS = new Set(['vitest-full', 'jest-full', 'playwright-full']);
@@ -322,10 +330,22 @@ export function validateManifest(manifest) {
 				if (lane.execution.inventory !== undefined)
 					fail(`lane ${lane.id} TypeScript execution must not declare an inventory`);
 				if (lane.execution.config !== undefined || lane.execution.root !== undefined)
-					fail(`lane ${lane.id} TypeScript execution only accepts compiler and project`);
+					fail(`lane ${lane.id} TypeScript execution must not declare config or root`);
+				if (lane.execution.compilerBins !== undefined) {
+					if (
+						!Array.isArray(lane.execution.compilerBins) ||
+						lane.execution.compilerBins.length === 0
+					) {
+						fail(`lane ${lane.id} compilerBins must be a non-empty array`);
+					}
+					for (const bin of lane.execution.compilerBins) {
+						exactPath(bin, `lane ${lane.id} compilerBins entry`);
+					}
+				}
 			} else if (lane.execution.kind === 'vitest-full') {
 				if (
 					lane.execution.compiler !== undefined ||
+					lane.execution.compilerBins !== undefined ||
 					lane.execution.project !== undefined ||
 					lane.execution.config !== undefined ||
 					lane.execution.root !== undefined
@@ -333,7 +353,11 @@ export function validateManifest(manifest) {
 					fail(`lane ${lane.id} full-suite execution only accepts an inventory`);
 				exactPath(lane.execution.inventory, `lane ${lane.id} execution inventory`);
 			} else {
-				if (lane.execution.compiler !== undefined || lane.execution.project !== undefined)
+				if (
+					lane.execution.compiler !== undefined ||
+					lane.execution.compilerBins !== undefined ||
+					lane.execution.project !== undefined
+				)
 					fail(
 						`lane ${lane.id} ${lane.execution.kind} execution must not declare a compiler or project`,
 					);
@@ -440,41 +464,20 @@ export function validateManifest(manifest) {
 			);
 		}
 
-		const typeLanes = manifest.lanes.filter((lane) => lane.type.endsWith('-types'));
-		if (manifest.upstreamSuites.types === 'absent') {
-			// Drei-style ports may omit type lanes entirely when upstream has no type
-			// suite. LiveStore/react-map-gl-style ports still publish repo-authored
-			// pristine/adapted type lanes under the same upstreamSuites.types value.
-			if (typeLanes.length > 0) {
-				const requiredTypeEvidence = (type) =>
-					manifest.lanes.some(
-						(lane) =>
-							lane.type === type &&
-							lane.oracle === 'required' &&
-							lane.available !== false &&
-							lane.evidenceOrigin === 'repo-authored',
-					);
-				if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
-					fail(
-						'verified provenance with absent upstream type tests requires available required pristine-types and adapted-types lanes with repo-authored evidence when type lanes are declared',
-					);
-			}
-		} else {
-			const expectedOrigin =
-				manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
-			const requiredTypeEvidence = (type) =>
-				manifest.lanes.some(
-					(lane) =>
-						lane.type === type &&
-						lane.oracle === 'required' &&
-						lane.available !== false &&
-						lane.evidenceOrigin === expectedOrigin,
-				);
-			if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
-				fail(
-					`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
-				);
-		}
+		const expectedOrigin =
+			manifest.upstreamSuites.types === 'present' ? 'upstream-suite' : 'repo-authored';
+		const requiredTypeEvidence = (type) =>
+			manifest.lanes.some(
+				(lane) =>
+					lane.type === type &&
+					lane.oracle === 'required' &&
+					lane.available !== false &&
+					lane.evidenceOrigin === expectedOrigin,
+			);
+		if (!requiredTypeEvidence('pristine-types') || !requiredTypeEvidence('adapted-types'))
+			fail(
+				`verified provenance with ${manifest.upstreamSuites.types} upstream type tests requires available required pristine-types and adapted-types lanes with ${expectedOrigin} evidence`,
+			);
 	}
 
 	if (!Array.isArray(manifest.divergences)) fail('divergences must be an array');
@@ -521,20 +524,9 @@ export async function verifyManifestFiles(manifest, root) {
 			const inventory = JSON.parse(
 				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
 			);
-			const adaptedRootInventory =
-				JSON.stringify(inventory.roots) === JSON.stringify(manifest.adaptedRoots.tests.roots);
-			// Upstream-suite adapted lanes may use a dedicated inventory root (for example
-			// Drei's browser port). Only inventories that match adaptedRoots feed the
-			// adaptedRuntimeSummary / discovery union.
-			validateRuntimeInventory(
-				inventory,
-				lane,
-				adaptedRootInventory ? manifest.adaptedRoots.tests.roots : inventory.roots,
-			);
-			if (adaptedRootInventory) {
-				adaptedRuntimeInventories.push(inventory);
-				for (const test of inventory.tests) runtimeCaseIds.add(test.id);
-			}
+			validateRuntimeInventory(inventory, lane, manifest.adaptedRoots.tests.roots);
+			adaptedRuntimeInventories.push(inventory);
+			for (const test of inventory.tests) runtimeCaseIds.add(test.id);
 		} else if (
 			lane.oracle === 'required' &&
 			lane.available !== false &&
@@ -813,12 +805,28 @@ export function buildTypeScriptCompilerArgv(compiler, project) {
 	return [process.execPath, compilerEntrypoints[compiler], '--noEmit', '-p', project];
 }
 
+export function buildTypeScriptCompilerRuns(lane) {
+	const project = lane.execution.project;
+	if (Array.isArray(lane.execution.compilerBins) && lane.execution.compilerBins.length > 0) {
+		return lane.execution.compilerBins.map(function toArgv(bin) {
+			return [process.execPath, bin, '--noEmit', '-p', project];
+		});
+	}
+	return [buildTypeScriptCompilerArgv(lane.execution.compiler, project)];
+}
+
 export function buildLaneArgv(lane, root = process.cwd()) {
 	if (lane.available === false) {
 		throw new Error(`${lane.oracle} oracle is unavailable; parity not established`);
 	}
 	if (lane.execution?.kind === 'typescript') {
-		return buildTypeScriptCompilerArgv(lane.execution.compiler, lane.execution.project);
+		const runs = buildTypeScriptCompilerRuns(lane);
+		if (runs.length !== 1) {
+			throw new Error(
+				`lane ${lane.id} declares ${runs.length} TypeScript compiler runs; use buildTypeScriptCompilerRuns`,
+			);
+		}
+		return runs[0];
 	}
 	if (lane.execution?.kind === 'vitest-full') {
 		const inventory = JSON.parse(readFileSync(resolve(root, lane.execution.inventory), 'utf8'));
@@ -944,4 +952,12 @@ export function verifyLaneRunResult(lane, stdout, root = process.cwd()) {
 
 export function requiredExecutableLanes(manifest) {
 	return manifest.lanes.filter((lane) => lane.oracle === 'required' && lane.available !== false);
+}
+
+/**
+ * Generic parity-job routing: execute every available required lane. Provenance
+ * completeness gates public claims elsewhere; it must not skip harness execution.
+ */
+export function selectHarnessAction(manifest) {
+	return requiredExecutableLanes(manifest).length > 0 ? 'run-required' : 'validate';
 }
