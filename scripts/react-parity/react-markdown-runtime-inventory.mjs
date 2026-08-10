@@ -27,7 +27,7 @@ const lanes = [
 		inventory: 'packages/markdown/audit/test-inventory.json',
 	},
 	{
-		project: 'react-markdown',
+		project: 'markdown',
 		destination: 'packages/markdown/audit/adapted-runtime.json',
 		roots: ['packages/markdown/tests'],
 		include: (file) => adaptedFiles.includes(file),

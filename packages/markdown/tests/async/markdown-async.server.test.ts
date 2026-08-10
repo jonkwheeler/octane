@@ -23,7 +23,7 @@ async function renderOctane(element: ElementDescriptor): Promise<string> {
 
 describe('MarkdownAsync', function () {
 	it('documents the synchronous-render framework divergence with the upstream fixture', async function () {
-		// OCTANE DIVERGENCE[react-markdown-async-sync-render][runtime:090a6b90380b5935]
+		// OCTANE DIVERGENCE[react-markdown-async-sync-render][runtime:0c41907154f06242]
 		// React's synchronous renderer throws when MarkdownAsync suspends; Octane returns an
 		// awaitable ElementDescriptor from the same call site.
 		expect(function () {

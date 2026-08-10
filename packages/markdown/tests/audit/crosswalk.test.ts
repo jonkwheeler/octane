@@ -34,9 +34,7 @@ const read = <T>(path: string): T => JSON.parse(readFileSync(join(repoRoot, path
 const upstream = read<{ cases: Array<{ id: string; title: string }> }>(
 	'packages/markdown/audit/test-inventory.json',
 );
-const adapted = read<{ tests: RuntimeTest[] }>(
-	'packages/markdown/audit/adapted-runtime.json',
-);
+const adapted = read<{ tests: RuntimeTest[] }>('packages/markdown/audit/adapted-runtime.json');
 const crosswalk = read<Crosswalk>('packages/markdown/audit/adapted-case-crosswalk.json');
 const parameterRows = read<
 	Record<string, { template: string; rowIndex: number; rowSha256: string }>
@@ -296,9 +294,9 @@ describe('react-markdown adapted case crosswalk', () => {
 			expect(entry.declarationEvidence.blockSha256).toBe(binding.rowSha256);
 		}
 		for (const id of [
-			'runtime:05f2e97e043ce8c9',
-			'runtime:1d8f9068cba2602b',
-			'runtime:26cbd999b3e4698e',
+			'runtime:fda08a631f66e79c',
+			'runtime:e69335a396904873',
+			'runtime:1f402419ebb612a1',
 		])
 			expect(parameterRows[id]).toBeDefined();
 	});

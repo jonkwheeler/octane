@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "project": "react-markdown",
+  "project": "markdown",
   "roots": ["packages/markdown/tests"],
   "files": [
     "packages/markdown/tests/async/markdown-async.server.test.ts",
@@ -13,437 +13,437 @@
   ],
   "tests": [
     {
-      "id": "runtime:090a6b90380b5935",
+      "id": "runtime:0c41907154f06242",
       "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync documents the synchronous-render framework divergence with the upstream fixture"
     },
     {
-      "id": "runtime:052ced3137ef63b1",
+      "id": "runtime:67cdbd818a4d4de8",
       "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync matches exact starry-night highlighted HTML for the upstream fixture"
     },
     {
-      "id": "runtime:db91988cfb235ff3",
+      "id": "runtime:838a21678ae087c9",
       "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
       "fullName": "MarkdownAsync matches the upstream pipeable-stream output fixture"
     },
     {
-      "id": "runtime:cf81bb17d3865b81",
+      "id": "runtime:2231a5c628c11bf1",
       "file": "packages/markdown/tests/conformance/public-types.test.ts",
       "fullName": "exposes the public api"
     },
     {
-      "id": "runtime:8cf35d7144a5a047",
+      "id": "runtime:178ae640205b1263",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection ignores the exact upstream root comment while preserving the paragraph"
     },
     {
-      "id": "runtime:28a815ad8f068e93",
+      "id": "runtime:8d26728e41461df1",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine rehype-raw behavior"
     },
     {
-      "id": "runtime:d5050f366996856b",
+      "id": "runtime:998f6b5c266febc7",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine remark-toc output for the upstream fixture"
     },
     {
-      "id": "runtime:f6a14f6585be95a5",
+      "id": "runtime:4f748bebdecac4bb",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: absolute URL"
     },
     {
-      "id": "runtime:8ab6d756e0efb565",
+      "id": "runtime:de770f51640d0b6a",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: absolute path"
     },
     {
-      "id": "runtime:f10bea66a68d797a",
+      "id": "runtime:075cebbb4595dcc2",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: aligned table"
     },
     {
-      "id": "runtime:da16b6b30d515557",
+      "id": "runtime:22a65c6e20016f12",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: ampersand URL"
     },
     {
-      "id": "runtime:36c2628e4cfb068a",
+      "id": "runtime:c76f9edda6d2663a",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: block quote"
     },
     {
-      "id": "runtime:05f2e97e043ce8c9",
+      "id": "runtime:fda08a631f66e79c",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: break"
     },
     {
-      "id": "runtime:e3509e4c5c186116",
+      "id": "runtime:ffdab05f55602d2e",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: delete"
     },
     {
-      "id": "runtime:12ad6c80233473aa",
+      "id": "runtime:3b13229f80706c5a",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: duplicate definitions"
     },
     {
-      "id": "runtime:52c15497958da745",
+      "id": "runtime:23142d606f952ca3",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: emphasis"
     },
     {
-      "id": "runtime:75aa0a7b6562aa26",
+      "id": "runtime:9df2d57fba958503",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: empty URL"
     },
     {
-      "id": "runtime:b22a7af6bcd4beeb",
+      "id": "runtime:9dffe4adcbd7b913",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: fenced code"
     },
     {
-      "id": "runtime:90330ca82b1b319b",
+      "id": "runtime:6b59ecd4f27dc431",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: file URL"
     },
     {
-      "id": "runtime:e21febf544107f7c",
+      "id": "runtime:d268522b954e33eb",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: footnote"
     },
     {
-      "id": "runtime:18d214ca6e953e79",
+      "id": "runtime:eb40eb0ad2d33e9b",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: hash URL"
     },
     {
-      "id": "runtime:6b57624dac683eb7",
+      "id": "runtime:c05219c550cc01a8",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: heading"
     },
     {
-      "id": "runtime:c1c8e5a375ca7926",
+      "id": "runtime:8755b9482d7749e5",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: image"
     },
     {
-      "id": "runtime:f0d20c1db2c89b8a",
+      "id": "runtime:9514e2af773d245b",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: image reference"
     },
     {
-      "id": "runtime:a162bcc8641816d1",
+      "id": "runtime:8ecc0d7a1af7bdbb",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: image title"
     },
     {
-      "id": "runtime:fe0e95c1235dda49",
+      "id": "runtime:350755b03d39b7a5",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: indented code"
     },
     {
-      "id": "runtime:467abf057d3bc5e1",
+      "id": "runtime:e86573c8e6fd3343",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: inline code"
     },
     {
-      "id": "runtime:e8551d8b3bcdbe9f",
+      "id": "runtime:1f3f3af0e8dc1d89",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: javascript URL"
     },
     {
-      "id": "runtime:7a247a9d5f71353c",
+      "id": "runtime:8c4c62ab4ded7a4c",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: link"
     },
     {
-      "id": "runtime:685522707e4d6e60",
+      "id": "runtime:81d22d0302a4a7d8",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: link reference"
     },
     {
-      "id": "runtime:c8c51e58efd41ce1",
+      "id": "runtime:9aced0afaf1b15d3",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: link title"
     },
     {
-      "id": "runtime:54bad030a3708b21",
+      "id": "runtime:3ce2f0a54ffc8da8",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: ordered list"
     },
     {
-      "id": "runtime:e631e708209d8bab",
+      "id": "runtime:13a58f6de832010e",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: paragraph"
     },
     {
-      "id": "runtime:74962374091e3157",
+      "id": "runtime:d16585730bc6c3c1",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: prototype-polluting definitions"
     },
     {
-      "id": "runtime:cec002264847ad73",
+      "id": "runtime:a419f6e2896c811a",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: query URL"
     },
     {
-      "id": "runtime:e9d27c9fe2bbf755",
+      "id": "runtime:74b2f0d69fac7967",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: raw HTML"
     },
     {
-      "id": "runtime:8525cdecca856515",
+      "id": "runtime:dc7585a83a4630f8",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: strong"
     },
     {
-      "id": "runtime:900475c7a7b2a1b9",
+      "id": "runtime:33bbf99f135484b9",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: table"
     },
     {
-      "id": "runtime:81523bf9cb17d4fe",
+      "id": "runtime:d5fa63c66da1f7a8",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: thematic break"
     },
     {
-      "id": "runtime:45d2d551298bb978",
+      "id": "runtime:f44811bf82ae83fc",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: unordered list"
     },
     {
-      "id": "runtime:2befada496497227",
+      "id": "runtime:da07a60a137fb1fc",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: uppercase protocol"
     },
     {
-      "id": "runtime:26cbd999b3e4698e",
+      "id": "runtime:1f402419ebb612a1",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: uppercase vbscript URL"
     },
     {
-      "id": "runtime:1d8f9068cba2602b",
+      "id": "runtime:e69335a396904873",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches pristine sync identity: vbscript URL"
     },
     {
-      "id": "runtime:ffc3e1ebaa17d492",
+      "id": "runtime:2a9a770162c4ce1b",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream GFM aligned table cell with merged plugin style"
     },
     {
-      "id": "runtime:69d006d9955d2bbb",
+      "id": "runtime:83d41db47e423751",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream SVG projection fixture"
     },
     {
-      "id": "runtime:bf6e7624cf30b61e",
+      "id": "runtime:202c547e6a229e44",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream allowedElements drop fixture"
     },
     {
-      "id": "runtime:98b6ab01a91c3ed5",
+      "id": "runtime:6f3309cb93e54861",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream disallowedElements fixture without unwrap"
     },
     {
-      "id": "runtime:20e62e65276d5c67",
+      "id": "runtime:f4990c8644147140",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream href urlTransform public-render fixture"
     },
     {
-      "id": "runtime:62666e5fecdaf613",
+      "id": "runtime:c198e9c92fbdc90d",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream image src urlTransform returning null fixture"
     },
     {
-      "id": "runtime:52c80c5c94041b1d",
+      "id": "runtime:183884b6703af082",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream plugin-created ARIA property fixture"
     },
     {
-      "id": "runtime:42901f712e4ea60b",
+      "id": "runtime:b4ba8cfd67005dff",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream plugin-created broken style property fixture"
     },
     {
-      "id": "runtime:6cb86ea421795b13",
+      "id": "runtime:da492fb4b8ffb3bc",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream plugin-created comma-separated property fixture"
     },
     {
-      "id": "runtime:c5cd49f14eb93169",
+      "id": "runtime:830309bb6cb06dd1",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream plugin-created data property fixture"
     },
     {
-      "id": "runtime:4191409c2580cd05",
+      "id": "runtime:8887cf75e475e297",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream plugin-created style property fixture"
     },
     {
-      "id": "runtime:c982891ec636936d",
+      "id": "runtime:68f4dfc058569fd4",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream plugin-created vendor-prefixed style property fixture"
     },
     {
-      "id": "runtime:14d6a5c135c6f8a7",
+      "id": "runtime:f54a19bc82c821b5",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream remark-gfm single-tilde fixture"
     },
     {
-      "id": "runtime:2544c277b5fdb5d1",
+      "id": "runtime:b59351c44a63dc6e",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream remarkRehypeOptions clobberPrefix footnote output"
     },
     {
-      "id": "runtime:7f054a986e2f123f",
+      "id": "runtime:7924c6922df92c37",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream root-replaced-by-comment empty output"
     },
     {
-      "id": "runtime:21e126ff95b2f6cb",
+      "id": "runtime:5c52f098cf7221b0",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the exact upstream unwrapDisallowed with allowedElements fixture"
     },
     {
-      "id": "runtime:8405d9e64b10e579",
+      "id": "runtime:80ad097e9505bd13",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the pristine default renderer for \"# heading\\n\\nA [safe](https://example.com) link.\""
     },
     {
-      "id": "runtime:3abe373c6f7e85ae",
+      "id": "runtime:83935a483c65c7bd",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (code) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:69f5d039da625392",
+      "id": "runtime:cb92118075fd3d0f",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (headings) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:aa8f61570d348570",
+      "id": "runtime:caa00aaeea4c2811",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (li) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:c0faaf3fc5992b1e",
+      "id": "runtime:5035d9e00f86f5eb",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (ol) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:adb89e6e53378f7f",
+      "id": "runtime:38ce59d23bf6b11b",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (td and th) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:ee36ebea71e78f5c",
+      "id": "runtime:f4ff2dda2a1069f2",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (tr) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:fa589a869e389fac",
+      "id": "runtime:946a9470ea394053",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection matches the upstream components (ul) fixture, output, node tags, and call count"
     },
     {
-      "id": "runtime:f790ec86e665b380",
+      "id": "runtime:c615b439c7406a36",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection passes complete intrinsic props and node while keeping key special"
     },
     {
-      "id": "runtime:d853764df692474d",
+      "id": "runtime:b4c0bd03a48148ed",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection passes the complete upstream HAST node including child and source positions"
     },
     {
-      "id": "runtime:9c4989f9a58cb4ef",
+      "id": "runtime:1b9af13c540adae3",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection preserves sibling projection and rejects invalid mappings"
     },
     {
-      "id": "runtime:0c31045076dccbbb",
+      "id": "runtime:42f3fc3159557e3f",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection publicly renders exact unwrapDisallowed with disallowedElements fixture"
     },
     {
-      "id": "runtime:a112bb863ac4ec74",
+      "id": "runtime:d1f7123bee28af78",
       "file": "packages/markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection supports intrinsic remapping, null components, and fragments"
     },
     {
-      "id": "runtime:df796150e8d55d22",
+      "id": "runtime:ac2e0bde9fc0938f",
       "file": "packages/markdown/tests/differential/processor.test.ts",
       "fullName": "matches pinned raw handling and filtering order"
     },
     {
-      "id": "runtime:3ca4712df44cbe4d",
+      "id": "runtime:48b3e44d58d84922",
       "file": "packages/markdown/tests/differential/processor.test.ts",
       "fullName": "passes exact element index and parent to allowElement"
     },
     {
-      "id": "runtime:537136ca2595fdb1",
+      "id": "runtime:d6729efe7ef6939b",
       "file": "packages/markdown/tests/differential/url-transform.test.ts",
       "fullName": "the pinned URL oracle transforms \"\" to \"\""
     },
     {
-      "id": "runtime:220745d3a5b56e21",
+      "id": "runtime:81cb174cb7e7e18c",
       "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle matches exact async MarkdownHooks starry-night JavaScript highlighted HTML"
     },
     {
-      "id": "runtime:01cbc40342ec4745",
+      "id": "runtime:015127dfde5d789b",
       "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle matches pristine fallback and async resolution"
     },
     {
-      "id": "runtime:022869b7d63b27dc",
+      "id": "runtime:7937ba2c07116393",
       "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle matches the pinned no-fallback initial empty DOM and resolved paragraph"
     },
     {
-      "id": "runtime:aa46d56015467bbd",
+      "id": "runtime:294cc3f959a538cd",
       "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle rerenders a to b, resolves both async runs, and commits only b"
     },
     {
-      "id": "runtime:ae1ab0e444ff0faa",
+      "id": "runtime:5e37d78e456ae96a",
       "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
       "fullName": "MarkdownHooks lifecycle surfaces async errors through rendering"
     },
     {
-      "id": "runtime:de5359a9878bbea5",
+      "id": "runtime:b1c3662bc6c1423f",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "accepts pinned empty child null"
     },
     {
-      "id": "runtime:6ec71928dd0170b6",
+      "id": "runtime:19f582b6a620fd87",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "accepts pinned empty child undefined"
     },
     {
-      "id": "runtime:3f5f8ba2fead421b",
+      "id": "runtime:735d65624e002d3f",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "rejects boolean true children with the exact pinned diagnostic"
     },
     {
-      "id": "runtime:990481e14d5bcc08",
+      "id": "runtime:7c25b30cda512624",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "rejects combined element lists with the pinned message"
     },
     {
-      "id": "runtime:03ff8e5ea27a65b7",
+      "id": "runtime:a13dd7c191c61d10",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "rejects non-string children with the pinned message"
     },
     {
-      "id": "runtime:e820231d50268321",
+      "id": "runtime:4ff5ea1b07c23b52",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "rejects removed prop allowDangerousHtml"
     },
     {
-      "id": "runtime:8ebf28c5aad28f21",
+      "id": "runtime:8779e0fd7d1a74f1",
       "file": "packages/markdown/tests/validation.test.ts",
       "fullName": "rejects removed prop source"
     }

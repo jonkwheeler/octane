@@ -34,6 +34,7 @@ surface and evidence.
 | `@octanejs/livestore` | 0 |
 | `@octanejs/lucide` | 0 |
 | `@octanejs/mantine-hooks` | 0 |
+| `@octanejs/markdown` | 0 |
 | `@octanejs/mdx` | 0 |
 | `@octanejs/mobx` | 0 |
 | `@octanejs/motion` | 0 |
@@ -43,7 +44,6 @@ surface and evidence.
 | `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/react-map-gl` | 0 |
-| `@octanejs/markdown` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
 | `@octanejs/redux-toolkit` | 0 |

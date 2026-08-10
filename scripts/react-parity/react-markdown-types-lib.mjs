@@ -69,13 +69,10 @@ function listFiles(root) {
 			const relativePath = posix(
 				relative(root, resolve(entry.parentPath ?? entry.path, entry.name)),
 			);
-			return /(?:\.test-d\.ts|\.ts)$/.test(relativePath) && !relativePath.endsWith('tsconfig.json');
+			return relativePath.endsWith('.test-d.ts');
 		})
 		.map(function toRelative(entry) {
 			return posix(relative(root, resolve(entry.parentPath ?? entry.path, entry.name)));
-		})
-		.filter(function excludeConfigs(path) {
-			return !path.includes('tsconfig');
 		})
 		.sort();
 }

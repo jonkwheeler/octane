@@ -37,6 +37,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/livestore` | [`packages/livestore`](../packages/livestore) | framework binding | `0.0.3` | 2 |
 | `@octanejs/lucide` | [`packages/lucide`](../packages/lucide) | framework binding | `0.1.28` | 4 |
 | `@octanejs/mantine-hooks` | [`packages/mantine-hooks`](../packages/mantine-hooks) | framework binding | `0.1.14` | 1 |
+| `@octanejs/markdown` | [`packages/markdown`](../packages/markdown) | framework binding | `0.1.20` | 1 |
 | `@octanejs/mcp-server` | [`packages/octane-mcp-server`](../packages/octane-mcp-server) | agent tooling | `0.2.15` | 2 |
 | `@octanejs/mdx` | [`packages/mdx`](../packages/mdx) | framework binding | `0.1.30` | 4 |
 | `@octanejs/mobx` | [`packages/mobx`](../packages/mobx) | framework binding | `0.1.14` | 1 |
@@ -47,7 +48,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.13` | 2 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.14` | 2 |
 | `@octanejs/react-map-gl` | [`packages/react-map-gl`](../packages/react-map-gl) | framework binding | `0.0.5` | 2 |
-| `@octanejs/markdown` | [`packages/markdown`](../packages/markdown) | framework binding | `0.1.20` | 1 |
 | `@octanejs/recharts` | [`packages/recharts`](../packages/recharts) | framework binding | `0.1.30` | 1 |
 | `@octanejs/redux` | [`packages/redux`](../packages/redux) | framework binding | `0.1.30` | 1 |
 | `@octanejs/redux-toolkit` | [`packages/redux-toolkit`](../packages/redux-toolkit) | framework binding | `0.1.28` | 4 |

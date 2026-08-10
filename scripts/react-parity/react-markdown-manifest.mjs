@@ -98,7 +98,7 @@ const manifest = {
 			type: 'adapted-octane',
 			oracle: 'required',
 			environment: 'workspace-node',
-			project: 'react-markdown',
+			project: 'markdown',
 			evidenceOrigin: 'upstream-suite',
 			notes:
 				'Executes the one-for-one adapted Octane counterparts of the 87 upstream test.jsx identities with exact collected and executed identities.',
@@ -119,7 +119,7 @@ const manifest = {
 			type: 'differential',
 			oracle: 'required',
 			environment: 'workspace-node',
-			project: 'react-markdown-differential',
+			project: 'markdown-differential',
 			evidenceOrigin: 'repo-authored',
 			notes:
 				'Runs the same Markdown and URL fixtures through pristine React and Octane public entry points.',
@@ -218,7 +218,7 @@ const manifest = {
 		},
 		{
 			id: 'react-markdown-async-sync-render',
-			caseIds: ['runtime:090a6b90380b5935'],
+			caseIds: ['runtime:0c41907154f06242'],
 			upstreamResult:
 				"React's synchronous renderer throws when MarkdownAsync suspends during renderToStaticMarkup.",
 			octaneResult:

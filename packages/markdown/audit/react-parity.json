@@ -46,7 +46,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b5d420659f6abee82c3a2ed21bfd97f1b74ea4b381c613bf7f055352863369e1"
+      "lockfileSha256": "1d869521fff70460a418f8974a5fa5bdb6700e5b107e81e3935c4d606448328f"
     }
   },
   "lanes": [
@@ -74,7 +74,7 @@
         {
           "path": "packages/markdown/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "7384b7332e0eccd85c093a3f632b6623d7daa41b496e05e3a7c854fb30872ff9"
+          "sha256": "ca3824ca3a6df4da4c6c10a871e3f562d6c35475833bbc5f7d88aabe10522917"
         },
         {
           "path": "packages/markdown/upstream/source/test.jsx",
@@ -103,7 +103,7 @@
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-markdown",
+      "project": "markdown",
       "evidenceOrigin": "upstream-suite",
       "notes": "Executes the one-for-one adapted Octane counterparts of the 87 upstream test.jsx identities with exact collected and executed identities.",
       "execution": {
@@ -114,27 +114,27 @@
         {
           "path": "packages/markdown/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "885b72bd318ad8e41570dde4d1ff6ced7ba276c9d1c08f2d10699391adbc86c7"
+          "sha256": "5aa5540d5069170fb56d03a91291b0e08df42b5a90fedd232e1b32626706a23b"
         },
         {
           "path": "packages/markdown/audit/adapted-case-crosswalk.json",
           "role": "support",
-          "sha256": "2e16c205caff88994ef39457b5d5372330a0d9b1aeb3640b42a370d3f8023fe6"
+          "sha256": "e91a88f4e1fac0fb054c1d29bfc1fd7b7bba5660270f3bc81f5612980ede8829"
         },
         {
           "path": "scripts/react-parity/react-markdown-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5a8283b0309f7d3232674385bed9eebf6e8e36d842b3e6bd263a4f477d6dcbf0"
+          "sha256": "0353ed591102a51e40365fe3cd86e334768f0e3cbcb1ea17c41a79bf22baf987"
         },
         {
           "path": "scripts/react-parity/react-markdown-crosswalk.mjs",
           "role": "support",
-          "sha256": "d359795aa0d2bc7c758a622e3dc31cf91b7b37f655a805566e9ec83223fcb4df"
+          "sha256": "e46c91d548e54b713de6d7664d314b7e6fba1d86fa1fd4b76e788997928e5705"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "bb4a12fd619f43680086b4a04ea1dbf8fcbd3f4d54f8204f67611513e51fe56e"
+          "sha256": "0dd872755fe1e7625c3022a004c22eb5e237878e71b7e67eb0caae004366898e"
         }
       ]
     },
@@ -143,7 +143,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-markdown-differential",
+      "project": "markdown-differential",
       "evidenceOrigin": "repo-authored",
       "notes": "Runs the same Markdown and URL fixtures through pristine React and Octane public entry points.",
       "files": [
@@ -210,7 +210,7 @@
         {
           "path": "packages/markdown/audit/type-parity.json",
           "role": "support",
-          "sha256": "8fa159d2752d7c3bd1983980bdb035b9481d84ba4bc0bc3f20e84dd2a4877a9b"
+          "sha256": "3a033a891c8f9560b1c1ec66488b6c4d88916ba83720e1e4da6a907b50af46a5"
         }
       ]
     },
@@ -253,12 +253,12 @@
         {
           "path": "packages/markdown/audit/type-parity.json",
           "role": "support",
-          "sha256": "8fa159d2752d7c3bd1983980bdb035b9481d84ba4bc0bc3f20e84dd2a4877a9b"
+          "sha256": "3a033a891c8f9560b1c1ec66488b6c4d88916ba83720e1e4da6a907b50af46a5"
         },
         {
           "path": "scripts/react-parity/react-markdown-types-lib.mjs",
           "role": "support",
-          "sha256": "590e68f3d59725a2ce85743e0af10ebcb8e7413cf31f3890f9eba956fbbdd730"
+          "sha256": "f58d645a1af84f541f244396969d03d83fbe8363ae7519c01eeff7f5a1e85c64"
         }
       ]
     }
@@ -278,7 +278,7 @@
     },
     {
       "id": "react-markdown-async-sync-render",
-      "caseIds": ["runtime:090a6b90380b5935"],
+      "caseIds": ["runtime:0c41907154f06242"],
       "upstreamResult": "React's synchronous renderer throws when MarkdownAsync suspends during renderToStaticMarkup.",
       "octaneResult": "MarkdownAsync returns a Promise<ElementDescriptor> that resolves to ordinary Octane output.",
       "rationale": "Octane has no React Suspense boundary for sync render of an async Markdown entry; the public call site is awaitable instead.",

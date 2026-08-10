@@ -14,12 +14,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:cf81bb17d3865b81",
-        "ownershipSha256": "7cd0a2e190778bf008332f3401f45f689e4ccaef8559250ec0abfe52f4566e23"
+        "runtimeId": "runtime:2231a5c628c11bf1",
+        "ownershipSha256": "84fbf1a8105ac50ca5fea39f1f31f5e3d82935b8ce4e1be8606f6dba47d35375"
       },
       "adapted": [
         {
-          "id": "runtime:cf81bb17d3865b81",
+          "id": "runtime:2231a5c628c11bf1",
           "file": "packages/markdown/tests/conformance/public-types.test.ts",
           "fullName": "exposes the public api",
           "sourceSha256": "8abb0289ee08c3a9c0c18e4afd8f76cc000d399d2c49ecc9507c00b429af0f80"
@@ -39,12 +39,12 @@
         "callbackSha256": "88e3a2242da4941098c2a32ef81808a503a7c4b0a88d281dc7f786f779be3c41"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:8405d9e64b10e579",
-        "ownershipSha256": "a9e1477d4cf2ce5c49cdb0078614ac1f6015f1ecc19bb92ab23f199f60dbdec3"
+        "runtimeId": "runtime:80ad097e9505bd13",
+        "ownershipSha256": "179df074c0f33c1ef006341af466a9ee20bd2ed134f789e7fe150b9d19ed7749"
       },
       "adapted": [
         {
-          "id": "runtime:8405d9e64b10e579",
+          "id": "runtime:80ad097e9505bd13",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the pristine default renderer for \"# heading\\n\\nA [safe](https://example.com) link.\"",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -64,12 +64,12 @@
         "callbackSha256": "5fefd2d2aa8f5facba3c66778e2ada94f7384c76d8d605d6229f467cdd6e0418"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:8ebf28c5aad28f21",
-        "ownershipSha256": "f9f8c8334f838da0b5ac6ef21fac528aca334090751b7a8c0a942adf4ddb4f78"
+        "runtimeId": "runtime:8779e0fd7d1a74f1",
+        "ownershipSha256": "2d22d6a26b1fb7f858a9dc4d639fd680bba6304b916cb18bba31ee6079f9a1b1"
       },
       "adapted": [
         {
-          "id": "runtime:8ebf28c5aad28f21",
+          "id": "runtime:8779e0fd7d1a74f1",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects removed prop source",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -89,12 +89,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:03ff8e5ea27a65b7",
-        "ownershipSha256": "8c766c976dfc433746b3cd272e055cab77221123b0678090715798c7262a3970"
+        "runtimeId": "runtime:a13dd7c191c61d10",
+        "ownershipSha256": "73570e069f2f9a39b3ee0fd2cf7e2a0275c90244bea9a36f500507778056fb51"
       },
       "adapted": [
         {
-          "id": "runtime:03ff8e5ea27a65b7",
+          "id": "runtime:a13dd7c191c61d10",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects non-string children with the pinned message",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -111,12 +111,12 @@
         "blockSha256": "bc6e256d846194e757b551f52d99117f4f3407fe887451f9855d8df202836096"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:3f5f8ba2fead421b",
-        "ownershipSha256": "419a3e80f779e1cfcb31ba5630c055a9d4ca81be79747b9c223b6ce29090b854"
+        "runtimeId": "runtime:735d65624e002d3f",
+        "ownershipSha256": "d64bb0c2b88442ca370da71b172e3f974873b773bead1b7ad46443e52fd5a652"
       },
       "adapted": [
         {
-          "id": "runtime:3f5f8ba2fead421b",
+          "id": "runtime:735d65624e002d3f",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects boolean true children with the exact pinned diagnostic",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -136,12 +136,12 @@
         "callbackSha256": "6f1f081284ba82971e913d2bc85643195614cc873eb39c72ffbc72b62ab87a23"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:de5359a9878bbea5",
-        "ownershipSha256": "cdfda66db47b366e526b7f7a5262521638ccbc805ce1b1e844eae9e1ca150457"
+        "runtimeId": "runtime:b1c3662bc6c1423f",
+        "ownershipSha256": "8fb78d7b54c37b9135b8fbf9139c08a92e13ff536daf6e70dcf8cfb3917f277d"
       },
       "adapted": [
         {
-          "id": "runtime:de5359a9878bbea5",
+          "id": "runtime:b1c3662bc6c1423f",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "accepts pinned empty child null",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -161,12 +161,12 @@
         "callbackSha256": "6f1f081284ba82971e913d2bc85643195614cc873eb39c72ffbc72b62ab87a23"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:6ec71928dd0170b6",
-        "ownershipSha256": "940c041f07b446559d3f047253987427c892f7254c473346e60896f5a74b58a0"
+        "runtimeId": "runtime:19f582b6a620fd87",
+        "ownershipSha256": "e30f9c43deb4897bfcb12d8c67352681c17f0a57df5b5da08619b2b77a18d595"
       },
       "adapted": [
         {
-          "id": "runtime:6ec71928dd0170b6",
+          "id": "runtime:19f582b6a620fd87",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "accepts pinned empty child undefined",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -186,12 +186,12 @@
         "callbackSha256": "5fefd2d2aa8f5facba3c66778e2ada94f7384c76d8d605d6229f467cdd6e0418"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:e820231d50268321",
-        "ownershipSha256": "7d8fc823705ade19d9f919877ebbd407e9b90ea70115c81d0bbafe6580b6eb3c"
+        "runtimeId": "runtime:4ff5ea1b07c23b52",
+        "ownershipSha256": "2aeea5082ad42c0f2e7e8d00f9199080803b1e6b334431f83075a4fd77f24985"
       },
       "adapted": [
         {
-          "id": "runtime:e820231d50268321",
+          "id": "runtime:4ff5ea1b07c23b52",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects removed prop allowDangerousHtml",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -211,12 +211,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:36c2628e4cfb068a",
-        "ownershipSha256": "6ac451d7ed1987470d824886f95a2b041409687da82ed46faf5b270a08879642"
+        "runtimeId": "runtime:c76f9edda6d2663a",
+        "ownershipSha256": "e58750dc919fc9585eda427cf278f9df5765309f2b227999860f1c91d3c757f0"
       },
       "adapted": [
         {
-          "id": "runtime:36c2628e4cfb068a",
+          "id": "runtime:c76f9edda6d2663a",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: block quote",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -236,12 +236,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:05f2e97e043ce8c9",
-        "ownershipSha256": "bfac128a4f9b58dd3e81659d98f9600901b73481796d6d66603ae650bc994092"
+        "runtimeId": "runtime:fda08a631f66e79c",
+        "ownershipSha256": "5dcb4780ccdaad13a37983898af695a0b9709da953169fc2bf3387f88ced4b01"
       },
       "adapted": [
         {
-          "id": "runtime:05f2e97e043ce8c9",
+          "id": "runtime:fda08a631f66e79c",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: break",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -261,12 +261,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:fe0e95c1235dda49",
-        "ownershipSha256": "c50bf1095b9382f3ba5e0e1cbfe64673b19be08123039aaee53ecb873c953c3c"
+        "runtimeId": "runtime:350755b03d39b7a5",
+        "ownershipSha256": "f741860dafdcb9f935e34b4d1070f347904474d6b718ea4ed7739cef71360e96"
       },
       "adapted": [
         {
-          "id": "runtime:fe0e95c1235dda49",
+          "id": "runtime:350755b03d39b7a5",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: indented code",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -286,12 +286,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:b22a7af6bcd4beeb",
-        "ownershipSha256": "c245cb4404cba02f43749ac4253f77e64d3e7f6a1bdbe6f3c445bec17098cd99"
+        "runtimeId": "runtime:9dffe4adcbd7b913",
+        "ownershipSha256": "287eacde24821f646079ee3b8daa7fe301c67d93afce16122f4ba978210004f9"
       },
       "adapted": [
         {
-          "id": "runtime:b22a7af6bcd4beeb",
+          "id": "runtime:9dffe4adcbd7b913",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: fenced code",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -311,12 +311,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:e3509e4c5c186116",
-        "ownershipSha256": "d945090f27566ae6b4ece43f5dc3db4a6f01081f2dd71a3c67431b6585603e89"
+        "runtimeId": "runtime:ffdab05f55602d2e",
+        "ownershipSha256": "a92000138941946cb0cd21439be60c9219e1e027f279a9f48f299a84b54d659d"
       },
       "adapted": [
         {
-          "id": "runtime:e3509e4c5c186116",
+          "id": "runtime:ffdab05f55602d2e",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: delete",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -336,12 +336,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:52c15497958da745",
-        "ownershipSha256": "e91a9f5e2e6c86f9bf6b7c6f4e0af2a08b58ee5a69a55bcdd452a7ff7c5061c6"
+        "runtimeId": "runtime:23142d606f952ca3",
+        "ownershipSha256": "1aa6e453955d8729c869b5d906768dd0c869c6fec4af74223398ef2f54bc23db"
       },
       "adapted": [
         {
-          "id": "runtime:52c15497958da745",
+          "id": "runtime:23142d606f952ca3",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: emphasis",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -361,12 +361,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:e21febf544107f7c",
-        "ownershipSha256": "e2bacd55169fbea9c09d193a32d8caea0f1bafa8da0c344dabd3ed465fcaec80"
+        "runtimeId": "runtime:d268522b954e33eb",
+        "ownershipSha256": "1fde4ad36f6b4121987a6e0ca181b91cedaa200652681ff8b986580c90200cfb"
       },
       "adapted": [
         {
-          "id": "runtime:e21febf544107f7c",
+          "id": "runtime:d268522b954e33eb",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: footnote",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -386,12 +386,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:6b57624dac683eb7",
-        "ownershipSha256": "9777adc14e8353057fd9586ff758c970d23cbd0547c1b1fe2991c5a855e1876f"
+        "runtimeId": "runtime:c05219c550cc01a8",
+        "ownershipSha256": "e7708a7755aa818ac0e066531133ee7767c302637a666adfbe5d8102826b0ca5"
       },
       "adapted": [
         {
-          "id": "runtime:6b57624dac683eb7",
+          "id": "runtime:c05219c550cc01a8",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: heading",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -411,12 +411,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:e9d27c9fe2bbf755",
-        "ownershipSha256": "457abaedeba288555ca4583b75de7b0be780fc7aaa8b088d8555d27fc1ee5c63"
+        "runtimeId": "runtime:74b2f0d69fac7967",
+        "ownershipSha256": "4775c75fef565b5d3547cc1f5c35ea7a1d0276875563db5a418434702d08aea2"
       },
       "adapted": [
         {
-          "id": "runtime:e9d27c9fe2bbf755",
+          "id": "runtime:74b2f0d69fac7967",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: raw HTML",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -436,12 +436,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:28a815ad8f068e93",
-        "ownershipSha256": "9eb48d4e9166616a0653ea834e062e5a49c465879abf307b24e04efe2666ed5a"
+        "runtimeId": "runtime:8d26728e41461df1",
+        "ownershipSha256": "98d5a0fcbab9b750c26a97a12be471837cd9b8c8a72819060250cd6f6e60ee91"
       },
       "adapted": [
         {
-          "id": "runtime:28a815ad8f068e93",
+          "id": "runtime:8d26728e41461df1",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine rehype-raw behavior",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -461,12 +461,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:c1c8e5a375ca7926",
-        "ownershipSha256": "ac2dd8f6cb7cc44caf7ead81dea42f70f6b975a5cbfc0c11ae118b14d7edac6b"
+        "runtimeId": "runtime:8755b9482d7749e5",
+        "ownershipSha256": "3bcddecd1f76b5f525acb7d07be06645f692092663533c6e8d870c956394f8a9"
       },
       "adapted": [
         {
-          "id": "runtime:c1c8e5a375ca7926",
+          "id": "runtime:8755b9482d7749e5",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: image",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -486,12 +486,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:a162bcc8641816d1",
-        "ownershipSha256": "a9107be9b47ffaac906c690ab31752aebe44a0643fea9b4d5810cdd695ba494a"
+        "runtimeId": "runtime:8ecc0d7a1af7bdbb",
+        "ownershipSha256": "a826f15313e9bc0586c87d02fd4db7d15d747880fdc21e76097ad262cd0a235f"
       },
       "adapted": [
         {
-          "id": "runtime:a162bcc8641816d1",
+          "id": "runtime:8ecc0d7a1af7bdbb",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: image title",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -511,12 +511,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:f0d20c1db2c89b8a",
-        "ownershipSha256": "12308c19a77a773ba2dad4b360cd4f08bd3bccbcd8a0765e7374afd5c809e3bf"
+        "runtimeId": "runtime:9514e2af773d245b",
+        "ownershipSha256": "ba748ce7e5a0186dc0503cb7eb71ed6c852a6ad1b2c92943952aa870d8c24bff"
       },
       "adapted": [
         {
-          "id": "runtime:f0d20c1db2c89b8a",
+          "id": "runtime:9514e2af773d245b",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: image reference",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -536,12 +536,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:467abf057d3bc5e1",
-        "ownershipSha256": "86bf86024472cbf6bcab44517f852bd6a3e1861b1fedd3bb6db5b88b670ba3e8"
+        "runtimeId": "runtime:e86573c8e6fd3343",
+        "ownershipSha256": "fbcea7a6e6d03398688a17e96571f167fe19ccb8bc0c2a8a71510c0a795b1fa0"
       },
       "adapted": [
         {
-          "id": "runtime:467abf057d3bc5e1",
+          "id": "runtime:e86573c8e6fd3343",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: inline code",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -561,12 +561,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:7a247a9d5f71353c",
-        "ownershipSha256": "2c8575b999581cd2a4ae53b43bcb030b18026d2d8f8b8e1060268b8c4b30af1c"
+        "runtimeId": "runtime:8c4c62ab4ded7a4c",
+        "ownershipSha256": "b373b4cc0d69873c4c786396c7e33a13e211e11587a338671363bcb446940071"
       },
       "adapted": [
         {
-          "id": "runtime:7a247a9d5f71353c",
+          "id": "runtime:8c4c62ab4ded7a4c",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: link",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -586,12 +586,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:c8c51e58efd41ce1",
-        "ownershipSha256": "21812475aa90125f29d14918be7e37169c3afdb7e460bd7ae243dddd880c0438"
+        "runtimeId": "runtime:9aced0afaf1b15d3",
+        "ownershipSha256": "67b98f443d5d36c4d7b7cb501bd7660888490a83e641fd8c330817d751b4cec0"
       },
       "adapted": [
         {
-          "id": "runtime:c8c51e58efd41ce1",
+          "id": "runtime:9aced0afaf1b15d3",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: link title",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -611,12 +611,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:685522707e4d6e60",
-        "ownershipSha256": "5a347585c31f17673e62b79368834f017b20b5773433514359e982df8b113990"
+        "runtimeId": "runtime:81d22d0302a4a7d8",
+        "ownershipSha256": "d282139ea7eb8f4e0fd0ec9fe9ca2d867a68844e8c35cb5ae739cab3c894e1bb"
       },
       "adapted": [
         {
-          "id": "runtime:685522707e4d6e60",
+          "id": "runtime:81d22d0302a4a7d8",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: link reference",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -636,12 +636,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:74962374091e3157",
-        "ownershipSha256": "7c1db7c840b84e60248d7c5ff3283afc64726371c694d9e9f1bbb0c3553e0f27"
+        "runtimeId": "runtime:d16585730bc6c3c1",
+        "ownershipSha256": "e07006dbec498d286f6a1379ba56b72e7345c25eafcee8c12f834d93ee254130"
       },
       "adapted": [
         {
-          "id": "runtime:74962374091e3157",
+          "id": "runtime:d16585730bc6c3c1",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: prototype-polluting definitions",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -661,12 +661,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:12ad6c80233473aa",
-        "ownershipSha256": "f56e1c99bf4cb5f668852c7db898e60e8eac3ca2252614dab79f6deb593dd6a4"
+        "runtimeId": "runtime:3b13229f80706c5a",
+        "ownershipSha256": "7aaf44cd208c4b21ccee763a0e6aab0e142e9baa0cd67d7e40510143ba335005"
       },
       "adapted": [
         {
-          "id": "runtime:12ad6c80233473aa",
+          "id": "runtime:3b13229f80706c5a",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: duplicate definitions",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -686,12 +686,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:45d2d551298bb978",
-        "ownershipSha256": "5a5b219069a06ad1847b9266f495aa820b1c7a92aa56dbaf0035100688106adb"
+        "runtimeId": "runtime:f44811bf82ae83fc",
+        "ownershipSha256": "5ba42f0ac9aefbe0b0c9af97af4374ea329dcd917527453c8d04e02f259ae5ec"
       },
       "adapted": [
         {
-          "id": "runtime:45d2d551298bb978",
+          "id": "runtime:f44811bf82ae83fc",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: unordered list",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -711,12 +711,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:54bad030a3708b21",
-        "ownershipSha256": "1ce1219df708d7acf05afe2f35ced1e486a53cc9acfb5b090b9f28373519d328"
+        "runtimeId": "runtime:3ce2f0a54ffc8da8",
+        "ownershipSha256": "fb0c2588256b7889df47e7e9b2b77606f8c083c44efef4790f53611a7b4a8862"
       },
       "adapted": [
         {
-          "id": "runtime:54bad030a3708b21",
+          "id": "runtime:3ce2f0a54ffc8da8",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: ordered list",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -736,12 +736,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:e631e708209d8bab",
-        "ownershipSha256": "7bb2ea2d3a8ead2d2f9efb4a39f4cba61fbb365c737cd187138997aea8e76d5c"
+        "runtimeId": "runtime:13a58f6de832010e",
+        "ownershipSha256": "aac55215133fa8133a8c3b7b399b3363899e17f04523737a37f23365862762e4"
       },
       "adapted": [
         {
-          "id": "runtime:e631e708209d8bab",
+          "id": "runtime:13a58f6de832010e",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: paragraph",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -761,12 +761,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:8525cdecca856515",
-        "ownershipSha256": "bfd8bcc474aca8a9d12b857c525de8f30d65f2b3abcf30c7b43eb5fd1b64d08d"
+        "runtimeId": "runtime:dc7585a83a4630f8",
+        "ownershipSha256": "3df34052fe262462253bf23c19ce8ccb96d242b0cb8e5bfe9bc8d969a3c6318e"
       },
       "adapted": [
         {
-          "id": "runtime:8525cdecca856515",
+          "id": "runtime:dc7585a83a4630f8",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: strong",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -786,12 +786,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:900475c7a7b2a1b9",
-        "ownershipSha256": "a4594b6763234d0ed34dfdd4ab1e6bcb6931aada924fce8df6b50706c1233af5"
+        "runtimeId": "runtime:33bbf99f135484b9",
+        "ownershipSha256": "4446aad2c55aa15703483c6754d0baac6cfea3934a6892c2bacf9a371d0e6c0d"
       },
       "adapted": [
         {
-          "id": "runtime:900475c7a7b2a1b9",
+          "id": "runtime:33bbf99f135484b9",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: table",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -811,12 +811,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:f10bea66a68d797a",
-        "ownershipSha256": "edaaef5f1efdca2980a13eee8547a733a96ff039fe3ff834a030e5c811c6a945"
+        "runtimeId": "runtime:075cebbb4595dcc2",
+        "ownershipSha256": "8e78bf5dcf8782bc48b71b655cda67ade70c6c503282751512322e9d6d8af87d"
       },
       "adapted": [
         {
-          "id": "runtime:f10bea66a68d797a",
+          "id": "runtime:075cebbb4595dcc2",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: aligned table",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -836,12 +836,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:81523bf9cb17d4fe",
-        "ownershipSha256": "28067208f24217bb3a4320bf22a53fa3f6c77d10097d8c6709ad132c3e774b17"
+        "runtimeId": "runtime:d5fa63c66da1f7a8",
+        "ownershipSha256": "532616be1130c27785ccd81a01f84fdeeb08f3a98c869a7c07d4c5ee4082a676"
       },
       "adapted": [
         {
-          "id": "runtime:81523bf9cb17d4fe",
+          "id": "runtime:d5fa63c66da1f7a8",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: thematic break",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -861,12 +861,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:8ab6d756e0efb565",
-        "ownershipSha256": "a6c0de9f0b1a570e7bf862eb879d7031081d4dd9f60d656449d99fab4c5351c3"
+        "runtimeId": "runtime:de770f51640d0b6a",
+        "ownershipSha256": "dc0e2392b624756777eeea7bfcde7188b09314382e5f8f7986b01053da5cccae"
       },
       "adapted": [
         {
-          "id": "runtime:8ab6d756e0efb565",
+          "id": "runtime:de770f51640d0b6a",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: absolute path",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -886,12 +886,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:f6a14f6585be95a5",
-        "ownershipSha256": "935860a9602b7e8e256343ce86cb6c7bd51b411a52e40d16e17ce2a1cf2cb2ac"
+        "runtimeId": "runtime:4f748bebdecac4bb",
+        "ownershipSha256": "5b3bf8fde839d455879d89a936c97b6f701fc3b5c32ae39878868d65ea3312c5"
       },
       "adapted": [
         {
-          "id": "runtime:f6a14f6585be95a5",
+          "id": "runtime:4f748bebdecac4bb",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: absolute URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -911,12 +911,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:2befada496497227",
-        "ownershipSha256": "a461bee47aeca4cd98f5199109bc4d2aa4892bc2b301603316f3c478c44c415f"
+        "runtimeId": "runtime:da07a60a137fb1fc",
+        "ownershipSha256": "3d6a1ccd8a22db1e572b591e97e02afe526b904a95536591c354919ec8342188"
       },
       "adapted": [
         {
-          "id": "runtime:2befada496497227",
+          "id": "runtime:da07a60a137fb1fc",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: uppercase protocol",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -936,12 +936,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:e8551d8b3bcdbe9f",
-        "ownershipSha256": "cf3841e928dcc19c22d7e9a91d1f2959aed2288b23f62af2d58cb6ea5952e595"
+        "runtimeId": "runtime:1f3f3af0e8dc1d89",
+        "ownershipSha256": "b228bf8063b968f661a8688e144448044da8da8719738880eb3ee857b8578d25"
       },
       "adapted": [
         {
-          "id": "runtime:e8551d8b3bcdbe9f",
+          "id": "runtime:1f3f3af0e8dc1d89",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: javascript URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -961,12 +961,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:1d8f9068cba2602b",
-        "ownershipSha256": "c98550871d8c8e37337975fe29da4f4e079114ec35e43c1f59b96d7d48a8e7e9"
+        "runtimeId": "runtime:e69335a396904873",
+        "ownershipSha256": "e8cd6544d0d8544ff9960e4836638b8450cf2b37d2d4c103d58ded736f25c6a3"
       },
       "adapted": [
         {
-          "id": "runtime:1d8f9068cba2602b",
+          "id": "runtime:e69335a396904873",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: vbscript URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -986,12 +986,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:26cbd999b3e4698e",
-        "ownershipSha256": "bea5aaf353ec8fa6163d4365a86017d6be983b658d0bbeda5c5c58b9fbb5f4fa"
+        "runtimeId": "runtime:1f402419ebb612a1",
+        "ownershipSha256": "913c96054744385e996e9827576288b015d12636e82239be4dfc183ec9f8ccc6"
       },
       "adapted": [
         {
-          "id": "runtime:26cbd999b3e4698e",
+          "id": "runtime:1f402419ebb612a1",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: uppercase vbscript URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1011,12 +1011,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:90330ca82b1b319b",
-        "ownershipSha256": "a1d874f4529d89048296bdd407190237efdec1b8aad8e819b8c1456fbfc0874b"
+        "runtimeId": "runtime:6b59ecd4f27dc431",
+        "ownershipSha256": "236391a844d5188d2e9ccc0ac9ca2b53a4cd812133e9bc8c3e3c5f629032810b"
       },
       "adapted": [
         {
-          "id": "runtime:90330ca82b1b319b",
+          "id": "runtime:6b59ecd4f27dc431",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: file URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1036,12 +1036,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:75aa0a7b6562aa26",
-        "ownershipSha256": "2912f825e09cba8b4c404139779e294c1c62392b0818d39ec78d045be3d0eaa0"
+        "runtimeId": "runtime:9df2d57fba958503",
+        "ownershipSha256": "7b3f7b68554027f5d0589d253777d89f0de37249364eb1e6e3947d8c1be8801c"
       },
       "adapted": [
         {
-          "id": "runtime:75aa0a7b6562aa26",
+          "id": "runtime:9df2d57fba958503",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: empty URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1061,12 +1061,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:cec002264847ad73",
-        "ownershipSha256": "f3009e6d93f395e1a648aa26648aa800b8413a6d2622aa04edf661d0ba3fc754"
+        "runtimeId": "runtime:a419f6e2896c811a",
+        "ownershipSha256": "944819dfc0188833c0c586405b14448d28181f6c9adcaeef878db3d574e3b681"
       },
       "adapted": [
         {
-          "id": "runtime:cec002264847ad73",
+          "id": "runtime:a419f6e2896c811a",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: query URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1086,12 +1086,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:da16b6b30d515557",
-        "ownershipSha256": "4b8b00c3a4c29ba64d47f4b008f8fb92269388d6fabe2da07644ee6df72d49ba"
+        "runtimeId": "runtime:22a65c6e20016f12",
+        "ownershipSha256": "46dbb4b606dc62fa3e34e7d3fdaf5f8cf8e0451900612d9ee07c6f647497ebe6"
       },
       "adapted": [
         {
-          "id": "runtime:da16b6b30d515557",
+          "id": "runtime:22a65c6e20016f12",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: ampersand URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1111,12 +1111,12 @@
         "callbackSha256": "7531e387da3e3fb88c09e2c4cdb44396437dc3795c431adbc02c6eda60ed7535"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:18d214ca6e953e79",
-        "ownershipSha256": "abdd49a74148e6c0a582ee0c995a09d6a0505f8ce26ba82b66142c5585c7c799"
+        "runtimeId": "runtime:eb40eb0ad2d33e9b",
+        "ownershipSha256": "7f800f698abb1f93fba33af3a3974bf32f544da7e89cc657f5217194ffea3ff8"
       },
       "adapted": [
         {
-          "id": "runtime:18d214ca6e953e79",
+          "id": "runtime:eb40eb0ad2d33e9b",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: hash URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1136,12 +1136,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:20e62e65276d5c67",
-        "ownershipSha256": "1b2727cbd389db9fabaf29ff2ca917d242874098b99e9be7fb59822917e33e77"
+        "runtimeId": "runtime:f4990c8644147140",
+        "ownershipSha256": "7c207b927ea9ff9804e4107ba40f613553691cb53841a93bbb3e33c2af47f5b9"
       },
       "adapted": [
         {
-          "id": "runtime:20e62e65276d5c67",
+          "id": "runtime:f4990c8644147140",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream href urlTransform public-render fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1161,12 +1161,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:537136ca2595fdb1",
-        "ownershipSha256": "88d774fde416ff988de2379cca8181f2f29209fa8f08ac283451825fd89f7f71"
+        "runtimeId": "runtime:d6729efe7ef6939b",
+        "ownershipSha256": "e7adaaf3d560d236df963bb83f5715e59fb74d9425658a3b2b97ac13e8f5f685"
       },
       "adapted": [
         {
-          "id": "runtime:537136ca2595fdb1",
+          "id": "runtime:d6729efe7ef6939b",
           "file": "packages/markdown/tests/differential/url-transform.test.ts",
           "fullName": "the pinned URL oracle transforms \"\" to \"\"",
           "sourceSha256": "ba54f3394d093e567ca10b1031af27d2e8e9cb59e141e8c6a42dc72ac06205dd"
@@ -1186,12 +1186,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:62666e5fecdaf613",
-        "ownershipSha256": "96f21a63887723932ac42f281eac1889e03e1ccf66caff4520a7fab64fd5ae57"
+        "runtimeId": "runtime:c198e9c92fbdc90d",
+        "ownershipSha256": "a8df2eb6ada108b26347706eadb3f9cdd42867d569eabf2b3bfa82ee8594fb85"
       },
       "adapted": [
         {
-          "id": "runtime:62666e5fecdaf613",
+          "id": "runtime:c198e9c92fbdc90d",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream image src urlTransform returning null fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1211,12 +1211,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:df796150e8d55d22",
-        "ownershipSha256": "2cd6ea941771cb2eeff2c5f9adbb3fd8a440dd55494dfe616ba0ddf6d21ba16d"
+        "runtimeId": "runtime:ac2e0bde9fc0938f",
+        "ownershipSha256": "3606b5fc3971927844b36f776954a6b2970f0e29a779f9239e7435e80bff2302"
       },
       "adapted": [
         {
-          "id": "runtime:df796150e8d55d22",
+          "id": "runtime:ac2e0bde9fc0938f",
           "file": "packages/markdown/tests/differential/processor.test.ts",
           "fullName": "matches pinned raw handling and filtering order",
           "sourceSha256": "ffb156a541f08d9aca0a71bd82253be718beedc1085ee534d835c7d0b0e9c763"
@@ -1233,12 +1233,12 @@
         "blockSha256": "87ff7c476617b30dd453694bab6b0c3f6f1bb97def4d1e8182e18b05c3881ae1"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:bf6e7624cf30b61e",
-        "ownershipSha256": "f9f1dbdc2f25d298fac91310f5dfd8a85b7e7690fa54a11ec7ebfb4a1aa81235"
+        "runtimeId": "runtime:202c547e6a229e44",
+        "ownershipSha256": "77ee1085c377f743b3a56fa72f129db95ad3a8ac6a5f25e118b93f45de9c1b1f"
       },
       "adapted": [
         {
-          "id": "runtime:bf6e7624cf30b61e",
+          "id": "runtime:202c547e6a229e44",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream allowedElements drop fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1258,12 +1258,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:3ca4712df44cbe4d",
-        "ownershipSha256": "5f89b849538d7c17df9ec75867986868cb28f6f27e86dd2b8762dbc6d8b00334"
+        "runtimeId": "runtime:48b3e44d58d84922",
+        "ownershipSha256": "f26d22819641d18654796d966e1717f4c541445dd7a77fa5068e096bb52ef33f"
       },
       "adapted": [
         {
-          "id": "runtime:3ca4712df44cbe4d",
+          "id": "runtime:48b3e44d58d84922",
           "file": "packages/markdown/tests/differential/processor.test.ts",
           "fullName": "passes exact element index and parent to allowElement",
           "sourceSha256": "ffb156a541f08d9aca0a71bd82253be718beedc1085ee534d835c7d0b0e9c763"
@@ -1283,12 +1283,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:98b6ab01a91c3ed5",
-        "ownershipSha256": "e3bfe53ac6d1f2d36dc7b36bfc6b41e259ee67a836261044b5405f0a97d09068"
+        "runtimeId": "runtime:6f3309cb93e54861",
+        "ownershipSha256": "c85344516cee9e274309b28e1c020bea638fdf92988f6c50131ce69a801943d0"
       },
       "adapted": [
         {
-          "id": "runtime:98b6ab01a91c3ed5",
+          "id": "runtime:6f3309cb93e54861",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream disallowedElements fixture without unwrap",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1308,12 +1308,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:990481e14d5bcc08",
-        "ownershipSha256": "4a0ad1527120244d97d2126096e9328722b5a9f0b756c8ed2a7185e5a67a8225"
+        "runtimeId": "runtime:7c25b30cda512624",
+        "ownershipSha256": "c0c457bba8f98359faa37db70301630555df2e16199231e508f5b2287213f339"
       },
       "adapted": [
         {
-          "id": "runtime:990481e14d5bcc08",
+          "id": "runtime:7c25b30cda512624",
           "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects combined element lists with the pinned message",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
@@ -1330,12 +1330,12 @@
         "blockSha256": "3f9c8e3c94671c550cd2e57e78b709a2abe5eb41b4747f13a65c87fb056ffa40"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:21e126ff95b2f6cb",
-        "ownershipSha256": "87ca87342b61398c349293fed0506374769173c91e39e678da0b13878e93416c"
+        "runtimeId": "runtime:5c52f098cf7221b0",
+        "ownershipSha256": "f8be98d17992134f3386d69178f9d8c9f91feca04ec7e46ba55037893de0c995"
       },
       "adapted": [
         {
-          "id": "runtime:21e126ff95b2f6cb",
+          "id": "runtime:5c52f098cf7221b0",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream unwrapDisallowed with allowedElements fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1355,12 +1355,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:0c31045076dccbbb",
-        "ownershipSha256": "b9e343831142764da2ff7fac6d9d81444939696e5a10bdb6af7487c06b3ef6d5"
+        "runtimeId": "runtime:42f3fc3159557e3f",
+        "ownershipSha256": "ea0c1d4c9bcc80c24367b519ad92e2a5c41ac4cf37595d654ffcd078b2269d09"
       },
       "adapted": [
         {
-          "id": "runtime:0c31045076dccbbb",
+          "id": "runtime:42f3fc3159557e3f",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection publicly renders exact unwrapDisallowed with disallowedElements fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1380,12 +1380,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:2544c277b5fdb5d1",
-        "ownershipSha256": "9f0fe48747daf03be599db8fdf0a12f3255477809da9b4809a7cc256d5e9f1ab"
+        "runtimeId": "runtime:b59351c44a63dc6e",
+        "ownershipSha256": "bbe5060ba211766d396399e55060eeebf5c6ff03acc03028ff7316dc4814ad8c"
       },
       "adapted": [
         {
-          "id": "runtime:2544c277b5fdb5d1",
+          "id": "runtime:b59351c44a63dc6e",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream remarkRehypeOptions clobberPrefix footnote output",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1405,12 +1405,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:a112bb863ac4ec74",
-        "ownershipSha256": "abef023b24cf4b1c5b45b81a08791fb6ec0aa0d7187ab26bbb878809e3202013"
+        "runtimeId": "runtime:d1f7123bee28af78",
+        "ownershipSha256": "e9f479eec5de5c826b1d877581f62cc0c4a308b5dc5695944ee216ef07f4fc5d"
       },
       "adapted": [
         {
-          "id": "runtime:a112bb863ac4ec74",
+          "id": "runtime:d1f7123bee28af78",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection supports intrinsic remapping, null components, and fragments",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1430,12 +1430,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:f790ec86e665b380",
-        "ownershipSha256": "0f52272dc716acc77129fde916e7ee9a88f1909f30781f1674c6c4e30863370f"
+        "runtimeId": "runtime:c615b439c7406a36",
+        "ownershipSha256": "5cf8312a6212ee6e57f48394822f19bfbc3c676fb92456fd016d5e58580f12a6"
       },
       "adapted": [
         {
-          "id": "runtime:f790ec86e665b380",
+          "id": "runtime:c615b439c7406a36",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection passes complete intrinsic props and node while keeping key special",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1455,12 +1455,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:9c4989f9a58cb4ef",
-        "ownershipSha256": "65286a6da93f8b4ee1456a55d256855feb1e96345420c974d6414080fd79259b"
+        "runtimeId": "runtime:1b9af13c540adae3",
+        "ownershipSha256": "b7b045ff2fee7e63d813037c4d4b0717160077bee94fadba8198857e0886b375"
       },
       "adapted": [
         {
-          "id": "runtime:9c4989f9a58cb4ef",
+          "id": "runtime:1b9af13c540adae3",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection preserves sibling projection and rejects invalid mappings",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1480,12 +1480,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:69f5d039da625392",
-        "ownershipSha256": "ebbc4679c26035e4a2a573604aa6aff52e4bc62ae0e98629674e304e181b0f9c"
+        "runtimeId": "runtime:cb92118075fd3d0f",
+        "ownershipSha256": "579f913a28276d6635a922b226085c54ba98cf9c2ec0043abd938101e961681c"
       },
       "adapted": [
         {
-          "id": "runtime:69f5d039da625392",
+          "id": "runtime:cb92118075fd3d0f",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (headings) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1505,12 +1505,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:3abe373c6f7e85ae",
-        "ownershipSha256": "1f2a91e990895d1873e5a9e806dc478b2ea65195531f4e6663cb90d10ed0ff30"
+        "runtimeId": "runtime:83935a483c65c7bd",
+        "ownershipSha256": "07b8180e34a71d39fd58778b2306ed772ec74f5861faab32d017d87a8130bad0"
       },
       "adapted": [
         {
-          "id": "runtime:3abe373c6f7e85ae",
+          "id": "runtime:83935a483c65c7bd",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (code) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1530,12 +1530,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:aa8f61570d348570",
-        "ownershipSha256": "143cc3d6d1b452527593739da7419f53f7c4c31d72270da5007f516db597ab46"
+        "runtimeId": "runtime:caa00aaeea4c2811",
+        "ownershipSha256": "63d654b0adceba79438be03f176812d06e6cb54d0182f9a4dec1b7301d497354"
       },
       "adapted": [
         {
-          "id": "runtime:aa8f61570d348570",
+          "id": "runtime:caa00aaeea4c2811",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (li) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1555,12 +1555,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:c0faaf3fc5992b1e",
-        "ownershipSha256": "2c446c52c8f7235a1bd626334d106178cd5f75e050c6ffa6a8b130cc7c73f4d2"
+        "runtimeId": "runtime:5035d9e00f86f5eb",
+        "ownershipSha256": "ee227d5c31c90ad0b88a36e7abd77a28c5155b0d407399fe3e26e7b731e59c01"
       },
       "adapted": [
         {
-          "id": "runtime:c0faaf3fc5992b1e",
+          "id": "runtime:5035d9e00f86f5eb",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (ol) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1580,12 +1580,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:fa589a869e389fac",
-        "ownershipSha256": "4b7cd4837814f8c2dbc66503a6484b3c875aad2b7a8015a35f8caafc5e023ac0"
+        "runtimeId": "runtime:946a9470ea394053",
+        "ownershipSha256": "fca435f1dc579d1d7b1ee44d7e137ce6b0a14553100dfe62f51ecb629ce31b24"
       },
       "adapted": [
         {
-          "id": "runtime:fa589a869e389fac",
+          "id": "runtime:946a9470ea394053",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (ul) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1605,12 +1605,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:ee36ebea71e78f5c",
-        "ownershipSha256": "426863dff184023437945e427bd1e106a8ac4ce1275b95f91f813e00e3a0f081"
+        "runtimeId": "runtime:f4ff2dda2a1069f2",
+        "ownershipSha256": "ccf916d51ef8100a5fcb2bbaf8d47ae1a0b5d67ddd8bb463720b38f7ced601d3"
       },
       "adapted": [
         {
-          "id": "runtime:ee36ebea71e78f5c",
+          "id": "runtime:f4ff2dda2a1069f2",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (tr) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1630,12 +1630,12 @@
         "callbackSha256": "9c911885b370b916ad794a734780844acd1d11b3babf6ef038a1a0f96cc139bb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:adb89e6e53378f7f",
-        "ownershipSha256": "8b4f258ba40287e7af9d18885884b5e7f042e244f877a4df70c7d32323731e9f"
+        "runtimeId": "runtime:38ce59d23bf6b11b",
+        "ownershipSha256": "f109039e3c61036d5411c9168bc7cf468b619b5dc6deb95fe5c17df36a90b9c9"
       },
       "adapted": [
         {
-          "id": "runtime:adb89e6e53378f7f",
+          "id": "runtime:38ce59d23bf6b11b",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (td and th) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1652,12 +1652,12 @@
         "blockSha256": "316bcfb9c396f4611efb1af6a27d495e63b94c9c1ea0d623acd3509a72224460"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:d853764df692474d",
-        "ownershipSha256": "ef58807486daf8e0dd0037c5e3e275342799a223563548a32e6bd87e6c33f2fd"
+        "runtimeId": "runtime:b4c0bd03a48148ed",
+        "ownershipSha256": "22c9b341a0c9a47a8e73f0a94a6289a72ea764425d8d401037a9344dff49ec8c"
       },
       "adapted": [
         {
-          "id": "runtime:d853764df692474d",
+          "id": "runtime:b4c0bd03a48148ed",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection passes the complete upstream HAST node including child and source positions",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1677,12 +1677,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:14d6a5c135c6f8a7",
-        "ownershipSha256": "ce282d5ecb1fb253d7049fd34f1ff4eb913e8f6433ba732f36ec06a88a15663d"
+        "runtimeId": "runtime:f54a19bc82c821b5",
+        "ownershipSha256": "50e2fbc4fb27eb49b424a82fc7c2ee2a9a99e280634a1b477969ce7a6f1944ee"
       },
       "adapted": [
         {
-          "id": "runtime:14d6a5c135c6f8a7",
+          "id": "runtime:f54a19bc82c821b5",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream remark-gfm single-tilde fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1699,12 +1699,12 @@
         "blockSha256": "4a8a3a2a30527768ae59ddc72824382ab5d367e3900f3ccfb5ea699c6e6680cb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:d5050f366996856b",
-        "ownershipSha256": "c1c7c20af4afc512949de0b1543451a3d266e45f3ae3510be8397ac7e875c169"
+        "runtimeId": "runtime:998f6b5c266febc7",
+        "ownershipSha256": "f509ed22011cfc2ee9175fbfab866c77b2f14238551a121294e579a3bb9ce779"
       },
       "adapted": [
         {
-          "id": "runtime:d5050f366996856b",
+          "id": "runtime:998f6b5c266febc7",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine remark-toc output for the upstream fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1724,12 +1724,12 @@
         "callbackSha256": "8ac7ffd25fba3f0510f4881970de80a7e2dacdbcfd1beb97771f1561a0151462"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:52c80c5c94041b1d",
-        "ownershipSha256": "eabc2264db35976155791d8d1569a58ffc30de45d321fcaa823d9694ac2e5034"
+        "runtimeId": "runtime:183884b6703af082",
+        "ownershipSha256": "c993213532ab6db851486f5a82b8402dd3155d42f23d5239c3d0de6241dc7e64"
       },
       "adapted": [
         {
-          "id": "runtime:52c80c5c94041b1d",
+          "id": "runtime:183884b6703af082",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created ARIA property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1749,12 +1749,12 @@
         "callbackSha256": "8ac7ffd25fba3f0510f4881970de80a7e2dacdbcfd1beb97771f1561a0151462"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:c5cd49f14eb93169",
-        "ownershipSha256": "eaf4e306f070647ba6e0562a00b5867610fb70d585307a326557953b09da3827"
+        "runtimeId": "runtime:830309bb6cb06dd1",
+        "ownershipSha256": "7490213f68265f329fedd42988a76090a577304d57413f36a3c6a5a724962a9c"
       },
       "adapted": [
         {
-          "id": "runtime:c5cd49f14eb93169",
+          "id": "runtime:830309bb6cb06dd1",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created data property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1774,12 +1774,12 @@
         "callbackSha256": "8ac7ffd25fba3f0510f4881970de80a7e2dacdbcfd1beb97771f1561a0151462"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:6cb86ea421795b13",
-        "ownershipSha256": "d4dd2209401de9879e673c5bfb78657014911b9a0f10cf7d63668588f83acedd"
+        "runtimeId": "runtime:da492fb4b8ffb3bc",
+        "ownershipSha256": "cd845316074391b5aad72ab11467c3d574281d8fe8fe0d6d126e4971e6b840eb"
       },
       "adapted": [
         {
-          "id": "runtime:6cb86ea421795b13",
+          "id": "runtime:da492fb4b8ffb3bc",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created comma-separated property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1799,12 +1799,12 @@
         "callbackSha256": "8ac7ffd25fba3f0510f4881970de80a7e2dacdbcfd1beb97771f1561a0151462"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:4191409c2580cd05",
-        "ownershipSha256": "bde702cc655eb70ef9a1ce3a6503b2cea0e3d1f48bc3ba6231b3af4e8c592cbb"
+        "runtimeId": "runtime:8887cf75e475e297",
+        "ownershipSha256": "500f2bdddaa3db21d8e6d8c02fa2e9fa9ca8760b8a20e31b1ee082a337681ea3"
       },
       "adapted": [
         {
-          "id": "runtime:4191409c2580cd05",
+          "id": "runtime:8887cf75e475e297",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created style property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1824,12 +1824,12 @@
         "callbackSha256": "8ac7ffd25fba3f0510f4881970de80a7e2dacdbcfd1beb97771f1561a0151462"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:c982891ec636936d",
-        "ownershipSha256": "c368b08d34339fb679b0be62ee4ee588dbecbe0801e0f809e4c2f45ac2f99f0b"
+        "runtimeId": "runtime:68f4dfc058569fd4",
+        "ownershipSha256": "d845376893827c59b8cf18aad9e1dc4006b78f15c00768ecb368a9adbb723e17"
       },
       "adapted": [
         {
-          "id": "runtime:c982891ec636936d",
+          "id": "runtime:68f4dfc058569fd4",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created vendor-prefixed style property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1849,12 +1849,12 @@
         "callbackSha256": "8ac7ffd25fba3f0510f4881970de80a7e2dacdbcfd1beb97771f1561a0151462"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:42901f712e4ea60b",
-        "ownershipSha256": "0bc17174e195c776a2493d006f0dd618102ea60bdc11ea092d0b5025f1f1c5f5"
+        "runtimeId": "runtime:b4ba8cfd67005dff",
+        "ownershipSha256": "0be8b68d2d6a4b30d1ec5aa65abe20ead37bbc8f7a18eeded9103ff645a5719e"
       },
       "adapted": [
         {
-          "id": "runtime:42901f712e4ea60b",
+          "id": "runtime:b4ba8cfd67005dff",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created broken style property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1871,12 +1871,12 @@
         "blockSha256": "7ccab0869b255181ea0afa42f8b80e7bf22cf3180dde9c03fe9cbbfd5e0ab95a"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:69d006d9955d2bbb",
-        "ownershipSha256": "686fcce35562377ad90d219a6a0911b0c22c47423d33b6bf300ff01fff7238f1"
+        "runtimeId": "runtime:83d41db47e423751",
+        "ownershipSha256": "8690ddc99a3b17079b21e28328082dfea4bdbd9420770101dd067bb8ef2e591d"
       },
       "adapted": [
         {
-          "id": "runtime:69d006d9955d2bbb",
+          "id": "runtime:83d41db47e423751",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream SVG projection fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1893,12 +1893,12 @@
         "blockSha256": "36a1279069e0dfbf5dfbc2614d8e04c9ff4861b5e36668fd0d6a6fd160dc60e9"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:8cf35d7144a5a047",
-        "ownershipSha256": "a5ce4c47bdef3a1752e1fff100748859262a0b18cc0186da0eb20b42adfaf50e"
+        "runtimeId": "runtime:178ae640205b1263",
+        "ownershipSha256": "9c60521ad36caeba1252e75c78e1a4cbbc087fc1391c97010f026c8100bda5a1"
       },
       "adapted": [
         {
-          "id": "runtime:8cf35d7144a5a047",
+          "id": "runtime:178ae640205b1263",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection ignores the exact upstream root comment while preserving the paragraph",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1918,12 +1918,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:ffc3e1ebaa17d492",
-        "ownershipSha256": "0b4caad66fe6a57e8a03ec5249379adad12e80cf1625669ff76fd472be04e715"
+        "runtimeId": "runtime:2a9a770162c4ce1b",
+        "ownershipSha256": "4515b2b1385bf075335ed53296ea0296aecc7a4f4c354ca32743096a11ba0f33"
       },
       "adapted": [
         {
-          "id": "runtime:ffc3e1ebaa17d492",
+          "id": "runtime:2a9a770162c4ce1b",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream GFM aligned table cell with merged plugin style",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1940,12 +1940,12 @@
         "blockSha256": "05c614c7666751280ed9c4800bb6e83f4c21311179fe08495b14385089b99cfb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:7f054a986e2f123f",
-        "ownershipSha256": "e44b60f145f8a1330d05549cee77b79e5f9c76fec98b12fd2ae14f02520ccae3"
+        "runtimeId": "runtime:7924c6922df92c37",
+        "ownershipSha256": "65ff7056eeb8c622c5a103977cfbc7f498b3beeccb2bd422be957fae3304e8d7"
       },
       "adapted": [
         {
-          "id": "runtime:7f054a986e2f123f",
+          "id": "runtime:7924c6922df92c37",
           "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream root-replaced-by-comment empty output",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
@@ -1963,18 +1963,18 @@
       "declarationEvidence": {
         "declaration": "documents the synchronous-render framework divergence with the upstream fixture",
         "kind": "block",
-        "blockSha256": "12bd6237fea79bb98e23bade7c07b248bf96faed737c35714d7024398934d0b5"
+        "blockSha256": "25a9e925fc6ef854473496cc1ec6003db6befb682a23ff1045a1153d4f5051cb"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:090a6b90380b5935",
-        "ownershipSha256": "956423bb9e5521aba41a6cff1075c552cd49e669292d09b35e837b5ae68c391c"
+        "runtimeId": "runtime:0c41907154f06242",
+        "ownershipSha256": "747fb4439327b6c5618b1d36d66eb5835c07d194c9e523b8a9da80f3fd1291f4"
       },
       "adapted": [
         {
-          "id": "runtime:090a6b90380b5935",
+          "id": "runtime:0c41907154f06242",
           "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
           "fullName": "MarkdownAsync documents the synchronous-render framework divergence with the upstream fixture",
-          "sourceSha256": "fc460bede4f5dfe9420e38aabbdeddec40c0523dfaf37f543ed718696539c18b"
+          "sourceSha256": "e9058ddf2f168cf99d86a7318e0d04615572f9d3743325bd179b9b806086e386"
         }
       ]
     },
@@ -1988,15 +1988,15 @@
         "blockSha256": "5d411344a816e85afe0183490d9dca60fb806b7cd47acd0f22bad9afdb3f95e8"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:db91988cfb235ff3",
-        "ownershipSha256": "8d54f15ed903f5d760bea86c0a3ece481b2b5649726453e6e764e60378c4ebb8"
+        "runtimeId": "runtime:838a21678ae087c9",
+        "ownershipSha256": "5541edc8764c4182a5427b715154c2a25977971f88a1806a7cde305a07492108"
       },
       "adapted": [
         {
-          "id": "runtime:db91988cfb235ff3",
+          "id": "runtime:838a21678ae087c9",
           "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
           "fullName": "MarkdownAsync matches the upstream pipeable-stream output fixture",
-          "sourceSha256": "fc460bede4f5dfe9420e38aabbdeddec40c0523dfaf37f543ed718696539c18b"
+          "sourceSha256": "e9058ddf2f168cf99d86a7318e0d04615572f9d3743325bd179b9b806086e386"
         }
       ]
     },
@@ -2010,15 +2010,15 @@
         "blockSha256": "e0db38e90bef54893b922daac1c5c3520740fcefdb517db49dd7a1d07eeeb953"
       },
       "identityEvidence": {
-        "runtimeId": "runtime:052ced3137ef63b1",
-        "ownershipSha256": "cc2540031f6e4637227859d353bcc97fe5e9de70320c210875c968cefc0eb6e0"
+        "runtimeId": "runtime:67cdbd818a4d4de8",
+        "ownershipSha256": "daa3b94cded084da3ec8a4693c9c45d90000e2b4030eb795adef44b911ec8ccc"
       },
       "adapted": [
         {
-          "id": "runtime:052ced3137ef63b1",
+          "id": "runtime:67cdbd818a4d4de8",
           "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
           "fullName": "MarkdownAsync matches exact starry-night highlighted HTML for the upstream fixture",
-          "sourceSha256": "fc460bede4f5dfe9420e38aabbdeddec40c0523dfaf37f543ed718696539c18b"
+          "sourceSha256": "e9058ddf2f168cf99d86a7318e0d04615572f9d3743325bd179b9b806086e386"
         }
       ]
     },
@@ -2035,12 +2035,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:022869b7d63b27dc",
-        "ownershipSha256": "2f855f260e12ccbf9ec7e5cdadf90d6550d66a428c40eed8ea7ffb95702205bb"
+        "runtimeId": "runtime:7937ba2c07116393",
+        "ownershipSha256": "d79880ce4264a7c21f25d8405345008b625210d31ef4a57e79e6095e6e178cd7"
       },
       "adapted": [
         {
-          "id": "runtime:022869b7d63b27dc",
+          "id": "runtime:7937ba2c07116393",
           "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle matches the pinned no-fallback initial empty DOM and resolved paragraph",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
@@ -2060,12 +2060,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:220745d3a5b56e21",
-        "ownershipSha256": "31d68031620aabc5ec39a5920f6777963a1d196bdd196a84bd41742684e4afcc"
+        "runtimeId": "runtime:81cb174cb7e7e18c",
+        "ownershipSha256": "4584f9ed561df5a719a2e16c4a5949414d1ca6ca1a1b4b284c354751c14dfffb"
       },
       "adapted": [
         {
-          "id": "runtime:220745d3a5b56e21",
+          "id": "runtime:81cb174cb7e7e18c",
           "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle matches exact async MarkdownHooks starry-night JavaScript highlighted HTML",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
@@ -2085,12 +2085,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:01cbc40342ec4745",
-        "ownershipSha256": "fddaaa6c8334022ec9ea976a14acf0f9061d480942bee5f60f8bff4a06753b74"
+        "runtimeId": "runtime:015127dfde5d789b",
+        "ownershipSha256": "142e730b992a5d838d889ef0302a0afc61f29e3e2898c4285d5678f6ae83dfcf"
       },
       "adapted": [
         {
-          "id": "runtime:01cbc40342ec4745",
+          "id": "runtime:015127dfde5d789b",
           "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle matches pristine fallback and async resolution",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
@@ -2110,12 +2110,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:ae1ab0e444ff0faa",
-        "ownershipSha256": "16c4ce1580c10bd3803c5488f433198b623525dd9c2c5fb44b3f5b1585226266"
+        "runtimeId": "runtime:5e37d78e456ae96a",
+        "ownershipSha256": "ae2c6e0b3617adc8127cd925c0bd4af505ace4dbefb91f1a4ad96114189a189b"
       },
       "adapted": [
         {
-          "id": "runtime:ae1ab0e444ff0faa",
+          "id": "runtime:5e37d78e456ae96a",
           "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle surfaces async errors through rendering",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
@@ -2135,12 +2135,12 @@
         "rowIndex": null
       },
       "identityEvidence": {
-        "runtimeId": "runtime:aa46d56015467bbd",
-        "ownershipSha256": "345bdd1f79db4c973a276d03521543db2bdadd2d5a89b39b87c1c75392c59327"
+        "runtimeId": "runtime:294cc3f959a538cd",
+        "ownershipSha256": "e2e9e380e04e0d9617387de1e0d07733961c503e528b1ce26005ec258d5fb486"
       },
       "adapted": [
         {
-          "id": "runtime:aa46d56015467bbd",
+          "id": "runtime:294cc3f959a538cd",
           "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle rerenders a to b, resolves both async runs, and commits only b",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
