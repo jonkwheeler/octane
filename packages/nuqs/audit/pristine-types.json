@@ -4,6 +4,8 @@
   "assertionGroups": [
     "parser inference and defaults",
     "single and multi-key hook declarations",
-    "loader and serializer declarations"
+    "loader and serializer declarations",
+    "exact non-any type equality",
+    "negative accept/reject probes"
   ]
 }

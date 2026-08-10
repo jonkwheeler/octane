@@ -193,7 +193,7 @@
         {
           "path": "packages/nuqs/audit/pristine-types.json",
           "role": "test",
-          "sha256": "640b893525e5d1376bf06dc4bfb21bbb55bba7833c06f9bc91c94bd061f711de",
+          "sha256": "02b561b749aaa7b816f86abda93b1e5d923985d90315ab9ddf2929fb9a2fa2e4",
           "cases": [
             {
               "id": "types:nuqs-pristine-public-api",
@@ -205,7 +205,7 @@
         {
           "path": "packages/nuqs/typetests/pristine/public-api.test-d.ts",
           "role": "support",
-          "sha256": "e9fd835cead7f199740a227f0d62afff02e7e971d0ae0d71948093a795e98207"
+          "sha256": "b07f6a9e02d8ab3f526bfb12084b3aabc35f5129b67628e2310fe4712c92f684"
         },
         {
           "path": "packages/nuqs/typetests/pristine/tsconfig.json",
@@ -231,7 +231,7 @@
         {
           "path": "packages/nuqs/audit/adapted-types.json",
           "role": "test",
-          "sha256": "07c29c1fa263ceb5b13319f31a64ee18102679f19118d73aeef082a247abc73d",
+          "sha256": "8676744372aba8733622ae9ed005fff5d7b6afcc43cc9fa202bef648b96ddd77",
           "cases": [
             {
               "id": "types:nuqs-public-api",
@@ -243,7 +243,7 @@
         {
           "path": "packages/nuqs/typetests/public-api.test-d.ts",
           "role": "support",
-          "sha256": "24af067a8b1ae35e8ae141cfd0242f55c5ddc86ccc1a6a842f8fc75fc0ea9cde"
+          "sha256": "00cd196ad1e45a380b872ae791846865214923a66be2cb46a002773018b0848e"
         },
         {
           "path": "packages/nuqs/typetests/tsconfig.json",
