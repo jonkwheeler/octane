@@ -78,6 +78,11 @@ export function DoomDemo() @{
 		setPhase(next);
 	}
 
+	function setPausedNow(next: boolean): void {
+		pausedRef.current = next;
+		setPaused(next);
+	}
+
 	function invalidateEnterSession(): void {
 		enterSessionRef.current += 1;
 		if (loadingTimeoutRef.current !== null) {
@@ -91,7 +96,7 @@ export function DoomDemo() @{
 		inputRef.current = emptyInput();
 		simulationTimeRef.current = 0;
 		setGame(stateRef.current);
-		setPaused(false);
+		setPausedNow(false);
 	}, []);
 
 	const requestPermissions = useCallback(async function requestPermissions(session: number) {
@@ -286,11 +291,9 @@ export function DoomDemo() @{
 
 	function togglePaused(): void {
 		unlockAim();
-		setPaused(function nextPaused(value) {
-			const next = !value;
-			if (next) inputRef.current = emptyInput();
-			return next;
-		});
+		const next = !pausedRef.current;
+		if (next) inputRef.current = emptyInput();
+		setPausedNow(next);
 	}
 
 	function resetFromSafety(): void {
