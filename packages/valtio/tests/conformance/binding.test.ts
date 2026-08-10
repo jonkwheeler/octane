@@ -63,16 +63,24 @@ describe('useSnapshot', () => {
 		result.unmount();
 	});
 
-	it('supports synchronous subscriptions', function () {
-		const result = mount(SyncCounter, { state });
-		// Sync `act` drains the render queue before returning. Valtio's
-		// `{ sync: true }` notifies inside that callback; a non-sync
-		// subscription waits on a microtask and would still read "0" here.
+	it('supports synchronous subscriptions', async function () {
+		const asyncState = createState();
+		const syncResult = mount(SyncCounter, { state });
+		const asyncResult = mount(Counter, { state: asyncState });
+		// Attach useSyncExternalStore subscriptions (passive) before mutating.
+		await nextPaint();
+
+		// Sync `act` drains renders scheduled during the callback. Valtio's
+		// `{ sync: true }` notifies inside that window; non-sync waits on a
+		// microtask, so the ordinary Counter still reads the pre-mutation value.
 		act(function () {
 			state.count = 3;
+			asyncState.count = 3;
 		});
-		expect(result.find('#sync-count').textContent).toBe('3');
-		result.unmount();
+		expect(syncResult.find('#sync-count').textContent).toBe('3');
+		expect(asyncResult.find('#count').textContent).toBe('0');
+		syncResult.unmount();
+		asyncResult.unmount();
 	});
 
 	it('reads a current snapshot when a render starts accessing a new path', async () => {
