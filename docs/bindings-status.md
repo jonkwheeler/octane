@@ -279,6 +279,7 @@ SSR / hydration: Supported and tested through renderToStaticMarkup: output has t
 Scope/evidence last checked: 2026-08-10.
 
 - Ported from upstream commit ffe605819782b31d7f946e30f938b1b63e6b239c under the MIT license.
+- Bounded React parity currently runs one shared welcome-email differential render lane against @react-email/components@1.0.12. Pristine upstream suites, exhaustive classifications, and verified provenance remain open.
 - The two primary Prism themes, vscDarkPlus and xonokai, are included; upstream's full generated theme catalog is not yet copied.
 - Export/preview tooling and editor serialization are published as separate Octane packages.
 

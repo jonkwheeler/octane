@@ -1,0 +1,92 @@
+{
+  "$schema": "../../hook-form/audit/react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/resend/react-email.git",
+    "version": "6.9.2",
+    "commit": "ffe605819782b31d7f946e30f938b1b63e6b239c",
+    "sourceRoot": "packages/components/src",
+    "testRoot": "packages/components",
+    "license": "MIT",
+    "integrity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "verification": "recorded-unverified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": ["packages/email/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
+    "tests": {
+      "roots": ["packages/email/tests/differential"],
+      "include": ["\\.test\\.ts$"],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
+    "duplicateEntriesWithinLanes": 0,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "8ccfe35b9ff943ca065e5afbf4148c1bf04e3e617c8392e1db8a33071bc38724"
+    }
+  },
+  "lanes": [
+    {
+      "id": "email-render-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "email-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "One shared welcome-email fixture renders through Octane and @react-email/render on React.",
+      "files": [
+        {
+          "path": "packages/email/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "c0832f8f7fd6077e8d81b90a3326fcadf2fe341bb8e5722827ab3b83a08dd5ba",
+          "cases": [
+            {
+              "id": "differential:email-welcome-render",
+              "testName": "welcome email static render matches the React Email oracle",
+              "fullName": "differential: @octanejs/email vs @react-email/components welcome email static render matches the React Email oracle"
+            }
+          ]
+        },
+        {
+          "path": "packages/email/tests/_fixtures/parity-email.tsrx",
+          "role": "support",
+          "sha256": "618dde0e4a6895aad72e21e5adbdb3bc759aab012794a604239764a6e6bdefec"
+        },
+        {
+          "path": "packages/email/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "84df2a6c975438b0d638f052654ee62c38a91836a4ef4b8030b28ceedf2383cc"
+        },
+        {
+          "path": "packages/email/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "7d482b2a609dd3e44d4cef6d5450844e621bcaecf71df86a120c46222f5e426a"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

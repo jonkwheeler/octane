@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f7e69c40ef130bd9d8bddea02f1904031eeadbac777819b6d4b210a5913994cb"
+      "lockfileSha256": "8ccfe35b9ff943ca065e5afbf4148c1bf04e3e617c8392e1db8a33071bc38724"
     }
   },
   "lanes": [
@@ -108,7 +108,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
+          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
         }
       ]
     },

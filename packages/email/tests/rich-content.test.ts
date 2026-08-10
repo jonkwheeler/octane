@@ -22,7 +22,9 @@ describe('rich email content', () => {
 	});
 
 	it('escapes HTML inside markdown code fences and spans', () => {
-		const html = renderMarkdown('Use `<script>alert(1)</script>` and:\n\n```js\n<img src=x>\n```\n');
+		const html = renderMarkdown(
+			'Use `<script>alert(1)</script>` and:\n\n```js\n<img src=x>\n```\n',
+		);
 		expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
 		expect(html).toContain('&lt;img src=x&gt;');
 		expect(html).not.toContain('<script>alert(1)</script>');

@@ -13,10 +13,8 @@ function resolveTextChild(child: unknown): string {
 	}
 	if (typeof value === 'string') return value;
 	if (isChildrenBlock(child)) {
-		throw new Error(
-			'Markdown children must be a string prop: use <Markdown children={"…"} />. ' +
-				'JSX children compile to a children block, which is not a string.',
-		);
+		throw new Error('Markdown children must be a string prop: use <Markdown children={"…"} />. ' +
+			'JSX children compile to a children block, which is not a string.');
 	}
 	throw new Error('Markdown children must resolve to a string');
 }

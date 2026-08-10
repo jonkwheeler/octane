@@ -3,9 +3,12 @@ import { CodeBlock, Markdown, vscDarkPlus } from '../../src/index.ts';
 export function MarkdownEmail() @{
 	<Markdown
 		markdownCustomStyles={{ p: { color: '#123456' } }}
-		children={
-			'# Hello\n\nThis is **important** and [linked](https://octanejs.dev).\n\n- First\n- Second'
-		}
+		children="# Hello
+
+This is **important** and [linked](https://octanejs.dev).
+
+- First
+- Second"
 	/>
 }
 
