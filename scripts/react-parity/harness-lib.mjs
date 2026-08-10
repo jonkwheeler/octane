@@ -516,15 +516,25 @@ export async function verifyManifestFiles(manifest, root) {
 			lane.oracle === 'required' &&
 			lane.available !== false &&
 			lane.type === 'adapted-octane' &&
-			lane.evidenceOrigin === 'repo-authored' &&
 			lane.execution?.kind === 'vitest-full'
 		) {
 			const inventory = JSON.parse(
 				await readFile(resolve(absoluteRoot, lane.execution.inventory), 'utf8'),
 			);
-			validateRuntimeInventory(inventory, lane, manifest.adaptedRoots.tests.roots);
-			adaptedRuntimeInventories.push(inventory);
-			for (const test of inventory.tests) runtimeCaseIds.add(test.id);
+			const adaptedRootInventory =
+				JSON.stringify(inventory.roots) === JSON.stringify(manifest.adaptedRoots.tests.roots);
+			// Upstream-suite adapted lanes may use a dedicated inventory root (for example
+			// Drei's browser port). Only inventories that match adaptedRoots feed the
+			// adaptedRuntimeSummary / discovery union.
+			validateRuntimeInventory(
+				inventory,
+				lane,
+				adaptedRootInventory ? manifest.adaptedRoots.tests.roots : inventory.roots,
+			);
+			if (adaptedRootInventory) {
+				adaptedRuntimeInventories.push(inventory);
+				for (const test of inventory.tests) runtimeCaseIds.add(test.id);
+			}
 		} else if (
 			lane.oracle === 'required' &&
 			lane.available !== false &&

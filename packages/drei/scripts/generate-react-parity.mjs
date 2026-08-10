@@ -532,7 +532,26 @@ manifest.lanes = [
 	},
 ];
 
-manifest.divergences = [];
+manifest.divergences = [
+	{
+		id: 'view-renderer-boundary',
+		caseIds: ['differential:view-rendering'],
+		upstreamResult:
+			'React Drei View can render from a DOM root and move authored Three children through View.Port via tunnel-rat.',
+		octaneResult:
+			'Calling View from an Octane DOM root fails with the universal renderer-boundary diagnostic, and View.Port is a callable no-op.',
+		rationale:
+			'Octane components are statically renderer-owned, so one component cannot switch between DOM and Three renderers or transport authored Three children between independent roots.',
+		classification: 'renderer-boundary',
+		consumerImpact:
+			'DOM-rooted View usage and View.Port tunneling are unavailable; inline Canvas views remain supported.',
+		migrationGuidance:
+			'Keep View under an Octane Three Canvas. Do not call View.Port from a DOM tree to host Three children.',
+		owner: '@octanejs/drei',
+		reviewCondition:
+			'Review if Octane gains cross-renderer component ownership or a supported tunnel between DOM and Three roots.',
+	},
+];
 
 for (const lane of manifest.lanes) {
 	for (const file of lane.files ?? []) {

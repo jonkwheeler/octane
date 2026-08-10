@@ -112,12 +112,20 @@ beforeAll(async function () {
 					replacement: resolve(testDir, '../../../three/src/index.ts'),
 				},
 				{
+					find: /^@octanejs\/three\/core$/,
+					replacement: resolve(testDir, '../../../three/src/core/index.ts'),
+				},
+				{
 					find: /^@octanejs\/three\/renderer$/,
 					replacement: resolve(testDir, '../../../three/src/renderer.ts'),
 				},
 				{
 					find: /^@octanejs\/three\/config$/,
 					replacement: resolve(testDir, '../../../three/src/config.ts'),
+				},
+				{
+					find: /^@octanejs\/three\/testing$/,
+					replacement: resolve(testDir, '../../../three/src/testing.ts'),
 				},
 				{
 					find: /^@octanejs\/three\/intrinsics(?:\/jsx-runtime)?$/,
@@ -135,7 +143,12 @@ beforeAll(async function () {
 					find: /^octane\/universal$/,
 					replacement: resolve(testDir, '../../../octane/src/universal.ts'),
 				},
+				{
+					find: /^octane\/server$/,
+					replacement: resolve(testDir, '../../../octane/src/server/index.ts'),
+				},
 			],
+			dedupe: ['three'],
 		},
 	});
 	await viteServer.listen();

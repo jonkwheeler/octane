@@ -89,7 +89,8 @@ for (const entry of classifications.tests) {
 		if (
 			!entry.path.includes('/tests/browser/') ||
 			!entry.oracle ||
-			!source.includes('@parity-case upstream:e2e-snapshot')
+			!source.includes('@parity-case adapted:e2e-snapshot') ||
+			!source.includes('playright:r3f')
 		)
 			fail(`${entry.path} does not port the vendored upstream browser case`);
 	} else if (!entry.disposition.startsWith('octane-only-') || !entry.reason || entry.oracle) {

@@ -1,12 +1,8 @@
 /** @jsxImportSource @octanejs/three/intrinsics */
+import { useEffect } from '@octanejs/three/renderer';
 import { CameraControls, Environment, Sphere } from '@octanejs/drei';
 
-export function Scene() @{
-	if (!(globalThis as typeof globalThis & { __dreiE2eMounted?: boolean }).__dreiE2eMounted) {
-		(globalThis as typeof globalThis & { __dreiE2eMounted?: boolean }).__dreiE2eMounted = true;
-		document.dispatchEvent(new Event('playright:r3f'));
-	}
-
+function LoadedScene() @{
 	<>
 		<Sphere>
 			<meshStandardMaterial roughness={0} metalness={1} />
@@ -14,4 +10,16 @@ export function Scene() @{
 		<Environment preset="city" />
 		<CameraControls />
 	</>
+}
+
+export function Scene() @{
+	useEffect(function dispatchReady() {
+		document.dispatchEvent(new Event('playright:r3f'));
+	}, []);
+
+	@try {
+		<LoadedScene />
+	} @pending {
+		<group />
+	}
 }
