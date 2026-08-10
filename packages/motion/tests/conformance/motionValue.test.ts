@@ -4,6 +4,7 @@ import { mount, nextPaint } from '../_helpers';
 import { MVBox } from '../_fixtures/mv.tsrx';
 import { StyleXLater } from '../_fixtures/style-rebind.tsrx';
 import { StyleOpacity } from '../_fixtures/style-opacity.tsrx';
+import { removeTransformFn } from '../../src/useMotionValue';
 
 describe('useMotionValue', function useMotionValueSuite() {
 	it('binds a MotionValue to style and updates the element without a re-render', async function bindsWithoutRerender() {
@@ -48,6 +49,16 @@ describe('useMotionValue', function useMotionValueSuite() {
 		expect(div.style.transform).toBe('translate(40px, -50px) scale(1.2, 0.8)');
 		expect(div.style.transform).not.toContain('translateX');
 		r.unmount();
+	});
+
+	it('leaves layout FLIP compound translate alone when unbinding x', function leavesLayoutCompoundOnUnbind() {
+		const div = document.createElement('div');
+		div.style.transform = 'translate(-50px, -50px) scale(1.2, 0.8)';
+		removeTransformFn(div, 'x');
+		expect(div.style.transform).toBe('translate(-50px, -50px) scale(1.2, 0.8)');
+		div.style.transform = 'translateX(40px) scale(2)';
+		removeTransformFn(div, 'x');
+		expect(div.style.transform).toBe('scale(2)');
 	});
 
 	it('keeps plain static styles when a MotionValue style key becomes static', async function keepsStaticAfterMotionValue() {

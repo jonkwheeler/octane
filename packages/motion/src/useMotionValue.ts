@@ -182,43 +182,6 @@ function patchCompoundTransform(current: string, key: string, val: any): string 
 	return null;
 }
 
-function removeCompoundTransform(current: string, key: string): string | null {
-	if (key === 'x' || key === 'y') {
-		const range = findTransformFnRange(current, 'translate');
-		if (!range) return null;
-		const inner = current.slice(range.start + 'translate('.length, range.end - 1);
-		const args = splitTransformArgs(inner);
-		const x = key === 'x' ? '0px' : args[0] || '0px';
-		const y = key === 'y' ? '0px' : args[1] || '0px';
-		if (x === '0px' && y === '0px') {
-			const before = current.slice(0, range.start).trimEnd();
-			const after = current.slice(range.end).trimStart();
-			return before && after ? `${before} ${after}` : before || after;
-		}
-		return replaceTransformRange(current, range, `translate(${x}, ${y})`);
-	}
-	if (key === 'scale' || key === 'scaleX' || key === 'scaleY') {
-		const range = findTransformFnRange(current, 'scale');
-		if (!range) return null;
-		if (key === 'scale') {
-			const before = current.slice(0, range.start).trimEnd();
-			const after = current.slice(range.end).trimStart();
-			return before && after ? `${before} ${after}` : before || after;
-		}
-		const inner = current.slice(range.start + 'scale('.length, range.end - 1);
-		const args = splitTransformArgs(inner);
-		const sx = key === 'scaleX' ? '1' : args[0] || '1';
-		const sy = key === 'scaleY' ? '1' : args[1] !== undefined ? args[1] : args[0] || '1';
-		if (sx === '1' && sy === '1') {
-			const before = current.slice(0, range.start).trimEnd();
-			const after = current.slice(range.end).trimStart();
-			return before && after ? `${before} ${after}` : before || after;
-		}
-		return replaceTransformRange(current, range, `scale(${sx}, ${sy})`);
-	}
-	return null;
-}
-
 /** Patch one transform function into the live CSS string without wiping others. */
 export function patchTransformFn(node: HTMLElement, key: string, val: any): void {
 	const fn = TRANSFORM_FN[key];
@@ -242,21 +205,21 @@ export function patchTransformFn(node: HTMLElement, key: string, val: any): void
 	node.style.transform = insertTransformFn(current, next, fn);
 }
 
-/** Remove one transform function from the live CSS string. */
+/**
+ * Remove one shorthand transform function from the live CSS string.
+ * Do not mutate compound layout FLIP `translate(...)` / `scale(...)` forms —
+ * those are owned by layout, not by style MotionValue unbind.
+ */
 export function removeTransformFn(node: HTMLElement, key: string): void {
 	const fn = TRANSFORM_FN[key];
 	if (!fn) return;
 	const current = node.style.transform || '';
 	if (!current || current === 'none') return;
 	const range = findTransformFnRange(current, fn);
-	if (range) {
-		const before = current.slice(0, range.start).trimEnd();
-		const after = current.slice(range.end).trimStart();
-		node.style.transform = before && after ? `${before} ${after}` : before || after;
-		return;
-	}
-	const compound = removeCompoundTransform(current, key);
-	if (compound !== null) node.style.transform = compound;
+	if (!range) return;
+	const before = current.slice(0, range.start).trimEnd();
+	const after = current.slice(range.end).trimStart();
+	node.style.transform = before && after ? `${before} ${after}` : before || after;
 }
 
 // Apply one style/transform value to the element. Transform shorthands patch the
