@@ -42,7 +42,7 @@ adapted files.
 | `Reference` | Ported | Adapted `tests/upstream/Reference.test.tsx` (direct setter-context provider fixture). |
 | `Popper` | Ported | Adapted `tests/upstream/Popper.test.tsx`; differential markup/placement cases. |
 | `usePopper` | Ported | Adapted `tests/upstream/usePopper.test.tsx`. |
-| `ManagerProps` | Ported | Public type contract (`typetests/public-api.test.ts`) and adapted typings programs. |
+| `ManagerProps` | Ported | Public type contract (`typetests/public-api.test.ts`, ordinary package typecheck) and adapted typings programs. |
 | `ReferenceProps` / `ReferenceChildrenProps` | Ported | Public type contract and adapted typings programs. |
 | `PopperProps` / `PopperChildrenProps` / `PopperArrowProps` | Ported | Public type contract and adapted typings programs. |
 | `RefHandler` | Ported | Public type contract. |

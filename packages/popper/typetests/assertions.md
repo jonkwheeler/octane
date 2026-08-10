@@ -10,11 +10,12 @@ stay structurally one-for-one after the permitted transformations below.
 | 2 | import-root | `../..` → `@octanejs/popper` |
 | 3 | react-runtime-import | `import * as React from 'react'` / `React.useState` → `import { useState } from 'octane'` / `useState` |
 | 4 | jsx-pragma | optional `/** @jsxImportSource octane */` (stripped before structural compare) |
-| 5 | negative-control | deleting a real JSX/typed-usage probe or excluding a paired file via tsconfig must fail closed; adapted-only public-api controls keep `@ts-expect-error` |
+| 5 | negative-control | deleting a real JSX/typed-usage probe or excluding a paired file via tsconfig must fail closed |
 
-`typetests/public-api.test.ts` is adapted-only Octane public-surface evidence with
-its own `@ts-expect-error` negative controls; it has no upstream twin and is not
-part of the one-for-one structural pair.
+`typetests/public-api.test.ts` is Octane-only public-surface evidence checked by the
+package `typecheck` script (`typetests/tsconfig.public-api.json`); it has no
+upstream twin and is not part of the one-for-one structural pair or the
+`popper-adapted-types` react-parity lane.
 
 Shared programs:
 

@@ -191,7 +191,7 @@
         {
           "path": "packages/popper/audit/type-parity.json",
           "role": "support",
-          "sha256": "e9c2b7163ce0c1bc51e050d81f60062e8df1910b84041a8f302ad3b8ff13d166"
+          "sha256": "7176b209314451e363654bf4b46e61382757ad0512ff587ff4b7c3f5bd5e9170"
         },
         {
           "path": "packages/popper/audit/upstream-types.json",
@@ -239,26 +239,14 @@
           ]
         },
         {
-          "path": "packages/popper/typetests/public-api.test.ts",
-          "role": "test",
-          "sha256": "5001c813e3ea7cc46a00614d4a0d48592048403e6ff119877c2cd86603c6c144",
-          "cases": [
-            {
-              "id": "types:popper-adapted-public",
-              "testName": "complete Octane public type contract",
-              "fullName": "@octanejs/popper complete Octane public type contract"
-            }
-          ]
-        },
-        {
           "path": "packages/popper/typetests/tsconfig.adapted.json",
           "role": "support",
-          "sha256": "7f222cf7d4efd497aa67aba9a1610e81e5ff25acdaf68583b61f8639c04624c2"
+          "sha256": "5145e94aa253762c02971a92effa172952287b56f0b48cc57f8fcd0a48242589"
         },
         {
           "path": "packages/popper/audit/type-parity.json",
           "role": "support",
-          "sha256": "e9c2b7163ce0c1bc51e050d81f60062e8df1910b84041a8f302ad3b8ff13d166"
+          "sha256": "7176b209314451e363654bf4b46e61382757ad0512ff587ff4b7c3f5bd5e9170"
         },
         {
           "path": "packages/popper/audit/upstream-types.json",
@@ -273,12 +261,12 @@
         {
           "path": "packages/popper/audit/adapted-only-types.json",
           "role": "support",
-          "sha256": "bb5b0c1f9a958bbf8a6c058e95b89b13fc4e0134e91b9679aeec4404cecd9c35"
+          "sha256": "7dd99fe389aae3bd045ef2ed2386640ba754bb01e5feb1c47b60de16a2584911"
         },
         {
           "path": "packages/popper/typetests/assertions.md",
           "role": "support",
-          "sha256": "965922cdb736983bb71ac49379ca3a86826ec4d42ae008f44110f87d53343b01"
+          "sha256": "9540abd1870c44e368a20a7074aacf169d84c2f61212c764a31cea116ad4dc35"
         },
         {
           "path": "scripts/react-parity/popper-types-lib.mjs",
@@ -293,8 +281,7 @@
       "id": "popper-octane-node-and-ref-types",
       "caseIds": [
         "types:popper-adapted-main",
-        "types:popper-adapted-svg",
-        "types:popper-adapted-public"
+        "types:popper-adapted-svg"
       ],
       "upstreamResult": "Public props use React.ReactNode, React.Ref, and React.CSSProperties around class components.",
       "octaneResult": "Public props use OctaneNode, plain Ref callback/object unions, and CSSProperties while Manager/Reference/Popper are function components.",

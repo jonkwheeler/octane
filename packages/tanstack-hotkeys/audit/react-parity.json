@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-hotkeys/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/tanstack-hotkeys/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-hotkeys/tests/upstream"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-hotkeys/tests/upstream"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -242,7 +234,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "1425c28c8f893a30e5cfff25ae0b14473614242297cc82a83f54fe580770fdc5"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         }
       ]
     }
@@ -250,9 +242,7 @@
   "divergences": [
     {
       "id": "plain-ref-target",
-      "caseIds": [
-        "types:adapted-octane"
-      ],
+      "caseIds": ["types:adapted-octane"],
       "upstreamResult": "Target options use React.RefObject<EventTarget | null>.",
       "octaneResult": "Target options use a plain { current: EventTarget | null } object.",
       "rationale": "Octane has no React.RefObject type, while the runtime ref shape is framework-neutral.",

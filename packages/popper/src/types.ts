@@ -19,7 +19,6 @@ export type Style = CSSProperties;
 
 // OCTANE DIVERGENCE[popper-octane-node-and-ref-types][types:popper-adapted-main]
 // OCTANE DIVERGENCE[popper-octane-node-and-ref-types][types:popper-adapted-svg]
-// OCTANE DIVERGENCE[popper-octane-node-and-ref-types][types:popper-adapted-public]
 export interface ManagerProps {
 	children: OctaneNode;
 }

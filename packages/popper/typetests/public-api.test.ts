@@ -11,9 +11,10 @@ import {
 	type ReferenceProps,
 	type StrictModifier,
 } from '@octanejs/popper';
-// @parity-case types:popper-adapted-public
 
-const refHandler: RefHandler = (node) => node?.focus();
+const refHandler: RefHandler = function refHandler(node) {
+	return node?.focus();
+};
 const managerProps: ManagerProps = { children: 'content' };
 const referenceChildren: ReferenceChildrenProps = { ref: refHandler };
 const referenceProps: ReferenceProps = { children: () => referenceChildren.ref };

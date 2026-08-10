@@ -52,8 +52,7 @@
       "id": "popper-octane-node-and-ref-types",
       "caseIds": [
         "types:popper-adapted-main",
-        "types:popper-adapted-svg",
-        "types:popper-adapted-public"
+        "types:popper-adapted-svg"
       ],
       "upstreamResult": "React.ReactNode / class-component oriented typings.",
       "octaneResult": "OctaneNode and function-component typings with plain refs/CSS properties.",
