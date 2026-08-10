@@ -1,43 +1,45 @@
 [
-  {
-    "path": "index.ts",
-    "sha256": "cac4add22291d5303ed08f47fa8218db5d1d9a49d949ee6aaa47dacd47b1cb85",
-    "exports": [
-      "ClientEventBusConfig",
-      "PLUGIN_CONTAINER_ID",
-      "PLUGIN_TITLE_CONTAINER_ID",
-      "TanStackDevtools",
-      "TanStackDevtoolsConfig",
-      "TanStackDevtoolsCore",
-      "TanStackDevtoolsFrameworkInit",
-      "TanStackDevtoolsFrameworkPlugin",
-      "TanStackDevtoolsInit",
-      "TanStackDevtoolsPlugin",
-      "TanStackDevtoolsPluginProps",
-      "TanStackDevtoolsTheme"
-    ],
-    "extraExports": [
-      "ClientEventBusConfig",
-      "PLUGIN_CONTAINER_ID",
-      "PLUGIN_TITLE_CONTAINER_ID",
-      "TanStackDevtoolsConfig",
-      "TanStackDevtoolsCore",
-      "TanStackDevtoolsInit",
-      "TanStackDevtoolsPlugin",
-      "TanStackDevtoolsPluginProps",
-      "TanStackDevtoolsTheme"
-    ],
-    "pairedUpstream": "index.ts"
-  },
-  {
-    "path": "devtools.tsrx",
-    "sha256": "1b6c6874866661a5f0bcdf792d2fe20083a5b0d00c2fdae2b09739e7ec831487",
-    "exports": [
-      "TanStackDevtools",
-      "TanStackDevtoolsFrameworkInit",
-      "TanStackDevtoolsFrameworkPlugin"
-    ],
-    "extraExports": [],
-    "pairedUpstream": "devtools.tsx"
-  }
+	{
+		"path": "index.ts",
+		"sha256": "366597944549d430b8ebab5ab5882e3b330d2cb6501161a5a34583c4f5bac994",
+		"exports": [
+			"ClientEventBusConfig",
+			"PLUGIN_CONTAINER_ID",
+			"PLUGIN_TITLE_CONTAINER_ID",
+			"TanStackDevtools",
+			"TanStackDevtoolsConfig",
+			"TanStackDevtoolsCore",
+			"TanStackDevtoolsFrameworkInit",
+			"TanStackDevtoolsFrameworkPlugin",
+			"TanStackDevtoolsInit",
+			"TanStackDevtoolsPlugin",
+			"TanStackDevtoolsPluginProps",
+			"TanStackDevtoolsTheme"
+		],
+		"extraExports": [
+			"ClientEventBusConfig",
+			"PLUGIN_CONTAINER_ID",
+			"PLUGIN_TITLE_CONTAINER_ID",
+			"TanStackDevtoolsConfig",
+			"TanStackDevtoolsCore",
+			"TanStackDevtoolsInit",
+			"TanStackDevtoolsPlugin",
+			"TanStackDevtoolsPluginProps",
+			"TanStackDevtoolsTheme"
+		],
+		"structure": "fb80a1bf9ab79b0b1a22fa832b614e90a652aacdeca4726596c732be57512026",
+		"pairedUpstream": "index.ts"
+	},
+	{
+		"path": "devtools.tsrx",
+		"sha256": "72b021a8559bc7dd2f543333eb0afc1acc7a41039ca81beeeabf7bcdea8d6fd9",
+		"exports": [
+			"TanStackDevtools",
+			"TanStackDevtoolsFrameworkInit",
+			"TanStackDevtoolsFrameworkPlugin"
+		],
+		"extraExports": [],
+		"structure": "5d853e1fd9d138a35122719762e890906f79d3ad7fafecdbe377c6789b033c5c",
+		"pairedUpstream": "devtools.tsx"
+	}
 ]

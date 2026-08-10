@@ -22,8 +22,10 @@ There are no dedicated `expectType` fixtures, so type-suite strength is the sour
 This binding records `upstreamSuites.types` as present and runs that pristine `tsc` compile plus an
 adapted `tsrx-tsc` compile of the Octane adapter source. `audit/type-parity.json` pairs the two
 compiler programs with a `fileMap` (`index.ts`↔`index.ts`, `devtools.tsx`↔`devtools.tsrx`),
-export-surface comparison under permitted transforms, program-membership negative controls, and
-inventories. Repo-authored public-API probes remain supplementary controls beside that source map.
+export-surface and structural comparison under permitted transforms, TypeScript
+config/program membership negative controls (exclude via tsconfig `files`, not
+directory deletion), and inventories. Repo-authored public-API probes remain
+supplementary controls beside that source map.
 
 The package publishes one runtime entrypoint and a metadata-only package entrypoint. The published
 adapter resolves `@tanstack/devtools@0.12.4`; the current Octane catalog resolves `0.12.5`. That

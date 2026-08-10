@@ -1,9 +1,15 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/tanstack-devtools/audit/type-parity.json';
+
+const TSRX_EXTENSION = {
+	extension: '.tsrx',
+	isMixedContent: false,
+	scriptKind: ts.ScriptKind.TSX,
+};
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
@@ -13,19 +19,9 @@ function posix(value) {
 	return value.split(sep).join('/');
 }
 
-function listSourceFiles(root) {
-	return readdirSync(root, { recursive: true, withFileTypes: true })
-		.filter(function keepSourceFiles(entry) {
-			if (!entry.isFile()) return false;
-			const relativePath = posix(
-				relative(root, resolve(entry.parentPath ?? entry.path, entry.name)),
-			);
-			return /\.(?:ts|tsx|tsrx)$/.test(relativePath) && !relativePath.endsWith('.d.ts');
-		})
-		.map(function toRelative(entry) {
-			return posix(relative(root, resolve(entry.parentPath ?? entry.path, entry.name)));
-		})
-		.sort();
+function scriptKindFor(fileName) {
+	if (fileName.endsWith('.tsrx') || fileName.endsWith('.tsx')) return ts.ScriptKind.TSX;
+	return ts.ScriptKind.TS;
 }
 
 function listProbeFiles(root) {
@@ -123,7 +119,12 @@ function normalizeSpecifier(specifier) {
 		return '#tanstack-devtools-public';
 	}
 	if (specifier === 'react' || specifier === 'octane') return '#renderable-runtime';
-	if (specifier === 'react-dom' || specifier === './devtools' || specifier === './devtools.tsrx') {
+	if (
+		specifier === 'react-dom' ||
+		specifier === './devtools' ||
+		specifier === './devtools.tsrx' ||
+		specifier === './devtools.tsx'
+	) {
 		return '#adapter-local';
 	}
 	return specifier;
@@ -137,6 +138,94 @@ function normalizeFrameworkNames(source) {
 		.replace(/\bReactElement\b/g, 'RenderableNode')
 		.replace(/\bOctaneNode\b/g, 'RenderableNode')
 		.replace(/\bJSX\.Element\b/g, 'RenderableNode');
+}
+
+function stripOctaneMarkers(source) {
+	return source
+		.replace(/^\/\/ OCTANE DIVERGENCE\[[^\]]*\]\[[^\]]*\]\s*\n/gm, '')
+		.replace(/^\/\/ Ported from[\s\S]*?^\/\/ - `ref`[^\n]*\n+/m, '')
+		.replace(/^\/\/ An octane renderable[\s\S]*?^\/\/ \(a `unknown`[^\n]*\n+/m, '')
+		.replace(/^\/\/ A createPortal VALUE[\s\S]*?^\/\/ so each container[^\n]*\n+/m, '');
+}
+
+function stripAdditiveExports(source) {
+	return source
+		.replace(
+			/\n\/\/ Re-export the framework-agnostic core surface[\s\S]*$/m,
+			'\n',
+		)
+		.replace(
+			/\nexport \{\s*PLUGIN_CONTAINER_ID[\s\S]*from '@tanstack\/devtools';\s*/m,
+			'\n',
+		)
+		.replace(/\nexport type \{\s*ClientEventBusConfig[\s\S]*from '@tanstack\/devtools';\s*/m, '\n');
+}
+
+function canonicalizeAdapterSource(source, fileName) {
+	let text = stripOctaneMarkers(source);
+	if (fileName === 'index.ts' || fileName.endsWith('/index.ts')) {
+		text = stripAdditiveExports(text);
+	}
+	text = normalizeFrameworkNames(text);
+	text = text
+		.replace(
+			/import React,\s*\{\s*useEffect,\s*useMemo,\s*useRef,\s*useState\s*\}\s*from ['"]#renderable-runtime['"];?\s*/g,
+			"import { createPortal, useEffect, useMemo, useRef, useState } from '#renderable-runtime';\n",
+		)
+		.replace(
+			/import\s*\{\s*createPortal,\s*useEffect,\s*useMemo,\s*useRef,\s*useState\s*\}\s*from ['"]#renderable-runtime['"];?\s*/g,
+			"import { createPortal, useEffect, useMemo, useRef, useState } from '#renderable-runtime';\n",
+		)
+		.replace(/import\s*\{\s*createPortal\s*\}\s*from ['"]#adapter-local['"];?\s*/g, '')
+		.replace(
+			/import type\s*\{\s*JSX,\s*RenderableNode\s*\}\s*from ['"]#renderable-runtime['"];?\s*/g,
+			'',
+		)
+		.replace(
+			/import type\s*\{\s*RenderableNode\s*\}\s*from ['"]#renderable-runtime['"];?\s*/g,
+			'',
+		)
+		.replace(
+			/import type\s*\{\s*OctaneNode\s*\}\s*from ['"]#renderable-runtime['"];?\s*/g,
+			'',
+		)
+		.replace(
+			/type Renderable = \{\} \| null \| undefined;\s*/g,
+			'',
+		)
+		.replace(/\bRenderable\b/g, 'RenderableNode')
+		.replace(
+			/React\.Dispatch<\s*React\.SetStateAction<Record<string, RenderableNode>>\s*>/g,
+			'SetComponents',
+		)
+		.replace(
+			/\(updater: \(prev: Record<string, RenderableNode>\) => Record<string, RenderableNode>\) => void/g,
+			'SetComponents',
+		)
+		.replace(
+			/React\.Dispatch<\s*React\.SetStateAction<RenderableNode \| null>\s*>/g,
+			'(element: RenderableNode | null) => void',
+		)
+		.replace(
+			/function DevtoolsPortal\(props: \{ target: HTMLElement; content: RenderableNode \}\) \{\s*return createPortal\(props\.content, props\.target\);\s*\}\s*/g,
+			'',
+		)
+		.replace(
+			/<DevtoolsPortal\s+target=\{([^}]+)\}\s+content=\{([^}]+)\}\s*\/>/g,
+			'createPortal(<>{$2}</>, $1)',
+		)
+		.replace(
+			/Object\.entries\(([^)]+)\)\.map\(function map\w+\(\[key,\s*(\w+)\]\)\s*\{\s*return createPortal\(<>\{([^}]+)\}<\/>,\s*\2\);\s*\}\)/g,
+			'Object.entries($1).map(([key, $2]) => createPortal(<>{$3}</>, $2))',
+		)
+		.replace(/from '\.\/devtools(?:\.tsx|\.tsrx)?'/g, "from '#adapter-local'")
+		.replace(/from "\.\/devtools(?:\.tsx|\.tsrx)?"/g, 'from "#adapter-local"')
+		.replace(
+			/export type \{\s*TanStackDevtoolsFrameworkPlugin,\s*TanStackDevtoolsFrameworkInit,\s*\} from '#adapter-local'/g,
+			"export type { TanStackDevtoolsFrameworkPlugin, TanStackDevtoolsFrameworkInit } from '#adapter-local'",
+		)
+		.replace(/useRef<HTMLDivElement>\(null\)/g, 'useRef<HTMLDivElement | null>(null)');
+	return text;
 }
 
 function structuralProbeSource(source, fileName) {
@@ -180,18 +269,118 @@ function structuralProbeSource(source, fileName) {
 		.trim();
 }
 
+function rewriteImportSpecifiers(source, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		scriptKindFor(fileName),
+	);
+	const replacements = [];
+	for (const statement of sourceFile.statements) {
+		if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
+			continue;
+		const specifier = statement.moduleSpecifier.text;
+		const normalized = normalizeSpecifier(specifier);
+		if (normalized === specifier) continue;
+		replacements.push({
+			start: statement.moduleSpecifier.getStart(sourceFile) + 1,
+			end: statement.moduleSpecifier.getEnd() - 1,
+			value: normalized,
+		});
+	}
+	let transformed = source;
+	for (const replacement of replacements.sort(function byStartDesc(a, b) {
+		return b.start - a.start;
+	})) {
+		transformed = `${transformed.slice(0, replacement.start)}${replacement.value}${transformed.slice(replacement.end)}`;
+	}
+	return transformed;
+}
+
+function structuralAdapterSource(source, fileName) {
+	const rewritten = canonicalizeAdapterSource(
+		rewriteImportSpecifiers(source, fileName),
+		fileName,
+	);
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		rewritten,
+		ts.ScriptTarget.Latest,
+		true,
+		scriptKindFor(fileName),
+	);
+	const printer = ts.createPrinter({ removeComments: true });
+	const parts = [];
+	for (const statement of sourceFile.statements) {
+		if (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) {
+			parts.push(printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile));
+			continue;
+		}
+		if (ts.isTypeAliasDeclaration(statement) || ts.isInterfaceDeclaration(statement)) {
+			parts.push(printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile));
+			continue;
+		}
+		if (
+			ts.isFunctionDeclaration(statement) &&
+			statement.modifiers?.some(function isExport(modifier) {
+				return modifier.kind === ts.SyntaxKind.ExportKeyword;
+			})
+		) {
+			const signatureOnly = ts.factory.updateFunctionDeclaration(
+				statement,
+				statement.modifiers,
+				statement.asteriskToken,
+				statement.name,
+				statement.typeParameters,
+				statement.parameters,
+				statement.type,
+				undefined,
+			);
+			parts.push(printer.printNode(ts.EmitHint.Unspecified, signatureOnly, sourceFile));
+			if (statement.body) {
+				parts.push(
+					`body:${printer
+						.printNode(ts.EmitHint.Unspecified, statement.body, sourceFile)
+						.replace(/\s+/g, ' ')
+						.trim()}`,
+				);
+			}
+			continue;
+		}
+		if (
+			ts.isVariableStatement(statement) &&
+			statement.modifiers?.some(function isExport(modifier) {
+				return modifier.kind === ts.SyntaxKind.ExportKeyword;
+			})
+		) {
+			parts.push(printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile));
+			continue;
+		}
+		if (
+			ts.isFunctionDeclaration(statement) ||
+			ts.isVariableStatement(statement) ||
+			ts.isExpressionStatement(statement)
+		) {
+			parts.push(printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile));
+		}
+	}
+	return parts
+		.map(function compact(part) {
+			return part.replace(/\s+/g, ' ').trim();
+		})
+		.filter(Boolean)
+		.join('\n');
+}
+
 function exportSurface(source, fileName) {
-	const kind = fileName.endsWith('.tsrx')
-		? ts.ScriptKind.TSX
-		: fileName.endsWith('.tsx')
-			? ts.ScriptKind.TSX
-			: ts.ScriptKind.TS;
 	const sourceFile = ts.createSourceFile(
 		fileName,
 		normalizeFrameworkNames(source),
 		ts.ScriptTarget.Latest,
 		true,
-		kind,
+		scriptKindFor(fileName),
 	);
 	const exports = new Set();
 	for (const statement of sourceFile.statements) {
@@ -231,7 +420,55 @@ export function loadTypeParityConfig(root = process.cwd()) {
 	return JSON.parse(readFileSync(resolve(root, TYPE_PARITY_CONFIG), 'utf8'));
 }
 
-function verifyProgramMembership(config, upstreamFiles, adaptedFiles) {
+function listCompilerProgramFiles(root, projectPath, sourceRoot) {
+	const configPath = resolve(root, projectPath);
+	if (!existsSync(configPath)) {
+		throw new Error(`missing compiler project for program membership: ${projectPath}`);
+	}
+	const readResult = ts.readConfigFile(configPath, ts.sys.readFile);
+	if (readResult.error) {
+		throw new Error(
+			`failed to read ${projectPath}: ${ts.flattenDiagnosticMessageText(readResult.error.messageText, '\n')}`,
+		);
+	}
+	const config = { ...readResult.config };
+	if (Array.isArray(config.include) && !config.files) {
+		const explicit = config.include.filter(function isExplicitFile(pattern) {
+			return /\.(?:ts|tsx|tsrx)$/.test(pattern) && !pattern.includes('*');
+		});
+		if (explicit.length === config.include.length && explicit.length > 0) {
+			config.files = explicit;
+			delete config.include;
+		}
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		config,
+		ts.sys,
+		dirname(configPath),
+		undefined,
+		configPath,
+		undefined,
+		[TSRX_EXTENSION],
+	);
+	const sourceAbs = resolve(root, sourceRoot);
+	return parsed.fileNames
+		.filter(function underSourceRoot(filePath) {
+			const rel = relative(sourceAbs, filePath);
+			return (
+				rel &&
+				!rel.startsWith('..') &&
+				!rel.includes(`..${sep}`) &&
+				/\.(?:ts|tsx|tsrx)$/.test(filePath) &&
+				!filePath.endsWith('.d.ts')
+			);
+		})
+		.map(function toRelative(filePath) {
+			return posix(relative(sourceAbs, filePath));
+		})
+		.sort();
+}
+
+function verifyProgramMembership(config, root, upstreamFiles, adaptedFiles) {
 	const mappedUpstream = config.fileMap
 		.map(function upstreamPath(entry) {
 			return entry.upstream;
@@ -244,12 +481,12 @@ function verifyProgramMembership(config, upstreamFiles, adaptedFiles) {
 		.sort();
 	if (JSON.stringify(upstreamFiles) !== JSON.stringify(mappedUpstream)) {
 		throw new Error(
-			`upstream source program membership drifted from fileMap; expected ${JSON.stringify(mappedUpstream)}, received ${JSON.stringify(upstreamFiles)}`,
+			`upstream compiler program membership drifted from fileMap; expected ${JSON.stringify(mappedUpstream)}, received ${JSON.stringify(upstreamFiles)}`,
 		);
 	}
 	if (JSON.stringify(adaptedFiles) !== JSON.stringify(mappedAdapted)) {
 		throw new Error(
-			`adapted source program membership drifted from fileMap; expected ${JSON.stringify(mappedAdapted)}, received ${JSON.stringify(adaptedFiles)}`,
+			`adapted compiler program membership drifted from fileMap; expected ${JSON.stringify(mappedAdapted)}, received ${JSON.stringify(adaptedFiles)}`,
 		);
 	}
 	const seenAdapted = new Set();
@@ -259,15 +496,22 @@ function verifyProgramMembership(config, upstreamFiles, adaptedFiles) {
 		}
 		seenAdapted.add(entry.adapted);
 	}
+	const pristineProject = config.lanes?.pristine?.project;
+	const adaptedProject = config.lanes?.adapted?.project;
+	if (!pristineProject || !adaptedProject) {
+		throw new Error('type-parity.json lanes must declare pristine and adapted compiler projects');
+	}
 }
 
 function buildSourceInventories(root, config) {
+	const pristineProject = config.lanes.pristine.project;
+	const adaptedProject = config.lanes.adapted.project;
+	const upstreamFiles = listCompilerProgramFiles(root, pristineProject, config.upstreamRoot);
+	const adaptedFiles = listCompilerProgramFiles(root, adaptedProject, config.adaptedRoot);
+	verifyProgramMembership(config, root, upstreamFiles, adaptedFiles);
+
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
-	const upstreamFiles = listSourceFiles(upstreamRoot);
-	const adaptedFiles = listSourceFiles(adaptedRoot);
-	verifyProgramMembership(config, upstreamFiles, adaptedFiles);
-
 	const upstream = [];
 	const adapted = [];
 	const allowedExtra = config.allowedExtraExports ?? {};
@@ -306,10 +550,18 @@ function buildSourceInventories(root, config) {
 				`${entry.adapted}: allowedExtraExports lists symbols not present on the adapted surface: ${undeclaredAllow.join(', ')}`,
 			);
 		}
+		const upstreamStructure = structuralAdapterSource(upstreamSource, entry.upstream);
+		const adaptedStructure = structuralAdapterSource(adaptedSource, entry.adapted);
+		if (upstreamStructure !== adaptedStructure) {
+			throw new Error(
+				`${entry.upstream} → ${entry.adapted}: adapted source contains a change outside the permitted transformations`,
+			);
+		}
 		upstream.push({
 			path: entry.upstream,
 			sha256: sha256(upstreamSource),
 			exports: upstreamExports,
+			structure: sha256(upstreamStructure),
 			pairedAdapted: entry.adapted,
 		});
 		adapted.push({
@@ -317,6 +569,7 @@ function buildSourceInventories(root, config) {
 			sha256: sha256(adaptedSource),
 			exports: adaptedExports,
 			extraExports: extras,
+			structure: sha256(adaptedStructure),
 			pairedUpstream: entry.upstream,
 		});
 	}

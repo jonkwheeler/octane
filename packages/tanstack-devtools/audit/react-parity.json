@@ -112,7 +112,7 @@
         {
           "path": "scripts/react-parity/tanstack-devtools-controls.test.mjs",
           "role": "support",
-          "sha256": "707671cdd8f369cd30ebe3e5b7cff0ea542499c2ccb3d0144c37e93e4248bd09"
+          "sha256": "1b6ae214ec680bfd97c4747d73a55bd6e4dc49bf4fcc6af93ff1e5d7341f00ee"
         },
         {
           "path": "vitest.config.js",
@@ -176,7 +176,7 @@
         {
           "path": "packages/tanstack-devtools/src/index.ts",
           "role": "test",
-          "sha256": "cac4add22291d5303ed08f47fa8218db5d1d9a49d949ee6aaa47dacd47b1cb85",
+          "sha256": "366597944549d430b8ebab5ab5882e3b330d2cb6501161a5a34583c4f5bac994",
           "cases": [
             {
               "id": "types:adapted-octane-compile",
@@ -188,27 +188,27 @@
         {
           "path": "packages/tanstack-devtools/src/devtools.tsrx",
           "role": "support",
-          "sha256": "1b6c6874866661a5f0bcdf792d2fe20083a5b0d00c2fdae2b09739e7ec831487"
+          "sha256": "72b021a8559bc7dd2f543333eb0afc1acc7a41039ca81beeeabf7bcdea8d6fd9"
         },
         {
           "path": "packages/tanstack-devtools/typetests/adapted/tsconfig.json",
           "role": "support",
-          "sha256": "2c92d0733f5b47d93e51f094abadcf9a2d23f0d68c83b4d7920849a5293374e3"
+          "sha256": "abb795280f0ea86fa1584c9db5d1b5d3db0bb946e77666fc5eb80fe903e4b0c7"
         },
         {
           "path": "packages/tanstack-devtools/audit/type-parity.json",
           "role": "support",
-          "sha256": "4a6309b6e6df444e3ed4223adb0ad58234e274a9d4fa10b6fe9cef2b3f848f30"
+          "sha256": "737974c749cfad2ce9e42f5c89e120020d296e051f6d8549d6bb9ab2d063b174"
         },
         {
           "path": "scripts/react-parity/tanstack-devtools-types-lib.mjs",
           "role": "support",
-          "sha256": "36fd9920c0f3deb7f5c9e3c14b0aa5a8f86bc8792975ff120e11d5379484c5d0"
+          "sha256": "37250157f51b73b70477cc621d94092513293cce724696657bffed427724b103"
         },
         {
           "path": "scripts/react-parity/tanstack-devtools-types-lib.test.mjs",
           "role": "support",
-          "sha256": "7250b6d3071e1672658431ca6c074e155f089311ba5c028a6bfce4c2d2390bf1"
+          "sha256": "45bc78e0fb8406679e08a8db836d69edea95b7797fa0c4b3bea7406736c3b123"
         },
         {
           "path": "packages/tanstack-devtools/audit/type-probes/public-api.test-d.ts",
@@ -223,22 +223,22 @@
         {
           "path": "packages/tanstack-devtools/audit/upstream-types.json",
           "role": "support",
-          "sha256": "3ccb498b39a9e75bf9782a9c27320f97e6f5490ba7844a8b7644fc8bccdd4314"
+          "sha256": "9ad390786acdd69b742f9825def49b5d20a64af05853b413642648bae8ec74b7"
         },
         {
           "path": "packages/tanstack-devtools/audit/adapted-types.json",
           "role": "support",
-          "sha256": "fc7893a7443b97f9b696c9134bcb30e91debbc645eed0925f6ff1825984e460e"
+          "sha256": "e7eccc100b6a1c864d4f53f116d28da6867259e6abae49162499a81daaf11376"
         },
         {
           "path": "packages/tanstack-devtools/audit/upstream-probe-types.json",
           "role": "support",
-          "sha256": "ff8a3cae965397ff1515396cb608ab03c037f582a77bb4b62089a7345f2e8ff6"
+          "sha256": "73e79980716fbb4522a7adfabfb098e959eebb391d7c8937ba53d774c07da062"
         },
         {
           "path": "packages/tanstack-devtools/audit/adapted-probe-types.json",
           "role": "support",
-          "sha256": "d48c2cb062acb6d1ef89427bb916b6ce0e97bd321b9fd492ec734c068c77bc9f"
+          "sha256": "27a3da23bcb9d30db2cfe8165c75a507d83377f2617409499d3218f2ce1b1608"
         }
       ]
     }
@@ -261,7 +261,7 @@
     {
       "id": "octane-type-names",
       "caseIds": [
-        "types:adapted-octane-compile"
+        "conformance:tanstack-devtools-octane-type-names"
       ],
       "upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
       "octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",

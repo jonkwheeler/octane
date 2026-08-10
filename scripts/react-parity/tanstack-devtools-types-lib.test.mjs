@@ -8,6 +8,8 @@ import { buildTypeInventories } from './tanstack-devtools-types-lib.mjs';
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'tanstack-devtools-types-'));
 	await mkdir(join(root, 'packages/tanstack-devtools/audit'), { recursive: true });
+	await mkdir(join(root, 'packages/tanstack-devtools/typetests/pristine'), { recursive: true });
+	await mkdir(join(root, 'packages/tanstack-devtools/typetests/adapted'), { recursive: true });
 	await cp(
 		new URL('../../packages/tanstack-devtools/upstream/package/src', import.meta.url),
 		join(root, 'packages/tanstack-devtools/upstream/package/src'),
@@ -24,18 +26,17 @@ async function fixture() {
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/tanstack-devtools/typetests', import.meta.url),
-		join(root, 'packages/tanstack-devtools/typetests'),
-		{ recursive: true },
+		new URL('../../packages/tanstack-devtools/typetests/public-api.test-d.ts', import.meta.url),
+		join(root, 'packages/tanstack-devtools/typetests/public-api.test-d.ts'),
 	);
-	await rm(join(root, 'packages/tanstack-devtools/typetests/pristine'), {
-		recursive: true,
-		force: true,
-	});
-	await rm(join(root, 'packages/tanstack-devtools/typetests/adapted'), {
-		recursive: true,
-		force: true,
-	});
+	await cp(
+		new URL('../../packages/tanstack-devtools/typetests/pristine/tsconfig.json', import.meta.url),
+		join(root, 'packages/tanstack-devtools/typetests/pristine/tsconfig.json'),
+	);
+	await cp(
+		new URL('../../packages/tanstack-devtools/typetests/adapted/tsconfig.json', import.meta.url),
+		join(root, 'packages/tanstack-devtools/typetests/adapted/tsconfig.json'),
+	);
 	const config = JSON.parse(
 		await readFile(
 			new URL('../../packages/tanstack-devtools/audit/type-parity.json', import.meta.url),
@@ -49,18 +50,42 @@ async function fixture() {
 	return { root };
 }
 
-test('rejects a skipped adapted source-program file', async function rejectsSkippedSource(t) {
+test('rejects a mapped file excluded from the adapted compiler program', async function rejectsSkippedSource(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
 	});
-	await rm(join(value.root, 'packages/tanstack-devtools/src/devtools.tsrx'));
+	await writeFile(
+		join(value.root, 'packages/tanstack-devtools/typetests/adapted/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'esnext',
+					lib: ['esnext', 'dom', 'dom.iterable'],
+					target: 'esnext',
+					noEmit: true,
+					moduleResolution: 'bundler',
+					strict: true,
+					jsx: 'react-jsx',
+					jsxImportSource: 'octane',
+					skipLibCheck: true,
+					esModuleInterop: true,
+					allowSyntheticDefaultImports: true,
+					allowImportingTsExtensions: true,
+					types: ['node'],
+				},
+				files: ['../../src/index.ts'],
+			},
+			null,
+			'\t',
+		)}\n`,
+	);
 	assert.throws(function run() {
 		buildTypeInventories(value.root);
-	}, /adapted source program membership drifted/);
+	}, /adapted compiler program membership drifted/);
 });
 
-test('rejects an unmapped adapted source file', async function rejectsUnmappedSource(t) {
+test('rejects an unmapped adapted source file added to the compiler program', async function rejectsUnmappedSource(t) {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
@@ -69,9 +94,34 @@ test('rejects an unmapped adapted source file', async function rejectsUnmappedSo
 		join(value.root, 'packages/tanstack-devtools/src/extra.ts'),
 		'export const orphan = 1;\n',
 	);
+	await writeFile(
+		join(value.root, 'packages/tanstack-devtools/typetests/adapted/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'esnext',
+					lib: ['esnext', 'dom', 'dom.iterable'],
+					target: 'esnext',
+					noEmit: true,
+					moduleResolution: 'bundler',
+					strict: true,
+					jsx: 'react-jsx',
+					jsxImportSource: 'octane',
+					skipLibCheck: true,
+					esModuleInterop: true,
+					allowSyntheticDefaultImports: true,
+					allowImportingTsExtensions: true,
+					types: ['node'],
+				},
+				files: ['../../src/index.ts', '../../src/devtools.tsrx', '../../src/extra.ts'],
+			},
+			null,
+			'\t',
+		)}\n`,
+	);
 	assert.throws(function run() {
 		buildTypeInventories(value.root);
-	}, /adapted source program membership drifted/);
+	}, /adapted compiler program membership drifted/);
 });
 
 test('rejects deleting a required adapted export', async function rejectsMissingExport(t) {
@@ -84,7 +134,7 @@ test('rejects deleting a required adapted export', async function rejectsMissing
 	await writeFile(
 		file,
 		source.replace(
-			"export type { TanStackDevtoolsOctanePlugin, TanStackDevtoolsOctaneInit } from './devtools.tsrx';\n",
+			/export type \{\s*TanStackDevtoolsOctanePlugin,\s*TanStackDevtoolsOctaneInit,\s*\} from '\.\/devtools\.tsrx';\s*/,
 			'',
 		),
 	);
@@ -104,6 +154,41 @@ test('rejects an undeclared adapted extra export', async function rejectsUndecla
 	assert.throws(function run() {
 		buildTypeInventories(value.root);
 	}, /undeclared extra exports/);
+});
+
+test('rejects an unauthorized adapted type signature change', async function rejectsSignatureChange(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.root, 'packages/tanstack-devtools/src/devtools.tsrx');
+	const source = await readFile(file, 'utf8');
+	await writeFile(
+		file,
+		source.replace(
+			'name: string | PluginRender;',
+			'name: string | PluginRender | number;',
+		),
+	);
+	assert.throws(function run() {
+		buildTypeInventories(value.root);
+	}, /change outside the permitted transformations/);
+});
+
+test('rejects an unauthorized adapted implementation body change', async function rejectsBodyChange(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.root, 'packages/tanstack-devtools/src/devtools.tsrx');
+	const source = await readFile(file, 'utf8');
+	await writeFile(
+		file,
+		source.replace('devtools.mount(devToolRef.current);', 'devtools.mount(devToolRef.current); void 0;'),
+	);
+	assert.throws(function run() {
+		buildTypeInventories(value.root);
+	}, /change outside the permitted transformations/);
 });
 
 test('rejects a skipped adapted type-probe file', async function rejectsSkippedProbe(t) {

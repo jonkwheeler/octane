@@ -12,6 +12,7 @@
 // - `ref` is the normal React-19-style ref prop; native events; no synthetic layer.
 import { createPortal, useEffect, useMemo, useRef, useState } from 'octane';
 import { TanStackDevtoolsCore } from '@tanstack/devtools';
+import type { OctaneNode } from 'octane';
 import type {
 	ClientEventBusConfig,
 	TanStackDevtoolsConfig,
@@ -20,21 +21,22 @@ import type {
 	TanStackDevtoolsTheme,
 } from '@tanstack/devtools';
 
-// An octane renderable (JSX element descriptor, component, primitive, array, …).
-// `{} | null | undefined` rather than `unknown` so the `(el, props) => Renderable`
-// callback member of the render/name/trigger unions keeps its parameter inference
-// (a `unknown` union member collapses the whole union to `unknown`).
-type Renderable = {} | null | undefined;
-
-type PluginRender = Renderable | ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => Renderable);
+type PluginRender =
+	| OctaneNode
+	| ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => OctaneNode);
 
 type TriggerProps = {
 	theme: TanStackDevtoolsTheme;
 };
 
-type TriggerRender = Renderable | ((el: HTMLElement, props: TriggerProps) => Renderable);
+type TriggerRender =
+	| OctaneNode
+	| ((el: HTMLElement, props: TriggerProps) => OctaneNode);
 
-export type TanStackDevtoolsOctanePlugin = Omit<TanStackDevtoolsPlugin, 'render' | 'name'> & {
+export type TanStackDevtoolsOctanePlugin = Omit<
+	TanStackDevtoolsPlugin,
+	'render' | 'name'
+> & {
 	/**
 	 * The render can be an octane element or a function that returns one. If it's a
 	 * function, it's called to render the plugin; otherwise it's rendered directly.
@@ -59,7 +61,10 @@ export type TanStackDevtoolsOctanePlugin = Omit<TanStackDevtoolsPlugin, 'render'
 	name: string | PluginRender;
 };
 
-type TanStackDevtoolsOctaneConfig = Omit<Partial<TanStackDevtoolsConfig>, 'customTrigger'> & {
+type TanStackDevtoolsOctaneConfig = Omit<
+	Partial<TanStackDevtoolsConfig>,
+	'customTrigger'
+> & {
 	/**
 	 * Optional custom trigger component. An octane element or a function returning one.
 	 *
@@ -94,13 +99,9 @@ export interface TanStackDevtoolsOctaneInit {
 	eventBusConfig?: ClientEventBusConfig;
 }
 
-type ComponentMap = Record<string, Renderable>;
-type ContainerMap = Record<string, HTMLElement>;
-type SetComponents = (updater: (prev: ComponentMap) => ComponentMap) => void;
-
 const convertRender = (
 	Component: PluginRender,
-	setComponents: SetComponents,
+	setComponents: (updater: (prev: Record<string, OctaneNode>) => Record<string, OctaneNode>) => void,
 	e: HTMLElement,
 	props: TanStackDevtoolsPluginProps,
 ) => {
@@ -114,7 +115,7 @@ const convertRender = (
 
 const convertTrigger = (
 	Component: TriggerRender,
-	setComponent: (element: Renderable) => void,
+	setComponent: (element: OctaneNode | null) => void,
 	e: HTMLElement,
 	props: TriggerProps,
 ) => {
@@ -124,24 +125,26 @@ const convertTrigger = (
 
 // A createPortal VALUE returned from a component renders at any position in octane,
 // so each container's content lives in its own tiny portal component.
-function DevtoolsPortal(props: { target: HTMLElement; content: Renderable }) {
+function DevtoolsPortal(props: { target: HTMLElement; content: OctaneNode }) {
 	return createPortal(props.content, props.target);
 }
 
-export function TanStackDevtools(props: TanStackDevtoolsOctaneInit) {
-	const { plugins, config, eventBusConfig } = props;
-
+export const TanStackDevtools = ({
+	plugins,
+	config,
+	eventBusConfig,
+}: TanStackDevtoolsOctaneInit): OctaneNode | null => {
 	const devToolRef = useRef<HTMLDivElement | null>(null);
 
-	const [pluginContainers, setPluginContainers] = useState<ContainerMap>({});
-	const [titleContainers, setTitleContainers] = useState<ContainerMap>({});
+	const [pluginContainers, setPluginContainers] = useState<Record<string, HTMLElement>>({});
+	const [titleContainers, setTitleContainers] = useState<Record<string, HTMLElement>>({});
 	const [triggerContainer, setTriggerContainer] = useState<HTMLElement | null>(null);
 
-	const [PluginComponents, setPluginComponents] = useState<ComponentMap>({});
-	const [TitleComponents, setTitleComponents] = useState<ComponentMap>({});
-	const [TriggerComponent, setTriggerComponent] = useState<Renderable>(null);
+	const [PluginComponents, setPluginComponents] = useState<Record<string, OctaneNode>>({});
+	const [TitleComponents, setTitleComponents] = useState<Record<string, OctaneNode>>({});
+	const [TriggerComponent, setTriggerComponent] = useState<OctaneNode | null>(null);
 
-	const pluginsMap = useMemo<Array<TanStackDevtoolsPlugin>>(
+	const pluginsMap: Array<TanStackDevtoolsPlugin> = useMemo(
 		() =>
 			plugins?.map((plugin) => {
 				return {
@@ -149,7 +152,7 @@ export function TanStackDevtools(props: TanStackDevtoolsOctaneInit) {
 					name:
 						typeof plugin.name === 'string'
 							? plugin.name
-							: (e: HTMLElement, pluginProps: TanStackDevtoolsPluginProps) => {
+							: (e, props) => {
 									const id = e.getAttribute('id')!;
 									const target = e.ownerDocument.getElementById(id);
 
@@ -160,9 +163,14 @@ export function TanStackDevtools(props: TanStackDevtoolsOctaneInit) {
 										}));
 									}
 
-									convertRender(plugin.name as PluginRender, setTitleComponents, e, pluginProps);
+									convertRender(
+										plugin.name as PluginRender,
+										setTitleComponents,
+										e,
+										props,
+									);
 								},
-					render: (e: HTMLElement, pluginProps: TanStackDevtoolsPluginProps) => {
+					render: (e, theme) => {
 						const id = e.getAttribute('id')!;
 						const target = e.ownerDocument.getElementById(id);
 
@@ -173,9 +181,9 @@ export function TanStackDevtools(props: TanStackDevtoolsOctaneInit) {
 							}));
 						}
 
-						convertRender(plugin.render, setPluginComponents, e, pluginProps);
+						convertRender(plugin.render, setPluginComponents, e, theme);
 					},
-				} as TanStackDevtoolsPlugin;
+				};
 			}) ?? [],
 		[plugins],
 	);
@@ -186,9 +194,9 @@ export function TanStackDevtools(props: TanStackDevtoolsOctaneInit) {
 			config: {
 				...coreConfig,
 				customTrigger: customTrigger
-					? (el: HTMLElement, triggerProps: TriggerProps) => {
+					? (el, props) => {
 							setTriggerContainer(el);
-							convertTrigger(customTrigger, setTriggerComponent, el, triggerProps);
+							convertTrigger(customTrigger, setTriggerComponent, el, props);
 						}
 					: undefined,
 			},
@@ -220,21 +228,21 @@ export function TanStackDevtools(props: TanStackDevtoolsOctaneInit) {
 		<>
 			<div style={{ position: 'absolute' }} ref={devToolRef} />
 
-			@if (hasPlugins) {
-				@for (const [id, pluginContainer] of Object.entries(pluginContainers); key id) {
-					<DevtoolsPortal target={pluginContainer} content={PluginComponents[id]} />
-				}
-			}
+			{hasPlugins
+				? Object.entries(pluginContainers).map(function mapPlugin([key, pluginContainer]) {
+						return <DevtoolsPortal target={pluginContainer} content={PluginComponents[key]} />;
+					})
+				: null}
 
-			@if (hasTitles) {
-				@for (const [id, titleContainer] of Object.entries(titleContainers); key id) {
-					<DevtoolsPortal target={titleContainer} content={TitleComponents[id]} />
-				}
-			}
+			{hasTitles
+				? Object.entries(titleContainers).map(function mapTitle([key, titleContainer]) {
+						return <DevtoolsPortal target={titleContainer} content={TitleComponents[key]} />;
+					})
+				: null}
 
-			@if (triggerContainer && TriggerComponent) {
-				<DevtoolsPortal target={triggerContainer} content={TriggerComponent} />
-			}
+			{triggerContainer && TriggerComponent
+				? <DevtoolsPortal target={triggerContainer} content={TriggerComponent} />
+				: null}
 		</>
 	);
-}
+};

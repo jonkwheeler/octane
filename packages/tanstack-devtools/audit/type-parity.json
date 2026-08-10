@@ -56,7 +56,7 @@
     },
     {
       "kind": "import-root",
-      "rule": "react / react-dom imports become octane; local ./devtools becomes ./devtools.tsrx"
+      "rule": "react / react-dom imports become octane; local ./devtools becomes ./devtools.tsrx; React default+hooks and createPortal collapse to one octane import"
     },
     {
       "kind": "type-rename",
@@ -64,7 +64,15 @@
     },
     {
       "kind": "renderable-type",
-      "rule": "JSX.Element / ReactElement become Octane renderable shapes"
+      "rule": "JSX.Element / ReactElement become OctaneNode / RenderableNode equivalents"
+    },
+    {
+      "kind": "setter-types",
+      "rule": "React.Dispatch<SetStateAction<...>> becomes the equivalent local setter function type"
+    },
+    {
+      "kind": "portal-host",
+      "rule": "createPortal(<>{content}</>, target) may be hosted through DevtoolsPortal so Octane can render returned portal values"
     },
     {
       "kind": "export-surface",
@@ -72,7 +80,7 @@
     },
     {
       "kind": "negative-control",
-      "rule": "Program-membership and export-surface controls reject skipped mapped files, unmapped extras, missing required exports, and undeclared additive exports"
+      "rule": "Compiler-program membership (via tsconfig fileNames), structural adaptation, export-surface, signature-change, and body-change controls must reject drift"
     }
   ],
   "divergences": [

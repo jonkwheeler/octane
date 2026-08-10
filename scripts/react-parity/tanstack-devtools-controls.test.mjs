@@ -130,5 +130,7 @@ test('tanstack-devtools cites ordinary conformance cases for non-type divergence
 	assert.deepEqual(byId['extra-core-reexports'].caseIds, [
 		'conformance:tanstack-devtools-extra-core-reexports',
 	]);
-	assert.deepEqual(byId['octane-type-names'].caseIds, ['types:adapted-octane-compile']);
+	assert.deepEqual(byId['octane-type-names'].caseIds, [
+		'conformance:tanstack-devtools-octane-type-names',
+	]);
 });
