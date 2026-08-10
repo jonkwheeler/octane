@@ -25,10 +25,14 @@ export function useDefaultLayout(options: UseDefaultLayoutOptions, ...rest: [sym
 	const hasPanelIds = panelIds !== undefined;
 	const storage = resolveStorage(storageProp);
 	const readStorageKey = getStorageKey(id, panelIds ?? []);
+	// Match upstream: the same storage read runs on server and client so
+	// cookie/DB-backed LayoutStorage can restore during SSR. Client-only APIs
+	// (implicit localStorage) resolve to undefined on the server via
+	// resolveStorage, so the snapshot stays null without a custom storage prop.
 	const defaultLayoutString = useSyncExternalStore(
 		subscribe,
 		() => readDefaultLayoutString(storage, readStorageKey, id, panelIds),
-		() => null,
+		() => readDefaultLayoutString(storage, readStorageKey, id, panelIds),
 		subSlot(slot, 'stored-layout'),
 	);
 	const defaultLayout = useMemo(

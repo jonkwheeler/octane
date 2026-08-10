@@ -3,19 +3,25 @@ import { renderToString } from 'octane/server';
 import { PersistenceHydrationFixture } from '../_fixtures/persistence-hydration.tsrx';
 
 describe('react-resizable-panels persistence SSR', () => {
-	it('renders deterministic defaults without resolving or reading browser storage', () => {
+	it('renders deterministic defaults when no server-capable storage is provided', () => {
+		const first = renderToString(PersistenceHydrationFixture, {}).html;
+		const second = renderToString(PersistenceHydrationFixture, {}).html;
+		expect(first).toBe(second);
+		expect(first).toContain('data-layout="default"');
+	});
+
+	it('restores an injected server-capable storage layout during SSR', () => {
+		const values = new Map([['react-resizable-panels:hydrated', '{"left":30,"right":70}']]);
 		const storage = {
-			getItem(): never {
-				throw new Error('storage must not be read during server render');
+			getItem(key: string) {
+				return values.get(key) ?? null;
 			},
-			setItem(): never {
+			setItem() {
 				throw new Error('storage must not be written during server render');
 			},
 		};
 
-		const first = renderToString(PersistenceHydrationFixture, { storage }).html;
-		const second = renderToString(PersistenceHydrationFixture, { storage }).html;
-		expect(first).toBe(second);
-		expect(first).toContain('data-layout="default"');
+		const html = renderToString(PersistenceHydrationFixture, { storage }).html;
+		expect(html).toContain('data-layout="{&quot;left&quot;:30,&quot;right&quot;:70}"');
 	});
 });
