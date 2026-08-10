@@ -200,5 +200,9 @@
   "inventories": {
     "pristine": "packages/tanstack-pacer/audit/upstream-types.json",
     "adapted": "packages/tanstack-pacer/audit/adapted-types.json"
+  },
+  "projects": {
+    "pristine": "packages/tanstack-pacer/typetests/pristine/tsconfig.json",
+    "adapted": "packages/tanstack-pacer/typetests/adapted/tsconfig.json"
   }
 }

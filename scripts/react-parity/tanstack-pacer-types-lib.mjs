@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/tanstack-pacer/audit/type-parity.json';
@@ -352,7 +352,56 @@ export function readTypeParityConfig(root, configPath = TYPE_PARITY_CONFIG) {
 	if (!Array.isArray(config.permittedTransforms) || config.permittedTransforms.length === 0) {
 		throw new Error('type-parity.json must declare permittedTransforms');
 	}
+	if (!config.projects?.pristine || !config.projects?.adapted) {
+		throw new Error('type-parity.json must declare projects.pristine and projects.adapted');
+	}
 	return config;
+}
+
+function programFileSet(root, tsconfigPath) {
+	const absoluteConfig = resolve(root, tsconfigPath);
+	if (!existsSync(absoluteConfig)) {
+		throw new Error(`missing type project config: ${tsconfigPath}`);
+	}
+	const read = ts.readConfigFile(absoluteConfig, ts.sys.readFile);
+	if (read.error) {
+		throw new Error(
+			`unable to read ${tsconfigPath}: ${ts.flattenDiagnosticMessageText(read.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		read.config,
+		ts.sys,
+		dirname(absoluteConfig),
+		undefined,
+		absoluteConfig,
+		undefined,
+		[{ extension: '.tsrx', isMixedContent: false, scriptKind: ts.ScriptKind.TSX }],
+	);
+	return new Set(
+		parsed.fileNames.map(function absolute(file) {
+			return resolve(file);
+		}),
+	);
+}
+
+function assertMappedPathInProgram(programFiles, absolutePath, label) {
+	if (programFiles.has(absolutePath)) return;
+	if (absolutePath.endsWith('.tsrx') && programFiles.has(`${absolutePath}.d.ts`)) return;
+	throw new Error(`${label} compiler program omits mapped inventory member ${posix(absolutePath)}`);
+}
+
+export function assertCompilerProgramMembership(root, config, inventory) {
+	const pristineProgram = programFileSet(root, config.projects.pristine);
+	const adaptedProgram = programFileSet(root, config.projects.adapted);
+	const upstreamRoot = resolve(root, config.upstreamRoot);
+	const adaptedRoot = resolve(root, config.adaptedRoot);
+	for (const entry of inventory.upstream) {
+		assertMappedPathInProgram(pristineProgram, resolve(upstreamRoot, entry.path), 'pristine');
+	}
+	for (const entry of inventory.adapted) {
+		assertMappedPathInProgram(adaptedProgram, resolve(adaptedRoot, entry.path), 'adapted');
+	}
 }
 
 function adaptedSourceForMap(root, config, entry) {
@@ -437,6 +486,7 @@ export function buildTypeInventory(root, config) {
 export function verifyTanstackPacerTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) {
 	const config = readTypeParityConfig(root, configPath);
 	const inventory = buildTypeInventory(root, config);
+	assertCompilerProgramMembership(root, config, inventory);
 	for (const [inventoryKey, configKey] of [
 		['upstream', 'pristine'],
 		['adapted', 'adapted'],

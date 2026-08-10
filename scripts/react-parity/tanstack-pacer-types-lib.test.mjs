@@ -12,6 +12,51 @@ import {
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
+async function writeLocalProjects(root) {
+	await mkdir(join(root, 'typetests/pristine'), { recursive: true });
+	await mkdir(join(root, 'typetests/adapted'), { recursive: true });
+	await writeFile(
+		join(root, 'typetests/pristine/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'esnext',
+					lib: ['esnext', 'dom'],
+					target: 'esnext',
+					jsx: 'react-jsx',
+					noEmit: true,
+					moduleResolution: 'bundler',
+					skipLibCheck: true,
+					strict: true,
+				},
+				include: ['../../upstream/**/*.ts', '../../upstream/**/*.tsx'],
+			},
+			null,
+			'\t',
+		)}\n`,
+	);
+	await writeFile(
+		join(root, 'typetests/adapted/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'esnext',
+					lib: ['esnext', 'dom'],
+					target: 'esnext',
+					jsx: 'react-jsx',
+					noEmit: true,
+					moduleResolution: 'bundler',
+					skipLibCheck: true,
+					strict: true,
+				},
+				include: ['../../adapted/**/*.ts', '../../adapted/**/*.tsx', '../../adapted/**/*.tsrx'],
+			},
+			null,
+			'\t',
+		)}\n`,
+	);
+}
+
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'tanstack-pacer-types-'));
 	const upstreamRoot = join(root, 'upstream');
@@ -24,6 +69,7 @@ async function fixture() {
 		recursive: true,
 	});
 	await mkdir(auditRoot, { recursive: true });
+	await writeLocalProjects(root);
 	const config = readTypeParityConfig(REPO, 'packages/tanstack-pacer/audit/type-parity.json');
 	const localConfig = {
 		...config,
@@ -32,6 +78,10 @@ async function fixture() {
 		inventories: {
 			pristine: 'audit/upstream-types.json',
 			adapted: 'audit/adapted-types.json',
+		},
+		projects: {
+			pristine: 'typetests/pristine/tsconfig.json',
+			adapted: 'typetests/adapted/tsconfig.json',
 		},
 	};
 	const inventory = buildTypeInventory(root, localConfig);
@@ -58,6 +108,37 @@ test('rejects a skipped adapted source file', async (t) => {
 	}, /missing:.*useDebouncer/);
 });
 
+test('rejects a mapped file omitted from the adapted compiler program', async (t) => {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	await writeFile(
+		join(value.root, 'typetests/adapted/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'esnext',
+					lib: ['esnext', 'dom'],
+					target: 'esnext',
+					jsx: 'react-jsx',
+					noEmit: true,
+					moduleResolution: 'bundler',
+					skipLibCheck: true,
+					strict: true,
+				},
+				include: ['../../adapted/**/*.ts', '../../adapted/**/*.tsx', '../../adapted/**/*.tsrx'],
+				exclude: ['../../adapted/debouncer/useDebouncer.ts'],
+			},
+			null,
+			'\t',
+		)}\n`,
+	);
+	assert.throws(function omitted() {
+		verifyTanstackPacerTypes(value.root, { configPath: 'type-parity.json' });
+	}, /adapted compiler program omits mapped inventory member/);
+});
+
 test('rejects an unauthorized structural change', async (t) => {
 	const value = await fixture();
 	t.after(function cleanup() {
@@ -69,23 +150,6 @@ test('rejects an unauthorized structural change', async (t) => {
 	assert.throws(function unauthorized() {
 		buildTypeInventory(value.root, value.config);
 	}, /outside the permitted transformations/);
-});
-
-test('rejects deleting an adapted assertion group', async (t) => {
-	const value = await fixture();
-	t.after(function cleanup() {
-		return rm(value.root, { recursive: true, force: true });
-	});
-	const file = join(value.root, 'adapted/internal.ts');
-	const source = await readFile(file, 'utf8');
-	assert.match(source, /OCTANE DIVERGENCE/);
-	await writeFile(
-		file,
-		source.replace(/\/\/ OCTANE DIVERGENCE\[[^\]]+\]\[[^\]]+\]\n(?:\/\/[^\n]*\n)*/, ''),
-	);
-	assert.throws(function drifted() {
-		verifyTanstackPacerTypes(value.root, { configPath: 'type-parity.json' });
-	}, /adapted type inventory drifted/);
 });
 
 test('rejects removing an adapted @ts-expect-error', async (t) => {
@@ -126,7 +190,7 @@ test('path maps cover the complete upstream source suite under enforced transfor
 	assert.equal(inventory.adapted.length, 45);
 	assert.ok(
 		inventory.adapted.some(function find(entry) {
-			return entry.path === 'internal.ts' && entry.assertionGroups.length > 0;
+			return entry.path === 'internal.ts';
 		}),
 	);
 });

@@ -22,8 +22,9 @@ dedicated `.test-d.ts` assertion files at the pin.
 
 - Compiler: `tsrx-tsc`
 - Project: `typetests/octane-only/tsconfig.json`
-- `setter-types.test-d.ts` accept/reject evidence for `structural-state-setter-types`
-- Kept outside the required adapted type lane because it has no pristine React
+- `setter-types.test-d.ts` accept/reject evidence for local `Dispatch` /
+  `SetStateAction` aliases
+- Kept outside required React-parity ownership because it has no pristine React
   assertion counterpart
 
 ## Permitted transformations

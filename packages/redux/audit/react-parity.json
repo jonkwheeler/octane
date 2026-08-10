@@ -17,13 +17,23 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/redux/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/redux/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/redux/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/redux/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -60,8 +70,8 @@
           "cases": [
             {
               "id": "differential:redux-counter",
-              "testName": "counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical",
-              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical"
+              "testName": "counter: mount → increment ×2 → decrement renders byte-identical",
+              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount → increment ×2 → decrement renders byte-identical"
             }
           ]
         },
@@ -83,12 +93,12 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+          "sha256": "d7c4fe7f2a13353d3ed0f848b1182e528eaf946c32179430e3b0ff2f10254b6e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "105be21a6cbef89f02c9586be1eb103f3961076985ac05ff82209e75444b1b70"
         }
       ]
     }

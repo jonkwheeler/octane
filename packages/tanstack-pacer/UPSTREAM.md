@@ -36,10 +36,10 @@ provenance is `verified` via a repo-authored adapted-octane suite plus a React/O
   `audit/adapted-types.json`. Permitted transforms (structurally enforced):
   `typetests/assertions.md`.
 - Ordinary Octane-only: `typetests/octane-only/setter-types.test-d.ts` holds
-  accept/reject evidence for `structural-state-setter-types` outside the required
-  adapted type lane. Root `bindings:typecheck` runs
-  `typetests/octane-only/tsconfig.json` so this evidence executes in the always-on
-  ordinary typecheck control plane.
+  accept/reject evidence for local `Dispatch` / `SetStateAction` aliases outside
+  required React-parity ownership (no pristine React assertion counterpart). Root
+  `bindings:typecheck` runs `typetests/octane-only/tsconfig.json` so this evidence
+  executes in the always-on ordinary typecheck control plane.
 
 ## Executable evidence
 

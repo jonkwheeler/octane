@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-pacer/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/tanstack-pacer/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/tanstack-pacer/tests/adapted"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-pacer/tests/adapted"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -108,7 +116,7 @@
         {
           "path": "packages/tanstack-pacer/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "7d663eb784341cd9db4e8373c1f41b332cb03d4ea5223450c7f8b818a4236eff"
+          "sha256": "144866a0436ceafb1f8912236f795d22fe4ec50b99112cebd1c1d91dbfae2a01"
         },
         {
           "path": "packages/tanstack-pacer/tests/_fixtures/pacer-diff.tsrx",
@@ -128,12 +136,12 @@
         {
           "path": "packages/tanstack-pacer/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "2867ab199c110bb7a7284ea70f13c14c2fc734e14645c1733175625abddc6907"
+          "sha256": "5292360fa37631b4e0cd91ab6b256e9ecc29e07b8133a003d21393ddb8bbfcfc"
         },
         {
           "path": "packages/tanstack-pacer/audit/test-classifications.json",
           "role": "support",
-          "sha256": "fafa0fecf0a88d3b5ed71d7af4cf9de6a2d666797c0637504203d62a736f57e8"
+          "sha256": "29cce0187ae4ffbe1698e560aa617ce22601c2280d74891d0b1e7b41ad1b580e"
         },
         {
           "path": "packages/tanstack-pacer/scripts/check-upstream-ledger.mjs",
@@ -143,7 +151,7 @@
         {
           "path": "scripts/react-parity/tanstack-pacer-controls.test.mjs",
           "role": "support",
-          "sha256": "37effe947b6fa4ea092aa2a687b6cd54577e3caf1069187ff0a63db459e0e859"
+          "sha256": "1ac38e344273a86774d7e8d1ffd765557b793b996b9a416a70738e0156293f62"
         },
         {
           "path": "vitest.config.js",
@@ -186,12 +194,12 @@
         {
           "path": "packages/tanstack-pacer/audit/type-parity.json",
           "role": "support",
-          "sha256": "42c8acb7d25fc67c61922e7a13cd12548ea5ad6842eef22ef0c9df1d17901764"
+          "sha256": "ee49816da4a15a51320e8e70c3aab82863c67260992946f0932c848b613fa24d"
         },
         {
           "path": "packages/tanstack-pacer/typetests/assertions.md",
           "role": "support",
-          "sha256": "7fe8c998147e30732d8548cb00a1305efee31b94807a12fe53f84793683d0ad7"
+          "sha256": "285bf3ebd690c64b0f02b156c07a0314da37c94ffd0622a9b0972911be3576bc"
         }
       ]
     },
@@ -202,7 +210,7 @@
       "environment": "workspace-node",
       "project": "tanstack-pacer-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the complete Octane adapter source through tsrx-tsc (one-for-one with upstream test:types). Setter adaptation is claimed via src/internal.ts (compiled in this lane); accept/reject probes live in ordinary typetests/octane-only outside parity ownership.",
+      "notes": "Compiles the complete Octane adapter source through tsrx-tsc (one-for-one with upstream test:types). Ordinary typetests/octane-only holds accept/reject setter probes outside required parity ownership.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -212,24 +220,12 @@
         {
           "path": "packages/tanstack-pacer/audit/adapted-types.json",
           "role": "test",
-          "sha256": "909120b6bb6b1d846ca74227c9b0cdd44453000aab7089f89cf555c6bc152b1a",
+          "sha256": "14731b2e220c1a33f2a2ca3d7cc2c9ad54dc47aed9eddef2a2c243804f02f488",
           "cases": [
             {
               "id": "types:adapted-octane",
               "testName": "adapted Octane type suite",
               "fullName": "adapted Octane type suite"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-pacer/src/internal.ts",
-          "role": "test",
-          "sha256": "5f1d892a8a6b1787dc6905cab25d9ebe661a4fb01e955bb1372b76481ca514c4",
-          "cases": [
-            {
-              "id": "types:adapted-setters",
-              "testName": "structural state-setter type adaptation",
-              "fullName": "structural state-setter type adaptation"
             }
           ]
         },
@@ -241,28 +237,15 @@
         {
           "path": "packages/tanstack-pacer/audit/type-parity.json",
           "role": "support",
-          "sha256": "42c8acb7d25fc67c61922e7a13cd12548ea5ad6842eef22ef0c9df1d17901764"
+          "sha256": "ee49816da4a15a51320e8e70c3aab82863c67260992946f0932c848b613fa24d"
         },
         {
           "path": "packages/tanstack-pacer/typetests/assertions.md",
           "role": "support",
-          "sha256": "7fe8c998147e30732d8548cb00a1305efee31b94807a12fe53f84793683d0ad7"
+          "sha256": "285bf3ebd690c64b0f02b156c07a0314da37c94ffd0622a9b0972911be3576bc"
         }
       ]
     }
   ],
-  "divergences": [
-    {
-      "id": "structural-state-setter-types",
-      "caseIds": ["types:adapted-setters"],
-      "upstreamResult": "React adapter state helpers expose React.Dispatch<React.SetStateAction<T>> types.",
-      "octaneResult": "Octane exposes structurally identical local state-setter aliases without a React type dependency.",
-      "rationale": "The callback/value union shape is framework-neutral while the React namespace is not.",
-      "classification": "types",
-      "consumerImpact": "Type names do not require importing React, but setter call shapes are unchanged.",
-      "migrationGuidance": "Use the exported local setter types or rely on structural inference.",
-      "owner": "@octanejs/tanstack-pacer",
-      "reviewCondition": "Review if Octane adopts a canonical namespaced setter type."
-    }
-  ]
+  "divergences": []
 }
