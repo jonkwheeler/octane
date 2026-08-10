@@ -175,8 +175,9 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 			await settle();
 		});
 
-		// Ranking: "a" leaves Salad/Apple/Banana with different scores. Score order
-		// is Apple > Banana > Salad, which disagrees with source order — so removing
+		// Ranking: "a" leaves Salad/Apple/Banana with different scores
+		// (Apple≈0.9899, Banana=0.17, Salad=0.1683). Score order is
+		// Apple > Banana > Salad, which disagrees with source order — so removing
 		// Octane's CSS ranking (or upstream's DOM relocate) would fail these asserts.
 		// DOM order itself is the recorded divergence, so this checkpoint does not
 		// byte-compare markup.
