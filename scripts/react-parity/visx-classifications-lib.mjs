@@ -21,9 +21,11 @@ function portable(root, entry) {
 function discoverVisxTests(root) {
 	const testsRoot = resolve(root, 'packages/visx/tests');
 	const typetestsRoot = resolve(root, 'packages/visx/typetests');
-	const runtime = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
-		.filter(function keepTestFiles(entry) {
-			return entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name);
+	const underTests = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
+		.filter(function keepTestAndTypeFiles(entry) {
+			return (
+				entry.isFile() && /\.(?:test\.(?:ts|tsx|tsrx)|test-d\.ts)$/.test(entry.name)
+			);
 		})
 		.map(function toPortablePath(entry) {
 			return portable(root, entry);
@@ -38,7 +40,7 @@ function discoverVisxTests(root) {
 		.map(function toPortablePath(entry) {
 			return portable(root, entry);
 		});
-	return [...runtime, ...typetests].sort();
+	return [...underTests, ...typetests].sort();
 }
 
 export function verifyVisxTestClassifications(root) {

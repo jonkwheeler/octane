@@ -69,6 +69,11 @@
       "reason": "Checks deterministic DOM-free Octane server rendering."
     },
     {
+      "path": "packages/visx/tests/types/parity.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks the port-authored public type surface against @visx/visx with OctaneNode and attribute-bag divergence normalizations."
+    },
+    {
       "path": "packages/visx/typetests/adapted/types.test-d.ts",
       "disposition": "adapted-types",
       "oracle": "Repo-authored PieProps OctaneNode accept probes against @octanejs/visx under tsrx-tsc (visx-adapted-types lane)."

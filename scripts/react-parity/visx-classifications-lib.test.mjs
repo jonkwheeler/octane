@@ -38,13 +38,25 @@ test('rejects an unclassified port-authored runtime test', async function reject
 	}, /exactly one classification/);
 });
 
-test('rejects an unclassified type probe', async function rejectsUnclassifiedTypeProbe(t) {
+test('rejects an unclassified typetests probe', async function rejectsUnclassifiedTypetestsProbe(t) {
 	const root = await fixture();
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
 	await mkdir(join(root, 'packages/visx/typetests/extra'), { recursive: true });
 	await writeFile(join(root, 'packages/visx/typetests/extra/new.test-d.ts'), 'export {};\n');
+	assert.throws(function run() {
+		verifyVisxTestClassifications(root);
+	}, /exactly one classification/);
+});
+
+test('rejects an unclassified tests/types probe', async function rejectsUnclassifiedTestsTypesProbe(t) {
+	const root = await fixture();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await mkdir(join(root, 'packages/visx/tests/types'), { recursive: true });
+	await writeFile(join(root, 'packages/visx/tests/types/extra.test-d.ts'), 'export {};\n');
 	assert.throws(function run() {
 		verifyVisxTestClassifications(root);
 	}, /exactly one classification/);
