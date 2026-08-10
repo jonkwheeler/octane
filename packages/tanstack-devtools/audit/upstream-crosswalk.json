@@ -28,7 +28,7 @@
       "octaneExport": "TanStackDevtoolsOctanePlugin",
       "disposition": "renamed-divergence",
       "divergenceId": "octane-type-names",
-      "evidence": "packages/tanstack-devtools/tests/differential/parity.test.ts"
+      "evidence": "packages/tanstack-devtools/tests/parity/divergences.test.ts"
     },
     {
       "name": "TanStackDevtoolsReactInit",
@@ -37,13 +37,13 @@
       "octaneExport": "TanStackDevtoolsOctaneInit",
       "disposition": "renamed-divergence",
       "divergenceId": "octane-type-names",
-      "evidence": "packages/tanstack-devtools/tests/differential/parity.test.ts"
+      "evidence": "packages/tanstack-devtools/tests/parity/divergences.test.ts"
     }
   ],
   "octaneAdditiveExports": {
     "disposition": "additive-divergence",
     "divergenceId": "extra-core-reexports",
-    "evidence": "packages/tanstack-devtools/tests/differential/parity.test.ts",
+    "evidence": "packages/tanstack-devtools/tests/parity/divergences.test.ts",
     "names": [
       "PLUGIN_CONTAINER_ID",
       "PLUGIN_TITLE_CONTAINER_ID",
