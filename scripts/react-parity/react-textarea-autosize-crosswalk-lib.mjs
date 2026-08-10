@@ -53,6 +53,9 @@ export function verifyReactTextareaAutosizeCrosswalk(
 				'each crosswalk case requires upstreamFullName, adaptedFullName, and adaptedFile',
 			);
 		}
+		if (entry.status !== 'ported') {
+			throw new Error(`${entry.upstreamFullName}: crosswalk status must be ported`);
+		}
 		if (entry.upstreamFullName === entry.adaptedFullName) {
 			throw new Error(`${entry.upstreamFullName}: adapted name must differ from pristine`);
 		}
