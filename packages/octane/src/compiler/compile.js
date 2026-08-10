@@ -3927,12 +3927,57 @@ function collectImmutableModuleFunctions(body) {
 	return declared;
 }
 
+// A component whose synchronous proof reads its props is safe only at JSX
+// edges that construct every read property as an own data field. Missing keys
+// can reach an inherited getter, and `__proto__` changes an object literal's
+// prototype. Warm records carry plain `{ key, value }` entries; graph edges
+// retain their original immutable JSX attributes.
+function warmCallsiteOwnsRequiredProps(info, props) {
+	const required = info.warmRequiredProps;
+	if (required === null || required === undefined || required.size === 0) return true;
+	if (!Array.isArray(props)) return false;
+
+	for (let index = 0; index < props.length; index++) {
+		const prop = props[index];
+		let name;
+		if (prop?.type === 'JSXAttribute' || prop?.type === 'Attribute') {
+			const key = prop.name;
+			if (typeof key === 'string') name = key;
+			else if (key?.type === 'JSXIdentifier' || key?.type === 'Identifier') name = key.name;
+			else return false;
+		} else if (prop?.type === undefined && typeof prop?.key === 'string') {
+			name = prop.key;
+		} else {
+			return false;
+		}
+		if (name === '__proto__') return false;
+	}
+
+	for (const name of required) {
+		let found = false;
+		for (let index = 0; index < props.length; index++) {
+			const prop = props[index];
+			const own = prop.key ?? (typeof prop.name === 'string' ? prop.name : prop.name.name);
+			// Reconciliation consumes `key`; `ref` remains an ordinary own prop.
+			if (own === 'key') continue;
+			if (own === name) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) return false;
+	}
+	return true;
+}
+
 // A child warm plan is useful only if that child can reach an async creation.
 // Same-module declarations are the only closed call graph we can prove: an
 // imported/dynamic component, custom hook, helper call, or lazy state initializer
 // may suspend behind an opaque boundary, so each keeps its existing warm edge.
 // A useState call with a primitive literal initializer and publishing its stable
 // setter are synchronous, so neither turns a synchronous tree into a warm plan.
+// Flat props destructuring and direct props reads are also synchronous when
+// every traversed call site proves those keys are compiler-owned data fields.
 function classifySameModuleWarmPotential(ctx) {
 	for (const [, info] of ctx.componentInfo) {
 		const component = info.node;
@@ -3941,12 +3986,45 @@ function classifySameModuleWarmPotential(ctx) {
 		const invariant = computeInvariantLocals(statements, locals, false);
 		const dependencies = new Set();
 		const seen = new WeakSet();
+		const parameters = component.params || [];
+		let propsName = null;
+		let requiredProps = null;
 		// A reassigned function binding can point at an async component by the
-		// time its warm edge runs. Destructuring/default/rest parameters can also
-		// invoke user code before the authored component body is reached.
-		let opaque =
-			!ctx.moduleFunctionDeclarations.has(component.id?.name) ||
-			(component.params || []).some((parameter) => parameter.type !== 'Identifier');
+		// time its warm edge runs. Defaults, computed/rest/nested patterns, and
+		// unknown parameters may invoke user code before its body is reached.
+		let opaque = !ctx.moduleFunctionDeclarations.has(component.id?.name);
+		for (let index = 0; !opaque && index < parameters.length; index++) {
+			const parameter = parameters[index];
+			if (parameter.type === 'Identifier') {
+				if (index === 0) propsName = parameter.name;
+				continue;
+			}
+			if (index !== 0 || parameters.length !== 1 || parameter.type !== 'ObjectPattern') {
+				opaque = true;
+				break;
+			}
+			for (const property of parameter.properties || []) {
+				if (
+					property.type !== 'Property' ||
+					property.computed ||
+					property.value?.type !== 'Identifier'
+				) {
+					opaque = true;
+					break;
+				}
+				const key =
+					property.key?.type === 'Identifier'
+						? property.key.name
+						: property.key?.type === 'Literal' && typeof property.key.value === 'string'
+							? property.key.value
+							: null;
+				if (key === null || key === '__proto__' || key === 'current') {
+					opaque = true;
+					break;
+				}
+				(requiredProps ??= new Set()).add(key);
+			}
+		}
 
 		function walk(node) {
 			if (opaque || node === null || typeof node !== 'object') return;
@@ -3959,7 +4037,10 @@ function classifySameModuleWarmPotential(ctx) {
 
 			// Deferred handlers do not execute during this component's render. State
 			// initializers are admitted only when proven primitive and non-callable.
-			if (FN_TYPES.has(node.type)) return;
+			if (FN_TYPES.has(node.type)) {
+				if (node.type === 'FunctionDeclaration' && node.id?.name === propsName) opaque = true;
+				return;
+			}
 
 			if ((node.type === 'Element' || node.type === 'JSXElement') && isComponentTag(node)) {
 				const name = tagBindingName(node);
@@ -3972,7 +4053,9 @@ function classifySameModuleWarmPotential(ctx) {
 					opaque = true;
 					return;
 				}
-				dependencies.add(name);
+				// Keep the immutable JSX node so the fixed point can prove the
+				// descendant's required own props separately for each call site.
+				dependencies.add(node);
 			} else if (node.type === 'CallExpression' || node.type === 'NewExpression') {
 				const hook = stableHookCallName(node);
 				if (
@@ -3988,15 +4071,39 @@ function classifySameModuleWarmPotential(ctx) {
 				// other destructuring can execute a custom iterator or rest/default.
 				if (
 					stableHookCallName(unwrapTsExpr(node.init)) !== 'useState' ||
-					node.id.elements.some((element) => element !== null && element.type !== 'Identifier')
+					node.id.elements.some(
+						(element) =>
+							element !== null && (element.type !== 'Identifier' || element.name === propsName),
+					)
 				) {
 					opaque = true;
 					return;
 				}
+			} else if (node.type === 'VariableDeclarator' && node.id?.name === propsName) {
+				// A nested lexical binding with the same name is not the props object.
+				opaque = true;
+				return;
+			} else if (node.type === 'MemberExpression') {
+				const owner = unwrapTsExpr(node.object);
+				const key = node.property;
+				if (
+					node.computed ||
+					node.optional ||
+					owner?.type !== 'Identifier' ||
+					owner.name !== propsName ||
+					key?.type !== 'Identifier' ||
+					key.name === '__proto__' ||
+					key.name === 'current'
+				) {
+					opaque = true;
+					return;
+				}
+				(requiredProps ??= new Set()).add(key.name);
 			} else if (node.type === 'AssignmentExpression') {
 				if (
 					node.operator !== '=' ||
 					node.left?.type !== 'Identifier' ||
+					node.left.name === propsName ||
 					node.right?.type !== 'Identifier' ||
 					!invariant.has(node.right.name)
 				) {
@@ -4006,7 +4113,6 @@ function classifySameModuleWarmPotential(ctx) {
 			} else if (
 				node.type === 'AwaitExpression' ||
 				node.type === 'YieldExpression' ||
-				node.type === 'MemberExpression' ||
 				node.type === 'JSXMemberExpression' ||
 				node.type === 'OptionalMemberExpression' ||
 				node.type === 'OptionalCallExpression' ||
@@ -4027,7 +4133,9 @@ function classifySameModuleWarmPotential(ctx) {
 				node.type === 'JSXTryExpression' ||
 				node.type === 'ImportExpression' ||
 				node.type === 'TaggedTemplateExpression' ||
-				node.type === 'UpdateExpression'
+				node.type === 'UpdateExpression' ||
+				(node.type === 'UnaryExpression' && node.operator === 'delete') ||
+				(node.type === 'ClassDeclaration' && node.id?.name === propsName)
 			) {
 				opaque = true;
 				return;
@@ -4042,6 +4150,7 @@ function classifySameModuleWarmPotential(ctx) {
 		walk(statements);
 		walk(component.body.render);
 		info.warmPotential = opaque;
+		info.warmRequiredProps = requiredProps;
 		info.warmDependencies = dependencies;
 	}
 
@@ -4053,8 +4162,15 @@ function classifySameModuleWarmPotential(ctx) {
 		changed = false;
 		for (const [, info] of ctx.componentInfo) {
 			if (info.warmPotential) continue;
-			for (const name of info.warmDependencies) {
-				if (ctx.componentInfo.get(name)?.warmPotential !== false) {
+			for (const dependency of info.warmDependencies) {
+				const target = ctx.componentInfo.get(tagBindingName(dependency));
+				if (
+					target?.warmPotential !== false ||
+					!warmCallsiteOwnsRequiredProps(
+						target,
+						dependency.openingElement?.attributes ?? dependency.attributes,
+					)
+				) {
 					info.warmPotential = true;
 					changed = true;
 					break;
@@ -4959,6 +5075,64 @@ function isSingleHostIfRoot(node) {
 		return render.length === 1 && isPlainHostRoot(render[0]);
 	};
 	return armIsSingleHost(node.consequent) && armIsSingleHost(node.alternate);
+}
+
+/**
+ * A component-call arm that participates in the transitive single-root proof:
+ * a bare same-module identifier tag with no key, no spread, and no children.
+ * Those are the same conditions under which the call site emits the markerless
+ * singleRoot/lite regime (makeCompCall's callSiteOk + key gate), so "the arm
+ * renders exactly one element" reduces to "the callee's output is one element".
+ * Local shadows are rejected — the module-level proof would name the wrong
+ * binding. Returns the callee name, or null when the arm does not qualify.
+ */
+function singleRootComponentArmName(node, locals, ctx) {
+	if ((node.type !== 'Element' && node.type !== 'JSXElement') || !isComponentTag(node)) return null;
+	const name = tagBindingName(node);
+	if (name === null || locals.has(name) || !ctx.componentInfo.has(name)) return null;
+	const attrs = node.attributes || node.openingElement?.attributes || [];
+	for (const a of attrs) {
+		if (a.type === 'SpreadAttribute' || a.type === 'JSXSpreadAttribute') return null;
+		if (a.type !== 'Attribute' && a.type !== 'JSXAttribute') continue;
+		if ((a.name && (a.name.name || a.name)) === 'key') return null;
+	}
+	if ((node.children || []).length > 0) return null;
+	return name;
+}
+
+/**
+ * Transitive definition-site single-root proof for a void `@{}` body whose
+ * sole root is an `@if`/`@else` tree: every reachable arm must render exactly
+ * one plain host OR one qualifying same-module component call (see
+ * singleRootComponentArmName). Returns the set of callee names the proof
+ * depends on (empty when every arm is a host), or null when the shape does
+ * not qualify. The caller resolves the deps with a fixed point over
+ * componentInfo, so `@if (d > 0) { <div>…</div> } @else { <Leaf/> }` is
+ * proven single-root once Leaf is — the multi-hole host shape
+ * `<div><Node/><Node/></div>` then takes the existing anchorless
+ * componentSlot singleRoot regime with zero minted markers. Purely a
+ * client-mount elision: SSR emission and hydration adoption are unchanged
+ * (hydration always adopts the server's frame pair before this regime is
+ * consulted).
+ */
+function collectSingleRootIfDeps(render, locals, ctx) {
+	const roots = normalizeChildren(render ? [render] : []).filter((n) => n.type !== 'HeadHoist');
+	if (roots.length !== 1 || !isIfDirective(roots[0])) return null;
+	const deps = new Set();
+	const armOk = (arm) => {
+		if (isIfDirective(arm)) return ifOk(arm);
+		const out = statementsOf(arm).filter((s) => isJsxNode(s) || isIfDirective(s));
+		if (out.length !== 1) return false;
+		const sole = out[0];
+		if (isIfDirective(sole)) return ifOk(sole);
+		if (isPlainHostRoot(sole)) return true;
+		const name = singleRootComponentArmName(sole, locals, ctx);
+		if (name === null) return false;
+		deps.add(name);
+		return true;
+	};
+	const ifOk = (n) => n.alternate != null && armOk(n.consequent) && armOk(n.alternate);
+	return ifOk(roots[0]) ? deps : null;
 }
 
 /**
@@ -7439,6 +7613,12 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 		// like a single-root `@for` item. (Output-shape based — independent of which
 		// hooks it calls.)
 		info.singleRoot = singleHostComponentRoot(compNode);
+		// Transitive @if-arm form of the same proof — resolved by the fixed point
+		// below once every same-module callee an arm depends on is itself proven.
+		info.singleRootIfDeps =
+			!info.singleRoot && isVoidJsxCodeBlockFunction(compNode)
+				? collectSingleRootIfDeps(compNode.body.render, locals, ctx)
+				: null;
 	}
 	// Purity is transitive for same-module component calls. Iterate to a fixed
 	// point so declaration order and mutually recursive pure components do not
@@ -7489,6 +7669,31 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 				info.autoMemoImportedComponents = [...importedComponents].sort();
 				info.autoMemoMayReadContext = mayReadContext;
 				autoMemoCapturesChanged = true;
+			}
+		}
+	}
+	// Single-root output is transitive across same-module `@if` arms (see
+	// collectSingleRootIfDeps): flip false → true until stable so declaration
+	// order and recursion through a proven base case don't matter. Pessimistic —
+	// an unproven cycle (`A = @{ <B/> arm }`, `B = @{ <A/> arm }` with no host
+	// base) stays false. Runs before lowering, so call sites, the `$$singleRoot`
+	// module-tail stamps, and the @for item proof all consume the widened result
+	// through the existing channels.
+	let singleRootChanged = true;
+	while (singleRootChanged) {
+		singleRootChanged = false;
+		for (const [, info] of ctx.componentInfo) {
+			if (info.singleRoot === true || info.singleRootIfDeps == null) continue;
+			let proven = true;
+			for (const name of info.singleRootIfDeps) {
+				if (ctx.componentInfo.get(name)?.singleRoot !== true) {
+					proven = false;
+					break;
+				}
+			}
+			if (proven) {
+				info.singleRoot = true;
+				singleRootChanged = true;
 			}
 		}
 	}
@@ -13456,7 +13661,8 @@ function buildWarmArtifacts(node, ctx, componentName, creations, warmChildren) {
 			// that this edge and every descendant are synchronously render-only.
 			(ctx.mode === 'server' ||
 				ctx._universalRuntimeUnit != null ||
-				ctx.componentInfo.get(w.compName)?.warmPotential !== false) &&
+				ctx.componentInfo.get(w.compName)?.warmPotential !== false ||
+				!warmCallsiteOwnsRequiredProps(ctx.componentInfo.get(w.compName), w.props)) &&
 			!paramNames.has(w.compName) &&
 			!(locals && locals.has(w.compName)) &&
 			!(w.locals && w.locals.has(w.compName)) &&
