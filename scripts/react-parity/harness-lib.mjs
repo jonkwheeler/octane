@@ -495,10 +495,7 @@ export function validateManifest(manifest) {
 		}
 		const ordinaryIds = new Set();
 		if (divergence.ordinaryEvidence !== undefined) {
-			if (
-				!Array.isArray(divergence.ordinaryEvidence) ||
-				divergence.ordinaryEvidence.length === 0
-			) {
+			if (!Array.isArray(divergence.ordinaryEvidence) || divergence.ordinaryEvidence.length === 0) {
 				fail(`divergence ${divergence.id} ordinaryEvidence must be a non-empty array`);
 			}
 			for (const evidence of divergence.ordinaryEvidence) {
@@ -507,31 +504,19 @@ export function validateManifest(manifest) {
 						fail(`divergence ${divergence.id} ordinaryEvidence has unknown key "${key}"`);
 				requiredString(evidence.id, `divergence ${divergence.id} ordinaryEvidence.id`);
 				if (!evidence.id.startsWith('ordinary:'))
-					fail(
-						`divergence ${divergence.id} ordinaryEvidence.id must start with "ordinary:"`,
-					);
+					fail(`divergence ${divergence.id} ordinaryEvidence.id must start with "ordinary:"`);
 				if (ordinaryIds.has(evidence.id))
 					fail(`divergence ${divergence.id} duplicate ordinaryEvidence id "${evidence.id}"`);
 				ordinaryIds.add(evidence.id);
 				exactPath(evidence.path, `divergence ${divergence.id} ordinaryEvidence.path`);
 				if (!/^[a-f0-9]{64}$/.test(evidence.sha256))
 					fail(`divergence ${divergence.id} ordinaryEvidence.sha256 is invalid`);
-				requiredString(
-					evidence.testName,
-					`divergence ${divergence.id} ordinaryEvidence.testName`,
-				);
-				requiredString(
-					evidence.fullName,
-					`divergence ${divergence.id} ordinaryEvidence.fullName`,
-				);
+				requiredString(evidence.testName, `divergence ${divergence.id} ordinaryEvidence.testName`);
+				requiredString(evidence.fullName, `divergence ${divergence.id} ordinaryEvidence.fullName`);
 			}
 		}
 		for (const caseId of divergence.caseIds) {
-			if (
-				!caseIds.has(caseId) &&
-				!caseId.startsWith('runtime:') &&
-				!ordinaryIds.has(caseId)
-			)
+			if (!caseIds.has(caseId) && !caseId.startsWith('runtime:') && !ordinaryIds.has(caseId))
 				fail(`divergence ${divergence.id} references unknown case id "${caseId}"`);
 			if (caseId.startsWith('ordinary:') && !ordinaryIds.has(caseId))
 				fail(
