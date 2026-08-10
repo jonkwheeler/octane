@@ -17,12 +17,8 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-devtools/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/tanstack-devtools/src"],
+      "include": ["\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     },
     "tests": {
@@ -30,9 +26,7 @@
         "packages/tanstack-devtools/tests/differential",
         "packages/tanstack-devtools/tests/parity"
       ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -49,7 +43,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "1f1c77d90d42248a1baa96941fd6ee0d589f6df3b0e8b21a0a2844000b87699b"
+      "lockfileSha256": "89660b8631a2c1e1cdcd6007dbc0524abb97a634a03882d6f8d83f11f689bb2f"
     }
   },
   "lanes": [
@@ -117,7 +111,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "38c39a3214465a8d494cd8126387206fb1c4ad5763c279d84fd7282284a1ea75"
+          "sha256": "745d95f91db82820eaec6b3a4f1ae6b621f2debe580de17137779d795d61ed3d"
         }
       ]
     },
@@ -246,9 +240,7 @@
   "divergences": [
     {
       "id": "core-version",
-      "caseIds": [
-        "conformance:tanstack-devtools-core-version"
-      ],
+      "caseIds": ["conformance:tanstack-devtools-core-version"],
       "upstreamResult": "The pinned React adapter publishes with @tanstack/devtools 0.12.4 (from @tanstack/react-devtools package.json).",
       "octaneResult": "The Octane package resolves @tanstack/devtools from the workspace catalog (currently 0.12.5).",
       "rationale": "The workspace catalog had advanced before this audit; silently downgrading the shared core is outside this harness PR.",
@@ -260,9 +252,7 @@
     },
     {
       "id": "octane-type-names",
-      "caseIds": [
-        "conformance:tanstack-devtools-octane-type-names"
-      ],
+      "caseIds": ["conformance:tanstack-devtools-octane-type-names"],
       "upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
       "octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",
       "rationale": "Framework-specific public type names identify the runtime they describe.",
@@ -274,9 +264,7 @@
     },
     {
       "id": "extra-core-reexports",
-      "caseIds": [
-        "conformance:tanstack-devtools-extra-core-reexports"
-      ],
+      "caseIds": ["conformance:tanstack-devtools-extra-core-reexports"],
       "upstreamResult": "The React adapter exports only the component and React adapter types.",
       "octaneResult": "Octane additionally re-exports framework-neutral core values and types.",
       "rationale": "Existing Octane consumers use the binding as the plugin-authoring type boundary.",

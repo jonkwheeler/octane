@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "9bfa66384d7cd40cb59b589c777f176cc5f8dc6a3f17a865039e902402bea226"
+      "lockfileSha256": "89660b8631a2c1e1cdcd6007dbc0524abb97a634a03882d6f8d83f11f689bb2f"
     }
   },
   "lanes": [
@@ -108,7 +108,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "22270530e881b4664083d76b2986943e9e469047966c51db4f409bac146b779a"
+          "sha256": "745d95f91db82820eaec6b3a4f1ae6b621f2debe580de17137779d795d61ed3d"
         }
       ]
     },
@@ -119,7 +119,7 @@
       "environment": "workspace-node",
       "project": "tanstack-router-ssr-query-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55\u2013typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
+      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55–typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
