@@ -11,6 +11,13 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const args = process.argv.slice(2);
 
+function resolveNpmCommand(command) {
+	if (process.platform === 'win32' && (command === 'npm' || command === 'npx')) {
+		return `${command}.cmd`;
+	}
+	return command;
+}
+
 function flag(name) {
 	const index = args.indexOf(name);
 	if (index === -1 || !args[index + 1]) throw new Error(`Missing ${name}`);
@@ -56,7 +63,8 @@ function writeJson(path, value) {
 }
 
 function run(command, commandArgs, cwd) {
-	const result = spawnSync(command, commandArgs, {
+	const resolved = resolveNpmCommand(command);
+	const result = spawnSync(resolved, commandArgs, {
 		cwd,
 		encoding: 'utf8',
 		env: process.env,
@@ -64,7 +72,7 @@ function run(command, commandArgs, cwd) {
 	if (result.status !== 0) {
 		process.stderr.write(result.stdout ?? '');
 		process.stderr.write(result.stderr ?? '');
-		throw new Error(`${command} ${commandArgs.join(' ')} failed with status ${result.status}`);
+		throw new Error(`${resolved} ${commandArgs.join(' ')} failed with status ${result.status}`);
 	}
 	return result;
 }
@@ -156,12 +164,16 @@ try {
 	run('npm', ['install', '--no-fund', '--no-audit', '--legacy-peer-deps'], join(workRoot, 'test'));
 	run('npx', ['playwright', 'install', project], workRoot);
 
-	const testResult = spawnSync('npx', ['playwright', 'test', `--project=${project}`], {
-		cwd: workRoot,
-		encoding: 'utf8',
-		// Match upstream CI settings: one worker and retries for timing-sensitive e2e.
-		env: { ...process.env, CI: '1' },
-	});
+	const testResult = spawnSync(
+		resolveNpmCommand('npx'),
+		['playwright', 'test', `--project=${project}`],
+		{
+			cwd: workRoot,
+			encoding: 'utf8',
+			// Match upstream CI settings: one worker and retries for timing-sensitive e2e.
+			env: { ...process.env, CI: '1' },
+		},
+	);
 	if (testResult.status !== 0) {
 		process.stderr.write(testResult.stdout ?? '');
 		process.stderr.write(testResult.stderr ?? '');

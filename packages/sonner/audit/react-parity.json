@@ -72,7 +72,7 @@
         {
           "path": "scripts/react-parity/playwright-full-runner.mjs",
           "role": "support",
-          "sha256": "a3d66bf80ffa831a349334ba2ab40ca3e678660fb78f77d283b38b6b15fdb894"
+          "sha256": "bb3fa16b4b6baaa1d01877be334b73dfc581e5f14f10aa09f3ee9411cb734799"
         },
         {
           "path": "packages/sonner/upstream/playwright.config.ts",
