@@ -1267,6 +1267,35 @@ export default defineConfig({
 				},
 			},
 			{
+				test: {
+					name: 'react-email',
+					include: ['packages/react-email/tests/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^octane$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+						{
+							find: /^octane\/server$/,
+							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-email-cli',
+					include: ['packages/react-email-cli/tests/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
 				// SSR half: the whole graph compiles in SERVER mode and bare `octane`
 				// imports resolve to `octane/server`, so the package's plain-.ts hooks
 				// run against the server runtime the compiled components use.
