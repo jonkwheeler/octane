@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { proxy } from '@octanejs/valtio';
-import { mount, nextPaint } from '../_helpers';
+import { act, mount, nextPaint } from '../_helpers';
 import {
 	Counter,
 	MutableProxy,
@@ -63,10 +63,14 @@ describe('useSnapshot', () => {
 		result.unmount();
 	});
 
-	it('supports synchronous subscriptions', async () => {
+	it('supports synchronous subscriptions', function () {
 		const result = mount(SyncCounter, { state });
-		state.count = 3;
-		await nextPaint();
+		// Sync `act` drains the render queue before returning. Valtio's
+		// `{ sync: true }` notifies inside that callback; a non-sync
+		// subscription waits on a microtask and would still read "0" here.
+		act(function () {
+			state.count = 3;
+		});
 		expect(result.find('#sync-count').textContent).toBe('3');
 		result.unmount();
 	});
