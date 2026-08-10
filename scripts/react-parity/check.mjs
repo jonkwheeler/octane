@@ -17,6 +17,8 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyTiptapTypes } from './tiptap-types-lib.mjs';
+import { verifyTiptapRuntimeCrosswalk } from './tiptap-runtime-lib.mjs';
+import { verifyTiptapTestClassifications } from './tiptap-classifications-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -61,6 +63,16 @@ try {
 	verifyTiptapTypes(REPO);
 } catch (error) {
 	errors.push(`@octanejs/tiptap type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyTiptapRuntimeCrosswalk(REPO);
+} catch (error) {
+	errors.push(`@octanejs/tiptap runtime crosswalk is invalid: ${error.message}`);
+}
+try {
+	verifyTiptapTestClassifications(REPO);
+} catch (error) {
+	errors.push(`@octanejs/tiptap test classifications are invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);
@@ -144,7 +156,10 @@ for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
-		if (existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))) {
+		if (
+			binding !== 'tiptap' &&
+			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
+		) {
 			verifyPortTestClassifications(REPO, binding);
 		}
 		await verifyManifestFiles(manifest, REPO);

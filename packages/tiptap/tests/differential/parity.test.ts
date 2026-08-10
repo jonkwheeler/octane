@@ -6,6 +6,7 @@ import { flushEffects } from '../_helpers';
 
 const fixture = resolve(__dirname, '../_fixtures/basic-editor.tsrx');
 const customViewsFixture = resolve(__dirname, '../_fixtures/custom-views-parity.tsrx');
+const customViewsAsPropFixture = resolve(__dirname, '../_fixtures/custom-views-as-prop-parity.tsrx');
 const cache = resolve(__dirname, '.react-cache');
 
 async function waitForPublishedSelection(...mounts: { container: HTMLElement }[]): Promise<void> {
@@ -204,6 +205,57 @@ describe('differential: @octanejs/tiptap vs @tiptap/react', () => {
 			'node:cleanup',
 			'node:cleanup',
 		]);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:tiptap-node-view-as-prop
+	it('consumes NodeViewWrapper as without forwarding the attribute', async function () {
+		const differential = await mountDifferential(
+			customViewsAsPropFixture,
+			'CustomViewsAsPropParity',
+			{ onLifecycle: function onLifecycle() {} },
+			cache,
+		);
+
+		await differential.observe('mount node views with an as host tag', function () {});
+		flushEffects();
+		const octaneNode = differential.octane.find('[data-parity-node-view]');
+		const reactNode = differential.react.find('[data-parity-node-view]');
+		expect(octaneNode.tagName).toBe('ARTICLE');
+		expect(reactNode.tagName).toBe('ARTICLE');
+		expect(octaneNode.hasAttribute('as')).toBe(false);
+		expect(reactNode.hasAttribute('as')).toBe(true);
+
+		differential.unmount();
+	});
+
+	// @parity-case differential:tiptap-mark-view-portal-cleanup
+	it('cleans mark-view portals when the mark is removed', async function () {
+		const differential = await mountDifferential(
+			customViewsFixture,
+			'CustomViewsParity',
+			{ onLifecycle: function onLifecycle() {} },
+			cache,
+		);
+
+		await differential.step('mount mark portals', function () {});
+		flushEffects();
+		expect(differential.octane.find('[data-parity-mark-view]')).toBeTruthy();
+
+		await differential.step(
+			'remove the mark and require Octane portal teardown',
+			async function (octane, react) {
+				await octane.click('[data-parity-mark-remove]');
+				await react.click('[data-parity-mark-remove]');
+			},
+		);
+		flushEffects();
+		expect(differential.octane.container.querySelector('[data-parity-mark-view]')).toBe(null);
+		expect(differential.octane.container.querySelector('[data-mark-view-content]')).toBe(null);
+		expect(differential.octane.find('[data-parity-editor-text]').textContent).toContain(
+			'Marked text',
+		);
 
 		differential.unmount();
 	});

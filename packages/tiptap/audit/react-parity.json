@@ -50,7 +50,7 @@
 			"arch": "any",
 			"packageManager": "pnpm@11.15.1",
 			"lockfile": "pnpm-lock.yaml",
-			"lockfileSha256": "182c8199b6f21193b4a1d9fb015fc583efa832e2c9b023260ba50171bf407469"
+			"lockfileSha256": "c65fe681452ba4ddff8c82b80b720d02f6462501bd2fd92a75327af616991018"
 		}
 	},
 	"lanes": [
@@ -171,7 +171,7 @@
 				{
 					"path": "packages/tiptap/tests/differential/parity.test.ts",
 					"role": "test",
-					"sha256": "97c24a6cd7086e33204f1ba8685637b1efa5a44a335ead3a3bd279d0e7d8ad5c",
+					"sha256": "91894eaa0b199da6054a800e8f6160e567f14620ba6f020a4a370b342edca61f",
 					"cases": [
 						{
 							"id": "differential:tiptap-editor",
@@ -182,13 +182,23 @@
 							"id": "differential:tiptap-custom-views",
 							"testName": "matches renderer, node-view, and mark-view behavior through their visible lifecycles",
 							"fullName": "differential: @octanejs/tiptap vs @tiptap/react matches renderer, node-view, and mark-view behavior through their visible lifecycles"
+						},
+						{
+							"id": "differential:tiptap-node-view-as-prop",
+							"testName": "consumes NodeViewWrapper as without forwarding the attribute",
+							"fullName": "differential: @octanejs/tiptap vs @tiptap/react consumes NodeViewWrapper as without forwarding the attribute"
+						},
+						{
+							"id": "differential:tiptap-mark-view-portal-cleanup",
+							"testName": "cleans mark-view portals when the mark is removed",
+							"fullName": "differential: @octanejs/tiptap vs @tiptap/react cleans mark-view portals when the mark is removed"
 						}
 					]
 				},
 				{
 					"path": "packages/tiptap/tests/differential/_setup.ts",
 					"role": "support",
-					"sha256": "1f352aa16a2a485536f25febb344b11ce3e46718974bd3d2f8cff68c4b2bf11b"
+					"sha256": "ef02c12eaf28e2f8d68770cd8ddcdc288c8724c302fba6ad9df850557471d9a0"
 				},
 				{
 					"path": "packages/tiptap/tests/differential/fixture-compiler.ts",
@@ -204,6 +214,11 @@
 					"path": "packages/tiptap/tests/_fixtures/custom-views-parity.tsrx",
 					"role": "support",
 					"sha256": "335c358464ef8cdf396eee577010b790740b7defd48742479ea770effc93216c"
+				},
+				{
+					"path": "packages/tiptap/tests/_fixtures/custom-views-as-prop-parity.tsrx",
+					"role": "support",
+					"sha256": "a2642672fd79f9fa4caa9df2d51b2b56fd0898219f775227d286faf7a9210b93"
 				}
 			]
 		},
@@ -318,6 +333,34 @@
 			"migrationGuidance": "Use standard DOM event fields directly.",
 			"owner": "@octanejs/tiptap",
 			"reviewCondition": "Review if Octane introduces synthetic events."
+		},
+		{
+			"id": "tiptap-node-view-as-prop",
+			"caseIds": [
+				"differential:tiptap-node-view-as-prop"
+			],
+			"upstreamResult": "NodeViewWrapper forwards the as prop onto the host DOM node as an invalid attribute.",
+			"octaneResult": "NodeViewWrapper consumes as when selecting the host tag and does not forward it.",
+			"rationale": "Octane treats as as a host-tag selector rather than a passthrough DOM attribute.",
+			"classification": "dom-attribute",
+			"consumerImpact": "Selectors and attribute snapshots must not expect an as attribute on the rendered host.",
+			"migrationGuidance": "Pass as only to choose the host tag; read tagName instead of the as attribute.",
+			"owner": "@octanejs/tiptap",
+			"reviewCondition": "Review if Octane starts forwarding unknown host props differently."
+		},
+		{
+			"id": "tiptap-mark-view-portal-cleanup",
+			"caseIds": [
+				"differential:tiptap-mark-view-portal-cleanup"
+			],
+			"upstreamResult": "ReactMarkView can leave a renderer portal registered after ProseMirror destroys the mark view.",
+			"octaneResult": "ReactMarkView.destroy unregisters and destroys the Octane portal immediately.",
+			"rationale": "Octane closes the known @tiptap/react 3.28.0 mark-view portal leak on destroy.",
+			"classification": "lifecycle",
+			"consumerImpact": "Mark removal must not retain detached portal hosts or stale mark-view refs.",
+			"migrationGuidance": "Rely on destroy-driven portal teardown; do not keep manual mark-view registries for this pin.",
+			"owner": "@octanejs/tiptap",
+			"reviewCondition": "Review if upstream mark-view destroy semantics change."
 		}
 	]
 }

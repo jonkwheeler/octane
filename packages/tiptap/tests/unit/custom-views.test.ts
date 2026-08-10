@@ -110,33 +110,8 @@ describe('@octanejs/tiptap custom views', () => {
 		editor?.destroy();
 	});
 
-	// Octane framework contract: consumed as prop (not parity-owned).
-	it('consumes the node view as prop without forwarding it to the DOM', async () => {
-		let editor: Editor | undefined;
-		const result = mount(CustomViewsEditor as any, {
-			theme: 'day',
-			onEditor: (currentEditor: Editor) => {
-				editor = currentEditor;
-			},
-			onRenderer: () => {},
-			onDirectLifecycle: () => {},
-			onNodeLifecycle: () => {},
-			onNodeRef: () => {},
-			onMarkLifecycle: () => {},
-			onMarkRef: () => {},
-		});
-		await settlePortals();
-
-		const nodeView = result.find('[data-panel-node-view]');
-		expect(nodeView.tagName).toBe('ARTICLE');
-		expect(nodeView.hasAttribute('as')).toBe(false);
-
-		result.unmount();
-		flushEffects();
-		editor?.destroy();
-	});
-
-	// Octane framework contract: mark-view cleanup (not parity-owned).
+	// NodeViewWrapper `as` consumption and ReactMarkView portal teardown live in
+	// dedicated divergence files (node-view-as-prop / mark-view-portal-cleanup).
 	it('keeps non-leaf node and mark content live across updates, then cleans both views up', async () => {
 		let editor: Editor | undefined;
 		const nodeLifecycle: string[] = [];

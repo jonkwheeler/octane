@@ -8,9 +8,13 @@ import { compileFixture } from './fixture-compiler';
 const fixtureDirectory = join(dirname(fileURLToPath(import.meta.url)), '../_fixtures');
 const cacheDirectory = join(dirname(fileURLToPath(import.meta.url)), '.react-cache');
 
-const fixtures = ['basic-editor.tsrx', 'custom-views-parity.tsrx'].map((name) =>
-	join(fixtureDirectory, name),
-);
+const fixtures = [
+	'basic-editor.tsrx',
+	'custom-views-parity.tsrx',
+	'custom-views-as-prop-parity.tsrx',
+].map(function toAbsolute(name) {
+	return join(fixtureDirectory, name);
+});
 
 export async function setup(): Promise<void> {
 	if (!existsSync(cacheDirectory)) mkdirSync(cacheDirectory, { recursive: true });

@@ -34,7 +34,7 @@
     {
       "path": "packages/tiptap/tests/unit/custom-views.test.ts",
       "disposition": "octane-only-framework-contract",
-      "reason": "Pins ordinary refs, consumed as props, and mark-view cleanup as Octane framework contracts outside the upstream suite."
+      "reason": "Checks renderer/node/mark lifecycle and context wiring as Octane framework contracts outside the upstream suite."
     },
     {
       "path": "packages/tiptap/tests/unit/editor-consumer.test.ts",
@@ -50,6 +50,12 @@
       "path": "packages/tiptap/tests/unit/fixture-compiler.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks fail-closed React fixture compilation for the parity harness itself."
+    },
+    {
+      "path": "packages/tiptap/tests/unit/mark-view-portal-cleanup.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tiptap-mark-view-portal-cleanup",
+      "reason": "Extra conformance for mark-view portal teardown; the required differential case authenticates the divergence."
     },
     {
       "path": "packages/tiptap/tests/unit/menus.test.ts",
@@ -68,6 +74,12 @@
       "reason": "Extra conformance around native menu callbacks; the required adapted upstream case authenticates the divergence."
     },
     {
+      "path": "packages/tiptap/tests/unit/node-view-as-prop.test.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tiptap-node-view-as-prop",
+      "reason": "Extra conformance for consumed as props; the required differential case authenticates the divergence."
+    },
+    {
       "path": "packages/tiptap/tests/unit/public-surface.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks public export-name parity with @tiptap/react; it is not a framework divergence case."
@@ -76,6 +88,26 @@
       "path": "packages/tiptap/tests/unit/stage4-lifecycle.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks advanced Octane renderer and menu lifecycle races."
+    },
+    {
+      "path": "packages/tiptap/typetests/adapted/types.test-d.ts",
+      "disposition": "react-parity-type-probe",
+      "oracle": "One-for-one adapted Octane declaration probes against @octanejs/tiptap with tsrx-tsc."
+    },
+    {
+      "path": "packages/tiptap/typetests/menus-api.test-d.ts",
+      "disposition": "octane-only-type-probe",
+      "reason": "Octane-only menus public-API declaration contract outside the React-parity type lane."
+    },
+    {
+      "path": "packages/tiptap/typetests/pristine/types.test-d.ts",
+      "disposition": "react-parity-type-probe",
+      "oracle": "Port-authored React declaration probes against @tiptap/react@3.28.0 with tsc."
+    },
+    {
+      "path": "packages/tiptap/typetests/public-api.test-d.ts",
+      "disposition": "octane-only-type-probe",
+      "reason": "Octane-only root public-API declaration contract outside the React-parity type lane."
     }
   ]
 }
