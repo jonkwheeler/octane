@@ -24,7 +24,7 @@ const globals = globalThis as unknown as Record<string, unknown>;
 let realResizeObserver: unknown;
 let addedScrollIntoView = false;
 
-beforeAll(() => {
+beforeAll(function () {
 	realResizeObserver = globals.ResizeObserver;
 	globals.ResizeObserver = InertResizeObserver;
 
@@ -37,7 +37,7 @@ beforeAll(() => {
 	}
 });
 
-afterAll(() => {
+afterAll(function () {
 	globals.ResizeObserver = realResizeObserver;
 	if (addedScrollIntoView) {
 		delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView;
@@ -45,16 +45,63 @@ afterAll(() => {
 });
 
 async function settle(): Promise<void> {
-	await act(async () => {
-		await new Promise((resolvePromise) => setTimeout(resolvePromise, 20));
+	await act(async function () {
+		await new Promise(function resolvePromise(resolveTimeout) {
+			setTimeout(resolveTimeout, 20);
+		});
 	});
 }
 
-const selectedText = (mount: { find(selector: string): Element }): string | null =>
-	mount.find('[cmdk-item][aria-selected="true"]').textContent;
+function selectedText(mount: { find(selector: string): Element }): string | null {
+	return mount.find('[cmdk-item][aria-selected="true"]').textContent;
+}
 
-const activeDescendant = (mount: { find(selector: string): Element }): string | null =>
-	mount.find('[cmdk-input]').getAttribute('aria-activedescendant');
+function activeDescendant(mount: { find(selector: string): Element }): string | null {
+	return mount.find('[cmdk-input]').getAttribute('aria-activedescendant');
+}
+
+function itemTexts(mount: { findAll(selector: string): Element[] }): Array<string | null> {
+	return mount.findAll('[cmdk-item]').map(function textOf(el) {
+		return el.textContent;
+	});
+}
+
+/**
+ * Ranked order as the user sees it. Octane assigns CSS `order` inside a flex
+ * container, so DOM order stays source order; upstream relocates nodes, so DOM
+ * order is the ranked order. Sorting by `order` (defaulting missing to 0) then
+ * source index recovers the visible sequence for both.
+ */
+function inVisualOrder<T extends Element>(elements: T[]): T[] {
+	return elements
+		.map(function withOrder(el, index) {
+			return {
+				el,
+				index,
+				order: Number((el as unknown as HTMLElement).style.order) || 0,
+			};
+		})
+		.sort(function byOrderThenIndex(a, b) {
+			return a.order - b.order || a.index - b.index;
+		})
+		.map(function onlyElement(entry) {
+			return entry.el;
+		});
+}
+
+function visibleItemTexts(mount: { findAll(selector: string): Element[] }): Array<string | null> {
+	return inVisualOrder(mount.findAll('[cmdk-item]')).map(function textOf(el) {
+		return el.textContent;
+	});
+}
+
+function visibleGroupHeadings(mount: {
+	findAll(selector: string): Element[];
+}): Array<string | null | undefined> {
+	return inVisualOrder(mount.findAll('[cmdk-group]')).map(function headingOf(group) {
+		return group.querySelector('[cmdk-group-heading]')?.textContent;
+	});
+}
 
 /**
  * Byte-compare both trees ignoring `aria-activedescendant` only. cmdk re-selects
@@ -85,16 +132,17 @@ function expectEqualIgnoringActiveDescendant(
 	octane: { container: HTMLElement },
 	react: { container: HTMLElement },
 ): void {
-	const strip = (html: string) =>
-		stripRankingStyles(html.replace(/ aria-activedescendant="[^"]*"/g, ''));
+	function strip(html: string): string {
+		return stripRankingStyles(html.replace(/ aria-activedescendant="[^"]*"/g, ''));
+	}
 	expect(normaliseHtml(strip(octane.container.innerHTML))).toBe(
 		normaliseHtml(strip(react.container.innerHTML)),
 	);
 }
 
-describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
+describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 	// @parity-case differential:cmdk-filter-selection-empty
-	it('matches filtering, keyboard selection and the empty state', async () => {
+	it('matches filtering, keyboard selection and the empty state', async function () {
 		const differential = await mountDifferential(FIXTURE, 'CmdkDiff', undefined, CACHE);
 
 		// OCTANE DIVERGENCE[runtime-adaptation-divergences][differential:cmdk-filter-selection-empty]
@@ -106,48 +154,77 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
 		// for correctness on octane), so the combobox is wired from the start.
 		// Both agree on WHICH item is selected; only the aria wiring differs, and
 		// the runtimes converge as soon as a selection is user-driven.
-		await differential.observe('initial render (auto-select)', async (octane, react) => {
+		await differential.observe('initial render (auto-select)', async function (octane, react) {
 			await settle();
-			expect(selectedText(octane)).toBe('Apple');
-			expect(selectedText(react)).toBe('Apple');
+			expect(selectedText(octane)).toBe('Salad');
+			expect(selectedText(react)).toBe('Salad');
 			expect(activeDescendant(octane)).toBe(octane.find('[cmdk-item][aria-selected="true"]').id);
 			expect(activeDescendant(react)).toBeNull();
 		});
 
 		// From here every selection is user-driven, so the runtimes agree byte-for-byte.
-		await differential.step('arrow down moves the selection', async (octane, react) => {
+		await differential.step('arrow down moves the selection', async function (octane, react) {
 			await octane.keydown('[cmdk-root]', 'ArrowDown');
 			await react.keydown('[cmdk-root]', 'ArrowDown');
 			await settle();
 		});
 
-		await differential.step('arrow up moves it back', async (octane, react) => {
+		await differential.step('arrow up moves it back', async function (octane, react) {
 			await octane.keydown('[cmdk-root]', 'ArrowUp');
 			await react.keydown('[cmdk-root]', 'ArrowUp');
 			await settle();
 		});
 
-		// Filtering re-selects the first match from inside the flush, so upstream
-		// drops `aria-activedescendant` again — these compare the whole tree with
-		// only that attribute ignored.
-		await differential.observe('type to filter', async (octane, react) => {
+		// Ranking: "a" leaves Salad/Apple/Banana with different scores. Score order
+		// is Apple > Banana > Salad, which disagrees with source order — so removing
+		// Octane's CSS ranking (or upstream's DOM relocate) would fail these asserts.
+		// DOM order itself is the recorded divergence, so this checkpoint does not
+		// byte-compare markup.
+		await differential.observe('type to rank multiple matches', async function (octane, react) {
+			await octane.input('[cmdk-input]', 'a');
+			await react.input('[cmdk-input]', 'a');
+			await settle();
+
+			expect(selectedText(octane)).toBe('Apple');
+			expect(selectedText(react)).toBe('Apple');
+			// Filter re-selects from inside the flush: Octane wires the new item;
+			// upstream leaves the attribute unset or pointing at a stale id.
+			expect(activeDescendant(octane)).toBe(octane.find('[cmdk-item][aria-selected="true"]').id);
+			expect(activeDescendant(react)).not.toBe(react.find('[cmdk-item][aria-selected="true"]').id);
+
+			// Upstream relocates nodes, so DOM order is ranked order.
+			expect(itemTexts(react)).toEqual(['Apple', 'Banana', 'Salad']);
+			// Octane keeps source DOM order and expresses rank as CSS `order`.
+			expect(itemTexts(octane)).toEqual(['Salad', 'Apple', 'Banana']);
+			expect(visibleItemTexts(octane)).toEqual(['Apple', 'Banana', 'Salad']);
+			expect(visibleItemTexts(react)).toEqual(['Apple', 'Banana', 'Salad']);
+		});
+
+		// Single-match filter: same aria contract, then byte-compare with the
+		// attribute stripped (DOM order agrees when only one item survives).
+		await differential.observe('type to filter', async function (octane, react) {
 			await octane.input('[cmdk-input]', 'ban');
 			await react.input('[cmdk-input]', 'ban');
 			await settle();
 			expect(selectedText(octane)).toBe('Banana');
+			expect(selectedText(react)).toBe('Banana');
+			expect(activeDescendant(octane)).toBe(octane.find('[cmdk-item][aria-selected="true"]').id);
+			expect(activeDescendant(react)).not.toBe(react.find('[cmdk-item][aria-selected="true"]').id);
 			expectEqualIgnoringActiveDescendant(octane, react);
 		});
 
-		await differential.observe('no matches renders Empty', async (octane, react) => {
+		await differential.observe('no matches renders Empty', async function (octane, react) {
 			await octane.input('[cmdk-input]', 'zzzz');
 			await react.input('[cmdk-input]', 'zzzz');
 			await settle();
 			expect(octane.findAll('[cmdk-item]')).toHaveLength(0);
 			expect(octane.find('[cmdk-empty]').textContent).toBe('No results found.');
+			expect(activeDescendant(octane)).toBeNull();
+			expect(activeDescendant(react)).toBeNull();
 			expectEqualIgnoringActiveDescendant(octane, react);
 		});
 
-		await differential.observe('clearing restores every item', async (octane, react) => {
+		await differential.observe('clearing restores every item', async function (octane, react) {
 			await octane.input('[cmdk-input]', '');
 			await react.input('[cmdk-input]', '');
 			await settle();
@@ -158,10 +235,13 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
 			// scrambled. The port no longer moves nodes at all (it ranks with CSS
 			// `order` and drops that on clear), so the residue cannot form and the
 			// two runtimes agree exactly.
-			const values = (mount: typeof octane) =>
-				mount.findAll('[cmdk-item]').map((el) => el.textContent);
-			expect(values(react)).toEqual(['Apple', 'Banana', 'Cherry']);
-			expect(values(octane)).toEqual(['Apple', 'Banana', 'Cherry']);
+			expect(itemTexts(react)).toEqual(['Salad', 'Apple', 'Banana', 'Cherry']);
+			expect(itemTexts(octane)).toEqual(['Salad', 'Apple', 'Banana', 'Cherry']);
+			expect(selectedText(octane)).toBe('Salad');
+			expect(selectedText(react)).toBe('Salad');
+			// Clear re-selects from inside the flush again: only Octane wires aria.
+			expect(activeDescendant(octane)).toBe(octane.find('[cmdk-item][aria-selected="true"]').id);
+			expect(activeDescendant(react)).not.toBe(react.find('[cmdk-item][aria-selected="true"]').id);
 			expectEqualIgnoringActiveDescendant(octane, react);
 		});
 
@@ -169,15 +249,21 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
 	});
 
 	// @parity-case differential:cmdk-groups
-	it('matches grouped rendering, and documents the group-ordering divergence', async () => {
+	it('matches grouped rendering, and documents the group-ordering divergence', async function () {
 		const differential = await mountDifferential(FIXTURE, 'CmdkDiffGroups', undefined, CACHE);
 
-		await differential.observe('initial grouped render', async (octane, react) => {
+		await differential.observe('initial grouped render', async function (octane, react) {
 			await settle();
-			const headings = (mount: typeof octane) =>
-				mount.findAll('[cmdk-group-heading]').map((el) => el.textContent);
-			const groupValues = (mount: typeof octane) =>
-				mount.findAll('[cmdk-group]').map((el) => el.getAttribute('data-value'));
+			const headings = function headingsOf(mount: typeof octane) {
+				return mount.findAll('[cmdk-group-heading]').map(function textOf(el) {
+					return el.textContent;
+				});
+			};
+			const groupValues = function groupValuesOf(mount: typeof octane) {
+				return mount.findAll('[cmdk-group]').map(function valueOf(el) {
+					return el.getAttribute('data-value');
+				});
+			};
 
 			// Both register a value for every group, from the heading text.
 			expect(headings(octane)).toEqual(['Fruits', 'Vegetables']);
@@ -186,31 +272,52 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', () => {
 			expect(groupValues(react)).toEqual(['Fruits', 'Vegetables']);
 		});
 
-		// OCTANE DIVERGENCE[corrected-group-ordering][differential:cmdk-groups]
-		// Upstream resolves the group element by
-		// `[data-value="<groupId>"]`, but `data-value` holds the heading text — so
-		// its group reorder can never match and is dead code. The port matches on
-		// the registered value, so groups reorder by best item score. Both must
-		// still agree on which items survive the filter.
-		await differential.observe('filter to one group', async (octane, react) => {
+		// Empty-group hide is shared behaviour; keep it before the ordering pin.
+		await differential.observe('filter to one group', async function (octane, react) {
 			await octane.input('[cmdk-input]', 'car');
 			await react.input('[cmdk-input]', 'car');
 			await settle();
 
-			const items = (mount: typeof octane) =>
-				mount.findAll('[cmdk-item]').map((el) => el.textContent);
-			expect(items(octane)).toEqual(['Carrot']);
-			expect(items(react)).toEqual(['Carrot']);
+			expect(itemTexts(octane)).toEqual(['Carrot']);
+			expect(itemTexts(react)).toEqual(['Carrot']);
 
-			// The empty group is hidden in both.
-			const hidden = (mount: typeof octane) =>
-				mount
+			const hidden = function hiddenGroups(mount: typeof octane) {
+				return mount
 					.findAll('[cmdk-group]')
-					.filter((el) => el.hasAttribute('hidden'))
-					.map((el) => el.getAttribute('data-value'));
+					.filter(function isHidden(el) {
+						return el.hasAttribute('hidden');
+					})
+					.map(function valueOf(el) {
+						return el.getAttribute('data-value');
+					});
+			};
 			expect(hidden(octane)).toEqual(['Fruits']);
 			expect(hidden(react)).toEqual(['Fruits']);
 		});
+
+		// OCTANE DIVERGENCE[corrected-group-ordering][differential:cmdk-groups]
+		// Upstream resolves the group element by
+		// `[data-value="<groupId>"]`, but `data-value` holds the heading text — so
+		// its group reorder can never match and is dead code. The port matches on
+		// the registered value, so groups reorder by best item score. "p" leaves
+		// both groups visible (Apple + Potato) while Potato outranks Apple, so the
+		// later source group must paint first on Octane and stay second on React.
+		await differential.observe(
+			'filter ranks groups by best item score',
+			async function (octane, react) {
+				await octane.input('[cmdk-input]', 'p');
+				await react.input('[cmdk-input]', 'p');
+				await settle();
+
+				expect([...itemTexts(octane)].sort()).toEqual(['Apple', 'Potato']);
+				expect([...itemTexts(react)].sort()).toEqual(['Apple', 'Potato']);
+
+				// React: source order — Fruits before Vegetables (dead reorder).
+				expect(visibleGroupHeadings(react)).toEqual(['Fruits', 'Vegetables']);
+				// Octane: Vegetables (Potato) outranks Fruits (Apple).
+				expect(visibleGroupHeadings(octane)).toEqual(['Vegetables', 'Fruits']);
+			},
+		);
 
 		differential.unmount();
 	});

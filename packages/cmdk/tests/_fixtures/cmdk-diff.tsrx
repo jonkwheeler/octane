@@ -4,11 +4,14 @@
 import { Command } from '@octanejs/cmdk';
 
 // Flat list: the byte-equal baseline (render, filter, keyboard, empty state).
+// Salad leads so a query of "a" ranks Apple above Salad — source order and
+// score order disagree, which is what pins the CSS-order ranking divergence.
 export function CmdkDiff() @{
 	<Command label="Command Menu">
 		<Command.Input placeholder="Search…" />
 		<Command.List>
 			<Command.Empty>No results found.</Command.Empty>
+			<Command.Item>Salad</Command.Item>
 			<Command.Item>Apple</Command.Item>
 			<Command.Item>Banana</Command.Item>
 			<Command.Item>Cherry</Command.Item>
