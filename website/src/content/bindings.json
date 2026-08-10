@@ -45,6 +45,7 @@
       "@octanejs/mantine-hooks",
       "@octanejs/floating-ui",
       "@octanejs/animejs",
+      "@octanejs/gsap",
       "@octanejs/motion",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",

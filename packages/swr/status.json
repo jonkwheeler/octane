@@ -1,6 +1,6 @@
 {
   "upstream": { "package": "swr", "version": "2.4.2" },
-  "surface": "Complete mapped port of SWR 2.4.2: root useSWR/config/cache/mutate/preload, infinite, immutable, remote mutation, subscription, _internal, and the published react-server condition branches. The fail-closed parity harness executes 362 passing pristine React tests plus 5 pinned upstream skips, all three pristine type projects, all three adapted Octane type projects, and 35 adapted runtime cases.",
+  "surface": "Complete mapped port of SWR 2.4.2: root useSWR/config/cache/mutate/preload, infinite, immutable, remote mutation, subscription, _internal, and the published react-server condition branches. The fail-closed parity harness executes 362 passing pristine React tests plus 5 pinned upstream skips, all three pristine type projects, all three adapted Octane type projects, and 18 adapted runtime cases.",
   "divergences": [
     "The binding exposes window.__SWR_DEVTOOLS_OCTANE__ and deliberately does not claim React's window.__SWR_DEVTOOLS_REACT__ global; React-only devtools that require that identity are incompatible.",
     "SWR 2.4.2 behavior is pinned exactly, including the absence of automatic request abortion on consumer unmount."

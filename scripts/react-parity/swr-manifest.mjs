@@ -168,7 +168,7 @@ const manifest = {
 			project: 'swr-differential',
 			evidenceOrigin: 'repo-authored',
 			notes:
-				'Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted full suite.',
+				'Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted full suite. Octane-only request-state oracles live under tests/unit/.',
 			files: [
 				file('packages/swr/tests/differential/cache.test.ts', 'test', [
 					{
@@ -197,13 +197,7 @@ const manifest = {
 						id: 'differential:root-surface',
 						testName: 'preserves the exact pinned root runtime surface',
 						fullName:
-							'SWR U3 pinned React/Octane root trace preserves the exact pinned root runtime surface',
-					},
-					{
-						id: 'differential:root-trace',
-						testName: 'matches request-state and callback ordering',
-						fullName:
-							'SWR U3 pinned React/Octane root trace matches request-state and callback ordering',
+							'SWR U3 pinned React/Octane root surface preserves the exact pinned root runtime surface',
 					},
 				]),
 				file('packages/swr/tests/differential/specialized-exports.test.ts', 'test', [

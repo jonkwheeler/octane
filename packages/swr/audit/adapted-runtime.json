@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "project": "swr",
-  "roots": ["packages/swr/tests/upstream"],
+  "roots": [
+    "packages/swr/tests/upstream"
+  ],
   "files": [
     "packages/swr/tests/upstream/root/root.test.ts",
     "packages/swr/tests/upstream/specialized/specialized.test.ts"
@@ -16,11 +18,6 @@
       "id": "runtime:244dc543526ea047",
       "file": "packages/swr/tests/upstream/root/root.test.ts",
       "fullName": "SWR U3 root lifecycle fires loading-slow and polling timers deterministically and cleans polling up"
-    },
-    {
-      "id": "runtime:c25aea31636444bc",
-      "file": "packages/swr/tests/upstream/root/root.test.ts",
-      "fullName": "SWR U3 root lifecycle mounts and tears down an isolated SWRConfig provider with a stable effect slot"
     },
     {
       "id": "runtime:82aa3f73991637e6",

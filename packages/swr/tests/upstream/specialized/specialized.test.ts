@@ -10,6 +10,10 @@ import {
 	SubscriptionSiblings,
 } from './fixtures.tsrx';
 
+// Cases adapted from the pinned SWR 2.4.2 suite under `packages/swr/upstream/test/`.
+// Each `it` cites the upstream file and case it adapts and asserts Octane's observable
+// outcome rather than React internals.
+
 let container: HTMLElement;
 let root: ReturnType<typeof createRoot> | undefined;
 
@@ -42,6 +46,7 @@ afterEach(() => {
 });
 
 describe('SWR U4 specialized entrypoints', () => {
+	// Per use-swr-immutable.test.tsx:104 — 'should not revalidate with the immutable hook'.
 	it('keeps immutable data stable across focus events', async () => {
 		const fetcher = vi.fn(async () => 'immutable');
 		mount(ImmutableReader, {
@@ -57,6 +62,7 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(value('immutable').data).toBe('immutable');
 	});
 
+	// Per use-swr-infinite.test.tsx:76 — 'should render the multiple pages'.
 	it('loads infinite pages sequentially and grows with setSize', async () => {
 		const fetcher = vi.fn(async ([, index]) => `page-${index}`);
 		const getKey = (index: number) => (index < 3 ? ['page', index] : null);
@@ -73,6 +79,8 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(fetcher).toHaveBeenCalledTimes(4);
 	});
 
+	// Per use-swr-infinite.test.tsx:1819 — 'should make previousPageData null when the parallel
+	// option is enabled'.
 	it('passes null previous-page data in parallel infinite mode', async () => {
 		const previous: unknown[] = [];
 		const getKey = (index: number, previousPageData: unknown) => {
@@ -90,6 +98,8 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(previous.every((item) => item === null)).toBe(true);
 	});
 
+	// Per use-swr-remote-mutation.test.tsx:10 — 'should return data after triggering'.
+	// Per use-swr-remote-mutation.test.tsx:734 — 'should be able to reset the state'.
 	it('tracks remote mutation trigger success and reset', async () => {
 		const fetcher = vi.fn(async (_key, { arg }) => `saved-${arg}`);
 		mount(MutationReader, { cacheKey: 'mutation-key', fetcher });
@@ -104,6 +114,8 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(value('mutation')).toEqual({ isMutating: false });
 	});
 
+	// Per use-swr-remote-mutation.test.tsx:802 — 'should prevent race condition if triggered
+	// multiple times'.
 	it('keeps only the latest remote mutation result and callback', async () => {
 		const resolvers: ((value: string) => void)[] = [];
 		const successes: string[] = [];
@@ -125,6 +137,7 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(successes).toEqual(['newer-result']);
 	});
 
+	// Per use-swr-remote-mutation.test.tsx:134 — 'should call `onError` event and throw'.
 	it('surfaces remote mutation failures and honors throwOnError', async () => {
 		const error = new Error('mutation failed');
 		const onError = vi.fn();
@@ -141,6 +154,7 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(onError).toHaveBeenCalledOnce();
 	});
 
+	// Per use-swr-subscription.test.tsx:159 — 'should deduplicate subscriptions'.
 	it('shares one subscription setup and disposes it after the final consumer', async () => {
 		let next!: (error?: Error, data?: string) => void;
 		const dispose = vi.fn();
@@ -161,6 +175,7 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(dispose).toHaveBeenCalledOnce();
 	});
 
+	// Per use-swr-subscription.test.tsx:9 — 'should update the state' (error branch via next(err)).
 	it('surfaces subscription errors', async () => {
 		let next!: (error?: Error, data?: string) => void;
 		mount(SubscriptionReader, {
@@ -175,6 +190,7 @@ describe('SWR U4 specialized entrypoints', () => {
 		expect(value('subscription').error).toBe('subscription failed');
 	});
 
+	// Per use-swr-subscription.test.tsx:296 — 'should require a dispose function'.
 	it('rejects an invalid subscription disposer', () => {
 		const report = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 		mount(SubscriptionReader, {

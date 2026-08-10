@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as octane from '../../src/_internal/index';
+import { initCache as reactInitCache } from '../../upstream/src/_internal/utils/cache';
+import { createCacheHelper as reactCreateCacheHelper } from '../../upstream/src/_internal/utils/helper';
 import { stableHash as reactStableHash } from '../../upstream/src/_internal/utils/hash';
 import { mergeConfigs as reactMergeConfigs } from '../../upstream/src/_internal/utils/merge-config';
 import { serialize as reactSerialize } from '../../upstream/src/_internal/utils/serialize';
@@ -13,12 +15,15 @@ const candidates = [
 	/swr/,
 ];
 
-function cacheTrace() {
+function cacheTrace(
+	initCache: typeof octane.initCache,
+	createCacheHelper: typeof octane.createCacheHelper,
+) {
 	const provider = new Map();
-	const context = octane.initCache(provider)!;
-	const [get, set, subscribe] = octane.createCacheHelper(provider, 'key');
+	const context = initCache(provider)!;
+	const [get, set, subscribe] = createCacheHelper(provider, 'key');
 	const callbacks: unknown[] = [];
-	const unsubscribe = subscribe('key', (current, previous) => {
+	const unsubscribe = subscribe('key', function (current, previous) {
 		callbacks.push([current, previous]);
 	});
 	set({ data: 1 });
@@ -44,12 +49,8 @@ describe('SWR U2 React/Octane differential traces', () => {
 
 	// @parity-case differential:cache-trace
 	it('matches cache snapshots and callback logs', () => {
-		expect(cacheTrace()).toEqual({
-			snapshot: { data: 2, error: 'boom' },
-			callbacks: [
-				[{ data: 1 }, {}],
-				[{ data: 1, error: 'boom' }, { data: 1 }],
-			],
-		});
+		expect(cacheTrace(octane.initCache, octane.createCacheHelper)).toEqual(
+			cacheTrace(reactInitCache, reactCreateCacheHelper),
+		);
 	});
 });

@@ -36,8 +36,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 19,
-    "uniqueIdentities": 19,
+    "inventoryEntries": 18,
+    "uniqueIdentities": 18,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -48,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "0c724596659e752f54f4520b1b3bfde609070f34ef986478eb47d4ef14438395"
+      "lockfileSha256": "686f95fb48f4569ae8748eae14380e0b594620c4ade932ef145e29421ba375c2"
     }
   },
   "lanes": [
@@ -300,7 +300,7 @@
         {
           "path": "packages/swr/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "1530413a775615aefed7984192dc8dae14823523cd422ffbc8e467498a8b9233"
+          "sha256": "c1fc70bfb88e1f1d48a88d652f01ed1457937100c89a1104e446c4d571741850"
         },
         {
           "path": "scripts/react-parity/swr-runtime-inventory.mjs",
@@ -310,7 +310,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "92702147ead8d396d88dbc155cae04bb8f70b4251d0a382ca8105c02b14d5693"
+          "sha256": "ec1ae431e6ffe8b3a05768599a697bc05b5673159da81d01817c972e3ebfceed"
         }
       ]
     },
@@ -321,12 +321,12 @@
       "environment": "workspace-node",
       "project": "swr-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted full suite.",
+      "notes": "Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted full suite. Octane-only request-state oracles live under tests/unit/.",
       "files": [
         {
           "path": "packages/swr/tests/differential/cache.test.ts",
           "role": "test",
-          "sha256": "a9966933575ec74e2b6eaa279a9e3a169645df06f7680fd5204ec5532566baa2",
+          "sha256": "84892c610b38a3697a3641953d5c8a68f79051a3c3b8ac8ae60dc61c9dca676a",
           "cases": [
             {
               "id": "differential:cache-serialize",
@@ -355,24 +355,19 @@
         {
           "path": "packages/swr/tests/differential/root.test.ts",
           "role": "test",
-          "sha256": "ec87ce235df62c1163837577bc5d14c2fd6e56225d459e81b68bf367b0a1ed10",
+          "sha256": "8ed056d9f68c1fd15c17a78deab2e09499fa62b4964eb354609bc57084e2378c",
           "cases": [
             {
               "id": "differential:root-surface",
               "testName": "preserves the exact pinned root runtime surface",
-              "fullName": "SWR U3 pinned React/Octane root trace preserves the exact pinned root runtime surface"
-            },
-            {
-              "id": "differential:root-trace",
-              "testName": "matches request-state and callback ordering",
-              "fullName": "SWR U3 pinned React/Octane root trace matches request-state and callback ordering"
+              "fullName": "SWR U3 pinned React/Octane root surface preserves the exact pinned root runtime surface"
             }
           ]
         },
         {
           "path": "packages/swr/tests/differential/specialized-exports.test.ts",
           "role": "test",
-          "sha256": "f6a8193db4873a0ef497b97a5f3ce709a9dd1083f5a9704dac777ba4fe71d889",
+          "sha256": "32287a9476a05f81201c4cf4c4f3a3b3429c761dd6baf7b4cc87090ace1f97d8",
           "cases": [
             {
               "id": "differential:specialized-exports",
@@ -384,7 +379,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "92702147ead8d396d88dbc155cae04bb8f70b4251d0a382ca8105c02b14d5693"
+          "sha256": "ec1ae431e6ffe8b3a05768599a697bc05b5673159da81d01817c972e3ebfceed"
         }
       ]
     }
