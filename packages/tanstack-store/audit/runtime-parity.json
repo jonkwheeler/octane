@@ -31,7 +31,7 @@
     },
     {
       "kind": "formatting",
-      "rule": "semicolons, indentation, and return-paren wrappers around JSX are ignored by the structural printer"
+      "rule": "semicolons, indentation, return-paren wrappers around JSX, and printer whitespace are normalized before the structural body compare"
     }
   ]
 }

@@ -120,7 +120,7 @@
         {
           "path": "packages/tanstack-store/audit/runtime-parity.json",
           "role": "support",
-          "sha256": "e876d961505c0f13977941c215218080fedffc6b0c837d656a98ee7c12d5cae5"
+          "sha256": "afd3e1a97c823c561988cb7071c7a6561f91f7a26772a4136cb76fb3ae6039c3"
         },
         {
           "path": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",

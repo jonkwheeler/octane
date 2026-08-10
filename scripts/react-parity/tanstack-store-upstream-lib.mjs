@@ -125,6 +125,42 @@ function assertionGroups(source, fileName) {
 	return groups;
 }
 
+function normalizePrinted(printed) {
+	return printed
+		.replace(/\s+/g, ' ')
+		.trim()
+		.replace(/ \./g, '.')
+		.replace(/\. /g, '.')
+		.replace(/ ,/g, ',')
+		.replace(/\( /g, '(')
+		.replace(/ \)/g, ')')
+		.replace(/\[ /g, '[')
+		.replace(/ \]/g, ']');
+}
+
+function structuralSource(source, fileName) {
+	const collapsed = source.replace(/[ \t]+/g, ' ').replace(/\n+/g, '\n');
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		collapsed,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TSX,
+	);
+	const printer = ts.createPrinter({ removeComments: true, newLine: ts.NewLineKind.LineFeed });
+	const imports = [];
+	const body = [];
+	for (const statement of sourceFile.statements) {
+		const printed = normalizePrinted(
+			printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile),
+		);
+		if (ts.isImportDeclaration(statement)) imports.push(printed);
+		else body.push(printed);
+	}
+	imports.sort();
+	return `${imports.join(' ')} ${body.join(' ')}`.replace(/\s+/g, ' ').trim();
+}
+
 export function readRuntimeParityConfig(repoRoot, configPath = RUNTIME_PARITY_CONFIG) {
 	const config = readJson(repoRoot, configPath);
 	if (!config.upstreamTest || !config.adaptedFixture || !config.inventories) {
@@ -149,6 +185,13 @@ export function compareAdaptedRuntimeAssertions(upstreamSource, adaptedSource) {
 	if (JSON.stringify(upstreamGroups) !== JSON.stringify(adaptedGroups)) {
 		throw new Error(
 			'tanstack-store adapted runtime assertions drifted from the permitted upstream crosswalk',
+		);
+	}
+	const normalizedUpstream = structuralSource(comparableUpstream, 'upstream.tsx');
+	const normalizedAdapted = structuralSource(comparableAdapted, 'adapted.tsx');
+	if (normalizedUpstream !== normalizedAdapted) {
+		throw new Error(
+			'tanstack-store adapted runtime body contains a change outside the permitted transformations',
 		);
 	}
 	return {

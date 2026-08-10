@@ -117,3 +117,13 @@ test('changing an adapted runtime assertion fails the source-level crosswalk', (
 		compareAdaptedRuntimeAssertions(upstream, mutated);
 	}, /assertions drifted/);
 });
+
+test('rewriting adapted setup outside permitted transforms fails the structural gate', () => {
+	const upstream = read(UPSTREAM_TEST);
+	const adapted = read(ADAPTED_FIXTURE);
+	const mutated = adapted.replace('const atom = createAtom(0);', 'const atom = createAtom(42);');
+	assert.notEqual(mutated, adapted);
+	assert.throws(function changedBody() {
+		compareAdaptedRuntimeAssertions(upstream, mutated);
+	}, /outside the permitted transformations|assertions drifted/);
+});
