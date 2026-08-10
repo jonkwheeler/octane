@@ -196,7 +196,7 @@
         {
           "path": "packages/visx/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "210afb5a6122149a0ac04d211a1fedced60cb88e071cfcf1c68c731e5ee0d784",
+          "sha256": "f6e41d6724d63db74ad9a08c97302c80a867ec8b09c089cd072898d5d1cb3203",
           "cases": [
             {
               "id": "differential:visx-primitives",
@@ -238,7 +238,7 @@
         {
           "path": "packages/visx/tests/_fixtures/differential.tsrx",
           "role": "support",
-          "sha256": "3cc462c233fd3b58bb87fe5c3d33871d854b3416db44ed13aa2f6628587943e6"
+          "sha256": "bd9d2c727852f5a0059e51575ec665471fc0f5962a9256955b3804c9bed5b0ed"
         },
         {
           "path": "vitest.config.js",
