@@ -227,12 +227,13 @@ it("Pointer doesn't follow the mouse if it was released outside of the document 
 	const root = mountTracked(RgbaHarness, { onChange });
 	const saturation = interactive(root, 'Color');
 	mouse(saturation, 'mousedown', 20, 10);
-	settle();
-	expect(onChange).toHaveBeenCalledTimes(1);
-	// Document drag listeners are effect-scoped; after settle, further moves must not track.
-	mouse(window, 'mousemove', 1, 50, 1);
-	settle();
-	expect(onChange).toHaveBeenCalledTimes(1);
+	mouse(window, 'mousemove', 10, 10);
+	await settleAsync();
+	expect(onChange).toHaveBeenCalledTimes(2);
+	// Released outside the document: no mouseup, then a buttonless move must be ignored.
+	mouse(window, 'mousemove', 1, 50, 0);
+	await settleAsync();
+	expect(onChange).toHaveBeenCalledTimes(2);
 });
 
 it('Changes alpha channel value after an interaction', async function changesAlpha() {
