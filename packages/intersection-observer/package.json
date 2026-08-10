@@ -3,13 +3,6 @@
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
-  "octane": {
-    "hookSlots": {
-      "manual": [
-        "src"
-      ]
-    }
-  },
   "engines": {
     "node": ">=22.22.2"
   },
