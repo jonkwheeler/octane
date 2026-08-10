@@ -17,13 +17,23 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-virtual/src"],
-      "include": ["\\.ts$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/tanstack-virtual/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/tanstack-virtual/tests/differential"],
-      "include": ["parity\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-virtual/tests/differential"
+      ],
+      "include": [
+        "parity\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -83,12 +93,12 @@
         {
           "path": "packages/tanstack-virtual/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "271c821488a6ccf73bde7ae32b7fea84d32ebf1f940e2247874aac48f6088bf8"
+          "sha256": "3864d3736c50302580c27825645fede026ed2cab96d4d287bdbb0cbfdca55fa1"
         },
         {
           "path": "packages/tanstack-virtual/tests/differential/fixture-compiler.ts",
           "role": "support",
-          "sha256": "842eb7fde270b1773b2e3b76481b3a9c19c2a2efb6396d72418e98032fe64bf9"
+          "sha256": "bc084ffb146b2a6982bf70d7a9b83d57b729297f6b93dd246456909279bdaa93"
         },
         {
           "path": "packages/tanstack-virtual/tests/_setup.ts",
@@ -109,21 +119,6 @@
           "path": "packages/tanstack-virtual/tests/_fixtures/horizontal-diff.tsrx",
           "role": "support",
           "sha256": "7b354c8873feb4dda8ab89a5290a538b0271981aa36a95d44b2b7b7f1d479614"
-        },
-        {
-          "path": "packages/tanstack-virtual/tests/_fixtures/list-basic.tsrx",
-          "role": "support",
-          "sha256": "d9f6b49e023554100f3f5f7e27c89c509eddc7b6faa2de65d34a91b1dba3c766"
-        },
-        {
-          "path": "packages/tanstack-virtual/tests/_fixtures/list-dynamic.tsrx",
-          "role": "support",
-          "sha256": "dfbd1781728124932c9b6804649bb1230e77371363666e4c1f13046084475b0d"
-        },
-        {
-          "path": "packages/tanstack-virtual/tests/_fixtures/list-window.tsrx",
-          "role": "support",
-          "sha256": "00e5a6c99aff59f917a3bfdba76588c0ba65c1c9608e2caa4435337d8420eb0b"
         },
         {
           "path": "packages/tanstack-virtual/tests/_fixtures/window-diff.tsrx",
@@ -149,7 +144,9 @@
   "divergences": [
     {
       "id": "nested-flushsync-degradation",
-      "caseIds": ["conformance:nested-flush-sync-scroll"],
+      "caseIds": [
+        "conformance:nested-flush-sync-scroll"
+      ],
       "upstreamResult": "Nested flushSync during a sync scroll notify re-enters React and applies the window update inside the nested flush.",
       "octaneResult": "Nested flushSync hits Octane's re-entrancy guard and degrades to a plain dispatch drained by the ambient flush; the window still updates once that flush settles.",
       "rationale": "Octane intentionally refuses nested flushSync; the adapter preserves upstream's flushSync-on-sync-scroll wiring and relies on the ambient flush to land the update.",
