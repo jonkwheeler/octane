@@ -64,7 +64,7 @@
 				{
 					"path": "packages/cmdk/tests/differential/parity.test.ts",
 					"role": "test",
-					"sha256": "d881093daabe76080489ce61329a6847acb9765d991552390aae6ea50723fa2b",
+					"sha256": "78f077754275930a4578a749bc69be9d2b3e684f62bbf061a03ddba616245c75",
 					"cases": [
 						{
 							"id": "differential:cmdk-filter-selection-empty",
@@ -88,8 +88,8 @@
 						},
 						{
 							"id": "differential:cmdk-registration-teardown",
-							"testName": "documents forceMount registration release across remounts",
-							"fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents forceMount registration release across remounts"
+							"testName": "keeps a single Apple across live forceMount/plain swaps",
+							"fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 keeps a single Apple across live forceMount/plain swaps"
 						},
 						{
 							"id": "differential:cmdk-batcher-isolation",
@@ -108,8 +108,8 @@
 						},
 						{
 							"id": "differential:cmdk-unscored-arrival",
-							"testName": "documents unscored arrivals during an active search",
-							"fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents unscored arrivals during an active search"
+							"testName": "keeps mid-search arrivals visible without an explicit value",
+							"fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 keeps mid-search arrivals visible without an explicit value"
 						},
 						{
 							"id": "differential:cmdk-value-change-filter",
@@ -136,7 +136,7 @@
 				{
 					"path": "packages/cmdk/tests/_fixtures/cmdk-diff.tsrx",
 					"role": "support",
-					"sha256": "c003b474bef9aca43b8574c7bd3cb4b3380f1e8d162ecc0b5c9c8b29c4c8af62"
+					"sha256": "e68291ba7c2d701b390584384ff32942c1e4bafa3fbcefc71a7a6722f0b5b3a9"
 				},
 				{
 					"path": "packages/octane/tests/differential/_rig.ts",
@@ -151,7 +151,7 @@
 				{
 					"path": "packages/cmdk/audit/test-classifications.json",
 					"role": "support",
-					"sha256": "3d05d9b2b05ab8e29a4f1a6b81b5840f5d411ff0d11c9ecb1aaa22a4d1c58e2f"
+					"sha256": "abde0a3a3569ea7c8ff839a92dd206f558a7bb6d6d2d7caadb3e208b543a60e7"
 				},
 				{
 					"path": "packages/cmdk/scripts/check-upstream-ledger.mjs",
@@ -171,12 +171,12 @@
 				{
 					"path": "packages/cmdk/src/components/command.tsrx",
 					"role": "support",
-					"sha256": "5f34dd3d782beabe33b1b0215b899322e2d03af78fea53d3d8fdcf3c67b79c1e"
+					"sha256": "7e77000d7d8a854a6bcb594d60435f25c3c20bdf34966e4c89c2fe0896b31c2b"
 				},
 				{
 					"path": "packages/cmdk/src/components/item.tsrx",
 					"role": "support",
-					"sha256": "99a03d65ac5e191a0321df3fe81fe191f055eca64e81851a85623a7356b0c286"
+					"sha256": "5c6cfca163b6541982eb2b38406becf4a68f923ebcb551fed33990fd3005c9fa"
 				},
 				{
 					"path": "packages/cmdk/src/components/dialog.tsrx",
@@ -277,20 +277,6 @@
 			"reviewCondition": "Review if ranking moves off CSS order or forceMount scoring changes."
 		},
 		{
-			"id": "registration-teardown-release",
-			"caseIds": [
-				"differential:cmdk-registration-teardown"
-			],
-			"upstreamResult": "Upstream only releases values on the plain item teardown, so force-mounted items and groups that unmount leave entries in ids/filtered.items for the Command lifetime.",
-			"octaneResult": "Items, force-mounted items, and groups all release through the same teardown path, so remounting the same value does not inflate the duplicate-value warning.",
-			"rationale": "All three registration paths share useValue, so release must be symmetric or the owner count lies.",
-			"classification": "state",
-			"consumerImpact": "Toggling force-mounted items or groups no longer emits false duplicate-value warnings or leaks registration maps.",
-			"migrationGuidance": "Treat duplicate-value warnings as live-item collisions only; remount cycles should stay quiet.",
-			"owner": "@octanejs/cmdk",
-			"reviewCondition": "Review if upstream releases forceMount and group values symmetrically."
-		},
-		{
 			"id": "batcher-isolation",
 			"caseIds": [
 				"differential:cmdk-batcher-isolation"
@@ -331,20 +317,6 @@
 			"migrationGuidance": "Expect selection to move when a selected force-mounted item unmounts.",
 			"owner": "@octanejs/cmdk",
 			"reviewCondition": "Review if upstream registers and tears down forceMount items."
-		},
-		{
-			"id": "unscored-arrival-inference",
-			"caseIds": [
-				"differential:cmdk-unscored-arrival"
-			],
-			"upstreamResult": "Upstream infers values from string children synchronously, so items arriving mid-search register immediately.",
-			"octaneResult": "Compiled children are opaque, so unscored items render once for textContent inference and then participate in filtering.",
-			"rationale": "Treating never-scored items as score zero deadlocks inference on Octane; one visible pass is required.",
-			"classification": "filtering",
-			"consumerImpact": "Async results without explicit value props remain visible during an active search.",
-			"migrationGuidance": "Prefer stable value props for dynamic items; textContent inference still covers the common upstream examples.",
-			"owner": "@octanejs/cmdk",
-			"reviewCondition": "Review if Octane gains synchronous string-child inspection."
 		},
 		{
 			"id": "value-change-filter-refresh",

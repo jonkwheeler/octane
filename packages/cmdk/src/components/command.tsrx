@@ -287,7 +287,6 @@ export function CommandRoot(props: CommandProps) @{
 	}
 
 	/**
- * OCTANE DIVERGENCE[registration-teardown-release][differential:cmdk-registration-teardown]:
  * Drop everything `context.value` registered for `id`. Items, force-mounted
  * items AND groups all register their value through the same `useValue` hook,
  * so all three teardown paths have to release through here. Releasing on only

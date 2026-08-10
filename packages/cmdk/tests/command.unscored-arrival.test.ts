@@ -3,7 +3,7 @@ import { mount } from '../../octane/tests/_helpers';
 import { inVisualOrder, settle, typeInput } from './_command-helpers';
 import { AsyncItemsNoValueMenu } from './_fixtures/basic.tsrx';
 
-describe('@octanejs/cmdk — unscored arrival divergence', () => {
+describe('@octanejs/cmdk — unscored arrival', () => {
 	it('renders an item that arrives while a search is active, with no explicit value', async () => {
 		// The real async-results flow: results land while the user is already
 		// typing, and — as in every upstream example — the value is inferred from

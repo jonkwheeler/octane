@@ -44,9 +44,8 @@
     },
     {
       "path": "packages/cmdk/tests/command.registration-teardown.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Exercises symmetric registration release across item, forceMount, and group teardowns.",
-      "divergenceIds": ["registration-teardown-release"]
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary port regression for symmetric registration release across item, forceMount, and group teardowns; not paired React divergence evidence."
     },
     {
       "path": "packages/cmdk/tests/command.selected-force-mount.test.ts",
@@ -66,9 +65,8 @@
     },
     {
       "path": "packages/cmdk/tests/command.unscored-arrival.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Exercises inferred-value arrivals during an active search without a same-case React oracle.",
-      "divergenceIds": ["unscored-arrival-inference"]
+      "disposition": "octane-only-framework-contract",
+      "reason": "Exercises inferred-value arrivals during an active search; consumer-visible results match upstream, so this is not a structured divergence."
     },
     {
       "path": "packages/cmdk/tests/command.value-change-filter.test.ts",

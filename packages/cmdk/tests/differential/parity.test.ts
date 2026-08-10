@@ -4,13 +4,38 @@
  * `observe` is used only where the port documents an intentional divergence.
  */
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
+import * as React from 'react';
 import { act } from 'react';
+import { createRoot as reactCreateRoot } from 'react-dom/client';
+import { createRoot as octaneCreateRoot, flushSync as octaneFlushSync } from 'octane';
 import { mountDifferential, normaliseHtml } from '../../../octane/tests/differential/_rig.js';
 import { clearConsoleErrors, consoleErrorCalls } from '../_setup.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/cmdk-diff.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
+
+// Match the differential rig: React 18+ requires this for act() to flush.
+(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+
+/** Must match packages/cmdk/tests/differential/_setup.ts and the differential rig. */
+function hashString(value: string): string {
+	let hash = 5381;
+	for (let index = 0; index < value.length; index++) {
+		hash = ((hash << 5) + hash + value.charCodeAt(index)) | 0;
+	}
+	return Math.abs(hash).toString(36);
+}
+
+function duplicateValueWarns(calls: unknown[][]): string[] {
+	return calls
+		.map(function toMessage(call) {
+			return String(call[0]);
+		})
+		.filter(function isDuplicate(message) {
+			return message.includes('share the value') && message.includes('Apple');
+		});
+}
 
 // Upstream cmdk's List constructs a ResizeObserver unguarded, which throws in
 // jsdom. Install an inert one for BOTH runtimes so neither side writes
@@ -389,8 +414,7 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 	});
 
 	// @parity-case differential:cmdk-registration-teardown
-	it('documents forceMount registration release across remounts', async function () {
-		const warn = vi.spyOn(console, 'warn').mockImplementation(function noop() {});
+	it('keeps a single Apple across live forceMount/plain swaps', async function () {
 		const differential = await mountDifferential(
 			FIXTURE,
 			'CmdkDiffForceMountSwap',
@@ -398,11 +422,12 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 			CACHE,
 		);
 
-		// OCTANE DIVERGENCE[registration-teardown-release][differential:cmdk-registration-teardown]
-		// Swap forceMount ↔ plain on ONE live Command so release (or the lack of
-		// it) is observable. Fresh mount/unmount trees cannot leak across stores.
+		// Ordinary parity: both runtimes keep one Apple across the swap. Symmetric
+		// registration release is covered by the Octane-only suite; this case is
+		// not paired divergence evidence. Uses observe because aria-activedescendant
+		// wiring already diverges on the initial auto-select.
 		await differential.observe(
-			'live forceMount/plain swap keeps a single Apple without duplicate warnings',
+			'live forceMount/plain swap keeps a single Apple',
 			async function (octane, react) {
 				expect(itemTexts(octane)).toEqual(['Apple']);
 				expect(itemTexts(react)).toEqual(['Apple']);
@@ -418,19 +443,9 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 				await settle();
 				expect(itemTexts(octane)).toEqual(['Apple']);
 				expect(itemTexts(react)).toEqual(['Apple']);
-
-				const messages = warn.mock.calls.map(function toMessage(call) {
-					return String(call[0]);
-				});
-				expect(
-					messages.filter(function isDuplicate(message) {
-						return message.includes('share the value');
-					}),
-				).toEqual([]);
 			},
 		);
 
-		warn.mockRestore();
 		differential.unmount();
 	});
 
@@ -487,33 +502,55 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 	// @parity-case differential:cmdk-duplicate-value
 	it('documents development duplicate-value warnings', async function () {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(function noop() {});
-		const differential = await mountDifferential(
-			FIXTURE,
-			'CmdkDiffDuplicateValue',
-			undefined,
-			CACHE,
-		);
 
 		// OCTANE DIVERGENCE[duplicate-value-warning][differential:cmdk-duplicate-value]
-		await differential.observe(
-			'duplicate values warn only on Octane',
-			async function (octane, react) {
-				await settle();
-				expect(itemTexts(octane)).toEqual(['Apple', 'Apple']);
-				expect(itemTexts(react)).toEqual(['Apple', 'Apple']);
-				const messages = warn.mock.calls.map(function toMessage(call) {
-					return String(call[0]);
-				});
-				expect(
-					messages.some(function isDuplicate(message) {
-						return message.includes('share the value') && message.includes('Apple');
-					}),
-				).toBe(true);
-			},
-		);
+		// Isolate each runtime's call window so Octane's warning and upstream
+		// silence are asserted separately rather than pooled across both mounts.
 
+		const octaneMod = await import(/* @vite-ignore */ FIXTURE);
+		const octaneHost = document.createElement('div');
+		document.body.appendChild(octaneHost);
+		const octaneRoot = octaneCreateRoot(octaneHost);
+		octaneRoot.render(octaneMod.CmdkDiffDuplicateValue);
+		octaneFlushSync(function flushMount() {});
+		await settle();
+		expect(
+			Array.from(octaneHost.querySelectorAll('[cmdk-item]')).map(function textOf(el) {
+				return el.textContent;
+			}),
+		).toEqual(['Apple', 'Apple']);
+		const octaneWarns = duplicateValueWarns(warn.mock.calls);
+		expect(octaneWarns.length).toBeGreaterThan(0);
+		expect(
+			octaneWarns.every(function isOctaneTagged(message) {
+				return message.includes('[@octanejs/cmdk]');
+			}),
+		).toBe(true);
+		octaneRoot.unmount();
+		octaneHost.remove();
+		warn.mockClear();
+
+		const reactMod = await import(
+			/* @vite-ignore */ join(CACHE, `cmdk-diff-${hashString(FIXTURE)}.js`)
+		);
+		const reactHost = document.createElement('div');
+		document.body.appendChild(reactHost);
+		const reactRoot = reactCreateRoot(reactHost);
+		await act(async function renderReact() {
+			reactRoot.render(React.createElement(reactMod.CmdkDiffDuplicateValue));
+		});
+		await settle();
+		expect(
+			Array.from(reactHost.querySelectorAll('[cmdk-item]')).map(function textOf(el) {
+				return el.textContent;
+			}),
+		).toEqual(['Apple', 'Apple']);
+		expect(duplicateValueWarns(warn.mock.calls)).toEqual([]);
+		await act(async function unmountReact() {
+			reactRoot.unmount();
+		});
+		reactHost.remove();
 		warn.mockRestore();
-		differential.unmount();
 	});
 
 	// @parity-case differential:cmdk-selected-force-mount
@@ -551,7 +588,7 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 	});
 
 	// @parity-case differential:cmdk-unscored-arrival
-	it('documents unscored arrivals during an active search', async function () {
+	it('keeps mid-search arrivals visible without an explicit value', async function () {
 		const differential = await mountDifferential(
 			FIXTURE,
 			'CmdkDiffUnscoredArrival',
@@ -559,9 +596,10 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 			CACHE,
 		);
 
-		// OCTANE DIVERGENCE[unscored-arrival-inference][differential:cmdk-unscored-arrival]
+		// Ordinary parity: both runtimes keep the arrival visible and ranked.
+		// Inference route differences are not a consumer-observable incompatibility.
 		await differential.observe(
-			'items arriving mid-search infer values and stay visible',
+			'items arriving mid-search stay visible on both runtimes',
 			async function (octane, react) {
 				await settle();
 				await octane.input('[cmdk-input]', 'ap');
@@ -574,9 +612,6 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 				await react.click('#add-apricot');
 				await settle();
 
-				// Upstream reads string children synchronously; Octane infers from
-				// textContent on a first render of unscored items. Both keep the
-				// arrival visible and ranked for the active search.
 				expect(visibleItemTexts(octane)).toEqual(['Apple', 'Apricot']);
 				expect(visibleItemTexts(react)).toEqual(['Apple', 'Apricot']);
 			},
@@ -657,12 +692,14 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 		// OCTANE DIVERGENCE[dialog-default-open][differential:cmdk-dialog-default-open]
 		await differential.observe(
 			'defaultOpen opens the dialog on Octane only',
-			async function (_octane, _react) {
+			async function (octane, react) {
 				await settle();
-				const dialogs = document.querySelectorAll('[cmdk-dialog]');
-				// Dialog portals to document.body; Octane forwards defaultOpen while
-				// upstream only wires open/onOpenChange, so React stays closed.
-				expect(dialogs.length).toBe(1);
+				// Each side portals into its own host under data-rt, so presence is
+				// attributed per runtime rather than pooled on document.body.
+				expect(octane.container.querySelector('[cmdk-dialog]')).not.toBeNull();
+				expect(octane.container.querySelector('[cmdk-item]')?.textContent).toBe('Apple');
+				expect(react.container.querySelector('[cmdk-dialog]')).toBeNull();
+				expect(document.querySelectorAll('[cmdk-dialog]')).toHaveLength(1);
 			},
 		);
 

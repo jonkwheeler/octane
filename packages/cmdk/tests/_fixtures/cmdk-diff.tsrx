@@ -1,7 +1,7 @@
 // Differential fixtures: the SAME source runs through @octanejs/cmdk (octane)
 // and the published cmdk@1.1.1 (React) — `_setup.ts` rewrites the import for the
 // React side. Keep these free of anything non-deterministic.
-import { useState } from 'octane';
+import { useLayoutEffect, useRef, useState } from 'octane';
 import { Command } from '@octanejs/cmdk';
 
 // Flat list: the byte-equal baseline (render, filter, keyboard, empty state).
@@ -210,11 +210,22 @@ export function CmdkDiffAsChild() @{
 }
 
 // defaultOpen is forwarded on Octane Dialog; upstream only wires open/onOpenChange.
+// Portal into this host so each runtime's dialog stays under its data-rt container
+// instead of both landing on document.body.
 export function CmdkDiffDialogDefaultOpen() @{
-	<Command.Dialog defaultOpen label="Command Menu">
-		<Command.Input placeholder="Search…" />
-		<Command.List>
-			<Command.Item>Apple</Command.Item>
-		</Command.List>
-	</Command.Dialog>
+	const hostRef = useRef<HTMLElement | null>(null);
+	const [portalHost, setPortalHost] = useState<HTMLElement | null>(null);
+	useLayoutEffect(function bindPortalHost() {
+		setPortalHost(hostRef.current);
+	}, []);
+	<div ref={hostRef} data-cmdk-dialog-host="">
+		@if (portalHost) {
+			<Command.Dialog defaultOpen container={portalHost} label="Command Menu">
+				<Command.Input placeholder="Search…" />
+				<Command.List>
+					<Command.Item>Apple</Command.Item>
+				</Command.List>
+			</Command.Dialog>
+		}
+	</div>
 }

@@ -4,7 +4,7 @@ import { consoleErrorCalls } from './_setup';
 import { settle } from './_command-helpers';
 import { ForceMountSwapMenu, GroupSwapMenu, RemovableMenu } from './_fixtures/basic.tsrx';
 
-describe('@octanejs/cmdk — registration teardown divergence', () => {
+describe('@octanejs/cmdk — registration teardown', () => {
 	it.each(['item', 'force', 'group'] as const)(
 		'removing a rendered %s from outside the menu reports nothing',
 		async (kind) => {
