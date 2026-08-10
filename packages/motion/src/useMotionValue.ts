@@ -51,25 +51,49 @@ export function isTransformKey(k: string): boolean {
 	return k in TRANSFORM_FN;
 }
 
-// Apply one style/transform value to the element, rebuilding the transform string
-// from the accumulated transform-key state.
+function unitizeTransformValue(key: string, val: any): string {
+	if (typeof val !== 'number') return String(val);
+	if (PX_KEYS.has(key)) return `${val}px`;
+	if (DEG_KEYS.has(key)) return `${val}deg`;
+	return `${val}`;
+}
+
+/** Patch one transform function into the live CSS string without wiping others. */
+export function patchTransformFn(node: HTMLElement, key: string, val: any): void {
+	const fn = TRANSFORM_FN[key];
+	if (!fn) return;
+	const next = `${fn}(${unitizeTransformValue(key, val)})`;
+	const current = node.style.transform || '';
+	const re = new RegExp(`${fn}\\([^)]*\\)`);
+	if (!current || current === 'none') {
+		node.style.transform = next;
+		return;
+	}
+	node.style.transform = re.test(current)
+		? current.replace(re, next).trim()
+		: `${current} ${next}`.trim();
+}
+
+/** Remove one transform function from the live CSS string. */
+export function removeTransformFn(node: HTMLElement, key: string): void {
+	const fn = TRANSFORM_FN[key];
+	if (!fn) return;
+	const current = node.style.transform || '';
+	if (!current || current === 'none') return;
+	node.style.transform = current.replace(new RegExp(`\\s*${fn}\\([^)]*\\)\\s*`), ' ').trim();
+}
+
+// Apply one style/transform value to the element. Transform shorthands patch the
+// live `transform` string in place so animate/layout/drag values survive rebinds.
 export function applyStyleValue(
 	node: HTMLElement,
 	key: string,
 	val: any,
-	transformState: Record<string, any>,
+	_transformState?: Record<string, any>,
 ): void {
-	const fn = TRANSFORM_FN[key];
-	if (fn) {
-		transformState[key] = val;
-		let t = '';
-		for (const k in transformState) {
-			let v = transformState[k];
-			if (typeof v === 'number')
-				v = PX_KEYS.has(k) ? `${v}px` : DEG_KEYS.has(k) ? `${v}deg` : `${v}`;
-			t += `${TRANSFORM_FN[k]}(${v}) `;
-		}
-		node.style.transform = t.trim();
+	if (TRANSFORM_FN[key]) {
+		if (_transformState) _transformState[key] = val;
+		patchTransformFn(node, key, val);
 	} else {
 		(node.style as any)[key] = typeof val === 'number' && !NO_UNIT.has(key) ? `${val}px` : val;
 	}

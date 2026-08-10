@@ -15,7 +15,12 @@ import {
 	resolveVariant,
 	splitVariant,
 } from './context';
-import { isMotionValue, isTransformKey, applyStyleValue } from './useMotionValue';
+import {
+	isMotionValue,
+	isTransformKey,
+	applyStyleValue,
+	removeTransformFn,
+} from './useMotionValue';
 import { useContext } from 'octane';
 
 // A plain-TS component gets its OWN block per instance (componentSlot), so fixed
@@ -272,36 +277,38 @@ function createMotionComponent(tag: string) {
 		}
 		useLayoutEffect(
 			() => {
-				// Clear prior motion-managed styles at bind time (rebind / empty bag).
+				// Clear only keys this effect previously managed that are absent from the
+				// new style bag. Patch transform functions in place so animate/layout/drag
+				// values on `style.transform` survive a MotionValue rebind.
 				// Do not clear in cleanup: on unmount the exit effect clones this node
 				// after layout-effect cleanups, and still needs the live transforms.
-				// Do not clear on first mount either — animate/initial may already have
-				// written transforms before this effect runs.
+				const style = props.style;
 				const prevKeys = motionStyleKeys.get(node);
 				if (prevKeys) {
-					let clearTransform = false;
 					for (const key of prevKeys) {
-						if (isTransformKey(key)) clearTransform = true;
+						const next = style && typeof style === 'object' ? style[key] : undefined;
+						const stillManaged = next !== undefined && (isMotionValue(next) || isTransformKey(key));
+						if (stillManaged) continue;
+						if (isTransformKey(key)) removeTransformFn(node, key);
 						else (node.style as any)[key] = '';
 					}
-					if (clearTransform) node.style.transform = '';
 					motionStyleKeys.delete(node);
 				}
 
-				const style = props.style;
 				if (!style || typeof style !== 'object') return;
-				const transformState: Record<string, any> = {};
 				const appliedKeys: string[] = [];
 				const cleanups: Array<() => void> = [];
 				for (const key in style) {
 					const v = style[key];
 					if (isMotionValue(v)) {
-						const apply = (val: any) => applyStyleValue(node, key, val, transformState);
+						function apply(val: any) {
+							applyStyleValue(node, key, val);
+						}
 						apply(v.get());
 						appliedKeys.push(key);
 						cleanups.push(v.on('change', apply));
 					} else if (isTransformKey(key)) {
-						applyStyleValue(node, key, v, transformState);
+						applyStyleValue(node, key, v);
 						appliedKeys.push(key);
 					}
 				}
