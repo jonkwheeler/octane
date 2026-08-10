@@ -10,7 +10,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["node"]
+    "types": ["node"],
+    "allowImportingTsExtensions": true
   },
-  "include": ["../../upstream/package/src/**/*.ts", "../../upstream/package/src/**/*.tsx"]
+  "include": ["./**/*.test-d.ts"]
 }

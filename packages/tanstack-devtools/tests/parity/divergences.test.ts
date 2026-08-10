@@ -1,18 +1,40 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const root = resolve(import.meta.dirname, '../../../..');
+const packageRoot = resolve(root, 'packages/tanstack-devtools');
 const crosswalk = JSON.parse(
 	readFileSync(resolve(root, 'packages/tanstack-devtools/audit/upstream-crosswalk.json'), 'utf8'),
 );
 const octaneIndex = readFileSync(resolve(root, 'packages/tanstack-devtools/src/index.ts'), 'utf8');
+const octanePackage = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8'));
+
+function readInstalledPackage(name: string) {
+	const candidates = [
+		resolve(packageRoot, 'node_modules', name, 'package.json'),
+		resolve(root, 'node_modules', name, 'package.json'),
+	];
+	for (const candidate of candidates) {
+		if (existsSync(candidate)) return JSON.parse(readFileSync(candidate, 'utf8'));
+	}
+	throw new Error(`could not locate installed package.json for ${name}`);
+}
+
+const upstreamReactDevtools = readInstalledPackage('@tanstack/react-devtools');
+const octaneCore = readInstalledPackage('@tanstack/devtools');
 
 describe('@octanejs/tanstack-devtools divergence contracts', function divergenceSuite() {
 	it('records the framework-neutral core version drift', function coreVersion() {
+		const upstreamVersion = upstreamReactDevtools.dependencies['@tanstack/devtools'];
+		const octaneVersion = octaneCore.version;
+		expect(typeof upstreamVersion).toBe('string');
+		expect(upstreamVersion.length).toBeGreaterThan(0);
+		expect(octanePackage.dependencies['@tanstack/devtools']).toMatch(/^catalog:/);
+		expect(octaneVersion).toMatch(/^\d+\.\d+\.\d+/);
 		expect(crosswalk.coreDependency).toEqual({
-			upstreamVersion: '0.12.4',
-			octaneVersion: '0.12.5',
+			upstreamVersion,
+			octaneVersion,
 			disposition: 'version-divergence',
 		});
 	});

@@ -1,263 +1,275 @@
 {
-  "$schema": "../../hook-form/audit/react-parity.schema.json",
-  "schemaVersion": 1,
-  "provenance": {
-    "repo": "https://github.com/TanStack/devtools.git",
-    "version": "0.10.7",
-    "commit": "c6374669b8f56d7e64542b5d385af9be606e5aa7",
-    "sourceRoot": "packages/react-devtools/src",
-    "testRoot": "packages/react-devtools (no runtime test artifacts)",
-    "license": "MIT",
-    "integrity": "sha256:79faf09d544b1558c0ed01c3b6784b4b0d4e84485a6beb3195ce13dcdbf1e94b",
-    "verification": "recorded-unverified"
-  },
-  "upstreamSuites": {
-    "runtime": "absent",
-    "types": "present"
-  },
-  "adaptedRoots": {
-    "source": {
-      "roots": ["packages/tanstack-devtools/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
-      "exclude": []
-    },
-    "tests": {
-      "roots": [
-        "packages/tanstack-devtools/tests/differential",
-        "packages/tanstack-devtools/tests/parity"
-      ],
-      "include": ["\\.test\\.ts$"],
-      "exclude": []
-    }
-  },
-  "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
-    "duplicateEntriesWithinLanes": 0,
-    "identitiesSharedAcrossLanes": 0
-  },
-  "environments": {
-    "workspace-node": {
-      "node": ">=22",
-      "platform": "any",
-      "arch": "any",
-      "packageManager": "pnpm@11.15.1",
-      "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "73fd4be1a31e36430376aa9cb01e3c6ccda90b39d4b533da6352526cf5021a86"
-    }
-  },
-  "lanes": [
-    {
-      "id": "tanstack-devtools-differential",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-devtools-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Runs one same-fixture adapter lifecycle against the Octane and pinned React sources; upstream provides no runtime suite. Documented public-surface divergences live in the ordinary audit project.",
-      "files": [
-        {
-          "path": "packages/tanstack-devtools/tests/differential/parity.test.ts",
-          "role": "test",
-          "sha256": "66892a36ad1fa20f5666d5873c77b2f8d41662f31f83fcf61042dbc380957d5e",
-          "cases": [
-            {
-              "id": "differential:tanstack-devtools-portal-lifecycle",
-              "testName": "matches mount, plugin, title, trigger, config, and teardown behavior",
-              "fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools matches mount, plugin, title, trigger, config, and teardown behavior"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-devtools/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "8e40854c69551c300335674aec1741e44d4a9aa078a0c9c5b0fc0a1a9d6e5dc2"
-        },
-        {
-          "path": "packages/tanstack-devtools/tests/_fixtures/devtools-diff.tsrx",
-          "role": "support",
-          "sha256": "f65a8af5766581e4de9cd7af9c6b1e0888ff9d4d3453abffff8b2c1f112b128c"
-        },
-        {
-          "path": "packages/octane/tests/differential/_rig.ts",
-          "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "packages/tanstack-devtools/upstream/SHA256SUMS",
-          "role": "support",
-          "sha256": "8dc934855214447cbac1a8941586b4479317dfeec6ad164d9853b5f6a8fd8b4b"
-        },
-        {
-          "path": "packages/tanstack-devtools/audit/upstream-crosswalk.json",
-          "role": "support",
-          "sha256": "1bcfca65b4f908116a4d50e044b0fd2688274dac7bf863738d4629aae4c5c9ff"
-        },
-        {
-          "path": "packages/tanstack-devtools/audit/test-classifications.json",
-          "role": "support",
-          "sha256": "f2a15c40ab9171c852f54fa0c9e8a5e12a246c669e11b3f6c370013de1d62103"
-        },
-        {
-          "path": "packages/tanstack-devtools/scripts/check-upstream-ledger.mjs",
-          "role": "support",
-          "sha256": "c03ad7f7bc30bd7c048466c5406f2ad1ba4ceee9a4f8d02e581cb22d20ec3c2c"
-        },
-        {
-          "path": "scripts/react-parity/tanstack-devtools-controls.test.mjs",
-          "role": "support",
-          "sha256": "6311c87cb447141e2420de3c466fe4e7b13c6b69db099df94e556f27637cd421"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "38c39a3214465a8d494cd8126387206fb1c4ad5763c279d84fd7282284a1ea75"
-        }
-      ]
-    },
-    {
-      "id": "tanstack-devtools-pristine-types",
-      "type": "pristine-types",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-devtools-pristine-types",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the pinned upstream test:types command shape: tsc over the complete React adapter source with React types.",
-      "execution": {
-        "kind": "typescript",
-        "compiler": "tsc",
-        "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json"
-      },
-      "files": [
-        {
-          "path": "packages/tanstack-devtools/audit/upstream-types.json",
-          "role": "test",
-          "sha256": "6d82310d90645d2eeb990af0071b4f185392a98416478acdc52c2bcb2f28afde",
-          "cases": [
-            {
-              "id": "types:pristine-upstream",
-              "testName": "pinned upstream adapter source typecheck",
-              "fullName": "pinned upstream adapter source typecheck"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json",
-          "role": "support",
-          "sha256": "3442b0f5f31459db2267982d62b1d24d5983db06428b9bc72dcb1c4d8ca38376"
-        },
-        {
-          "path": "packages/tanstack-devtools/audit/type-parity.json",
-          "role": "support",
-          "sha256": "b24a22d072d15c16602d6eef39920e1841819e73093d6e1bb5b8e8dc6d95a508"
-        },
-        {
-          "path": "scripts/react-parity/tanstack-devtools-types-lib.mjs",
-          "role": "support",
-          "sha256": "78553a0e8ce72a376b4fd57463705ab804e9fc028bf6b0943d8026cb0eb90d16"
-        },
-        {
-          "path": "packages/tanstack-devtools/upstream/package/src/index.ts",
-          "role": "support",
-          "sha256": "d3e3197586d890b2a312b47224f559ee4459b9e40e388dc708dfea84ca783019"
-        },
-        {
-          "path": "packages/tanstack-devtools/upstream/package/src/devtools.tsx",
-          "role": "support",
-          "sha256": "00639858472da60e1a0c7a58d760126d9ae27cfc5be2d4b04bf046fc873539e4"
-        }
-      ]
-    },
-    {
-      "id": "tanstack-devtools-adapted-types",
-      "type": "adapted-types",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-devtools-adapted-types",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "One-for-one adapted tsrx-tsc lane over the Octane adapter source after permitted transformations; type renames and additive core re-exports are explicit divergences.",
-      "execution": {
-        "kind": "typescript",
-        "compiler": "tsrx-tsc",
-        "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.adapted.json"
-      },
-      "files": [
-        {
-          "path": "packages/tanstack-devtools/audit/adapted-types.json",
-          "role": "test",
-          "sha256": "3bac33cd0266e292f1b89b1ceff30fea0a8324fed000ea28f74d3cff1a475a95",
-          "cases": [
-            {
-              "id": "types:adapted-octane",
-              "testName": "adapted Octane adapter source typecheck",
-              "fullName": "adapted Octane adapter source typecheck"
-            }
-          ]
-        },
-        {
-          "path": "packages/tanstack-devtools/audit/type-probes/tsconfig.adapted.json",
-          "role": "support",
-          "sha256": "e2d948abcd71eae8594fb21ea8b784aa36d4775ff7b7c9c54e316626c647c8b5"
-        },
-        {
-          "path": "packages/tanstack-devtools/audit/type-parity.json",
-          "role": "support",
-          "sha256": "b24a22d072d15c16602d6eef39920e1841819e73093d6e1bb5b8e8dc6d95a508"
-        },
-        {
-          "path": "scripts/react-parity/tanstack-devtools-types-lib.mjs",
-          "role": "support",
-          "sha256": "78553a0e8ce72a376b4fd57463705ab804e9fc028bf6b0943d8026cb0eb90d16"
-        },
-        {
-          "path": "packages/tanstack-devtools/src/index.ts",
-          "role": "support",
-          "sha256": "c5d0bab8e292a9ed4a34c443d9247d7573bc2e803dfcf4e6c2769a5177a3ab70"
-        },
-        {
-          "path": "packages/tanstack-devtools/src/devtools.tsrx",
-          "role": "support",
-          "sha256": "1b6c6874866661a5f0bcdf792d2fe20083a5b0d00c2fdae2b09739e7ec831487"
-        }
-      ]
-    }
-  ],
-  "divergences": [
-    {
-      "id": "core-version",
-      "caseIds": ["differential:tanstack-devtools-portal-lifecycle"],
-      "upstreamResult": "The pinned React adapter publishes with @tanstack/devtools 0.12.4.",
-      "octaneResult": "The current Octane catalog resolves @tanstack/devtools 0.12.5.",
-      "rationale": "The workspace catalog had advanced before this audit; silently downgrading the shared core is outside this harness PR.",
-      "classification": "dependency",
-      "consumerImpact": "Core behavior may include patch-level changes beyond the pinned React adapter.",
-      "migrationGuidance": "Review 0.12.4 to 0.12.5 core changes when exact-version parity is required.",
-      "owner": "@octanejs/tanstack-devtools",
-      "reviewCondition": "Remove when both adapters resolve the same core version."
-    },
-    {
-      "id": "octane-type-names",
-      "caseIds": ["types:adapted-octane"],
-      "upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
-      "octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",
-      "rationale": "Framework-specific public type names identify the runtime they describe.",
-      "classification": "types",
-      "consumerImpact": "Type-only imports require renamed symbols.",
-      "migrationGuidance": "Rename ReactPlugin/ReactInit imports to OctanePlugin/OctaneInit.",
-      "owner": "@octanejs/tanstack-devtools",
-      "reviewCondition": "Review if framework-neutral aliases are introduced."
-    },
-    {
-      "id": "extra-core-reexports",
-      "caseIds": ["types:pristine-upstream"],
-      "upstreamResult": "The React adapter exports only the component and React adapter types.",
-      "octaneResult": "Octane additionally re-exports framework-neutral core values and types.",
-      "rationale": "Existing Octane consumers use the binding as the plugin-authoring type boundary.",
-      "classification": "api",
-      "consumerImpact": "Octane has an additive public surface.",
-      "migrationGuidance": "React-targeted code should import these symbols from @tanstack/devtools directly.",
-      "owner": "@octanejs/tanstack-devtools",
-      "reviewCondition": "Review if the additive exports are removed or upstream adds them."
-    }
-  ]
+	"$schema": "../../hook-form/audit/react-parity.schema.json",
+	"schemaVersion": 1,
+	"provenance": {
+		"repo": "https://github.com/TanStack/devtools.git",
+		"version": "0.10.7",
+		"commit": "c6374669b8f56d7e64542b5d385af9be606e5aa7",
+		"sourceRoot": "packages/react-devtools/src",
+		"testRoot": "packages/react-devtools (no runtime test artifacts)",
+		"license": "MIT",
+		"integrity": "sha256:79faf09d544b1558c0ed01c3b6784b4b0d4e84485a6beb3195ce13dcdbf1e94b",
+		"verification": "verified"
+	},
+	"upstreamSuites": {
+		"runtime": "absent",
+		"types": "absent"
+	},
+	"adaptedRoots": {
+		"source": {
+			"roots": [
+				"packages/tanstack-devtools/src"
+			],
+			"include": [
+				"\\.(?:ts|tsx|tsrx)$"
+			],
+			"exclude": []
+		},
+		"tests": {
+			"roots": [
+				"packages/tanstack-devtools/tests/differential",
+				"packages/tanstack-devtools/tests/parity"
+			],
+			"include": [
+				"\\.test\\.ts$"
+			],
+			"exclude": []
+		}
+	},
+	"adaptedRuntimeSummary": {
+		"inventoryEntries": 0,
+		"uniqueIdentities": 0,
+		"duplicateEntriesWithinLanes": 0,
+		"identitiesSharedAcrossLanes": 0
+	},
+	"environments": {
+		"workspace-node": {
+			"node": ">=22",
+			"platform": "any",
+			"arch": "any",
+			"packageManager": "pnpm@11.15.1",
+			"lockfile": "pnpm-lock.yaml",
+			"lockfileSha256": "1f1c77d90d42248a1baa96941fd6ee0d589f6df3b0e8b21a0a2844000b87699b"
+		}
+	},
+	"lanes": [
+		{
+			"id": "tanstack-devtools-differential",
+			"type": "differential",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tanstack-devtools-differential",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Runs one same-fixture adapter lifecycle against the Octane and pinned React sources; upstream provides no runtime suite. Documented public-surface divergences live in the ordinary audit project.",
+			"files": [
+				{
+					"path": "packages/tanstack-devtools/tests/differential/parity.test.ts",
+					"role": "test",
+					"sha256": "66892a36ad1fa20f5666d5873c77b2f8d41662f31f83fcf61042dbc380957d5e",
+					"cases": [
+						{
+							"id": "differential:tanstack-devtools-portal-lifecycle",
+							"testName": "matches mount, plugin, title, trigger, config, and teardown behavior",
+							"fullName": "differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools matches mount, plugin, title, trigger, config, and teardown behavior"
+						}
+					]
+				},
+				{
+					"path": "packages/tanstack-devtools/tests/differential/_setup.ts",
+					"role": "support",
+					"sha256": "8e40854c69551c300335674aec1741e44d4a9aa078a0c9c5b0fc0a1a9d6e5dc2"
+				},
+				{
+					"path": "packages/tanstack-devtools/tests/_fixtures/devtools-diff.tsrx",
+					"role": "support",
+					"sha256": "f65a8af5766581e4de9cd7af9c6b1e0888ff9d4d3453abffff8b2c1f112b128c"
+				},
+				{
+					"path": "packages/octane/tests/differential/_rig.ts",
+					"role": "support",
+					"sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+				},
+				{
+					"path": "packages/tanstack-devtools/upstream/SHA256SUMS",
+					"role": "support",
+					"sha256": "8dc934855214447cbac1a8941586b4479317dfeec6ad164d9853b5f6a8fd8b4b"
+				},
+				{
+					"path": "packages/tanstack-devtools/audit/upstream-crosswalk.json",
+					"role": "support",
+					"sha256": "cc41c51080de024ddd3daf5170a37ce1b64589d3058c21dfef4a86e038442b3d"
+				},
+				{
+					"path": "packages/tanstack-devtools/audit/test-classifications.json",
+					"role": "support",
+					"sha256": "f2a15c40ab9171c852f54fa0c9e8a5e12a246c669e11b3f6c370013de1d62103"
+				},
+				{
+					"path": "packages/tanstack-devtools/scripts/check-upstream-ledger.mjs",
+					"role": "support",
+					"sha256": "c03ad7f7bc30bd7c048466c5406f2ad1ba4ceee9a4f8d02e581cb22d20ec3c2c"
+				},
+				{
+					"path": "scripts/react-parity/tanstack-devtools-controls.test.mjs",
+					"role": "support",
+					"sha256": "b06972e1d4a2db578ff7774f23fc5b51d3fa0484fd84b5613f76470420c9e37b"
+				},
+				{
+					"path": "vitest.config.js",
+					"role": "support",
+					"sha256": "38c39a3214465a8d494cd8126387206fb1c4ad5763c279d84fd7282284a1ea75"
+				}
+			]
+		},
+		{
+			"id": "tanstack-devtools-pristine-types",
+			"type": "pristine-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tanstack-devtools-pristine-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "Repo-authored React declaration probes against the pinned adapter public entry; upstream has no expectType fixtures.",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsc",
+				"project": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json"
+			},
+			"files": [
+				{
+					"path": "packages/tanstack-devtools/audit/upstream-types.json",
+					"role": "test",
+					"sha256": "73e79980716fbb4522a7adfabfb098e959eebb391d7c8937ba53d774c07da062",
+					"cases": [
+						{
+							"id": "types:pristine-upstream",
+							"testName": "pinned upstream adapter public probes",
+							"fullName": "pinned upstream adapter public probes"
+						}
+					]
+				},
+				{
+					"path": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json",
+					"role": "support",
+					"sha256": "ee57aa0c0fb9624349e3650535cf8a53efdade1c8a396fef0905748a53aa2faf"
+				},
+				{
+					"path": "packages/tanstack-devtools/audit/type-parity.json",
+					"role": "support",
+					"sha256": "2dae2dbeb72df9d0bd267c6cc3f4434ead077d6604a747684dc8ce60a3240202"
+				},
+				{
+					"path": "scripts/react-parity/tanstack-devtools-types-lib.mjs",
+					"role": "support",
+					"sha256": "df15fb8aa31cfa050a27c5f5b4fa2e344a10500953ce3d419aa4fa93d9826d5f"
+				},
+				{
+					"path": "scripts/react-parity/tanstack-devtools-types-lib.test.mjs",
+					"role": "support",
+					"sha256": "f3226cd742614aa9cf0c868221eabc8ca8f5d48378a358ffa97ef387812198d4"
+				},
+				{
+					"path": "packages/tanstack-devtools/audit/type-probes/public-api.test-d.ts",
+					"role": "support",
+					"sha256": "516d0e8f0af74a8e3f48397b66a5b96288aee459d2da8e4aea0f98195cc37969"
+				}
+			]
+		},
+		{
+			"id": "tanstack-devtools-adapted-types",
+			"type": "adapted-types",
+			"oracle": "required",
+			"environment": "workspace-node",
+			"project": "tanstack-devtools-adapted-types",
+			"evidenceOrigin": "repo-authored",
+			"notes": "One-for-one adapted tsrx-tsc probes after permitted transformations; type renames are explicit divergences.",
+			"execution": {
+				"kind": "typescript",
+				"compiler": "tsrx-tsc",
+				"project": "packages/tanstack-devtools/typetests/tsconfig.json"
+			},
+			"files": [
+				{
+					"path": "packages/tanstack-devtools/audit/adapted-types.json",
+					"role": "test",
+					"sha256": "27a3da23bcb9d30db2cfe8165c75a507d83377f2617409499d3218f2ce1b1608",
+					"cases": [
+						{
+							"id": "types:adapted-octane",
+							"testName": "adapted Octane public probes",
+							"fullName": "adapted Octane public probes"
+						}
+					]
+				},
+				{
+					"path": "packages/tanstack-devtools/typetests/tsconfig.json",
+					"role": "support",
+					"sha256": "3e5a10a15c7cfc431288f01fe2a1a279724e378d6ab0f154297d6f708dab6417"
+				},
+				{
+					"path": "packages/tanstack-devtools/audit/type-parity.json",
+					"role": "support",
+					"sha256": "2dae2dbeb72df9d0bd267c6cc3f4434ead077d6604a747684dc8ce60a3240202"
+				},
+				{
+					"path": "scripts/react-parity/tanstack-devtools-types-lib.mjs",
+					"role": "support",
+					"sha256": "df15fb8aa31cfa050a27c5f5b4fa2e344a10500953ce3d419aa4fa93d9826d5f"
+				},
+				{
+					"path": "scripts/react-parity/tanstack-devtools-types-lib.test.mjs",
+					"role": "support",
+					"sha256": "f3226cd742614aa9cf0c868221eabc8ca8f5d48378a358ffa97ef387812198d4"
+				},
+				{
+					"path": "packages/tanstack-devtools/typetests/public-api.test-d.ts",
+					"role": "support",
+					"sha256": "6d0001c2728b227d2d4b28bec5e185455e1853a6f87ff6f2615d511131242b47"
+				}
+			]
+		}
+	],
+	"divergences": [
+		{
+			"id": "core-version",
+			"caseIds": [
+				"differential:tanstack-devtools-portal-lifecycle"
+			],
+			"upstreamResult": "The pinned React adapter publishes with @tanstack/devtools 0.12.4 (from @tanstack/react-devtools package.json).",
+			"octaneResult": "The Octane package resolves @tanstack/devtools from the workspace catalog (currently 0.12.5).",
+			"rationale": "The workspace catalog had advanced before this audit; silently downgrading the shared core is outside this harness PR.",
+			"classification": "dependency",
+			"consumerImpact": "Core behavior may include patch-level changes beyond the pinned React adapter.",
+			"migrationGuidance": "Review 0.12.4 to 0.12.5 core changes when exact-version parity is required.",
+			"owner": "@octanejs/tanstack-devtools",
+			"reviewCondition": "Remove when both adapters resolve the same core version."
+		},
+		{
+			"id": "octane-type-names",
+			"caseIds": [
+				"types:adapted-octane"
+			],
+			"upstreamResult": "Adapter types are named TanStackDevtoolsReactPlugin and TanStackDevtoolsReactInit.",
+			"octaneResult": "Adapter types are named TanStackDevtoolsOctanePlugin and TanStackDevtoolsOctaneInit.",
+			"rationale": "Framework-specific public type names identify the runtime they describe.",
+			"classification": "types",
+			"consumerImpact": "Type-only imports require renamed symbols.",
+			"migrationGuidance": "Rename ReactPlugin/ReactInit imports to OctanePlugin/OctaneInit.",
+			"owner": "@octanejs/tanstack-devtools",
+			"reviewCondition": "Review if framework-neutral aliases are introduced."
+		},
+		{
+			"id": "extra-core-reexports",
+			"caseIds": [
+				"types:pristine-upstream"
+			],
+			"upstreamResult": "The React adapter exports only the component and React adapter types.",
+			"octaneResult": "Octane additionally re-exports framework-neutral core values and types.",
+			"rationale": "Existing Octane consumers use the binding as the plugin-authoring type boundary.",
+			"classification": "api",
+			"consumerImpact": "Octane has an additive public surface.",
+			"migrationGuidance": "React-targeted code should import these symbols from @tanstack/devtools directly.",
+			"owner": "@octanejs/tanstack-devtools",
+			"reviewCondition": "Review if the additive exports are removed or upstream adds them."
+		}
+	]
 }

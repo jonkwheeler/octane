@@ -63,7 +63,7 @@
   },
   "upstreamTests": [],
   "typeSuite": {
-    "disposition": "present",
-    "reason": "Upstream test:types runs tsc over the complete React adapter source with the package config; dedicated expectType fixtures are absent, so strength is limited but the suite is executable."
+    "disposition": "absent",
+    "reason": "Upstream test:types only compiles adapter source with no expectType fixtures; repo-authored pristine/adapted declaration probes supply required type evidence instead."
   }
 }

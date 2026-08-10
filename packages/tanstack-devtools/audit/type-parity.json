@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "upstreamRoot": "packages/tanstack-devtools/upstream/package/src",
-  "adaptedRoot": "packages/tanstack-devtools/src",
+  "upstreamRoot": "packages/tanstack-devtools/audit/type-probes",
+  "adaptedRoot": "packages/tanstack-devtools/typetests",
   "inventories": {
     "upstream": "packages/tanstack-devtools/audit/upstream-types.json",
     "adapted": "packages/tanstack-devtools/audit/adapted-types.json"
@@ -10,26 +10,30 @@
     "pristine": {
       "compiler": "tsc",
       "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json",
-      "sourcePolicy": "byte-exact pinned upstream package source compiled with React types"
+      "sourcePolicy": "repo-authored React declaration probes against the pinned adapter public entry"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.adapted.json",
-      "sourcePolicy": "one-for-one adapted adapter source after permitted transformations"
+      "project": "packages/tanstack-devtools/typetests/tsconfig.json",
+      "sourcePolicy": "one-for-one adapted probes after permitted transformations"
     }
   },
   "permittedTransformations": [
     {
-      "kind": "file-extension",
-      "rule": "devtools.tsx becomes devtools.tsrx; the Octane declaration companion remains outside the one-for-one inventory"
+      "kind": "import-root",
+      "rule": "React probes import vendored upstream/package/src; Octane probes import the package public entry"
     },
     {
-      "kind": "import-style",
-      "rule": "React JSX/hooks/portal imports become Octane equivalents; createPortal becomes DevtoolsPortal"
+      "kind": "renderable-type",
+      "rule": "ReactNode/ReactElement become OctaneNode"
     },
     {
       "kind": "type-rename",
       "rule": "TanStackDevtoolsReactPlugin/Init become TanStackDevtoolsOctanePlugin/Init"
+    },
+    {
+      "kind": "negative-control",
+      "rule": "Matching @ts-expect-error controls must reject the same invalid shapes on both sides"
     }
   ],
   "divergences": [
@@ -37,11 +41,6 @@
       "id": "octane-type-names",
       "kind": "types",
       "rule": "Public adapter types keep framework-prefixed names on each side"
-    },
-    {
-      "id": "extra-core-reexports",
-      "kind": "api",
-      "rule": "Octane index.ts additionally re-exports framework-neutral @tanstack/devtools values and types"
     }
   ]
 }

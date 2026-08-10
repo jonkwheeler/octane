@@ -53,12 +53,13 @@ test('tanstack-devtools differential lane rejects a renamed declared case', () =
 	);
 });
 
-test('tanstack-devtools records present upstream type evidence with paired lanes', () => {
-	assert.equal(manifest.upstreamSuites.types, 'present');
+test('tanstack-devtools records repo-authored type probes with paired lanes', () => {
+	assert.equal(manifest.upstreamSuites.types, 'absent');
+	assert.equal(manifest.provenance.verification, 'verified');
 	for (const id of ['tanstack-devtools-pristine-types', 'tanstack-devtools-adapted-types']) {
 		const lane = manifest.lanes.find((entry) => entry.id === id);
 		assert.equal(lane?.oracle, 'required');
-		assert.equal(lane?.evidenceOrigin, 'upstream-suite');
+		assert.equal(lane?.evidenceOrigin, 'repo-authored');
 		assert.equal(lane?.execution?.kind, 'typescript');
 	}
 	assert.equal(
@@ -72,5 +73,6 @@ test('tanstack-devtools records present upstream type evidence with paired lanes
 		'tsrx-tsc',
 	);
 	const inventories = verifyTypeInventories(root);
-	assert.equal(inventories.pairs, 2);
+	assert.equal(inventories.pairs, 1);
+	assert.ok(inventories.assertions > 0);
 });
