@@ -67,8 +67,7 @@
       "@octanejs/lexical",
       "@octanejs/tiptap",
       "@octanejs/streamdown",
-      "@octanejs/react-email",
-      "@octanejs/react-email-cli",
+      "@octanejs/monaco-editor",
       "@octanejs/mdx",
       "@octanejs/i18next"
     ]
