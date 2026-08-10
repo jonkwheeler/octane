@@ -133,7 +133,7 @@
         {
           "path": "packages/tanstack-pacer/audit/test-classifications.json",
           "role": "support",
-          "sha256": "15d1963b33f6c1e0cc17051b9e30addc83cffeb2425301caf07a52d65c349eb7"
+          "sha256": "fafa0fecf0a88d3b5ed71d7af4cf9de6a2d666797c0637504203d62a736f57e8"
         },
         {
           "path": "packages/tanstack-pacer/scripts/check-upstream-ledger.mjs",
