@@ -257,7 +257,7 @@
       "available": true,
       "environment": "workspace-node",
       "project": "tanstack-table",
-      "notes": "Focused same-scenario package-export observation for the ./legacy omission. Classified react-octane-differential; executed via react-parity:check against the ordinary tanstack-table Vitest project and pins divergence legacy-migration-subpath.",
+      "notes": "Focused same-scenario package-export observation for the ./legacy omission. Classified react-octane-differential; owned by file-granular testExecution.include on the mixed tanstack-table project so react-parity:check executes the case once and ordinary shards omit it; pins divergence legacy-migration-subpath.",
       "files": [
         {
           "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",

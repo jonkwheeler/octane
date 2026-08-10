@@ -1597,6 +1597,13 @@ export default defineConfig({
 				},
 			},
 			{
+				// Mixed project: conformance + package tests stay in ordinary shards;
+				// parity-legacy-api is owned by react-parity so it executes once via
+				// react-parity:check (same file-granular pattern as apollo-client/livestore).
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts'],
+				},
 				test: {
 					name: 'tanstack-table',
 					include: ['packages/tanstack-table/tests/**/*.test.ts'],
