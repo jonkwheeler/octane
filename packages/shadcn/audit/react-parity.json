@@ -11,21 +11,10 @@
     "integrity": "sha256:015a8c4972120e794fa648ef6604fdd0ff94d4748c9308b0cfe147c177b5df4a",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": {
-    "runtime": "insufficient",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "insufficient", "types": "absent" },
   "adaptedRoots": {
-    "source": {
-      "roots": ["packages/shadcn/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": []
-    },
-    "tests": {
-      "roots": ["packages/shadcn/tests"],
-      "include": ["\\.test\\.tsx?$"],
-      "exclude": []
-    }
+    "source": { "roots": ["packages/shadcn/src"], "include": ["\\.(?:ts|tsrx)$"], "exclude": [] },
+    "tests": { "roots": ["packages/shadcn/tests"], "include": ["\\.test\\.tsx?$"], "exclude": [] }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -80,8 +69,8 @@
             },
             {
               "id": "differential:shadcn-dropdown-upstream",
-              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical",
-              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical"
+              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical",
+              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical"
             }
           ]
         },
@@ -168,7 +157,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     }

@@ -11,10 +11,7 @@
     "integrity": "sha256:3a2b9b8de9120db2e7f595e4c7e0c0d74ff76a9a41864464207f4e45f632bf8a",
     "verification": "verified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/react-map-gl/src"],
@@ -135,7 +132,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     },
@@ -227,7 +224,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     },
@@ -429,7 +426,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     },
@@ -604,7 +601,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     }

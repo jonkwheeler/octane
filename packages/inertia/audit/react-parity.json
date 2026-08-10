@@ -11,10 +11,7 @@
     "integrity": "sha256:15742c04ce626d9f02d78be4c0550dc95a221410e47e1688ebc060a0d7fd2d47",
     "verification": "verified"
   },
-  "upstreamSuites": {
-    "runtime": "absent",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "absent", "types": "absent" },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/inertia/src"],
@@ -75,7 +72,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     },
@@ -118,7 +115,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     },

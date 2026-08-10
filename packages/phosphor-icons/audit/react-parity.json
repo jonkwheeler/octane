@@ -11,10 +11,7 @@
     "integrity": "sha256:08027417baf5fc4818581a63c487c98ad36c80c17816a0069d4fd0805350ee90",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/phosphor-icons/src"],
@@ -83,7 +80,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     }

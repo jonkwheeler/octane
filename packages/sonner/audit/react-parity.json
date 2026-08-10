@@ -11,21 +11,10 @@
     "integrity": "sha256:eb0f5dd35d890d38e8dcba1b242e9ac38cf45cc92c02aa914f144d98cfa7ce8f",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
-    "source": {
-      "roots": ["packages/sonner/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": []
-    },
-    "tests": {
-      "roots": ["packages/sonner/tests"],
-      "include": ["\\.test\\.ts$"],
-      "exclude": []
-    }
+    "source": { "roots": ["packages/sonner/src"], "include": ["\\.(?:ts|tsrx)$"], "exclude": [] },
+    "tests": { "roots": ["packages/sonner/tests"], "include": ["\\.test\\.ts$"], "exclude": [] }
   },
   "adaptedRuntimeSummary": {
     "inventoryEntries": 0,
@@ -130,7 +119,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     }

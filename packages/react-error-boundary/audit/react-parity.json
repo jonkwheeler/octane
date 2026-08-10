@@ -11,16 +11,9 @@
     "integrity": "sha256:74ba770d513712aaab909ffe27209804739a33896c2635f974eddf141661901f",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
-    "source": {
-      "roots": ["packages/react-error-boundary/src"],
-      "include": ["$a"],
-      "exclude": []
-    },
+    "source": { "roots": ["packages/react-error-boundary/src"], "include": ["$a"], "exclude": [] },
     "tests": {
       "roots": ["packages/react-error-boundary/tests/differential"],
       "include": ["$a"],
@@ -83,7 +76,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     }

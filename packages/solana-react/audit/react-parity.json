@@ -11,10 +11,7 @@
     "integrity": "sha256:605e5fd0285c2c51586af11210f23fb1b47e10f8f5ac3c5736cfc32cf6fc3b5d",
     "verification": "verified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "present"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "present" },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/solana-react/src"],
@@ -130,7 +127,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "827df7d4195c0267f565bdaf5da64842218a8a19d3d6db62b82a489d2adb7db5"
+          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
         }
       ]
     },
