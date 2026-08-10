@@ -27,8 +27,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 4,
-    "uniqueIdentities": 4,
+    "inventoryEntries": 10,
+    "uniqueIdentities": 10,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -104,12 +104,12 @@
         {
           "path": "packages/react-pdf/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "b786f812b3f492e4e42d12a0b3f78e68c4e2ffa17c9907ec8caacf84c8549b7d"
+          "sha256": "321231cd32c656c9f6731871593431240e2ffc3ecc51c5731e81b603b428da8c"
         },
         {
           "path": "packages/react-pdf/tests/runtime/private-evidence.test.ts",
           "role": "support",
-          "sha256": "ca70d5ccb98b3667508d06baa7c823a285ac5259924afb1cadf1bb47dd8445d5"
+          "sha256": "c52446143e58674fffedd33768a79deee08118846131c07124c4a2ea3f494417"
         }
       ]
     },

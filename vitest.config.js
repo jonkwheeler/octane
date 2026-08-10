@@ -318,11 +318,14 @@ export default defineConfig({
 			{
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-pdf/tests/runtime/**/*.test.ts'],
+					include: ['packages/react-pdf/tests/runtime/private-evidence.test.ts'],
 				},
 				test: {
 					name: 'react-pdf',
-					include: ['packages/react-pdf/tests/runtime/**/*.test.ts'],
+					include: [
+						'packages/react-pdf/tests/runtime/**/*.test.ts',
+						'packages/react-pdf/tests/contracts/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},

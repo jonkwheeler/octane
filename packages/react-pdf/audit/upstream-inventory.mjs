@@ -96,20 +96,40 @@ function defaultMapping(entry) {
 	// Only exact one-for-one private helpers are claimed as adapted evidence.
 	// Everything else is an explicit pending disposition until a dedicated counterpart exists.
 	if (entry.file.endsWith('shared/utils.spec.ts')) {
-		if (entry.name === 'throws given invalid data URI') {
+		const utilsEvidence = {
+			'returns $expectedResult given $input':
+				'tests/runtime/private-evidence.test.ts::returns $expectedResult given $input',
+			'throws given invalid data URI':
+				'tests/runtime/private-evidence.test.ts::throws given invalid data URI',
+			'returns a byte string given plain text data URI':
+				'tests/runtime/private-evidence.test.ts::returns a byte string given plain text data URI',
+			'returns a byte string given base64 data URI':
+				'tests/runtime/private-evidence.test.ts::returns a byte string given base64 data URI',
+			'returns a byte string given base64 PDF data URI':
+				'tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI',
+			'returns a byte string given base64 PDF data URI with filename':
+				'tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI with filename',
+		};
+		const evidence = utilsEvidence[entry.name];
+		if (evidence) {
 			return {
 				disposition: 'adapted-and-executable',
-				evidence:
-					'tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities',
+				evidence,
 			};
 		}
 	}
 	if (entry.file.endsWith('Ref.spec.ts')) {
-		if (entry.name === 'returns proper reference for given num and gen') {
+		const refEvidence = {
+			'returns proper reference for given num and gen':
+				'tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen',
+			'returns proper reference for given num and gen when gen = 0':
+				'tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen when gen = 0',
+		};
+		const evidence = refEvidence[entry.name];
+		if (evidence) {
 			return {
 				disposition: 'adapted-and-executable',
-				evidence:
-					'tests/runtime/private-evidence.test.ts::preserves Ref number and generation values',
+				evidence,
 			};
 		}
 	}

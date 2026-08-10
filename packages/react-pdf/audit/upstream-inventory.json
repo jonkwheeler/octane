@@ -2743,12 +2743,12 @@
     {
       "upstream": "tag/src/Ref.spec.ts:6::returns proper reference for given num and gen",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::preserves Ref number and generation values"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen"
     },
     {
       "upstream": "tag/src/Ref.spec.ts:12::returns proper reference for given num and gen when gen = 0",
-      "disposition": "pending-adaptation",
-      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen when gen = 0"
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:57::loads structure tree and calls onGetStructTreeSuccess callback properly",
@@ -2987,33 +2987,33 @@
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:6::returns $expectedResult given $input",
-      "disposition": "pending-adaptation",
-      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/private-evidence.test.ts::returns $expectedResult given $input"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:19::throws given invalid data URI",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::matches upstream data URI and source utilities"
+      "evidence": "tests/runtime/private-evidence.test.ts::throws given invalid data URI"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:22::returns a byte string given plain text data URI",
-      "disposition": "pending-adaptation",
-      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given plain text data URI"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:28::returns a byte string given base64 data URI",
-      "disposition": "pending-adaptation",
-      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 data URI"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:34::returns a byte string given base64 PDF data URI",
-      "disposition": "pending-adaptation",
-      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:42::returns a byte string given base64 PDF data URI with filename",
-      "disposition": "pending-adaptation",
-      "rationale": "No one-for-one Octane counterpart yet. Browser, shell, SSR, feasibility, and packed coverage remain ordinary package tests outside adapted-octane parity accounting."
+      "disposition": "adapted-and-executable",
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI with filename"
     }
   ]
 }
