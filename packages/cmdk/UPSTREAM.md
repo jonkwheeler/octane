@@ -66,5 +66,6 @@ All files under `test/pages/`, plus `test/style.css`, `test/package.json`, `test
 ## Known divergences
 
 The complete consumer-visible list remains in `status.json`. The differential lane specifically
-pins native input events, ref-as-prop behavior, CSS-order ranking rather than physical node moves,
-initial `aria-activedescendant` wiring, and corrected group ordering. `asChild` remains unsupported.
+pins native input events, CSS-order ranking rather than physical node moves, initial
+`aria-activedescendant` wiring, and corrected group ordering. Ref-as-prop behavior is documented in
+`status.json` but is not yet observed by a paired differential case. `asChild` remains unsupported.
