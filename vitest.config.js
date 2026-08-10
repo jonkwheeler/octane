@@ -4223,33 +4223,22 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
-				test: {
-					name: 'react-popper-pristine',
-					include: ['packages/react-popper/tests/upstream-original.test.ts'],
-					environment: 'node',
-					globals: false,
-					sequence: { groupOrder: 1 },
-				},
-			},
-			{
 				testExecution: {
 					group: 'react-parity',
 					include: [
-						'packages/react-popper/tests/upstream/**/*.test.ts',
-						'packages/react-popper/tests/upstream/**/*.test.tsx',
+						'packages/popper/tests/upstream/**/*.test.ts',
+						'packages/popper/tests/upstream/**/*.test.tsx',
 					],
 				},
 				test: {
-					name: 'react-popper',
+					name: 'popper',
 					include: [
-						'packages/react-popper/tests/runtime/**/*.test.ts',
-						'packages/react-popper/tests/upstream/**/*.test.ts',
-						'packages/react-popper/tests/upstream/**/*.test.tsx',
+						'packages/popper/tests/runtime/**/*.test.ts',
+						'packages/popper/tests/upstream/**/*.test.ts',
+						'packages/popper/tests/upstream/**/*.test.tsx',
 					],
 					exclude: [
 						...configDefaults.exclude,
-						'packages/react-popper/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -4258,16 +4247,16 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-popper$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+							find: /^@octanejs\/popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/popper/src/index.ts'),
 						},
 					],
 				},
 			},
 			{
 				test: {
-					name: 'react-popper-hydration',
-					include: ['packages/react-popper/tests/hydration/**/*.test.ts'],
+					name: 'popper-hydration',
+					include: ['packages/popper/tests/hydration/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -4275,8 +4264,8 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-popper$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+							find: /^@octanejs\/popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/popper/src/index.ts'),
 						},
 					],
 				},
@@ -4284,26 +4273,26 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-popper-differential',
-					include: ['packages/react-popper/tests/differential/**/*.test.ts'],
+					name: 'popper-differential',
+					include: ['packages/popper/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
-					globalSetup: ['packages/react-popper/tests/differential/_setup.ts'],
+					globalSetup: ['packages/popper/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-popper$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+							find: /^@octanejs\/popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/popper/src/index.ts'),
 						},
 					],
 				},
 			},
 			{
 				test: {
-					name: 'react-popper-ssr',
-					include: ['packages/react-popper/tests/ssr/**/*.test.ts'],
+					name: 'popper-ssr',
+					include: ['packages/popper/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -4315,16 +4304,16 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-popper$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-popper/src/index.ts'),
+							find: /^@octanejs\/popper$/,
+							replacement: resolve(import.meta.dirname, 'packages/popper/src/index.ts'),
 						},
 					],
 				},
 			},
 			{
 				test: {
-					name: 'react-popper-browser',
-					include: ['packages/react-popper/tests/browser/**/*.test.ts'],
+					name: 'popper-browser',
+					include: ['packages/popper/tests/browser/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 60_000,

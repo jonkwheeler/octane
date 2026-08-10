@@ -45,7 +45,7 @@
       "@octanejs/floating-ui",
       "@octanejs/animejs",
       "@octanejs/gsap",
-      "@octanejs/react-popper",
+      "@octanejs/popper",
       "@octanejs/motion",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",

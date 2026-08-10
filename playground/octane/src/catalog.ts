@@ -14,7 +14,7 @@ import { GSAPDemo } from './demos/GSAP.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { LiveStoreDemo } from './demos/LiveStore.tsrx';
-import { ReactPopperDemo } from './demos/ReactPopper.tsrx';
+import { PopperDemo } from './demos/Popper.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
 import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
@@ -36,7 +36,7 @@ import gsapSource from './demos/GSAP.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import liveStoreSource from './demos/LiveStore.tsrx?raw';
-import reactPopperSource from './demos/ReactPopper.tsrx?raw';
+import popperSource from './demos/Popper.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
 import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
@@ -194,10 +194,10 @@ export const GROUPS: readonly DemoGroup[] = [
 				source: errorBoundarySource,
 			},
 			{
-				id: 'react-popper',
-				title: 'React Popper',
-				Component: ReactPopperDemo,
-				source: reactPopperSource,
+				id: 'popper',
+				title: 'Popper',
+				Component: PopperDemo,
+				source: popperSource,
 			},
 		],
 	},
