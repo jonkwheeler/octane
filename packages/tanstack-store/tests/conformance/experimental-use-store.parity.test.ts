@@ -6,8 +6,9 @@
 import { describe, expect, it } from 'vitest';
 import * as binding from '@octanejs/tanstack-store';
 
-describe('export surface', () => {
-	it('matches the supported @tanstack/react-store runtime exports', async () => {
+describe('export surface', function () {
+	// @parity-case ported:tanstack-store-experimental-use-store
+	it('matches the supported @tanstack/react-store runtime exports', async function () {
 		const real = await import('@tanstack/react-store');
 		const expected = Object.keys(real)
 			.filter(function (name) {
