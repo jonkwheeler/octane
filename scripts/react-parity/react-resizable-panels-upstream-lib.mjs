@@ -817,18 +817,81 @@ function bindEventFromInitializer(name, initializer, bindings) {
 	else bindings.delete(name);
 }
 
-function isTerminalStatement(node) {
-	return (
-		ts.isReturnStatement(node) ||
-		ts.isThrowStatement(node) ||
-		ts.isBreakStatement(node) ||
-		ts.isContinueStatement(node)
-	);
+function isFunctionExit(node) {
+	return ts.isReturnStatement(node) || ts.isThrowStatement(node);
 }
 
-/** True when control never falls through to a following sibling statement. */
+function isLoopLocalExit(node) {
+	return ts.isBreakStatement(node) || ts.isContinueStatement(node);
+}
+
+function containsBreak(node) {
+	let found = false;
+	function visit(current) {
+		if (found || !current) return;
+		if (ts.isBreakStatement(current)) {
+			found = true;
+			return;
+		}
+		if (
+			ts.isFunctionDeclaration(current) ||
+			ts.isFunctionExpression(current) ||
+			ts.isArrowFunction(current) ||
+			ts.isWhileStatement(current) ||
+			ts.isDoStatement(current) ||
+			ts.isForStatement(current) ||
+			ts.isForOfStatement(current) ||
+			ts.isForInStatement(current) ||
+			ts.isSwitchStatement(current)
+		) {
+			// Nested loops/switches own their breaks; do not attribute them here.
+			return;
+		}
+		ts.forEachChild(current, visit);
+	}
+	visit(node);
+	return found;
+}
+
+/** True when executing `node` always leaves the enclosing function. */
+function statementExitsFunction(node) {
+	if (isFunctionExit(node)) return true;
+	if (ts.isBlock(node)) {
+		for (const stmt of node.statements) {
+			if (statementExitsFunction(stmt)) return true;
+			if (isLoopLocalExit(stmt)) return false;
+		}
+		return false;
+	}
+	if (ts.isIfStatement(node)) {
+		if (isConstantTrue(node.expression)) {
+			return statementExitsFunction(node.thenStatement);
+		}
+		if (isConstantFalse(node.expression)) {
+			return node.elseStatement ? statementExitsFunction(node.elseStatement) : false;
+		}
+		return (
+			!!node.elseStatement &&
+			statementExitsFunction(node.thenStatement) &&
+			statementExitsFunction(node.elseStatement)
+		);
+	}
+	if ((ts.isWhileStatement(node) || ts.isDoStatement(node)) && isConstantTrue(node.expression)) {
+		return statementExitsFunction(node.statement);
+	}
+	if (ts.isForStatement(node) && (!node.condition || isConstantTrue(node.condition))) {
+		return statementExitsFunction(node.statement);
+	}
+	return false;
+}
+
+/**
+ * True when control never falls through to a following sibling statement.
+ * Constant-true loops cut siblings unless the body can `break` out; a body that
+ * only `break`s must not be treated as non-falling-through.
+ */
 function statementAlwaysExits(node) {
-	if (isTerminalStatement(node)) return true;
+	if (isFunctionExit(node) || isLoopLocalExit(node)) return true;
 	if (ts.isBlock(node)) {
 		for (const stmt of node.statements) {
 			if (statementAlwaysExits(stmt)) return true;
@@ -848,14 +911,15 @@ function statementAlwaysExits(node) {
 			statementAlwaysExits(node.elseStatement)
 		);
 	}
-	if (ts.isWhileStatement(node) && isConstantTrue(node.expression)) {
-		return statementAlwaysExits(node.statement);
-	}
-	if (ts.isDoStatement(node) && isConstantTrue(node.expression)) {
-		return statementAlwaysExits(node.statement);
+	if ((ts.isWhileStatement(node) || ts.isDoStatement(node)) && isConstantTrue(node.expression)) {
+		if (statementExitsFunction(node.statement)) return true;
+		if (containsBreak(node.statement)) return false;
+		return true;
 	}
 	if (ts.isForStatement(node) && (!node.condition || isConstantTrue(node.condition))) {
-		return statementAlwaysExits(node.statement);
+		if (statementExitsFunction(node.statement)) return true;
+		if (containsBreak(node.statement)) return false;
+		return true;
 	}
 	return false;
 }

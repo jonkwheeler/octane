@@ -91,6 +91,17 @@ test('support fixtures map to upstream after declared helper transforms', functi
 			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
 			'}\n' +
 			'export default { pointer, type };\n',
+		"import { act } from '@octanejs/testing-library';\n" +
+			'async function pointer(steps) {\n' +
+			'\twhile (true) {}\n' +
+			"\tact(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
+			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
+			'}\n' +
+			'async function type(element, text) {\n' +
+			'\tfor (;;) {}\n' +
+			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
+			'}\n' +
+			'export default { pointer, type };\n',
 	];
 	for (const decoy of decoyBodies) {
 		const decoyBehavior = authoredUserEventBehavior(decoy, 'test/userEvent.ts');
