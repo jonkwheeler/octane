@@ -105,8 +105,11 @@ describe('pinned Draggable public cases', () => {
 	});
 	adaptedCase('tag/test/Draggable.test.jsx::should add dragging class during drag', () => {
 		const mounted = mountDraggable();
+		expect(mounted.node.classList.contains('react-draggable-dragging')).toBe(false);
 		mouse(mounted.node, 'mousedown');
 		expect(mounted.node.classList.contains('react-draggable-dragging')).toBe(true);
+		mouse(document, 'mouseup');
+		expect(mounted.node.classList.contains('react-draggable-dragging')).toBe(false);
 	});
 	adaptedCase('tag/test/Draggable.test.jsx::should add dragged class after drag', () => {
 		const mounted = mountDraggable();
@@ -277,7 +280,15 @@ describe('pinned DraggableCore public cases', () => {
 		const mounted = mountCore();
 		mouse(mounted.node, 'mousedown', { clientX: 2, clientY: 3 });
 		mouse(document, 'mousemove', { clientX: 7, clientY: 9 });
-		expect(mounted.onDrag.mock.calls[0][1]).toMatchObject({ deltaX: 5, deltaY: 6 });
+		expect(mounted.onDrag.mock.calls[0][1]).toMatchObject({
+			x: 7,
+			y: 9,
+			deltaX: 5,
+			deltaY: 6,
+			lastX: 2,
+			lastY: 3,
+			node: mounted.node,
+		});
 	});
 	adaptedCase('tag/test/DraggableCore.test.jsx::should not start dragging when disabled', () => {
 		const mounted = mountCore({ disabled: true });
@@ -364,9 +375,56 @@ describe('pinned DraggableCore public cases', () => {
 		mouse(mounted.node, 'mousedown');
 		expect(mounted.onStart.mock.calls[0][1].node).toBe(mounted.nodeRef.current);
 	});
+	// Octane has no forwardRef; adapt to the React-19/Octane ref-as-prop boundary
+	// through a custom child that forwards handlers and the shared nodeRef.
 	adaptedCase('tag/test/DraggableCore.test.jsx::should work with forwardRef components', () => {
-		const mounted = mountCore();
-		expect(mounted.nodeRef.current).toBe(mounted.node);
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		const root = createRoot(container);
+		const nodeRef = { current: null as HTMLDivElement | null };
+		const onDrag = vi.fn();
+		function CustomChild(props: {
+			ref?: { current: HTMLDivElement | null };
+			'data-testid'?: string;
+			children?: string;
+			onMouseDown?: (event: MouseEvent) => void;
+			onMouseUp?: (event: MouseEvent) => void;
+			onTouchEnd?: (event: TouchEvent) => void;
+		}) {
+			return createElement(
+				'div',
+				{
+					ref: props.ref,
+					'data-testid': props['data-testid'],
+					onMouseDown: props.onMouseDown,
+					onMouseUp: props.onMouseUp,
+					onTouchEnd: props.onTouchEnd,
+				},
+				props.children ?? 'Custom',
+			);
+		}
+		root.render(
+			createElement(DraggableCore, {
+				nodeRef,
+				onDrag,
+				enableUserSelectHack: false,
+				children: createElement(CustomChild, {
+					ref: nodeRef,
+					'data-testid': 'target',
+					children: 'Custom',
+				}),
+			}),
+		);
+		flushSync(() => {});
+		flushEffects();
+		const target = container.querySelector('[data-testid="target"]') as HTMLDivElement;
+		expect(nodeRef.current).toBe(target);
+		mouse(target, 'mousedown', { clientX: 0, clientY: 0 });
+		mouse(document, 'mousemove', { clientX: 5, clientY: 6 });
+		expect(onDrag).toHaveBeenCalled();
+		expect(onDrag.mock.calls[0][1].node.textContent).toBe('Custom');
+		root.unmount();
+		container.remove();
 	});
 	adaptedCase('tag/test/DraggableCore.test.jsx::should handle touch start', () => {
 		const mounted = mountCore();
@@ -438,10 +496,17 @@ describe('pinned DraggableCore public cases', () => {
 			);
 		},
 	);
+	// Upstream reads class-instance `.mounted`; Octane keeps that guard private.
+	// Assert the consumer-visible cleanup: an active drag must not continue after unmount.
 	adaptedCase('tag/test/DraggableCore.test.jsx::should track mounted state correctly', () => {
 		const mounted = mountCore();
+		mouse(mounted.node, 'mousedown');
+		expect(mounted.onStart).toHaveBeenCalledTimes(1);
 		mounted.root.unmount();
-		expect(mounted.node.isConnected).toBe(false);
+		mouse(document, 'mousemove', { clientX: 10, clientY: 12 });
+		mouse(document, 'mouseup', { clientX: 10, clientY: 12 });
+		expect(mounted.onDrag).not.toHaveBeenCalled();
+		expect(mounted.onStop).not.toHaveBeenCalled();
 	});
 	adaptedCase(
 		'tag/test/DraggableCore.test.jsx::should not continue drag if onStart returns false',
