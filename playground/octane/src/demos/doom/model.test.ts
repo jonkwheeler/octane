@@ -120,6 +120,24 @@ describe('Doom fixed-step model', () => {
 		expect(shot.z).toBeCloseTo(chased.enemies[0]!.z + postChaseDisplacement * 0.075, 8);
 	});
 
+	it('keeps idle enemies outside the player solid radius so movement cannot soft-lock', () => {
+		const state = createGameState();
+		state.player = { x: 0, y: 1, z: 0, yaw: 0 };
+		const enemy = state.enemies[0]!;
+		enemy.x = 1.52;
+		enemy.z = 0;
+		enemy.direction = -Math.PI / 2;
+		enemy.nextDirectionAt = ENEMY_DIRECTION_MS;
+		const after = stepGame(state, idle, 1);
+		expect(
+			Math.hypot(after.enemies[0]!.x - after.player.x, after.enemies[0]!.z - after.player.z),
+		).toBeGreaterThanOrEqual(1.5);
+		expect(after.enemies[0]!.x).toBeCloseTo(enemy.x, 8);
+		expect(after.enemies[0]!.z).toBeCloseTo(enemy.z, 8);
+		const escaped = stepGame(after, { ...idle, left: true }, 2);
+		expect(escaped.player.x).toBeLessThan(after.player.x);
+	});
+
 	it('preserves the collectible restoration quirk', () => {
 		const state = createGameState();
 		state.player.x = state.pickups[0]!.x;

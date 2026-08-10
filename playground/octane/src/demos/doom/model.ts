@@ -126,6 +126,10 @@ export function isBlocked(state: GameState, point: Point, includeEnemies = true)
 	return includeEnemies && state.enemies.some((enemy) => near(point, enemy, 1.5));
 }
 
+function enemyCanOccupy(state: GameState, point: Point): boolean {
+	return !cellBlocks(point, 1.5) && !near(point, BLOCKING_PROP, 1.5) && !near(point, state.player, 1.5);
+}
+
 export function hasGridLineOfSight(from: Point, to: Point): boolean {
 	const length = distance(from, to);
 	const samples = Math.max(1, Math.ceil(length * 4));
@@ -205,7 +209,7 @@ export function stepGame(previous: GameState, input: InputState, now: number): G
 				const dx = (state.player.x - enemy.x) * 0.0075;
 				const dz = (state.player.z - enemy.z) * 0.0075;
 				const next = { x: enemy.x + dx, z: enemy.z + dz };
-				if (!cellBlocks(next, 1.5) && !near(next, BLOCKING_PROP, 1.5)) Object.assign(enemy, next);
+				if (enemyCanOccupy(state, next)) Object.assign(enemy, next);
 			}
 			if (now - enemy.lastShotAt >= ENEMY_FIRE_COOLDOWN_MS) {
 				enemy.lastShotAt = now;
@@ -230,7 +234,7 @@ export function stepGame(previous: GameState, input: InputState, now: number): G
 				x: enemy.x + Math.sin(enemy.direction) * 0.025,
 				z: enemy.z + Math.cos(enemy.direction) * 0.025,
 			};
-			if (!cellBlocks(next, 1.5) && !near(next, BLOCKING_PROP, 1.5)) Object.assign(enemy, next);
+			if (enemyCanOccupy(state, next)) Object.assign(enemy, next);
 		}
 	}
 
