@@ -49,21 +49,21 @@ package typecheck.
 ## Executable parity evidence
 
 `audit/react-parity.json` registers the pristine upstream Playwright lane, the
-separate adapted upstream browser lane, the adapted `drei` Vitest project
-(paired files only), an isolated `drei-differential` View canary, and
+separate adapted upstream browser lane, the `drei-differential` Vitest project
+(all paired React/Octane characterization files, including the View canary), and
 repo-authored pristine/adapted type lanes with the global
 `react-parity:check` harness.
 `audit/test-classifications.json` gives every port-authored test file exactly
 one disposition. Paired files import the pinned React Drei oracle in the test
-body; `config.test.ts`, `crosswalk-guard.test.ts`, and `react-parity-guard.test.ts`
-are Octane-only and execute in the ordinary `drei-guards` project outside
-`testExecution`.
+body; `config.test.ts`, `crosswalk-guard.test.ts`, `react-parity-guard.test.ts`,
+and `view-renderer-boundary.test.ts` are Octane-only and execute in the ordinary
+`drei-guards` project outside `testExecution`.
 
 `audit/runtime-evidence.json` hashes every test file and every collected assertion
 inventory. `audit/upstream-test-artifacts.json` records the executed screenshot
 case and its supporting artifacts. `typetests/assertions.md` defines the
 permitted import/comment transformations and shared assertion groups. The audit
-guard includes negative controls for a dropped adapted inventory file, deleted
+guard includes negative controls for a dropped differential inventory file, deleted
 assertion, removed upstream `@ts-expect-error` inventory entry, and fabricated
 upstream type suite.
 

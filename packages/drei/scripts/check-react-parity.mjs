@@ -38,7 +38,7 @@ function normalizedTypeAssertions(source) {
 		.replaceAll('@react-three/drei', '@octanejs/drei');
 }
 
-const inventory = read('adapted-runtime.json');
+const inventory = read('differential-runtime.json');
 const evidence = read('runtime-evidence.json');
 const classifications = read('test-classifications.json');
 const upstream = read('upstream-test-artifacts.json');
@@ -52,18 +52,13 @@ const discovered = readdirSync(resolve(root, 'packages/drei/tests'), {
 	.map((entry) => portable(relative(root, resolve(entry.parentPath, entry.name))))
 	.sort();
 const inventoried = [...inventory.files].sort();
-const differential = discovered.filter((path) => path.includes('/tests/differential/'));
+const differential = inventoried;
 const guards = discovered.filter((path) => isOctaneOnly(path));
-const expectedAdapted = discovered
-	.filter(
-		(path) =>
-			!isOctaneOnly(path) &&
-			!path.includes('/tests/differential/') &&
-			!path.includes('/tests/browser/'),
-	)
+const expectedDifferential = discovered
+	.filter((path) => !isOctaneOnly(path) && !path.includes('/tests/browser/'))
 	.sort();
-if (JSON.stringify(expectedAdapted) !== JSON.stringify(inventoried))
-	fail('adapted inventory must cover every paired file and exclude guards/differential');
+if (JSON.stringify(expectedDifferential) !== JSON.stringify(inventoried))
+	fail('differential inventory must cover every paired file and exclude guards/browser');
 if (differential.length === 0) fail('differential project files are missing');
 if (guards.filter((path) => OCTANE_ONLY_GUARDS.has(path)).length !== OCTANE_ONLY_GUARDS.size)
 	fail('octane-only guard files drifted');
@@ -242,5 +237,5 @@ for (const lane of manifest.lanes.filter((lane) =>
 }
 
 console.log(
-	`Drei parity evidence is current (${inventory.tests.length} adapted assertions in ${inventory.files.length} files; ${differential.length} differential file(s); ${guards.length} Octane-only guards).`,
+	`Drei parity evidence is current (${inventory.tests.length} differential assertions in ${inventory.files.length} files; ${guards.length} Octane-only guards).`,
 );

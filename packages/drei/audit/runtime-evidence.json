@@ -562,9 +562,9 @@
     },
     {
       "path": "packages/drei/tests/react-parity-guard.test.ts",
-      "sha256": "d8081bf2f89a35ba5c5645407fea60ba6b40c76186e2dee57232ab3f3802a55d",
+      "sha256": "93581cbd5f96600c32f49b2c3b214c5de0c3fe52d6c262291141f8905656f0ff",
       "assertionCount": 7,
-      "assertionInventorySha256": "2f4fe252055e821a94f0ef9811f512699f2730b74a1f08aa8d33634bae684710"
+      "assertionInventorySha256": "fb638aa9b9ffdca8f04365589d93810277541a3718b31c04cbad80e4b8950162"
     },
     {
       "path": "packages/drei/tests/render-textures.test.ts",
@@ -772,7 +772,7 @@
     },
     {
       "path": "packages/drei/tests/view-renderer-boundary.test.ts",
-      "sha256": "f2fa1fb526aa00be14e67979c50ad86f342f75cfb1d96283ef459adb6196309e",
+      "sha256": "6c6a33608d17203ff1a0de01217d58e23143cb4fd70f9e7bff5f9e80c37225e8",
       "assertionCount": 1,
       "assertionInventorySha256": "94da7a2764f9178115fa4c3a2c6b2b62f74c4c7e760ee513483f76f36c9113fc"
     },

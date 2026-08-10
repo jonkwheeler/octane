@@ -2582,11 +2582,11 @@ export default defineConfig({
 				},
 			},
 			{
-				// Paired React/Octane characterization only. Octane-only contracts live in
-				// drei-guards so whole-project ownership does not absorb them as parity evidence.
+				// All paired React/Octane characterization (root suite + View canary). Octane-only
+				// contracts stay in drei-guards so differential ownership stays non-overlapping.
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'drei',
+					name: 'drei-differential',
 					include: ['packages/drei/tests/**/*.test.ts'],
 					exclude: [
 						...configDefaults.exclude,
@@ -2595,30 +2595,8 @@ export default defineConfig({
 						'packages/drei/tests/react-parity-guard.test.ts',
 						'packages/drei/tests/view-renderer-boundary.test.ts',
 						'packages/drei/tests/octane-contracts/**/*.test.ts',
-						'packages/drei/tests/differential/**/*.test.ts',
 						'packages/drei/tests/browser/**/*.browser.test.ts',
 					],
-					environment: 'jsdom',
-					globals: false,
-					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },
-				},
-				plugins: [octane({ renderers: DREI_RENDERERS })],
-				resolve: {
-					alias: [
-						...THREE_ALIASES,
-						{
-							find: /^@octanejs\/drei$/,
-							replacement: resolve(import.meta.dirname, 'packages/drei/src/index.ts'),
-						},
-					],
-					dedupe: ['react', 'react-dom', 'three'],
-				},
-			},
-			{
-				testExecution: { group: 'react-parity' },
-				test: {
-					name: 'drei-differential',
-					include: ['packages/drei/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 					server: { deps: { inline: ['@react-three/drei', '@react-three/fiber'] } },

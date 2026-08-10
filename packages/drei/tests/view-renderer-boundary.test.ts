@@ -4,6 +4,7 @@ import { View } from '../src/web/View.three.tsrx';
 import { ViewDomBoundary } from './_fixtures/view-dom-boundary.tsrx';
 
 describe('View renderer boundary', () => {
+	// @parity-case octane-only:view-renderer-boundary
 	it('documents the outside-DOM renderer boundary while keeping View.Port callable', () => {
 		const root = createOctaneDomRoot(document.createElement('div'));
 		expect(() => root.render(ViewDomBoundary, {})).toThrow(

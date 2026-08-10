@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "project": "drei",
+  "project": "drei-differential",
   "roots": ["packages/drei/tests"],
   "files": [
     "packages/drei/tests/accumulative-shadows.test.ts",
@@ -26,6 +26,7 @@
     "packages/drei/tests/decal.test.ts",
     "packages/drei/tests/depth-buffer.test.ts",
     "packages/drei/tests/detect-gpu.test.ts",
+    "packages/drei/tests/differential/view.test.ts",
     "packages/drei/tests/drag-controls.test.ts",
     "packages/drei/tests/effects-utils.test.ts",
     "packages/drei/tests/effects.test.ts",
@@ -389,6 +390,16 @@
       "id": "runtime:bbd45fa51fcf22be",
       "file": "packages/drei/tests/detect-gpu.test.ts",
       "fullName": "DetectGPU matches the pinned React Drei suspension, result, render callback, and global cache key"
+    },
+    {
+      "id": "runtime:c09c9986485c3abd",
+      "file": "packages/drei/tests/differential/view.test.ts",
+      "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
+    },
+    {
+      "id": "runtime:63a5a201aebec8ad",
+      "file": "packages/drei/tests/differential/view.test.ts",
+      "fullName": "View matches tracked rect, viewport/scissor/render restoration, frames and refs"
     },
     {
       "id": "runtime:81f62e7c44af57ea",

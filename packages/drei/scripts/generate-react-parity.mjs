@@ -54,17 +54,16 @@ function withIds(tests) {
 	});
 }
 
-const adaptedTests = withIds(listProject('drei'));
 const differentialTests = withIds(listProject('drei-differential'));
 const browserTests = withIds(listProject('drei-adapted-browser'));
 const guardTests = listProject('drei-guards');
 
 const inventory = {
 	schemaVersion: 1,
-	project: 'drei',
+	project: 'drei-differential',
 	roots: ['packages/drei/tests'],
-	files: [...new Set(adaptedTests.map((test) => test.file))],
-	tests: adaptedTests,
+	files: [...new Set(differentialTests.map((test) => test.file))],
+	tests: differentialTests,
 };
 const browserInventory = {
 	schemaVersion: 1,
@@ -76,7 +75,6 @@ const browserInventory = {
 
 const allParityAndGuardFiles = [
 	...inventory.files,
-	...differentialTests.map((test) => test.file),
 	...browserTests.map((test) => test.file),
 	...guardTests.map((test) => test.file),
 ].sort();
@@ -141,7 +139,7 @@ const runtimeEvidence = {
 	oracle: '@react-three/drei@10.7.7 with React 19 and @react-three/fiber@9.6.1',
 	files: uniqueFiles.map((path) => {
 		const contents = readFileSync(resolve(root, path));
-		const assertions = [...adaptedTests, ...differentialTests].filter((test) => test.file === path);
+		const assertions = differentialTests.filter((test) => test.file === path);
 		const guardAssertions = guardTests.filter((test) => test.file === path);
 		const allAssertions = assertions.length > 0 ? assertions : guardAssertions;
 		return {
@@ -226,7 +224,7 @@ function readdirRecursive(directory) {
 }
 
 const generatedFiles = [
-	['adapted-runtime.json', inventory],
+	['differential-runtime.json', inventory],
 	['upstream-browser.json', browserInventory],
 	['test-classifications.json', classifications],
 	['runtime-evidence.json', runtimeEvidence],
@@ -250,7 +248,7 @@ execFileSync(
 
 const manifestPath = resolve(auditRoot, 'react-parity.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-const runtimeIdentities = new Set(adaptedTests.map((test) => `${test.file}\0${test.fullName}`));
+const runtimeIdentities = new Set(browserTests.map((test) => `${test.file}\0${test.fullName}`));
 manifest.upstreamSuites = { runtime: 'insufficient', types: 'absent' };
 manifest.adaptedRoots = {
 	source: {
@@ -259,23 +257,15 @@ manifest.adaptedRoots = {
 		exclude: [],
 	},
 	tests: {
-		roots: ['packages/drei/tests'],
-		include: ['\\.test\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$'],
-		exclude: [
-			'tests/config\\.test\\.ts$',
-			'tests/crosswalk-guard\\.test\\.ts$',
-			'tests/react-parity-guard\\.test\\.ts$',
-			'tests/view-renderer-boundary\\.test\\.ts$',
-			'tests/octane-contracts/',
-			'tests/differential/',
-			'tests/browser/',
-		],
+		roots: ['packages/drei/tests/browser'],
+		include: ['\\.browser\\.test\\.ts$'],
+		exclude: [],
 	},
 };
 manifest.adaptedRuntimeSummary = {
-	inventoryEntries: adaptedTests.length,
+	inventoryEntries: browserTests.length,
 	uniqueIdentities: runtimeIdentities.size,
-	duplicateEntriesWithinLanes: adaptedTests.length - runtimeIdentities.size,
+	duplicateEntriesWithinLanes: browserTests.length - runtimeIdentities.size,
 	identitiesSharedAcrossLanes: 0,
 };
 manifest.environments['workspace-node'].lockfileSha256 = digest(
@@ -285,7 +275,14 @@ manifest.environments['workspace-node'].lockfileSha256 = digest(
 function requireDifferentialCase(needle) {
 	const match = differentialTests.find((test) => test.fullName.includes(needle));
 	if (!match) {
-		throw new Error(`differential canary case missing from drei-differential project: ${needle}`);
+		throw new Error(`differential case missing from drei-differential project: ${needle}`);
+	}
+	return match;
+}
+function requireGuardCase(needle) {
+	const match = guardTests.find((test) => test.fullName.includes(needle));
+	if (!match) {
+		throw new Error(`guard case missing from drei-guards project: ${needle}`);
 	}
 	return match;
 }
@@ -294,6 +291,9 @@ const viewRenderingCase = requireDifferentialCase(
 );
 const viewVisibilityCase = requireDifferentialCase(
 	'matches invisible and offscreen clear/render boundaries and event connection cleanup',
+);
+const viewBoundaryCase = requireGuardCase(
+	'documents the outside-DOM renderer boundary while keeping View.Port callable',
 );
 const adaptedScreenshotCase = browserTests.find((test) =>
 	test.fullName.endsWith('should match previous one'),
@@ -383,23 +383,23 @@ manifest.lanes = [
 		],
 	},
 	{
-		id: 'drei-repo-authored-full-suite',
-		type: 'adapted-octane',
+		id: 'drei-repo-authored-differential',
+		type: 'differential',
 		oracle: 'required',
 		environment: 'workspace-node',
-		project: 'drei',
+		project: 'drei-differential',
 		evidenceOrigin: 'repo-authored',
 		notes:
-			'Runs the 100 paired React/Octane characterization files. Octane-only guards stay in drei-guards; the View canary lives in drei-differential.',
+			'Runs the paired React/Octane characterization suite (including the View canary) under the non-overlapping drei-differential project. Octane-only guards stay in drei-guards.',
 		execution: {
 			kind: 'vitest-full',
-			inventory: 'packages/drei/audit/adapted-runtime.json',
+			inventory: 'packages/drei/audit/differential-runtime.json',
 		},
 		files: [
 			{
-				path: 'packages/drei/audit/adapted-runtime.json',
+				path: 'packages/drei/audit/differential-runtime.json',
 				role: 'support',
-				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/adapted-runtime.json'))),
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/differential-runtime.json'))),
 			},
 			{
 				path: 'packages/drei/audit/runtime-evidence.json',
@@ -425,18 +425,6 @@ manifest.lanes = [
 				role: 'support',
 				sha256: digest(readFileSync(resolve(root, 'packages/drei/scripts/check-react-parity.mjs'))),
 			},
-		],
-	},
-	{
-		id: 'drei-differential-canary',
-		type: 'differential',
-		oracle: 'required',
-		environment: 'workspace-node',
-		project: 'drei-differential',
-		evidenceOrigin: 'repo-authored',
-		notes:
-			'Isolated View canary proving paired React/Octane Three-renderer selection outside the full adapted suite.',
-		files: [
 			{
 				path: 'packages/drei/tests/differential/view.test.ts',
 				role: 'test',
@@ -454,6 +442,20 @@ manifest.lanes = [
 						testName:
 							'matches invisible and offscreen clear/render boundaries and event connection cleanup',
 						fullName: viewVisibilityCase.fullName,
+					},
+				],
+			},
+			{
+				path: 'packages/drei/tests/view-renderer-boundary.test.ts',
+				role: 'test',
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/tests/view-renderer-boundary.test.ts')),
+				),
+				cases: [
+					{
+						id: 'octane-only:view-renderer-boundary',
+						testName: 'documents the outside-DOM renderer boundary while keeping View.Port callable',
+						fullName: viewBoundaryCase.fullName,
 					},
 				],
 			},
@@ -535,7 +537,7 @@ manifest.lanes = [
 manifest.divergences = [
 	{
 		id: 'view-renderer-boundary',
-		caseIds: ['differential:view-rendering'],
+		caseIds: ['octane-only:view-renderer-boundary'],
 		upstreamResult:
 			'React Drei View can render from a DOM root and move authored Three children through View.Port via tunnel-rat.',
 		octaneResult:

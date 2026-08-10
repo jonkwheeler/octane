@@ -21,22 +21,14 @@
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/drei/tests"],
-      "include": ["\\.test\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
-      "exclude": [
-        "tests/config\\.test\\.ts$",
-        "tests/crosswalk-guard\\.test\\.ts$",
-        "tests/react-parity-guard\\.test\\.ts$",
-        "tests/view-renderer-boundary\\.test\\.ts$",
-        "tests/octane-contracts/",
-        "tests/differential/",
-        "tests/browser/"
-      ]
+      "roots": ["packages/drei/tests/browser"],
+      "include": ["\\.browser\\.test\\.ts$"],
+      "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 257,
-    "uniqueIdentities": 257,
+    "inventoryEntries": 1,
+    "uniqueIdentities": 1,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -121,27 +113,27 @@
       ]
     },
     {
-      "id": "drei-repo-authored-full-suite",
-      "type": "adapted-octane",
+      "id": "drei-repo-authored-differential",
+      "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "drei",
+      "project": "drei-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs the 100 paired React/Octane characterization files. Octane-only guards stay in drei-guards; the View canary lives in drei-differential.",
+      "notes": "Runs the paired React/Octane characterization suite (including the View canary) under the non-overlapping drei-differential project. Octane-only guards stay in drei-guards.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/drei/audit/adapted-runtime.json"
+        "inventory": "packages/drei/audit/differential-runtime.json"
       },
       "files": [
         {
-          "path": "packages/drei/audit/adapted-runtime.json",
+          "path": "packages/drei/audit/differential-runtime.json",
           "role": "support",
-          "sha256": "2ded5c934b480f237f7391d618dbf4256f8a2798ad1ea87a54d3f9b956ec2409"
+          "sha256": "b906a3b42d514f22e5065777946443e6971d0c9a8aa0d3623a888ebea224e2ae"
         },
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "203eaa33d749b5fd370e0e6877a0bdfefc4190ed716db96b04899b408e13761a"
+          "sha256": "e6d71aefdac935885be2f1ee1eea9a1107bb0e34dc65db3ddf285f36c42b0b5f"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
@@ -156,19 +148,8 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "3fa028933ef056f3c7ea04489a65b34710758b9c89200553d07fd7720807e54c"
-        }
-      ]
-    },
-    {
-      "id": "drei-differential-canary",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "drei-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Isolated View canary proving paired React/Octane Three-renderer selection outside the full adapted suite.",
-      "files": [
+          "sha256": "41e3f0136b0c9b3753febbc7f6873f894c72e524c9930f67da9b6b4c218f8113"
+        },
         {
           "path": "packages/drei/tests/differential/view.test.ts",
           "role": "test",
@@ -183,6 +164,18 @@
               "id": "differential:view-visibility",
               "testName": "matches invisible and offscreen clear/render boundaries and event connection cleanup",
               "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
+            }
+          ]
+        },
+        {
+          "path": "packages/drei/tests/view-renderer-boundary.test.ts",
+          "role": "test",
+          "sha256": "6c6a33608d17203ff1a0de01217d58e23143cb4fd70f9e7bff5f9e80c37225e8",
+          "cases": [
+            {
+              "id": "octane-only:view-renderer-boundary",
+              "testName": "documents the outside-DOM renderer boundary while keeping View.Port callable",
+              "fullName": "View renderer boundary documents the outside-DOM renderer boundary while keeping View.Port callable"
             }
           ]
         }
@@ -258,7 +251,7 @@
   "divergences": [
     {
       "id": "view-renderer-boundary",
-      "caseIds": ["differential:view-rendering"],
+      "caseIds": ["octane-only:view-renderer-boundary"],
       "upstreamResult": "React Drei View can render from a DOM root and move authored Three children through View.Port via tunnel-rat.",
       "octaneResult": "Calling View from an Octane DOM root fails with the universal renderer-boundary diagnostic, and View.Port is a callable no-op.",
       "rationale": "Octane components are statically renderer-owned, so one component cannot switch between DOM and Three renderers or transport authored Three children between independent roots.",

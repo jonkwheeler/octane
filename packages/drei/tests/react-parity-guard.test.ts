@@ -36,16 +36,16 @@ async function runTypeMutation(file: string, mutate: (value: string) => string) 
 }
 
 describe('Drei React-parity guard', () => {
-	it('rejects an adapted inventory that drops a paired runtime file', async () => {
-		const result = await runMutation('adapted-runtime.json', (value) => value.files.pop());
+	it('rejects a differential inventory that drops a paired runtime file', async () => {
+		const result = await runMutation('differential-runtime.json', (value) => value.files.pop());
 		expect(result.status).not.toBe(0);
 		expect(result.stderr).toContain(
-			'adapted inventory must cover every paired file and exclude guards/differential',
+			'differential inventory must cover every paired file and exclude guards/browser',
 		);
 	});
 
 	it('rejects a deleted assertion identity', async () => {
-		const result = await runMutation('adapted-runtime.json', (value) => value.tests.pop());
+		const result = await runMutation('differential-runtime.json', (value) => value.tests.pop());
 		expect(result.status).not.toBe(0);
 		expect(result.stderr).toContain('lost or gained an assertion');
 	});
