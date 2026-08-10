@@ -1,12 +1,12 @@
-# `@octanejs/react-syntax-highlighter`
+# `@octanejs/syntax-highlighter`
 
 The Octane binding for `react-syntax-highlighter@16.1.1`. It preserves the
 default, Light, Prism, async, language, style, renderer, and deep-import
 surfaces without adding React to the runtime graph.
 
 ```tsrx
-import { Prism } from '@octanejs/react-syntax-highlighter';
-import vscDarkPlus from '@octanejs/react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus';
+import { Prism } from '@octanejs/syntax-highlighter';
+import vscDarkPlus from '@octanejs/syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus';
 
 export function CodeSample() @{
 	<Prism
@@ -23,8 +23,8 @@ Existing imports can be rewritten package-for-package:
 ```diff
 - import SyntaxHighlighter from 'react-syntax-highlighter';
 - import javascript from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-+ import SyntaxHighlighter from '@octanejs/react-syntax-highlighter';
-+ import javascript from '@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript';
++ import SyntaxHighlighter from '@octanejs/syntax-highlighter';
++ import javascript from '@octanejs/syntax-highlighter/dist/esm/languages/hljs/javascript';
 ```
 
 The complete generated export map includes extensionless and `.js` ESM/CJS

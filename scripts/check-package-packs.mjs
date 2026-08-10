@@ -393,7 +393,7 @@ async function validatePackedConsumer(tempRoot, archives) {
 					'@apollo/client': '4.2.6',
 					'@octanejs/apollo-client': `file:${requireArchive(archives, '@octanejs/apollo-client')}`,
 					'@octanejs/hook-form': `file:${requireArchive(archives, '@octanejs/hook-form')}`,
-					'@octanejs/react-syntax-highlighter': `file:${requireArchive(archives, '@octanejs/react-syntax-highlighter')}`,
+					'@octanejs/syntax-highlighter': `file:${requireArchive(archives, '@octanejs/syntax-highlighter')}`,
 					'@octanejs/three': `file:${requireArchive(archives, '@octanejs/three')}`,
 					'@types/three': '0.172.0',
 					graphql: '^16.11.0',
@@ -415,9 +415,9 @@ async function validatePackedConsumer(tempRoot, archives) {
 		`import { ApolloClient, InMemoryCache } from '@octanejs/apollo-client';
 import { ApolloProvider, useApolloClient } from '@octanejs/apollo-client/react';
 import { useForm } from '@octanejs/hook-form';
-import { Light, Prism, PrismAsync } from '@octanejs/react-syntax-highlighter';
-import javascript from '@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-import vscDarkPlus from '@octanejs/react-syntax-highlighter/dist/cjs/styles/prism/vsc-dark-plus';
+import { Light, Prism, PrismAsync } from '@octanejs/syntax-highlighter';
+import javascript from '@octanejs/syntax-highlighter/dist/esm/languages/hljs/javascript';
+import vscDarkPlus from '@octanejs/syntax-highlighter/dist/cjs/styles/prism/vsc-dark-plus';
 import { Canvas } from '@octanejs/three';
 import { ThreeScene } from './ThreeScene.three.tsrx';
 
@@ -477,11 +477,11 @@ export function ThreeScene() @{
 	writeFileSync(
 		path.join(sourceDirectory, 'package-surface.ts'),
 		`import * as publicApi from '@octanejs/three';
-import * as syntaxApi from '@octanejs/react-syntax-highlighter';
-import LightAsync from '@octanejs/react-syntax-highlighter/dist/esm/light-async';
-import PrismLight from '@octanejs/react-syntax-highlighter/dist/cjs/prism-light.js';
-import javascript from '@octanejs/react-syntax-highlighter/dist/cjs/languages/hljs/javascript.js';
-import vscDarkPlus from '@octanejs/react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus.js';
+import * as syntaxApi from '@octanejs/syntax-highlighter';
+import LightAsync from '@octanejs/syntax-highlighter/dist/esm/light-async';
+import PrismLight from '@octanejs/syntax-highlighter/dist/cjs/prism-light.js';
+import javascript from '@octanejs/syntax-highlighter/dist/cjs/languages/hljs/javascript.js';
+import vscDarkPlus from '@octanejs/syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus.js';
 import * as coreApi from '@octanejs/three/core';
 import * as rendererApi from '@octanejs/three/renderer';
 import config, { threeRenderers } from '@octanejs/three/config';
@@ -653,7 +653,7 @@ process.stdout.write(JSON.stringify(result));`,
 			`binding resolved a second Octane runtime:\n  app: ${directRuntime}\n  binding: ${peerRuntime}`,
 		);
 	}
-	const syntaxEntry = consumerRequire.resolve('@octanejs/react-syntax-highlighter');
+	const syntaxEntry = consumerRequire.resolve('@octanejs/syntax-highlighter');
 	const syntaxPeerRuntime = realpathSync(createRequire(syntaxEntry).resolve('octane'));
 	if (syntaxPeerRuntime !== directRuntime) {
 		throw new Error(

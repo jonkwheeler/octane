@@ -61,7 +61,7 @@ export const PACKED_TSRX_CONSUMER_PACKAGES = [
 	'@octanejs/cmdk',
 	'@octanejs/floating-ui',
 	'@octanejs/radix',
-	'@octanejs/react-syntax-highlighter',
+	'@octanejs/syntax-highlighter',
 	'@octanejs/sonner',
 	'@octanejs/tiptap',
 	'octane',
@@ -118,9 +118,9 @@ export function createPackedTsrxConsumerConfig() {
 
 export function renderPackedTsrxConsumerSource() {
 	return `import { Command } from '@octanejs/cmdk';
-import { Light } from '@octanejs/react-syntax-highlighter';
-import javascript from '@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-import docco from '@octanejs/react-syntax-highlighter/dist/esm/styles/hljs/docco';
+import { Light } from '@octanejs/syntax-highlighter';
+import javascript from '@octanejs/syntax-highlighter/dist/esm/languages/hljs/javascript';
+import docco from '@octanejs/syntax-highlighter/dist/esm/styles/hljs/docco';
 import { toast, Toaster } from '@octanejs/sonner';
 import {
 	Editor,
@@ -186,7 +186,7 @@ export function PublishedSourceConsumer() @{
 
 export function renderPackedTsrxConsumerTypeProbe() {
 	return `import { Command, type CommandProps } from '@octanejs/cmdk';
-import SyntaxHighlighter, { type SyntaxHighlighterProps } from '@octanejs/react-syntax-highlighter';
+import SyntaxHighlighter, { type SyntaxHighlighterProps } from '@octanejs/syntax-highlighter';
 import { Toaster, useSonner, type ToasterProps } from '@octanejs/sonner';
 import {
 	EditorContent,

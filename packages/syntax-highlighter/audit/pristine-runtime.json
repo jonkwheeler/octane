@@ -258,5 +258,5 @@
     }
   ],
   "snapshots": 40,
-  "root": "packages/react-syntax-highlighter/upstream"
+  "root": "packages/syntax-highlighter/upstream"
 }

@@ -73,7 +73,7 @@ function listProject(project) {
 	}));
 }
 
-const adaptedPrefix = 'packages/react-syntax-highlighter/tests/adapted/';
+const adaptedPrefix = 'packages/syntax-highlighter/tests/adapted/';
 const adaptedTests = listProject('react-syntax-highlighter')
 	.filter((test) => test.file.startsWith(adaptedPrefix))
 	.map((test) => ({ id: testId(test.file, test.fullName), ...test }))
@@ -83,7 +83,7 @@ const adaptedTests = listProject('react-syntax-highlighter')
 const adaptedInventory = {
 	schemaVersion: 1,
 	project: 'react-syntax-highlighter',
-	roots: ['packages/react-syntax-highlighter/tests/adapted'],
+	roots: ['packages/syntax-highlighter/tests/adapted'],
 	files: [...new Set(adaptedTests.map((test) => test.file))],
 	tests: adaptedTests,
 };
@@ -94,14 +94,14 @@ const pristineOutput = execFileSync(
 	[
 		'scripts/react-parity/jest-full-runner.mjs',
 		'--config',
-		'packages/react-syntax-highlighter/jest.pristine.config.cjs',
+		'packages/syntax-highlighter/jest.pristine.config.cjs',
 		'--root',
-		'packages/react-syntax-highlighter/upstream',
+		'packages/syntax-highlighter/upstream',
 	],
 	{ cwd: repoRoot, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 );
 const pristineInventory = JSON.parse(pristineOutput);
-pristineInventory.root = 'packages/react-syntax-highlighter/upstream';
+pristineInventory.root = 'packages/syntax-highlighter/upstream';
 await writeJson(resolve(auditRoot, 'pristine-runtime.json'), pristineInventory);
 
 const normalizedFile = (path) =>
@@ -177,13 +177,13 @@ async function manifestFile(path, role = 'support', cases) {
 }
 
 const selectedCases = {
-	'packages/react-syntax-highlighter/tests/differential/parity.test.ts': [
+	'packages/syntax-highlighter/tests/differential/parity.test.ts': [
 		[
 			'differential:render-and-update',
 			'matches React DOM across line rendering, custom tags, and a language update',
 		],
 	],
-	'packages/react-syntax-highlighter/tests/browser/rendering.browser.test.ts': [
+	'packages/syntax-highlighter/tests/browser/rendering.browser.test.ts': [
 		[
 			'browser:chromium-render-update-async',
 			'matches rendering, selection, updates, and async loading in Chromium',
@@ -226,14 +226,13 @@ async function selectedLane({ id, type, project, files, notes }) {
 	};
 }
 
-const differentialFiles = ['packages/react-syntax-highlighter/tests/differential/parity.test.ts'];
-const browserFiles = ['packages/react-syntax-highlighter/tests/browser/rendering.browser.test.ts'];
+const differentialFiles = ['packages/syntax-highlighter/tests/differential/parity.test.ts'];
+const browserFiles = ['packages/syntax-highlighter/tests/browser/rendering.browser.test.ts'];
 
 const packageJson = JSON.parse(await readFile(resolve(repoRoot, 'package.json'), 'utf8'));
 const lockfileSha256 = await sha256('pnpm-lock.yaml');
-const tarball =
-	'packages/react-syntax-highlighter/upstream/npm/react-syntax-highlighter-16.1.1.tgz';
-const adaptedEvidenceFiles = (await walkFiles('packages/react-syntax-highlighter/tests/adapted'))
+const tarball = 'packages/syntax-highlighter/upstream/npm/react-syntax-highlighter-16.1.1.tgz';
+const adaptedEvidenceFiles = (await walkFiles('packages/syntax-highlighter/tests/adapted'))
 	.filter((path) => path.endsWith('.test.ts') || path.endsWith('.snap'))
 	.sort();
 const lanes = [
@@ -247,14 +246,14 @@ const lanes = [
 		notes: 'Runs all 19 pinned upstream Jest suites, 51 identities, and 40 snapshots unchanged.',
 		execution: {
 			kind: 'jest-full',
-			config: 'packages/react-syntax-highlighter/jest.pristine.config.cjs',
-			root: 'packages/react-syntax-highlighter/upstream',
-			inventory: 'packages/react-syntax-highlighter/audit/pristine-runtime.json',
+			config: 'packages/syntax-highlighter/jest.pristine.config.cjs',
+			root: 'packages/syntax-highlighter/upstream',
+			inventory: 'packages/syntax-highlighter/audit/pristine-runtime.json',
 		},
 		files: await Promise.all([
-			manifestFile('packages/react-syntax-highlighter/audit/pristine-runtime.json'),
-			manifestFile('packages/react-syntax-highlighter/jest.pristine.config.cjs'),
-			manifestFile('packages/react-syntax-highlighter/audit/upstream-files.json'),
+			manifestFile('packages/syntax-highlighter/audit/pristine-runtime.json'),
+			manifestFile('packages/syntax-highlighter/jest.pristine.config.cjs'),
+			manifestFile('packages/syntax-highlighter/audit/upstream-files.json'),
 		]),
 	},
 	{
@@ -268,13 +267,13 @@ const lanes = [
 			'Runs every generated one-for-one Octane adaptation with the same 51 titles and 40 structural snapshots.',
 		execution: {
 			kind: 'vitest-full',
-			inventory: 'packages/react-syntax-highlighter/audit/adapted-runtime.json',
+			inventory: 'packages/syntax-highlighter/audit/adapted-runtime.json',
 		},
 		files: await Promise.all([
-			manifestFile('packages/react-syntax-highlighter/audit/adapted-runtime.json'),
-			manifestFile('packages/react-syntax-highlighter/audit/upstream-crosswalk.json'),
-			manifestFile('packages/react-syntax-highlighter/scripts/generate-adapted-tests.mjs'),
-			manifestFile('packages/react-syntax-highlighter/scripts/generate-parity-audit.mjs'),
+			manifestFile('packages/syntax-highlighter/audit/adapted-runtime.json'),
+			manifestFile('packages/syntax-highlighter/audit/upstream-crosswalk.json'),
+			manifestFile('packages/syntax-highlighter/scripts/generate-adapted-tests.mjs'),
+			manifestFile('packages/syntax-highlighter/scripts/generate-parity-audit.mjs'),
 			...adaptedEvidenceFiles.map((path) => manifestFile(path)),
 		]),
 	},
@@ -308,11 +307,11 @@ const lanes = [
 		execution: {
 			kind: 'typescript',
 			compiler: 'tsc',
-			project: 'packages/react-syntax-highlighter/typetests/pristine/tsconfig.json',
+			project: 'packages/syntax-highlighter/typetests/pristine/tsconfig.json',
 		},
 		files: [
 			await manifestFile(
-				'packages/react-syntax-highlighter/typetests/pristine/public-api.test-d.ts',
+				'packages/syntax-highlighter/typetests/pristine/public-api.test-d.ts',
 				'test',
 				[
 					{
@@ -322,8 +321,8 @@ const lanes = [
 					},
 				],
 			),
-			await manifestFile('packages/react-syntax-highlighter/typetests/pristine/tsconfig.json'),
-			await manifestFile('packages/react-syntax-highlighter/audit/type-crosswalk.json'),
+			await manifestFile('packages/syntax-highlighter/typetests/pristine/tsconfig.json'),
+			await manifestFile('packages/syntax-highlighter/audit/type-crosswalk.json'),
 		],
 	},
 	{
@@ -338,11 +337,11 @@ const lanes = [
 		execution: {
 			kind: 'typescript',
 			compiler: 'tsrx-tsc',
-			project: 'packages/react-syntax-highlighter/typetests/adapted/tsconfig.json',
+			project: 'packages/syntax-highlighter/typetests/adapted/tsconfig.json',
 		},
 		files: [
 			await manifestFile(
-				'packages/react-syntax-highlighter/typetests/adapted/public-api.test-d.ts',
+				'packages/syntax-highlighter/typetests/adapted/public-api.test-d.ts',
 				'test',
 				[
 					{
@@ -357,8 +356,8 @@ const lanes = [
 					},
 				],
 			),
-			await manifestFile('packages/react-syntax-highlighter/typetests/adapted/tsconfig.json'),
-			await manifestFile('packages/react-syntax-highlighter/audit/type-crosswalk.json'),
+			await manifestFile('packages/syntax-highlighter/typetests/adapted/tsconfig.json'),
+			await manifestFile('packages/syntax-highlighter/audit/type-crosswalk.json'),
 		],
 	},
 ];
@@ -379,12 +378,12 @@ const manifest = {
 	upstreamSuites: { runtime: 'present', types: 'insufficient' },
 	adaptedRoots: {
 		source: {
-			roots: ['packages/react-syntax-highlighter/src'],
+			roots: ['packages/syntax-highlighter/src'],
 			include: ['\\.(?:js|d\\.ts)$'],
 			exclude: [],
 		},
 		tests: {
-			roots: ['packages/react-syntax-highlighter/tests/adapted'],
+			roots: ['packages/syntax-highlighter/tests/adapted'],
 			include: ['\\.test\\.ts$'],
 			exclude: [],
 		},
@@ -420,7 +419,7 @@ const manifest = {
 				'Rewrite nested SyntaxHighlighter source to the explicit children prop in .tsrx.',
 			migrationGuidance:
 				'Replace <SyntaxHighlighter>{source}</SyntaxHighlighter> with <SyntaxHighlighter children={source} />.',
-			owner: '@octanejs/react-syntax-highlighter',
+			owner: '@octanejs/syntax-highlighter',
 			reviewCondition:
 				'Remove only if Octane exposes a supported value-child lowering for text-inspecting component APIs.',
 		},
@@ -438,7 +437,7 @@ const manifest = {
 				'Native tags and ordinary function components migrate directly; React class components require a function adapter.',
 			migrationGuidance:
 				'Replace a React class-valued custom tag with an Octane function component returning the same native host.',
-			owner: '@octanejs/react-syntax-highlighter',
+			owner: '@octanejs/syntax-highlighter',
 			reviewCondition:
 				'Remove only if Octane gains a supported React class-component execution bridge.',
 		},

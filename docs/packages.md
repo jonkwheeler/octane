@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**74 publishable package(s), including 60 framework binding(s) and 3 framework integration(s).**
+**75 publishable package(s), including 61 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -48,7 +48,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.13` | 2 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.14` | 2 |
 | `@octanejs/react-map-gl` | [`packages/react-map-gl`](../packages/react-map-gl) | framework binding | `0.0.5` | 2 |
-| `@octanejs/react-syntax-highlighter` | [`packages/react-syntax-highlighter`](../packages/react-syntax-highlighter) | framework binding | `0.1.0` | 2634 |
 | `@octanejs/recharts` | [`packages/recharts`](../packages/recharts) | framework binding | `0.1.30` | 1 |
 | `@octanejs/redux` | [`packages/redux`](../packages/redux) | framework binding | `0.1.30` | 1 |
 | `@octanejs/redux-toolkit` | [`packages/redux-toolkit`](../packages/redux-toolkit) | framework binding | `0.1.28` | 4 |
@@ -63,6 +62,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/streamdown` | [`packages/streamdown`](../packages/streamdown) | framework binding | `0.1.12` | 6 |
 | `@octanejs/styled-components` | [`packages/styled-components`](../packages/styled-components) | framework binding | `0.1.25` | 1 |
 | `@octanejs/stylex` | [`packages/stylex`](../packages/stylex) | framework binding | `0.1.32` | 2 |
+| `@octanejs/syntax-highlighter` | [`packages/syntax-highlighter`](../packages/syntax-highlighter) | framework binding | `0.1.0` | 2634 |
 | `@octanejs/tanstack-ai` | [`packages/tanstack-ai`](../packages/tanstack-ai) | framework binding | `0.0.27` | 1 |
 | `@octanejs/tanstack-devtools` | [`packages/tanstack-devtools`](../packages/tanstack-devtools) | framework binding | `0.0.27` | 1 |
 | `@octanejs/tanstack-form` | [`packages/tanstack-form`](../packages/tanstack-form) | framework binding | `0.0.27` | 1 |

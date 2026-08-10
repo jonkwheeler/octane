@@ -2,11 +2,11 @@
 // React.PureComponent is expressed as an Octane function component with a
 // post-commit effect. The public static methods and shared loader caches remain
 // properties of the returned component function.
-import { createElement, useEffect, useState } from 'octane';
-import highlight from './highlight.js';
+import { createElement, useEffect, useState } from "octane";
+import highlight from "./highlight.js";
 
-const EFFECT_SLOT = Symbol.for('@octanejs/react-syntax-highlighter:async:effect');
-const STATE_SLOT = Symbol.for('@octanejs/react-syntax-highlighter:async:state');
+const EFFECT_SLOT = Symbol.for("@octanejs/syntax-highlighter:async:effect");
+const STATE_SLOT = Symbol.for("@octanejs/syntax-highlighter:async:state");
 
 export default function createAsyncLoadingHighlighter(options) {
 	const {
@@ -28,11 +28,13 @@ export default function createAsyncLoadingHighlighter(options) {
 				};
 
 				const astGeneratorPromise =
-					AsyncHighlighter.astGeneratorPromise || AsyncHighlighter.loadAstGenerator();
-				if (!AsyncHighlighter.astGenerator) astGeneratorPromise.then(refresh, () => {});
+					AsyncHighlighter.astGeneratorPromise ||
+					AsyncHighlighter.loadAstGenerator();
+				if (!AsyncHighlighter.astGenerator)
+					astGeneratorPromise.then(refresh, () => {});
 
 				if (
-					props.language !== 'text' &&
+					props.language !== "text" &&
 					languageLoaders &&
 					!AsyncHighlighter.isRegistered(props.language)
 				) {
@@ -49,7 +51,9 @@ export default function createAsyncLoadingHighlighter(options) {
 			EFFECT_SLOT,
 		);
 
-		const language = AsyncHighlighter.isSupportedLanguage(props.language) ? props.language : 'text';
+		const language = AsyncHighlighter.isSupportedLanguage(props.language)
+			? props.language
+			: "text";
 		return createElement(AsyncHighlighter.highlightInstance, {
 			...props,
 			language,
@@ -62,33 +66,40 @@ export default function createAsyncLoadingHighlighter(options) {
 		highlightInstance: highlight(null, {}),
 		astGeneratorPromise: null,
 		languages: new Map(),
-		supportedLanguages: options.supportedLanguages || Object.keys(languageLoaders || {}),
+		supportedLanguages:
+			options.supportedLanguages || Object.keys(languageLoaders || {}),
 		preload() {
 			return AsyncHighlighter.loadAstGenerator();
 		},
 		async loadLanguage(language) {
 			const languageLoader = languageLoaders?.[language];
-			if (typeof languageLoader === 'function') {
+			if (typeof languageLoader === "function") {
 				return languageLoader(AsyncHighlighter.registerLanguage);
 			}
 			throw new Error(`Language ${language} not supported`);
 		},
 		isSupportedLanguage(language) {
 			return (
-				AsyncHighlighter.isRegistered(language) || typeof languageLoaders?.[language] === 'function'
+				AsyncHighlighter.isRegistered(language) ||
+				typeof languageLoaders?.[language] === "function"
 			);
 		},
 		isRegistered(language) {
 			if (noAsyncLoadingLanguages) return true;
 			if (!registerLanguage) {
-				throw new Error("Current syntax highlighter doesn't support registration of languages");
+				throw new Error(
+					"Current syntax highlighter doesn't support registration of languages",
+				);
 			}
-			if (!AsyncHighlighter.astGenerator) return AsyncHighlighter.languages.has(language);
+			if (!AsyncHighlighter.astGenerator)
+				return AsyncHighlighter.languages.has(language);
 			return isLanguageRegistered(AsyncHighlighter.astGenerator, language);
 		},
 		registerLanguage(name, language) {
 			if (!registerLanguage) {
-				throw new Error("Current syntax highlighter doesn't support registration of languages");
+				throw new Error(
+					"Current syntax highlighter doesn't support registration of languages",
+				);
 			}
 			if (AsyncHighlighter.astGenerator) {
 				return registerLanguage(AsyncHighlighter.astGenerator, name, language);

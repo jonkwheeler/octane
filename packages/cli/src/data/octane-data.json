@@ -424,19 +424,6 @@
       "verified": "2026-08-06"
     },
     {
-      "name": "@octanejs/react-syntax-highlighter",
-      "version": "0.1.0",
-      "category": "Forms and content",
-      "upstream": { "package": "react-syntax-highlighter", "version": "16.1.1" },
-      "surface": "Complete against react-syntax-highlighter 16.1.1: default, Light, Prism, async and async-light components; static registration and language lists; custom renderers and tags; all pinned Highlight.js and Prism languages and styles; and all ESM/CJS deep-import aliases.",
-      "divergences": [
-        "PreTag and CodeTag accept native tag names or Octane function components. React class components require a function adapter because React instance identity is renderer-owned.",
-        "In .tsrx, source text must use the explicit children={source} prop. Nested component children compile to an opaque renderer block that a text-inspecting component cannot unwrap."
-      ],
-      "ssr": "Synchronous variants emit highlighted server HTML without DOM globals. Async variants emit the same deterministic plain-code fallback and hydrate by adopting the existing pre, code, and token nodes before live updates.",
-      "verified": "2026-08-03"
-    },
-    {
       "name": "@octanejs/recharts",
       "version": "0.1.30",
       "category": "Data-heavy screens",
@@ -613,6 +600,19 @@
       ],
       "ssr": "Works under SSR — the stylesheet is static and server markup carries the final class names; no dedicated SSR test files.",
       "verified": "2026-07-09"
+    },
+    {
+      "name": "@octanejs/syntax-highlighter",
+      "version": "0.1.0",
+      "category": "Forms and content",
+      "upstream": { "package": "react-syntax-highlighter", "version": "16.1.1" },
+      "surface": "Complete against react-syntax-highlighter 16.1.1: default, Light, Prism, async and async-light components; static registration and language lists; custom renderers and tags; all pinned Highlight.js and Prism languages and styles; and all ESM/CJS deep-import aliases.",
+      "divergences": [
+        "PreTag and CodeTag accept native tag names or Octane function components. React class components require a function adapter because React instance identity is renderer-owned.",
+        "In .tsrx, source text must use the explicit children={source} prop. Nested component children compile to an opaque renderer block that a text-inspecting component cannot unwrap."
+      ],
+      "ssr": "Synchronous variants emit highlighted server HTML without DOM globals. Async variants emit the same deterministic plain-code fallback and hydrate by adopting the existing pre, code, and token nodes before live updates.",
+      "verified": "2026-08-03"
     },
     {
       "name": "@octanejs/tanstack-ai",
@@ -1012,7 +1012,7 @@
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
     "react-stately": "@octanejs/aria",
-    "react-syntax-highlighter": "@octanejs/react-syntax-highlighter",
+    "react-syntax-highlighter": "@octanejs/syntax-highlighter",
     "recharts": "@octanejs/recharts",
     "shadcn": "@octanejs/shadcn",
     "sonner": "@octanejs/sonner",

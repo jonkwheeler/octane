@@ -1,282 +1,282 @@
 {
   "schemaVersion": 1,
   "project": "react-syntax-highlighter",
-  "roots": ["packages/react-syntax-highlighter/tests/adapted"],
+  "roots": ["packages/syntax-highlighter/tests/adapted"],
   "files": [
-    "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/code-style-passed-to-line-numbers.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/custom-code.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/custom-pre.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/light-async.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/multiline-comments.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/no-inline.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/no-language.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/prism-async-light.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/prism-async.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/prism-light.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/refractor.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/render-plain-string.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/render.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/text-language.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/unknown-language.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/vue-language.test.ts",
-    "packages/react-syntax-highlighter/tests/adapted/wrap-lines.test.ts"
+    "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+    "packages/syntax-highlighter/tests/adapted/code-style-passed-to-line-numbers.test.ts",
+    "packages/syntax-highlighter/tests/adapted/custom-code.test.ts",
+    "packages/syntax-highlighter/tests/adapted/custom-pre.test.ts",
+    "packages/syntax-highlighter/tests/adapted/light-async.test.ts",
+    "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
+    "packages/syntax-highlighter/tests/adapted/multiline-comments.test.ts",
+    "packages/syntax-highlighter/tests/adapted/no-inline.test.ts",
+    "packages/syntax-highlighter/tests/adapted/no-language.test.ts",
+    "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts",
+    "packages/syntax-highlighter/tests/adapted/prism-async.test.ts",
+    "packages/syntax-highlighter/tests/adapted/prism-light.test.ts",
+    "packages/syntax-highlighter/tests/adapted/refractor.test.ts",
+    "packages/syntax-highlighter/tests/adapted/render-plain-string.test.ts",
+    "packages/syntax-highlighter/tests/adapted/render.test.ts",
+    "packages/syntax-highlighter/tests/adapted/text-language.test.ts",
+    "packages/syntax-highlighter/tests/adapted/unknown-language.test.ts",
+    "packages/syntax-highlighter/tests/adapted/vue-language.test.ts",
+    "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts"
   ],
   "tests": [
     {
       "id": "runtime:1281ff9f0523860d",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter isRegistered when astGenerator is defined it should call isLanguageRegistered"
     },
     {
       "id": "runtime:a1b1904c67233cc8",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter isRegistered when astGenerator is not defined it checks the languages array"
     },
     {
       "id": "runtime:3976232dc74deaf1",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter isRegistered when registerLanguage is not defined"
     },
     {
       "id": "runtime:822cee340fdc708c",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter loadAstGenerator should return the promise of the loader"
     },
     {
       "id": "runtime:3a40505ba6557689",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter loadAstGenerator when astGenerator resolves"
     },
     {
       "id": "runtime:2054d0719c2a1077",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter loadAstGenerator when astGenerator resolves and it has languages in the language array"
     },
     {
       "id": "runtime:bb6db29f178604c5",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter registerLanguage when registerLanguage & astGenerator is defined"
     },
     {
       "id": "runtime:2d581fec543f802a",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter registerLanguage when registerLanguage is defined but astGenerator isn't"
     },
     {
       "id": "runtime:3c53d3d9799c969d",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter registerLanguage when registerLanguage is undefined"
     },
     {
       "id": "runtime:6b7c57ca5e60cc46",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter when a supportedLanguages array is passed in it should be set to the supported languages static field"
     },
     {
       "id": "runtime:28f3aca2865914d1",
-      "file": "packages/react-syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts",
       "fullName": "AsyncSyntaxHighlighter when language loaders are passed in, it should set the keys to the supported languages static field"
     },
     {
       "id": "runtime:c5064ce818fd332f",
-      "file": "packages/react-syntax-highlighter/tests/adapted/code-style-passed-to-line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/code-style-passed-to-line-numbers.test.ts",
       "fullName": "SyntaxHighlighter component passes along code style to non-inline line numbers element"
     },
     {
       "id": "runtime:81d0122aafbb0eeb",
-      "file": "packages/react-syntax-highlighter/tests/adapted/custom-code.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/custom-code.test.ts",
       "fullName": "SyntaxHighlighter component renders custom react component where code tag is by default"
     },
     {
       "id": "runtime:1b62ed3d31cb2351",
-      "file": "packages/react-syntax-highlighter/tests/adapted/custom-code.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/custom-code.test.ts",
       "fullName": "SyntaxHighlighter renders div where code tag is by default"
     },
     {
       "id": "runtime:4701b63be4f03077",
-      "file": "packages/react-syntax-highlighter/tests/adapted/custom-pre.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/custom-pre.test.ts",
       "fullName": "SyntaxHighlighter component renders custom react component where pre tag is by default"
     },
     {
       "id": "runtime:f8872856b0676a15",
-      "file": "packages/react-syntax-highlighter/tests/adapted/custom-pre.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/custom-pre.test.ts",
       "fullName": "SyntaxHighlighter renders div where pre tag is by default"
     },
     {
       "id": "runtime:8bb36b1cb43623a3",
-      "file": "packages/react-syntax-highlighter/tests/adapted/light-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/light-async.test.ts",
       "fullName": "SyntaxHighlighter render as text if language doesnt exist"
     },
     {
       "id": "runtime:6ff17cf46e6627fa",
-      "file": "packages/react-syntax-highlighter/tests/adapted/light-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/light-async.test.ts",
       "fullName": "SyntaxHighlighter renders fortran highlighted text"
     },
     {
       "id": "runtime:ee108099f8aaab5a",
-      "file": "packages/react-syntax-highlighter/tests/adapted/light-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/light-async.test.ts",
       "fullName": "SyntaxHighlighter renders javascript highlighted text"
     },
     {
       "id": "runtime:ad03f3b907a72b93",
-      "file": "packages/react-syntax-highlighter/tests/adapted/light-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/light-async.test.ts",
       "fullName": "SyntaxHighlighter renders text while language loads"
     },
     {
       "id": "runtime:0e8fc926b0121a92",
-      "file": "packages/react-syntax-highlighter/tests/adapted/light-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/light-async.test.ts",
       "fullName": "When the code split is loaded - SyntaxHighlighter renders jsx highlighted text"
     },
     {
       "id": "runtime:9113c188d81dab6c",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter allows lineNumberStyle as function"
     },
     {
       "id": "runtime:b731cc90b74fba96",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter allows lineNumberStyle as function for inline line numbers"
     },
     {
       "id": "runtime:c0a36d6f2ee70cd1",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter allows lineNumberStyle as object"
     },
     {
       "id": "runtime:e55c646207f12e55",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter component does not render line numbers if showInlineNumbers === true && showLineNumbers === undefined"
     },
     {
       "id": "runtime:7ad51345bc795308",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter component does not render line numbers if showLineNumbers === undefined"
     },
     {
       "id": "runtime:d5031bfe155e5dd3",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly"
     },
     {
       "id": "runtime:80acf2e79251ef08",
-      "file": "packages/react-syntax-highlighter/tests/adapted/line-numbers.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts",
       "fullName": "SyntaxHighlighter component renders line numbers if showLineNumbers === true"
     },
     {
       "id": "runtime:3639b439b99e0155",
-      "file": "packages/react-syntax-highlighter/tests/adapted/multiline-comments.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/multiline-comments.test.ts",
       "fullName": "Syntaxhighliter correctly renders multi-line comments in arduino language"
     },
     {
       "id": "runtime:b21b3c28435fade2",
-      "file": "packages/react-syntax-highlighter/tests/adapted/no-inline.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/no-inline.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly without inline styles when useInlineStyles=false"
     },
     {
       "id": "runtime:1f0f8b6f664fd6c5",
-      "file": "packages/react-syntax-highlighter/tests/adapted/no-language.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/no-language.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly"
     },
     {
       "id": "runtime:aaaf5712f07c0ec8",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async-light.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts",
       "fullName": "SyntaxHighlighter renders jsx highlighted text"
     },
     {
       "id": "runtime:b4cc17f1d9645202",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async-light.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts",
       "fullName": "SyntaxHighlighter should just render text if syntax is not registered"
     },
     {
       "id": "runtime:d06527e4eac759d5",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async-light.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts",
       "fullName": "When the code split is loaded - SyntaxHighlighter renders python highlighted text after async loading python"
     },
     {
       "id": "runtime:ee56a2c307ba3dc6",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts",
       "fullName": "Prism SyntaxHighlighter renders template strings and JSX correctly"
     },
     {
       "id": "runtime:3ae469c87ee47e49",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts",
       "fullName": "SyntaxHighlighter renders jsx highlighted text"
     },
     {
       "id": "runtime:9ff7eefccef698cd",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts",
       "fullName": "SyntaxHighlighter should just render text if syntax is not registered"
     },
     {
       "id": "runtime:72384ee2479187c7",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-async.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts",
       "fullName": "When the code split is loaded - SyntaxHighlighter renders jsx highlighted text"
     },
     {
       "id": "runtime:9ce895beb3ea464e",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-light.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-light.test.ts",
       "fullName": "SyntaxHighlighter renders jsx highlighted text"
     },
     {
       "id": "runtime:3966f09cf03ef506",
-      "file": "packages/react-syntax-highlighter/tests/adapted/prism-light.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/prism-light.test.ts",
       "fullName": "SyntaxHighlighter should just render text if syntax is not registered"
     },
     {
       "id": "runtime:5b7ee8a737e62c93",
-      "file": "packages/react-syntax-highlighter/tests/adapted/refractor.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/refractor.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly with refractor instead of lowlight"
     },
     {
       "id": "runtime:a5900098549a87b3",
-      "file": "packages/react-syntax-highlighter/tests/adapted/render-plain-string.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/render-plain-string.test.ts",
       "fullName": "SyntaxHighlighter renders childre unadultered when no language disocvered in highlight auto"
     },
     {
       "id": "runtime:396f65383bf19352",
-      "file": "packages/react-syntax-highlighter/tests/adapted/render.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/render.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly"
     },
     {
       "id": "runtime:1c9d2e8e768b7ed2",
-      "file": "packages/react-syntax-highlighter/tests/adapted/text-language.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/text-language.test.ts",
       "fullName": "SyntaxHighlighter component renders monospace text when text is passed as language"
     },
     {
       "id": "runtime:996972800a5b7575",
-      "file": "packages/react-syntax-highlighter/tests/adapted/unknown-language.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/unknown-language.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly by falling back to highlightAuto if unknown language provided"
     },
     {
       "id": "runtime:b15885b5327dc322",
-      "file": "packages/react-syntax-highlighter/tests/adapted/vue-language.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/vue-language.test.ts",
       "fullName": "SyntaxHighlighter component renders vue"
     },
     {
       "id": "runtime:8e0c46dd1865ae96",
-      "file": "packages/react-syntax-highlighter/tests/adapted/wrap-lines.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts",
       "fullName": "Prism SyntaxHighlighter renders JSX code correctly with wrapLines"
     },
     {
       "id": "runtime:d78320d6b2ee5a07",
-      "file": "packages/react-syntax-highlighter/tests/adapted/wrap-lines.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts",
       "fullName": "SyntaxHighlighter allows lineProps as an object"
     },
     {
       "id": "runtime:44261b2467befc09",
-      "file": "packages/react-syntax-highlighter/tests/adapted/wrap-lines.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts",
       "fullName": "SyntaxHighlighter allows lineProps as function"
     },
     {
       "id": "runtime:af0441820a0f2b5d",
-      "file": "packages/react-syntax-highlighter/tests/adapted/wrap-lines.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts",
       "fullName": "SyntaxHighlighter component renders correctly"
     },
     {
       "id": "runtime:394e85ef0ccc54f8",
-      "file": "packages/react-syntax-highlighter/tests/adapted/wrap-lines.test.ts",
+      "file": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts",
       "fullName": "SyntaxHighlighter renders java code correctly with wrapLines"
     }
   ]

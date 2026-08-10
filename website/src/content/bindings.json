@@ -68,7 +68,7 @@
       "@octanejs/tiptap",
       "@octanejs/streamdown",
       "@octanejs/monaco-editor",
-      "@octanejs/react-syntax-highlighter",
+      "@octanejs/syntax-highlighter",
       "@octanejs/mdx",
       "@octanejs/i18next"
     ]

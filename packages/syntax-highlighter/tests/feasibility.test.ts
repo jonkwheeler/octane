@@ -17,8 +17,8 @@ describe('react-syntax-highlighter feasibility gate', () => {
 	// @parity-case conformance:entrypoint-families
 	it('resolves representative pinned ESM and CJS path families', async () => {
 		const [esmLanguage, cjsStyle] = await Promise.all([
-			import('@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript'),
-			import('@octanejs/react-syntax-highlighter/dist/cjs/styles/prism/vsc-dark-plus.js'),
+			import('@octanejs/syntax-highlighter/dist/esm/languages/hljs/javascript'),
+			import('@octanejs/syntax-highlighter/dist/cjs/styles/prism/vsc-dark-plus.js'),
 		]);
 		expect(typeof esmLanguage.default).toBe('function');
 		expect(cjsStyle.default['pre[class*="language-"]']).toBeTruthy();

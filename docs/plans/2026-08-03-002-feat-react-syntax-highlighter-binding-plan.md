@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Ship `@octanejs/react-syntax-highlighter` as an exact React-free binding for `react-syntax-highlighter@16.1.1`, preserving the root component variants, registration APIs, AST renderer contract, and supported published language/style/build deep imports.
+- **Objective:** Ship `@octanejs/syntax-highlighter` as an exact React-free binding for `react-syntax-highlighter@16.1.1`, preserving the root component variants, registration APIs, AST renderer contract, and supported published language/style/build deep imports.
 - **Authority:** npm SHA-1 `928459855d375f5cfc8e646071e20d541cebcb52`, npm integrity `sha512-PjVawBGy80C6YbC5DDZJeUjBmC7skaoEUdvfFQediQHgCL7aKyVHe57SaJGfQsloGDac+gCpTfRdtxzWWKmCXA==`, source commit `ecac533ba1fce8cf4f98a79c5c913f1a7ffab34c`, the MIT license, current repository guidance, and executable React-oracle evidence govern parity in that order.
 - **Execution profile:** Preserve framework-neutral lowlight, refractor, Prism, grammar, AST, and style data; re-author only React-owned rendering and async lifecycle seams; generate the high-cardinality deep-import surface from one pinned inventory.
 - **Stop conditions:** Stop for license/source mismatch, a dynamic-tag/custom-renderer/async contract that Octane cannot express without a prerequisite core PR, deep-import compatibility that cannot be represented honestly, or browser/SSR evidence that contradicts the parity claim.
@@ -109,42 +109,42 @@ Pin provenance and generate the surface inventory first. Run the U2 feasibility 
 ### U1. Pin upstream provenance and inventory the public surface
 
 - **Requirements:** R1-R5, R13-R15; KTD1-KTD2, KTD5, KTD7.
-- **Files:** `packages/react-syntax-highlighter/{package.json,LICENSE,UPSTREAM.md}`, `packages/react-syntax-highlighter/upstream/`, `packages/react-syntax-highlighter/audit/`, `packages/react-syntax-highlighter/scripts/{verify-upstream,generate-entrypoints}.mjs`.
+- **Files:** `packages/syntax-highlighter/{package.json,LICENSE,UPSTREAM.md}`, `packages/syntax-highlighter/upstream/`, `packages/syntax-highlighter/audit/`, `packages/syntax-highlighter/scripts/{verify-upstream,generate-entrypoints}.mjs`.
 - **Approach:** Retain byte-exact source/tests/snapshots and a published tarball inventory. Classify root exports, every `dist/esm`/`dist/cjs` build module, 197 Highlight.js languages, 300 Prism languages, 99 Highlight.js styles, 47 Prism styles, aliases, supported-language modules, declarations, and intentional exclusions. Create manifest/crosswalk skeletons before product code.
 - **Test scenarios:** Correct pin passes; altered tarball/source/license/test/snapshot hash fails; missing/extra/colliding/unsorted deep entry fails; unpublished evidence remains absent from the pack; root and deep import counts match both artifacts.
 
 ### U2. Prove the rendering and async feasibility gate
 
 - **Requirements:** R1-R2, R6, R8-R12; KTD3-KTD4, KTD6. Depends on U1.
-- **Files:** `packages/react-syntax-highlighter/tests/feasibility/`, initial `src/create-element.tsrx`, initial `src/async-syntax-highlighter.tsrx`, `vitest.config.js`.
+- **Files:** `packages/syntax-highlighter/tests/feasibility/`, initial `src/create-element.tsrx`, initial `src/async-syntax-highlighter.tsrx`, `vitest.config.js`.
 - **Approach:** Build minimal same-scenario React/Octane fixtures for recursive AST tags, dynamic native/component tags, custom renderer output, static members, server fallback, hydration adoption, queued grammar registration, and two out-of-order loader completions. Stop and open a prerequisite plan if the declared surface cannot be expressed honestly.
 - **Test scenarios:** Token nesting/text; custom native and component tags; renderer returning nested output; static method access; async preload/register/load/error; switch A to B before A resolves; unmount before completion; SSR import/render; hydrate identical fallback then resolve.
 
 ### U3. Port synchronous engines and renderer behavior
 
 - **Requirements:** R1-R8; KTD3, KTD6.
-- **Files:** `packages/react-syntax-highlighter/src/{index,highlight,create-element,default-highlight,light,prism,prism-light}.tsrx`, helpers under `src/`, adapted tests under `tests/upstream/`.
+- **Files:** `packages/syntax-highlighter/src/{index,highlight,create-element,default-highlight,light,prism,prism-light}.tsrx`, helpers under `src/`, adapted tests under `tests/upstream/`.
 - **Approach:** Port the pinned module structure and algorithms with typed AST/data boundaries. Preserve class/style permutation, line splitting, line numbers, wrapping, tags, renderer, fallback, registration, aliases, and static supported-language members.
 - **Test scenarios:** Every synchronous upstream case plus text/no/unknown language, Highlight.js auto-detect, Prism failure fallback, multiline tokens, trailing newline, custom style/class, inline styles off, all line-number modes, lineProps callbacks, wrapLines/LongLines, custom tags/renderers, and rerenders.
 
 ### U4. Port async variants and lifecycle
 
 - **Requirements:** R1, R5, R8-R10; KTD3-KTD4.
-- **Files:** `packages/react-syntax-highlighter/src/{async-syntax-highlighter,light-async,prism-async,prism-async-light}.tsrx`, async loader inventory/modules, async adapted/differential tests.
+- **Files:** `packages/syntax-highlighter/src/{async-syntax-highlighter,light-async,prism-async,prism-async-light}.tsrx`, async loader inventory/modules, async adapted/differential tests.
 - **Approach:** Replace class lifecycle with Octane state/effects and explicit request generations. Preserve shared generator/language registration semantics without allowing stale promise completion or post-unmount updates.
 - **Test scenarios:** All upstream async snapshots; preload; shared generator reuse; pre-registration; supported/unsupported/text languages; loader reject; concurrent language switches; remount; multiple instances; SSR fallback; hydration then resolution.
 
 ### U5. Generate and verify deep language/style/build entrypoints
 
 - **Requirements:** R3-R5, R13; KTD1-KTD2, KTD5.
-- **Files:** generated modules under `packages/react-syntax-highlighter/src/{languages,styles,compat}/`, package exports, generator tests, exact expected-subpath inventory.
+- **Files:** generated modules under `packages/syntax-highlighter/src/{languages,styles,compat}/`, package exports, generator tests, exact expected-subpath inventory.
 - **Approach:** Generate leaf modules/barrels/aliases and explicit export conditions from the pinned inventory. Re-export framework-neutral grammar/style data without React. Preserve both recorded path families while testing actual ESM/CJS behavior separately.
 - **Test scenarios:** Import every expected path; compare language/style values and keys to upstream; register representative grammars from each family; resolve canonical/alias paths; reject extra/missing/collision/stale output; packed `import` and supported `require` probes.
 
 ### U6. Build complete parity, type, SSR, hydration, and browser evidence
 
 - **Requirements:** R1-R15; KTD6-KTD7.
-- **Files:** `packages/react-syntax-highlighter/tests/{pristine,differential,ssr,hydration,browser,negative-controls}/`, `typetests/`, `audit/{react-parity,pristine-runtime,adapted-runtime,upstream-crosswalk}.json`, package/vitest configs, root `vitest.config.js`.
+- **Files:** `packages/syntax-highlighter/tests/{pristine,differential,ssr,hydration,browser,negative-controls}/`, `typetests/`, `audit/{react-parity,pristine-runtime,adapted-runtime,upstream-crosswalk}.json`, package/vitest configs, root `vitest.config.js`.
 - **Approach:** Execute 51 pristine React identities and one-for-one adapted cases, paired public types, exact differentials, server/adoption lanes, and Chromium/Firefox fixtures. Keep projects non-overlapping and declare parity ownership through current guidance.
 - **Test scenarios:** Requirements R1-R12 across root variants and representative deep imports; every upstream title/snapshot; exact DOM/text/class/style; updates; SSR no-globals; hydration node identity/selection; selection/copy; async race; deleted/renamed/skipped case, stale hash, missing lane, and removed type assertion negative controls.
 

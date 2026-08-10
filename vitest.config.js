@@ -263,16 +263,16 @@ export default defineConfig({
 				// and negative controls remain ordinary Octane conformance coverage.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-syntax-highlighter/tests/adapted/**/*.test.ts'],
+					include: ['packages/syntax-highlighter/tests/adapted/**/*.test.ts'],
 				},
 				test: {
-					name: 'react-syntax-highlighter',
+					name: 'syntax-highlighter',
 					fileParallelism: false,
 					include: [
-						'packages/react-syntax-highlighter/tests/**/*.test.ts',
-						'!packages/react-syntax-highlighter/tests/ssr/**/*.test.ts',
-						'!packages/react-syntax-highlighter/tests/browser/**/*.test.ts',
-						'!packages/react-syntax-highlighter/tests/differential/**/*.test.ts',
+						'packages/syntax-highlighter/tests/**/*.test.ts',
+						'!packages/syntax-highlighter/tests/ssr/**/*.test.ts',
+						'!packages/syntax-highlighter/tests/browser/**/*.test.ts',
+						'!packages/syntax-highlighter/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -282,8 +282,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-syntax-highlighter-differential',
-					include: ['packages/react-syntax-highlighter/tests/differential/**/*.test.ts'],
+					name: 'syntax-highlighter-differential',
+					include: ['packages/syntax-highlighter/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -292,8 +292,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-syntax-highlighter-browser',
-					include: ['packages/react-syntax-highlighter/tests/browser/**/*.test.ts'],
+					name: 'syntax-highlighter-browser',
+					include: ['packages/syntax-highlighter/tests/browser/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,
@@ -305,8 +305,8 @@ export default defineConfig({
 			{
 				// Octane-only SSR assertions (no React/upstream oracle) stay ordinary.
 				test: {
-					name: 'react-syntax-highlighter-ssr',
-					include: ['packages/react-syntax-highlighter/tests/ssr/**/*.test.ts'],
+					name: 'syntax-highlighter-ssr',
+					include: ['packages/syntax-highlighter/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},

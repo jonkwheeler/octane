@@ -24,7 +24,7 @@ describe('the shipped catalog', () => {
 		expect(resolveBinding('zustand')?.binding.name).toBe('@octanejs/zustand');
 		expect(resolveBinding('@tanstack/react-query')?.binding.name).toBe('@octanejs/tanstack-query');
 		expect(resolveBinding('react-syntax-highlighter')?.binding.name).toBe(
-			'@octanejs/react-syntax-highlighter',
+			'@octanejs/syntax-highlighter',
 		);
 		expect(resolveBinding('react-select')).toBe(null);
 	});

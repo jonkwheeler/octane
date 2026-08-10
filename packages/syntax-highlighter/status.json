@@ -9,9 +9,6 @@
     "In .tsrx, source text must use the explicit children={source} prop. Nested component children compile to an opaque renderer block that a text-inspecting component cannot unwrap."
   ],
   "ssr": "Synchronous variants emit highlighted server HTML without DOM globals. Async variants emit the same deterministic plain-code fallback and hydrate by adopting the existing pre, code, and token nodes before live updates.",
-  "docs": [
-    "packages/react-syntax-highlighter/README.md",
-    "packages/react-syntax-highlighter/UPSTREAM.md"
-  ],
+  "docs": ["packages/syntax-highlighter/README.md", "packages/syntax-highlighter/UPSTREAM.md"],
   "verified": "2026-08-03"
 }

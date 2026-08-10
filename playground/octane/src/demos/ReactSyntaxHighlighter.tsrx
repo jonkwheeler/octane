@@ -1,5 +1,5 @@
-import { Prism } from '@octanejs/react-syntax-highlighter';
-import vscDarkPlus from '@octanejs/react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus';
+import { Prism } from '@octanejs/syntax-highlighter';
+import vscDarkPlus from '@octanejs/syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus';
 
 const source = `type Binding = {
   framework: 'Octane';

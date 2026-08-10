@@ -7,9 +7,9 @@ import SyntaxHighlighter, {
 	PrismLight,
 	createElement,
 	type SyntaxHighlighterProps,
-} from '@octanejs/react-syntax-highlighter';
-import javascript from '@octanejs/react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-import github from '@octanejs/react-syntax-highlighter/dist/esm/styles/hljs/github';
+} from '@octanejs/syntax-highlighter';
+import javascript from '@octanejs/syntax-highlighter/dist/esm/languages/hljs/javascript';
+import github from '@octanejs/syntax-highlighter/dist/esm/styles/hljs/github';
 
 // @type-case props
 const props = {

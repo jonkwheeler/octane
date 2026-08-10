@@ -106,7 +106,7 @@ describe('packed TSRX source consumers', () => {
 		'@octanejs/cmdk': 'file:/tmp/cmdk.tgz',
 		'@octanejs/floating-ui': 'file:/tmp/floating-ui.tgz',
 		'@octanejs/radix': 'file:/tmp/radix.tgz',
-		'@octanejs/react-syntax-highlighter': 'file:/tmp/react-syntax-highlighter.tgz',
+		'@octanejs/syntax-highlighter': 'file:/tmp/syntax-highlighter.tgz',
 		'@octanejs/sonner': 'file:/tmp/sonner.tgz',
 		'@octanejs/tiptap': 'file:/tmp/tiptap.tgz',
 		octane: 'file:/tmp/octane.tgz',
@@ -157,7 +157,7 @@ describe('packed TSRX source consumers', () => {
 		assert.match(source, /from '@octanejs\/cmdk'/);
 		assert.match(source, /from '@octanejs\/sonner'/);
 		assert.match(source, /from '@octanejs\/tiptap'/);
-		assert.match(source, /from '@octanejs\/react-syntax-highlighter'/);
+		assert.match(source, /from '@octanejs\/syntax-highlighter'/);
 		assert.match(source, /<Command\b/);
 		assert.match(source, /<Toaster\b/);
 		assert.match(source, /<Light\b/);
