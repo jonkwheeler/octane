@@ -6,6 +6,11 @@ import { fileURLToPath } from 'node:url';
 
 const classifications = new Set(['unchanged', 'mechanically-transformed', 'owned-divergence']);
 const evidenceKinds = new Set(['browser', 'unit', 'manual', 'divergence']);
+const scenarioLinkedKinds = new Set(['browser', 'unit']);
+const scenarioFiles = [
+	'playground/octane/tests/doom/doom-production.test.ts',
+	'playground/octane/src/demos/doom/model.test.ts',
+];
 
 function requireText(value, label) {
 	if (typeof value !== 'string' || value.trim() === '') throw new Error(`${label} is required`);
@@ -18,6 +23,25 @@ function uniqueIds(entries, label) {
 		if (ids.has(entry.id)) throw new Error(`duplicate ${label} id ${entry.id}`);
 		ids.add(entry.id);
 	}
+}
+
+export function loadDoomScenarioNames(root) {
+	const names = new Set();
+	const pattern = /\bit\(\s*(['"`])([\s\S]*?)\1/g;
+	for (const relativePath of scenarioFiles) {
+		const filePath = resolve(root, relativePath);
+		if (!existsSync(filePath)) {
+			throw new Error(`missing Doom scenario suite ${relativePath}`);
+		}
+		const source = readFileSync(filePath, 'utf8');
+		pattern.lastIndex = 0;
+		let match;
+		while ((match = pattern.exec(source)) !== null) {
+			names.add(match[2]);
+		}
+	}
+	if (names.size === 0) throw new Error('Doom scenario suites expose no it(...) titles');
+	return names;
 }
 
 export function validateDoomAudit(audit, options = {}) {
@@ -40,6 +64,12 @@ export function validateDoomAudit(audit, options = {}) {
 		throw new Error('audit needs at least one behavior');
 	}
 	uniqueIds(audit.behaviors, 'behavior');
+	const scenarioNames =
+		options.scenarioNames instanceof Set
+			? options.scenarioNames
+			: options.root
+				? loadDoomScenarioNames(options.root)
+				: null;
 	for (const behavior of audit.behaviors) {
 		requireText(behavior.observation, `behavior ${behavior.id} observation`);
 		if (!Array.isArray(behavior.evidence))
@@ -52,6 +82,15 @@ export function validateDoomAudit(audit, options = {}) {
 				throw new Error(`behavior ${behavior.id} has invalid evidence kind`);
 			}
 			requireText(evidence.target, `behavior ${behavior.id} evidence target`);
+			if (
+				scenarioNames &&
+				scenarioLinkedKinds.has(evidence.kind) &&
+				!scenarioNames.has(evidence.target)
+			) {
+				throw new Error(
+					`behavior ${behavior.id} evidence target ${JSON.stringify(evidence.target)} is not an exact Doom suite scenario`,
+				);
+			}
 		}
 	}
 	if (!Array.isArray(audit.constructs) || audit.constructs.length === 0) {

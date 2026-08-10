@@ -100,3 +100,24 @@ test('rejects unclassified constructs and unlicensed assets', () => {
 		/sha256 must be a full digest/,
 	);
 });
+
+test('rejects browser and unit evidence targets outside the Doom suite', () => {
+	const scenarioNames = new Set(['doom landing route']);
+	assert.doesNotThrow(() => validateDoomAudit(complete, { scenarioNames }));
+	assert.throws(
+		() =>
+			validateDoomAudit(
+				{
+					...complete,
+					behaviors: [
+						{
+							...complete.behaviors[0],
+							evidence: [{ kind: 'browser', target: 'world collision' }],
+						},
+					],
+				},
+				{ scenarioNames },
+			),
+		/exact Doom suite scenario/,
+	);
+});

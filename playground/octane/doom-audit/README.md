@@ -4,5 +4,5 @@ The application uses `doom-react-three-fiber` only as an external behavioral ora
 
 An isolated oracle-research context recorded only user-observable behavior, numeric transitions, counts, timings, and framework categories. A separate clean-room implementation context receives `audit.json`, not the upstream checkout. The shipped visuals and audio are independently authored procedural data under this repository's MIT license.
 
-Run `node scripts/doom-audit.mjs` and `node --test scripts/doom-audit.test.mjs` to validate completeness, role separation, construct classification, evidence links, and redistribution metadata. Browser evidence targets are exact scenario names in the production Doom suite.
+Run `node scripts/doom-audit.mjs` and `node --test scripts/doom-audit.test.mjs` to validate completeness, role separation, construct classification, evidence links, and redistribution metadata. Browser and unit evidence targets must be exact `it(...)` titles from `playground/octane/tests/doom/doom-production.test.ts` and `playground/octane/src/demos/doom/model.test.ts`.
 
