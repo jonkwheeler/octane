@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "project": "drei-upstream-browser",
+  "project": "drei-adapted-browser",
   "roots": ["packages/drei/tests/browser"],
   "files": ["packages/drei/tests/browser/upstream-e2e.browser.test.ts"],
   "tests": [
     {
-      "id": "runtime:d4b7098924e1f40f",
+      "id": "runtime:812c63bc8b04d7e1",
       "file": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
-      "fullName": "upstream Drei e2e screenshot (Playwright) should match previous one"
+      "fullName": "adapted Drei e2e screenshot (Playwright) should match previous one"
     }
   ]
 }

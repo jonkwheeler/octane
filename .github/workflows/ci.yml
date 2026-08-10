@@ -485,6 +485,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
 
+      - name: Install Playwright Chromium
+        run: pnpm --filter website exec playwright install --with-deps chromium
+
       # The manifest runner executes every required runtime and type lane. Each
       # runner's JSON report proves the exact identities without a separate
       # pre-execution Vitest collection pass.

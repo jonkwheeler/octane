@@ -56,7 +56,7 @@ function withIds(tests) {
 
 const adaptedTests = withIds(listProject('drei'));
 const differentialTests = withIds(listProject('drei-differential'));
-const browserTests = withIds(listProject('drei-upstream-browser'));
+const browserTests = withIds(listProject('drei-adapted-browser'));
 const guardTests = listProject('drei-guards');
 
 const inventory = {
@@ -68,7 +68,7 @@ const inventory = {
 };
 const browserInventory = {
 	schemaVersion: 1,
-	project: 'drei-upstream-browser',
+	project: 'drei-adapted-browser',
 	roots: ['packages/drei/tests/browser'],
 	files: [...new Set(browserTests.map((test) => test.file))],
 	tests: browserTests,
@@ -88,9 +88,9 @@ const classifications = {
 		if (path.includes('/tests/browser/')) {
 			return {
 				path,
-				disposition: 'upstream-pristine-executed',
+				disposition: 'adapted-octane-upstream-suite',
 				oracle:
-					'Runs the vendored upstream Playwright screenshot case in Chromium through a Vitest/Vite wrapper.',
+					'Ports the vendored Playwright gallery scene to Octane; pristine upstream execution is tracked separately.',
 			};
 		}
 		if (isOctaneOnly(path)) {
@@ -195,9 +195,9 @@ const upstreamArtifacts = {
 	artifacts: [
 		{
 			path: 'packages/drei/upstream/test/e2e/App.tsx',
-			disposition: 'out-of-scope',
+			disposition: 'support',
 			reason:
-				'Whole-gallery Playwright fixture retained as pin evidence; excluded from Vitest/Jest parity execution because the upstream runner packs a release tarball and boots Vite/Next apps outside the repository harness.',
+				'Copied unchanged into the temporary Vite React application that executes the vendored Playwright test.',
 		},
 		{
 			path: 'packages/drei/upstream/test/e2e/e2e.sh',
@@ -209,7 +209,7 @@ const upstreamArtifacts = {
 			path: 'packages/drei/upstream/test/e2e/snapshot.test.ts',
 			disposition: 'executed-pristine',
 			reason:
-				'Executed through the drei-upstream-browser Vitest/Playwright wrapper against the vendored App.tsx and pinned React Drei runtime.',
+				'Executed unchanged by the playwright-full lane against the vendored App.tsx and pinned React Drei runtime.',
 		},
 		{
 			path: 'packages/drei/upstream/test/e2e/snapshot.test.ts-snapshots/should-match-previous-one-1-linux.png',
@@ -268,6 +268,7 @@ manifest.adaptedRoots = {
 			'tests/view-renderer-boundary\\.test\\.ts$',
 			'tests/octane-contracts/',
 			'tests/differential/',
+			'tests/browser/',
 		],
 	},
 };
@@ -294,14 +295,93 @@ const viewRenderingCase = requireDifferentialCase(
 const viewVisibilityCase = requireDifferentialCase(
 	'matches invisible and offscreen clear/render boundaries and event connection cleanup',
 );
-const upstreamScreenshotCase = browserTests.find((test) =>
+const adaptedScreenshotCase = browserTests.find((test) =>
 	test.fullName.endsWith('should match previous one'),
 );
-if (!upstreamScreenshotCase) {
-	throw new Error('upstream screenshot case missing from drei-upstream-browser project');
+if (!adaptedScreenshotCase) {
+	throw new Error('adapted screenshot case missing from drei-adapted-browser project');
 }
 
 manifest.lanes = [
+	{
+		id: 'drei-pristine-upstream',
+		type: 'pristine-upstream',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'drei-pristine-playwright',
+		evidenceOrigin: 'upstream-suite',
+		notes:
+			'Runs the vendored Playwright screenshot test byte-for-byte against published React Drei.',
+		execution: {
+			kind: 'playwright-full',
+			config: 'packages/drei/scripts/pristine-playwright.json',
+			root: 'packages/drei/upstream',
+			inventory: 'packages/drei/audit/pristine-runtime.json',
+		},
+		files: [
+			{
+				path: 'scripts/react-parity/playwright-full-runner.mjs',
+				role: 'support',
+				sha256: digest(
+					readFileSync(resolve(root, 'scripts/react-parity/playwright-full-runner.mjs')),
+				),
+			},
+			{
+				path: 'packages/drei/scripts/pristine-playwright.json',
+				role: 'support',
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/scripts/pristine-playwright.json')),
+				),
+			},
+			{
+				path: 'packages/drei/audit/pristine-runtime.json',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/pristine-runtime.json'))),
+			},
+			{
+				path: 'packages/drei/upstream/test/e2e/snapshot.test.ts',
+				role: 'support',
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/upstream/test/e2e/snapshot.test.ts')),
+				),
+			},
+		],
+	},
+	{
+		id: 'drei-adapted-upstream-e2e',
+		type: 'adapted-octane',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'drei-adapted-browser',
+		evidenceOrigin: 'upstream-suite',
+		notes:
+			'Ports the upstream gallery scene to Octane and retains its screenshot oracle as adapted evidence.',
+		execution: {
+			kind: 'vitest-full',
+			inventory: 'packages/drei/audit/upstream-browser.json',
+		},
+		files: [
+			{
+				path: 'packages/drei/tests/browser/upstream-e2e.browser.test.ts',
+				role: 'test',
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/tests/browser/upstream-e2e.browser.test.ts')),
+				),
+				cases: [
+					{
+						id: 'adapted:e2e-snapshot',
+						testName: 'should match previous one',
+						fullName: adaptedScreenshotCase.fullName,
+					},
+				],
+			},
+			{
+				path: 'packages/drei/audit/upstream-browser.json',
+				role: 'support',
+				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/upstream-browser.json'))),
+			},
+		],
+	},
 	{
 		id: 'drei-repo-authored-full-suite',
 		type: 'adapted-octane',
@@ -376,40 +456,6 @@ manifest.lanes = [
 						fullName: viewVisibilityCase.fullName,
 					},
 				],
-			},
-		],
-	},
-	{
-		id: 'drei-upstream-e2e-browser',
-		type: 'browser',
-		oracle: 'required',
-		environment: 'workspace-node',
-		project: 'drei-upstream-browser',
-		notes:
-			'Runs the vendored upstream Playwright gallery case in Chromium through a local Vite wrapper.',
-		execution: {
-			kind: 'vitest-full',
-			inventory: 'packages/drei/audit/upstream-browser.json',
-		},
-		files: [
-			{
-				path: 'packages/drei/tests/browser/upstream-e2e.browser.test.ts',
-				role: 'test',
-				sha256: digest(
-					readFileSync(resolve(root, 'packages/drei/tests/browser/upstream-e2e.browser.test.ts')),
-				),
-				cases: [
-					{
-						id: 'upstream:e2e-snapshot',
-						testName: 'should match previous one',
-						fullName: upstreamScreenshotCase.fullName,
-					},
-				],
-			},
-			{
-				path: 'packages/drei/audit/upstream-browser.json',
-				role: 'support',
-				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/upstream-browser.json'))),
 			},
 		],
 	},

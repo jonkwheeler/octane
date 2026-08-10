@@ -29,7 +29,8 @@
         "tests/react-parity-guard\\.test\\.ts$",
         "tests/view-renderer-boundary\\.test\\.ts$",
         "tests/octane-contracts/",
-        "tests/differential/"
+        "tests/differential/",
+        "tests/browser/"
       ]
     }
   },
@@ -51,6 +52,75 @@
   },
   "lanes": [
     {
+      "id": "drei-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei-pristine-playwright",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the vendored Playwright screenshot test byte-for-byte against published React Drei.",
+      "execution": {
+        "kind": "playwright-full",
+        "config": "packages/drei/scripts/pristine-playwright.json",
+        "root": "packages/drei/upstream",
+        "inventory": "packages/drei/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "scripts/react-parity/playwright-full-runner.mjs",
+          "role": "support",
+          "sha256": "2847e304659a45c0557a19a061951921ebbe9fd65d3a9dd461956ebb35b71e07"
+        },
+        {
+          "path": "packages/drei/scripts/pristine-playwright.json",
+          "role": "support",
+          "sha256": "85e6daa57a67314e19094a9a75f915cca984ee1ac790f4bdc7a4da3ddb263edd"
+        },
+        {
+          "path": "packages/drei/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "9edfb434bc8bf93652ae67ccd6354417b9eba642b2444acd1f370c4fc600a0e3"
+        },
+        {
+          "path": "packages/drei/upstream/test/e2e/snapshot.test.ts",
+          "role": "support",
+          "sha256": "dea9f23926e17c55f1ee1623a5b3ba1d466db725c644d0d9671fd4a8644da69b"
+        }
+      ]
+    },
+    {
+      "id": "drei-adapted-upstream-e2e",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei-adapted-browser",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Ports the upstream gallery scene to Octane and retains its screenshot oracle as adapted evidence.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/drei/audit/upstream-browser.json"
+      },
+      "files": [
+        {
+          "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
+          "role": "test",
+          "sha256": "3454e296ec092ba3f3194271bd35e10cd125992ebe7e667cab1fc97726108502",
+          "cases": [
+            {
+              "id": "adapted:e2e-snapshot",
+              "testName": "should match previous one",
+              "fullName": "adapted Drei e2e screenshot (Playwright) should match previous one"
+            }
+          ]
+        },
+        {
+          "path": "packages/drei/audit/upstream-browser.json",
+          "role": "support",
+          "sha256": "e899a546a1c4b1de352796d50e3bb86ee3cd6a3f2fe51faede36363fa2fac2a4"
+        }
+      ]
+    },
+    {
       "id": "drei-repo-authored-full-suite",
       "type": "adapted-octane",
       "oracle": "required",
@@ -71,22 +141,22 @@
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "a17268fa92f4ac8d0167f285787fa809337901d8ab5a1d096dbfa54a565289f3"
+          "sha256": "b3faaa1f1ce6d40abc94c7aa0e70276a650fe1d35a01d6879514b9f2a086eddc"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "f9d8282ce7776a3e1d205ef5b39f0c99e141137cb645ceac47897b39c818109d"
+          "sha256": "92f7ddb6361d43a81369773cb8c243e48a981b35f8febb83c90e06d5dde99b43"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
           "role": "support",
-          "sha256": "0e292b763338aab8f765479129eb2c23c4cac3486a5a57be2b39c3f426876836"
+          "sha256": "fdc175ffe1f69cd2d3afe99e707c8dc5535b022eb09f6887d11260261c0895fd"
         },
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "798217e7bd30c8b2f2d2f8de5581b478c189bd41537014d08a43dce7d783e10d"
+          "sha256": "21fcc7ad36af1bbc140d197ff90cf30abd5fb7e25032cf1515a30f423f4be7c7"
         }
       ]
     },
@@ -115,37 +185,6 @@
               "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "drei-upstream-e2e-browser",
-      "type": "browser",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "drei-upstream-browser",
-      "notes": "Runs the vendored upstream Playwright gallery case in Chromium through a local Vite wrapper.",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/drei/audit/upstream-browser.json"
-      },
-      "files": [
-        {
-          "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
-          "role": "test",
-          "sha256": "473eff7870f15294bd36692ba6293cf4e920d6ae0a2a44d1ae2927c198211dcf",
-          "cases": [
-            {
-              "id": "upstream:e2e-snapshot",
-              "testName": "should match previous one",
-              "fullName": "upstream Drei e2e screenshot (Playwright) should match previous one"
-            }
-          ]
-        },
-        {
-          "path": "packages/drei/audit/upstream-browser.json",
-          "role": "support",
-          "sha256": "5e18f075c4512dcd04abd1f65b1b69610b22808e3bef4ac32fd69e0b516709cc"
         }
       ]
     },

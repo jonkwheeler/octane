@@ -84,14 +84,14 @@ for (const entry of classifications.tests) {
 			fail(`${entry.path} no longer imports its React oracle`);
 		if (isOctaneOnly(entry.path))
 			fail(`${entry.path} is classified as parity evidence but is an Octane-only guard`);
-	} else if (entry.disposition === 'upstream-pristine-executed') {
+	} else if (entry.disposition === 'adapted-octane-upstream-suite') {
 		const source = readFileSync(resolve(root, entry.path), 'utf8');
 		if (
 			!entry.path.includes('/tests/browser/') ||
 			!entry.oracle ||
 			!source.includes('@parity-case upstream:e2e-snapshot')
 		)
-			fail(`${entry.path} does not execute the vendored upstream browser case`);
+			fail(`${entry.path} does not port the vendored upstream browser case`);
 	} else if (!entry.disposition.startsWith('octane-only-') || !entry.reason || entry.oracle) {
 		fail(`${entry.path} has an invalid unpaired classification`);
 	} else if (!isOctaneOnly(entry.path)) {
@@ -130,7 +130,7 @@ for (const artifact of upstream.artifacts) {
 	if (!artifact.disposition || !artifact.reason)
 		fail(`${artifact.path} lacks a disposition or reason`);
 	if (artifact.path.endsWith('/snapshot.test.ts') && artifact.disposition !== 'executed-pristine')
-		fail('the vendored Playwright screenshot case must execute in the browser lane');
+		fail('the vendored Playwright screenshot case must execute in the pristine Playwright lane');
 	if (
 		!artifact.path.endsWith('/snapshot.test.ts') &&
 		!['out-of-scope', 'support'].includes(artifact.disposition)
@@ -149,6 +149,27 @@ if (
 	manifest.upstreamSuites?.types !== 'absent'
 )
 	fail('react-parity manifest suite states must match the upstream artifact ledger');
+const pristineLane = manifest.lanes.find((lane) => lane.id === 'drei-pristine-upstream');
+if (
+	pristineLane?.type !== 'pristine-upstream' ||
+	pristineLane.evidenceOrigin !== 'upstream-suite' ||
+	pristineLane.execution?.kind !== 'playwright-full' ||
+	pristineLane.execution?.root !== 'packages/drei/upstream' ||
+	!pristineLane.files.some(
+		(file) =>
+			file.path === 'packages/drei/upstream/test/e2e/snapshot.test.ts' && file.role === 'support',
+	)
+)
+	fail(
+		'the vendored Playwright screenshot case must execute unchanged in a pristine playwright-full lane',
+	);
+const adaptedE2eLane = manifest.lanes.find((lane) => lane.id === 'drei-adapted-upstream-e2e');
+if (
+	adaptedE2eLane?.type !== 'adapted-octane' ||
+	adaptedE2eLane.evidenceOrigin !== 'upstream-suite' ||
+	adaptedE2eLane.execution?.kind !== 'vitest-full'
+)
+	fail('the Octane e2e port must remain separate adapted upstream-suite evidence');
 const upstreamFiles = readdirSync(resolve(root, 'packages/drei/upstream'), {
 	recursive: true,
 	withFileTypes: true,

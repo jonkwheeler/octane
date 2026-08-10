@@ -28,11 +28,15 @@ The complete tagged test tree contains exactly four artifacts, all under
 They form one whole-gallery Playwright screenshot case. Their byte hashes and
 dispositions are recorded in `audit/upstream-test-artifacts.json`.
 
-The full tarball/Vite/Next workflow in `e2e.sh` remains out of scope, but the
-vendored `App.tsx` and `snapshot.test.ts` case execute in Chromium through the
-`drei-upstream-browser` Vitest/Vite wrapper. The upstream runtime suite is
-therefore `insufficient`: its sole case is real browser evidence, while complete
-pristine and adapted whole-gallery screenshot lanes are not available.
+The full tarball/Vite/Next workflow in `e2e.sh` remains out of scope. The
+vendored `snapshot.test.ts` case now runs unchanged in Chromium through the
+`playwright-full` lane, which creates the small Vite React app it expects from
+the byte-exact vendored `App.tsx`. The separate `drei-adapted-browser` Vitest
+project ports that scene to Octane and uses the same screenshot oracle; it is
+adapted evidence, never a claim that the upstream test ran there. The upstream
+runtime suite remains `insufficient`: its one case is genuine pristine evidence,
+but an incomplete suite cannot replace the required upstream-suite lanes and
+repo-authored differential evidence.
 
 The tag contains no upstream type-test suite. The upstream `tsconfig.json`
 compiles package source, while the `@ts-expect-error` comments in that source are
@@ -44,9 +48,10 @@ package typecheck.
 
 ## Executable parity evidence
 
-`audit/react-parity.json` registers the adapted `drei` Vitest project (paired
-files only), an isolated `drei-differential` View canary, the upstream browser
-lane, and repo-authored pristine/adapted type lanes with the global
+`audit/react-parity.json` registers the pristine upstream Playwright lane, the
+separate adapted upstream browser lane, the adapted `drei` Vitest project
+(paired files only), an isolated `drei-differential` View canary, and
+repo-authored pristine/adapted type lanes with the global
 `react-parity:check` harness.
 `audit/test-classifications.json` gives every port-authored test file exactly
 one disposition. Paired files import the pinned React Drei oracle in the test

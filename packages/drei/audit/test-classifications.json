@@ -33,8 +33,8 @@
     },
     {
       "path": "packages/drei/tests/browser/upstream-e2e.browser.test.ts",
-      "disposition": "upstream-pristine-executed",
-      "oracle": "Runs the vendored upstream Playwright screenshot case in Chromium through a Vitest/Vite wrapper."
+      "disposition": "adapted-octane-upstream-suite",
+      "oracle": "Ports the vendored Playwright gallery scene to Octane; pristine upstream execution is tracked separately."
     },
     {
       "path": "packages/drei/tests/bvh.test.ts",

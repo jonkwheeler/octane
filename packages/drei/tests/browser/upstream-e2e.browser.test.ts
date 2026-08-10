@@ -4,9 +4,12 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createServer, type ViteDevServer } from 'vite';
+import { octane } from '../../../octane/src/compiler/vite.js';
+import { threeRenderers } from '../../../three/src/config.ts';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const harnessRoot = resolve(testDir, 'e2e');
+const repoRoot = resolve(testDir, '../../../..');
 const oraclePath = resolve(
 	testDir,
 	'../../upstream/test/e2e/snapshot.test.ts-snapshots/should-match-previous-one-1-linux.png',
@@ -85,12 +88,58 @@ beforeAll(async function () {
 	browser = await chromium.launch({ headless: true });
 	const port = await getFreePort();
 	viteServer = await createServer({
-		root: harnessRoot,
+		root: repoRoot,
+		configFile: false,
 		logLevel: 'error',
 		server: { port, host: '127.0.0.1', strictPort: true },
+		plugins: [
+			octane({
+				renderers: {
+					...threeRenderers,
+					boundaries: {
+						...threeRenderers.boundaries,
+						'@octanejs/drei': {
+							Html: { ownerRenderer: 'three', childRenderer: 'dom', prop: 'children' },
+						},
+					},
+				},
+			}),
+		],
+		resolve: {
+			alias: [
+				{
+					find: /^@octanejs\/three$/,
+					replacement: resolve(testDir, '../../../three/src/index.ts'),
+				},
+				{
+					find: /^@octanejs\/three\/renderer$/,
+					replacement: resolve(testDir, '../../../three/src/renderer.ts'),
+				},
+				{
+					find: /^@octanejs\/three\/config$/,
+					replacement: resolve(testDir, '../../../three/src/config.ts'),
+				},
+				{
+					find: /^@octanejs\/three\/intrinsics(?:\/jsx-runtime)?$/,
+					replacement: resolve(testDir, '../../../three/src/intrinsics.ts'),
+				},
+				{
+					find: /^@octanejs\/drei$/,
+					replacement: resolve(testDir, '../../src/index.ts'),
+				},
+				{
+					find: /^octane$/,
+					replacement: resolve(testDir, '../../../octane/src/index.ts'),
+				},
+				{
+					find: /^octane\/universal$/,
+					replacement: resolve(testDir, '../../../octane/src/universal.ts'),
+				},
+			],
+		},
 	});
 	await viteServer.listen();
-	origin = `http://127.0.0.1:${port}`;
+	origin = `http://127.0.0.1:${port}/packages/drei/tests/browser/e2e/index.html`;
 }, 60_000);
 
 afterAll(async function () {
@@ -98,17 +147,32 @@ afterAll(async function () {
 	await viteServer?.close();
 });
 
-describe('upstream Drei e2e screenshot (Playwright)', function () {
-	// Per upstream test/e2e/snapshot.test.ts: should match previous one
-	// @parity-case upstream:e2e-snapshot
+describe('adapted Drei e2e screenshot (Playwright)', function () {
+	// @parity-case adapted:e2e-snapshot
 	it('should match previous one', async function () {
 		const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-		await page.goto(origin, { waitUntil: 'networkidle' });
-		await page.waitForFunction(function () {
-			return Boolean((globalThis as { __dreiReady?: boolean }).__dreiReady);
+		let pageError = '';
+		page.on('pageerror', function capturePageError(error) {
+			pageError = error.message;
 		});
-		const canvas = page.locator('canvas[data-engine]');
+		await page.addInitScript(function captureDreiReadyEvent() {
+			const dispatchEvent = document.dispatchEvent.bind(document);
+			document.dispatchEvent = function trackDreiReadyEvent(event: Event): boolean {
+				if (event.type === 'playright:r3f') {
+					(globalThis as typeof globalThis & { __dreiE2eEvent?: boolean }).__dreiE2eEvent = true;
+				}
+				return dispatchEvent(event);
+			};
+		});
+		await page.goto(origin, { waitUntil: 'networkidle' });
+		const canvas = page.locator('canvas');
+		expect(pageError).toBe('');
 		expect(await canvas.count()).toBe(1);
+		await page.waitForFunction(function () {
+			return Boolean(
+				(globalThis as typeof globalThis & { __dreiE2eEvent?: boolean }).__dreiE2eEvent,
+			);
+		});
 		expect((await canvas.boundingBox())?.width).toBe(300);
 		expect((await canvas.boundingBox())?.height).toBe(150);
 

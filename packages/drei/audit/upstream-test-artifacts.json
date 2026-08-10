@@ -95,8 +95,8 @@
   "artifacts": [
     {
       "path": "packages/drei/upstream/test/e2e/App.tsx",
-      "disposition": "out-of-scope",
-      "reason": "Whole-gallery Playwright fixture retained as pin evidence; excluded from Vitest/Jest parity execution because the upstream runner packs a release tarball and boots Vite/Next apps outside the repository harness.",
+      "disposition": "support",
+      "reason": "Copied unchanged into the temporary Vite React application that executes the vendored Playwright test.",
       "sha256": "4499b3c92227b0dce656e3bfdbcaa2e2048994e0f7e507575e59da1678f4d2af"
     },
     {
@@ -108,7 +108,7 @@
     {
       "path": "packages/drei/upstream/test/e2e/snapshot.test.ts",
       "disposition": "executed-pristine",
-      "reason": "Executed through the drei-upstream-browser Vitest/Playwright wrapper against the vendored App.tsx and pinned React Drei runtime.",
+      "reason": "Executed unchanged by the playwright-full lane against the vendored App.tsx and pinned React Drei runtime.",
       "sha256": "dea9f23926e17c55f1ee1623a5b3ba1d466db725c644d0d9671fd4a8644da69b"
     },
     {

@@ -2190,12 +2190,23 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'drei-upstream-browser',
+					name: 'drei-adapted-browser',
 					include: ['packages/drei/tests/browser/**/*.browser.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 60_000,
 					hookTimeout: 60_000,
+				},
+				plugins: [octane({ renderers: DREI_RENDERERS })],
+				resolve: {
+					alias: [
+						...THREE_ALIASES,
+						{
+							find: /^@octanejs\/drei$/,
+							replacement: resolve(import.meta.dirname, 'packages/drei/src/index.ts'),
+						},
+					],
+					dedupe: ['react', 'react-dom', 'three'],
 				},
 			},
 			{

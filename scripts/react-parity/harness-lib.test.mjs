@@ -522,15 +522,21 @@ test('makes every upstream runtime suite state an executable verified requiremen
 
 	const insufficient = structuredClone(present);
 	insufficient.upstreamSuites.runtime = 'insufficient';
-	insufficient.lanes = insufficient.lanes.filter((lane) => lane.type !== 'pristine-upstream');
-	insufficient.lanes.find((lane) => lane.type === 'adapted-octane').evidenceOrigin =
-		'repo-authored';
 	assert.throws(
 		() => validateManifest(insufficient),
-		/insufficient upstream runtime tests requires full adapted-octane and differential lanes with repo-authored evidence/,
+		/insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence/,
 	);
 	insufficient.lanes.push(differentialLane());
 	assert.doesNotThrow(() => validateManifest(insufficient));
+
+	const missingInsufficientPristine = structuredClone(insufficient);
+	missingInsufficientPristine.lanes = missingInsufficientPristine.lanes.filter(
+		(lane) => lane.type !== 'pristine-upstream',
+	);
+	assert.throws(
+		() => validateManifest(missingInsufficientPristine),
+		/insufficient upstream runtime tests requires full upstream-suite lanes plus repo-authored differential evidence/,
+	);
 
 	const absent = structuredClone(present);
 	absent.upstreamSuites.runtime = 'absent';
@@ -615,7 +621,7 @@ test('requires paired executable type lanes only when upstream type evidence exi
 	synthetic.lanes.push(typeLane('pristine-types'));
 	assert.throws(
 		() => validateManifest(synthetic),
-		/must not be represented by synthetic type parity lanes/,
+		/absent upstream type tests requires available required pristine-types and adapted-types lanes with repo-authored evidence when type lanes are declared/,
 	);
 });
 
