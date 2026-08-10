@@ -1,5 +1,6 @@
 import {
 	createElement,
+	Fragment,
 	useEffect,
 	useImperativeHandle,
 	useLayoutEffect,
@@ -393,6 +394,21 @@ function buildFocusableOptionsFromCategorized<Option, Group extends GroupBase<Op
 	return options;
 }
 
+function getNextFocusedValue<Option>(
+	focusedValue: Option | null,
+	lastSelectValue: Options<Option>,
+	nextSelectValue: Options<Option>,
+): Option | null {
+	if (!focusedValue) return null;
+	const lastFocusedIndex = lastSelectValue.indexOf(focusedValue);
+	if (lastFocusedIndex > -1) {
+		const nextFocusedIndex = nextSelectValue.indexOf(focusedValue);
+		if (nextFocusedIndex > -1) return focusedValue;
+		if (lastFocusedIndex < nextSelectValue.length) return nextSelectValue[lastFocusedIndex];
+	}
+	return null;
+}
+
 let nextInstanceId = 1;
 
 const a11yTextStyle = {
@@ -654,6 +670,14 @@ export function Select<
 	const [appleDevice] = useState(isAppleDevice);
 	const [focusedOption, setFocusedOption] = useState<Option | null>(initialFocusedOption);
 	const [focusedValue, setFocusedValue] = useState<Option | null>(null);
+	const clearFocusValueOnUpdateRef = useRef(false);
+	const prevSelectValueRef = useRef(selectValue);
+	const prevFocusReconcileRef = useRef({
+		options: props.options,
+		value: props.value,
+		menuIsOpen: props.menuIsOpen,
+		inputValue: props.inputValue,
+	});
 	const [ariaSelection, setAriaSelection] = useState<AriaSelection<Option, IsMulti> | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const controlRef = useRef<HTMLDivElement | null>(null);
@@ -720,6 +744,28 @@ export function Select<
 				: focusableOptions[0] ?? null;
 		if (nextFocusedOption !== focusedOption) setFocusedOption(nextFocusedOption);
 	}, [props.options, props.value, props.menuIsOpen, props.inputValue, focusedOption]);
+	useEffect(() => {
+		const prev = prevFocusReconcileRef.current;
+		const changed =
+			props.value !== prev.value || props.options !== prev.options ||
+				props.menuIsOpen !== prev.menuIsOpen ||
+				props.inputValue !== prev.inputValue;
+		if (!changed) return;
+		prevFocusReconcileRef.current = {
+			options: props.options,
+			value: props.value,
+			menuIsOpen: props.menuIsOpen,
+			inputValue: props.inputValue,
+		};
+		const lastSelectValue = prevSelectValueRef.current;
+		prevSelectValueRef.current = selectValue;
+		const nextFocusedValue =
+			clearFocusValueOnUpdateRef.current
+				? getNextFocusedValue(focusedValue, lastSelectValue, selectValue)
+				: null;
+		clearFocusValueOnUpdateRef.current = false;
+		if (nextFocusedValue !== focusedValue) setFocusedValue(nextFocusedValue);
+	}, [props.options, props.value, props.menuIsOpen, props.inputValue, selectValue, focusedValue]);
 	useLayoutEffect(() => {
 		if (!props.menuIsOpen || !menuListRef.current || !focusedOptionRef.current) return;
 		scrollOptionIntoView(menuListRef.current, focusedOptionRef.current);
@@ -811,6 +857,7 @@ export function Select<
 		if (props.closeMenuOnSelect) setInputIsHidden(!props.isMulti);
 		const actionMeta = { action, option, name: props.name } as ActionMeta<Option>;
 		setAriaSelection({ ...actionMeta, value: newValue } as AriaSelection<Option, IsMulti>);
+		clearFocusValueOnUpdateRef.current = true;
 		props.onChange(newValue, actionMeta);
 	};
 	const selectOption = (option: Option) => {
@@ -1487,7 +1534,15 @@ export function Select<
 					{createElement(Components.ValueContainer, {
 						...commonProps,
 						isDisabled: props.isDisabled,
-						children: [valueUI, inputUI],
+						children: props.isMulti && Array.isArray(valueUI)
+							? [
+									...valueUI,
+									createElement(Fragment, { key: 'select-input', children: inputUI }),
+								]
+							: [
+									createElement(Fragment, { key: 'select-value', children: valueUI }),
+									createElement(Fragment, { key: 'select-input', children: inputUI }),
+								],
 					})}
 				</>
 			} @else {
