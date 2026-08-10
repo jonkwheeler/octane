@@ -74,7 +74,7 @@ function listProject(project) {
 }
 
 const adaptedPrefix = 'packages/syntax-highlighter/tests/adapted/';
-const adaptedTests = listProject('react-syntax-highlighter')
+const adaptedTests = listProject('syntax-highlighter')
 	.filter((test) => test.file.startsWith(adaptedPrefix))
 	.map((test) => ({ id: testId(test.file, test.fullName), ...test }))
 	.sort((left, right) =>
@@ -82,7 +82,7 @@ const adaptedTests = listProject('react-syntax-highlighter')
 	);
 const adaptedInventory = {
 	schemaVersion: 1,
-	project: 'react-syntax-highlighter',
+	project: 'syntax-highlighter',
 	roots: ['packages/syntax-highlighter/tests/adapted'],
 	files: [...new Set(adaptedTests.map((test) => test.file))],
 	tests: adaptedTests,
@@ -166,8 +166,8 @@ await writeJson(
 );
 
 const allProjectTests = {
-	'react-syntax-highlighter-differential': listProject('react-syntax-highlighter-differential'),
-	'react-syntax-highlighter-browser': listProject('react-syntax-highlighter-browser'),
+	'syntax-highlighter-differential': listProject('syntax-highlighter-differential'),
+	'syntax-highlighter-browser': listProject('syntax-highlighter-browser'),
 };
 
 async function manifestFile(path, role = 'support', cases) {
@@ -261,7 +261,7 @@ const lanes = [
 		type: 'adapted-octane',
 		oracle: 'required',
 		environment: 'workspace-node',
-		project: 'react-syntax-highlighter',
+		project: 'syntax-highlighter',
 		evidenceOrigin: 'upstream-suite',
 		notes:
 			'Runs every generated one-for-one Octane adaptation with the same 51 titles and 40 structural snapshots.',
@@ -281,7 +281,7 @@ const lanes = [
 		...(await selectedLane({
 			id: 'react-syntax-highlighter-differential',
 			type: 'differential',
-			project: 'react-syntax-highlighter-differential',
+			project: 'syntax-highlighter-differential',
 			files: differentialFiles,
 			notes:
 				'Runs React and Octane side by side and compares normalized DOM before and after a language update.',
@@ -291,7 +291,7 @@ const lanes = [
 	await selectedLane({
 		id: 'react-syntax-highlighter-browser',
 		type: 'browser',
-		project: 'react-syntax-highlighter-browser',
+		project: 'syntax-highlighter-browser',
 		files: browserFiles,
 		notes:
 			'Runs real Chromium and Firefox rendering, computed whitespace/wrapping, selection, updates, and async loading.',

@@ -62,7 +62,7 @@
         {
           "path": "packages/syntax-highlighter/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "0b55a25e6353e64226707bb9e07e5f093d2c9ad903bb5318ca1592281c542620"
+          "sha256": "b1e738126f45e90ff12b8b110bbd496771503fb8ca09c6ecd55553231af1a150"
         },
         {
           "path": "packages/syntax-highlighter/jest.pristine.config.cjs",
@@ -81,7 +81,7 @@
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-syntax-highlighter",
+      "project": "syntax-highlighter",
       "evidenceOrigin": "upstream-suite",
       "notes": "Runs every generated one-for-one Octane adaptation with the same 51 titles and 40 structural snapshots.",
       "execution": {
@@ -92,12 +92,12 @@
         {
           "path": "packages/syntax-highlighter/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "213956fd6022b0d16e93f73dc5f0d96a87c0a1971749e9ca294d9bc7ae2e4cf6"
+          "sha256": "ff15891b8eb9dfc7c497b2128a61bc8fd72ad4c51f40b320e7a87df8c0306dc6"
         },
         {
           "path": "packages/syntax-highlighter/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "1cc862924fc4ebd746c19c9960b02e3276341396f04b9aa31196884c57d39a52"
+          "sha256": "9a30d29768b05243d6a32d00c907548f3214c10d03a745e80472d2eae62678f5"
         },
         {
           "path": "packages/syntax-highlighter/scripts/generate-adapted-tests.mjs",
@@ -107,7 +107,7 @@
         {
           "path": "packages/syntax-highlighter/scripts/generate-parity-audit.mjs",
           "role": "support",
-          "sha256": "dccab12c9fb68f8efff707ccc85abfa1f82d2fc040357d4089d3f0d19810ef5f"
+          "sha256": "80ef3f560b8f65718e3bd65e86d4542168a724fea35c7cd70bc3a69f35204359"
         },
         {
           "path": "packages/syntax-highlighter/tests/adapted/__snapshots__/code-style-passed-to-line-numbers.test.ts.snap",
@@ -301,7 +301,7 @@
       "type": "differential",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-syntax-highlighter-differential",
+      "project": "syntax-highlighter-differential",
       "notes": "Runs React and Octane side by side and compares normalized DOM before and after a language update.",
       "files": [
         {
@@ -324,7 +324,7 @@
       "type": "browser",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-syntax-highlighter-browser",
+      "project": "syntax-highlighter-browser",
       "notes": "Runs real Chromium and Firefox rendering, computed whitespace/wrapping, selection, updates, and async loading.",
       "files": [
         {
@@ -401,7 +401,7 @@
         {
           "path": "packages/syntax-highlighter/typetests/adapted/public-api.test-d.ts",
           "role": "test",
-          "sha256": "cf2b37d23eb9654f0968c3306c5e924b769b99774011d444524094cb16e420bd",
+          "sha256": "ea245d39a4c4a1a42185bf6f0a89801f03517d954465ac6bfe654d3224befa82",
           "cases": [
             {
               "id": "types:adapted-compiled-children",

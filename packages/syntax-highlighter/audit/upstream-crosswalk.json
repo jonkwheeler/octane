@@ -6,307 +6,307 @@
   "snapshots": 40,
   "entries": [
     {
-      "id": "runtime:1281ff9f0523860d",
+      "id": "runtime:e3e6b6da67cd15d1",
       "title": "AsyncSyntaxHighlighter isRegistered when astGenerator is defined it should call isLanguageRegistered",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:a1b1904c67233cc8",
+      "id": "runtime:065c8caf5f5b61cc",
       "title": "AsyncSyntaxHighlighter isRegistered when astGenerator is not defined it checks the languages array",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:3976232dc74deaf1",
+      "id": "runtime:5b1f35c3d9ecc99e",
       "title": "AsyncSyntaxHighlighter isRegistered when registerLanguage is not defined",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:822cee340fdc708c",
+      "id": "runtime:befc55759353a6c3",
       "title": "AsyncSyntaxHighlighter loadAstGenerator should return the promise of the loader",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:3a40505ba6557689",
+      "id": "runtime:bee6a33d7fbba96a",
       "title": "AsyncSyntaxHighlighter loadAstGenerator when astGenerator resolves",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:2054d0719c2a1077",
+      "id": "runtime:7248302c3e1f4807",
       "title": "AsyncSyntaxHighlighter loadAstGenerator when astGenerator resolves and it has languages in the language array",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:bb6db29f178604c5",
+      "id": "runtime:78dd6a3480a2eb3a",
       "title": "AsyncSyntaxHighlighter registerLanguage when registerLanguage & astGenerator is defined",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:2d581fec543f802a",
+      "id": "runtime:af6eb0fa66946463",
       "title": "AsyncSyntaxHighlighter registerLanguage when registerLanguage is defined but astGenerator isn't",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:3c53d3d9799c969d",
+      "id": "runtime:113a18f449e9ab06",
       "title": "AsyncSyntaxHighlighter registerLanguage when registerLanguage is undefined",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:6b7c57ca5e60cc46",
+      "id": "runtime:373bed446e6a2849",
       "title": "AsyncSyntaxHighlighter when a supportedLanguages array is passed in it should be set to the supported languages static field",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:28f3aca2865914d1",
+      "id": "runtime:2e5be69048313e3c",
       "title": "AsyncSyntaxHighlighter when language loaders are passed in, it should set the keys to the supported languages static field",
       "pristine": "__tests__/async-syntax-highlighter.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/async-syntax-highlighter.test.ts"
     },
     {
-      "id": "runtime:c5064ce818fd332f",
+      "id": "runtime:b33e65d03f155044",
       "title": "SyntaxHighlighter component passes along code style to non-inline line numbers element",
       "pristine": "__tests__/code-style-passed-to-line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/code-style-passed-to-line-numbers.test.ts"
     },
     {
-      "id": "runtime:81d0122aafbb0eeb",
+      "id": "runtime:e74887eb11629c9c",
       "title": "SyntaxHighlighter component renders custom react component where code tag is by default",
       "pristine": "__tests__/custom-code.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/custom-code.test.ts"
     },
     {
-      "id": "runtime:1b62ed3d31cb2351",
+      "id": "runtime:13b9f6a22a7faca8",
       "title": "SyntaxHighlighter renders div where code tag is by default",
       "pristine": "__tests__/custom-code.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/custom-code.test.ts"
     },
     {
-      "id": "runtime:4701b63be4f03077",
+      "id": "runtime:d0824b7e3209f7de",
       "title": "SyntaxHighlighter component renders custom react component where pre tag is by default",
       "pristine": "__tests__/custom-pre.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/custom-pre.test.ts"
     },
     {
-      "id": "runtime:f8872856b0676a15",
+      "id": "runtime:a3668eb50e7c5b7c",
       "title": "SyntaxHighlighter renders div where pre tag is by default",
       "pristine": "__tests__/custom-pre.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/custom-pre.test.ts"
     },
     {
-      "id": "runtime:8bb36b1cb43623a3",
+      "id": "runtime:30f7cccb85a65683",
       "title": "SyntaxHighlighter render as text if language doesnt exist",
       "pristine": "__tests__/light-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/light-async.test.ts"
     },
     {
-      "id": "runtime:6ff17cf46e6627fa",
+      "id": "runtime:269ebda3c68abe30",
       "title": "SyntaxHighlighter renders fortran highlighted text",
       "pristine": "__tests__/light-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/light-async.test.ts"
     },
     {
-      "id": "runtime:ee108099f8aaab5a",
+      "id": "runtime:c5ce96da5c6f3ee8",
       "title": "SyntaxHighlighter renders javascript highlighted text",
       "pristine": "__tests__/light-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/light-async.test.ts"
     },
     {
-      "id": "runtime:ad03f3b907a72b93",
+      "id": "runtime:46f4dcf9b1e3b48f",
       "title": "SyntaxHighlighter renders text while language loads",
       "pristine": "__tests__/light-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/light-async.test.ts"
     },
     {
-      "id": "runtime:0e8fc926b0121a92",
+      "id": "runtime:e6a8170aea05b30c",
       "title": "When the code split is loaded - SyntaxHighlighter renders jsx highlighted text",
       "pristine": "__tests__/light-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/light-async.test.ts"
     },
     {
-      "id": "runtime:9113c188d81dab6c",
+      "id": "runtime:fb1f28fbaa806d29",
       "title": "SyntaxHighlighter allows lineNumberStyle as function",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:b731cc90b74fba96",
+      "id": "runtime:61e5c5d1eb7eb361",
       "title": "SyntaxHighlighter allows lineNumberStyle as function for inline line numbers",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:c0a36d6f2ee70cd1",
+      "id": "runtime:af7ca1c2cba98889",
       "title": "SyntaxHighlighter allows lineNumberStyle as object",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:e55c646207f12e55",
+      "id": "runtime:9c3e3e17c77c2bbe",
       "title": "SyntaxHighlighter component does not render line numbers if showInlineNumbers === true && showLineNumbers === undefined",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:7ad51345bc795308",
+      "id": "runtime:2e87a1e47a851021",
       "title": "SyntaxHighlighter component does not render line numbers if showLineNumbers === undefined",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:d5031bfe155e5dd3",
+      "id": "runtime:a5444fa5d4df140d",
       "title": "SyntaxHighlighter component renders correctly",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:80acf2e79251ef08",
+      "id": "runtime:933dcb4f88308e7b",
       "title": "SyntaxHighlighter component renders line numbers if showLineNumbers === true",
       "pristine": "__tests__/line-numbers.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/line-numbers.test.ts"
     },
     {
-      "id": "runtime:3639b439b99e0155",
+      "id": "runtime:769c9bc47bf6a7e5",
       "title": "Syntaxhighliter correctly renders multi-line comments in arduino language",
       "pristine": "__tests__/multiline-comments.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/multiline-comments.test.ts"
     },
     {
-      "id": "runtime:b21b3c28435fade2",
+      "id": "runtime:a5a52a074e4b3f3f",
       "title": "SyntaxHighlighter component renders correctly without inline styles when useInlineStyles=false",
       "pristine": "__tests__/no-inline.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/no-inline.test.ts"
     },
     {
-      "id": "runtime:1f0f8b6f664fd6c5",
+      "id": "runtime:ea4fe34ea3aaa686",
       "title": "SyntaxHighlighter component renders correctly",
       "pristine": "__tests__/no-language.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/no-language.test.ts"
     },
     {
-      "id": "runtime:aaaf5712f07c0ec8",
+      "id": "runtime:24e74dac61d1053a",
       "title": "SyntaxHighlighter renders jsx highlighted text",
       "pristine": "__tests__/prism-async-light.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts"
     },
     {
-      "id": "runtime:b4cc17f1d9645202",
+      "id": "runtime:b079cba572a77625",
       "title": "SyntaxHighlighter should just render text if syntax is not registered",
       "pristine": "__tests__/prism-async-light.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts"
     },
     {
-      "id": "runtime:d06527e4eac759d5",
+      "id": "runtime:cd61777b2ea5c5cd",
       "title": "When the code split is loaded - SyntaxHighlighter renders python highlighted text after async loading python",
       "pristine": "__tests__/prism-async-light.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async-light.test.ts"
     },
     {
-      "id": "runtime:ee56a2c307ba3dc6",
+      "id": "runtime:e9d8ac6e10e85747",
       "title": "Prism SyntaxHighlighter renders template strings and JSX correctly",
       "pristine": "__tests__/prism-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts"
     },
     {
-      "id": "runtime:3ae469c87ee47e49",
+      "id": "runtime:d893b0e4f5fc2f85",
       "title": "SyntaxHighlighter renders jsx highlighted text",
       "pristine": "__tests__/prism-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts"
     },
     {
-      "id": "runtime:9ff7eefccef698cd",
+      "id": "runtime:c3f5ffc2b33ba839",
       "title": "SyntaxHighlighter should just render text if syntax is not registered",
       "pristine": "__tests__/prism-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts"
     },
     {
-      "id": "runtime:72384ee2479187c7",
+      "id": "runtime:f1da79e0a6c68162",
       "title": "When the code split is loaded - SyntaxHighlighter renders jsx highlighted text",
       "pristine": "__tests__/prism-async.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-async.test.ts"
     },
     {
-      "id": "runtime:9ce895beb3ea464e",
+      "id": "runtime:2d5d8c5eb8fa8633",
       "title": "SyntaxHighlighter renders jsx highlighted text",
       "pristine": "__tests__/prism-light.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-light.test.ts"
     },
     {
-      "id": "runtime:3966f09cf03ef506",
+      "id": "runtime:be940446deffc4ec",
       "title": "SyntaxHighlighter should just render text if syntax is not registered",
       "pristine": "__tests__/prism-light.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/prism-light.test.ts"
     },
     {
-      "id": "runtime:5b7ee8a737e62c93",
+      "id": "runtime:ec498f3a83f98508",
       "title": "SyntaxHighlighter component renders correctly with refractor instead of lowlight",
       "pristine": "__tests__/refractor.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/refractor.test.ts"
     },
     {
-      "id": "runtime:a5900098549a87b3",
+      "id": "runtime:bf67bf89923c0edb",
       "title": "SyntaxHighlighter renders childre unadultered when no language disocvered in highlight auto",
       "pristine": "__tests__/render-plain-string.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/render-plain-string.test.ts"
     },
     {
-      "id": "runtime:396f65383bf19352",
+      "id": "runtime:22b8c007ad8cd6a8",
       "title": "SyntaxHighlighter component renders correctly",
       "pristine": "__tests__/render.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/render.test.ts"
     },
     {
-      "id": "runtime:1c9d2e8e768b7ed2",
+      "id": "runtime:93b9323870048901",
       "title": "SyntaxHighlighter component renders monospace text when text is passed as language",
       "pristine": "__tests__/text-language.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/text-language.test.ts"
     },
     {
-      "id": "runtime:996972800a5b7575",
+      "id": "runtime:4a804bf4f8f289b8",
       "title": "SyntaxHighlighter component renders correctly by falling back to highlightAuto if unknown language provided",
       "pristine": "__tests__/unknown-language.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/unknown-language.test.ts"
     },
     {
-      "id": "runtime:b15885b5327dc322",
+      "id": "runtime:48752a4994171ae4",
       "title": "SyntaxHighlighter component renders vue",
       "pristine": "__tests__/vue-language.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/vue-language.test.ts"
     },
     {
-      "id": "runtime:8e0c46dd1865ae96",
+      "id": "runtime:51a53b6312280f73",
       "title": "Prism SyntaxHighlighter renders JSX code correctly with wrapLines",
       "pristine": "__tests__/wrap-lines.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts"
     },
     {
-      "id": "runtime:d78320d6b2ee5a07",
+      "id": "runtime:178fca841bb50fd2",
       "title": "SyntaxHighlighter allows lineProps as an object",
       "pristine": "__tests__/wrap-lines.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts"
     },
     {
-      "id": "runtime:44261b2467befc09",
+      "id": "runtime:fd862b6ff9918ccb",
       "title": "SyntaxHighlighter allows lineProps as function",
       "pristine": "__tests__/wrap-lines.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts"
     },
     {
-      "id": "runtime:af0441820a0f2b5d",
+      "id": "runtime:e9e148ab67a80084",
       "title": "SyntaxHighlighter component renders correctly",
       "pristine": "__tests__/wrap-lines.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts"
     },
     {
-      "id": "runtime:394e85ef0ccc54f8",
+      "id": "runtime:2ef94c8f4cac9b14",
       "title": "SyntaxHighlighter renders java code correctly with wrapLines",
       "pristine": "__tests__/wrap-lines.js",
       "adapted": "packages/syntax-highlighter/tests/adapted/wrap-lines.test.ts"
