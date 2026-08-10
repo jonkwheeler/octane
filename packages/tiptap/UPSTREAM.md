@@ -27,7 +27,11 @@ The pin ships four Vitest specs (seven cases). They are preserved byte-exact und
 
 `scripts/react-parity/tiptap-runtime-lib.mjs` crosswalks pristine and adapted
 runtime inventories by `fullName`, checks UPSTREAM citations, and rejects
-renamed/omitted identities plus missing fixtures. It is wired through
+renamed/omitted identities plus missing fixtures. It also reads both sources
+for a one-for-one assertion/interaction crosswalk under the permitted
+transformation ledger in `audit/runtime-parity.json` (see
+`tests/upstream/assertions.md`), including negative controls for deleted or
+changed expects and `// Per …:<line>` citation drift. Wired through
 `pnpm react-parity:validate` / `pnpm react-parity:check`.
 
 ## Type suites

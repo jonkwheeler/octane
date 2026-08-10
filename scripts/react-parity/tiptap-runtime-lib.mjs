@@ -1,10 +1,12 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import ts from 'typescript';
 
 export const PRISTINE_RUNTIME = 'packages/tiptap/audit/pristine-runtime.json';
 export const ADAPTED_RUNTIME = 'packages/tiptap/audit/adapted-runtime.json';
 export const MANIFEST = 'packages/tiptap/audit/react-parity.json';
 export const UPSTREAM_MD = 'packages/tiptap/UPSTREAM.md';
+export const RUNTIME_PARITY_CONFIG = 'packages/tiptap/audit/runtime-parity.json';
 
 function readJson(root, relativePath) {
 	const absolute = resolve(root, relativePath);
@@ -18,7 +20,7 @@ function listedAdaptedEvidence(markdown) {
 	const rest = markdown.slice(start);
 	const end = rest.indexOf('\n## ');
 	const body = end === -1 ? rest : rest.slice(0, end);
-	return [...body.matchAll(/`tests\/upstream\/[^`]+`/g)].map(function path(match) {
+	return [...body.matchAll(/`tests\/upstream\/[^`]+\.test\.ts`/g)].map(function path(match) {
 		return match[0].slice(1, -1);
 	});
 }
@@ -34,11 +36,314 @@ function listedUpstreamSpecs(markdown) {
 	});
 }
 
+function printNode(node, sourceFile) {
+	return ts
+		.createPrinter({ removeComments: true })
+		.printNode(ts.EmitHint.Unspecified, node, sourceFile)
+		.replace(/\s+/g, ' ')
+		.trim();
+}
+
+function expectRoot(node) {
+	let root = node;
+	while (
+		root.parent &&
+		(ts.isPropertyAccessExpression(root.parent) ||
+			(ts.isCallExpression(root.parent) && root.parent.expression === root))
+	) {
+		root = root.parent;
+	}
+	return root;
+}
+
+function isDispatchInteraction(node, sourceFile) {
+	if (!ts.isCallExpression(node)) return false;
+	const text = printNode(node, sourceFile);
+	return /\.dispatchEvent\(/.test(text);
+}
+
+function arrayLiteralStrings(node) {
+	if (!ts.isArrayLiteralExpression(node)) return [];
+	return node.elements
+		.map(function element(entry) {
+			return ts.isStringLiteral(entry) || ts.isNoSubstitutionTemplateLiteral(entry)
+				? entry.text
+				: null;
+		})
+		.filter(function keep(value) {
+			return value !== null;
+		});
+}
+
+function resolveEachEntries(sourceFile, identifier) {
+	let entries = [];
+	function visit(node) {
+		if (
+			ts.isVariableDeclaration(node) &&
+			ts.isIdentifier(node.name) &&
+			node.name.text === identifier &&
+			node.initializer
+		) {
+			entries = arrayLiteralStrings(node.initializer);
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(sourceFile);
+	return entries;
+}
+
+function collectScenarioBody(body, sourceFile) {
+	const expects = [];
+	const interactions = [];
+	function walk(node) {
+		if (
+			ts.isCallExpression(node) &&
+			ts.isIdentifier(node.expression) &&
+			node.expression.text === 'expect'
+		) {
+			expects.push(printNode(expectRoot(node), sourceFile));
+		} else if (isDispatchInteraction(node, sourceFile)) {
+			interactions.push(printNode(node, sourceFile));
+		}
+		ts.forEachChild(node, walk);
+	}
+	if (body) walk(body);
+	return { expects, interactions };
+}
+
+function precedingPerCitations(source, sourceFile, node) {
+	const trivia = source.slice(node.getFullStart(), node.getStart(sourceFile));
+	return [...trivia.matchAll(/\/\/\s*Per\s+([^\n]+)/g)].map(function citation(match) {
+		return match[1].trim();
+	});
+}
+
+function parseCitation(citation) {
+	const match = citation.match(/^(upstream\/src\/[^:\s]+):(\d+)\b/);
+	if (!match) return null;
+	return { path: match[1], line: Number(match[2]) };
+}
+
 /**
- * Executable pristine/adapted runtime crosswalk: case identities must match
- * one-for-one by fullName, UPSTREAM citations must cover every pristine file,
- * divergence runtime citations must resolve, and adapted inventory files must
- * exist on disk (fixture/provenance drift).
+ * Parse Vitest `it` / expanded `it.each` scenarios from a runtime test source.
+ */
+export function extractRuntimeScenarios(source, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TSX,
+	);
+	const scenarios = [];
+
+	function pushScenario(title, node, body, extra) {
+		const collected = collectScenarioBody(body, sourceFile);
+		const start = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+		const end = sourceFile.getLineAndCharacterOfPosition(node.end).line + 1;
+		scenarios.push({
+			title,
+			startLine: start,
+			endLine: end,
+			expects: collected.expects,
+			interactions: collected.interactions,
+			citations: precedingPerCitations(source, sourceFile, node),
+			...(extra ?? {}),
+		});
+	}
+
+	function visit(node) {
+		if (
+			ts.isCallExpression(node) &&
+			ts.isCallExpression(node.expression) &&
+			ts.isPropertyAccessExpression(node.expression.expression) &&
+			ts.isIdentifier(node.expression.expression.expression) &&
+			node.expression.expression.expression.text === 'it' &&
+			node.expression.expression.name.text === 'each'
+		) {
+			const eachArg = node.expression.arguments[0];
+			const titleNode = node.arguments[0];
+			const body = node.arguments[1];
+			const template =
+				titleNode &&
+				(ts.isStringLiteral(titleNode) || ts.isNoSubstitutionTemplateLiteral(titleNode))
+					? titleNode.text
+					: '%s';
+			let entries = [];
+			if (ts.isIdentifier(eachArg)) {
+				entries = resolveEachEntries(sourceFile, eachArg.text);
+			} else if (eachArg) {
+				entries = arrayLiteralStrings(eachArg);
+			}
+			for (const entry of entries) {
+				pushScenario(template.replace('%s', entry), node, body, { eachEntry: entry });
+			}
+			return;
+		}
+
+		if (
+			ts.isCallExpression(node) &&
+			ts.isIdentifier(node.expression) &&
+			node.expression.text === 'it'
+		) {
+			const titleNode = node.arguments[0];
+			if (
+				titleNode &&
+				(ts.isStringLiteral(titleNode) || ts.isNoSubstitutionTemplateLiteral(titleNode))
+			) {
+				pushScenario(titleNode.text, node, node.arguments[1]);
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+
+	visit(sourceFile);
+	return scenarios;
+}
+
+function normalizeExpect(text) {
+	return text
+		.replace(
+			/unregisterCalls\.some\(\(\[key\]\)\s*=>\s*key\s*===\s*(\w+)\)/g,
+			'unregisterCalls.some(function (call) { return call[0] === $1; })',
+		)
+		.replace(/expect\(firstLine\)/g, 'expect(__firstStatement__)')
+		.replace(/expect\(firstStatement\([^)]*\)\)/g, 'expect(__firstStatement__)');
+}
+
+function applyAssertionReplacements(expects, replacements) {
+	return expects.map(function replaceOne(text) {
+		let next = text;
+		for (const replacement of replacements) {
+			if (next === replacement.from) {
+				next = replacement.to;
+				break;
+			}
+		}
+		return next;
+	});
+}
+
+function replacementsFor(config, pristineRelative, title) {
+	return (config.assertionReplacements ?? [])
+		.filter(function match(entry) {
+			return entry.pristine === pristineRelative && entry.title === title;
+		})
+		.flatMap(function list(entry) {
+			return entry.replacements ?? [];
+		});
+}
+
+/**
+ * Source-level assertion/interaction crosswalk for one pristine/adapted pair.
+ */
+export function crosswalkRuntimePair(root, pair, config) {
+	const pristineAbsolute = resolve(root, pair.pristine);
+	const adaptedAbsolute = resolve(root, pair.adapted);
+	if (!existsSync(pristineAbsolute)) throw new Error(`missing ${pair.pristine}`);
+	if (!existsSync(adaptedAbsolute)) throw new Error(`missing ${pair.adapted}`);
+
+	const pristineSource = readFileSync(pristineAbsolute, 'utf8');
+	const adaptedSource = readFileSync(adaptedAbsolute, 'utf8');
+	const pristineScenarios = extractRuntimeScenarios(pristineSource, pair.pristine);
+	const adaptedScenarios = extractRuntimeScenarios(adaptedSource, pair.adapted);
+
+	if (pristineScenarios.length === 0) {
+		throw new Error(`${pair.pristine}: no runtime scenarios extracted`);
+	}
+	if (pristineScenarios.length !== adaptedScenarios.length) {
+		throw new Error(
+			`${pair.adapted}: scenario count differs from pristine (${adaptedScenarios.length} vs ${pristineScenarios.length})`,
+		);
+	}
+
+	const adaptedByTitle = new Map(
+		adaptedScenarios.map(function entry(scenario) {
+			return [scenario.title, scenario];
+		}),
+	);
+	if (adaptedByTitle.size !== adaptedScenarios.length) {
+		throw new Error(`${pair.adapted}: duplicate scenario titles`);
+	}
+
+	const pristineSrcPath = pair.pristine.replace(/^packages\/tiptap\//, '');
+	let assertions = 0;
+	let interactions = 0;
+
+	for (const pristine of pristineScenarios) {
+		const adapted = adaptedByTitle.get(pristine.title);
+		if (!adapted) {
+			throw new Error(`${pair.adapted}: missing scenario ${JSON.stringify(pristine.title)}`);
+		}
+
+		const citation = adapted.citations[0];
+		if (!citation) {
+			throw new Error(
+				`${pair.adapted}: scenario ${JSON.stringify(pristine.title)} missing // Per citation`,
+			);
+		}
+		const parsed = parseCitation(citation);
+		if (!parsed) {
+			throw new Error(
+				`${pair.adapted}: scenario ${JSON.stringify(pristine.title)} has unparseable Per citation ${JSON.stringify(citation)}`,
+			);
+		}
+		if (parsed.path !== pristineSrcPath) {
+			throw new Error(
+				`${pair.adapted}: citation path ${parsed.path} does not match pristine ${pristineSrcPath}`,
+			);
+		}
+		if (parsed.line < pristine.startLine || parsed.line > pristine.endLine) {
+			throw new Error(
+				`${pair.adapted}: citation ${parsed.path}:${parsed.line} drifted from scenario ${JSON.stringify(pristine.title)} (${pristine.startLine}-${pristine.endLine})`,
+			);
+		}
+
+		const replacements = replacementsFor(config, pair.pristine, pristine.title);
+		const expectedExpects = applyAssertionReplacements(pristine.expects, replacements).map(
+			normalizeExpect,
+		);
+		const actualExpects = adapted.expects.map(normalizeExpect);
+		if (JSON.stringify(expectedExpects) !== JSON.stringify(actualExpects)) {
+			throw new Error(
+				`${pair.adapted}: assertion groups differ for ${JSON.stringify(pristine.title)} (deleted/changed expect outside permitted transformations)`,
+			);
+		}
+		if (JSON.stringify(pristine.interactions) !== JSON.stringify(adapted.interactions)) {
+			throw new Error(`${pair.adapted}: interactions differ for ${JSON.stringify(pristine.title)}`);
+		}
+		assertions += pristine.expects.length;
+		interactions += pristine.interactions.length;
+	}
+
+	return {
+		scenarios: pristineScenarios.length,
+		assertions,
+		interactions,
+	};
+}
+
+export function verifyTiptapRuntimeScenarios(root, { configPath = RUNTIME_PARITY_CONFIG } = {}) {
+	const config = readJson(root, configPath);
+	if (!Array.isArray(config.pairs) || config.pairs.length === 0) {
+		throw new Error(`${configPath}: pairs must be a non-empty array`);
+	}
+	let scenarios = 0;
+	let assertions = 0;
+	let interactions = 0;
+	for (const pair of config.pairs) {
+		const result = crosswalkRuntimePair(root, pair, config);
+		scenarios += result.scenarios;
+		assertions += result.assertions;
+		interactions += result.interactions;
+	}
+	return { pairs: config.pairs.length, scenarios, assertions, interactions };
+}
+
+/**
+ * Executable pristine/adapted runtime crosswalk: inventory identities, UPSTREAM
+ * citations, fixture presence, and source-level assertion/interaction parity
+ * under the permitted-transformation ledger.
  */
 export function verifyTiptapRuntimeCrosswalk(root) {
 	const pristine = readJson(root, PRISTINE_RUNTIME);
@@ -99,9 +404,7 @@ export function verifyTiptapRuntimeCrosswalk(root) {
 		for (const caseId of divergence.caseIds ?? []) {
 			if (!caseId.startsWith('runtime:')) continue;
 			if (!adaptedIds.has(caseId)) {
-				throw new Error(
-					`divergence ${divergence.id} cites unknown adapted runtime case ${caseId}`,
-				);
+				throw new Error(`divergence ${divergence.id} cites unknown adapted runtime case ${caseId}`);
 			}
 		}
 	}
@@ -149,10 +452,15 @@ export function verifyTiptapRuntimeCrosswalk(root) {
 		}
 	}
 
+	const scenarios = verifyTiptapRuntimeScenarios(root);
+
 	return {
 		identities: pristine.tests.length,
 		pristineFiles: pristineSpecs.length,
 		adaptedFiles: adaptedFiles.length,
+		scenarios: scenarios.scenarios,
+		assertions: scenarios.assertions,
+		interactions: scenarios.interactions,
 	};
 }
 

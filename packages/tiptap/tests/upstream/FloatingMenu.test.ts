@@ -102,7 +102,6 @@ describe('FloatingMenu', function () {
 		expect(element.style.zIndex).toBe('8888');
 		expect(element.style.marginTop).toBe('12px');
 		expect(element.style.position).toBe('absolute');
-		expect(element.textContent).toContain('Floating action');
 
 		element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		element.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
@@ -111,6 +110,7 @@ describe('FloatingMenu', function () {
 		expect(handleClick).toHaveBeenCalledTimes(2);
 		expect(handleDoubleClick).toHaveBeenCalledTimes(1);
 		expect(handleClickCapture).toHaveBeenCalledTimes(2);
+		expect(element.textContent).toContain('Floating action');
 
 		rerender(createElement(FloatingMenu as never, updatedProps));
 
@@ -121,7 +121,6 @@ describe('FloatingMenu', function () {
 		expect(element.style.zIndex).toBe('7777');
 		expect(element.style.marginTop).toBe('20px');
 		expect(element.style.position).toBe('absolute');
-		expect(element.textContent).toContain('Updated floating action');
 
 		element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		element.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
@@ -130,6 +129,7 @@ describe('FloatingMenu', function () {
 		expect(handleClick).toHaveBeenCalledTimes(2);
 		expect(handleDoubleClick).toHaveBeenCalledTimes(1);
 		expect(handleClickCapture).toHaveBeenCalledTimes(2);
+		expect(element.textContent).toContain('Updated floating action');
 
 		unmount();
 

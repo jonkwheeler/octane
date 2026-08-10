@@ -9,6 +9,7 @@ import {
 	omitAdaptedIdentity,
 	renameAdaptedIdentity,
 	verifyTiptapRuntimeCrosswalk,
+	verifyTiptapRuntimeScenarios,
 } from './tiptap-runtime-lib.mjs';
 
 const REPO = fileURLToPath(new URL('../..', import.meta.url));
@@ -16,35 +17,43 @@ const REPO = fileURLToPath(new URL('../..', import.meta.url));
 async function fixtureRoot() {
 	const root = await mkdtemp(join(tmpdir(), 'tiptap-runtime-'));
 	await mkdir(join(root, 'packages/tiptap/audit'), { recursive: true });
-	await mkdir(join(root, 'packages/tiptap/upstream/src/menus'), { recursive: true });
-	await mkdir(join(root, 'packages/tiptap/tests/upstream'), { recursive: true });
 	for (const file of [
 		'packages/tiptap/audit/pristine-runtime.json',
 		'packages/tiptap/audit/adapted-runtime.json',
 		'packages/tiptap/audit/react-parity.json',
+		'packages/tiptap/audit/runtime-parity.json',
 		'packages/tiptap/UPSTREAM.md',
 	]) {
+		await mkdir(join(root, file, '..'), { recursive: true });
 		await cp(join(REPO, file), join(root, file));
 	}
-	const pristine = JSON.parse(
-		await readFile(join(root, 'packages/tiptap/audit/pristine-runtime.json'), 'utf8'),
+	await cp(join(REPO, 'packages/tiptap/upstream'), join(root, 'packages/tiptap/upstream'), {
+		recursive: true,
+	});
+	await cp(
+		join(REPO, 'packages/tiptap/tests/upstream'),
+		join(root, 'packages/tiptap/tests/upstream'),
+		{ recursive: true },
 	);
-	const adapted = JSON.parse(
-		await readFile(join(root, 'packages/tiptap/audit/adapted-runtime.json'), 'utf8'),
-	);
-	for (const relativePath of [...(pristine.files ?? []), ...(adapted.files ?? [])]) {
-		const absolute = join(root, relativePath);
-		await mkdir(join(absolute, '..'), { recursive: true });
-		await writeFile(absolute, '// fixture\n');
-	}
 	return root;
 }
 
 test('tiptap runtime crosswalk accepts the committed inventories', function acceptsCommitted() {
-	assert.deepEqual(verifyTiptapRuntimeCrosswalk(REPO), {
-		identities: 7,
-		pristineFiles: 4,
-		adaptedFiles: 4,
+	const result = verifyTiptapRuntimeCrosswalk(REPO);
+	assert.equal(result.identities, 7);
+	assert.equal(result.pristineFiles, 4);
+	assert.equal(result.adaptedFiles, 4);
+	assert.equal(result.scenarios, 7);
+	assert.ok(result.assertions > 0);
+	assert.ok(result.interactions > 0);
+});
+
+test('source scenario crosswalk accepts the committed adaptations', function acceptsScenarios() {
+	assert.deepEqual(verifyTiptapRuntimeScenarios(REPO), {
+		pairs: 4,
+		scenarios: 7,
+		assertions: 78,
+		interactions: 12,
 	});
 });
 
@@ -100,4 +109,71 @@ test('deleting an on-disk adapted fixture fails the crosswalk', async function d
 	assert.throws(function run() {
 		verifyTiptapRuntimeCrosswalk(root);
 	}, /missing fixture/);
+});
+
+test('deleting an adapted assertion fails the scenario crosswalk', async function deletesAssertion(t) {
+	const root = await fixtureRoot();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const file = join(root, 'packages/tiptap/tests/upstream/EditorContent.test.ts');
+	const source = await readFile(file, 'utf8');
+	await writeFile(
+		file,
+		source.replace(/\n\t\texpect\(subscriber\)\.toHaveBeenCalledTimes\(1\);\n/, '\n'),
+	);
+	assert.throws(function run() {
+		verifyTiptapRuntimeScenarios(root);
+	}, /assertion groups differ/);
+});
+
+test('changing an adapted assertion fails the scenario crosswalk', async function changesAssertion(t) {
+	const root = await fixtureRoot();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const file = join(root, 'packages/tiptap/tests/upstream/EditorContent.test.ts');
+	const source = await readFile(file, 'utf8');
+	await writeFile(file, source.replace('toHaveBeenCalledTimes(1)', 'toHaveBeenCalledTimes(9)'));
+	assert.throws(function run() {
+		verifyTiptapRuntimeScenarios(root);
+	}, /assertion groups differ/);
+});
+
+test('removing an adapted interaction fails the scenario crosswalk', async function removesInteraction(t) {
+	const root = await fixtureRoot();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const file = join(root, 'packages/tiptap/tests/upstream/BubbleMenu.test.ts');
+	const source = await readFile(file, 'utf8');
+	await writeFile(
+		file,
+		source.replace(
+			"\telement.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));\n",
+			'\t',
+		),
+	);
+	assert.throws(function run() {
+		verifyTiptapRuntimeScenarios(root);
+	}, /interactions differ/);
+});
+
+test('drifting a Per citation to another case fails the scenario crosswalk', async function driftsCitation(t) {
+	const root = await fixtureRoot();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const file = join(root, 'packages/tiptap/tests/upstream/BubbleMenu.test.ts');
+	const source = await readFile(file, 'utf8');
+	await writeFile(
+		file,
+		source.replace(
+			'// Per upstream/src/menus/BubbleMenu.spec.ts:42.',
+			'// Per upstream/src/menus/BubbleMenu.spec.ts:137.',
+		),
+	);
+	assert.throws(function run() {
+		verifyTiptapRuntimeScenarios(root);
+	}, /citation .* drifted|does not match/);
 });
