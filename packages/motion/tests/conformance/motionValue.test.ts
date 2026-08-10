@@ -4,6 +4,7 @@ import { mount, nextPaint } from '../_helpers';
 import { MVBox } from '../_fixtures/mv.tsrx';
 import { StyleXLater } from '../_fixtures/style-rebind.tsrx';
 import { StyleOpacity } from '../_fixtures/style-opacity.tsrx';
+import { StyleXY } from '../_fixtures/style-xy.tsrx';
 import { removeTransformFn, patchTransformFn } from '../../src/useMotionValue';
 
 describe('useMotionValue', function useMotionValueSuite() {
@@ -49,6 +50,29 @@ describe('useMotionValue', function useMotionValueSuite() {
 		expect(div.style.transform).toBe('translateX(40px) translateY(-50px) scale(1.2, 0.8)');
 		expect(div.style.transform).not.toContain('translate(');
 		r.unmount();
+	});
+
+	it('keeps a sibling axis MotionValue when patching over layout FLIP', async function keepsSiblingAxisOverLayoutFlip() {
+		const x = motionValue(10);
+		const y = motionValue(20);
+		const r = mount(StyleXY, { x, y });
+		await nextPaint();
+		const div = r.find('#box');
+		expect(div.style.transform).toBe('translateX(10px) translateY(20px)');
+
+		// Layout FLIP overwrites the live string with a compound form.
+		div.style.transform = 'translate(-50px, -50px) scale(1.2, 0.8)';
+		x.set(40);
+		await nextPaint();
+		expect(div.style.transform).toBe('translateX(40px) translateY(20px) scale(1.2, 0.8)');
+		r.unmount();
+	});
+
+	it('prefers transformState sibling axes when decomposing compound translate', function prefersTransformStateSiblings() {
+		const div = document.createElement('div');
+		div.style.transform = 'translate(-50px, -50px)';
+		patchTransformFn(div, 'x', 40, { x: 10, y: 20 });
+		expect(div.style.transform).toBe('translateX(40px) translateY(20px)');
 	});
 
 	it('clears a decomposed axis on unbind after binding over layout FLIP', function clearsDecomposedAxisOnUnbind() {

@@ -150,16 +150,31 @@ function replaceTransformRange(
  * Layout FLIP writes compound `translate(x, y)` / `scale(sx, sy)`. Decompose those
  * into shorthands when a style MotionValue binds so unbind can remove only that
  * shorthand without corrupting or orphaning the layout contribution.
+ *
+ * When `transformState` already holds a sibling axis (another bound style
+ * MotionValue/static shorthand), prefer that over the FLIP compound value so a
+ * single-axis patch does not clobber the sibling until it emits again.
  */
-function patchCompoundTransform(current: string, key: string, val: any): string | null {
+function patchCompoundTransform(
+	current: string,
+	key: string,
+	val: any,
+	transformState?: Record<string, any>,
+): string | null {
 	const unitized = unitizeTransformValue(key, val);
 	if (key === 'x' || key === 'y') {
 		const range = findTransformFnRange(current, 'translate');
 		if (!range) return null;
 		const inner = current.slice(range.start + 'translate('.length, range.end - 1);
 		const args = splitTransformArgs(inner);
-		let x = args[0] || '0px';
-		let y = args[1] || '0px';
+		let x =
+			transformState && transformState.x !== undefined
+				? unitizeTransformValue('x', transformState.x)
+				: args[0] || '0px';
+		let y =
+			transformState && transformState.y !== undefined
+				? unitizeTransformValue('y', transformState.y)
+				: args[1] || '0px';
 		if (key === 'x') x = unitized;
 		else y = unitized;
 		return replaceTransformRange(current, range, `translateX(${x}) translateY(${y})`);
@@ -169,8 +184,16 @@ function patchCompoundTransform(current: string, key: string, val: any): string 
 		if (!range) return null;
 		const inner = current.slice(range.start + 'scale('.length, range.end - 1);
 		const args = splitTransformArgs(inner);
-		let sx = args[0] || '1';
-		let sy = args[1] !== undefined ? args[1] : args[0] || '1';
+		let sx =
+			transformState && transformState.scaleX !== undefined
+				? unitizeTransformValue('scaleX', transformState.scaleX)
+				: args[0] || '1';
+		let sy =
+			transformState && transformState.scaleY !== undefined
+				? unitizeTransformValue('scaleY', transformState.scaleY)
+				: args[1] !== undefined
+					? args[1]
+					: args[0] || '1';
 		if (key === 'scaleX') sx = unitized;
 		else sy = unitized;
 		return replaceTransformRange(current, range, `scaleX(${sx}) scaleY(${sy})`);
@@ -179,7 +202,12 @@ function patchCompoundTransform(current: string, key: string, val: any): string 
 }
 
 /** Patch one transform function into the live CSS string without wiping others. */
-export function patchTransformFn(node: HTMLElement, key: string, val: any): void {
+export function patchTransformFn(
+	node: HTMLElement,
+	key: string,
+	val: any,
+	transformState?: Record<string, any>,
+): void {
 	const fn = TRANSFORM_FN[key];
 	if (!fn) return;
 	const next = `${fn}(${unitizeTransformValue(key, val)})`;
@@ -193,7 +221,7 @@ export function patchTransformFn(node: HTMLElement, key: string, val: any): void
 		node.style.transform = replaceTransformRange(current, range, next);
 		return;
 	}
-	const compound = patchCompoundTransform(current, key, val);
+	const compound = patchCompoundTransform(current, key, val, transformState);
 	if (compound !== null) {
 		node.style.transform = compound;
 		return;
@@ -224,11 +252,11 @@ export function applyStyleValue(
 	node: HTMLElement,
 	key: string,
 	val: any,
-	_transformState?: Record<string, any>,
+	transformState?: Record<string, any>,
 ): void {
 	if (TRANSFORM_FN[key]) {
-		if (_transformState) _transformState[key] = val;
-		patchTransformFn(node, key, val);
+		if (transformState) transformState[key] = val;
+		patchTransformFn(node, key, val, transformState);
 	} else {
 		(node.style as any)[key] = typeof val === 'number' && !NO_UNIT.has(key) ? `${val}px` : val;
 	}

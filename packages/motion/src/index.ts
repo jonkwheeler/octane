@@ -404,17 +404,20 @@ function createMotionComponent(tag: string, preloadedFeatures: boolean): MotionC
 				if (!style || typeof style !== 'object') return;
 				const appliedKeys: string[] = [];
 				const cleanups: Array<() => void> = [];
+				// Shared bag of currently bound transform shorthands so a compound
+				// FLIP patch can keep sibling axes owned by other style MotionValues.
+				const transformState: Record<string, any> = {};
 				for (const key in style) {
 					const v = style[key];
 					if (isMotionValue(v)) {
 						function apply(val: any) {
-							applyStyleValue(node, key, val);
+							applyStyleValue(node, key, val, transformState);
 						}
 						apply(v.get());
 						appliedKeys.push(key);
 						cleanups.push(v.on('change', apply));
 					} else if (isTransformKey(key)) {
-						applyStyleValue(node, key, v);
+						applyStyleValue(node, key, v, transformState);
 						appliedKeys.push(key);
 					}
 				}
