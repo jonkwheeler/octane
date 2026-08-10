@@ -70,7 +70,7 @@
         {
           "path": "packages/tiptap/scripts/verify-upstream.mjs",
           "role": "support",
-          "sha256": "cabf860a8921ce538d2786e0a457dc3f56f31c9351db4602c747c844e06513e5"
+          "sha256": "b683ee6f75cfe7b15f13c2dfcde34de01a20eeb2f8d886277d810f74420ee6b8"
         },
         {
           "path": "packages/tiptap/tests/_harness/verify-upstream.ts",

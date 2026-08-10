@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -33,7 +33,7 @@ export function verifyTiptapUpstream(root = packageRoot) {
 
 	const actualFiles = walk(upstream)
 		.map(function toRelative(path) {
-			return relative(upstream, path);
+			return relative(upstream, path).split(sep).join('/');
 		})
 		.filter(function keepSource(path) {
 			return path !== 'SHA256SUMS';
