@@ -159,6 +159,7 @@
       "divergences": [
         "render accepts an Octane component plus props rather than a pre-created React node, matching octane/server's entry-point API.",
         "Preview accepts its inspectable preview copy through the text prop; natural .tsrx children are opaque render blocks.",
+        "Markdown accepts its source through a string children prop; JSX children compile to children blocks and are rejected rather than invoked as render props.",
         "Refs are ordinary Octane ref props rather than forwardRef components.",
         "Head uses Octane's metadata-hoisting channel; render reconstructs the consumer-visible document head around hoisted tags.",
         "Tailwind transforms fully rendered static HTML rather than cloning a React element tree, allowing natural .tsrx children and nested compiled components."

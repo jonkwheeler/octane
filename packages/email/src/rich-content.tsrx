@@ -1,4 +1,4 @@
-import type { OctaneNode } from 'octane';
+import { isChildrenBlock, type OctaneNode } from 'octane';
 import Prism from 'prismjs';
 import loadLanguages from 'prismjs/components/index.js';
 import { renderMarkdown, type MarkdownStyles } from './markdown.ts';
@@ -6,8 +6,19 @@ import type { EmailElementProps, EmailStyle } from './types.ts';
 
 loadLanguages();
 
-function resolveTextChild(child: string): string {
-	return typeof child === 'function' ? (child as () => string)() : child;
+function resolveTextChild(child: unknown): string {
+	let value = child;
+	if (typeof value === 'function' && !isChildrenBlock(value)) {
+		value = (value as () => unknown)();
+	}
+	if (typeof value === 'string') return value;
+	if (isChildrenBlock(child)) {
+		throw new Error(
+			'Markdown children must be a string prop: use <Markdown children={"…"} />. ' +
+				'JSX children compile to a children block, which is not a string.',
+		);
+	}
+	throw new Error('Markdown children must resolve to a string');
 }
 
 export type MarkdownProps =

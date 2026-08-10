@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '../src/index.ts';
+import { renderMarkdown } from '../src/markdown.ts';
 import {
 	CodeBlockEmail,
 	InvalidCodeBlockEmail,
@@ -18,6 +19,14 @@ describe('rich email content', () => {
 		expect(html).toContain('href="https://octanejs.dev" target="_blank"');
 		expect(html).toContain('<ul>');
 		expect(html).toContain('<li>First</li>');
+	});
+
+	it('escapes HTML inside markdown code fences and spans', () => {
+		const html = renderMarkdown('Use `<script>alert(1)</script>` and:\n\n```js\n<img src=x>\n```\n');
+		expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+		expect(html).toContain('&lt;img src=x&gt;');
+		expect(html).not.toContain('<script>alert(1)</script>');
+		expect(html).not.toContain('<img src=x>');
 	});
 
 	it('renders syntax-highlighted code with optional line numbers', async () => {

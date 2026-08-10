@@ -134,6 +134,15 @@ const styleAttribute = (style: EmailStyle | undefined) => {
 const styled = (tag: string, style: EmailStyle | undefined) => `${tag}${styleAttribute(style)}`;
 const escapeAttribute = (value: string) => value.replaceAll('"', '&quot;');
 
+function escapeHtml(value: string): string {
+	return value
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll("'", '&#39;');
+}
+
 export function renderMarkdown(source: string, customStyles?: MarkdownStyles): string {
 	const finalStyles = { ...markdownStyles, ...customStyles };
 	const renderer = new Renderer();
@@ -141,8 +150,9 @@ export function renderMarkdown(source: string, customStyles?: MarkdownStyles): s
 		`<${styled('blockquote', finalStyles.blockQuote)}>\n${renderer.parser.parse(tokens)}</blockquote>\n`;
 	renderer.br = () => `<${styled('br', finalStyles.br)} />`;
 	renderer.code = ({ text }) =>
-		`<${styled('pre', finalStyles.codeBlock)}><code>${text.replace(/\n$/, '')}\n</code></pre>\n`;
-	renderer.codespan = ({ text }) => `<${styled('code', finalStyles.codeInline)}>${text}</code>`;
+		`<${styled('pre', finalStyles.codeBlock)}><code>${escapeHtml(text.replace(/\n$/, ''))}\n</code></pre>\n`;
+	renderer.codespan = ({ text }) =>
+		`<${styled('code', finalStyles.codeInline)}>${escapeHtml(text)}</code>`;
 	renderer.del = ({ tokens }) =>
 		`<${styled('del', finalStyles.strikethrough)}>${renderer.parser.parseInline(tokens)}</del>`;
 	renderer.em = ({ tokens }) =>

@@ -133,8 +133,8 @@ function injectHeadStyle(html: string, css: string): string {
 }
 
 function selectorToClass(selector: string): string | undefined {
-	const match = /^\.((?:\\.|[\w-])+)$/.exec(selector);
-	return match?.[1].replace(/\\([:.\/\[\]])/g, '$1');
+	const match = /^\.((?:\\.|[\w-!])+)$/.exec(selector);
+	return match?.[1].replace(/\\(.)/g, '$1');
 }
 
 function escapeRegExp(value: string): string {

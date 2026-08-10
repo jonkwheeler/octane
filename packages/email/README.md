@@ -18,7 +18,7 @@ Included primitives: `Body`, `Button`, `CodeInline`, `Column`, `Container`, `Fon
 
 Rich email authoring includes `Markdown`, Prism-powered `CodeBlock`, and `Tailwind`. Tailwind utilities are applied after static rendering, so classes inside ordinary nested `.tsrx` components are inlined correctly; responsive and pseudo rules are emitted into the document head.
 
-Use `<Preview text="Inbox preview" />`. Octane's natural JSX children are render blocks, so text-inspecting components use explicit string props.
+Use `<Preview text="Inbox preview" />` and `<Markdown children={"# Hello"} />`. Octane's natural JSX children are render blocks, so text-inspecting components use explicit string props.
 
 Template export and development tooling lives in `@octanejs/email-cli`.
 
