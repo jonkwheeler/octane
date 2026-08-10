@@ -67,9 +67,24 @@ test('support fixtures map to upstream after declared helper transforms', functi
 	for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
 		assert.ok(behavior.includes(required), `missing ${required}`);
 	}
-	const weakened = userEvent.replace(/new PointerEvent/g, 'null /* weakened */');
-	const weakenedBehavior = authoredUserEventBehavior(weakened, 'test/userEvent.ts');
-	assert.equal(weakenedBehavior.includes('pointer:new PointerEvent'), false);
+	const decoy =
+		"import { act } from '@octanejs/testing-library';\n" +
+		'async function pointer(steps) {\n' +
+		'\tif (false) {\n' +
+		"\t\tact(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
+		"\t\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
+		'\t}\n' +
+		'}\n' +
+		'async function type(element, text) {\n' +
+		'\tif (false) {\n' +
+		"\t\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
+		'\t}\n' +
+		'}\n' +
+		'export default { pointer, type };\n';
+	const decoyBehavior = authoredUserEventBehavior(decoy, 'test/userEvent.ts');
+	for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
+		assert.equal(decoyBehavior.includes(required), false, `decoy must not satisfy ${required}`);
+	}
 });
 
 test('runtime inventories match one-for-one after explicit path mapping', function crosswalk() {

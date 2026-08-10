@@ -182,32 +182,43 @@ if (process.argv.includes('--negative-controls')) {
 	const originalUserEvent = readFileSync(userEventPath);
 	const runtimeParityPath = join(packageRoot, 'audit/runtime-parity.json');
 	const originalRuntimeParity = readFileSync(runtimeParityPath, 'utf8');
-	const weakenedUserEvent = originalUserEvent
-		.toString('utf8')
-		.replace(/new PointerEvent/g, 'null /* weakened */')
-		.replace(/new MouseEvent/g, 'null /* weakened */')
-		.replace(/new KeyboardEvent/g, 'null /* weakened */');
+	// Decoy-preserving mutation: helpers become no-ops while unreachable blocks
+	// retain every constructor/dispatch token the old syntactic check required.
+	const decoyUserEvent =
+		"import { act } from '@octanejs/testing-library';\n" +
+		'type PointerStep = {\n' +
+		"\tkeys?: '[MouseLeft>]' | '[/MouseLeft]' | '[MouseRight>]' | '[/MouseRight]';\n" +
+		'\tcoords?: { clientX: number; clientY: number };\n' +
+		'};\n' +
+		'async function pointer(steps: PointerStep[]): Promise<void> {\n' +
+		'\tif (false) {\n' +
+		"\t\tact(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
+		"\t\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
+		'\t}\n' +
+		'}\n' +
+		'async function type(element: HTMLElement, text: string): Promise<void> {\n' +
+		'\tif (false) {\n' +
+		"\t\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
+		'\t}\n' +
+		'}\n' +
+		'export default { pointer, type };\n';
 	try {
-		writeFileSync(userEventPath, weakenedUserEvent);
+		writeFileSync(userEventPath, decoyUserEvent);
 		writeFileSync(adaptedSumsPath, renderReactResizablePanelsAdaptedInventory(repoRoot));
-		// Refreshing the structural lock must not hide a weakened helper: the
-		// PointerEvent/KeyboardEvent behavioral contract stays fail-closed.
-		const weakenedStructural = structuralSupportSource(
-			weakenedUserEvent,
-			'test/userEvent.ts',
-			{},
-		);
-		const weakenedDigest = createHash('sha256').update(weakenedStructural).digest('hex');
+		// Refreshing the structural lock must not hide a decoy helper: reachable
+		// construction→dispatch dataflow stays fail-closed.
+		const decoyStructural = structuralSupportSource(decoyUserEvent, 'test/userEvent.ts', {});
+		const decoyDigest = createHash('sha256').update(decoyStructural).digest('hex');
 		const runtimeParity = JSON.parse(originalRuntimeParity);
 		const lock = (runtimeParity.authoredSupportLocks ?? []).find(function findLock(entry) {
 			return entry.path === 'test/userEvent.ts';
 		});
 		if (!lock) fail('Missing authoredSupportLocks entry for test/userEvent.ts');
-		lock.structuralSha256 = weakenedDigest;
+		lock.structuralSha256 = decoyDigest;
 		writeFileSync(runtimeParityPath, `${JSON.stringify(runtimeParity, null, 2)}\n`);
 		expectFailure(
-			'weakened authored user-event helper after regenerating adapted SHA list and structural lock',
-			function weakenedHelperAfterHashAndLockBlessing() {
+			'decoy authored user-event helper after regenerating adapted SHA list and structural lock',
+			function decoyHelperAfterHashAndLockBlessing() {
 				verifyReactResizablePanelsUpstream(repoRoot);
 			},
 		);

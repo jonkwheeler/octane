@@ -584,7 +584,7 @@ export function renderReactResizablePanelsAdaptedInventory(repoRoot) {
  * Support fixtures under tests/upstream that are not case-ledger artifacts.
  * Mapped files are compared to upstream after declared import rewrites; the
  * authored user-event helper is checked for its pointer/type export contract
- * plus the PointerEvent/KeyboardEvent dispatch behavioral contract.
+ * plus reachable act-wrapped construction→dispatchEvent dataflow.
  */
 const SUPPORT_FILE_CONTRACTS = [
 	{
@@ -720,28 +720,108 @@ function authoredUserEventExports(source, fileName) {
 
 /**
  * Behavioral contract for the authored user-event substitute that
- * moveSeparator uses in place of @testing-library/user-event. Tokens are
- * derived from the helper AST (constructors + call targets), not from a
- * refreshable whole-file hash, so blessing a weakened helper cannot satisfy
- * this check.
+ * moveSeparator uses in place of @testing-library/user-event. Facts are
+ * reachable construction→dispatch dataflow edges (event ctor + type + options
+ * flowing into an act-wrapped *.dispatchEvent call), not mere syntactic
+ * tokens. Dead-code decoys and lock refreshes cannot satisfy this check.
  */
 export const AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR = [
-	'pointer:call act',
-	'pointer:call document.dispatchEvent',
-	'pointer:new MouseEvent',
-	'pointer:new PointerEvent',
-	'type:call act',
-	'type:new KeyboardEvent',
+	'pointer:act document.dispatchEvent PointerEvent opts:bubbles,button,buttons,clientX,clientY,pointerId,pointerType',
+	'pointer:act document.dispatchEvent MouseEvent:contextmenu opts:bubbles,button,clientX,clientY',
+	'type:act element.dispatchEvent KeyboardEvent:keydown opts:bubbles,key',
 ];
 
-function callTargetText(node, sourceFile) {
+const EVENT_CTORS = new Set(['PointerEvent', 'MouseEvent', 'KeyboardEvent']);
+
+function callTargetText(node) {
 	if (ts.isIdentifier(node)) return node.text;
 	if (ts.isPropertyAccessExpression(node)) {
-		return `${callTargetText(node.expression, sourceFile)}.${node.name.text}`;
+		const left = callTargetText(node.expression);
+		if (left == null) return null;
+		return `${left}.${node.name.text}`;
 	}
 	return null;
 }
 
+function isConstantFalse(node) {
+	if (ts.isParenthesizedExpression(node)) return isConstantFalse(node.expression);
+	if (node.kind === ts.SyntaxKind.FalseKeyword) return true;
+	if (ts.isNumericLiteral(node) && Number(node.text) === 0) return true;
+	if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) {
+		return isConstantTrue(node.operand);
+	}
+	return false;
+}
+
+function isConstantTrue(node) {
+	if (ts.isParenthesizedExpression(node)) return isConstantTrue(node.expression);
+	if (node.kind === ts.SyntaxKind.TrueKeyword) return true;
+	if (ts.isNumericLiteral(node) && Number(node.text) !== 0) return true;
+	if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) {
+		return isConstantFalse(node.operand);
+	}
+	return false;
+}
+
+function objectLiteralOptionKeys(node) {
+	if (!ts.isObjectLiteralExpression(node)) return null;
+	const keys = [];
+	for (const prop of node.properties) {
+		if (ts.isPropertyAssignment(prop) || ts.isShorthandPropertyAssignment(prop)) {
+			if (ts.isIdentifier(prop.name)) keys.push(prop.name.text);
+			else if (ts.isStringLiteral(prop.name)) keys.push(prop.name.text);
+		}
+	}
+	return keys.sort();
+}
+
+function eventConstruction(node) {
+	if (!ts.isNewExpression(node) || !ts.isIdentifier(node.expression)) return null;
+	const ctor = node.expression.text;
+	if (!EVENT_CTORS.has(ctor)) return null;
+	const args = node.arguments ?? [];
+	let typeLabel = '*';
+	if (args.length > 0 && ts.isStringLiteral(args[0])) {
+		typeLabel = args[0].text;
+	}
+	const opts = args.length > 1 ? objectLiteralOptionKeys(args[1]) : [];
+	return {
+		ctor,
+		typeLabel,
+		opts: opts ?? [],
+	};
+}
+
+function resolveEventExpr(node, bindings) {
+	if (ts.isIdentifier(node)) {
+		return bindings.get(node.text) ?? null;
+	}
+	if (ts.isParenthesizedExpression(node) || ts.isAsExpression(node)) {
+		return resolveEventExpr(node.expression, bindings);
+	}
+	return eventConstruction(node);
+}
+
+function formatEventFact(fnName, target, construction) {
+	const typePart =
+		construction.typeLabel === '*'
+			? construction.ctor
+			: `${construction.ctor}:${construction.typeLabel}`;
+	const optsPart = construction.opts.length > 0 ? ` opts:${construction.opts.join(',')}` : ' opts:';
+	return `${fnName}:act ${target} ${typePart}${optsPart}`;
+}
+
+function bindEventFromInitializer(name, initializer, bindings) {
+	const construction = resolveEventExpr(initializer, bindings);
+	if (construction) bindings.set(name, construction);
+	else bindings.delete(name);
+}
+
+/**
+ * Walk reachable statements in pointer/type and record act-wrapped
+ * construction→dispatchEvent dataflow. Constant-false branches are skipped so
+ * decoy tokens in dead code cannot satisfy the contract.
+ */
 export function authoredUserEventBehavior(source, fileName) {
 	const sourceFile = ts.createSourceFile(
 		fileName,
@@ -751,23 +831,81 @@ export function authoredUserEventBehavior(source, fileName) {
 		ts.ScriptKind.TS,
 	);
 	const behaviors = new Set();
-	function visit(fnName, node) {
-		if (ts.isNewExpression(node) && ts.isIdentifier(node.expression)) {
-			behaviors.add(`${fnName}:new ${node.expression.text}`);
+
+	function recordDispatch(fnName, callExpr, bindings, insideAct) {
+		if (!insideAct) return;
+		const target = callTargetText(callExpr.expression);
+		if (target !== 'document.dispatchEvent' && target !== 'element.dispatchEvent') return;
+		const arg = callExpr.arguments?.[0];
+		if (!arg) return;
+		const construction = resolveEventExpr(arg, bindings);
+		if (!construction) return;
+		behaviors.add(formatEventFact(fnName, target, construction));
+	}
+
+	function visit(fnName, node, bindings, insideAct) {
+		if (ts.isIfStatement(node)) {
+			const thenReachable = !isConstantFalse(node.expression);
+			const elseReachable = !isConstantTrue(node.expression);
+			if (thenReachable) visit(fnName, node.thenStatement, bindings, insideAct);
+			if (elseReachable && node.elseStatement) {
+				visit(fnName, node.elseStatement, bindings, insideAct);
+			}
+			return;
+		}
+		if ((ts.isWhileStatement(node) || ts.isDoStatement(node)) && isConstantFalse(node.expression)) {
+			return;
+		}
+		if (ts.isForStatement(node) && node.condition && isConstantFalse(node.condition)) {
+			return;
+		}
+		if (ts.isVariableStatement(node)) {
+			for (const decl of node.declarationList.declarations) {
+				if (ts.isIdentifier(decl.name) && decl.initializer) {
+					bindEventFromInitializer(decl.name.text, decl.initializer, bindings);
+				}
+			}
+		}
+		if (ts.isExpressionStatement(node) && ts.isBinaryExpression(node.expression)) {
+			const expr = node.expression;
+			if (expr.operatorToken.kind === ts.SyntaxKind.EqualsToken && ts.isIdentifier(expr.left)) {
+				bindEventFromInitializer(expr.left.text, expr.right, bindings);
+			}
 		}
 		if (ts.isCallExpression(node)) {
-			const target = callTargetText(node.expression, sourceFile);
-			if (target) behaviors.add(`${fnName}:call ${target}`);
+			const target = callTargetText(node.expression);
+			if (target === 'act' && node.arguments.length > 0) {
+				const cb = node.arguments[0];
+				if ((ts.isArrowFunction(cb) || ts.isFunctionExpression(cb)) && cb.body) {
+					visit(fnName, cb.body, bindings, true);
+				}
+			}
+			recordDispatch(fnName, node, bindings, insideAct);
 		}
 		ts.forEachChild(node, function eachChild(child) {
-			visit(fnName, child);
+			// Variable/if/call handling above already recurses where needed;
+			// skip re-entering those roots via forEachChild to avoid double work
+			// and to keep if-false pruning intact.
+			if (
+				child === node.thenStatement ||
+				child === node.elseStatement ||
+				(ts.isCallExpression(node) &&
+					callTargetText(node.expression) === 'act' &&
+					node.arguments[0] &&
+					(ts.isArrowFunction(node.arguments[0]) || ts.isFunctionExpression(node.arguments[0])) &&
+					child === node.arguments[0])
+			) {
+				return;
+			}
+			visit(fnName, child, bindings, insideAct);
 		});
 	}
+
 	for (const statement of sourceFile.statements) {
 		if (!ts.isFunctionDeclaration(statement) || !statement.name || !statement.body) continue;
 		const fnName = statement.name.text;
 		if (fnName !== 'pointer' && fnName !== 'type') continue;
-		visit(fnName, statement.body);
+		visit(fnName, statement.body, new Map(), false);
 	}
 	return [...behaviors].sort();
 }
