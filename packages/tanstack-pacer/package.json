@@ -45,7 +45,7 @@
   },
   "scripts": {
     "test": "vitest run --project tanstack-pacer",
-    "typecheck": "tsrx-tsc --noEmit"
+    "typecheck": "tsrx-tsc --noEmit && tsrx-tsc --noEmit -p typetests/octane-only/tsconfig.json"
   },
   "dependencies": {
     "@tanstack/pacer": "0.21.1"

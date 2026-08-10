@@ -32,9 +32,12 @@ provenance is `verified` via a repo-authored adapted-octane suite plus a React/O
 - Pristine: `typetests/pristine` runs `tsc` over the vendored React adapter source (upstream
   `test:types`) with pinned React types. Inventory: `audit/upstream-types.json`.
 - Adapted: `typetests/adapted` compiles the complete Octane adapter source through
-  `tsrx-tsc` (one-for-one with upstream `test:types`) plus `setter-types.test-d.ts`
-  accept/reject evidence for `structural-state-setter-types`. Inventory:
-  `audit/adapted-types.json`. Permitted transforms: `typetests/assertions.md`.
+  `tsrx-tsc` (one-for-one with upstream `test:types`). Inventory:
+  `audit/adapted-types.json`. Permitted transforms (structurally enforced):
+  `typetests/assertions.md`.
+- Ordinary Octane-only: `typetests/octane-only/setter-types.test-d.ts` holds
+  accept/reject evidence for `structural-state-setter-types` outside the required
+  adapted type lane.
 
 ## Executable evidence
 

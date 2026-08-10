@@ -421,7 +421,7 @@
       "entrypoint": ".",
       "source": "upstream/package/src/debouncer/useDebouncedState.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Also published from the package root entrypoint."
     },
     {
@@ -430,7 +430,7 @@
       "entrypoint": ".",
       "source": "upstream/package/src/debouncer/useDebouncedValue.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Also published from the package root entrypoint."
     },
     {
@@ -502,7 +502,7 @@
       "entrypoint": ".",
       "source": "upstream/package/src/rate-limiter/useRateLimitedState.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Also published from the package root entrypoint."
     },
     {
@@ -511,7 +511,7 @@
       "entrypoint": ".",
       "source": "upstream/package/src/rate-limiter/useRateLimitedValue.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Also published from the package root entrypoint."
     },
     {
@@ -538,7 +538,7 @@
       "entrypoint": ".",
       "source": "upstream/package/src/throttler/useThrottledState.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Also published from the package root entrypoint."
     },
     {
@@ -547,7 +547,7 @@
       "entrypoint": ".",
       "source": "upstream/package/src/throttler/useThrottledValue.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Also published from the package root entrypoint."
     },
     {
@@ -855,7 +855,7 @@
       "entrypoint": "./debouncer",
       "source": "upstream/package/src/debouncer/useDebouncedState.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Uses local Dispatch/SetStateAction aliases; covered by structural-state-setter-types."
     },
     {
@@ -864,7 +864,7 @@
       "entrypoint": "./debouncer",
       "source": "upstream/package/src/debouncer/useDebouncedValue.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Uses local Dispatch/SetStateAction aliases; covered by structural-state-setter-types."
     },
     {
@@ -1003,7 +1003,7 @@
       "entrypoint": "./rate-limiter",
       "source": "upstream/package/src/rate-limiter/useRateLimitedState.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Uses local Dispatch/SetStateAction aliases; covered by structural-state-setter-types."
     },
     {
@@ -1012,7 +1012,7 @@
       "entrypoint": "./rate-limiter",
       "source": "upstream/package/src/rate-limiter/useRateLimitedValue.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Uses local Dispatch/SetStateAction aliases; covered by structural-state-setter-types."
     },
     {
@@ -1063,7 +1063,7 @@
       "entrypoint": "./throttler",
       "source": "upstream/package/src/throttler/useThrottledState.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Uses local Dispatch/SetStateAction aliases; covered by structural-state-setter-types."
     },
     {
@@ -1072,7 +1072,7 @@
       "entrypoint": "./throttler",
       "source": "upstream/package/src/throttler/useThrottledValue.ts",
       "disposition": "adapted-divergence",
-      "evidence": "packages/tanstack-pacer/typetests/adapted/setter-types.test-d.ts",
+      "evidence": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "note": "Uses local Dispatch/SetStateAction aliases; covered by structural-state-setter-types."
     },
     {

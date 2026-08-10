@@ -56,7 +56,7 @@
   },
   {
     "path": "async-rate-limiter/useAsyncRateLimiter.ts",
-    "sha256": "47f13b46ee8165b978fdf4ab06c9cb5ea49e66e27d0e9ca36d7b0ec2a63b5926",
+    "sha256": "8644377c4950cdf42899403cca90cd13e45f33cfb205ce2e56515946ca909aa3",
     "assertionGroups": []
   },
   {
@@ -127,7 +127,9 @@
   {
     "path": "internal.ts",
     "sha256": "5f1d892a8a6b1787dc6905cab25d9ebe661a4fb01e955bb1372b76481ca514c4",
-    "assertionGroups": ["35ec44d030879435ec611fbb76462b82202d9177fde944d7c53182a783f164cb"]
+    "assertionGroups": [
+      "35ec44d030879435ec611fbb76462b82202d9177fde944d7c53182a783f164cb"
+    ]
   },
   {
     "path": "provider/context.ts",
@@ -188,14 +190,6 @@
     "path": "rate-limiter/useRateLimiter.ts",
     "sha256": "9c0acdd71a2ab90d2313f5fccf59738dfcf94c407017f566fb8afe5e64e1d79e",
     "assertionGroups": []
-  },
-  {
-    "path": "setter-types.test-d.ts",
-    "sha256": "c73ca59223858255ef6ac080d8ffee821808dab5d6dead7afb0962d2de384030",
-    "assertionGroups": [
-      "21030a944fad3b7ff0535a79c70f31b2d4498902672b7c66cb4c515ce0282cd8",
-      "580f428ac6ab85dccf08334058001d4c126675ba30a3413f817ba9b27d21b51c"
-    ]
   },
   {
     "path": "throttler/index.ts",

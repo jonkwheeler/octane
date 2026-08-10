@@ -16,15 +16,11 @@ async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'tanstack-pacer-types-'));
 	const upstreamRoot = join(root, 'upstream');
 	const adaptedRoot = join(root, 'adapted');
-	const adaptedProbesRoot = join(root, 'probes');
 	const auditRoot = join(root, 'audit');
 	await cp(join(REPO, 'packages/tanstack-pacer/upstream/package/src'), upstreamRoot, {
 		recursive: true,
 	});
 	await cp(join(REPO, 'packages/tanstack-pacer/src'), adaptedRoot, {
-		recursive: true,
-	});
-	await cp(join(REPO, 'packages/tanstack-pacer/typetests/adapted'), adaptedProbesRoot, {
 		recursive: true,
 	});
 	await mkdir(auditRoot, { recursive: true });
@@ -33,7 +29,6 @@ async function fixture() {
 		...config,
 		upstreamRoot: 'upstream',
 		adaptedRoot: 'adapted',
-		adaptedProbesRoot: 'probes',
 		inventories: {
 			pristine: 'audit/upstream-types.json',
 			adapted: 'audit/adapted-types.json',
@@ -63,19 +58,30 @@ test('rejects a skipped adapted source file', async (t) => {
 	}, /missing:.*useDebouncer/);
 });
 
-test('rejects deleting an adapted probe assertion', async (t) => {
+test('rejects an unauthorized structural change', async (t) => {
 	const value = await fixture();
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
 	});
-	const file = join(value.root, 'probes/setter-types.test-d.ts');
+	const file = join(value.root, 'adapted/debouncer/useDebouncer.ts');
 	const source = await readFile(file, 'utf8');
+	await writeFile(file, `${source}\nexport const __unauthorizedDrift = true;\n`);
+	assert.throws(function unauthorized() {
+		buildTypeInventory(value.root, value.config);
+	}, /outside the permitted transformations/);
+});
+
+test('rejects deleting an adapted assertion group', async (t) => {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.root, 'adapted/internal.ts');
+	const source = await readFile(file, 'utf8');
+	assert.match(source, /OCTANE DIVERGENCE/);
 	await writeFile(
 		file,
-		source.replace(
-			/\n\/\/ Local aliases must remain structurally assignable[\s\S]*?\nvoid reactLike;\n/,
-			'\n',
-		),
+		source.replace(/\/\/ OCTANE DIVERGENCE\[[^\]]+\]\[[^\]]+\]\n(?:\/\/[^\n]*\n)*/, ''),
 	);
 	assert.throws(function drifted() {
 		verifyTanstackPacerTypes(value.root, { configPath: 'type-parity.json' });
@@ -87,23 +93,40 @@ test('rejects removing an adapted @ts-expect-error', async (t) => {
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
 	});
-	const file = join(value.root, 'probes/setter-types.test-d.ts');
-	const source = await readFile(file, 'utf8');
-	assert.match(source, /@ts-expect-error/);
-	await writeFile(file, source.replace(/\s*\/\/\s*@ts-expect-error[^\n]*\n/, '\n'));
-	assert.throws(function drifted() {
+	const adaptedFile = join(value.root, 'adapted/debouncer/useDebouncer.ts');
+	const upstreamFile = join(value.root, 'upstream/debouncer/useDebouncer.ts');
+	const adaptedSource = await readFile(adaptedFile, 'utf8');
+	const upstreamSource = await readFile(upstreamFile, 'utf8');
+	const marker =
+		'\n// @ts-expect-error control fixture\nconst __control: string = 1 as unknown as string;\n';
+	await writeFile(adaptedFile, `${adaptedSource}${marker}`);
+	await writeFile(upstreamFile, `${upstreamSource}${marker}`);
+	const inventory = buildTypeInventory(value.root, value.config);
+	await writeFile(
+		join(value.root, 'audit/adapted-types.json'),
+		`${JSON.stringify(inventory.adapted, null, '\t')}\n`,
+	);
+	await writeFile(
+		join(value.root, 'audit/upstream-types.json'),
+		`${JSON.stringify(inventory.upstream, null, '\t')}\n`,
+	);
+	await writeFile(
+		adaptedFile,
+		`${adaptedSource}${marker}`.replace(/\s*\/\/\s*@ts-expect-error[^\n]*\n/, '\n'),
+	);
+	assert.throws(function removed() {
 		verifyTanstackPacerTypes(value.root, { configPath: 'type-parity.json' });
-	}, /adapted type inventory drifted|must retain assertion groups/);
+	}, /adapted type inventory drifted/);
 });
 
-test('path maps cover the complete upstream source suite', () => {
+test('path maps cover the complete upstream source suite under enforced transforms', () => {
 	const config = readTypeParityConfig(REPO);
 	const inventory = buildTypeInventory(REPO, config);
 	assert.equal(inventory.upstream.length, 43);
-	assert.ok(inventory.adapted.length > inventory.upstream.length);
+	assert.equal(inventory.adapted.length, 45);
 	assert.ok(
 		inventory.adapted.some(function find(entry) {
-			return entry.path === 'setter-types.test-d.ts' && entry.assertionGroups.length > 0;
+			return entry.path === 'internal.ts' && entry.assertionGroups.length > 0;
 		}),
 	);
 });

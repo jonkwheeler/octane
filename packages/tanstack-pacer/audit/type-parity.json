@@ -2,12 +2,15 @@
   "schemaVersion": 1,
   "upstreamRoot": "packages/tanstack-pacer/upstream/package/src",
   "adaptedRoot": "packages/tanstack-pacer/src",
-  "adaptedProbesRoot": "packages/tanstack-pacer/typetests/adapted",
   "permittedTransforms": [
-    "import-root: @tanstack/react-pacer / react -> @octanejs/tanstack-pacer / octane",
+    "import-root: react -> octane",
+    "import-root: @tanstack/react-store -> @octanejs/tanstack-store",
+    "provider-options import: ../provider/PacerProvider -> ../provider/context",
     "extension: .tsx -> .tsrx for provider/PacerProvider",
-    "setter-types: React.Dispatch/React.SetStateAction -> local Dispatch/SetStateAction",
-    "jsxImportSource: react -> octane",
+    "setter-types: React.Dispatch/React.SetStateAction -> local Dispatch/SetStateAction (+ internal import)",
+    "selector-slots: useSelector -> useSelectorSlot with Symbol.for call-site slots",
+    "renderable types: ReactNode/FunctionComponent -> OctaneNode/unknown in Subscribe signatures",
+    "provider split: context helpers extracted to adapted-only provider/context.ts",
     "adapted-only modules: internal.ts and provider/context.ts"
   ],
   "pathMaps": [
@@ -192,13 +195,6 @@
     {
       "path": "provider/context.ts",
       "rationale": "Provider context helpers split out of upstream's single PacerProvider.tsx module for Octane module layout."
-    }
-  ],
-  "adaptedProbes": [
-    {
-      "path": "setter-types.test-d.ts",
-      "disposition": "octane-only-divergence",
-      "rationale": "Accept/reject evidence for structural-state-setter-types; not present upstream because test:types is compile-only."
     }
   ],
   "inventories": {

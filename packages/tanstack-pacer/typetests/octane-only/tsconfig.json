@@ -19,5 +19,5 @@
       "octane": ["../../../octane/src/index.ts"]
     }
   },
-  "include": ["../../src/**/*.ts", "../../src/**/*.tsrx"]
+  "include": ["./setter-types.test-d.ts", "../../src/**/*.ts", "../../src/**/*.tsrx"]
 }

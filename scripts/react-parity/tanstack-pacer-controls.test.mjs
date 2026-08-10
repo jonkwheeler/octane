@@ -52,7 +52,7 @@ test('tanstack-pacer classifies every port-authored test exactly once', () => {
 test('tanstack-pacer type inventories cover the complete adapted source suite', () => {
 	const result = verifyTanstackPacerTypes(root);
 	assert.equal(result.files, 43);
-	assert.ok(result.adaptedFiles > 43);
+	assert.equal(result.adaptedFiles, 45);
 	assert.ok(result.assertions > 0);
 });
 

@@ -14,18 +14,33 @@ dedicated `.test-d.ts` assertion files at the pin.
 
 - Compiler: `tsrx-tsc`
 - Project: `typetests/adapted/tsconfig.json`
-- Includes the complete Octane adapter source under `src/` plus
-  `setter-types.test-d.ts` accept/reject evidence for `structural-state-setter-types`
+- Includes the complete Octane adapter source under `src/` only (one-for-one with
+  upstream `test:types`)
 - Inventory: `audit/adapted-types.json`
+
+## Ordinary Octane-only setter probe
+
+- Compiler: `tsrx-tsc`
+- Project: `typetests/octane-only/tsconfig.json`
+- `setter-types.test-d.ts` accept/reject evidence for `structural-state-setter-types`
+- Kept outside the required adapted type lane because it has no pristine React
+  assertion counterpart
 
 ## Permitted transformations
 
-1. Import roots: `@tanstack/react-pacer` / `react` → `@octanejs/tanstack-pacer` / `octane`
-2. Extension: `provider/PacerProvider.tsx` → `provider/PacerProvider.tsrx`
-3. React namespace setter types → local `Dispatch` / `SetStateAction` aliases from `src/internal.ts`
-4. JSX import source: `react` → `octane`
-5. Adapted-only modules: `src/internal.ts` and `src/provider/context.ts`
+Documented in `audit/type-parity.json` `permittedTransforms` and enforced by
+`scripts/react-parity/tanstack-pacer-types-lib.mjs` via normalized AST/source
+comparison of every mapped file:
 
-Any other structural change is drift. `scripts/react-parity/tanstack-pacer-types-lib.mjs`
-compares file inventories under these maps and rejects a skipped adapted file, a deleted
-probe assertion, or a removed `@ts-expect-error`.
+1. Import roots: `react` → `octane`; `@tanstack/react-store` → `@octanejs/tanstack-store`
+2. Provider options import: `../provider/PacerProvider` → `../provider/context`
+3. Extension: `provider/PacerProvider.tsx` → `provider/PacerProvider.tsrx`
+4. React namespace setter types → local `Dispatch` / `SetStateAction` from `src/internal.ts`
+5. Selector slots: `useSelector` → `useSelectorSlot` with `Symbol.for` call-site slots
+6. Renderable types in Subscribe signatures: `ReactNode` / `FunctionComponent` → Octane equivalents
+7. Provider context helpers extracted to adapted-only `provider/context.ts`
+8. Adapted-only modules: `src/internal.ts` and `src/provider/context.ts`
+
+Any other structural change is drift. Controls reject a skipped adapted file, an
+unauthorized change outside these transforms, a deleted assertion group, or a
+removed `@ts-expect-error`.
