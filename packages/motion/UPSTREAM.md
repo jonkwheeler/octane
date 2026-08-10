@@ -9,7 +9,8 @@
 - Commit: `40e8756c63b258c9dd07de9501cb788410eefb02`
 - npm tarball SHA-256: `d99821507dace914ef6924e95c25beb2d618438fc925517569dd6b083a4df793`
 - License: MIT
-- React oracle: workspace React 19.2.7
+- Supported upstream range: exactly `12.42.2`
+- React oracle: `react@19.2.7`, `react-dom@19.2.7`, `@types/react@19.2.17`, and `@types/react-dom@19.2.3`
 
 The binding reuses Motion's framework-neutral animation engine and ports a bounded React-facing component and hook surface onto Octane.
 
