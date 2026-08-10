@@ -1,39 +1,78 @@
 {
   "schemaVersion": 1,
-  "upstreamRoot": "packages/tanstack-devtools/audit/type-probes",
-  "adaptedRoot": "packages/tanstack-devtools/typetests",
+  "upstreamRoot": "packages/tanstack-devtools/upstream/package/src",
+  "adaptedRoot": "packages/tanstack-devtools/src",
+  "fileMap": [
+    {
+      "upstream": "index.ts",
+      "adapted": "index.ts"
+    },
+    {
+      "upstream": "devtools.tsx",
+      "adapted": "devtools.tsrx"
+    }
+  ],
+  "allowedExtraExports": {
+    "index.ts": [
+      "ClientEventBusConfig",
+      "PLUGIN_CONTAINER_ID",
+      "PLUGIN_TITLE_CONTAINER_ID",
+      "TanStackDevtoolsConfig",
+      "TanStackDevtoolsCore",
+      "TanStackDevtoolsInit",
+      "TanStackDevtoolsPlugin",
+      "TanStackDevtoolsPluginProps",
+      "TanStackDevtoolsTheme"
+    ]
+  },
   "inventories": {
     "upstream": "packages/tanstack-devtools/audit/upstream-types.json",
     "adapted": "packages/tanstack-devtools/audit/adapted-types.json"
+  },
+  "probePair": {
+    "upstreamRoot": "packages/tanstack-devtools/audit/type-probes",
+    "adaptedRoot": "packages/tanstack-devtools/typetests",
+    "inventories": {
+      "upstream": "packages/tanstack-devtools/audit/upstream-probe-types.json",
+      "adapted": "packages/tanstack-devtools/audit/adapted-probe-types.json"
+    }
   },
   "lanes": {
     "pristine": {
       "compiler": "tsc",
       "project": "packages/tanstack-devtools/typetests/pristine/tsconfig.json",
-      "sourcePolicy": "upstream test:types compiles the complete React adapter source"
+      "sourcePolicy": "upstream test:types compiles the complete React adapter source program"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
       "project": "packages/tanstack-devtools/typetests/adapted/tsconfig.json",
-      "sourcePolicy": "adapted test:types compiles the complete Octane adapter source"
+      "sourcePolicy": "adapted test:types compiles the complete Octane adapter source program paired by fileMap"
     }
   },
   "permittedTransformations": [
     {
-      "kind": "import-root",
-      "rule": "React probes import vendored upstream/package/src; Octane probes import the package public entry"
+      "kind": "extension",
+      "rule": "devtools.tsx becomes devtools.tsrx for the Octane component module"
     },
     {
-      "kind": "renderable-type",
-      "rule": "ReactNode/ReactElement become OctaneNode"
+      "kind": "import-root",
+      "rule": "react / react-dom imports become octane; local ./devtools becomes ./devtools.tsrx"
     },
     {
       "kind": "type-rename",
-      "rule": "TanStackDevtoolsReactPlugin/Init become TanStackDevtoolsOctanePlugin/Init"
+      "rule": "TanStackDevtoolsReactPlugin/Init/Config become TanStackDevtoolsOctanePlugin/Init/Config"
+    },
+    {
+      "kind": "renderable-type",
+      "rule": "JSX.Element / ReactElement become Octane renderable shapes"
+    },
+    {
+      "kind": "export-surface",
+      "rule": "Every upstream export must remain after rename transforms; adapted-only extras require allowedExtraExports"
     },
     {
       "kind": "negative-control",
-      "rule": "Matching @ts-expect-error controls must reject the same invalid shapes on both sides"
+      "rule": "Program-membership and export-surface controls reject skipped mapped files, unmapped extras, missing required exports, and undeclared additive exports"
     }
   ],
   "divergences": [
@@ -41,7 +80,12 @@
       "id": "octane-type-names",
       "kind": "types",
       "rule": "Public adapter types keep framework-prefixed names on each side"
+    },
+    {
+      "id": "extra-core-reexports",
+      "kind": "api",
+      "rule": "Adapted index.ts may re-export framework-neutral core symbols listed in allowedExtraExports"
     }
   ],
-  "notes": "Public-API probes under type-probes/ and typetests/ are classified controls that keep one-for-one assertion inventories; they do not substitute for the upstream-suite source compiles declared in react-parity.json."
+  "notes": "Required type lanes compile the paired source programs declared by fileMap. Public-API probes under probePair remain supplementary assertion inventories and do not substitute for source-program membership."
 }

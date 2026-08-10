@@ -50,7 +50,7 @@
     {
       "path": "scripts/react-parity/tanstack-devtools-types-lib.test.mjs",
       "disposition": "octane-only-audit-contract",
-      "reason": "Negative controls for one-for-one public-API probe inventories (skipped file, deleted assertion, removed expect-error, retargeted import)."
+      "reason": "Negative controls for source-program membership/export-surface pairing and supplementary public-API probe inventories."
     }
   ]
 }

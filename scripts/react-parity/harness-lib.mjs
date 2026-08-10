@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { readFile, readdir } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
+import { readFile, readdir } from 'node:fs/promises';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -493,7 +493,11 @@ export function validateManifest(manifest) {
 			fail(`divergence ${divergence.id} must match at least one case id`);
 		}
 		for (const caseId of divergence.caseIds) {
-			if (!caseIds.has(caseId) && !caseId.startsWith('runtime:'))
+			if (
+				!caseIds.has(caseId) &&
+				!caseId.startsWith('runtime:') &&
+				!caseId.startsWith('conformance:')
+			)
 				fail(`divergence ${divergence.id} references unknown case id "${caseId}"`);
 			if (divergentCases.has(caseId)) fail(`case id "${caseId}" has multiple divergences`);
 			divergentCases.add(caseId);
@@ -606,6 +610,15 @@ export async function verifyManifestFiles(manifest, root) {
 				);
 		}
 	}
+	const conformanceCaseIds = await discoverConformanceCaseIds(absoluteRoot, manifest);
+	for (const divergence of manifest.divergences) {
+		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('conformance:'))) {
+			if (!conformanceCaseIds.has(caseId))
+				throw new Error(
+					`divergence ${divergence.id} references unknown conformance case id "${caseId}"`,
+				);
+		}
+	}
 	const markerCounts = new Map();
 	const markerFiles = new Set([
 		...(await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.source)),
@@ -621,7 +634,9 @@ export async function verifyManifestFiles(manifest, root) {
 			const entry = manifest.divergences.find((candidate) => candidate.id === match[1]);
 			if (
 				!entry.caseIds.includes(match[2]) ||
-				(!runtimeCaseIds.has(match[2]) && !caseIdsForManifest(manifest).has(match[2]))
+				(!runtimeCaseIds.has(match[2]) &&
+					!caseIdsForManifest(manifest).has(match[2]) &&
+					!conformanceCaseIds.has(match[2]))
 			)
 				throw new Error(
 					`${path}: divergence marker "${match[1]}" is not bound to required executed case "${match[2]}"`,
@@ -644,6 +659,30 @@ function caseIdsForManifest(manifest) {
 			.filter((lane) => lane.oracle === 'required' && lane.available !== false)
 			.flatMap((lane) => lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.id))),
 	);
+}
+
+async function discoverConformanceCaseIds(root, manifest) {
+	const found = new Map();
+	const markers = await discoverAdaptedFiles(root, manifest.adaptedRoots.tests);
+	for (const path of markers) {
+		const source = await readFile(resolve(root, path), 'utf8');
+		for (const match of source.matchAll(/^\s*\/\/\s*@parity-case\s+(conformance:\S+)\s*$/gm)) {
+			const caseId = match[1];
+			const markerEnd = match.index + match[0].length;
+			const tail = source.slice(markerEnd).trimStart();
+			const declaration = /^(?:it|test)(?:\.(skip|todo))?\s*\(\s*/.exec(tail);
+			if (!declaration || declaration[1]) {
+				throw new Error(`${path}: @parity-case ${caseId} must immediately precede one active test`);
+			}
+			if (found.has(caseId) && found.get(caseId) !== path) {
+				throw new Error(
+					`duplicate conformance case id "${caseId}" in ${found.get(caseId)} and ${path}`,
+				);
+			}
+			found.set(caseId, path);
+		}
+	}
+	return new Set(found.keys());
 }
 
 function validateRuntimeInventory(inventory, lane, expectedRoots) {

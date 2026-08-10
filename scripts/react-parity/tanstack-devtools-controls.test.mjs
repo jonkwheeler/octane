@@ -95,7 +95,12 @@ test('tanstack-devtools records present upstream types with source-compile lanes
 	assert.equal(manifest.provenance.verification, 'verified');
 	assert.deepEqual(manifest.adaptedRoots.tests.roots, [
 		'packages/tanstack-devtools/tests/differential',
+		'packages/tanstack-devtools/tests/parity',
 	]);
+	assert.equal(
+		manifest.lanes.some((entry) => entry.id === 'tanstack-devtools-divergence-contracts'),
+		false,
+	);
 	for (const id of ['tanstack-devtools-pristine-types', 'tanstack-devtools-adapted-types']) {
 		const lane = manifest.lanes.find((entry) => entry.id === id);
 		assert.equal(lane?.oracle, 'required');
@@ -113,13 +118,17 @@ test('tanstack-devtools records present upstream types with source-compile lanes
 		'tsrx-tsc',
 	);
 	const inventories = verifyTypeInventories(root);
-	assert.equal(inventories.pairs, 1);
+	assert.equal(inventories.pairs, 2);
+	assert.ok(inventories.exports > 0);
+	assert.ok(inventories.probePairs >= 1);
 	assert.ok(inventories.assertions > 0);
 });
 
-test('tanstack-devtools cites ordinary audit cases for non-type divergences', () => {
+test('tanstack-devtools cites ordinary conformance cases for non-type divergences', () => {
 	const byId = Object.fromEntries(manifest.divergences.map((entry) => [entry.id, entry]));
-	assert.deepEqual(byId['core-version'].caseIds, ['audit:core-version']);
-	assert.deepEqual(byId['extra-core-reexports'].caseIds, ['audit:extra-core-reexports']);
+	assert.deepEqual(byId['core-version'].caseIds, ['conformance:tanstack-devtools-core-version']);
+	assert.deepEqual(byId['extra-core-reexports'].caseIds, [
+		'conformance:tanstack-devtools-extra-core-reexports',
+	]);
 	assert.deepEqual(byId['octane-type-names'].caseIds, ['types:adapted-octane-compile']);
 });
