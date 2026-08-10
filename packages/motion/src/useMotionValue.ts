@@ -218,6 +218,17 @@ export function patchTransformFn(
 	}
 	const range = findTransformFnRange(current, fn);
 	if (range) {
+		// Layout FLIP writes asymmetric `scale(sx, sy)`. A style `scale` MotionValue
+		// shares the `scale(` token, but replacing that compound with uniform
+		// `scale(n)` drops an axis mid-FLIP. Leave asymmetric compounds alone —
+		// `scaleX`/`scaleY` still decompose via patchCompoundTransform below.
+		if (key === 'scale') {
+			const inner = current.slice(range.start + 'scale('.length, range.end - 1);
+			const args = splitTransformArgs(inner);
+			if (args.length >= 2 && args[0] !== args[1]) {
+				return;
+			}
+		}
 		node.style.transform = replaceTransformRange(current, range, next);
 		return;
 	}

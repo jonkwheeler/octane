@@ -75,6 +75,27 @@ describe('useMotionValue', function useMotionValueSuite() {
 		expect(div.style.transform).toBe('translateX(40px) translateY(20px)');
 	});
 
+	it('leaves asymmetric layout FLIP scale alone when binding uniform scale', function leavesAsymmetricFlipScaleOnUniformScale() {
+		const div = document.createElement('div');
+		div.style.transform = 'translate(-50px, -50px) scale(1.2, 0.8)';
+		patchTransformFn(div, 'scale', 2);
+		expect(div.style.transform).toBe('translate(-50px, -50px) scale(1.2, 0.8)');
+	});
+
+	it('replaces uniform two-arg scale when binding style scale', function replacesUniformTwoArgScale() {
+		const div = document.createElement('div');
+		div.style.transform = 'scale(1, 1)';
+		patchTransformFn(div, 'scale', 2);
+		expect(div.style.transform).toBe('scale(2)');
+	});
+
+	it('decomposes asymmetric FLIP scale when binding scaleX', function decomposesAsymmetricFlipOnScaleX() {
+		const div = document.createElement('div');
+		div.style.transform = 'scale(1.2, 0.8)';
+		patchTransformFn(div, 'scaleX', 2);
+		expect(div.style.transform).toBe('scaleX(2) scaleY(0.8)');
+	});
+
 	it('clears a decomposed axis on unbind after binding over layout FLIP', function clearsDecomposedAxisOnUnbind() {
 		const div = document.createElement('div');
 		div.style.transform = 'translate(0px, 0px) scale(1, 1)';
