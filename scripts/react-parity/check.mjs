@@ -38,6 +38,7 @@ const BINDING_MANIFESTS = readdirSync(path.join(REPO, 'packages'), { withFileTyp
 	.filter((manifest) => existsSync(path.join(REPO, manifest)))
 	.sort();
 const HARNESS_PATH = path.join(REPO, 'scripts/react-parity/harness.mjs');
+const SPECIALIZED_CLASSIFICATION_BINDINGS = new Set(['livestore', 'tanstack-hotkeys', 'tiptap']);
 const errors = [];
 try {
 	verifyHookFormUpstream(REPO);
@@ -157,7 +158,7 @@ for (const relativeFile of BINDING_MANIFESTS) {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));
 		const binding = relativeFile.split('/')[1];
 		if (
-			binding !== 'tiptap' &&
+			!SPECIALIZED_CLASSIFICATION_BINDINGS.has(binding) &&
 			existsSync(path.join(REPO, `packages/${binding}/audit/test-classifications.json`))
 		) {
 			verifyPortTestClassifications(REPO, binding);
