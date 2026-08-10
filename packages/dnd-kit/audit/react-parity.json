@@ -50,7 +50,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "020d961de0259148568495859fdd4e7698645d16b52cd0853e5a74b182db07a3"
+      "lockfileSha256": "9f9847ac3a12e546247e614fa28a2a5efa2360067bdfd3c59ac5553ddaf260af"
     }
   },
   "lanes": [
@@ -88,7 +88,7 @@
         {
           "path": "packages/dnd-kit/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "ff200f795962d57174f75bed5a4d5e6cbcd7ab1c9b35055264ac4dcc54053449"
+          "sha256": "d982970ac68712f7ac3ce51ac133b22bee4879dafde32902adb7bffbe1bfca88"
         },
         {
           "path": "packages/dnd-kit/tests/_fixtures/differential.tsrx",
@@ -123,7 +123,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "dbb6219f2a2a373fda216cf8f953f124591fc9789b34bf5ae9be4159f6c42162"
+          "sha256": "9369847ebfed4f491d31089adac018df607fec03515f32958c4ac92e862067a3"
         }
       ]
     }
