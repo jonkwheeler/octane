@@ -96,20 +96,21 @@ function TransitionImpl(props: TransitionProps) @{
 			timer.current = null;
 			done();
 		};
-		const node = props.nodeRef?.current ?? undefined;
-		if (props.nodeRef && !node) {
+		const live = latestProps.current;
+		const node = live.nodeRef?.current ?? undefined;
+		if (live.nodeRef && !node) {
 			timer.current = setTimeout(finish, 0);
 			return;
 		}
-		if (props.addEndListener) {
-			if (props.nodeRef) (props.addEndListener as (done: () => void) => void)(finish);
-			else if (node) (props.addEndListener as (node: Element, done: () => void) => void)(
+		if (live.addEndListener) {
+			if (live.nodeRef) (live.addEndListener as (done: () => void) => void)(finish);
+			else if (node) (live.addEndListener as (node: Element, done: () => void) => void)(
 				node,
 				finish,
 			);
 		}
 		if (active && timeout !== undefined) timer.current = setTimeout(finish, timeout);
-		else if (active && (!props.addEndListener || !node)) timer.current = setTimeout(finish, 0);
+		else if (active && (!live.addEndListener || !node)) timer.current = setTimeout(finish, 0);
 	};
 
 	const commitStatus = (next: TransitionStatus, run: () => void) => {
@@ -138,22 +139,20 @@ function TransitionImpl(props: TransitionProps) @{
 		const node = props.nodeRef?.current ?? undefined;
 		if (!mounting && props.enter === false || config.disabled) {
 			commitStatus(ENTERED, function afterEntered() {
-				callEnterCallback(props.onEntered, props.nodeRef, node, appearing);
+				const live = latestProps.current;
+				callEnterCallback(live.onEntered, live.nodeRef, node, appearing);
 			});
 			return;
 		}
 		callEnterCallback(props.onEnter, props.nodeRef, node, appearing);
 		const timeouts = getTimeouts(props.timeout);
 		commitStatus(ENTERING, function afterEntering() {
-			callEnterCallback(props.onEntering, props.nodeRef, node, appearing);
+			const live = latestProps.current;
+			callEnterCallback(live.onEntering, live.nodeRef, node, appearing);
 			finishAfter(appearing ? timeouts.appear : timeouts.enter, function enterDone() {
 				commitStatusNow(ENTERED, function afterEntered() {
-					callEnterCallback(
-						latestProps.current.onEntered,
-						latestProps.current.nodeRef,
-						node,
-						appearing,
-					);
+					const live = latestProps.current;
+					callEnterCallback(live.onEntered, live.nodeRef, node, appearing);
 				});
 			});
 		});
@@ -164,16 +163,19 @@ function TransitionImpl(props: TransitionProps) @{
 		const node = props.nodeRef?.current ?? undefined;
 		if (props.exit === false || config.disabled) {
 			commitStatus(EXITED, function afterExited() {
-				props.onExited?.(props.nodeRef ? undefined : node);
+				const live = latestProps.current;
+				live.onExited?.(live.nodeRef ? undefined : node);
 			});
 			return;
 		}
 		props.onExit?.(props.nodeRef ? undefined : node);
 		commitStatus(EXITING, function afterExiting() {
-			props.onExiting?.(props.nodeRef ? undefined : node);
-			finishAfter(getTimeouts(props.timeout).exit, function exitDone() {
+			const live = latestProps.current;
+			live.onExiting?.(live.nodeRef ? undefined : node);
+			finishAfter(getTimeouts(live.timeout).exit, function exitDone() {
 				commitStatusNow(EXITED, function afterExited() {
-					latestProps.current.onExited?.(latestProps.current.nodeRef ? undefined : node);
+					const live = latestProps.current;
+					live.onExited?.(live.nodeRef ? undefined : node);
 				});
 			});
 		});
