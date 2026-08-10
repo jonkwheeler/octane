@@ -25,7 +25,7 @@
     {
       "path": "packages/tanstack-pacer/typetests/octane-only/setter-types.test-d.ts",
       "disposition": "octane-only-divergence",
-      "reason": "Accept/reject evidence for structural-state-setter-types; kept in an ordinary typecheck project because upstream test:types is compile-only and has no assertion counterpart.",
+      "reason": "Accept/reject evidence for structural-state-setter-types; kept in an ordinary typecheck project because upstream test:types is compile-only and has no assertion counterpart. Executed by root bindings:typecheck via typetests/octane-only/tsconfig.json.",
       "divergenceIds": ["structural-state-setter-types"]
     }
   ]

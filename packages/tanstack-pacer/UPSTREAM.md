@@ -11,7 +11,7 @@
 - npm lock integrity: `sha512-CenQqK0GluSPIrnsG1yuD7w5uMSQ/4lI9AcGEFxBrRd66r260boWcYRIsS5+eHtXb238FoZYhKmJPGlhRzmHRw==`
 - Supported range: exactly `0.22.1`
 - License: MIT
-- React oracle: exact `react@19.2.7`, `react-dom@19.2.7`, and `@types/react@19.2.17` via the `tanstack-pacer-react-oracle` catalog
+- React oracle: exact `react@19.2.7`, `react-dom@19.2.7`, `@types/react@19.2.17`, and `@types/react-dom@19.2.3` via the `tanstack-pacer-react-oracle` catalog
 - Framework-neutral core: exact `@tanstack/pacer@0.21.1`, reused by both adapters
 
 ## Source, exports, and suites
@@ -37,7 +37,9 @@ provenance is `verified` via a repo-authored adapted-octane suite plus a React/O
   `typetests/assertions.md`.
 - Ordinary Octane-only: `typetests/octane-only/setter-types.test-d.ts` holds
   accept/reject evidence for `structural-state-setter-types` outside the required
-  adapted type lane.
+  adapted type lane. Root `bindings:typecheck` runs
+  `typetests/octane-only/tsconfig.json` so this evidence executes in the always-on
+  ordinary typecheck control plane.
 
 ## Executable evidence
 

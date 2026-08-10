@@ -60,6 +60,7 @@
     "@tanstack/react-store": "0.11.0",
     "@tsrx/react": "catalog:default",
     "@types/react": "catalog:tanstack-pacer-react-oracle",
+    "@types/react-dom": "catalog:tanstack-pacer-react-oracle",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:tanstack-pacer-react-oracle",
