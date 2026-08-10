@@ -116,28 +116,92 @@ describe('react-textarea-autosize pristine differential', () => {
 	it('matches uncontrolled input sizing and callback ordering', async () => {
 		const reactCalls: string[] = [];
 		const octaneCalls: string[] = [];
+		const reactEvents: Array<Record<string, unknown>> = [];
+		const octaneEvents: Array<Record<string, unknown>> = [];
+		function pushReactHeight(height: number) {
+			reactCalls.push(`height:${height}`);
+		}
+		function pushOctaneHeight(height: number) {
+			octaneCalls.push(`height:${height}`);
+		}
+		function pushReactInput() {
+			reactCalls.push('input');
+		}
+		function pushOctaneInput() {
+			octaneCalls.push('input');
+		}
+		function onReactChange(event: Event & { nativeEvent?: Event }) {
+			reactCalls.push('change');
+			const currentTarget = event.currentTarget as HTMLTextAreaElement | null;
+			reactEvents.push({
+				constructorName: event.constructor.name,
+				isInputEvent: event instanceof InputEvent,
+				hasNativeEvent: event.nativeEvent instanceof Event,
+				currentTargetTag: currentTarget?.tagName,
+				value: currentTarget?.value,
+			});
+		}
+		function onOctaneChange(event: Event) {
+			octaneCalls.push('change');
+			const currentTarget = event.currentTarget as HTMLTextAreaElement | null;
+			octaneEvents.push({
+				constructorName: event.constructor.name,
+				isInputEvent: event instanceof InputEvent,
+				hasNativeEvent: 'nativeEvent' in event,
+				currentTargetTag: currentTarget?.tagName,
+				value: currentTarget?.value,
+			});
+		}
 		const react = await renderReact({
 			defaultValue: 'one',
 			style,
-			onHeightChange: (height: number) => reactCalls.push(`height:${height}`),
-			onInput: () => reactCalls.push('input'),
-			onChange: () => reactCalls.push('change'),
+			onHeightChange: pushReactHeight,
+			onInput: pushReactInput,
+			onChange: onReactChange,
 		});
 		const octane = renderOctane({
 			defaultValue: 'one',
 			style,
-			onHeightChange: (height: number) => octaneCalls.push(`height:${height}`),
-			onInput: () => octaneCalls.push('input'),
-			onChange: () => octaneCalls.push('change'),
+			onHeightChange: pushOctaneHeight,
+			onInput: pushOctaneInput,
+			onChange: onOctaneChange,
 		});
 		reactCalls.length = 0;
 		octaneCalls.length = 0;
+
+		const nativeSetter = Object.getOwnPropertyDescriptor(
+			HTMLTextAreaElement.prototype,
+			'value',
+		)!.set!;
+		nativeSetter.call(react, 'assigned-without-dispatch');
+		nativeSetter.call(octane.textarea, 'assigned-without-dispatch');
+		await act(function flushReact() {
+			return undefined;
+		});
+		flushEffects();
+		expect(reactCalls).toEqual([]);
+		expect(octaneCalls).toEqual([]);
+		expect(reactEvents).toEqual([]);
+		expect(octaneEvents).toEqual([]);
 
 		await dispatchInput(react, 'one\ntwo\nthree');
 		await dispatchInput(octane.textarea, 'one\ntwo\nthree');
 
 		expect(octane.textarea.style.height).toBe(react.style.height);
 		expect(octaneCalls).toEqual(reactCalls);
+		expect(reactEvents[0]?.isInputEvent).toBe(false);
+		expect(reactEvents[0]?.hasNativeEvent).toBe(true);
+		expect(reactEvents[0]?.currentTargetTag).toBe('TEXTAREA');
+		expect(reactEvents[0]?.value).toBe('one\ntwo\nthree');
+		expect(octaneEvents).toEqual([
+			{
+				constructorName: 'InputEvent',
+				isInputEvent: true,
+				hasNativeEvent: false,
+				currentTargetTag: 'TEXTAREA',
+				value: 'one\ntwo\nthree',
+			},
+		]);
 
 		octane.app.unmount();
 	});

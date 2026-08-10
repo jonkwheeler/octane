@@ -6,7 +6,8 @@
 - npm integrity: `sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A==`
 - Source commit: `ed1894cd8611d99fbea1c47adcf6ee522b1030fd`
 - License: MIT, copyright 2013 Andrey Popp
-- React oracle: `19.2.7` with `@types/react@19.2.17` via catalog `react-textarea-autosize-react-oracle` (exact pins; not `catalog:default`)
+- React oracle: `react@19.2.7`, `react-dom@19.2.7`, `@types/react@19.2.17`, and `@types/react-dom@19.2.3` via catalog `react-textarea-autosize-react-oracle` (exact pins; not `catalog:default`)
+- Published declarations oracle: `upstream/dist/declarations/src/index.d.ts` (sha256 `4b44a78900c844368d8f27ce485bb55bd17ba164cb31e3b8bbc64c6800da506c`), extracted byte-exact from the pinned npm tarball for the pristine type lane
 
 The npm artifact supplies the published distribution and package-condition boundary. The exact repository commit supplies the source and two upstream Jest artifacts absent from the tarball. `upstream/` is byte-exact development evidence and is excluded from publication.
 
