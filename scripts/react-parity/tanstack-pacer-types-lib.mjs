@@ -358,6 +358,52 @@ export function readTypeParityConfig(root, configPath = TYPE_PARITY_CONFIG) {
 	return config;
 }
 
+function globToRegExp(pattern) {
+	let body = '';
+	for (let index = 0; index < pattern.length; index += 1) {
+		const char = pattern[index];
+		if (char === '*' && pattern[index + 1] === '*') {
+			body += '.*';
+			index += 1;
+			if (pattern[index + 1] === '/') index += 1;
+			continue;
+		}
+		if (char === '*') {
+			body += '[^/]*';
+			continue;
+		}
+		if (char === '?') {
+			body += '[^/]';
+			continue;
+		}
+		if ('\\.^$+{}()|[]'.includes(char)) {
+			body += `\\${char}`;
+			continue;
+		}
+		body += char;
+	}
+	return new RegExp(`^${body}$`);
+}
+
+function matchesConfigGlob(configDir, pattern, absolutePath) {
+	const relativePath = posix(relative(configDir, absolutePath));
+	const normalizedPattern = posix(pattern).replace(/^\.\//, '');
+	return globToRegExp(normalizedPattern).test(relativePath);
+}
+
+function configSelectsPath(configDir, config, absolutePath) {
+	if (!existsSync(absolutePath)) return false;
+	const include = Array.isArray(config.include) ? config.include : ['**/*'];
+	const exclude = Array.isArray(config.exclude) ? config.exclude : [];
+	const included = include.some(function matchesInclude(pattern) {
+		return matchesConfigGlob(configDir, pattern, absolutePath);
+	});
+	if (!included) return false;
+	return !exclude.some(function matchesExclude(pattern) {
+		return matchesConfigGlob(configDir, pattern, absolutePath);
+	});
+}
+
 function programFileSet(root, tsconfigPath) {
 	const absoluteConfig = resolve(root, tsconfigPath);
 	if (!existsSync(absoluteConfig)) {
@@ -369,25 +415,47 @@ function programFileSet(root, tsconfigPath) {
 			`unable to read ${tsconfigPath}: ${ts.flattenDiagnosticMessageText(read.error.messageText, '\n')}`,
 		);
 	}
+	const configDir = dirname(absoluteConfig);
 	const parsed = ts.parseJsonConfigFileContent(
 		read.config,
 		ts.sys,
-		dirname(absoluteConfig),
+		configDir,
 		undefined,
 		absoluteConfig,
 		undefined,
 		[{ extension: '.tsrx', isMixedContent: false, scriptKind: ts.ScriptKind.TSX }],
 	);
-	return new Set(
+	const files = new Set(
 		parsed.fileNames.map(function absolute(file) {
 			return resolve(file);
 		}),
 	);
+	// TypeScript wildcards do not expand extraFileExtensions into fileNames, and
+	// `*.ts` globs can surface sibling `*.tsrx.d.ts` stubs instead. Record the
+	// authored `.tsrx` when include/exclude still select it, and drop the stub.
+	const sidecars = [];
+	for (const file of files) {
+		if (file.endsWith('.tsrx.d.ts')) sidecars.push(file);
+	}
+	for (const file of sidecars) {
+		const source = file.slice(0, -'.d.ts'.length);
+		if (!configSelectsPath(configDir, read.config, source)) continue;
+		files.add(source);
+		files.delete(file);
+	}
+	return { files, configDir, config: read.config };
 }
 
-function assertMappedPathInProgram(programFiles, absolutePath, label) {
-	if (programFiles.has(absolutePath)) return;
-	if (absolutePath.endsWith('.tsrx') && programFiles.has(`${absolutePath}.d.ts`)) return;
+function assertMappedPathInProgram(program, absolutePath, label) {
+	if (program.files.has(absolutePath)) return;
+	// Direct `.tsrx` membership can be absent from fileNames; include/exclude is
+	// the authoritative signal that the mapped source still participates.
+	if (
+		absolutePath.endsWith('.tsrx') &&
+		configSelectsPath(program.configDir, program.config, absolutePath)
+	) {
+		return;
+	}
 	throw new Error(`${label} compiler program omits mapped inventory member ${posix(absolutePath)}`);
 }
 

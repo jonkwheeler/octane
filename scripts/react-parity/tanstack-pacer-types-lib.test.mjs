@@ -139,6 +139,37 @@ test('rejects a mapped file omitted from the adapted compiler program', async (t
 	}, /adapted compiler program omits mapped inventory member/);
 });
 
+test('rejects a mapped .tsrx omitted while its .d.ts sidecar remains', async (t) => {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	await writeFile(
+		join(value.root, 'typetests/adapted/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: 'esnext',
+					lib: ['esnext', 'dom'],
+					target: 'esnext',
+					jsx: 'react-jsx',
+					noEmit: true,
+					moduleResolution: 'bundler',
+					skipLibCheck: true,
+					strict: true,
+				},
+				include: ['../../adapted/**/*.ts', '../../adapted/**/*.tsx', '../../adapted/**/*.tsrx'],
+				exclude: ['../../adapted/provider/PacerProvider.tsrx'],
+			},
+			null,
+			'\t',
+		)}\n`,
+	);
+	assert.throws(function omittedTsrx() {
+		verifyTanstackPacerTypes(value.root, { configPath: 'type-parity.json' });
+	}, /adapted compiler program omits mapped inventory member.*PacerProvider\.tsrx/);
+});
+
 test('rejects an unauthorized structural change', async (t) => {
 	const value = await fixture();
 	t.after(function cleanup() {
