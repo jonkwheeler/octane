@@ -825,31 +825,48 @@ function isLoopLocalExit(node) {
 	return ts.isBreakStatement(node) || ts.isContinueStatement(node);
 }
 
-function containsBreak(node) {
-	let found = false;
-	function visit(current) {
-		if (found || !current) return;
-		if (ts.isBreakStatement(current)) {
-			found = true;
-			return;
+function containsReachableBreak(node) {
+	if (!node) return false;
+	if (ts.isBreakStatement(node)) return true;
+	if (
+		ts.isFunctionDeclaration(node) ||
+		ts.isFunctionExpression(node) ||
+		ts.isArrowFunction(node) ||
+		ts.isWhileStatement(node) ||
+		ts.isDoStatement(node) ||
+		ts.isForStatement(node) ||
+		ts.isForOfStatement(node) ||
+		ts.isForInStatement(node) ||
+		ts.isSwitchStatement(node)
+	) {
+		// Nested loops/switches/functions own their breaks.
+		return false;
+	}
+	if (ts.isBlock(node)) {
+		for (const stmt of node.statements) {
+			if (containsReachableBreak(stmt)) return true;
+			if (isFunctionExit(stmt) || ts.isContinueStatement(stmt)) break;
+			if (statementExitsFunction(stmt)) break;
+		}
+		return false;
+	}
+	if (ts.isIfStatement(node)) {
+		if (!isConstantFalse(node.expression) && containsReachableBreak(node.thenStatement)) {
+			return true;
 		}
 		if (
-			ts.isFunctionDeclaration(current) ||
-			ts.isFunctionExpression(current) ||
-			ts.isArrowFunction(current) ||
-			ts.isWhileStatement(current) ||
-			ts.isDoStatement(current) ||
-			ts.isForStatement(current) ||
-			ts.isForOfStatement(current) ||
-			ts.isForInStatement(current) ||
-			ts.isSwitchStatement(current)
+			node.elseStatement &&
+			!isConstantTrue(node.expression) &&
+			containsReachableBreak(node.elseStatement)
 		) {
-			// Nested loops/switches own their breaks; do not attribute them here.
-			return;
+			return true;
 		}
-		ts.forEachChild(current, visit);
+		return false;
 	}
-	visit(node);
+	let found = false;
+	ts.forEachChild(node, function eachChild(child) {
+		if (!found && containsReachableBreak(child)) found = true;
+	});
 	return found;
 }
 
@@ -913,12 +930,12 @@ function statementAlwaysExits(node) {
 	}
 	if ((ts.isWhileStatement(node) || ts.isDoStatement(node)) && isConstantTrue(node.expression)) {
 		if (statementExitsFunction(node.statement)) return true;
-		if (containsBreak(node.statement)) return false;
+		if (containsReachableBreak(node.statement)) return false;
 		return true;
 	}
 	if (ts.isForStatement(node) && (!node.condition || isConstantTrue(node.condition))) {
 		if (statementExitsFunction(node.statement)) return true;
-		if (containsBreak(node.statement)) return false;
+		if (containsReachableBreak(node.statement)) return false;
 		return true;
 	}
 	return false;

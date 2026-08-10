@@ -191,13 +191,13 @@ if (process.argv.includes('--negative-controls')) {
 		'\tcoords?: { clientX: number; clientY: number };\n' +
 		'};\n' +
 		'async function pointer(steps: PointerStep[]): Promise<void> {\n' +
-		'\twhile (true) {}\n' +
+		'\twhile (true) { if (false) break; }\n' +
 		'\tconst type = "pointerdown";\n' +
 		"\tact(() => document.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
 		"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
 		'}\n' +
 		'async function type(element: HTMLElement, text: string): Promise<void> {\n' +
-		'\tfor (;;) {}\n' +
+		'\tfor (;;) { if (false) break; }\n' +
 		"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
 		'}\n' +
 		'export default { pointer, type };\n';
