@@ -9,7 +9,7 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,6 +17,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const FIXTURE_DIR = join(__dirname, '../_fixtures');
 const CACHE_DIR = join(__dirname, '.react-cache');
+
+// Declared differential fixtures only — non-diff `_fixtures/*.tsrx` stay out of
+// the React oracle cache so a broken/changed unit fixture cannot stale-poison
+// the required parity lane.
+const DECLARED_FIXTURES = ['cmdk-diff.tsrx'];
 
 // Must match packages/octane/tests/differential/_rig.ts.
 function hashString(value: string): string {
@@ -52,20 +57,12 @@ function compileOne(sourcePath: string): void {
 	writeFileSync(join(CACHE_DIR, `${slug}-${hashString(sourcePath)}.js`), rewritten);
 }
 
-function walk(directory: string): string[] {
-	const files: string[] = [];
-	for (const name of readdirSync(directory)) {
-		const fullPath = join(directory, name);
-		if (statSync(fullPath).isDirectory()) files.push(...walk(fullPath));
-		else if (fullPath.endsWith('.tsrx')) files.push(fullPath);
-	}
-	return files;
-}
-
 export async function setup(): Promise<void> {
 	rmSync(CACHE_DIR, { recursive: true, force: true });
 	mkdirSync(CACHE_DIR, { recursive: true });
-	for (const sourcePath of walk(FIXTURE_DIR)) compileOne(sourcePath);
+	for (const name of DECLARED_FIXTURES) {
+		compileOne(join(FIXTURE_DIR, name));
+	}
 }
 
 export async function teardown(): Promise<void> {
