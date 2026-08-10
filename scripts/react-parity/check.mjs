@@ -52,7 +52,10 @@ try {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
 }
 try {
-	verifyPortTestClassifications(REPO, 'swr');
+	verifyPortTestClassifications(REPO, 'swr', {
+		includeUpstream: true,
+		includeTypetests: true,
+	});
 } catch (error) {
 	errors.push(`swr test classifications are invalid: ${error.message}`);
 }

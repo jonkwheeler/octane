@@ -27,11 +27,13 @@ selected cited subset (not a one-for-one map of the pristine identities), and th
 adapted type projects are repo-authored export/call probes rather than structural
 ports of the upstream type assertion suite.
 
-Port-authored Vitest files outside `tests/upstream/` are classified exactly once
-in `packages/swr/audit/test-classifications.json`. Promoting provenance to
-`verified` still requires the exhaustive two-way runtime/type crosswalk with
-assertion/fixture preservation controls and per-upstream dispositions for every
-applicable pristine identity.
+Every authored runtime and type evidence file is classified exactly once in
+`packages/swr/audit/test-classifications.json`, including adapted suites under
+`tests/upstream/` and compiler-executed programs under `typetests/`.
+`react-parity:check` discovers those paths and fails closed on any unclassified
+file. Promoting provenance to `verified` still requires the exhaustive two-way
+runtime/type crosswalk with assertion/fixture preservation controls and
+per-upstream dispositions for every applicable pristine identity.
 
 ## U1 gate
 

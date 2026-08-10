@@ -69,7 +69,6 @@ for (const [binding, testCount] of [
 	['redux-toolkit', 6],
 	['shadcn', 23],
 	['sonner', 7],
-	['swr', 9],
 ]) {
 	test(`verifies the ${binding} classification ledger`, async (t) => {
 		const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
@@ -94,3 +93,36 @@ for (const [binding, testCount] of [
 		);
 	});
 }
+
+test('verifies the swr classification ledger including upstream and typetests', async (t) => {
+	const root = await mkdtemp(join(tmpdir(), 'swr-classifications-'));
+	t.after(() => rm(root, { recursive: true, force: true }));
+	const options = { includeUpstream: true, includeTypetests: true };
+	await cp(new URL('../../packages/swr/tests', import.meta.url), join(root, 'packages/swr/tests'), {
+		recursive: true,
+	});
+	await cp(
+		new URL('../../packages/swr/typetests', import.meta.url),
+		join(root, 'packages/swr/typetests'),
+		{ recursive: true },
+	);
+	for (const file of ['test-classifications.json', 'react-parity.json']) {
+		await cp(
+			new URL(`../../packages/swr/audit/${file}`, import.meta.url),
+			join(root, `packages/swr/audit/${file}`),
+			{ recursive: true },
+		);
+	}
+	assert.deepEqual(verifyPortTestClassifications(root, 'swr', options), { tests: 14 });
+	await writeFile(join(root, 'packages/swr/tests/unclassified.test.ts'), 'export {};\n');
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'swr', options),
+		/every port-authored swr test must have exactly one classification/,
+	);
+	await rm(join(root, 'packages/swr/tests/unclassified.test.ts'), { force: true });
+	await writeFile(join(root, 'packages/swr/typetests/unclassified.ts'), 'export {};\n');
+	assert.throws(
+		() => verifyPortTestClassifications(root, 'swr', options),
+		/every port-authored swr test must have exactly one classification/,
+	);
+});
