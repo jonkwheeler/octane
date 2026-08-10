@@ -1,5 +1,5 @@
 // OCTANE DIVERGENCE[visx-react-spring-raf-interpolation][adapted:visx-react-spring-raf]:
-// Numeric RAF interpolation replaces react-spring spring-physics timing.
+// Numeric RAF interpolation over a fixed 250ms timeline replaces react-spring spring-physics timing.
 import { createElement, useEffect, useRef, useState } from 'octane';
 
 type AnyRecord = Record<string, any>;

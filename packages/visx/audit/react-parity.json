@@ -189,7 +189,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "visx",
-      "notes": "Ordinary conformance cases that pin deterministic wordcloud measurement and RAF react-spring interpolation without claiming React byte identity.",
+      "notes": "Ordinary conformance cases that pin deterministic wordcloud measurement and fixed-duration RAF react-spring interpolation without claiming React byte identity.",
       "files": [
         {
           "path": "packages/visx/tests/conformance/wordcloud-parity.test.ts",
@@ -204,16 +204,21 @@
           ]
         },
         {
-          "path": "packages/visx/tests/conformance/layouts.test.ts",
+          "path": "packages/visx/tests/conformance/spring-parity.test.ts",
           "role": "test",
-          "sha256": "b89839f6d5bbe6fe110b4e13eb33827d1899df6b32a3f414963be4a1015c6272",
+          "sha256": "35014edb40c6fd289d0680411489e0ce6f925f2c4af4f7910142f5a74ed95e32",
           "cases": [
             {
               "id": "adapted:visx-react-spring-raf",
-              "testName": "renders chord, delaunay, geo, heatmap, hierarchy, legend, network, sankey, stats, threshold, and animated axis output",
-              "fullName": "@octanejs/visx representative layout families renders chord, delaunay, geo, heatmap, hierarchy, legend, network, sankey, stats, threshold, and animated axis output"
+              "testName": "interpolates numeric spring targets on a fixed 250ms RAF timeline",
+              "fullName": "@octanejs/visx react-spring RAF interpolator interpolates numeric spring targets on a fixed 250ms RAF timeline"
             }
           ]
+        },
+        {
+          "path": "packages/visx/tests/_fixtures/spring-raf.tsrx",
+          "role": "support",
+          "sha256": "15faf361f96bff59b2e5692e0976123d27998bcef693812d7f8b79b9bc6b3437"
         }
       ]
     }
@@ -271,11 +276,11 @@
       "id": "visx-react-spring-raf-interpolation",
       "caseIds": ["adapted:visx-react-spring-raf"],
       "upstreamResult": "The react-spring entry point uses spring-physics timing for animated axes and related transitions.",
-      "octaneResult": "The react-spring entry point uses a deterministic requestAnimationFrame numeric interpolator rather than spring-physics timing.",
+      "octaneResult": "The react-spring entry point uses a deterministic requestAnimationFrame numeric interpolator on a fixed 250ms timeline rather than spring-physics timing.",
       "rationale": "Octane avoids the React-only @react-spring/web runtime while preserving public Visx react-spring props and exports.",
       "classification": "runtime-adapter",
       "consumerImpact": "Animation frame timing can differ from React Visx even when AnimatedAxis props and exported APIs match.",
-      "migrationGuidance": "Assert final animated axis/output state rather than spring-physics frame timing.",
+      "migrationGuidance": "Assert intermediate RAF-interpolated values or final animated axis/output state rather than spring-physics frame timing.",
       "owner": "@octanejs/visx",
       "reviewCondition": "Review if Octane ports react-spring with matching spring-physics timing."
     },

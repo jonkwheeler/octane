@@ -9,9 +9,6 @@ afterEach(() => {
 });
 
 describe('@octanejs/visx representative layout families', () => {
-	// OCTANE DIVERGENCE[visx-react-spring-raf-interpolation][adapted:visx-react-spring-raf]:
-	// AnimatedAxis uses the RAF numeric interpolator rather than spring-physics timing.
-	// @parity-case adapted:visx-react-spring-raf
 	it('renders chord, delaunay, geo, heatmap, hierarchy, legend, network, sankey, stats, threshold, and animated axis output', () => {
 		view = mount(LayoutFamiliesFixture);
 		expect(Number(view.find('#chord-count').textContent)).toBeGreaterThan(0);

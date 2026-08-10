@@ -18,8 +18,13 @@
     },
     {
       "path": "packages/visx/tests/conformance/layouts.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Checks representative layout family rendering including AnimatedAxis final ticks."
+    },
+    {
+      "path": "packages/visx/tests/conformance/spring-parity.test.ts",
       "disposition": "octane-only-divergence",
-      "reason": "Pins the RAF numeric react-spring interpolator output without claiming byte-identical React spring-physics timing.",
+      "reason": "Pins fixed-duration RAF numeric react-spring interpolation without claiming byte-identical React spring-physics timing.",
       "divergenceId": "visx-react-spring-raf-interpolation"
     },
     {
