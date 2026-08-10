@@ -19,7 +19,7 @@
     {
       "path": "packages/dnd-kit/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
-      "oracle": "Runs one identical authored programmatic manager-action drag fixture against both adapters (sensors=[], manager.actions)."
+      "oracle": "Runs one identical authored programmatic manager-action drag fixture against both adapters (sensors=[], manager.actions) and authenticates the two structured divergences."
     },
     {
       "path": "packages/dnd-kit/tests/hydration/hydration.test.ts",
@@ -28,13 +28,22 @@
     },
     {
       "path": "packages/dnd-kit/tests/parity/contracts.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Authenticates evidence and structured divergences without claiming React behavior parity."
+      "disposition": "octane-only-divergence",
+      "reason": "Authenticates evidence and the two structured DragOverlay / OptimisticSortingPlugin adaptations without claiming React behavior parity.",
+      "divergenceIds": [
+        "dnd-kit-drag-overlay-compiled-children",
+        "dnd-kit-sortable-omit-optimistic-sorting"
+      ]
     },
     {
       "path": "packages/dnd-kit/tests/ssr/ssr.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Exercises Octane server rendering and is not counted as React parity."
+    },
+    {
+      "path": "packages/dnd-kit/typetests/public-api.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane declaration coverage for the public surface; not a pristine/adapted upstream type pair and outside React parity evidence."
     }
   ]
 }

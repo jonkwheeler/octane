@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3a182f6a9f209e25cb84876a6cbdc24a1f0cab6d3acc6e13938922a1c59ec6fd"
+      "lockfileSha256": "020d961de0259148568495859fdd4e7698645d16b52cd0853e5a74b182db07a3"
     }
   },
   "lanes": [
@@ -51,17 +51,27 @@
       "environment": "workspace-node",
       "project": "dnd-kit-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs one identical authored programmatic manager-action drag lifecycle against @dnd-kit/react 0.5.0 and @octanejs/dnd-kit (sensors=[], manager.actions start/move/stop); this is bounded jsdom evidence, not browser-complete or keyboard-sensor parity.",
+      "notes": "Runs one identical authored programmatic manager-action drag lifecycle against @dnd-kit/react 0.5.0 and @octanejs/dnd-kit (sensors=[], manager.actions start/move/stop); this is bounded jsdom evidence, not browser-complete or keyboard-sensor parity. Also authenticates the two structured DragOverlay / OptimisticSortingPlugin divergences.",
       "files": [
         {
           "path": "packages/dnd-kit/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "bb5c0f5666c25306e7299d1a9c780d671f27646892c31da7a7c8b714ca8febba",
+          "sha256": "87375caaaa1e15c3aacd92bda6678083023dfa79d0383671f38a5e60cafd7dd5",
           "cases": [
             {
               "id": "differential:dnd-kit-programmatic-manager-lifecycle",
               "testName": "matches mount, pickup, movement, overlay, and drop output",
               "fullName": "differential: @octanejs/dnd-kit vs @dnd-kit/react matches mount, pickup, movement, overlay, and drop output"
+            },
+            {
+              "id": "differential:dnd-kit-drag-overlay-compiled-children",
+              "testName": "records DragOverlay compiled-child handling as a structured divergence",
+              "fullName": "differential: @octanejs/dnd-kit vs @dnd-kit/react records DragOverlay compiled-child handling as a structured divergence"
+            },
+            {
+              "id": "differential:dnd-kit-sortable-omit-optimistic-sorting",
+              "testName": "records OptimisticSortingPlugin omission as a structured divergence",
+              "fullName": "differential: @octanejs/dnd-kit vs @dnd-kit/react records OptimisticSortingPlugin omission as a structured divergence"
             }
           ]
         },
@@ -88,7 +98,7 @@
         {
           "path": "packages/dnd-kit/audit/test-classifications.json",
           "role": "support",
-          "sha256": "d52f2d9403a986a6aaac78987f3c6398ffcf8d220470c6778d8bd927bc712984"
+          "sha256": "5de68a9f3302f5dd809f584b4d7f05cf8b5b37d2fcf21a958e46e04da6135aad"
         },
         {
           "path": "packages/dnd-kit/scripts/check-upstream-ledger.mjs",
@@ -98,7 +108,7 @@
         {
           "path": "scripts/react-parity/dnd-kit-controls.test.mjs",
           "role": "support",
-          "sha256": "8297a8d8af4c5c7a812361ff114db5e688e2bdf5646889968def93868f4b9db2"
+          "sha256": "b336789448ebc47d2c2d5b8fcd643b1f0104b8c083b1e9ee1bab3068819b80ac"
         },
         {
           "path": "vitest.config.js",
@@ -108,5 +118,30 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "dnd-kit-drag-overlay-compiled-children",
+      "caseIds": ["differential:dnd-kit-drag-overlay-compiled-children"],
+      "upstreamResult": "DragOverlay treats every function child as a render prop and invokes it with the active source.",
+      "octaneResult": "DragOverlay distinguishes Octane compiled children blocks via isChildrenBlock and only invokes plain render-prop functions.",
+      "rationale": "Octane compiler children blocks are functions; calling them as render props would execute the wrong arm.",
+      "classification": "compiler-model",
+      "consumerImpact": "Ordinary typed JSX children and render props remain equivalent; bare Function children that are compiled blocks render as children rather than render props.",
+      "migrationGuidance": "Pass a plain (source) => node render prop when dynamic overlay content is required; keep static overlay children as elements or values.",
+      "owner": "@octanejs/dnd-kit",
+      "reviewCondition": "Review if Octane stops representing compiled children as functions or adds a React-compatible children channel."
+    },
+    {
+      "id": "dnd-kit-sortable-omit-optimistic-sorting",
+      "caseIds": ["differential:dnd-kit-sortable-omit-optimistic-sorting"],
+      "upstreamResult": "useSortable defaults include SortableKeyboardPlugin and OptimisticSortingPlugin, which reparents the host element before application state commits.",
+      "octaneResult": "useSortable defaults keep SortableKeyboardPlugin but omit OptimisticSortingPlugin; explicit plugin arrays remain authoritative.",
+      "rationale": "Optimistic host reparenting can split an Octane keyed item's owned DOM marker range before the consumer commits list state.",
+      "classification": "reconciler-model",
+      "consumerImpact": "Default sortable moves wait for consumer state updates instead of optimistically moving the host element.",
+      "migrationGuidance": "Update list state from drag events so Octane performs the keyed move; pass an explicit plugins array if OptimisticSortingPlugin is required.",
+      "owner": "@octanejs/dnd-kit",
+      "reviewCondition": "Review if Octane gains a safe optimistic DOM move for keyed ranges or if upstream stops defaulting OptimisticSortingPlugin."
+    }
+  ]
 }

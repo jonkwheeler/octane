@@ -24,9 +24,27 @@ describe('@octanejs/dnd-kit parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	it('keeps renderer-owned drag adaptations explicit', () => {
-		expect(status.divergences).toHaveLength(2);
-		expect(status.divergences.join(' ')).toContain('OptimisticSortingPlugin');
+	// OCTANE DIVERGENCE[dnd-kit-drag-overlay-compiled-children][differential:dnd-kit-drag-overlay-compiled-children]
+	it('keeps DragOverlay compiled-child handling explicit', () => {
+		const divergence = manifest.divergences.find(function (entry: { id: string }) {
+			return entry.id === 'dnd-kit-drag-overlay-compiled-children';
+		});
+		expect(divergence).toMatchObject({
+			id: 'dnd-kit-drag-overlay-compiled-children',
+			caseIds: ['differential:dnd-kit-drag-overlay-compiled-children'],
+		});
 		expect(status.divergences.join(' ')).toContain('compiled children');
+	});
+
+	// OCTANE DIVERGENCE[dnd-kit-sortable-omit-optimistic-sorting][differential:dnd-kit-sortable-omit-optimistic-sorting]
+	it('keeps OptimisticSortingPlugin omission explicit', () => {
+		const divergence = manifest.divergences.find(function (entry: { id: string }) {
+			return entry.id === 'dnd-kit-sortable-omit-optimistic-sorting';
+		});
+		expect(divergence).toMatchObject({
+			id: 'dnd-kit-sortable-omit-optimistic-sorting',
+			caseIds: ['differential:dnd-kit-sortable-omit-optimistic-sorting'],
+		});
+		expect(status.divergences.join(' ')).toContain('OptimisticSortingPlugin');
 	});
 });

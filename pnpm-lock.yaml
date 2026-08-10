@@ -846,6 +846,13 @@ catalogs:
     zustand:
       specifier: ^5.0.14
       version: 5.0.14
+  dnd-kit-react-oracle:
+    react:
+      specifier: 19.2.7
+      version: 19.2.7
+    react-dom:
+      specifier: 19.2.7
+      version: 19.2.7
   livestore-react-oracle:
     '@livestore/utils-dev':
       specifier: 0.4.0
@@ -4475,10 +4482,10 @@ importers:
         specifier: workspace:*
         version: link:../octane
       react:
-        specifier: catalog:default
+        specifier: catalog:dnd-kit-react-oracle
         version: 19.2.7
       react-dom:
-        specifier: catalog:default
+        specifier: catalog:dnd-kit-react-oracle
         version: 19.2.7(react@19.2.7)
       vitest:
         specifier: catalog:default

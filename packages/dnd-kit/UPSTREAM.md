@@ -12,7 +12,7 @@
 - npm lock integrity: `sha512-abQPLI8lmfVE+v/n+pqy5WFxrw6T2Yg0UQZsL78dp5DKci7dKTVDjvLWqvass+XTFtzJmsZEjk1NdqE6xG8Jiw==`
 - Supported range: exactly `0.5.0`
 - License: MIT
-- React oracle: workspace-pinned React and React DOM
+- React oracle: exact `react@19.2.7` and `react-dom@19.2.7` via catalog `dnd-kit-react-oracle`
 - Framework-neutral core: the workspace-pinned `@dnd-kit/{abstract,collision,dom,state}` 0.5.0 packages
 
 The byte-exact React adapter source, package/build metadata, and license are vendored under
