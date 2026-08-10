@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/jotai/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/jotai/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/jotai/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/jotai/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -75,8 +83,8 @@
             },
             {
               "id": "differential:jotai-async-atom",
-              "testName": "AsyncApp: pending fallback \u2192 resolved value, byte-identical at both steps",
-              "fullName": "differential: @octanejs/jotai vs real jotai on React AsyncApp: pending fallback \u2192 resolved value, byte-identical at both steps"
+              "testName": "AsyncApp: pending fallback → resolved value, byte-identical at both steps",
+              "fullName": "differential: @octanejs/jotai vs real jotai on React AsyncApp: pending fallback → resolved value, byte-identical at both steps"
             }
           ]
         },
@@ -118,7 +126,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     }

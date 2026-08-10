@@ -147,7 +147,7 @@
       "environment": "workspace-node",
       "project": "react-colorful-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the pinned upstream check-types program (tsc --noEmit on tag/src) and registers the fail-closed one-for-one public type-probe crosswalk inventories.",
+      "notes": "Runs the pinned upstream check-types program (tsc --noEmit on tag/src), fail-closed program membership vs adapted src, and one-for-one public type-probe crosswalk inventories.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -169,42 +169,72 @@
         {
           "path": "packages/react-colorful/audit/pristine-types.json",
           "role": "support",
-          "sha256": "c129c2f11cad2d3d0231179e03c5ee46ad5a93c35a4da8274194cd9983cbc681"
+          "sha256": "808c8a5b49ea1d950cbfb5a2c7a8a7ecaba7bd63f479c5a5c7dbebcf55f6decf"
         },
         {
           "path": "packages/react-colorful/audit/type-parity.json",
           "role": "support",
-          "sha256": "ac0b2b7f77d41a2c648be7769efd713bfa242d1cd43252918eaab51abe49607b"
+          "sha256": "539fa3b3e3a4ba8bdb8b336afd78d8b5e3173dedd2f6913631b907864c6d5fd4"
         },
         {
           "path": "packages/react-colorful/audit/adapted-types.json",
           "role": "support",
-          "sha256": "4aa09fb25a3ec06bd8f53d9279afd5eff105de09193314444300a10d32d7d784"
+          "sha256": "f5d856aa13945419f778b061e1b23d1a685180edf1e5b1486c72820932d025ce"
         },
         {
           "path": "packages/react-colorful/audit/type-probes/public-api.test.ts",
           "role": "support",
-          "sha256": "a3eff2ac9c1004437384837b585170d0520d7c977b4ffaac5716fc47753b9ba1"
+          "sha256": "fb72bdc343a3066723b9609dd36a1f6c5255e0c0ef9d26de652e05059a5b3ee2"
         },
         {
           "path": "packages/react-colorful/audit/type-probes/tsconfig.pristine.json",
           "role": "support",
-          "sha256": "7b3d35c2e45de39cea67628684ea5094552f9febe3ab1842caf37c8d9828c308"
+          "sha256": "61327cf8f3957498c6c9b04cf6656c692e323622777de127b0015e7ad0495256"
         },
         {
           "path": "scripts/react-parity/react-colorful-types-lib.mjs",
           "role": "support",
-          "sha256": "3d7cb281c8546f1d19726462f591b627d2a6f67bb1d56e6dbac2999a25699671"
+          "sha256": "75c8d2f77c27f05008161863f1f9b7207d5a82267a766183e3be52cc3d878f0b"
         },
         {
           "path": "scripts/react-parity/react-colorful-types-lib.test.mjs",
           "role": "support",
-          "sha256": "1304469625965f041331d63ce6da8af8063673ac48922c556b353b59653f7628"
+          "sha256": "07066c4a0fca1691e309e41da47a8436dd06f4ef345d2fa174def13bd0dc574b"
         },
         {
           "path": "scripts/react-parity/react-colorful-types.mjs",
           "role": "support",
-          "sha256": "2bc8b06b7bf55d030cd86df9e260cedfcbbadc56e36236a0197a5a4133c80568"
+          "sha256": "1dbea96ac55f7fba32035cb149ecd06dd5b11dbd891c9ac5543af93011bef04b"
+        },
+        {
+          "path": "packages/react-colorful/audit/pristine-program-types.json",
+          "role": "support",
+          "sha256": "0eb071f1a0db033da91deeec8c89f549c7cfc72a77ac9410f3dcae53d908ca02"
+        },
+        {
+          "path": "packages/react-colorful/audit/adapted-program-types.json",
+          "role": "support",
+          "sha256": "fbd0cc3871656c49e6a0ace180a2e44ce02543943f12078147d48be521265ccf"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-probes/host-input-event.ts",
+          "role": "support",
+          "sha256": "308df33237a618a50e1aca23fa2ca952fda44616b3d96e403aaa3740cfe51092"
+        },
+        {
+          "path": "packages/react-colorful/typetests/host-input-event.ts",
+          "role": "support",
+          "sha256": "982d640d7b89e14759e3ecb0c1232f8f3381ea3e895647b5c3c7d5e9af25d33b"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-upstream-lib.mjs",
+          "role": "support",
+          "sha256": "8270f3a8b49d82f2e0fc11afc3ffc8db41be1c5b07fd86633fde11bb655244b7"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-upstream-lib.test.mjs",
+          "role": "support",
+          "sha256": "6d7a2e9c0e2818aa89a4fac33cc004b816b3c0b5960c44b8df47784179c25dde"
         }
       ]
     },
@@ -215,7 +245,7 @@
       "environment": "workspace-node",
       "project": "react-colorful-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Compiles the Octane binding source plus the adapted public API probe with tsrx-tsc, paired one-for-one with the React probe via type-parity inventories.",
+      "notes": "Compiles the Octane binding source plus the adapted public API probe with tsrx-tsc; program membership and HostInputEvent proofs are pinned via type-parity inventories.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -225,7 +255,7 @@
         {
           "path": "packages/react-colorful/typetests/public-api.test.ts",
           "role": "test",
-          "sha256": "e4f182d121cbc5f7871f2cb2223b39ef75b06edd465af75704dfde777719e8a0",
+          "sha256": "54b45f95c3c3e30051b6a8641e47f15cdba6c7ceba2363768973b53988e8415c",
           "cases": [
             {
               "id": "types:react-colorful-adapted",
@@ -237,47 +267,77 @@
         {
           "path": "packages/react-colorful/typetests/tsconfig.adapted.json",
           "role": "support",
-          "sha256": "cf514cb28054b42c7066cb16da4a4df7443ce5960e52e49135abb9fd8e5a4f38"
+          "sha256": "7978bfe3d2070a254028358f740325730e7fbd4f1002d8989182aab3c386d6ee"
         },
         {
           "path": "packages/react-colorful/audit/adapted-types.json",
           "role": "support",
-          "sha256": "4aa09fb25a3ec06bd8f53d9279afd5eff105de09193314444300a10d32d7d784"
+          "sha256": "f5d856aa13945419f778b061e1b23d1a685180edf1e5b1486c72820932d025ce"
         },
         {
           "path": "packages/react-colorful/audit/type-parity.json",
           "role": "support",
-          "sha256": "ac0b2b7f77d41a2c648be7769efd713bfa242d1cd43252918eaab51abe49607b"
+          "sha256": "539fa3b3e3a4ba8bdb8b336afd78d8b5e3173dedd2f6913631b907864c6d5fd4"
         },
         {
           "path": "packages/react-colorful/audit/pristine-types.json",
           "role": "support",
-          "sha256": "c129c2f11cad2d3d0231179e03c5ee46ad5a93c35a4da8274194cd9983cbc681"
+          "sha256": "808c8a5b49ea1d950cbfb5a2c7a8a7ecaba7bd63f479c5a5c7dbebcf55f6decf"
         },
         {
           "path": "packages/react-colorful/audit/type-probes/public-api.test.ts",
           "role": "support",
-          "sha256": "a3eff2ac9c1004437384837b585170d0520d7c977b4ffaac5716fc47753b9ba1"
+          "sha256": "fb72bdc343a3066723b9609dd36a1f6c5255e0c0ef9d26de652e05059a5b3ee2"
         },
         {
           "path": "packages/react-colorful/audit/type-probes/tsconfig.pristine.json",
           "role": "support",
-          "sha256": "7b3d35c2e45de39cea67628684ea5094552f9febe3ab1842caf37c8d9828c308"
+          "sha256": "61327cf8f3957498c6c9b04cf6656c692e323622777de127b0015e7ad0495256"
         },
         {
           "path": "scripts/react-parity/react-colorful-types-lib.mjs",
           "role": "support",
-          "sha256": "3d7cb281c8546f1d19726462f591b627d2a6f67bb1d56e6dbac2999a25699671"
+          "sha256": "75c8d2f77c27f05008161863f1f9b7207d5a82267a766183e3be52cc3d878f0b"
         },
         {
           "path": "scripts/react-parity/react-colorful-types-lib.test.mjs",
           "role": "support",
-          "sha256": "1304469625965f041331d63ce6da8af8063673ac48922c556b353b59653f7628"
+          "sha256": "07066c4a0fca1691e309e41da47a8436dd06f4ef345d2fa174def13bd0dc574b"
         },
         {
           "path": "scripts/react-parity/react-colorful-types.mjs",
           "role": "support",
-          "sha256": "2bc8b06b7bf55d030cd86df9e260cedfcbbadc56e36236a0197a5a4133c80568"
+          "sha256": "1dbea96ac55f7fba32035cb149ecd06dd5b11dbd891c9ac5543af93011bef04b"
+        },
+        {
+          "path": "packages/react-colorful/audit/pristine-program-types.json",
+          "role": "support",
+          "sha256": "0eb071f1a0db033da91deeec8c89f549c7cfc72a77ac9410f3dcae53d908ca02"
+        },
+        {
+          "path": "packages/react-colorful/audit/adapted-program-types.json",
+          "role": "support",
+          "sha256": "fbd0cc3871656c49e6a0ace180a2e44ce02543943f12078147d48be521265ccf"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-probes/host-input-event.ts",
+          "role": "support",
+          "sha256": "308df33237a618a50e1aca23fa2ca952fda44616b3d96e403aaa3740cfe51092"
+        },
+        {
+          "path": "packages/react-colorful/typetests/host-input-event.ts",
+          "role": "support",
+          "sha256": "982d640d7b89e14759e3ecb0c1232f8f3381ea3e895647b5c3c7d5e9af25d33b"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-upstream-lib.mjs",
+          "role": "support",
+          "sha256": "8270f3a8b49d82f2e0fc11afc3ffc8db41be1c5b07fd86633fde11bb655244b7"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-upstream-lib.test.mjs",
+          "role": "support",
+          "sha256": "6d7a2e9c0e2818aa89a4fac33cc004b816b3c0b5960c44b8df47784179c25dde"
         }
       ]
     }

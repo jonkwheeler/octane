@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/solana-react/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/solana-react/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/solana-react/tests/upstream"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/solana-react/tests/upstream"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -130,7 +138,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     },
@@ -239,7 +247,10 @@
   "divergences": [
     {
       "id": "solana-react-missing-provider-error",
-      "caseIds": ["runtime:32e73d9952587b2f", "runtime:d775c531b3e8370b"],
+      "caseIds": [
+        "runtime:32e73d9952587b2f",
+        "runtime:d775c531b3e8370b"
+      ],
       "upstreamResult": "useClient throws SolanaError MISSING_PROVIDER with hookName context.",
       "octaneResult": "useClient throws a plain Error with message 'useClient must be used inside ClientProvider'.",
       "rationale": "The Octane binding keeps the public failure surface free of @solana/kit React error codes while preserving the must-be-under-provider contract.",
@@ -283,7 +294,9 @@
     },
     {
       "id": "solana-react-query-ssr",
-      "caseIds": ["runtime:04e39c17fcc6fcd5"],
+      "caseIds": [
+        "runtime:04e39c17fcc6fcd5"
+      ],
       "upstreamResult": "renderToString of useRequestQuery renders idle markup without firing queryFn.",
       "octaneResult": "QueryClientProvider SSR host plumbing may throw in this pin; the adapted identity still asserts queryFn is not invoked while effects are absent.",
       "rationale": "Preserve the no-fetch-during-SSR oracle without weakening it to a skipped case.",

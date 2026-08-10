@@ -17,13 +17,23 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/redux-toolkit/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/redux-toolkit/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/redux-toolkit/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/redux-toolkit/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -98,7 +108,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     }

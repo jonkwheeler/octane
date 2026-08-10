@@ -22,6 +22,9 @@ import {
 	type RgbColor,
 	type RgbaColor,
 } from '@octanejs/react-colorful';
+import type { HostInputEvent } from './host-input-event';
+
+declare function expectType<T>(value: T): void;
 
 const rgb: RgbColor = { r: 1, g: 2, b: 3 };
 const rgba: RgbaColor = { ...rgb, a: 0.5 };
@@ -56,6 +59,10 @@ HexColorInput({
 	onInput: (event) => event.currentTarget.value,
 	onBlur: () => {},
 });
+type HexColorInputOnInput = NonNullable<Parameters<typeof HexColorInput>[0]['onInput']>;
+type HexColorInputOnInputEvent = Parameters<HexColorInputOnInput>[0];
+// OCTANE DIVERGENCE[react-colorful-native-event-attributes]: HostInputEvent is FormEvent here vs InputEvent on Octane.
+expectType<HostInputEvent>(null as unknown as HexColorInputOnInputEvent);
 setNonce('nonce');
 
 // @ts-expect-error object pickers reject string colors

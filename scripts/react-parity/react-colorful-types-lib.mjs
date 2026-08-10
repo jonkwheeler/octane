@@ -5,6 +5,8 @@ import ts from 'typescript';
 
 export const TYPE_PARITY_CONFIG = 'packages/react-colorful/audit/type-parity.json';
 
+const DISPOSITIONS = new Set(['adapted', 'pristine-only', 'out-of-scope']);
+
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
 }
@@ -13,19 +15,31 @@ function posix(value) {
 	return value.split(sep).join('/');
 }
 
-function listFiles(root) {
+function listFiles(root, predicate) {
 	return readdirSync(root, { recursive: true, withFileTypes: true })
-		.filter(function keepProbeFiles(entry) {
+		.filter(function keepFiles(entry) {
 			if (!entry.isFile()) return false;
 			const relativePath = posix(
 				relative(root, resolve(entry.parentPath ?? entry.path, entry.name)),
 			);
-			return /\.test\.ts$/.test(relativePath);
+			return predicate(relativePath);
 		})
 		.map(function toRelative(entry) {
 			return posix(relative(root, resolve(entry.parentPath ?? entry.path, entry.name)));
 		})
 		.sort();
+}
+
+function listProbeFiles(root) {
+	return listFiles(root, function keepProbe(path) {
+		return /\.test\.ts$/.test(path);
+	});
+}
+
+function listProgramFiles(root) {
+	return listFiles(root, function keepProgram(path) {
+		return true;
+	});
 }
 
 function normalizeComment(comment) {
@@ -85,6 +99,9 @@ function normalizeSpecifier(specifier) {
 	if (specifier === 'react-colorful' || specifier === '@octanejs/react-colorful') {
 		return '#react-colorful-public';
 	}
+	if (specifier === './host-input-event') {
+		return '#host-input-event';
+	}
 	return specifier;
 }
 
@@ -129,11 +146,112 @@ function structuralSource(source, fileName) {
 		.trim();
 }
 
+export function readTypeParityConfig(root, configPath = TYPE_PARITY_CONFIG) {
+	const absoluteConfig = resolve(root, configPath);
+	if (!existsSync(absoluteConfig)) throw new Error(`missing type parity config: ${configPath}`);
+	const config = JSON.parse(readFileSync(absoluteConfig, 'utf8'));
+	if (!config.programRoots?.upstream || !config.programRoots?.adapted) {
+		throw new Error('type-parity.json must declare programRoots.upstream and programRoots.adapted');
+	}
+	if (!config.programInventories?.upstream || !config.programInventories?.adapted) {
+		throw new Error('type-parity.json must declare programInventories for both source programs');
+	}
+	if (!Array.isArray(config.fileDispositions) || config.fileDispositions.length === 0) {
+		throw new Error('type-parity.json must list fileDispositions for every upstream program file');
+	}
+	if (!Array.isArray(config.divergences)) {
+		throw new Error('type-parity.json must declare a divergences array');
+	}
+	const seen = new Set();
+	for (const entry of config.fileDispositions) {
+		if (!entry || typeof entry.path !== 'string' || !DISPOSITIONS.has(entry.disposition)) {
+			throw new Error(`invalid type file disposition: ${JSON.stringify(entry)}`);
+		}
+		if (typeof entry.rationale !== 'string' || entry.rationale.trim().length < 20) {
+			throw new Error(`${entry.path}: disposition rationale must be concrete`);
+		}
+		if (seen.has(entry.path)) throw new Error(`duplicate type disposition for ${entry.path}`);
+		seen.add(entry.path);
+		if (entry.disposition === 'adapted') {
+			if (typeof entry.adaptedPath !== 'string' || entry.adaptedPath.length === 0) {
+				throw new Error(`${entry.path}: adapted dispositions require adaptedPath`);
+			}
+		}
+		if (entry.disposition === 'pristine-only' && !Array.isArray(entry.adaptedEvidence)) {
+			throw new Error(`${entry.path}: pristine-only dispositions require adaptedEvidence array`);
+		}
+		if (entry.disposition === 'pristine-only') {
+			for (const evidence of entry.adaptedEvidence) {
+				if (!existsSync(resolve(root, config.programRoots.adapted, evidence))) {
+					throw new Error(`${entry.path}: missing adaptedEvidence ${evidence}`);
+				}
+			}
+		}
+	}
+	return config;
+}
+
+export function assertProgramDispositions(root, config) {
+	const upstreamRoot = resolve(root, config.programRoots.upstream);
+	const adaptedRoot = resolve(root, config.programRoots.adapted);
+	const upstreamFiles = listProgramFiles(upstreamRoot);
+	const adaptedFiles = listProgramFiles(adaptedRoot);
+	const disposed = new Set(
+		config.fileDispositions.map(function path(entry) {
+			return entry.path;
+		}),
+	);
+	for (const file of upstreamFiles) {
+		if (!disposed.has(file)) {
+			throw new Error(`missing type disposition for upstream program file ${file}`);
+		}
+	}
+	for (const entry of config.fileDispositions) {
+		if (!upstreamFiles.includes(entry.path)) {
+			throw new Error(`type disposition references missing upstream program file ${entry.path}`);
+		}
+	}
+
+	const accountedAdapted = new Set();
+	for (const entry of config.fileDispositions) {
+		if (entry.disposition === 'adapted') {
+			if (!adaptedFiles.includes(entry.adaptedPath)) {
+				throw new Error(
+					`${entry.path}: adaptedPath ${entry.adaptedPath} is missing from the adapted program`,
+				);
+			}
+			accountedAdapted.add(entry.adaptedPath);
+		}
+		if (entry.disposition === 'pristine-only') {
+			for (const evidence of entry.adaptedEvidence) accountedAdapted.add(evidence);
+		}
+	}
+	for (const file of adaptedFiles) {
+		if (!accountedAdapted.has(file)) {
+			throw new Error(`adapted program file ${file} is not covered by any disposition mapping`);
+		}
+	}
+	return { upstreamFiles, adaptedFiles };
+}
+
+export function buildProgramInventory(root, config) {
+	assertProgramDispositions(root, config);
+	const upstreamRoot = resolve(root, config.programRoots.upstream);
+	const adaptedRoot = resolve(root, config.programRoots.adapted);
+	const upstream = listProgramFiles(upstreamRoot).map(function entry(path) {
+		return { path, sha256: sha256(readFileSync(resolve(upstreamRoot, path))) };
+	});
+	const adapted = listProgramFiles(adaptedRoot).map(function entry(path) {
+		return { path, sha256: sha256(readFileSync(resolve(adaptedRoot, path))) };
+	});
+	return { upstream, adapted };
+}
+
 export function buildTypeInventory(root, config) {
 	const upstreamRoot = resolve(root, config.upstreamRoot);
 	const adaptedRoot = resolve(root, config.adaptedRoot);
-	const upstreamFiles = listFiles(upstreamRoot);
-	const adaptedFiles = listFiles(adaptedRoot);
+	const upstreamFiles = listProbeFiles(upstreamRoot);
+	const adaptedFiles = listProbeFiles(adaptedRoot);
 	if (JSON.stringify(upstreamFiles) !== JSON.stringify(adaptedFiles)) {
 		throw new Error(
 			'type-test file inventories differ; every upstream type artifact needs one adapted counterpart',
@@ -168,32 +286,53 @@ export function buildTypeInventory(root, config) {
 	return { upstream, adapted };
 }
 
+function requireRecordedInventory(root, inventoryPath, actual, label) {
+	const absolute = resolve(root, inventoryPath);
+	const recorded = existsSync(absolute) ? JSON.parse(readFileSync(absolute, 'utf8')) : undefined;
+	if (JSON.stringify(recorded) !== JSON.stringify(actual)) {
+		throw new Error(`${label} inventory drifted; review the change and regenerate its inventory`);
+	}
+}
+
 export function verifyReactColorfulTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) {
-	const absoluteConfig = resolve(root, configPath);
-	if (!existsSync(absoluteConfig)) throw new Error(`missing type parity config: ${configPath}`);
-	const config = JSON.parse(readFileSync(absoluteConfig, 'utf8'));
-	const inventory = buildTypeInventory(root, config);
+	const config = readTypeParityConfig(root, configPath);
+	if (
+		!config.divergences.some(function hasEventDivergence(entry) {
+			return entry?.id === 'react-colorful-native-event-attributes';
+		})
+	) {
+		throw new Error(
+			'type-parity.json must record react-colorful-native-event-attributes as a type divergence',
+		);
+	}
+	const probeInventory = buildTypeInventory(root, config);
 	for (const side of ['upstream', 'adapted']) {
-		const inventoryPath = resolve(root, config.inventories[side]);
-		const recorded = existsSync(inventoryPath)
-			? JSON.parse(readFileSync(inventoryPath, 'utf8'))
-			: undefined;
-		if (JSON.stringify(recorded) !== JSON.stringify(inventory[side])) {
-			throw new Error(
-				`${side} type inventory drifted; review the change and regenerate its inventory`,
-			);
-		}
+		requireRecordedInventory(root, config.inventories[side], probeInventory[side], `${side} type`);
+	}
+	const programInventory = buildProgramInventory(root, config);
+	for (const side of ['upstream', 'adapted']) {
+		requireRecordedInventory(
+			root,
+			config.programInventories[side],
+			programInventory[side],
+			`${side} program`,
+		);
 	}
 	return {
-		files: inventory.upstream.length,
-		assertions: inventory.upstream.reduce(function sumAssertions(sum, file) {
+		files: probeInventory.upstream.length,
+		assertions: probeInventory.upstream.reduce(function sumAssertions(sum, file) {
 			return sum + file.assertionGroups.length;
 		}, 0),
+		programFiles: {
+			upstream: programInventory.upstream.length,
+			adapted: programInventory.adapted.length,
+		},
 	};
 }
 
 export function renderTypeInventories(root, configPath = TYPE_PARITY_CONFIG) {
-	const config = JSON.parse(readFileSync(resolve(root, configPath), 'utf8'));
+	const config = readTypeParityConfig(root, configPath);
 	const inventory = buildTypeInventory(root, config);
-	return { config, inventory };
+	const programInventory = buildProgramInventory(root, config);
+	return { config, inventory, programInventory };
 }

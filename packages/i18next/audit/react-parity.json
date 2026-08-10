@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/i18next/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/i18next/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/i18next/tests/differential"],
-      "include": ["parity\\.test\\.ts$"],
+      "roots": [
+        "packages/i18next/tests/differential"
+      ],
+      "include": [
+        "parity\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -83,7 +91,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     }

@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/shadcn/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/shadcn/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/shadcn/tests"],
-      "include": ["\\.test\\.tsx?$"],
+      "roots": [
+        "packages/shadcn/tests"
+      ],
+      "include": [
+        "\\.test\\.tsx?$"
+      ],
       "exclude": []
     }
   },
@@ -80,8 +88,8 @@
             },
             {
               "id": "differential:shadcn-dropdown-upstream",
-              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical",
-              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical"
+              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical",
+              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical"
             }
           ]
         },
@@ -168,7 +176,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     }

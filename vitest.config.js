@@ -1042,10 +1042,9 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/react-colorful/tests/upstream/**/*.test.ts'],
-				},
+				// Fully parity-owned: omit testExecution.include so the sharded
+				// view drops the whole project instead of retaining an empty one.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-colorful-upstream',
 					include: ['packages/react-colorful/tests/upstream/**/*.test.ts'],

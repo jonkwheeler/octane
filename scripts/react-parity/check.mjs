@@ -17,6 +17,7 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyReactColorfulTypes } from './react-colorful-types-lib.mjs';
+import { verifyReactColorfulUpstream } from './react-colorful-upstream-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -61,6 +62,11 @@ try {
 	verifySolanaReactTypes(REPO);
 } catch (error) {
 	errors.push(`@octanejs/solana-react type evidence is invalid: ${error.message}`);
+}
+try {
+	await verifyReactColorfulUpstream(REPO);
+} catch (error) {
+	errors.push(`@octanejs/react-colorful upstream evidence is invalid: ${error.message}`);
 }
 try {
 	verifyReactColorfulTypes(REPO);

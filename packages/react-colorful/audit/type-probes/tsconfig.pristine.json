@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "types": []
   },
-  "include": ["public-api.test.ts"]
+  "include": ["public-api.test.ts", "host-input-event.ts"]
 }

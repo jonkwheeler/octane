@@ -17,13 +17,23 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/redux/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
-      "exclude": ["\\.d\\.ts$"]
+      "roots": [
+        "packages/redux/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
+      "exclude": [
+        "\\.d\\.ts$"
+      ]
     },
     "tests": {
-      "roots": ["packages/redux/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/redux/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -60,8 +70,8 @@
           "cases": [
             {
               "id": "differential:redux-counter",
-              "testName": "counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical",
-              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical"
+              "testName": "counter: mount → increment ×2 → decrement renders byte-identical",
+              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount → increment ×2 → decrement renders byte-identical"
             }
           ]
         },
@@ -88,7 +98,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     }

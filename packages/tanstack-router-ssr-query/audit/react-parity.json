@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/tanstack-router-ssr-query/src"],
-      "include": ["\\.(?:ts|tsx|tsrx)$"],
+      "roots": [
+        "packages/tanstack-router-ssr-query/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/tanstack-router-ssr-query/tests/differential"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/tanstack-router-ssr-query/tests/differential"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -108,7 +116,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "7423dbbb1ceaf96316f5ffe7bf5977dcc04bfc45040521ddbe954c6434e23c72"
         }
       ]
     },
@@ -119,7 +127,7 @@
       "environment": "workspace-node",
       "project": "tanstack-router-ssr-query-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55\u2013typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
+      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55–typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",

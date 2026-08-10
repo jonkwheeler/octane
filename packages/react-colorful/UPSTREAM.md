@@ -33,7 +33,8 @@ ledger: `react-colorful-native-event-attributes` in `audit/react-parity.json`.
 | `tag/tests/shadowDom.test.js` (1 case) | **ported** → `tests/upstream/shadowDom.test.ts` | adapted-octane lane |
 | `tag/tests/__snapshots__/*` | **pristine-only** (Jest snapshots); adapted asserts structure | pristine-upstream lane |
 | Upstream `check-types` (`tsc --noEmit` on `src`) | **pristine** via `typetests/tsconfig.pristine.json` | pristine-types lane |
-| Public type probes | **one-for-one** React (`audit/type-probes/public-api.test.ts`) ↔ Octane (`typetests/public-api.test.ts`) under `audit/type-parity.json` | type inventories + `pnpm test:type-parity` |
+| Upstream `tag/src` ↔ Octane `src` program membership | **fail-closed fileDispositions** in `audit/type-parity.json` (`.tsx`/hook `.ts` → `.tsrx`; CSS-module decl + isomorphic layout effect are pristine-only with adapted evidence) | program inventories + `react-parity:validate` |
+| Public type probes | **one-for-one** React (`audit/type-probes/public-api.test.ts`) ↔ Octane (`typetests/public-api.test.ts`) under `audit/type-parity.json`, including paired `HostInputEvent` proofs (`FormEvent` vs `InputEvent`) for `react-colorful-native-event-attributes` | type inventories + `pnpm test:type-parity` |
 | Octane source + adapted probe | **adapted types** via `typetests/tsconfig.adapted.json` | adapted-types lane |
 
 ### Port-authored classifications
