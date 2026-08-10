@@ -227,7 +227,7 @@ function FocusUnmountFixture(): OctaneNode {
 		{ id: 'draggable-slot' },
 		createElement(
 			Draggable,
-			{ nodeRef: ref, enableUserSelectHack: false },
+			{ nodeRef: ref },
 			createElement('div', {
 				ref,
 				id: 'draggable-test',
