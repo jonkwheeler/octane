@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 
-const CONFIG = 'packages/react-select/audit/test-classifications.json';
-const MANIFEST = 'packages/react-select/audit/react-parity.json';
+const CONFIG = 'packages/select/audit/test-classifications.json';
+const MANIFEST = 'packages/select/audit/react-parity.json';
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
@@ -14,8 +14,8 @@ const DISPOSITIONS = new Set([
 
 function discoverExecutableEvidence(root) {
 	const roots = [
-		resolve(root, 'packages/react-select/tests'),
-		resolve(root, 'packages/react-select/typetests'),
+		resolve(root, 'packages/select/tests'),
+		resolve(root, 'packages/select/typetests'),
 	];
 	const discovered = [];
 	for (const evidenceRoot of roots) {

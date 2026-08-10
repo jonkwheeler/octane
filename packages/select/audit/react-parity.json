@@ -4,24 +4,21 @@
     "repo": "https://github.com/JedWatson/react-select.git",
     "version": "5.10.2",
     "commit": "052e864b4990a67c4ee416851c34d1eb7b58267b",
-    "sourceRoot": "packages/react-select/src",
-    "testRoot": "packages/react-select/src/__tests__",
+    "sourceRoot": "packages/select/src",
+    "testRoot": "packages/select/src/__tests__",
     "license": "MIT",
     "integrity": "sha256:afe9505b2eb1fc35eec286aec284a35524eab572bde3946703a2453c343a1b8a",
     "verification": "verified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-select/src", "packages/react-select/typetests"],
+      "roots": ["packages/select/src", "packages/select/typetests"],
       "include": ["\\.(?:ts|tsrx|mjs)$"],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-select/tests/upstream"],
+      "roots": ["packages/select/tests/upstream"],
       "include": ["\\.test\\.(?:ts|mjs)$"],
       "exclude": []
     }
@@ -39,7 +36,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "fff56751f1882113c98e5494b4231a0a5bdd26f931c15c3a43f03ae4a5f03d9a"
+      "lockfileSha256": "90408e01feff09d1fc1160adcca944b6efe98ede9db66b6ee3b279904c47d737"
     }
   },
   "lanes": [
@@ -53,20 +50,20 @@
       "notes": "Runs the byte-exact react-select 5.10.2 Jest suites against the vendored React implementation, verifies all 255 passing identities and five snapshots, and leaves the three canonical upstream skips to adaptation.json not-applicable dispositions.",
       "execution": {
         "kind": "jest-full",
-        "config": "packages/react-select/tests/upstream-jest.config.cjs",
-        "root": "packages/react-select/upstream",
-        "inventory": "packages/react-select/audit/pristine-runtime.json"
+        "config": "packages/select/tests/upstream-jest.config.cjs",
+        "root": "packages/select/upstream",
+        "inventory": "packages/select/audit/pristine-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-select/audit/pristine-runtime.json",
+          "path": "packages/select/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "5907ef3ba5c8ef071a4ce6a335f7c1ec4725702e1cc63f6ca6fb4365e61d5f2c"
+          "sha256": "69a66bd9c2bff0d2020b484319fdd4ad7ce79ffe7aa29282e1501234f980fe81"
         },
         {
           "path": "scripts/react-parity/react-select-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "ddefb179b66cbb244733c6ec7d5bf3785c9e0de90c112dc900917b0bd1426b07"
+          "sha256": "1ebc4cfff637a54a194bfd0bea67db22af0498ce6ad4df89166a6049d45262aa"
         },
         {
           "path": "scripts/react-parity/react-select-pristine-runtime.d.mts",
@@ -79,32 +76,32 @@
           "sha256": "63641841ef1036467238d4a01188d14d529b639808814783b86d886efa00dc92"
         },
         {
-          "path": "packages/react-select/upstream/SHA256SUMS",
+          "path": "packages/select/upstream/SHA256SUMS",
           "role": "support",
           "sha256": "afe9505b2eb1fc35eec286aec284a35524eab572bde3946703a2453c343a1b8a"
         },
         {
-          "path": "packages/react-select/scripts/verify-upstream.mjs",
+          "path": "packages/select/scripts/verify-upstream.mjs",
           "role": "support",
           "sha256": "7ffdf13642702886444dd2646cf11c4ba17d4f0c1a80ea0c3385173109dd672d"
         },
         {
-          "path": "packages/react-select/tests/upstream-jest.config.cjs",
+          "path": "packages/select/tests/upstream-jest.config.cjs",
           "role": "support",
           "sha256": "01af40b831f03a23dd941a7fed22273c369db07638228f87bc0c5d75b70ac4f6"
         },
         {
-          "path": "packages/react-select/tests/upstream-jest.setup.ts",
+          "path": "packages/select/tests/upstream-jest.setup.ts",
           "role": "support",
           "sha256": "a46d66851af2c056e805fdd574bf5ec3adb1181c43c5e41f0a1c592e338afe64"
         },
         {
-          "path": "packages/react-select/tests/upstream-jest-transformer.cjs",
+          "path": "packages/select/tests/upstream-jest-transformer.cjs",
           "role": "support",
           "sha256": "3fadc0e3e5f5fe6a276f9a6e356807e60228dd65e791fa19d7d133d54c7a56e1"
         },
         {
-          "path": "packages/react-select/tests/upstream-emotion-serializer.cjs",
+          "path": "packages/select/tests/upstream-emotion-serializer.cjs",
           "role": "support",
           "sha256": "f05297f58037be355c988f4eed0149cacbd1e08fde2039981029fafaaba1de9a"
         }
@@ -115,53 +112,53 @@
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "react-select",
+      "project": "select",
       "evidenceOrigin": "upstream-suite",
       "notes": "Runs all 255 pristine identities one-for-one through the Octane adaptation lane across all five suites, including all upstream snapshots; the three canonical upstream skips are individually justified as not-applicable.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/react-select/audit/adapted-runtime.json"
+        "inventory": "packages/select/audit/adapted-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-select/audit/adapted-runtime.json",
+          "path": "packages/select/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "a3d28e5329de1405c34c302e7691517ac461579ebafb5b0a7066d809e7753d58"
+          "sha256": "280e8f0e8871bf746258ccd8510be05c68c86aa3cb8113a213269b158885c211"
         },
         {
-          "path": "packages/react-select/audit/adaptation.json",
+          "path": "packages/select/audit/adaptation.json",
           "role": "support",
-          "sha256": "e60868ba415dad272fd5f2cc886d575d20d94b491447e19680af6da570e7a614"
+          "sha256": "5d9f1b233033c251e24e74c66f7c9e1548d4529a157b29e2eae8c5ab99b62df4"
         },
         {
-          "path": "packages/react-select/audit/test-classifications.json",
+          "path": "packages/select/audit/test-classifications.json",
           "role": "support",
-          "sha256": "c28f2ae1a88bc4b38a80d50e6e4701668ab457d0b853f856eeaadbe6dddd04d5"
+          "sha256": "5eed22aafa865cc32b41d81c0978497d8891835c05e7bf8e7114905aabd2ef8f"
         },
         {
           "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "6749098d6a71af8d9dd9b02d797dc079e69d7038336dd02e9ec49a16f185df96"
+          "sha256": "d213831e88940ed79628e558f6c072e02c6d35f3f381b7cf76c394ac75bb3797"
         },
         {
           "path": "scripts/react-parity/react-select-adaptation.mjs",
           "role": "support",
-          "sha256": "b553f6cb865bdaf152f59afc6f40a08ac977cc34439ffc4f813d023d6fb67665"
+          "sha256": "3f787d472306fddbfc2c593a2e1cc4787aeebdfd6fb630448975a3810772015a"
         },
         {
           "path": "scripts/react-parity/react-select-adaptation.test.mjs",
           "role": "support",
-          "sha256": "7043598f486a8dc2a7f79258112ac9666f1e4518397e5acf7f4699859317475b"
+          "sha256": "55e7898ef1e2f703bb1fe649a8f13c0977e23efd8422df035517472ba16d59ca"
         },
         {
           "path": "scripts/react-parity/react-select-classifications-lib.mjs",
           "role": "support",
-          "sha256": "908106ffa00b078ae47219806e8e5c052a47e23515478ea7202966ef603a80ab"
+          "sha256": "650c24f8054680208dd41f200d88765ecd3dffa1989a87ece1fddd2308d784c4"
         },
         {
           "path": "scripts/react-parity/react-select-classifications-lib.test.mjs",
           "role": "support",
-          "sha256": "8802ad692384a9306d889032850ed24df1c8efe5d40b1d0a365051c32ec2b059"
+          "sha256": "b9d586cdc6ebbcf56c1cb031d348445fd03daf4c35139d6e521d139de63cf8b4"
         }
       ]
     },
@@ -176,13 +173,13 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/react-select/typetests/tsconfig.local.json"
+        "project": "packages/select/typetests/tsconfig.local.json"
       },
       "files": [
         {
-          "path": "packages/react-select/audit/local-types.json",
+          "path": "packages/select/audit/local-types.json",
           "role": "test",
-          "sha256": "4cffca79821c6bef62aa8ddfdaa69b53e8b094472e124eafc243202ea3b2f907",
+          "sha256": "7689627e5af12ff4bed536eab02831dbbfe5937a2a46df4a68613d43e6a0cdac",
           "cases": [
             {
               "id": "types:local-public-surface",
@@ -192,29 +189,29 @@
           ]
         },
         {
-          "path": "packages/react-select/typetests/tsconfig.local.json",
+          "path": "packages/select/typetests/tsconfig.local.json",
           "role": "support",
           "sha256": "a2b99225ec12fafb420eed9a54c94851bd4b5db181437cccb9145141d9ec0175"
         },
         {
-          "path": "packages/react-select/typetests/local.ts",
+          "path": "packages/select/typetests/local.ts",
           "role": "support",
           "sha256": "107d2ef3a1550a9cc931ee767ad5c9a02fa06721fe9755fcc11b1c4167587770"
         },
         {
-          "path": "packages/react-select/tests/browser/tsconfig.json",
+          "path": "packages/select/tests/browser/tsconfig.json",
           "role": "support",
           "sha256": "63d45556d53458cac6d733ab43410f3250865f564ab1b4ebc72c63a5dc2d9afc"
         },
         {
-          "path": "packages/react-select/audit/type-parity.json",
+          "path": "packages/select/audit/type-parity.json",
           "role": "support",
-          "sha256": "4917ca5ee1236e73292c5f031e5f68ceecc6eb86d315307adae5975316ff21c0"
+          "sha256": "822b20dc6e6f3c822cfe6dea57c54ea3cf745e5108f56cc7031687079c411837"
         },
         {
           "path": "scripts/react-parity/react-select-types-lib.mjs",
           "role": "support",
-          "sha256": "302db6e2f085fcc755be3330d966d109408065ca62ec64b17ea1a35bbede78bb"
+          "sha256": "be6efd43545e72fc272af5aa2c6b2b01fc0cf720cf3f77ea103aa6fd14d07ffc"
         }
       ]
     },
@@ -229,13 +226,13 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/react-select/typetests/tsconfig.upstream.json"
+        "project": "packages/select/typetests/tsconfig.upstream.json"
       },
       "files": [
         {
-          "path": "packages/react-select/audit/upstream-types.json",
+          "path": "packages/select/audit/upstream-types.json",
           "role": "test",
-          "sha256": "46ea717c93755fce733fb1d8f94cdd13ecf634c8497f6cc34123fa42eb825075",
+          "sha256": "5daf6d8d13f18f3b860a15f16feea5e313f653d400393119a939f1dde3308654",
           "cases": [
             {
               "id": "types:upstream-public-surface",
@@ -245,24 +242,24 @@
           ]
         },
         {
-          "path": "packages/react-select/typetests/tsconfig.upstream.json",
+          "path": "packages/select/typetests/tsconfig.upstream.json",
           "role": "support",
           "sha256": "1269c874a5a637ff385a2a18e1ab87ca7db02b2d937706685e3eb59205fb4a33"
         },
         {
-          "path": "packages/react-select/typetests/upstream.ts",
+          "path": "packages/select/typetests/upstream.ts",
           "role": "support",
           "sha256": "1d3a88d6a604176219efc33fec3009d0dde78a14db597bac5c3f837163421a49"
         },
         {
-          "path": "packages/react-select/audit/type-parity.json",
+          "path": "packages/select/audit/type-parity.json",
           "role": "support",
-          "sha256": "4917ca5ee1236e73292c5f031e5f68ceecc6eb86d315307adae5975316ff21c0"
+          "sha256": "822b20dc6e6f3c822cfe6dea57c54ea3cf745e5108f56cc7031687079c411837"
         },
         {
           "path": "scripts/react-parity/react-select-types-lib.mjs",
           "role": "support",
-          "sha256": "302db6e2f085fcc755be3330d966d109408065ca62ec64b17ea1a35bbede78bb"
+          "sha256": "be6efd43545e72fc272af5aa2c6b2b01fc0cf720cf3f77ea103aa6fd14d07ffc"
         }
       ]
     },
@@ -277,11 +274,11 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/react-select/typetests/tsconfig.compat.json"
+        "project": "packages/select/typetests/tsconfig.compat.json"
       },
       "files": [
         {
-          "path": "packages/react-select/audit/compat-types.json",
+          "path": "packages/select/audit/compat-types.json",
           "role": "test",
           "sha256": "ed2d2eee5aee9a3ca2da50af978ae59783825b4aaec9efc546d4cdf6bd43564f",
           "cases": [
@@ -308,12 +305,12 @@
           ]
         },
         {
-          "path": "packages/react-select/typetests/tsconfig.compat.json",
+          "path": "packages/select/typetests/tsconfig.compat.json",
           "role": "support",
           "sha256": "6192bdd932489330e6cae415483fa55cc0ce023b762e1b3190adabe4157a3079"
         },
         {
-          "path": "packages/react-select/typetests/compat.ts",
+          "path": "packages/select/typetests/compat.ts",
           "role": "support",
           "sha256": "4e8cef1b166dd6f816dbf35ec8da8f5a95c7cb18825c594e5ad288cc2b9e60a6"
         }
@@ -330,7 +327,7 @@
       "classification": "renderer-type",
       "consumerImpact": "Type annotations that explicitly name ReactNode must use OctaneNode when migrating.",
       "migrationGuidance": "Replace explicit ReactNode annotations at React Select render boundaries with OctaneNode.",
-      "owner": "@octanejs/react-select",
+      "owner": "@octanejs/select",
       "reviewCondition": "Review if Octane adopts a framework-neutral public renderable-node type compatible with ReactNode."
     },
     {
@@ -342,7 +339,7 @@
       "classification": "event-model",
       "consumerImpact": "Explicit React synthetic-event annotations must become native DOM event annotations.",
       "migrationGuidance": "Use the corresponding native DOM event type in callbacks and component overrides.",
-      "owner": "@octanejs/react-select",
+      "owner": "@octanejs/select",
       "reviewCondition": "Review if Octane introduces a React-compatible synthetic event layer."
     },
     {
@@ -354,7 +351,7 @@
       "classification": "renderer-type",
       "consumerImpact": "Explicit Emotion CSSObjectWithLabel annotations at style override boundaries must use the Octane style-object contract.",
       "migrationGuidance": "Remove Emotion-only type annotations and use the inferred Octane style callback types.",
-      "owner": "@octanejs/react-select",
+      "owner": "@octanejs/select",
       "reviewCondition": "Review if Octane adopts an Emotion-compatible renderer-owned style type."
     }
   ]

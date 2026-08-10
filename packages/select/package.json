@@ -1,5 +1,5 @@
 {
-  "name": "@octanejs/react-select",
+  "name": "@octanejs/select",
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
-    "directory": "packages/react-select"
+    "directory": "packages/select"
   },
   "main": "src/index.ts",
   "module": "src/index.ts",
@@ -30,7 +30,7 @@
   },
   "scripts": {
     "test": "pnpm upstream:verify && pnpm crosswalk:verify && pnpm test:octane && pnpm test:pristine",
-    "test:octane": "vitest run --root ../.. --project react-select",
+    "test:octane": "vitest run --root ../.. --project select",
     "test:pristine": "pnpm test:upstream",
     "test:upstream": "jest --config tests/upstream-jest.config.cjs --rootDir upstream --runInBand --no-watchman",
     "parity:inventory": "node ../../scripts/react-parity/react-select-runtime-inventory.mjs && node ../../scripts/react-parity/react-select-adaptation.mjs --write",
@@ -64,6 +64,8 @@
     "@testing-library/jest-dom": "catalog:default",
     "@testing-library/react": "12.1.4",
     "@testing-library/user-event": "10.4.1",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
     "@tsrx/react": "catalog:default",
     "babel-jest": "25.5.1",
     "happy-dom": "catalog:default",

@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Publish `@octanejs/react-select` as an exact Octane runtime binding for `react-select@5.10.2`, with consumer-compiled public types and explicit Octane renderer type adaptations.
+- **Objective:** Publish `@octanejs/select` as an exact Octane runtime binding for `react-select@5.10.2`, with consumer-compiled public types and explicit Octane renderer type adaptations.
 - **Authority:** The pinned upstream package, source, tests, and observable React behavior define parity. Octane repository guidance defines evidence and packaging requirements.
 - **Execution profile:** One binding on one isolated branch and pull request, stacked on the Transition Group prerequisite until that prerequisite merges.
 - **Stop condition:** A required behavior needs an Octane runtime, compiler, SSR, or shared parity-harness change outside this package. Such work becomes a separate prerequisite pull request.
@@ -22,7 +22,7 @@ execution: code
 
 ### Summary
 
-React users should be able to replace `react-select` imports with `@octanejs/react-select` without selecting a similar component library or rewriting their select behavior. The binding preserves the root, `base`, `async`, `animated`, `creatable`, and `async-creatable` entry points from `react-select@5.10.2`.
+React users should be able to replace `react-select` imports with `@octanejs/select` without selecting a similar component library or rewriting their select behavior. The binding preserves the root, `base`, `async`, `animated`, `creatable`, and `async-creatable` entry points from `react-select@5.10.2`.
 
 ### Problem Frame
 
@@ -87,7 +87,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 ### U1. Pin provenance and scaffold the package
 
 - **Goal:** Establish immutable upstream evidence, package metadata, license, entry points, and audit files for R1, R9, and R11.
-- **Files:** `packages/react-select/package.json`, `packages/react-select/LICENSE`, `packages/react-select/README.md`, `packages/react-select/UPSTREAM.md`, `packages/react-select/status.json`, `packages/react-select/upstream/**`, `packages/react-select/audit/**`.
+- **Files:** `packages/select/package.json`, `packages/select/LICENSE`, `packages/select/README.md`, `packages/select/UPSTREAM.md`, `packages/select/status.json`, `packages/select/upstream/**`, `packages/select/audit/**`.
 - **Approach:** Retain canonical source, tests, snapshots, package metadata, and license. Verify all retained files with SHA-256 and exclude evidence from publication.
 - **Test scenarios:** Reject modified, missing, or additional upstream artifacts; reject changed entry points or exports; verify the exact version, commit, license, and npm integrity.
 - **Verification:** `upstream:verify` and `crosswalk:verify` pass from the package scripts.
@@ -95,7 +95,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 ### U2. Port the core Select runtime and public types
 
 - **Goal:** Implement R2-R4 and R8 through the root and `base` entry points.
-- **Files:** `packages/react-select/src/select.tsrx`, `packages/react-select/src/components.tsrx`, `packages/react-select/src/types.ts`, `packages/react-select/src/default-styles.ts`, `packages/react-select/src/menu-placement.ts`, `packages/react-select/src/scroll-manager.ts`, `packages/react-select/src/style-context.tsrx`, `packages/react-select/src/utils.ts`, `packages/react-select/src/index.ts`, `packages/react-select/src/base.ts`.
+- **Files:** `packages/select/src/select.tsrx`, `packages/select/src/components.tsrx`, `packages/select/src/types.ts`, `packages/select/src/default-styles.ts`, `packages/select/src/menu-placement.ts`, `packages/select/src/scroll-manager.ts`, `packages/select/src/style-context.tsrx`, `packages/select/src/utils.ts`, `packages/select/src/index.ts`, `packages/select/src/base.ts`.
 - **Approach:** Preserve the upstream state model and public component boundaries with Octane primitives. Keep menu and focused-option refs separate. Reconcile focus after options change. Preserve nested scroll locks and imperative `SelectInstance` methods.
 - **Test scenarios:** Cover selection, clearing, multi-value removal, controlled props, component overrides, styles, themes, ARIA, keyboard, mouse, touch, forms, portal placement, flipping, scroll locking, focused-option scrolling, menu notices, ref methods, and reopening on the selected value.
 - **Verification:** Runtime, SSR, Chromium, differential, and type suites pass without skipped parity cases.
@@ -103,7 +103,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 ### U3. Port composed entry points
 
 - **Goal:** Implement R5-R7 across state-managed, async, creatable, async-creatable, and animated entry points.
-- **Files:** `packages/react-select/src/state-managed-select.tsrx`, `packages/react-select/src/use-state-manager.tsrx`, `packages/react-select/src/async.tsrx`, `packages/react-select/src/use-async.tsrx`, `packages/react-select/src/creatable.tsrx`, `packages/react-select/src/use-creatable.tsrx`, `packages/react-select/src/async-creatable.tsrx`, `packages/react-select/src/animated/**`.
+- **Files:** `packages/select/src/state-managed-select.tsrx`, `packages/select/src/use-state-manager.tsrx`, `packages/select/src/async.tsrx`, `packages/select/src/use-async.tsrx`, `packages/select/src/creatable.tsrx`, `packages/select/src/use-creatable.tsrx`, `packages/select/src/async-creatable.tsrx`, `packages/select/src/animated/**`.
 - **Approach:** Compose the core Select props exactly as upstream does. Use generation-safe async resolution and the Transition Group prerequisite for animated wrappers.
 - **Test scenarios:** Cover controlled/uncontrolled precedence, cached and stale async requests, default and null notices, creation validation and placement, action metadata, Async Creatable interaction, animation appearance/removal, interruption, and descriptor identity.
 - **Verification:** Optional-entry runtime, browser, SSR, and paired type fixtures pass.
@@ -111,7 +111,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 ### U4. Build executable React parity evidence
 
 - **Goal:** Prove R3-R8 at the environments where each behavior is observable.
-- **Files:** `packages/react-select/tests/**`, `packages/react-select/typetests/**`, `vitest.config.js`.
+- **Files:** `packages/select/tests/**`, `packages/select/typetests/**`, `vitest.config.js`.
 - **Approach:** Use React as the differential oracle, Chromium for DOM/layout behavior, SSR for server output, and TypeScript fixtures for public declarations.
 - **Test scenarios:** Exercise all Acceptance Examples plus async replacement and rejection, portal auto-flip, overlapping scroll locks, imperative refs, single-select reopen focus, null notices, animated re-add/interruption, and mobile-style touch paths.
 - **Verification:** The registered `react-select` Vitest project and all typecheck configurations pass.
@@ -119,7 +119,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 ### U5. Register fail-closed evidence and repository integration
 
 - **Goal:** Complete R9-R11 with current generated inventories and repository metadata.
-- **Files:** `packages/react-select/audit/react-parity.json`, `packages/react-select/audit/export-crosswalk.json`, `packages/react-select/audit/adapted-runtime.json`, `packages/react-select/scripts/**`, `scripts/react-parity/react-select-runtime-inventory.mjs`, `docs/binding-parity-gaps.md`, `docs/bindings-status.md`, `docs/packages.md`, `website/src/content/bindings.json`, `packages/cli/src/data/octane-data.json`, `packages/octane-evals/datasets/train/user-apps-v1/manifest.jsonl`, `.changeset/*.md`, `pnpm-lock.yaml`.
+- **Files:** `packages/select/audit/react-parity.json`, `packages/select/audit/export-crosswalk.json`, `packages/select/audit/adapted-runtime.json`, `packages/select/scripts/**`, `scripts/react-parity/react-select-runtime-inventory.mjs`, `docs/binding-parity-gaps.md`, `docs/bindings-status.md`, `docs/packages.md`, `website/src/content/bindings.json`, `packages/cli/src/data/octane-data.json`, `packages/octane-evals/datasets/train/user-apps-v1/manifest.jsonl`, `.changeset/*.md`, `pnpm-lock.yaml`.
 - **Approach:** Generate exact test identities and shared hashes. Validate all six entry points and 20 runtime exports. Run repository sync after authored files stabilize.
 - **Test scenarios:** Reject stale inventory counts, duplicate identities, missing execution lanes, changed hashes, absent type fixtures, missing entry points, and unregistered package metadata.
 - **Verification:** Package inventory, binding gap, sync, parity validation, format, and relevant repository checks are clean.
@@ -147,7 +147,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 
 ## Definition of Done
 
-- `@octanejs/react-select` exposes all six pinned public entry points and all 20 runtime exports with compatible runtime behavior, consumer-compiled types, and documented renderer type adaptations.
+- `@octanejs/select` exposes all six pinned public entry points and all 20 runtime exports with compatible runtime behavior, consumer-compiled types, and documented renderer type adaptations.
 - Core, state-managed, async, creatable, async-creatable, and animated behaviors have executable React-oracle evidence in the appropriate server, browser, runtime, and type lanes.
 - Provenance, license, source/test inventory, export crosswalk, collected test inventory, and parity hashes are current and fail closed.
 - Package metadata, documentation, generated inventories, website catalog, eval corpus, lockfile, and changeset are current.

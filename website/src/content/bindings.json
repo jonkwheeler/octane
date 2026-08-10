@@ -50,7 +50,7 @@
       "@octanejs/sonner",
       "@octanejs/react-error-boundary",
       "@octanejs/react-transition-group",
-      "@octanejs/react-select",
+      "@octanejs/select",
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",

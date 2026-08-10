@@ -23,7 +23,7 @@ describe('the shipped catalog', () => {
 		expect(resolveBinding('@octanejs/zustand')).toMatchObject({ via: 'binding' });
 		expect(resolveBinding('zustand')?.binding.name).toBe('@octanejs/zustand');
 		expect(resolveBinding('@tanstack/react-query')?.binding.name).toBe('@octanejs/tanstack-query');
-		expect(resolveBinding('react-select')?.binding.name).toBe('@octanejs/react-select');
+		expect(resolveBinding('react-select')?.binding.name).toBe('@octanejs/select');
 	});
 
 	it('gives every binding a category and an upstream or an explicit absence', () => {
@@ -115,7 +115,7 @@ describe('octane add', () => {
 		expect(result.exitCode).toBe(0);
 		expect(result.json().resolved[0]).toMatchObject({
 			requested: 'react-select',
-			binding: '@octanejs/react-select',
+			binding: '@octanejs/select',
 			via: 'react-package',
 		});
 	});

@@ -1,1290 +1,1290 @@
 {
   "schemaVersion": 1,
-  "project": "react-select",
+  "project": "select",
   "roots": [
-    "packages/react-select/tests/upstream"
+    "packages/select/tests/upstream"
   ],
   "files": [
-    "packages/react-select/tests/upstream/Async.test.ts",
-    "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
-    "packages/react-select/tests/upstream/Creatable.test.ts",
-    "packages/react-select/tests/upstream/Select.test.ts",
-    "packages/react-select/tests/upstream/StateManaged.test.ts"
+    "packages/select/tests/upstream/Async.test.ts",
+    "packages/select/tests/upstream/AsyncCreatable.test.ts",
+    "packages/select/tests/upstream/Creatable.test.ts",
+    "packages/select/tests/upstream/Select.test.ts",
+    "packages/select/tests/upstream/StateManaged.test.ts"
   ],
   "tests": [
     {
       "id": "runtime:ab1f05982da729d5",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "defaults - snapshot"
     },
     {
       "id": "runtime:b20b3c94f3472107",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "in case of callbacks display the most recently-requested loaded options (if results are returned out of order)"
     },
     {
       "id": "runtime:2f306cc702fcf73e",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "load option prop with defaultOptions true with callback  should resolve options"
     },
     {
       "id": "runtime:ea7954494c377b3b",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "load option prop with defaultOptions true with promise  should resolve options"
     },
     {
       "id": "runtime:8cd3da3004e94261",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "load options prop with defaultOptions true and inputValue prop"
     },
     {
       "id": "runtime:d321cb2e38361837",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "load options props with no default options with callback should resolve the options"
     },
     {
       "id": "runtime:e1fd473a0bdfa6ab",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "load options props with no default options with promise should resolve the options"
     },
     {
       "id": "runtime:00278f34a4dce59d",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "to create new cache for each instance"
     },
     {
       "id": "runtime:b696ab0cdc04ae0b",
-      "file": "packages/react-select/tests/upstream/Async.test.ts",
+      "file": "packages/select/tests/upstream/Async.test.ts",
       "fullName": "to not call loadOptions again for same value when cacheOptions is true"
     },
     {
       "id": "runtime:b208493325e3e591",
-      "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "file": "packages/select/tests/upstream/AsyncCreatable.test.ts",
       "fullName": "creates an inner Select"
     },
     {
       "id": "runtime:a42b7fb2e888a830",
-      "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "file": "packages/select/tests/upstream/AsyncCreatable.test.ts",
       "fullName": "defaults - snapshot"
     },
     {
       "id": "runtime:9d43c5bd8c8694cd",
-      "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "file": "packages/select/tests/upstream/AsyncCreatable.test.ts",
       "fullName": "render decorated select with props passed"
     },
     {
       "id": "runtime:c6d039ddaebc7300",
-      "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "file": "packages/select/tests/upstream/AsyncCreatable.test.ts",
       "fullName": "to show loading and then create option in menu"
     },
     {
       "id": "runtime:b39d6f672da25e7f",
-      "file": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
+      "file": "packages/select/tests/upstream/AsyncCreatable.test.ts",
       "fullName": "to show the create option in menu"
     },
     {
       "id": "runtime:9fc448c921a1bbde",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "close by hitting escape with search text present multi select should remove the search text"
     },
     {
       "id": "runtime:539ee31b10d77650",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "close by hitting escape with search text present single select should remove the search text"
     },
     {
       "id": "runtime:e417b23b6f4c53bb",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "compareOption() method multi select should handle options with custom structure"
     },
     {
       "id": "runtime:ab06fa4204f92844",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "compareOption() method single select should handle options with custom structure"
     },
     {
       "id": "runtime:494bad9491e3b8a9",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "defaults - snapshot"
     },
     {
       "id": "runtime:1ae057d06707dc39",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "filterOptions returns invalid value ( null ) multi select should not show \"create...\" prompt\""
     },
     {
       "id": "runtime:3441b88611b0050a",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "filterOptions returns invalid value ( null ) single select should not show \"create...\" prompt\""
     },
     {
       "id": "runtime:6c2919e7a1efe87c",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "filtered option is an exact match for an existing option multi select should not show \"create...\" prompt\""
     },
     {
       "id": "runtime:f2eb420c6f7e4886",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "filtered option is an exact match for an existing option single select should not show \"create...\" prompt\""
     },
     {
       "id": "runtime:abc5caafe7a4812a",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "formatCreateLabel() prop multi select should show label of custom option as per text returned from formatCreateLabel"
     },
     {
       "id": "runtime:1cc41fe6cc2381f9",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "formatCreateLabel() prop single select should show label of custom option as per text returned from formatCreateLabel"
     },
     {
       "id": "runtime:1e234f8da828b10b",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "getNewOptionData() prop multi select should create option as per label returned from getNewOptionData"
     },
     {
       "id": "runtime:ab73e1e0bc992897",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "getNewOptionData() prop single select should create option as per label returned from getNewOptionData"
     },
     {
       "id": "runtime:93e5fc1283c1922f",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "inputValue does not match any option after filter multi select should show a placeholder \"create...\" prompt"
     },
     {
       "id": "runtime:c2b35b1f8792961b",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "inputValue does not match any option after filter single select should show a placeholder \"create...\" prompt"
     },
     {
       "id": "runtime:17f77f24298faefc",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "isValidNewOption() prop multi select should show \"create...\" prompt only if isValidNewOption returns thruthy value"
     },
     {
       "id": "runtime:0fba1a4631c09dc5",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "isValidNewOption() prop single select should show \"create...\" prompt only if isValidNewOption returns thruthy value"
     },
     {
       "id": "runtime:192b08a01f12c784",
-      "file": "packages/react-select/tests/upstream/Creatable.test.ts",
+      "file": "packages/select/tests/upstream/Creatable.test.ts",
       "fullName": "should remove the new option after closing on blur"
     },
     {
       "id": "runtime:cddf1d9eadafd5a0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "Clicking Enter on a focused select while !menuIsOpen should not invoke event.preventDefault"
     },
     {
       "id": "runtime:dbc0a164cdb94c62",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "Clicking Enter on a focused select while menuIsOpen && focusedOption && !isComposing  should invoke event.preventDefault"
     },
     {
       "id": "runtime:58b5d9f1a581d870",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "Clicking dropdown indicator on select with closed menu with primary button on mouse multi select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
     },
     {
       "id": "runtime:53be7a21121e6c21",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "Clicking dropdown indicator on select with closed menu with primary button on mouse single select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
     },
     {
       "id": "runtime:20e4f382de75876d",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "Clicking dropdown indicator on select with open menu with primary button on mouse multi select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
     },
     {
       "id": "runtime:c0480dbdc4eaf281",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "Clicking dropdown indicator on select with open menu with primary button on mouse single select should call onMenuOpen prop when select is opened and onMenuClose prop when select is closed"
     },
     {
       "id": "runtime:edb2a643667396ce",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "`required` prop multi select should validate with value"
     },
     {
       "id": "runtime:eb4b011db7dfc2fd",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "`required` prop single select (isSearchable is false) should validate with value"
     },
     {
       "id": "runtime:86be736313af9a46",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "`required` prop single select should validate with value"
     },
     {
       "id": "runtime:4830e26456cfeecf",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility A11yTexts can be provided through ariaLiveMessages prop"
     },
     {
       "id": "runtime:4c9d27926ad31ff8",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility announces already selected values when focused"
     },
     {
       "id": "runtime:974c45ade0149c94",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility announces cleared values"
     },
     {
       "id": "runtime:8e997668e9b7af9f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility aria-activedescendant for basic options test-input-name"
     },
     {
       "id": "runtime:8e997668e9b7af9f:2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility aria-activedescendant for basic options test-input-name"
     },
     {
       "id": "runtime:113d993481b50c67",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility aria-activedescendant for grouped options test-input-name"
     },
     {
       "id": "runtime:113d993481b50c67:2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility aria-activedescendant for grouped options test-input-name"
     },
     {
       "id": "runtime:eb3a7b51aafaed31",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility aria-activedescendant should not exist if hideSelectedOptions=true"
     },
     {
       "id": "runtime:b1a562cf236d5097",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility interacting with disabled options shows correct A11yText"
     },
     {
       "id": "runtime:5d11db2e3afb52d1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility interacting with multi values options shows correct A11yText"
     },
     {
       "id": "runtime:49f85ba60225bc46",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-errormessage prop multi select should pass aria-errormessage prop down to input"
     },
     {
       "id": "runtime:dace047aa71b4730",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-errormessage prop single select should pass aria-errormessage prop down to input"
     },
     {
       "id": "runtime:7a233ebdb34db68e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-invalid prop multi select should pass aria-invalid prop down to input"
     },
     {
       "id": "runtime:205a7519b9859982",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-invalid prop single select should pass aria-invalid prop down to input"
     },
     {
       "id": "runtime:170a16e0de419883",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-label prop multi select should pass aria-labelledby prop down to input"
     },
     {
       "id": "runtime:9f750ed251579162",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-label prop single select should pass aria-labelledby prop down to input"
     },
     {
       "id": "runtime:49e09766938c7540",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-labelledby prop multi select should pass aria-labelledby prop down to input"
     },
     {
       "id": "runtime:d219e4d7f7b6d66d",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility passes through aria-labelledby prop single select should pass aria-labelledby prop down to input"
     },
     {
       "id": "runtime:e4384329d9f18b7a",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility screenReaderStatus function prop to pass custom text to A11yText"
     },
     {
       "id": "runtime:03f66c0ac2ef2280",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "accessibility to show the number of options available in A11yText when the menu is Open"
     },
     {
       "id": "runtime:7ede48f2299b4935",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "autoFocus multi select should focus select on mount"
     },
     {
       "id": "runtime:de7c721011a93770",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "autoFocus single select should focus select on mount"
     },
     {
       "id": "runtime:5df77956678a5d24",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on de-selecting an option in multi select enter key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:be7f63266327bd6b",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on de-selecting an option in multi select option is clicked should call onChange() prop with correct selected options and meta"
     },
     {
       "id": "runtime:dc74c42f5db1e0a5",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on de-selecting an option in multi select option with boolean value option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:9676928967540257",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on de-selecting an option in multi select option with number value option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:36afaadcbdde4b12",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on de-selecting an option in multi select space key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:acdf4ea16b68021b",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on de-selecting an option in multi select tab key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:869bfc552239f1c4",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option multi select enter key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:cfda617a3e7956cc",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option multi select option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:56cfae29d1aeda8c",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option multi select option with boolean value option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:ba656d7024136682",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option multi select option with number value option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:7af5d3a88a845864",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option multi select space key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:c0ec24e3945e2f8f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option multi select tab key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:5339f1de0ee7ae31",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option single select enter key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:0650dd922fa7907d",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option single select option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:12180458b060ad9f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option single select option with boolean value option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:b890faaeff4cb6b0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option single select option with number value option is clicked should call onChange() prop with selected option"
     },
     {
       "id": "runtime:3f8c40f61217db64",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option single select space key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:589aa1ac9b67b829",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "calls onChange on selecting an option single select tab key is pressed while focusing option should call onChange() prop with selected option"
     },
     {
       "id": "runtime:b70d4a455685156a",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "clear select by clicking on clear button should not call onMenuOpen"
     },
     {
       "id": "runtime:9b01ab4f79f5dd66",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "clearing select using clear button to not call onMenuOpen or onMenuClose"
     },
     {
       "id": "runtime:f2a7d36e39e51fc1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "click to open select multi select should focus the first option"
     },
     {
       "id": "runtime:dbd945070673632b",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "click to open select single select should focus the first option"
     },
     {
       "id": "runtime:19abec63f49ecf61",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "clicking on disabled option multi select should not select the disabled option"
     },
     {
       "id": "runtime:844aa33fce6aa554",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "clicking on disabled option single select should not select the disabled option"
     },
     {
       "id": "runtime:76ca78ff373278a2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "clicking when focused does not open select when openMenuOnClick=false"
     },
     {
       "id": "runtime:c4ceb17582bea6e6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "close menu on hitting escape and clear input value if menu is open even if escapeClearsValue and isClearable are true"
     },
     {
       "id": "runtime:5f0d67c69c0577a5",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "closeMenuOnSelect prop when passed as false it should not call onMenuClose on selecting option"
     },
     {
       "id": "runtime:24a11cd0b1b8f948",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "display placeholder once value is removed multi select should display placeholder once the value is removed from select"
     },
     {
       "id": "runtime:47ccf59a64e43169",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "display placeholder once value is removed single select should display placeholder once the value is removed from select"
     },
     {
       "id": "runtime:29e45a678971f528",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "does not select anything when a disabled option is the only item in the list after a search"
     },
     {
       "id": "runtime:7cb8956c359280b2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "filterOption prop is null multi select should show all the options other than selected options"
     },
     {
       "id": "runtime:4b2f47e47d0bd341",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "filterOption prop is null single select should show all the options"
     },
     {
       "id": "runtime:3c1c0dcdff7818cc",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "filterOption() prop - default filter behavior single select should ignore accented char in query"
     },
     {
       "id": "runtime:67a6b6828a3148b3",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "filterOption() prop - default filter behavior single select should match accented char"
     },
     {
       "id": "runtime:144db690bd22aa68",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "filterOption() prop - should filter only if function returns truthy for value multi select should filter all options other that options in value of select"
     },
     {
       "id": "runtime:20c3d407e9bf79bb",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "filterOption() prop - should filter only if function returns truthy for value single select should filter all options as per searchString"
     },
     {
       "id": "runtime:3005aa3ac37557ae",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select ArrowDown key on first option should focus second option"
     },
     {
       "id": "runtime:ba87d2523c7da4f6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select ArrowDown key on last option should focus first option"
     },
     {
       "id": "runtime:dc37cc7b313b425f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select ArrowUp key on first option should focus last option"
     },
     {
       "id": "runtime:d93e793c56f0bf37",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select ArrowUp key on last option should focus second last option"
     },
     {
       "id": "runtime:7caff47b878014dc",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select End key takes down to the last option"
     },
     {
       "id": "runtime:ff9458da961944af",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select Home key takes up to the first option"
     },
     {
       "id": "runtime:515e98c7ce357813",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select PageDown key takes to the last option is options below is less then page size"
     },
     {
       "id": "runtime:8190f9c9d89c5959",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select PageDown key takes us to next page with custom pageSize of 8"
     },
     {
       "id": "runtime:34b8c0edd880f0e6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select PageDown key takes us to next page with default page size of 5"
     },
     {
       "id": "runtime:ce2101a28ace1c03",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select PageUp key takes us to first option - previous options < pageSize"
     },
     {
       "id": "runtime:cdd335fe9b23cb24",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select PageUp key takes us to previous page with default page size of 5"
     },
     {
       "id": "runtime:e5ca3de9f192527d",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu multi select PageUp key takes us to previous page with default page size of 9"
     },
     {
       "id": "runtime:0f2f6b4344046e4e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select ArrowDown key on first option should focus second option"
     },
     {
       "id": "runtime:a083d0eeb644172c",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select ArrowDown key on last option should focus first option"
     },
     {
       "id": "runtime:1d6f5268aa7ceaa6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select ArrowUp key on first option should focus last option"
     },
     {
       "id": "runtime:7b630899ab103e61",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select ArrowUp key on last option should focus second last option"
     },
     {
       "id": "runtime:746c774ee2129759",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select End key takes down to the last option"
     },
     {
       "id": "runtime:5f91c693b3c76cdf",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select Home key takes up to the first option"
     },
     {
       "id": "runtime:104831eb7572e9b1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select PageDown key takes to the last option is options below is less then page size"
     },
     {
       "id": "runtime:209103379c0011a1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select PageDown key takes us to next page with custom pageSize 7"
     },
     {
       "id": "runtime:7704cc0367d96632",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select PageDown key takes us to next page with default page size of 5"
     },
     {
       "id": "runtime:67e9b7e273467796",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select PageUp key takes us to first option - (previous options < pageSize)"
     },
     {
       "id": "runtime:ef29a7204812fe38",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select PageUp key takes us to previous page with custom pageSize of 7"
     },
     {
       "id": "runtime:0d85c425c68f933f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select PageUp key takes us to previous page with default page size of 5"
     },
     {
       "id": "runtime:d13a351dbb91b049",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "focus on options keyboard interaction with Menu single select disabled options should be focusable"
     },
     {
       "id": "runtime:40134b564546a021",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "formatGroupLabel function prop to format Group label"
     },
     {
       "id": "runtime:4c01e7f09dcec2dd",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "formatOptionLabel multi select should format label of options according to text returned by formatOptionLabel"
     },
     {
       "id": "runtime:f6c22d656b3e4b95",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "formatOptionLabel single select should format label of options according to text returned by formatOptionLabel"
     },
     {
       "id": "runtime:d9bf4f0a80f04006",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "getOptionLabel() prop to format the option label"
     },
     {
       "id": "runtime:3f49783012230464",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hidden input field is not present if name is not passes"
     },
     {
       "id": "runtime:3896368993f62942",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hidden input field is present if name passes"
     },
     {
       "id": "runtime:e698c9cd904355bd",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting ArrowUp key on closed select should focus last element"
     },
     {
       "id": "runtime:2b92d7989d7e8850",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting Enter on option should not call onChange if the event comes from IME"
     },
     {
       "id": "runtime:64be3eaa0ebe5f96",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting escape does not call onChange if menu is Open"
     },
     {
       "id": "runtime:de2705ba360bda40",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting escape on select option multi select should not call onChange prop"
     },
     {
       "id": "runtime:1e40b69a2598040f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting escape on select option single select should not call onChange prop"
     },
     {
       "id": "runtime:0a2f3b5faf19b4d1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting escape with inputValue in select multi select should call onInputChange prop with empty string as inputValue"
     },
     {
       "id": "runtime:7b32b81c5e09dd46",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting escape with inputValue in select single select should call onInputChange prop with empty string as inputValue"
     },
     {
       "id": "runtime:910e1a9c37e27e65",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting spacebar should not select option if isSearchable is true (default)"
     },
     {
       "id": "runtime:23e073bada27e3b4",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting spacebar should select option if isSearchable is false"
     },
     {
       "id": "runtime:a1a4826ff6ff89d4",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "hitting tab on option should not call onChange if tabSelectsValue is false"
     },
     {
       "id": "runtime:eace4668cc2ad46b",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "instanceId prop to have instanceId as id prefix for the select components"
     },
     {
       "id": "runtime:a8cc16e60348e79e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isClearable is false single select should not show the X (clear) button"
     },
     {
       "id": "runtime:23a7be4b5d3b5255",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isClearable is false test-input-name"
     },
     {
       "id": "runtime:4d7304ab90fb58b6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isDisabled prop multi select should add isDisabled prop to select components"
     },
     {
       "id": "runtime:e05427ae40587ba0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isDisabled prop single select should add isDisabled prop to select components"
     },
     {
       "id": "runtime:ac0a180ad5ef396e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isOptionDisabled() prop multi select should add isDisabled as true prop only to options that are disabled"
     },
     {
       "id": "runtime:e2fe4b8cbe09f5f8",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isOptionDisabled() prop single select should add isDisabled as true prop only to options that are disabled"
     },
     {
       "id": "runtime:0f6450b796116da4",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isOptionSelected() prop multi select to not show the selected options in Menu for multiSelect"
     },
     {
       "id": "runtime:056cc8a5b64f3f66",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isOptionSelected() prop single select mark value as isSelected if isOptionSelected returns true for the option"
     },
     {
       "id": "runtime:8fac8c42247168a1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "isRtl boolean prop sets direction: rtl on container"
     },
     {
       "id": "runtime:2b2a2d6bda1a0d2f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "menuIsOpen prop multi select should show menu if menuIsOpen is true and hide menu if menuIsOpen prop is false"
     },
     {
       "id": "runtime:2b779e772b3b78d9",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "menuIsOpen prop single select should show menu if menuIsOpen is true and hide menu if menuIsOpen prop is false"
     },
     {
       "id": "runtime:ec465e7e78a0f291",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select  calls onChange when option is selected and isSearchable is false"
     },
     {
       "id": "runtime:29696f67627aaf44",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select call onChange with all values but last selected value and remove event on hitting backspace"
     },
     {
       "id": "runtime:618f45b56f379113",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select clicking on X next to option will call onChange with all options other that the clicked option"
     },
     {
       "id": "runtime:2c0a26e7080efd48",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select have default value delimiter seperated"
     },
     {
       "id": "runtime:e33d6106cb2f5421",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select removes the selected option from the menu options when isSearchable is false"
     },
     {
       "id": "runtime:28d7254c67745396",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select to not hide the selected options from the menu if hideSelectedOptions is false"
     },
     {
       "id": "runtime:ceb22d7931e48cc5",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select to not show selected value in options"
     },
     {
       "id": "runtime:d574cc32d0d9144d",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "multi select with multi character delimiter"
     },
     {
       "id": "runtime:fda480ef0c574431",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "name prop multi select should assign the given name"
     },
     {
       "id": "runtime:57de4327e415174e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "name prop single select should assign the given name"
     },
     {
       "id": "runtime:cfa85fe467d20f4e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "no option found on search based on filterOption prop multi select should show NoOptionsMessage"
     },
     {
       "id": "runtime:1b034de0a46f1d84",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "no option found on search based on filterOption prop single Select should show NoOptionsMessage"
     },
     {
       "id": "runtime:b8241d8c0eefaed6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "noOptionsMessage() function prop multi select should show NoOptionsMessage returned from noOptionsMessage function prop"
     },
     {
       "id": "runtime:e11a29dda62a5e0c",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "noOptionsMessage() function prop single Select should show NoOptionsMessage returned from noOptionsMessage function prop"
     },
     {
       "id": "runtime:c1eea40e77ac45c0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "not render any groups when there is not a single match when filtering"
     },
     {
       "id": "runtime:0728bdf45c036ee0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onBlur prop multi select should call onBlur handler on blur on input"
     },
     {
       "id": "runtime:acbd32a7cdf4e291",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onBlur prop single select should call onBlur handler on blur on input"
     },
     {
       "id": "runtime:8fcc4fa2ada4baff",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onFocus prop is called on on focus of input multi select should call onFocus handler on focus on input"
     },
     {
       "id": "runtime:bc63c6fc861d0d07",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onFocus prop is called on on focus of input single select should call onFocus handler on focus on input"
     },
     {
       "id": "runtime:46314a560ea36448",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onFocus prop with autoFocus multi select should call auto focus only once when select is autoFocus"
     },
     {
       "id": "runtime:38f97c66e096ee2e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onFocus prop with autoFocus single select should call auto focus only once when select is autoFocus"
     },
     {
       "id": "runtime:e453ffd4940c893a",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onInputChange() function prop to be called on blur"
     },
     {
       "id": "runtime:2503d266e873a8ac",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "onMenuClose() function prop to be called on blur"
     },
     {
       "id": "runtime:291e92d435e0503e",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "placeholder multi select should display default placeholder \"Select...\""
     },
     {
       "id": "runtime:505291ae4b0fd74f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "placeholder multi select should display provided placeholder"
     },
     {
       "id": "runtime:b08f58548c9603fc",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "placeholder single select should display default placeholder \"Select...\""
     },
     {
       "id": "runtime:f524616c35aa3c7b",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "placeholder single select should display provided node placeholder"
     },
     {
       "id": "runtime:298c2ecd85aba963",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "placeholder single select should display provided string placeholder"
     },
     {
       "id": "runtime:7a79e77078779ab8",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "pressing enter on disabled option multi select should not select the disabled option"
     },
     {
       "id": "runtime:08c21b44f86ce8b7",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "pressing enter on disabled option single select should not select the disabled option"
     },
     {
       "id": "runtime:c530b9aca8ae20b1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "render custom Input Component"
     },
     {
       "id": "runtime:d41a65117598a5e5",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "render custom Menu Component"
     },
     {
       "id": "runtime:8e37503bd579fda7",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "render custom Option Component"
     },
     {
       "id": "runtime:3a30fe7d86f968cd",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "renders with custom theme"
     },
     {
       "id": "runtime:7a1aaf54f0dbfc35",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "required on input is not there by default multi select should not have required attribute"
     },
     {
       "id": "runtime:9c78352b29fe35b6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "required on input is not there by default single select should not have required attribute"
     },
     {
       "id": "runtime:dcfe055bef346254",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "sets inputMode=\"none\" when isSearchable is false"
     },
     {
       "id": "runtime:e65295d7cf6ec97f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "should call not call onChange on hitting backspace when backspaceRemovesValue is true and isMulti is true and there are no values"
     },
     {
       "id": "runtime:28908724f5fbdbb5",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "should call onChange with `null` on hitting backspace when backspaceRemovesValue is true and isMulti is false"
     },
     {
       "id": "runtime:d3b9357fe36a1068",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "should call onChange with an array on hitting backspace when backspaceRemovesValue is true and isMulti is true"
     },
     {
       "id": "runtime:f152dba594cf74d1",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "should not call onChange on hitting backspace even when backspaceRemovesValue is true if isClearable is false"
     },
     {
       "id": "runtime:1cfb3eea1243710b",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "should not call onChange on hitting backspace when backspaceRemovesValue is false"
     },
     {
       "id": "runtime:9eaf4ec850d1eb34",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "single select passing multiple values should select the first value"
     },
     {
       "id": "runtime:395703c588e87592",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "snapshot - defaults"
     },
     {
       "id": "runtime:7ca2a7169abfcd91",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "to clear value when hitting escape if escapeClearsValue and isClearable are true"
     },
     {
       "id": "runtime:1bce102eefe03d5a",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "to not clear value when hitting escape if escapeClearsValue is false (default) and isClearable is false"
     },
     {
       "id": "runtime:0e6fcf39394d5afb",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "to not clear value when hitting escape if escapeClearsValue is false (default) and isClearable is true"
     },
     {
       "id": "runtime:e0649a4b88e42e3c",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "to not clear value when hitting escape if escapeClearsValue is true and isClearable is false"
     },
     {
       "id": "runtime:e20664d36ccbe77d",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "to only render groups with at least one match when filtering"
     },
     {
       "id": "runtime:185f18792099506a",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "update the value prop multi select should update the value when prop is updated"
     },
     {
       "id": "runtime:3af70a223ccfaa2f",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "update the value prop multi select value of options is number should update the value when prop is updated"
     },
     {
       "id": "runtime:78c293faf24971c0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "update the value prop single select should update the value when prop is updated"
     },
     {
       "id": "runtime:b7f726c7d32cbcf2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "update the value prop single select value of options is number should update the value when prop is updated"
     },
     {
       "id": "runtime:3ac237fc0add9bf2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control multi select options with boolean values should set value of input as value prop"
     },
     {
       "id": "runtime:8f73138915446d02",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control multi select options with number values should set value of input as value prop"
     },
     {
       "id": "runtime:3a79e056ee1fc4e9",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control multi select should set value of input as value prop"
     },
     {
       "id": "runtime:ac7a25947bfdaa98",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control multi select with delimiter prop options with boolean values should set value of input as value prop"
     },
     {
       "id": "runtime:c702c5729e0449d6",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control multi select with delimiter prop options with number values should set value of input as value prop"
     },
     {
       "id": "runtime:3e44fb2bf8e6d7d2",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control multi select with delimiter prop should set value of input as value prop"
     },
     {
       "id": "runtime:46b7ae88a4e78b99",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control single select options with boolean values should set value of input as value prop"
     },
     {
       "id": "runtime:89af3a2a451f6eda",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control single select options with number values should set value of input as value prop"
     },
     {
       "id": "runtime:d45b6243ad538936",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value of hidden input control single select should set value of input as value prop"
     },
     {
       "id": "runtime:f4fbb8b4401eb62a",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value prop multi select should set it as initial value"
     },
     {
       "id": "runtime:e34bf4c7b34eda63",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value prop multi select with option values as number should set it as initial value"
     },
     {
       "id": "runtime:e01402481528ccc0",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value prop single select should set it as initial value"
     },
     {
       "id": "runtime:625c95d834ca8cdd",
-      "file": "packages/react-select/tests/upstream/Select.test.ts",
+      "file": "packages/select/tests/upstream/Select.test.ts",
       "fullName": "value prop single select with option values as number should set it as initial value"
     },
     {
       "id": "runtime:06e03f9844952261",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "If menuIsOpen prop is passed Menu should not close on clicking Dropdown Indicator"
     },
     {
       "id": "runtime:086d2fb623dbd5a6",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selecting an option mouse interaction multi select clicking on an option should select the clicked option"
     },
     {
       "id": "runtime:9365a9fec2d98923",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selecting an option mouse interaction single select clicking on an option should select the clicked option"
     },
     {
       "id": "runtime:ca3726da2a9f80b6",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 1 x ArrowUp -> Enter) should select the last option in the select"
     },
     {
       "id": "runtime:84fefd2b3de92e9a",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) should select the second option - default pageSize 5"
     },
     {
       "id": "runtime:55b71d7c8cd1d144",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 1 x PageDown -> Enter) should select the first option on next page - default pageSize 5"
     },
     {
       "id": "runtime:3cfdd641613ad221",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) should select the first option in the select"
     },
     {
       "id": "runtime:2d77beb306b0b260",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 3 x ArrowDown -> Enter) should select the forth option in the select"
     },
     {
       "id": "runtime:0036ceed766278be",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> 3 x PageDown -> Home -> Enter) should select the last option"
     },
     {
       "id": "runtime:bce14cda45530c79",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select (open select -> End -> Enter) should select the last option"
     },
     {
       "id": "runtime:1d377bb807027e29",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select cycle options ( open select -> End -> ArrowDown -> Enter) should select the first option"
     },
     {
       "id": "runtime:4bb706ec8108496e",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select cycle options (open select -> ArrowUp -> Enter) should select the last option"
     },
     {
       "id": "runtime:f229583d3ca47109",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction multi select open select and hit enter should select first option"
     },
     {
       "id": "runtime:a98b72c69fa77e00",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 1 x ArrowUp -> Enter) should select the last option in the select"
     },
     {
       "id": "runtime:2b1533e4b4580a60",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 1 x PageDown -> 1 x ArrowDown -> 1 x PageUp -> Enter) should select the second option - default pageSize 5"
     },
     {
       "id": "runtime:c4e4ed032ed39199",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 1 x PageDown -> Enter) should select the first option on next page - default pageSize 5"
     },
     {
       "id": "runtime:58da842ef387df9c",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 2 x ArrowDown -> 2 x ArrowUp -> Enter) should select the first option in the select"
     },
     {
       "id": "runtime:1dc77dfd812c11b1",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 3 x ArrowDown -> Enter) should select the forth option in the select"
     },
     {
       "id": "runtime:3ec818274826c08e",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> 3 x PageDown -> Home -> Enter) should select the last option"
     },
     {
       "id": "runtime:56689a4957929010",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select (open select -> End -> Enter) should select the last option"
     },
     {
       "id": "runtime:c9c520704fd55524",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select cycle options ( open select -> End -> ArrowDown -> Enter) should select the first option"
     },
     {
       "id": "runtime:f61606f9554630df",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select cycle options (open select -> ArrowUp -> Enter) should select the last option"
     },
     {
       "id": "runtime:75c08cfb8244bb9a",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Integration tests selection an option keyboard interaction single select open select and hit enter should select first option"
     },
     {
       "id": "runtime:95726e5b61237f84",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Menu is controllable by menuIsOpen prop"
     },
     {
       "id": "runtime:bfa4f47984afc606",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Menu to open by default if menuIsOpen prop is true multi select should keep Menu open by default if true is passed for menuIsOpen prop"
     },
     {
       "id": "runtime:a5ed1e99ee334ad5",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "Menu to open by default if menuIsOpen prop is true single select should keep Menu open by default if true is passed for menuIsOpen prop"
     },
     {
       "id": "runtime:fb7fa53f3fa129e9",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "`required` prop should validate"
     },
     {
       "id": "runtime:56959a624a3f150f",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "click on dropdown indicator multi select should toggle Menu"
     },
     {
       "id": "runtime:0c5b041899f59b63",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "click on dropdown indicator single select should toggle Menu"
     },
     {
       "id": "runtime:01223ea3c9100dfe",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "defaultInputValue prop should update the inputValue on change of input if defaultInputValue prop is provided"
     },
     {
       "id": "runtime:7cce03e0b4752b73",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "defaultMenuIsOpen prop should open by menu default and clicking on Dropdown Indicator should toggle menu"
     },
     {
       "id": "runtime:e5b558d7791269de",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "defaultValue prop should update the value on selecting option"
     },
     {
       "id": "runtime:2d47976f8dcf9dbf",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "defaults snapshot"
     },
     {
       "id": "runtime:7f81c33ab7a5162e",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "inputValue prop should not update the inputValue when on change of input if inputValue prop is provided"
     },
     {
       "id": "runtime:66f51bec84e3e3d6",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "multi select selecting multiple values"
     },
     {
       "id": "runtime:45707bbbd83ac663",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "passes down the className prop"
     },
     {
       "id": "runtime:748c9fe2f163208c",
-      "file": "packages/react-select/tests/upstream/StateManaged.test.ts",
+      "file": "packages/select/tests/upstream/StateManaged.test.ts",
       "fullName": "value prop should not update the value on selecting option"
     }
   ]

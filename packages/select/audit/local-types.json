@@ -1,6 +1,6 @@
 [
   {
-    "path": "packages/react-select/typetests/local.ts",
+    "path": "packages/select/typetests/local.ts",
     "sha256": "107d2ef3a1550a9cc931ee767ad5c9a02fa06721fe9755fcc11b1c4167587770",
     "assertionGroups": [
       "10312666bf7625eb76eacc679d92041292a376576e5f346f00ac972f054987d3",

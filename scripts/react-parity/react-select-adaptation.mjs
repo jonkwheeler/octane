@@ -4,9 +4,9 @@ import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const pristinePath = resolve(root, 'packages/react-select/audit/pristine-runtime.json');
-const adaptedPath = resolve(root, 'packages/react-select/audit/adapted-runtime.json');
-const destination = resolve(root, 'packages/react-select/audit/adaptation.json');
+const pristinePath = resolve(root, 'packages/select/audit/pristine-runtime.json');
+const adaptedPath = resolve(root, 'packages/select/audit/adapted-runtime.json');
+const destination = resolve(root, 'packages/select/audit/adaptation.json');
 const expectedPristineCases = 255;
 const expectedAdaptedCases = 255;
 
@@ -172,6 +172,6 @@ if (process.argv.includes('--write')) {
 	const inventory = buildAdaptationInventory(pristine, adapted);
 	writeFileSync(destination, `${JSON.stringify(inventory, null, 2)}\n`);
 	console.log(
-		`packages/react-select/audit/adaptation.json: ${inventory.adaptedCases} adapted, ${inventory.notApplicableCases} not applicable, ${inventory.pendingCases} pending (${inventory.upstreamCases} upstream)`,
+		`packages/select/audit/adaptation.json: ${inventory.adaptedCases} adapted, ${inventory.notApplicableCases} not applicable, ${inventory.pendingCases} pending (${inventory.upstreamCases} upstream)`,
 	);
 }

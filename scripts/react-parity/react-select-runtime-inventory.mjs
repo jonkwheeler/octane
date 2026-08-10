@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const project = 'react-select';
-const destination = 'packages/react-select/audit/adapted-runtime.json';
+const project = 'select';
+const destination = 'packages/select/audit/adapted-runtime.json';
 const output = execFileSync(
 	process.execPath,
 	['node_modules/vitest/vitest.mjs', 'list', '--project', project, '--json'],
@@ -21,7 +21,7 @@ const tests = JSON.parse(output)
 		return { ...test, relativeFile: toPortablePath(relative(root, test.file)) };
 	})
 	.filter(function keepUpstreamAdaptation(test) {
-		return test.relativeFile.startsWith('packages/react-select/tests/upstream/');
+		return test.relativeFile.startsWith('packages/select/tests/upstream/');
 	})
 	.map(function inventoryEntry(test) {
 		const fullName = test.name.replaceAll(' > ', ' ');
@@ -42,7 +42,7 @@ const tests = JSON.parse(output)
 const inventory = {
 	schemaVersion: 1,
 	project,
-	roots: ['packages/react-select/tests/upstream'],
+	roots: ['packages/select/tests/upstream'],
 	files: [
 		...new Set(
 			tests.map(function testFile(test) {

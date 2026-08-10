@@ -2,23 +2,23 @@
   "schemaVersion": 1,
   "pairs": [
     {
-      "upstream": "packages/react-select/typetests/upstream.ts",
-      "adapted": "packages/react-select/typetests/local.ts"
+      "upstream": "packages/select/typetests/upstream.ts",
+      "adapted": "packages/select/typetests/local.ts"
     }
   ],
   "inventories": {
-    "upstream": "packages/react-select/audit/upstream-types.json",
-    "adapted": "packages/react-select/audit/local-types.json"
+    "upstream": "packages/select/audit/upstream-types.json",
+    "adapted": "packages/select/audit/local-types.json"
   },
   "lanes": {
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/react-select/typetests/tsconfig.upstream.json",
+      "project": "packages/select/typetests/tsconfig.upstream.json",
       "sourcePolicy": "repo-authored React declaration probes against pinned react-select 5.10.2"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/react-select/typetests/tsconfig.local.json",
+      "project": "packages/select/typetests/tsconfig.local.json",
       "sourcePolicy": "structurally equivalent Octane public probes after permitted transformations"
     }
   },

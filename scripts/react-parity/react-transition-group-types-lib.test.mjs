@@ -8,12 +8,31 @@ import { buildTypeInventory, readTypeParityConfig } from './react-transition-gro
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
+const SIMPLE_TSCONFIG = {
+	compilerOptions: {
+		strict: true,
+		noEmit: true,
+		module: 'ESNext',
+		moduleResolution: 'Bundler',
+		target: 'ES2022',
+		skipLibCheck: true,
+	},
+};
+
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'react-transition-group-types-'));
 	await cp(
 		new URL('../../packages/react-transition-group/typetests', import.meta.url),
 		join(root, 'typetests'),
 		{ recursive: true },
+	);
+	await writeFile(
+		join(root, 'typetests/tsconfig.upstream.json'),
+		`${JSON.stringify({ ...SIMPLE_TSCONFIG, include: ['./upstream.ts'] }, null, 2)}\n`,
+	);
+	await writeFile(
+		join(root, 'typetests/tsconfig.local.json'),
+		`${JSON.stringify({ ...SIMPLE_TSCONFIG, include: ['./local.ts'] }, null, 2)}\n`,
 	);
 	const config = {
 		pairs: [
@@ -25,6 +44,16 @@ async function fixture() {
 		inventories: {
 			upstream: 'upstream-types.json',
 			adapted: 'local-types.json',
+		},
+		lanes: {
+			pristine: {
+				compiler: 'tsc',
+				project: 'typetests/tsconfig.upstream.json',
+			},
+			adapted: {
+				compiler: 'tsrx-tsc',
+				project: 'typetests/tsconfig.local.json',
+			},
 		},
 	};
 	return { root, config };
@@ -84,4 +113,19 @@ test('rejects retargeting an adapted public import', async function rejectsRetar
 	assert.throws(function run() {
 		buildTypeInventory(value.root, value.config);
 	}, /change outside the permitted transformations/);
+});
+
+test('rejects inventoried fixtures missing from the compiler program', async function rejectsOutsideProgram(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	await writeFile(join(value.root, 'typetests/empty.ts'), 'export {};\n');
+	await writeFile(
+		join(value.root, 'typetests/tsconfig.upstream.json'),
+		`${JSON.stringify({ ...SIMPLE_TSCONFIG, include: ['./empty.ts'] }, null, 2)}\n`,
+	);
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /not included in compiler program/);
 });

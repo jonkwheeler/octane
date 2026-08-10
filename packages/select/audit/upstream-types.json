@@ -1,6 +1,6 @@
 [
   {
-    "path": "packages/react-select/typetests/upstream.ts",
+    "path": "packages/select/typetests/upstream.ts",
     "sha256": "1d3a88d6a604176219efc33fec3009d0dde78a14db597bac5c3f837163421a49",
     "assertionGroups": [
       "10312666bf7625eb76eacc679d92041292a376576e5f346f00ac972f054987d3",

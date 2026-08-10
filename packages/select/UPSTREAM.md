@@ -17,13 +17,14 @@ headless subset.
 | Published files | 138 |
 | Published unpacked bytes | 725,500 |
 | Pristine React oracle | `react@16.14.0` and `react-dom@16.14.0` via `react-select-pristine-react` / `react-select-pristine-react-dom` |
+| Type oracle | `@types/react@19.2.17` and `@types/react-dom@19.2.3` (workspace `catalog:default`) for the required `tsc` lane against pinned `react-select@5.10.2` declarations |
 | Pristine Jest | `jest@25.5.4`, `jest-environment-jsdom@25.5.0`, `babel-jest@25.5.1` |
 | Pristine Testing Library | `@testing-library/react@12.1.4`, `@testing-library/jest-dom@6.9.1`, `@testing-library/user-event@10.4.1` |
 | Pristine Emotion | `@emotion/react@11.9.3`, `@emotion/jest@11.5.0`, `@emotion/cache@11.9.3` |
 
 The published API has root, `base`, `async`, `animated`, `creatable`, and
 `async-creatable` JavaScript entry points plus `package.json`. The canonical
-source boundary contains 61 files under `packages/react-select/src`, including
+source boundary contains 61 files under `packages/select/src`, including
 five runtime test files, five snapshot artifacts, and 79 Jest cases at the
 pinned commit. The root package directly depends on `@emotion/react`,
 `@emotion/cache`, and `react-transition-group`.
@@ -32,7 +33,7 @@ The MIT license permits copying, modifying, and distributing an Octane port as
 long as the copyright and permission notice are retained. The canonical package
 source, five Jest suites, five snapshots, package metadata, and license are
 preserved under `upstream/`. `upstream/SHA256SUMS` locks all 63 files
-byte-for-byte. Run `pnpm --filter @octanejs/react-select upstream:verify` to
+byte-for-byte. Run `pnpm --filter @octanejs/select upstream:verify` to
 reject a changed, missing, or additional upstream artifact. The six public
 JavaScript entry points and all 20 runtime exports are tracked fail-closed in
 `audit/export-crosswalk.json`.
@@ -52,7 +53,7 @@ The paired fixtures in `typetests/upstream.ts` and `typetests/local.ts` compile 
 
 ## Upstream test disposition
 
-The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The required pristine Jest lane (`execution.kind: "jest-full"`) executes them unchanged against the vendored React source with the pinned React 16.14.0, Jest 25.5.x, Testing Library, and Emotion stack recorded above. It verifies 255 passing Jest identities and five snapshots; the three canonical upstream skips are inventoried as individually justified `not-applicable` dispositions in `audit/adaptation.json` (they are not counted as adapted evidence). The `react-select` project's narrowly owned `tests/upstream/**` lane runs all 255 pristine identities one-for-one across all five suites, including all five adapted snapshots, with `verification: verified` and zero pending adaptations. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
+The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The required pristine Jest lane (`execution.kind: "jest-full"`) executes them unchanged against the vendored React source with the pinned React 16.14.0, Jest 25.5.x, Testing Library, and Emotion stack recorded above. It verifies 255 passing Jest identities and five snapshots; the three canonical upstream skips are inventoried as individually justified `not-applicable` dispositions in `audit/adaptation.json` (they are not counted as adapted evidence). The `select` project's narrowly owned `tests/upstream/**` lane runs all 255 pristine identities one-for-one across all five suites, including all five adapted snapshots, with `verification: verified` and zero pending adaptations. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
 
 | Retained suite | Executable Octane evidence |
 | --- | --- |
@@ -62,4 +63,4 @@ The five canonical Jest suites and their snapshots are retained verbatim under `
 | `Creatable.test.tsx` | All 18 cases adapted plus creation metadata, delegated creation, option placement, and suppression differentials |
 | `AsyncCreatable.test.tsx` | All 5 cases adapted plus composed async/creatable public contract and export coverage |
 
-`audit/adapted-runtime.json` inventories only the adapted upstream lane. `audit/test-classifications.json` classifies every authored test under `tests/`, including the five adapted upstream suites, so a missing disposition cannot stay green. Run `pnpm --filter @octanejs/react-select test` to verify the vendored pin, fail-closed export crosswalk, pristine upstream suite, and Octane runtime lanes; run `pnpm --filter @octanejs/react-select typecheck` for paired type evidence.
+`audit/adapted-runtime.json` inventories only the adapted upstream lane. `audit/test-classifications.json` classifies every authored test under `tests/`, including the five adapted upstream suites, so a missing disposition cannot stay green. Run `pnpm --filter @octanejs/select test` to verify the vendored pin, fail-closed export crosswalk, pristine upstream suite, and Octane runtime lanes; run `pnpm --filter @octanejs/select typecheck` for paired type evidence.

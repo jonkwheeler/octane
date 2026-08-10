@@ -22,7 +22,7 @@ function adaptedFixture() {
 	return {
 		tests: pristine.tests.map(function adaptedCase(entry) {
 			return {
-				file: `packages/react-select/tests/upstream/${basenameFor(entry.file)}.test.ts`,
+				file: `packages/select/tests/upstream/${basenameFor(entry.file)}.test.ts`,
 				fullName: entry.fullName,
 			};
 		}),
@@ -59,7 +59,7 @@ test('rejects a renamed adapted identity', function rejectsRenamedAdaptedIdentit
 
 test('rejects a stale adapted source path', function rejectsStaleAdaptedPath() {
 	const adapted = adaptedFixture();
-	adapted.tests[0].file = 'packages/react-select/tests/upstream/Stale.test.ts';
+	adapted.tests[0].file = 'packages/select/tests/upstream/Stale.test.ts';
 	assert.throws(function buildInvalidInventory() {
 		buildAdaptationInventory(pristineFixture(), adapted);
 	}, /has no pristine identity/);

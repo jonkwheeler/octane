@@ -11,10 +11,7 @@
     "integrity": "sha256:3d7afd4e95d7ac4fdbbc105c1775556da892de229363736659957ed3c3de40de",
     "verification": "verified"
   },
-  "upstreamSuites": {
-    "runtime": "present",
-    "types": "absent"
-  },
+  "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/react-transition-group/src", "packages/react-transition-group/typetests"],
@@ -40,7 +37,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "fff56751f1882113c98e5494b4231a0a5bdd26f931c15c3a43f03ae4a5f03d9a"
+      "lockfileSha256": "90408e01feff09d1fc1160adcca944b6efe98ede9db66b6ee3b279904c47d737"
     }
   },
   "lanes": [
@@ -195,7 +192,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
           "role": "support",
-          "sha256": "b1f1dac51a6ff6ede2d3a5a7a012ff8c4ed491baf25abbe1b4561f841a4c9cfc"
+          "sha256": "0e5d929fd8f3ec5c14c758fa2fa5cdf639966a8b196b6aae3666c37aa51b077e"
         }
       ]
     },
@@ -243,7 +240,7 @@
         {
           "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
           "role": "support",
-          "sha256": "b1f1dac51a6ff6ede2d3a5a7a012ff8c4ed491baf25abbe1b4561f841a4c9cfc"
+          "sha256": "0e5d929fd8f3ec5c14c758fa2fa5cdf639966a8b196b6aae3666c37aa51b077e"
         }
       ]
     }

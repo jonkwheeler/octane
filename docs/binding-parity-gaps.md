@@ -43,13 +43,13 @@ surface and evidence.
 | `@octanejs/rainbowkit` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/react-map-gl` | 0 |
-| `@octanejs/react-select` | 0 |
 | `@octanejs/react-transition-group` | 0 |
 | `@octanejs/recharts` | 0 |
 | `@octanejs/redux` | 0 |
 | `@octanejs/redux-toolkit` | 0 |
 | `@octanejs/remix-router` | 0 |
 | `@octanejs/rxjs` | 0 |
+| `@octanejs/select` | 0 |
 | `@octanejs/shadcn` | 0 |
 | `@octanejs/solana-react` | 0 |
 | `@octanejs/sonner` | 0 |

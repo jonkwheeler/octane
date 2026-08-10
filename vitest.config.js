@@ -4306,14 +4306,11 @@ export default defineConfig({
 				// dedicated parity execution group.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-select/tests/upstream/**/*.test.ts'],
+					include: ['packages/select/tests/upstream/**/*.test.ts'],
 				},
 				test: {
-					name: 'react-select',
-					include: [
-						'packages/react-select/tests/**/*.test.ts',
-						'packages/react-select/tests/**/*.test.mjs',
-					],
+					name: 'select',
+					include: ['packages/select/tests/**/*.test.ts', 'packages/select/tests/**/*.test.mjs'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,
@@ -4326,12 +4323,12 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/testing-library/src/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-select$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-select/src/index.ts'),
+							find: /^@octanejs\/select$/,
+							replacement: resolve(import.meta.dirname, 'packages/select/src/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-select\/(.*)$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-select/src/$1'),
+							find: /^@octanejs\/select\/(.*)$/,
+							replacement: resolve(import.meta.dirname, 'packages/select/src/$1'),
 						},
 						{
 							find: /^@octanejs\/react-transition-group$/,

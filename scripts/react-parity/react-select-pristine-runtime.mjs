@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const upstreamRoot = resolve(root, 'packages/react-select/upstream');
+const upstreamRoot = resolve(root, 'packages/select/upstream');
 const report = join(tmpdir(), `octane-react-select-pristine-${process.pid}.json`);
-const destination = resolve(root, 'packages/react-select/audit/pristine-runtime.json');
-const jestBin = createRequire(resolve(root, 'packages/react-select/package.json')).resolve(
+const destination = resolve(root, 'packages/select/audit/pristine-runtime.json');
+const jestBin = createRequire(resolve(root, 'packages/select/package.json')).resolve(
 	'jest/bin/jest',
 );
 
@@ -22,7 +22,7 @@ export function pristineTestIdentities(result, repoRoot = root) {
 				.filter((test) => test.status === 'passed')
 				.map((test) => ({
 					file: toPortablePath(
-						relative(resolve(repoRoot, 'packages/react-select/upstream'), suite.name),
+						relative(resolve(repoRoot, 'packages/select/upstream'), suite.name),
 					),
 					fullName: test.fullName,
 					status: test.status,
@@ -37,7 +37,7 @@ if (process.argv.includes('--write')) {
 		[
 			jestBin,
 			'--config',
-			resolve(root, 'packages/react-select/tests/upstream-jest.config.cjs'),
+			resolve(root, 'packages/select/tests/upstream-jest.config.cjs'),
 			'--rootDir',
 			upstreamRoot,
 			'--runInBand',
@@ -56,7 +56,7 @@ if (process.argv.includes('--write')) {
 			`${JSON.stringify(
 				{
 					schemaVersion: 1,
-					root: 'packages/react-select/upstream',
+					root: 'packages/select/upstream',
 					tests,
 					snapshots: reportJson.snapshot?.total ?? 0,
 				},
@@ -64,7 +64,7 @@ if (process.argv.includes('--write')) {
 				2,
 			)}\n`,
 		);
-		console.log(`packages/react-select/audit/pristine-runtime.json: ${tests.length} tests`);
+		console.log(`packages/select/audit/pristine-runtime.json: ${tests.length} tests`);
 	} finally {
 		rmSync(report, { force: true });
 	}

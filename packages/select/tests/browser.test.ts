@@ -29,7 +29,7 @@ beforeAll(async () => {
 		browser = await chromium.launch({ headless: true });
 	} catch (error) {
 		throw new Error(
-			'[@octanejs/react-select browser] Chromium is required ' +
+			'[@octanejs/select browser] Chromium is required ' +
 				'(run `pnpm exec playwright install chromium`): ' +
 				(error instanceof Error ? error.message.split('\n')[0] : String(error)),
 		);

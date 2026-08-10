@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "root": "packages/react-select/upstream",
+  "root": "packages/select/upstream",
   "tests": [
     {
       "file": "src/__tests__/Async.test.tsx",

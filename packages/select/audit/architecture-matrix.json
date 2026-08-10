@@ -37,7 +37,7 @@
         "single-renderer-identity"
       ],
       "evidence": {
-        "command": "pnpm --filter @octanejs/react-select-u1 test",
+        "command": "pnpm --filter @octanejs/select-u1 test",
         "nodeTests": 9,
         "octaneSsrTests": 4,
         "renderers": ["renderToString", "renderToStaticMarkup", "renderToPipeableStream"],

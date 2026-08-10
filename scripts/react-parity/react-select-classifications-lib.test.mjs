@@ -20,25 +20,25 @@ test('rejects a missing authored test classification', async function rejectsMis
 	});
 	for (const file of ['test-classifications.json', 'react-parity.json']) {
 		await cp(
-			new URL(`../../packages/react-select/audit/${file}`, import.meta.url),
-			join(root, `packages/react-select/audit/${file}`),
+			new URL(`../../packages/select/audit/${file}`, import.meta.url),
+			join(root, `packages/select/audit/${file}`),
 			{ recursive: true },
 		);
 	}
 	await cp(
-		new URL('../../packages/react-select/tests', import.meta.url),
-		join(root, 'packages/react-select/tests'),
+		new URL('../../packages/select/tests', import.meta.url),
+		join(root, 'packages/select/tests'),
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-select/typetests', import.meta.url),
-		join(root, 'packages/react-select/typetests'),
+		new URL('../../packages/select/typetests', import.meta.url),
+		join(root, 'packages/select/typetests'),
 		{ recursive: true },
 	);
 	assert.deepEqual(verifyReactSelectTestClassifications(root), {
 		tests: verifyReactSelectTestClassifications(repoRoot).tests,
 	});
-	await writeFile(join(root, 'packages/react-select/tests/unclassified.test.ts'), 'export {};\n');
+	await writeFile(join(root, 'packages/select/tests/unclassified.test.ts'), 'export {};\n');
 	assert.throws(function missingRow() {
 		verifyReactSelectTestClassifications(root);
 	}, /every authored react-select test must have exactly one classification/);
