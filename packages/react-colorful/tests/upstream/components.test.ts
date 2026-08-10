@@ -18,6 +18,10 @@ import {
 	mountTracked,
 	mouse,
 	settle,
+	settleAsync,
+	touchEnd,
+	touchMove,
+	touchStart,
 } from './_helpers';
 
 // Per packages/react-colorful/upstream/tag/tests/components.test.js — titles preserved.
@@ -101,28 +105,20 @@ it('Triggers `onChangeEnd` after a mouse interaction', async function changeEndA
 });
 
 it('Triggers `onChangeEnd` after a touch interaction', async function changeEndAfterTouch() {
-	// Upstream uses touch events; Octane's jsdom harness drives the same geometry
-	// through the pointer path (touch delegation is not exercised in Vitest/jsdom).
 	mockPickerGeometry();
-	const onChange = vi.fn();
 	const onChangeEnd = vi.fn();
 	const root = mountTracked(HsvHarness, {
 		color: { h: 0, s: 100, v: 100 },
-		onChange,
 		onChangeEnd,
 	});
 	const hue = interactive(root, 'Hue');
-	mouse(hue, 'mousedown', 55, 0);
-	settle();
-	expect(onChange).toHaveBeenCalledWith({ h: 180, s: 100, v: 100 });
+	touchStart(hue, 0, 0);
+	touchMove(window, [{ pageX: 55, pageY: 0 }]);
+	await settleAsync();
 	expect(onChangeEnd).not.toHaveBeenCalled();
-	hue.focus();
-	hue.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, keyCode: 39 }));
-	settle();
-	expect(onChangeEnd).not.toHaveBeenCalled();
-	hue.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, keyCode: 39 }));
-	settle();
-	expect(onChangeEnd).toHaveBeenCalled();
+	touchEnd(window);
+	await settleAsync();
+	expect(onChangeEnd).toHaveBeenCalledWith({ h: 180, s: 100, v: 100 });
 });
 
 it('Triggers `onChangeEnd` after a keyboard interaction', async function changeEndAfterKeyboard() {
@@ -194,8 +190,9 @@ it('Triggers `onChange` after a touch interaction', async function changeAfterTo
 		onChange,
 	});
 	const hue = interactive(root, 'Hue');
-	mouse(hue, 'mousedown', 55, 0);
-	settle();
+	touchStart(hue, 0, 0);
+	touchMove(window, [{ pageX: 55, pageY: 0 }]);
+	await settleAsync();
 	expect(onChange).toHaveBeenCalledWith({ h: 180, s: 100, v: 100 });
 });
 
@@ -208,12 +205,19 @@ it('Supports multitouch', async function supportsMultitouch() {
 	});
 	const hue = interactive(root, 'Hue');
 	const alpha = interactive(root, 'Alpha');
-	mouse(hue, 'mousedown', 55, 0);
-	settle();
-	mouse(window, 'mouseup', 55, 0);
-	settle();
-	mouse(alpha, 'mousedown', 105, 0);
-	settle();
+
+	const firstFingerBefore = { pageX: 0, pageY: 0, identifier: 0 };
+	const firstFingerAfter = { pageX: 55, pageY: 0, identifier: 0 };
+	const secondFingerBefore = { pageX: 0, pageY: 0, identifier: 1 };
+	const secondFingerAfter = { pageX: 200, pageY: 0, identifier: 1 };
+	const extraTouch = { pageX: 10, pageY: 10, identifier: 2 };
+
+	touchStart(hue, 0, 0, 0);
+	touchStart(alpha, 0, 0, 1, [firstFingerBefore, secondFingerBefore]);
+	touchMove(window, [firstFingerAfter, secondFingerAfter]);
+	touchMove(window, [extraTouch]);
+	touchMove(window, [firstFingerAfter, secondFingerAfter]);
+	await settleAsync();
 	expect(onChange).toHaveBeenCalledWith({ h: 180, s: 100, v: 100, a: 1 });
 });
 
@@ -254,16 +258,21 @@ it('Uses #rrggbbaa format if alpha channel value is less than 1', async function
 	expect(onChange).toHaveBeenCalledWith('#11223300');
 });
 
-it("Doesn't react on mouse events after a touch interaction", function ignoreMouseAfterTouch() {
-	// Upstream asserts touch-then-mouse suppression; browser lane covers real touch.
-	// Here we pin the hue outcome from the mid-track pointer position.
+it("Doesn't react on mouse events after a touch interaction", async function ignoreMouseAfterTouch() {
 	mockPickerGeometry();
 	const onChange = vi.fn();
 	const root = mountTracked(HslStringHarness, { color: 'hsl(100, 0%, 0%)', onChange });
 	const hue = interactive(root, 'Hue');
-	mouse(hue, 'mousedown', 55, 0);
-	settle();
+	touchStart(hue, 0, 0);
+	touchMove(window, [{ pageX: 55, pageY: 0 }]);
+	await settleAsync();
+	const afterTouchCalls = onChange.mock.calls.length;
 	expect(onChange).toHaveBeenCalledWith('hsl(180, 0%, 0%)');
+	mouse(hue, 'mousedown', 35, 0);
+	mouse(hue, 'mousemove', 105, 0);
+	await settleAsync();
+	expect(onChange).toHaveBeenCalledTimes(afterTouchCalls);
+	expect(onChange).toHaveBeenLastCalledWith('hsl(180, 0%, 0%)');
 });
 
 it('Captures arrow keys only', async function capturesArrowKeysOnly() {
@@ -310,7 +319,9 @@ it('Changes alpha with arrow keys', async function changesAlphaKeys() {
 		onChange,
 	});
 	const alpha = interactive(root, 'Alpha');
-	alpha.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, keyCode: 39 }));
+	alpha.dispatchEvent(
+		new KeyboardEvent('keydown', { bubbles: true, cancelable: true, keyCode: 39 }),
+	);
 	settle();
 	expect(onChange).toHaveBeenCalled();
 	const next = onChange.mock.calls.at(-1)?.[0] as { a: number };
@@ -335,7 +346,9 @@ it('Ignores keyboard commands if the pointer is already on a alpha edge', async 
 	const onChange = vi.fn();
 	const root = mountTracked(HsvaStringHarness, { color: 'hsva(0, 0%, 0%, 1)', onChange });
 	const alpha = interactive(root, 'Alpha');
-	alpha.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, keyCode: 39 }));
+	alpha.dispatchEvent(
+		new KeyboardEvent('keydown', { bubbles: true, cancelable: true, keyCode: 39 }),
+	);
 	settle();
 	expect(onChange).not.toHaveBeenCalled();
 });

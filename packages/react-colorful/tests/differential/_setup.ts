@@ -5,7 +5,15 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,10 +36,16 @@ function compileOne(sourcePath: string): void {
 	let compiled;
 	try {
 		compiled = compileToReact(source, sourcePath);
-	} catch {
-		return;
+	} catch (error) {
+		throw new Error(
+			`React fixture compilation threw for ${sourcePath}: ${error instanceof Error ? error.message : String(error)}`,
+		);
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
+	if (compiled.errors && compiled.errors.length > 0) {
+		throw new Error(
+			`React fixture compilation failed for ${sourcePath}: ${JSON.stringify(compiled.errors)}`,
+		);
+	}
 
 	let transformed;
 	try {
@@ -43,8 +57,10 @@ function compileOne(sourcePath: string): void {
 			format: 'esm',
 			sourcefile: sourcePath,
 		});
-	} catch {
-		return;
+	} catch (error) {
+		throw new Error(
+			`React fixture esbuild transform failed for ${sourcePath}: ${error instanceof Error ? error.message : String(error)}`,
+		);
 	}
 
 	const rewritten = transformed.code
@@ -65,7 +81,8 @@ function walk(directory: string): string[] {
 }
 
 export async function setup(): Promise<void> {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
 	if (!existsSync(FIXTURE_DIR)) return;
 	for (const sourcePath of walk(FIXTURE_DIR)) compileOne(sourcePath);
 }

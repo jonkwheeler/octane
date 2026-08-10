@@ -1,5 +1,4 @@
 import { afterEach, vi } from 'vitest';
-import { fireEvent } from '@testing-library/react';
 import { delegateEvents, flushSync } from 'octane';
 import { flushEffects, mount } from '../../../octane/tests/_helpers';
 
@@ -25,6 +24,12 @@ export function mountTracked(...args: Parameters<typeof mount<any>>) {
 export function settle() {
 	flushEffects();
 	flushSync(function flush() {});
+}
+
+/** Document-level pointer listeners schedule Octane updates on a microtask. */
+export async function settleAsync() {
+	await Promise.resolve();
+	settle();
 }
 
 /** Match upstream tests/components.test.js getBoundingClientRect mock. */
@@ -79,23 +84,10 @@ export function mouse(
 	target.dispatchEvent(event);
 }
 
-export function touchStart(
-	target: Element,
-	pageX: number,
-	pageY: number,
-	identifier = 0,
-) {
-	fireEvent.touchStart(target, {
-		touches: [{ pageX, pageY, clientX: pageX, clientY: pageY, identifier }],
-		changedTouches: [{ pageX, pageY, clientX: pageX, clientY: pageY, identifier }],
-	});
-}
+type TouchPoint = { pageX: number; pageY: number; identifier?: number };
 
-export function touchMove(
-	target: Element,
-	touches: Array<{ pageX: number; pageY: number; identifier?: number }>,
-) {
-	const list = touches.map(function mapTouch(entry, index) {
+function toTouchList(touches: TouchPoint[]) {
+	return touches.map(function mapTouch(entry, index) {
 		return {
 			identifier: entry.identifier ?? index,
 			pageX: entry.pageX,
@@ -104,11 +96,40 @@ export function touchMove(
 			clientY: entry.pageY,
 		};
 	});
-	fireEvent.touchMove(target, { touches: list, changedTouches: list });
 }
 
-export function touchEnd(target: Element) {
-	fireEvent.touchEnd(target, { touches: [], changedTouches: [] });
+function dispatchTouch(
+	target: EventTarget,
+	type: 'touchstart' | 'touchmove' | 'touchend',
+	touches: TouchPoint[],
+	changedTouches: TouchPoint[],
+) {
+	const event = new Event(type, { bubbles: true, cancelable: true });
+	Object.defineProperties(event, {
+		touches: { configurable: true, value: toTouchList(touches) },
+		changedTouches: { configurable: true, value: toTouchList(changedTouches) },
+	});
+	target.dispatchEvent(event);
+}
+
+export function touchStart(
+	target: Element,
+	pageX: number,
+	pageY: number,
+	identifier = 0,
+	activeTouches?: TouchPoint[],
+) {
+	const changed = { pageX, pageY, identifier };
+	const touches = activeTouches ?? [changed];
+	dispatchTouch(target, 'touchstart', touches, [changed]);
+}
+
+export function touchMove(target: EventTarget, touches: TouchPoint[]) {
+	dispatchTouch(target, 'touchmove', touches, touches);
+}
+
+export function touchEnd(target: EventTarget) {
+	dispatchTouch(target, 'touchend', [], []);
 }
 
 afterEach(function cleanup() {
