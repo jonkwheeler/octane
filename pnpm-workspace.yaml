@@ -85,6 +85,11 @@ allowBuilds:
   # LiveStore's test-only telemetry closure uses protobufjs; its postinstall
   # prints a donation notice and does not generate runtime artifacts.
   protobufjs: false
+  # Wallet/WebSocket parity dependencies expose optional native accelerators;
+  # Node and the packages themselves provide JavaScript fallbacks.
+  bufferutil: false
+  keccak: false
+  utf-8-validate: false
 
 # Variables
 esrap_common: &esrap_common ^2.3.0
@@ -460,7 +465,7 @@ catalogs:
 # superseded — @tsrx/core >= 0.1.42 ships the fix.
 
 minimumReleaseAgeExclude:
-  - octane@0.1.29 || 0.1.31 || 0.1.32
+  - octane@0.1.29 || 0.1.31 || 0.1.32 || 0.1.33
 
 # Changesets 2.31.1 assumes npm's error shape and crashes on pnpm 11 duplicate
 # publish errors. Remove this backport once the fix ships on Changesets' stable line.
