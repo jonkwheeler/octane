@@ -1,28 +1,27 @@
 /**
- * Precompile the shared `.tsrx` fixtures through @tsrx/react and rewrite the
- * Octane adapter imports to the upstream @dnd-kit/react package. The normal
- * differential rig then mounts both products and compares every DOM step.
+ * Precompile the declared differential `.tsrx` fixtures through @tsrx/react and
+ * rewrite the Octane adapter imports to the upstream @dnd-kit/react package.
+ * The normal differential rig then mounts both products and compares every DOM
+ * step.
  *
  * Fail closed: clear the cache before writing, and throw on React compilation
  * or transform failures so incremental runs never import stale oracle JS.
+ * Only declared differential fixtures enter the oracle cache — conformance
+ * fixtures such as `core.tsrx` / `hooks.tsrx` stay out so Octane-only changes
+ * there cannot fail the required differential lane.
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync } from 'esbuild';
-import {
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	readdirSync,
-	rmSync,
-	statSync,
-	writeFileSync,
-} from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const currentDirectory = dirname(fileURLToPath(import.meta.url));
 const fixtureDirectory = join(currentDirectory, '../_fixtures');
 const cacheDirectory = join(currentDirectory, '.react-cache');
+
+/** Fixtures owned by this differential lane — never the unit-only `_fixtures` tree. */
+const DECLARED_FIXTURES = ['differential.tsrx'] as const;
 
 function hashString(value: string): string {
 	let hash = 5381;
@@ -71,21 +70,12 @@ function compileOne(sourcePath: string): void {
 	writeFileSync(join(cacheDirectory, `${slug}-${hashString(sourcePath)}.js`), rewritten);
 }
 
-function walk(directory: string): string[] {
-	const files: string[] = [];
-	for (const name of readdirSync(directory)) {
-		const path = join(directory, name);
-		if (statSync(path).isDirectory()) files.push(...walk(path));
-		else if (path.endsWith('.tsrx')) files.push(path);
-	}
-	return files;
-}
-
 export async function setup(): Promise<void> {
 	rmSync(cacheDirectory, { recursive: true, force: true });
 	mkdirSync(cacheDirectory, { recursive: true });
-	if (!existsSync(fixtureDirectory)) return;
-	for (const file of walk(fixtureDirectory)) compileOne(file);
+	for (const name of DECLARED_FIXTURES) {
+		compileOne(join(fixtureDirectory, name));
+	}
 }
 
 export async function teardown(): Promise<void> {}
