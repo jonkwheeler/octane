@@ -4,9 +4,8 @@
 
 Preserve host styles and layout FLIP transforms across style MotionValue rebinds.
 
-Style MotionValue effects patch and remove individual transform functions on the
-live CSS string instead of rebuilding from an empty per-bind state, update
-compound `translate(...)` / `scale(...)` layout FLIP forms in place rather than
-stacking parallel shorthands, leave those compound forms alone on unbind, and
-leave plain static style values alone when a key switches from a MotionValue to
-a host-owned value.
+Style MotionValue effects patch individual transform functions on the live CSS
+string, decompose compound layout FLIP `translate(...)` / `scale(...)` forms into
+shorthands when a style MotionValue binds so unbind can clear only that axis,
+leave untouched compound forms alone on unbind, and leave plain static style
+values alone when a key switches from a MotionValue to a host-owned value.

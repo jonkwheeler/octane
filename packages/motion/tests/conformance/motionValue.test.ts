@@ -4,7 +4,7 @@ import { mount, nextPaint } from '../_helpers';
 import { MVBox } from '../_fixtures/mv.tsrx';
 import { StyleXLater } from '../_fixtures/style-rebind.tsrx';
 import { StyleOpacity } from '../_fixtures/style-opacity.tsrx';
-import { removeTransformFn } from '../../src/useMotionValue';
+import { removeTransformFn, patchTransformFn } from '../../src/useMotionValue';
 
 describe('useMotionValue', function useMotionValueSuite() {
 	it('binds a MotionValue to style and updates the element without a re-render', async function bindsWithoutRerender() {
@@ -46,9 +46,18 @@ describe('useMotionValue', function useMotionValueSuite() {
 		const x = motionValue(40);
 		r.update(StyleXLater, { x });
 		await nextPaint();
-		expect(div.style.transform).toBe('translate(40px, -50px) scale(1.2, 0.8)');
-		expect(div.style.transform).not.toContain('translateX');
+		expect(div.style.transform).toBe('translateX(40px) translateY(-50px) scale(1.2, 0.8)');
+		expect(div.style.transform).not.toContain('translate(');
 		r.unmount();
+	});
+
+	it('clears a decomposed axis on unbind after binding over layout FLIP', function clearsDecomposedAxisOnUnbind() {
+		const div = document.createElement('div');
+		div.style.transform = 'translate(0px, 0px) scale(1, 1)';
+		patchTransformFn(div, 'x', 40);
+		expect(div.style.transform).toBe('translateX(40px) translateY(0px) scale(1, 1)');
+		removeTransformFn(div, 'x');
+		expect(div.style.transform).toBe('translateY(0px) scale(1, 1)');
 	});
 
 	it('leaves layout FLIP compound translate alone when unbinding x', function leavesLayoutCompoundOnUnbind() {

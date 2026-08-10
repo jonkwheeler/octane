@@ -147,8 +147,9 @@ function replaceTransformRange(
 }
 
 /**
- * Layout FLIP writes compound `translate(x, y)` / `scale(sx, sy)`. Patch those in
- * place for x/y/scale* keys instead of inserting parallel translateX/scaleX shorthands.
+ * Layout FLIP writes compound `translate(x, y)` / `scale(sx, sy)`. Decompose those
+ * into shorthands when a style MotionValue binds so unbind can remove only that
+ * shorthand without corrupting or orphaning the layout contribution.
  */
 function patchCompoundTransform(current: string, key: string, val: any): string | null {
 	const unitized = unitizeTransformValue(key, val);
@@ -157,27 +158,22 @@ function patchCompoundTransform(current: string, key: string, val: any): string 
 		if (!range) return null;
 		const inner = current.slice(range.start + 'translate('.length, range.end - 1);
 		const args = splitTransformArgs(inner);
-		const x = args[0] || '0px';
-		const y = args[1] || '0px';
-		const nextInner = key === 'x' ? `${unitized}, ${y}` : `${x}, ${unitized}`;
-		return replaceTransformRange(current, range, `translate(${nextInner})`);
+		let x = args[0] || '0px';
+		let y = args[1] || '0px';
+		if (key === 'x') x = unitized;
+		else y = unitized;
+		return replaceTransformRange(current, range, `translateX(${x}) translateY(${y})`);
 	}
-	if (key === 'scale' || key === 'scaleX' || key === 'scaleY') {
+	if (key === 'scaleX' || key === 'scaleY') {
 		const range = findTransformFnRange(current, 'scale');
 		if (!range) return null;
 		const inner = current.slice(range.start + 'scale('.length, range.end - 1);
 		const args = splitTransformArgs(inner);
-		let nextInner: string;
-		if (key === 'scale') {
-			nextInner = args.length >= 2 ? `${unitized}, ${unitized}` : unitized;
-		} else if (key === 'scaleX') {
-			const sy = args[1] !== undefined ? args[1] : args[0] || '1';
-			nextInner = `${unitized}, ${sy}`;
-		} else {
-			const sx = args[0] || '1';
-			nextInner = `${sx}, ${unitized}`;
-		}
-		return replaceTransformRange(current, range, `scale(${nextInner})`);
+		let sx = args[0] || '1';
+		let sy = args[1] !== undefined ? args[1] : args[0] || '1';
+		if (key === 'scaleX') sx = unitized;
+		else sy = unitized;
+		return replaceTransformRange(current, range, `scaleX(${sx}) scaleY(${sy})`);
 	}
 	return null;
 }
