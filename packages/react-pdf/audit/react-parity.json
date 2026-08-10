@@ -12,7 +12,7 @@
   },
   "upstreamSuites": {
     "runtime": "present",
-    "types": "present"
+    "types": "insufficient"
   },
   "adaptedRoots": {
     "source": {
@@ -141,8 +141,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-pdf-pristine-types",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the pinned upstream type suite unchanged: tsc over packages/react-pdf/upstream/tag source.",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Uses the package tsc program as repo-authored compile evidence for the vendored react-pdf 10.4.1 pin.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -169,8 +169,8 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "react-pdf-adapted-types",
-      "evidenceOrigin": "upstream-suite",
-      "notes": "One-for-one Octane adaptation of the upstream package compile program: tsrx-tsc over packages/react-pdf/src.",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Uses the Octane package tsrx-tsc program as repo-authored compile evidence; it is not a one-for-one upstream typetest adaptation.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -192,5 +192,30 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "react-pdf-octane-node-ref-event-types",
+      "caseIds": ["differential:react-pdf-document-shells"],
+      "upstreamResult": "React's public declarations use ReactNode, React ref types, synthetic event types, and React CSS property types.",
+      "octaneResult": "The binding declares OctaneNode, refs-as-props, native DOM events, and Octane class/style values.",
+      "rationale": "Octane deliberately exposes native event and ref-prop contracts instead of React's synthetic and forwardRef-oriented types.",
+      "classification": "intentional-framework-divergence",
+      "consumerImpact": "Type-only React node, ref, event, and CSS annotations need Octane equivalents when migrating an application.",
+      "migrationGuidance": "Use OctaneNode, plain ref props, native event types, and Octane-supported class/style values.",
+      "owner": "@octanejs/react-pdf",
+      "reviewCondition": "Revisit if Octane adopts a compatibility type layer without changing native runtime semantics."
+    },
+    {
+      "id": "react-pdf-star-export-surface",
+      "caseIds": ["types:react-pdf-adapted"],
+      "upstreamResult": "The upstream package's permissive wildcard exposes implementation and source artifacts through undocumented deep imports.",
+      "octaneResult": "The binding supports only the root entry point and the two documented CSS subpaths.",
+      "rationale": "Framework-private upstream implementation artifacts are pinned as audit evidence, not public Octane API.",
+      "classification": "intentional-public-surface-divergence",
+      "consumerImpact": "Consumers relying on undocumented react-pdf deep imports must migrate to documented root exports or CSS paths.",
+      "migrationGuidance": "Import public symbols from @octanejs/react-pdf and styles only from the documented CSS subpaths.",
+      "owner": "@octanejs/react-pdf",
+      "reviewCondition": "Revisit only when a documented upstream subpath becomes a supported binding export."
+    }
+  ]
 }

@@ -2743,12 +2743,16 @@
     {
       "upstream": "tag/src/Ref.spec.ts:6::returns proper reference for given num and gen",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen",
+      "adaptedDigest": "f39a91ebbfb1a5665ffa1125b2313bdc05fba0a158ef217f9b131645ff16ebff",
+      "upstreamDigest": "f39a91ebbfb1a5665ffa1125b2313bdc05fba0a158ef217f9b131645ff16ebff"
     },
     {
       "upstream": "tag/src/Ref.spec.ts:12::returns proper reference for given num and gen when gen = 0",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen when gen = 0"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen when gen = 0",
+      "adaptedDigest": "f3b7bb639696d4d65918644c95389111f3867da0c1c0978abaef643f2b40b1e1",
+      "upstreamDigest": "f3b7bb639696d4d65918644c95389111f3867da0c1c0978abaef643f2b40b1e1"
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:57::loads structure tree and calls onGetStructTreeSuccess callback properly",
@@ -2988,32 +2992,58 @@
     {
       "upstream": "tag/src/shared/utils.spec.ts:6::returns $expectedResult given $input",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns $expectedResult given $input"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns $expectedResult given $input",
+      "adaptedDigest": "f245ea67cc1e299ac7187846261107f47015b9da35995477f58047c2dffba4e8",
+      "upstreamDigest": "f245ea67cc1e299ac7187846261107f47015b9da35995477f58047c2dffba4e8"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:19::throws given invalid data URI",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::throws given invalid data URI"
+      "evidence": "tests/runtime/private-evidence.test.ts::throws given invalid data URI",
+      "adaptedDigest": "e153df3f3dcacba8016330be634e5beec4eff76388a0296d53bbfb0021367a3a",
+      "upstreamDigest": "e153df3f3dcacba8016330be634e5beec4eff76388a0296d53bbfb0021367a3a"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:22::returns a byte string given plain text data URI",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given plain text data URI"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given plain text data URI",
+      "adaptedDigest": "a7e32af6a7ea732aee323cb7c0288a5a396cfbed3c333fb90736d43a4bc19503",
+      "upstreamDigest": "a7e32af6a7ea732aee323cb7c0288a5a396cfbed3c333fb90736d43a4bc19503"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:28::returns a byte string given base64 data URI",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 data URI"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 data URI",
+      "adaptedDigest": "b62d98ba68af27bd31a4e62147adb8ccfab565b1ff2193606c02a6aceab59dff",
+      "upstreamDigest": "b62d98ba68af27bd31a4e62147adb8ccfab565b1ff2193606c02a6aceab59dff"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:34::returns a byte string given base64 PDF data URI",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI",
+      "adaptedDigest": "905833008565a81d76f27f8527eb0ca89aba63c899572ef4d1bcbd1f6c0ea14a",
+      "upstreamDigest": "905833008565a81d76f27f8527eb0ca89aba63c899572ef4d1bcbd1f6c0ea14a"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:42::returns a byte string given base64 PDF data URI with filename",
       "disposition": "adapted-and-executable",
-      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI with filename"
+      "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI with filename",
+      "adaptedDigest": "8a58fcf3ecb1efaa6eb52623b490a00d6fbce6711f7c82109cfd4c7245956bb5",
+      "upstreamDigest": "8a58fcf3ecb1efaa6eb52623b490a00d6fbce6711f7c82109cfd4c7245956bb5"
     }
+  ],
+  "authoredTests": [
+    "tests/browser/binding.browser.test.ts",
+    "tests/contracts/binding-contracts.test.ts",
+    "tests/feasibility/pdf-shell.hydration.test.ts",
+    "tests/feasibility/pdf-shell.server.test.ts",
+    "tests/feasibility/pdfjs.browser.test.ts",
+    "tests/feasibility/pdfjs.server.test.ts",
+    "tests/feasibility/public-surface.test.ts",
+    "tests/packed/consumer.test.ts",
+    "tests/parity/shells.test.ts",
+    "tests/runtime/private-evidence.test.ts",
+    "tests/ssr/server.test.ts",
+    "tests/upstream-original.test.ts"
   ]
 }

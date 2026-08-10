@@ -7,6 +7,17 @@
 - License: MIT
 - PDF.js dependency: `pdfjs-dist@5.4.296` (Apache-2.0)
 
+## Immutable React oracles
+
+| Oracle | Pinned version | Evidence lanes |
+| --- | --- | --- |
+| React runtime | `react@19.2.3` | `pristine-runtime`, `differential` |
+| ReactDOM runtime | `react-dom@19.2.3` | `pristine-runtime`, `differential` |
+| React types | `@types/react@19.2.7` | type lanes |
+| ReactDOM types | `@types/react-dom@19.2.3` | type lanes |
+
+These versions are the `catalog:default` pins in `pnpm-workspace.yaml`.
+
 The pinned tag source, all 13 source test authorities, package metadata,
 README, TypeScript programs, and license are vendored under `upstream/tag`.
 The complete published npm artifact is vendored under `upstream/npm`.

@@ -1,9 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildInventory, compareInventories } from '../../audit/upstream-inventory.mjs';
+import {
+	buildInventory,
+	caseStructuralDigest,
+	compareAdaptedEvidence,
+	compareInventories,
+} from '../../audit/upstream-inventory.mjs';
 
-const clone = (value) => structuredClone(value);
+function clone(value) {
+	return structuredClone(value);
+}
 
 test('the pinned React PDF authorities and case crosswalk validate', async () => {
 	const inventory = await buildInventory();
@@ -61,4 +68,37 @@ test('fails closed when the public surface changes', async () => {
 	const expected = clone(actual);
 	expected.publicSurface.runtimeExports.pop();
 	assert.throws(() => compareInventories(actual, expected), /public surface/);
+});
+
+test('fails closed when adapted evidence loses an expectation', () => {
+	const upstream = "it('case', () => { expect(value).toBe('fixture'); });";
+	const adapted = "it('case', function () { value; });";
+	assert.throws(function missingExpectation() {
+		compareAdaptedEvidence({
+			upstreamSource: upstream,
+			upstreamTitle: 'case',
+			adaptedSource: adapted,
+			adaptedTitle: 'case',
+		});
+	}, /no expectations/);
+});
+
+test('fails closed when adapted evidence has an empty case body', () => {
+	const source = "it('case', function () {});";
+	assert.throws(function emptyCase() {
+		caseStructuralDigest(source, 'case');
+	}, /no expectations/);
+});
+
+test('fails closed when adapted evidence changes a fixture', () => {
+	const upstream = "it('case', () => { expect(value).toBe('upstream fixture'); });";
+	const adapted = "it('case', function () { expect(value).toBe('adapted fixture'); });";
+	assert.throws(function changedFixture() {
+		compareAdaptedEvidence({
+			upstreamSource: upstream,
+			upstreamTitle: 'case',
+			adaptedSource: adapted,
+			adaptedTitle: 'case',
+		});
+	}, /diverges from upstream/);
 });

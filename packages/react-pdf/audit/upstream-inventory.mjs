@@ -4,7 +4,9 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+const sha256 = function sha256(value) {
+	return createHash('sha256').update(value).digest('hex');
+};
 
 const EXECUTABLE_DISPOSITIONS = new Set(['adapted-and-executable']);
 const PENDING_DISPOSITIONS = new Set(['pending-adaptation']);
@@ -53,6 +55,112 @@ function staticCases(source) {
 
 function testTitles(source) {
 	return new Set(staticCases(source).map(({ name }) => name));
+}
+
+function matchingDelimiter(source, start, open, close) {
+	let depth = 0;
+	let quote = null;
+	let escaped = false;
+	for (let index = start; index < source.length; index++) {
+		const character = source[index];
+		if (quote) {
+			if (escaped) escaped = false;
+			else if (character === '\\') escaped = true;
+			else if (character === quote) quote = null;
+			continue;
+		}
+		if (character === "'" || character === '"' || character === '`') {
+			quote = character;
+			continue;
+		}
+		if (character === open) depth++;
+		else if (character === close && --depth === 0) return index;
+	}
+	return -1;
+}
+
+function caseBody(source, title) {
+	const entry = [...directCases(source), ...eachCases(source)].find(function hasTitle(candidate) {
+		return candidate.name === title;
+	});
+	if (!entry) return null;
+	const open = source.indexOf('(', entry.index);
+	const close = matchingDelimiter(source, open, '(', ')');
+	return close === -1 ? null : source.slice(entry.index, close + 1);
+}
+
+function normalizeCaseStructure(body) {
+	return body
+		.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
+		.replace(/\bfunction\s*\(([^)]*)\)\s*\{/g, '($1)=>{')
+		.replace(/\s+/g, '')
+		.replace(/(\([^)]*\)=>)\{([^{}]+)\}/g, '$1$2')
+		.replace(/;(?=\})/g, '');
+}
+
+export function caseStructuralDigest(source, title) {
+	const body = caseBody(source, title);
+	if (!body) throw new Error(`test case is missing: ${title}`);
+	if (!/\bexpect\s*\(/.test(body)) throw new Error(`test case has no expectations: ${title}`);
+	if (!/\.to(?:Be|Throw)\s*\(/.test(body))
+		throw new Error(`test case has no assertion target: ${title}`);
+	const normalized = normalizeCaseStructure(body);
+	const expectCalls = normalized.match(/expect\(/g);
+	const assertionTargets = normalized.match(/\.to(?:Be|Throw)\([^)]*\)/g);
+	const strings = normalized.match(/(?:'[^']*'|"[^"]*"|`[^`]*`)/g);
+	const eachTable = normalized.match(/\.each`[^`]*`/g);
+	return sha256(
+		JSON.stringify({
+			expectCalls,
+			assertionTargets,
+			strings,
+			eachTable,
+		}),
+	);
+}
+
+export function compareAdaptedEvidence({
+	upstreamSource,
+	upstreamTitle,
+	adaptedSource,
+	adaptedTitle,
+}) {
+	const upstreamDigest = caseStructuralDigest(upstreamSource, upstreamTitle);
+	const adaptedDigest = caseStructuralDigest(adaptedSource, adaptedTitle);
+	if (adaptedDigest !== upstreamDigest) {
+		throw new Error(`adapted evidence diverges from upstream: ${adaptedTitle}`);
+	}
+	return { adaptedDigest, upstreamDigest };
+}
+
+async function authoredTests(root) {
+	const testsRoot = join(root, 'tests');
+	const paths = await filesUnder(testsRoot);
+	return paths
+		.filter(function keepTest(path) {
+			return /\.test\.(?:ts|tsx|tsrx)$/.test(path);
+		})
+		.map(function toPackagePath(path) {
+			return `tests/${path}`;
+		});
+}
+
+async function validateTestClassifications(root, tests) {
+	const classifications = JSON.parse(
+		await readFile(join(root, 'audit/test-classifications.json'), 'utf8'),
+	);
+	assert(Array.isArray(classifications.tests), 'test classifications must declare tests');
+	const declared = classifications.tests
+		.map(function pathOf(entry) {
+			assert(typeof entry.path === 'string', 'test classification path is required');
+			return entry.path.replace(/^packages\/react-pdf\//, '');
+		})
+		.sort();
+	assert(
+		JSON.stringify(tests) === JSON.stringify(declared),
+		'every authored react-pdf test must have exactly one classification',
+	);
+	return classifications.tests;
 }
 
 function normalizeMapping(value) {
@@ -184,17 +292,24 @@ export async function buildInventory(root = packageRoot) {
 			const path = mapping.evidence.slice(0, split);
 			const title = mapping.evidence.slice(split + 2);
 			await access(join(root, path));
-			if (!evidenceCache.has(path)) {
-				evidenceCache.set(path, testTitles(await readFile(join(root, path), 'utf8')));
-			}
+			if (!evidenceCache.has(path))
+				evidenceCache.set(path, await readFile(join(root, path), 'utf8'));
 			assert(
-				evidenceCache.get(path).has(title),
+				testTitles(evidenceCache.get(path)).has(title),
 				`mapped executable test is missing: ${mapping.evidence}`,
 			);
+			const upstreamSource = await readFile(join(root, 'upstream', entry.file), 'utf8');
+			const digests = compareAdaptedEvidence({
+				upstreamSource,
+				upstreamTitle: entry.name,
+				adaptedSource: evidenceCache.get(path),
+				adaptedTitle: title,
+			});
 			crosswalk.push({
 				upstream: entry.id,
 				disposition: mapping.disposition,
 				evidence: mapping.evidence,
+				...digests,
 			});
 		} else {
 			assert(
@@ -216,6 +331,8 @@ export async function buildInventory(root = packageRoot) {
 	for (const name of [...publicSurface.rootRuntimeExports, ...publicSurface.rootTypeExports]) {
 		assert(new RegExp(`\\b${name}\\b`).test(indexSource), `missing public export ${name}`);
 	}
+	const authored = await authoredTests(root);
+	await validateTestClassifications(root, authored);
 
 	return {
 		schemaVersion: 1,
@@ -239,6 +356,7 @@ export async function buildInventory(root = packageRoot) {
 		artifacts,
 		upstreamCases: cases,
 		crosswalk,
+		authoredTests: authored,
 	};
 }
 
@@ -262,6 +380,10 @@ export function compareInventories(actual, expected) {
 	assert(
 		JSON.stringify(actual.crosswalk) === JSON.stringify(expected.crosswalk),
 		'upstream executable crosswalk changed',
+	);
+	assert(
+		JSON.stringify(actual.authoredTests) === JSON.stringify(expected.authoredTests),
+		'authored test inventory changed',
 	);
 }
 
