@@ -172,6 +172,11 @@ async function installDoomProofShims(page: {
 			(globalThis as any).__doomPointerLockElement = null;
 			document.dispatchEvent(new Event('pointerlockchange'));
 		};
+		document.addEventListener('keydown', function onEscapeUnlock(event) {
+			if (event.code !== 'Escape' && event.key !== 'Escape') return;
+			if ((globalThis as any).__doomPointerLockElement == null) return;
+			(document as any).exitPointerLock();
+		});
 	});
 }
 
@@ -346,6 +351,11 @@ describe('Doom production playground evidence', () => {
 					(globalThis as any).__doomPointerLockElement = null;
 					document.dispatchEvent(new Event('pointerlockchange'));
 				};
+				document.addEventListener('keydown', (event) => {
+					if (event.code !== 'Escape' && event.key !== 'Escape') return;
+					if ((globalThis as any).__doomPointerLockElement == null) return;
+					(document as any).exitPointerLock();
+				});
 			});
 
 			await page.goto(`${origin}/#doom`, { waitUntil: 'load' });
@@ -534,9 +544,7 @@ describe('Doom production playground evidence', () => {
 			await enterDoomLevel(page);
 			const lockedShell = await readDoomShell(page);
 			expect(lockedShell).toMatchObject({ phase: 'playing', pointerLocked: true, paused: false });
-			await page.evaluate(function unlockViaEscapeEquivalent() {
-				(document as any).exitPointerLock();
-			});
+			await page.keyboard.press('Escape');
 			await expect
 				.poll(async function unlocked() {
 					return (await readDoomShell(page)).pointerLocked;
