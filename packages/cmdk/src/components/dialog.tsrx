@@ -25,7 +25,8 @@ export function Dialog(props: DialogProps) {
 
 	// OCTANE DIVERGENCE[dialog-default-open][differential:cmdk-dialog-default-open]:
 	// Upstream forwards only open/onOpenChange; the port also wires defaultOpen
-	// and modal through to the Radix root.
+	// through to the Radix root. `modal` is forwarded too, but that prop is outside
+	// this record's observing case.
 	return createElement(
 		RadixDialog.Root,
 		{ open, defaultOpen, onOpenChange, modal },

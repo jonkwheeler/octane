@@ -205,37 +205,3 @@ export function CmdkDiffDialogDefaultOpen() @{
 		</Command.List>
 	</Command.Dialog>
 }
-
-// Churn items through a group — pins group membership cleanup on leave.
-export function CmdkDiffGroupMembership() @{
-	const [items, setItems] = useState(['Apple', 'Banana']);
-	<Command label="Command Menu">
-		<button
-			type="button"
-			id="drop-apple"
-			onClick={function onDrop() {
-				setItems(['Banana']);
-			}}
-		>
-			drop
-		</button>
-		<button
-			type="button"
-			id="restore-cherry"
-			onClick={function onRestore() {
-				setItems(['Banana', 'Cherry']);
-			}}
-		>
-			restore
-		</button>
-		<Command.Input placeholder="Search…" />
-		<Command.List>
-			<Command.Empty>No results found.</Command.Empty>
-			<Command.Group heading="Fruits">
-				@for (const label of items; key label) {
-					<Command.Item>{label as string}</Command.Item>
-				}
-			</Command.Group>
-		</Command.List>
-	</Command>
-}

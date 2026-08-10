@@ -652,43 +652,4 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 
 		differential.unmount();
 	});
-
-	// @parity-case differential:cmdk-group-membership
-	it('documents group membership cleanup across item churn', async function () {
-		const differential = await mountDifferential(
-			FIXTURE,
-			'CmdkDiffGroupMembership',
-			undefined,
-			CACHE,
-		);
-
-		// OCTANE DIVERGENCE[group-membership-cleanup][differential:cmdk-group-membership]
-		await differential.observe(
-			'churned group members stay filter-correct on both runtimes',
-			async function (octane, react) {
-				await settle();
-				await octane.click('#drop-apple');
-				await react.click('#drop-apple');
-				await settle();
-				await octane.input('[cmdk-input]', 'app');
-				await react.input('[cmdk-input]', 'app');
-				await settle();
-				expect(itemTexts(octane)).toEqual([]);
-				expect(itemTexts(react)).toEqual([]);
-				expect(octane.find('[cmdk-empty]')).toBeTruthy();
-				expect(react.find('[cmdk-empty]')).toBeTruthy();
-
-				await octane.click('#restore-cherry');
-				await react.click('#restore-cherry');
-				await settle();
-				await octane.input('[cmdk-input]', 'che');
-				await react.input('[cmdk-input]', 'che');
-				await settle();
-				expect(itemTexts(octane)).toEqual(['Cherry']);
-				expect(itemTexts(react)).toEqual(['Cherry']);
-			},
-		);
-
-		differential.unmount();
-	});
 });

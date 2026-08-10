@@ -165,11 +165,11 @@ export function CommandRoot(props: CommandProps) @{
 				return () => {
 					releaseValue(id);
 					allItems.current.delete(id);
-					// OCTANE DIVERGENCE[group-membership-cleanup][differential:cmdk-group-membership]:
 					// An item leaving its group has to be dropped from that group's member
 					// set too, or the set accumulates dead ids for the Command's lifetime
 					// (unbounded growth in a menu whose results churn) and filterItems()
-					// walks them on every keystroke.
+					// walks them on every keystroke. Documented in status.json; no paired
+					// DOM oracle distinguishes the bookkeeping from upstream.
 					if (groupId) allGroups.current.get(groupId)?.delete(id);
 					const selectedItem = getSelectedItem();
 
