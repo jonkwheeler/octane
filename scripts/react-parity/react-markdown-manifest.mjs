@@ -150,20 +150,24 @@ const manifest = {
 			environment: 'workspace-node',
 			project: 'react-markdown-pristine-types',
 			evidenceOrigin: 'repo-authored',
+			notes:
+				'Repo-authored React declaration probes against pinned react-markdown 10.1.0, including negative controls, with file/assertion-group inventory and permitted-transformation verification.',
 			execution: {
 				kind: 'typescript',
 				compiler: 'tsc',
-				project: 'packages/react-markdown/typetests/pristine/tsconfig.json',
+				project: 'packages/react-markdown/audit/type-probes/tsconfig.pristine.json',
 			},
 			files: [
-				test('packages/react-markdown/typetests/pristine/public-api.tsx', [
+				test('packages/react-markdown/audit/pristine-types.json', [
 					{
-						id: 'react-markdown:types:pristine',
-						testName: 'pristine public type programs',
-						fullName: 'pristine public type programs',
+						id: 'types:react-markdown-pristine',
+						testName: 'pinned React declaration probes',
+						fullName: 'pinned React declaration probes',
 					},
 				]),
-				support('packages/react-markdown/typetests/pristine/tsconfig.json'),
+				support('packages/react-markdown/audit/type-probes/public-api.test-d.ts'),
+				support('packages/react-markdown/audit/type-probes/tsconfig.pristine.json'),
+				support('packages/react-markdown/audit/type-parity.json'),
 			],
 		},
 		{
@@ -173,20 +177,25 @@ const manifest = {
 			environment: 'workspace-node',
 			project: 'react-markdown-adapted-types',
 			evidenceOrigin: 'repo-authored',
+			notes:
+				'One-for-one Octane public type probes with matching negative controls after permitted renderable-type transformations; dedicated typetest project only.',
 			execution: {
 				kind: 'typescript',
 				compiler: 'tsrx-tsc',
-				project: 'packages/react-markdown/tsconfig.json',
+				project: 'packages/react-markdown/typetests/tsconfig.json',
 			},
 			files: [
-				test('packages/react-markdown/typetests/public-api.test.ts', [
+				test('packages/react-markdown/audit/adapted-types.json', [
 					{
-						id: 'react-markdown:types:adapted',
-						testName: 'adapted public type programs',
-						fullName: 'adapted public type programs',
+						id: 'types:react-markdown-adapted',
+						testName: 'adapted Octane declaration probes',
+						fullName: 'adapted Octane declaration probes',
 					},
 				]),
-				support('packages/react-markdown/tsconfig.json'),
+				support('packages/react-markdown/typetests/public-api.test-d.ts'),
+				support('packages/react-markdown/typetests/tsconfig.json'),
+				support('packages/react-markdown/audit/type-parity.json'),
+				support('scripts/react-parity/react-markdown-types-lib.mjs'),
 			],
 		},
 	],
