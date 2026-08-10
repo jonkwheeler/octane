@@ -152,7 +152,33 @@ test('rejects emptying adaptedEvidence omission module', async function rejectsE
 	};
 	assert.throws(function run() {
 		buildTypeInventory(value.root, config);
-	}, /no authenticating assertions/);
+	}, /must assert expectTypeOf/);
+});
+
+test('rejects hollow adaptedEvidence test shell without the omission assertion', async function rejectsHollowOmission(
+	t,
+) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const evidenceRel = 'adapted/_useStore-omission.test-d.ts';
+	await writeFile(
+		join(value.root, evidenceRel),
+		[
+			"import { test } from 'vitest';",
+			'',
+			"test('omits the upstream experimental _useStore hook', () => {});",
+			'',
+		].join('\n'),
+	);
+	const config = {
+		...value.config,
+		adaptedEvidence: [evidenceRel],
+	};
+	assert.throws(function run() {
+		buildTypeInventory(value.root, config);
+	}, /must assert expectTypeOf/);
 });
 
 test('rejects mutating adaptedEvidence omission assertion', async function rejectsMutatedOmission(t) {
@@ -177,16 +203,10 @@ test('rejects mutating adaptedEvidence omission assertion', async function rejec
 	const config = {
 		...value.config,
 		adaptedEvidence: [evidenceRel],
-		inventories: {
-			upstream: 'pristine-types.json',
-			adapted: 'adapted-types.json',
-		},
 	};
-	const baseline = buildTypeInventory(value.root, config);
-	const evidence = baseline.adapted.find(function isEvidence(entry) {
-		return entry.role === 'divergence-evidence';
+	assert.doesNotThrow(function run() {
+		buildTypeInventory(value.root, config);
 	});
-	assert.ok(evidence);
 	await writeFile(
 		absolute,
 		[
@@ -199,10 +219,7 @@ test('rejects mutating adaptedEvidence omission assertion', async function rejec
 			'',
 		].join('\n'),
 	);
-	const mutated = buildTypeInventory(value.root, config);
-	const mutatedEvidence = mutated.adapted.find(function isEvidence(entry) {
-		return entry.role === 'divergence-evidence';
-	});
-	assert.notDeepEqual(mutatedEvidence.assertionGroups, evidence.assertionGroups);
-	assert.notEqual(mutatedEvidence.sha256, evidence.sha256);
+	assert.throws(function run() {
+		buildTypeInventory(value.root, config);
+	}, /must assert expectTypeOf/);
 });

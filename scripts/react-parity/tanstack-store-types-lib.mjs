@@ -78,9 +78,12 @@ function evidenceInventoryEntry(root, evidencePath) {
 	}
 	const source = readFileSync(absolute, 'utf8');
 	const groups = assertionGroups(source, evidencePath);
-	if (groups.length === 0) {
+	const omissionAssertions = groups.filter(function keepOmission(group) {
+		return /^expect-type-of-not-property:.+:_useStore$/.test(group);
+	});
+	if (omissionAssertions.length === 0) {
 		throw new Error(
-			`adaptedEvidence ${evidencePath} has no authenticating assertions (existence alone is not enough)`,
+			`adaptedEvidence ${evidencePath} must assert expectTypeOf(...).not.toHaveProperty('_useStore') (titles/docs alone are not enough)`,
 		);
 	}
 	return {
