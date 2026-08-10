@@ -643,7 +643,9 @@ jobs:
 
       - name: Install selected Playwright browser
         if: ${{ matrix.lane == 'browser' }}
-        run: pnpm exec playwright install --with-deps ${{ matrix.playwright_browser }}
+        # behavior-root requires WebKit alongside the matrix engine; install it
+        # on every browser lane so discovered packages/octane/tests/browser can run.
+        run: pnpm exec playwright install --with-deps ${{ matrix.playwright_browser }} webkit
 
       - name: Install Playwright Chromium (astro)
         if: ${{ matrix.lane == 'astro' }}

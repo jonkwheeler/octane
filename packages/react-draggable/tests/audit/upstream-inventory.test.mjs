@@ -114,7 +114,7 @@ await rejectsMutation(
 			),
 		);
 	},
-	/browser case: missing identity .*should update transform on drag/,
+	/adapted browser case: unapproved identity .*should update transform on drag|browser case: missing identity .*should update transform on drag/,
 );
 
 await rejectsMutation(

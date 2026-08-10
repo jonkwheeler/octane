@@ -374,7 +374,7 @@ describe('CI workflow aggregation', () => {
 		assert.equal((heavyIntegration.match(/- lane: astro$/gm) ?? []).length, 1);
 		assert.match(
 			heavyIntegration,
-			/run: pnpm exec playwright install --with-deps \$\{\{ matrix\.playwright_browser \}\}/,
+			/run: pnpm exec playwright install --with-deps \$\{\{ matrix\.playwright_browser \}\} webkit/,
 		);
 		assert.match(heavyIntegration, /PLAYWRIGHT_BROWSER: \$\{\{ matrix\.playwright_browser \}\}/);
 		assert.match(heavyIntegration, /specs: discovered/);

@@ -49,7 +49,7 @@ function mountCore(props: Record<string, unknown> = {}) {
 	return { container, root, nodeRef, node: nodeRef.current!, ...callbacks };
 }
 
-function mouse(node: Element, type: string, init: MouseEventInit = {}): void {
+function mouse(node: EventTarget, type: string, init: MouseEventInit = {}): void {
 	node.dispatchEvent(new MouseEvent(type, { bubbles: true, button: 0, ...init }));
 	flushSync(() => {});
 }

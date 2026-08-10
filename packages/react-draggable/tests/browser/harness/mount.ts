@@ -1,11 +1,5 @@
 import Draggable from '@octanejs/react-draggable';
-import {
-	createElement,
-	createRoot,
-	useRef,
-	useState,
-	type OctaneNode,
-} from 'octane';
+import { createElement, createRoot, useRef, useState, type OctaneNode } from 'octane';
 
 type DragSample = { x: number; y: number; deltaX?: number; deltaY?: number };
 
@@ -227,27 +221,19 @@ function FocusUnmountFixture(): OctaneNode {
 	const [showDraggable, setShowDraggable] = useState(true);
 	const ref = useRef<HTMLDivElement | null>(null);
 	api.setShowDraggable = setShowDraggable;
+	if (!showDraggable) return createElement('div', { id: 'draggable-slot' });
 	return createElement(
 		'div',
-		null,
-		createElement('input', {
-			id: 'test-input',
-			type: 'text',
-			onBlur: function onBlur() {
-				api.inputBlurred = true;
-			},
-		}),
-		showDraggable
-			? createElement(
-					Draggable,
-					{ nodeRef: ref },
-					createElement('div', {
-						ref,
-						id: 'draggable-test',
-						style: boxStyle(),
-					}),
-				)
-			: null,
+		{ id: 'draggable-slot' },
+		createElement(
+			Draggable,
+			{ nodeRef: ref, enableUserSelectHack: false },
+			createElement('div', {
+				ref,
+				id: 'draggable-test',
+				style: boxStyle(),
+			}),
+		),
 	);
 }
 
@@ -276,7 +262,7 @@ function FocusDragFixture(): OctaneNode {
 	);
 }
 
-function renderInto(target: HTMLElement, node: OctaneNode): void {
+function renderInto(target: HTMLElement, node: unknown): void {
 	if (root) {
 		root.unmount();
 		root = null;
@@ -284,10 +270,12 @@ function renderInto(target: HTMLElement, node: OctaneNode): void {
 	target.replaceChildren();
 	host = target;
 	root = createRoot(target);
-	root.render(node);
+	root.render(node as never);
 }
 
-function mountShadow(spec: Extract<MountSpec, { kind: 'shadow-parent' | 'shadow-selector' }>): void {
+function mountShadow(
+	spec: Extract<MountSpec, { kind: 'shadow-parent' | 'shadow-selector' }>,
+): void {
 	const rootEl = document.getElementById('root');
 	if (!rootEl) throw new Error('missing #root');
 	rootEl.replaceChildren();
@@ -327,37 +315,29 @@ function mountShadow(spec: Extract<MountSpec, { kind: 'shadow-parent' | 'shadow-
 	);
 }
 
-function mountIframe(spec: Extract<MountSpec, { kind: 'iframe' | 'iframe-bounds' }>): void {
+function mountIframeShell(spec: Extract<MountSpec, { kind: 'iframe' | 'iframe-bounds' }>): void {
 	const rootEl = document.getElementById('root');
 	if (!rootEl) throw new Error('missing #root');
 	rootEl.replaceChildren();
 	const iframe = document.createElement('iframe');
 	iframe.id = spec.kind === 'iframe' ? 'test-iframe' : 'test-iframe-bounds';
 	iframe.style.cssText = 'width: 500px; height: 500px; border: 1px solid black;';
+	iframe.src = '/iframe.html';
 	rootEl.appendChild(iframe);
-	const iframeDoc = iframe.contentDocument;
-	if (!iframeDoc) throw new Error('iframe document unavailable');
-	iframeDoc.open();
-	if (spec.kind === 'iframe') {
-		iframeDoc.write(
-			'<!DOCTYPE html><html><head><style>body { margin: 0; padding: 20px; }</style></head><body><div id="iframe-root"></div></body></html>',
-		);
+}
+
+function mountIframeContent(spec: Extract<MountSpec, { kind: 'iframe' | 'iframe-bounds' }>): void {
+	const rootEl = document.getElementById('root');
+	if (!rootEl) throw new Error('missing #root');
+	if (spec.kind === 'iframe-bounds') {
+		rootEl.style.cssText = 'position: relative; width: 300px; height: 300px; background: #ccc;';
 	} else {
-		iframeDoc.write(
-			'<!DOCTYPE html><html><head><style>body { margin: 0; padding: 0; }</style></head><body><div id="iframe-root" style="position: relative; width: 300px; height: 300px; background: #ccc;"></div></body></html>',
-		);
+		rootEl.style.cssText = 'padding: 20px;';
 	}
-	iframeDoc.close();
-	const iframeRoot = iframeDoc.getElementById('iframe-root');
-	if (!iframeRoot) throw new Error('missing iframe root');
 	const nodeRef = { current: null as HTMLDivElement | null };
 	const childId = spec.kind === 'iframe' ? 'iframe-draggable' : 'iframe-draggable-bounds';
-	if (root) {
-		root.unmount();
-		root = null;
-	}
-	root = createRoot(iframeRoot);
-	root.render(
+	renderInto(
+		rootEl,
 		createElement(
 			Draggable,
 			{
@@ -405,7 +385,11 @@ function mount(spec: MountSpec): void {
 	const rootEl = document.getElementById('root');
 	if (!rootEl) throw new Error('missing #root');
 	if (spec.kind === 'iframe' || spec.kind === 'iframe-bounds') {
-		mountIframe(spec);
+		if (window.top !== window) {
+			mountIframeContent(spec);
+			return;
+		}
+		mountIframeShell(spec);
 		return;
 	}
 	if (spec.kind === 'shadow-parent' || spec.kind === 'shadow-selector') {
@@ -433,7 +417,17 @@ function mount(spec: MountSpec): void {
 		return;
 	}
 	if (spec.kind === 'focus-unmount') {
-		renderInto(rootEl, createElement(FocusUnmountFixture));
+		rootEl.replaceChildren();
+		const input = document.createElement('input');
+		input.id = 'test-input';
+		input.type = 'text';
+		input.addEventListener('blur', function onBlur() {
+			api.inputBlurred = true;
+		});
+		const slot = document.createElement('div');
+		slot.id = 'octane-slot';
+		rootEl.append(input, slot);
+		renderInto(slot, createElement(FocusUnmountFixture));
 		return;
 	}
 	if (spec.kind === 'focus-drag') {

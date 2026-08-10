@@ -82,9 +82,7 @@ async function dragBy(
 	deltaY: number,
 	options: { frame?: import('playwright').Frame; startOffset?: number } = {},
 ): Promise<void> {
-	const handle = options.frame
-		? await options.frame.$(selector)
-		: await page.$(selector);
+	const handle = options.frame ? await options.frame.$(selector) : await page.$(selector);
 	if (!handle) throw new Error(`missing ${selector}`);
 	const box = await handle.boundingBox();
 	if (!box) throw new Error(`no box for ${selector}`);
@@ -96,111 +94,135 @@ async function dragBy(
 }
 
 describe('pinned browser public cases', function browserSuite() {
-	adaptedCase('tag/test/browser/browser.test.js::should update transform on drag', async function caseUpdateTransform() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic' });
-			await page.waitForSelector('#draggable-test');
-			const initial = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should update transform on drag',
+		async function caseUpdateTransform() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic' });
+				await page.waitForSelector('#draggable-test');
+				const initial = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(initial).toMatch(/translate\(0px,?\s*0px\)/);
+				await dragBy(page, '#draggable-test', 100, 100);
+				const finalTransform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(100px,?\s*100px\)/);
 			});
-			expect(initial).toMatch(/translate\(0px,?\s*0px\)/);
-			await dragBy(page, '#draggable-test', 100, 100);
-			const finalTransform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(finalTransform).toMatch(/translate\(100px,?\s*100px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should honor x axis constraint', async function caseAxisX() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic', props: { axis: 'x' } });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 100, 100);
-			const finalTransform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should honor x axis constraint',
+		async function caseAxisX() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic', props: { axis: 'x' } });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 100, 100);
+				const finalTransform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(100px,?\s*0px\)/);
 			});
-			expect(finalTransform).toMatch(/translate\(100px,?\s*0px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should honor y axis constraint', async function caseAxisY() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic', props: { axis: 'y' } });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 100, 100);
-			const finalTransform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should honor y axis constraint',
+		async function caseAxisY() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic', props: { axis: 'y' } });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 100, 100);
+				const finalTransform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(0px,?\s*100px\)/);
 			});
-			expect(finalTransform).toMatch(/translate\(0px,?\s*100px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should call onStop when drag ends', async function caseOnStop() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic' });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 100, 100);
-			const stopCalled = await page.evaluate(function read() {
-				return window.__reactDraggableBrowser.api.stopCalled;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should call onStop when drag ends',
+		async function caseOnStop() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic' });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 100, 100);
+				const stopCalled = await page.evaluate(function read() {
+					return window.__reactDraggableBrowser.api.stopCalled;
+				});
+				expect(stopCalled).toBe(true);
 			});
-			expect(stopCalled).toBe(true);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should clip dragging to bounds object', async function caseBoundsObject() {
-		await withPage(async function run(page) {
-			await mount(page, {
-				kind: 'basic',
-				props: { bounds: { left: 0, right: 50, top: 0, bottom: 50 } },
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should clip dragging to bounds object',
+		async function caseBoundsObject() {
+			await withPage(async function run(page) {
+				await mount(page, {
+					kind: 'basic',
+					props: { bounds: { left: 0, right: 50, top: 0, bottom: 50 } },
+				});
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 150, 150);
+				const finalTransform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(50px,?\s*50px\)/);
 			});
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 150, 150);
-			const finalTransform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(finalTransform).toMatch(/translate\(50px,?\s*50px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should clip dragging to parent bounds', async function caseParentBounds() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'parent-bounds' });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 450, 450);
-			const finalTransform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should clip dragging to parent bounds',
+		async function caseParentBounds() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'parent-bounds' });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 450, 450);
+				const finalTransform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(200px,?\s*200px\)/);
 			});
-			expect(finalTransform).toMatch(/translate\(200px,?\s*200px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should clip to negative bounds', async function caseNegativeBounds() {
-		await withPage(async function run(page) {
-			await mount(page, {
-				kind: 'basic',
-				props: { bounds: { left: -50, right: 50, top: -50, bottom: 50 } },
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should clip to negative bounds',
+		async function caseNegativeBounds() {
+			await withPage(async function run(page) {
+				await mount(page, {
+					kind: 'basic',
+					props: { bounds: { left: -50, right: 50, top: -50, bottom: 50 } },
+				});
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', -150, -150);
+				const finalTransform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(-50px,?\s*-50px\)/);
 			});
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', -150, -150);
-			const finalTransform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(finalTransform).toMatch(/translate\(-50px,?\s*-50px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should snap movement to grid', async function caseGridSnap() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic', props: { grid: [25, 25] } });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 30, 30);
-			const position = await page.evaluate(function read() {
-				return window.__reactDraggableBrowser.api.lastPosition;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should snap movement to grid',
+		async function caseGridSnap() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic', props: { grid: [25, 25] } });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 30, 30);
+				const position = await page.evaluate(function read() {
+					return window.__reactDraggableBrowser.api.lastPosition;
+				});
+				expect(position).toEqual({ x: 25, y: 25 });
 			});
-			expect(position).toEqual({ x: 25, y: 25 });
-		});
-	});
+		},
+	);
 
 	adaptedCase(
 		'tag/test/browser/browser.test.js::should not trigger onDrag when movement is less than grid',
@@ -217,46 +239,55 @@ describe('pinned browser public cases', function browserSuite() {
 		},
 	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should snap to larger grid correctly', async function caseLargeGrid() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic', props: { grid: [100, 100] } });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 150, 150);
-			const position = await page.evaluate(function read() {
-				return window.__reactDraggableBrowser.api.lastPosition;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should snap to larger grid correctly',
+		async function caseLargeGrid() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic', props: { grid: [100, 100] } });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 150, 150);
+				const position = await page.evaluate(function read() {
+					return window.__reactDraggableBrowser.api.lastPosition;
+				});
+				expect(position).toEqual({ x: 200, y: 200 });
 			});
-			expect(position).toEqual({ x: 200, y: 200 });
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should adjust position when scale is 2x', async function caseScale() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'basic', props: { scale: 2 } });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '#draggable-test', 100, 100);
-			const dragData = await page.evaluate(function read() {
-				return window.__reactDraggableBrowser.api.dragData;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should adjust position when scale is 2x',
+		async function caseScale() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'basic', props: { scale: 2 } });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '#draggable-test', 100, 100);
+				const dragData = await page.evaluate(function read() {
+					return window.__reactDraggableBrowser.api.dragData;
+				});
+				expect(dragData).toEqual({ x: 50, y: 50, deltaX: 50, deltaY: 50 });
 			});
-			expect(dragData).toEqual({ x: 50, y: 50, deltaX: 50, deltaY: 50 });
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should only drag from handle', async function caseHandle() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'handle' });
-			await page.waitForSelector('#draggable-test');
-			await dragBy(page, '.content', 100, 100, { startOffset: 25 });
-			let transform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should only drag from handle',
+		async function caseHandle() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'handle' });
+				await page.waitForSelector('#draggable-test');
+				await dragBy(page, '.content', 100, 100, { startOffset: 25 });
+				let transform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(transform).toMatch(/translate\(0px,?\s*0px\)/);
+				await dragBy(page, '.handle', 100, 100, { startOffset: 25 });
+				transform = await page.$eval('#draggable-test', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(transform).toMatch(/translate\(100px,?\s*100px\)/);
 			});
-			expect(transform).toMatch(/translate\(0px,?\s*0px\)/);
-			await dragBy(page, '.handle', 100, 100, { startOffset: 25 });
-			transform = await page.$eval('#draggable-test', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(transform).toMatch(/translate\(100px,?\s*100px\)/);
-		});
-	});
+		},
+	);
 
 	adaptedCase(
 		'tag/test/browser/browser.test.js::should drag from deeply nested handle elements',
@@ -288,47 +319,57 @@ describe('pinned browser public cases', function browserSuite() {
 		},
 	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should work correctly inside an iframe', async function caseIframe() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'iframe' });
-			await page.waitForFunction(function ready() {
-				const iframe = document.getElementById('test-iframe') as HTMLIFrameElement | null;
-				return Boolean(iframe?.contentDocument?.getElementById('iframe-draggable'));
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should work correctly inside an iframe',
+		async function caseIframe() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'iframe' });
+				const iframeHandle = await page.waitForSelector('#test-iframe');
+				const frame = await iframeHandle!.contentFrame();
+				if (!frame) throw new Error('missing frame');
+				await frame.waitForFunction(function ready() {
+					return Boolean(window.__reactDraggableBrowser);
+				});
+				await frame.evaluate(function mountInner() {
+					window.__reactDraggableBrowser.mount({ kind: 'iframe' });
+				});
+				await frame.waitForSelector('#iframe-draggable');
+				const initial = await frame.$eval('#iframe-draggable', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(initial).toMatch(/translate\(0px,?\s*0px\)/);
+				await dragBy(page, '#iframe-draggable', 100, 100, { frame });
+				const finalTransform = await frame.$eval('#iframe-draggable', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(100px,?\s*100px\)/);
 			});
-			const iframeHandle = await page.$('#test-iframe');
-			if (!iframeHandle) throw new Error('missing iframe');
-			const frame = await iframeHandle.contentFrame();
-			if (!frame) throw new Error('missing frame');
-			const initial = await frame.$eval('#iframe-draggable', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(initial).toMatch(/translate\(0px,?\s*0px\)/);
-			await dragBy(page, '#iframe-draggable', 100, 100, { frame });
-			const finalTransform = await frame.$eval('#iframe-draggable', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(finalTransform).toMatch(/translate\(100px,?\s*100px\)/);
-		});
-	});
+		},
+	);
 
-	adaptedCase('tag/test/browser/browser.test.js::should respect bounds inside an iframe', async function caseIframeBounds() {
-		await withPage(async function run(page) {
-			await mount(page, { kind: 'iframe-bounds' });
-			await page.waitForFunction(function ready() {
-				const iframe = document.getElementById('test-iframe-bounds') as HTMLIFrameElement | null;
-				return Boolean(iframe?.contentDocument?.getElementById('iframe-draggable-bounds'));
+	adaptedCase(
+		'tag/test/browser/browser.test.js::should respect bounds inside an iframe',
+		async function caseIframeBounds() {
+			await withPage(async function run(page) {
+				await mount(page, { kind: 'iframe-bounds' });
+				const iframeHandle = await page.waitForSelector('#test-iframe-bounds');
+				const frame = await iframeHandle!.contentFrame();
+				if (!frame) throw new Error('missing frame');
+				await frame.waitForFunction(function ready() {
+					return Boolean(window.__reactDraggableBrowser);
+				});
+				await frame.evaluate(function mountInner() {
+					window.__reactDraggableBrowser.mount({ kind: 'iframe-bounds' });
+				});
+				await frame.waitForSelector('#iframe-draggable-bounds');
+				await dragBy(page, '#iframe-draggable-bounds', 450, 450, { frame });
+				const finalTransform = await frame.$eval('#iframe-draggable-bounds', function read(el) {
+					return (el as HTMLElement).style.transform;
+				});
+				expect(finalTransform).toMatch(/translate\(200px,?\s*200px\)/);
 			});
-			const iframeHandle = await page.$('#test-iframe-bounds');
-			if (!iframeHandle) throw new Error('missing iframe');
-			const frame = await iframeHandle.contentFrame();
-			if (!frame) throw new Error('missing frame');
-			await dragBy(page, '#iframe-draggable-bounds', 450, 450, { frame });
-			const finalTransform = await frame.$eval('#iframe-draggable-bounds', function read(el) {
-				return (el as HTMLElement).style.transform;
-			});
-			expect(finalTransform).toMatch(/translate\(200px,?\s*200px\)/);
-		});
-	});
+		},
+	);
 
 	adaptedCase(
 		'tag/test/browser/browser.test.js::should handle dragging in scrollable containers',
@@ -357,9 +398,9 @@ describe('pinned browser public cases', function browserSuite() {
 					return Boolean(host?.shadowRoot?.getElementById('shadow-draggable'));
 				});
 				const handle = await page.evaluateHandle(function getNode() {
-					return document.getElementById('shadow-host')!.shadowRoot!.getElementById(
-						'shadow-draggable',
-					);
+					return document
+						.getElementById('shadow-host')!
+						.shadowRoot!.getElementById('shadow-draggable');
 				});
 				const box = await handle.asElement()!.boundingBox();
 				if (!box) throw new Error('missing shadow box');
@@ -439,7 +480,7 @@ describe('pinned browser public cases', function browserSuite() {
 					return document.activeElement === document.getElementById('test-input');
 				});
 				expect(isFocused).toBe(true);
-				await page.evaluate(function resetBlur() {
+				await page.evaluate(function resetAndUnmount() {
 					window.__reactDraggableBrowser.api.inputBlurred = false;
 					window.__reactDraggableBrowser.api.setShowDraggable!(false);
 				});

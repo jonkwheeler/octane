@@ -2367,139 +2367,139 @@
         "id": "adapted-browser:tag/test/browser/browser.test.js::should update transform on drag",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should update transform on drag",
-        "line": 99
+        "line": 97
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should honor x axis constraint",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should honor x axis constraint",
-        "line": 115
+        "line": 116
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should honor y axis constraint",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should honor y axis constraint",
-        "line": 127
+        "line": 131
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should call onStop when drag ends",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should call onStop when drag ends",
-        "line": 139
+        "line": 146
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to bounds object",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to bounds object",
-        "line": 151
+        "line": 161
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to parent bounds",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to parent bounds",
-        "line": 166
+        "line": 179
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should clip to negative bounds",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip to negative bounds",
-        "line": 178
+        "line": 194
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should snap movement to grid",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should snap movement to grid",
-        "line": 193
+        "line": 212
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should not trigger onDrag when movement is less than grid",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not trigger onDrag when movement is less than grid",
-        "line": 205
+        "line": 227
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should snap to larger grid correctly",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should snap to larger grid correctly",
-        "line": 220
+        "line": 242
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should adjust position when scale is 2x",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should adjust position when scale is 2x",
-        "line": 232
+        "line": 257
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should only drag from handle",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should only drag from handle",
-        "line": 244
+        "line": 272
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should drag from deeply nested handle elements",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should drag from deeply nested handle elements",
-        "line": 261
+        "line": 292
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should not drag from deeply nested cancel elements",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not drag from deeply nested cancel elements",
-        "line": 276
+        "line": 307
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should work correctly inside an iframe",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should work correctly inside an iframe",
-        "line": 291
+        "line": 322
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should respect bounds inside an iframe",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should respect bounds inside an iframe",
-        "line": 314
+        "line": 350
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should handle dragging in scrollable containers",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should handle dragging in scrollable containers",
-        "line": 333
+        "line": 374
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to parent bounds in shadow DOM",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to parent bounds in shadow DOM",
-        "line": 350
+        "line": 391
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to selector bounds in shadow DOM",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to selector bounds in shadow DOM",
-        "line": 378
+        "line": 419
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should not throw when unmounted during onStop callback",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not throw when unmounted during onStop callback",
-        "line": 406
+        "line": 447
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should not defocus inputs when draggable unmounts",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not defocus inputs when draggable unmounts",
-        "line": 429
+        "line": 470
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should not steal focus from inputs when starting drag",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not steal focus from inputs when starting drag",
-        "line": 465
+        "line": 506
       },
       {
         "id": "adapted-browser:tag/test/browser/browser.test.js::should calculate drag with offset position correctly",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should calculate drag with offset position correctly",
-        "line": 486
+        "line": 527
       },
       {
         "id": "type-program:adapted-consumer",
