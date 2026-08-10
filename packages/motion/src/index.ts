@@ -290,6 +290,9 @@ function createMotionComponent(tag: string) {
 						const next = style && typeof style === 'object' ? style[key] : undefined;
 						const stillManaged = next !== undefined && (isMotionValue(next) || isTransformKey(key));
 						if (stillManaged) continue;
+						// Plain static values stay in the style bag for host/domProps — do not blank
+						// them after a MotionValue→static switch (domProps already applied them).
+						if (next !== undefined) continue;
 						if (isTransformKey(key)) removeTransformFn(node, key);
 						else (node.style as any)[key] = '';
 					}

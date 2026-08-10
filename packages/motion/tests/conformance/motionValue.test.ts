@@ -3,6 +3,7 @@ import { motionValue } from 'motion';
 import { mount, nextPaint } from '../_helpers';
 import { MVBox } from '../_fixtures/mv.tsrx';
 import { StyleXLater } from '../_fixtures/style-rebind.tsrx';
+import { StyleOpacity } from '../_fixtures/style-opacity.tsrx';
 
 describe('useMotionValue', function useMotionValueSuite() {
 	it('binds a MotionValue to style and updates the element without a re-render', async function bindsWithoutRerender() {
@@ -32,6 +33,33 @@ describe('useMotionValue', function useMotionValueSuite() {
 		r.update(StyleXLater, { x });
 		await nextPaint();
 		expect(div.style.transform).toBe('translateX(40px) scale(2)');
+		r.unmount();
+	});
+
+	it('patches layout FLIP compound translate instead of stacking translateX', async function patchesLayoutCompoundTranslate() {
+		const r = mount(StyleXLater, {});
+		await nextPaint();
+		const div = r.find('#box');
+		div.style.transform = 'translate(-50px, -50px) scale(1.2, 0.8)';
+
+		const x = motionValue(40);
+		r.update(StyleXLater, { x });
+		await nextPaint();
+		expect(div.style.transform).toBe('translate(40px, -50px) scale(1.2, 0.8)');
+		expect(div.style.transform).not.toContain('translateX');
+		r.unmount();
+	});
+
+	it('keeps plain static styles when a MotionValue style key becomes static', async function keepsStaticAfterMotionValue() {
+		const opacity = motionValue(0.2);
+		const r = mount(StyleOpacity, { style: { opacity } });
+		await nextPaint();
+		const div = r.find('#box');
+		expect(div.style.opacity).toBe('0.2');
+
+		r.update(StyleOpacity, { style: { opacity: 0.75 } });
+		await nextPaint();
+		expect(div.style.opacity).toBe('0.75');
 		r.unmount();
 	});
 

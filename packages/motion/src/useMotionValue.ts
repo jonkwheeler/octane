@@ -118,6 +118,107 @@ function insertTransformFn(current: string, next: string, fn: string): string {
 	return `${current} ${next}`.trim();
 }
 
+/** Split `fn(a, b)` args at depth-0 commas so nested `calc(...)` survives. */
+function splitTransformArgs(inner: string): string[] {
+	const parts: string[] = [];
+	let start = 0;
+	let depth = 0;
+	for (let i = 0; i < inner.length; i++) {
+		const ch = inner.charAt(i);
+		if (ch === '(') depth++;
+		else if (ch === ')') depth--;
+		else if (ch === ',' && depth === 0) {
+			const part = inner.slice(start, i).trim();
+			if (part) parts.push(part);
+			start = i + 1;
+		}
+	}
+	const tail = inner.slice(start).trim();
+	if (tail) parts.push(tail);
+	return parts;
+}
+
+function replaceTransformRange(
+	current: string,
+	range: { start: number; end: number },
+	next: string,
+): string {
+	return (current.slice(0, range.start) + next + current.slice(range.end)).trim();
+}
+
+/**
+ * Layout FLIP writes compound `translate(x, y)` / `scale(sx, sy)`. Patch those in
+ * place for x/y/scale* keys instead of inserting parallel translateX/scaleX shorthands.
+ */
+function patchCompoundTransform(current: string, key: string, val: any): string | null {
+	const unitized = unitizeTransformValue(key, val);
+	if (key === 'x' || key === 'y') {
+		const range = findTransformFnRange(current, 'translate');
+		if (!range) return null;
+		const inner = current.slice(range.start + 'translate('.length, range.end - 1);
+		const args = splitTransformArgs(inner);
+		const x = args[0] || '0px';
+		const y = args[1] || '0px';
+		const nextInner = key === 'x' ? `${unitized}, ${y}` : `${x}, ${unitized}`;
+		return replaceTransformRange(current, range, `translate(${nextInner})`);
+	}
+	if (key === 'scale' || key === 'scaleX' || key === 'scaleY') {
+		const range = findTransformFnRange(current, 'scale');
+		if (!range) return null;
+		const inner = current.slice(range.start + 'scale('.length, range.end - 1);
+		const args = splitTransformArgs(inner);
+		let nextInner: string;
+		if (key === 'scale') {
+			nextInner = args.length >= 2 ? `${unitized}, ${unitized}` : unitized;
+		} else if (key === 'scaleX') {
+			const sy = args[1] !== undefined ? args[1] : args[0] || '1';
+			nextInner = `${unitized}, ${sy}`;
+		} else {
+			const sx = args[0] || '1';
+			nextInner = `${sx}, ${unitized}`;
+		}
+		return replaceTransformRange(current, range, `scale(${nextInner})`);
+	}
+	return null;
+}
+
+function removeCompoundTransform(current: string, key: string): string | null {
+	if (key === 'x' || key === 'y') {
+		const range = findTransformFnRange(current, 'translate');
+		if (!range) return null;
+		const inner = current.slice(range.start + 'translate('.length, range.end - 1);
+		const args = splitTransformArgs(inner);
+		const x = key === 'x' ? '0px' : args[0] || '0px';
+		const y = key === 'y' ? '0px' : args[1] || '0px';
+		if (x === '0px' && y === '0px') {
+			const before = current.slice(0, range.start).trimEnd();
+			const after = current.slice(range.end).trimStart();
+			return before && after ? `${before} ${after}` : before || after;
+		}
+		return replaceTransformRange(current, range, `translate(${x}, ${y})`);
+	}
+	if (key === 'scale' || key === 'scaleX' || key === 'scaleY') {
+		const range = findTransformFnRange(current, 'scale');
+		if (!range) return null;
+		if (key === 'scale') {
+			const before = current.slice(0, range.start).trimEnd();
+			const after = current.slice(range.end).trimStart();
+			return before && after ? `${before} ${after}` : before || after;
+		}
+		const inner = current.slice(range.start + 'scale('.length, range.end - 1);
+		const args = splitTransformArgs(inner);
+		const sx = key === 'scaleX' ? '1' : args[0] || '1';
+		const sy = key === 'scaleY' ? '1' : args[1] !== undefined ? args[1] : args[0] || '1';
+		if (sx === '1' && sy === '1') {
+			const before = current.slice(0, range.start).trimEnd();
+			const after = current.slice(range.end).trimStart();
+			return before && after ? `${before} ${after}` : before || after;
+		}
+		return replaceTransformRange(current, range, `scale(${sx}, ${sy})`);
+	}
+	return null;
+}
+
 /** Patch one transform function into the live CSS string without wiping others. */
 export function patchTransformFn(node: HTMLElement, key: string, val: any): void {
 	const fn = TRANSFORM_FN[key];
@@ -129,9 +230,16 @@ export function patchTransformFn(node: HTMLElement, key: string, val: any): void
 		return;
 	}
 	const range = findTransformFnRange(current, fn);
-	node.style.transform = range
-		? (current.slice(0, range.start) + next + current.slice(range.end)).trim()
-		: insertTransformFn(current, next, fn);
+	if (range) {
+		node.style.transform = replaceTransformRange(current, range, next);
+		return;
+	}
+	const compound = patchCompoundTransform(current, key, val);
+	if (compound !== null) {
+		node.style.transform = compound;
+		return;
+	}
+	node.style.transform = insertTransformFn(current, next, fn);
 }
 
 /** Remove one transform function from the live CSS string. */
@@ -141,10 +249,14 @@ export function removeTransformFn(node: HTMLElement, key: string): void {
 	const current = node.style.transform || '';
 	if (!current || current === 'none') return;
 	const range = findTransformFnRange(current, fn);
-	if (!range) return;
-	const before = current.slice(0, range.start).trimEnd();
-	const after = current.slice(range.end).trimStart();
-	node.style.transform = before && after ? `${before} ${after}` : before || after;
+	if (range) {
+		const before = current.slice(0, range.start).trimEnd();
+		const after = current.slice(range.end).trimStart();
+		node.style.transform = before && after ? `${before} ${after}` : before || after;
+		return;
+	}
+	const compound = removeCompoundTransform(current, key);
+	if (compound !== null) node.style.transform = compound;
 }
 
 // Apply one style/transform value to the element. Transform shorthands patch the
