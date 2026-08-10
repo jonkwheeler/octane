@@ -132,7 +132,9 @@ export function GestureSpringDifferential() {
 					width={200}
 					height={120}
 					ref={zoom.containerRef}
+					data-testid="zoom-target"
 					data-transform={zoom.toString()}
+					data-dragging={zoom.isDragging ? 'true' : 'false'}
 				>
 					<rect width={200} height={120} fill="#e7f5ff" />
 				</svg>;
