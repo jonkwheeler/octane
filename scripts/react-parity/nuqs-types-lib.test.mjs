@@ -79,6 +79,80 @@ test('rejects retargeting an adapted public import', async function rejectsRetar
 	}, /change outside the permitted transformations/);
 });
 
+test('verifyNuqsTypes fails closed when adapted include pulls in pristine probes', async function rejectsAdaptedPristineExtras(t) {
+	const root = await mkdtemp(join(tmpdir(), 'nuqs-types-membership-'));
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	await mkdir(join(root, 'packages/nuqs/audit'), { recursive: true });
+	await mkdir(join(root, 'packages/nuqs/typetests/pristine'), { recursive: true });
+	await cp(
+		new URL('../../packages/nuqs/typetests/pristine/public-api.test-d.ts', import.meta.url),
+		join(root, 'packages/nuqs/typetests/pristine/public-api.test-d.ts'),
+	);
+	await cp(
+		new URL('../../packages/nuqs/typetests/public-api.test-d.ts', import.meta.url),
+		join(root, 'packages/nuqs/typetests/public-api.test-d.ts'),
+	);
+	await writeFile(
+		join(root, 'packages/nuqs/typetests/pristine/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: { strict: true, noEmit: true, skipLibCheck: true },
+				include: ['./public-api.test-d.ts'],
+			},
+			null,
+			2,
+		)}\n`,
+	);
+	await writeFile(
+		join(root, 'packages/nuqs/typetests/tsconfig.json'),
+		`${JSON.stringify(
+			{
+				compilerOptions: { strict: true, noEmit: true, skipLibCheck: true },
+				include: ['./public-api.test-d.ts', './pristine/**/*.test-d.ts'],
+			},
+			null,
+			2,
+		)}\n`,
+	);
+	const config = {
+		schemaVersion: 1,
+		upstreamRoot: 'packages/nuqs/typetests/pristine',
+		adaptedRoot: 'packages/nuqs/typetests',
+		inventories: {
+			upstream: 'packages/nuqs/audit/pristine-types.json',
+			adapted: 'packages/nuqs/audit/adapted-types.json',
+		},
+		lanes: {
+			pristine: {
+				compiler: 'tsc',
+				project: 'packages/nuqs/typetests/pristine/tsconfig.json',
+			},
+			adapted: {
+				compiler: 'tsrx-tsc',
+				project: 'packages/nuqs/typetests/tsconfig.json',
+			},
+		},
+	};
+	await writeFile(
+		join(root, 'packages/nuqs/audit/type-parity.json'),
+		`${JSON.stringify(config)}\n`,
+	);
+	const inventory = buildTypeInventory(root, config);
+	await writeFile(
+		join(root, 'packages/nuqs/audit/pristine-types.json'),
+		`${JSON.stringify(inventory.upstream)}\n`,
+	);
+	await writeFile(
+		join(root, 'packages/nuqs/audit/adapted-types.json'),
+		`${JSON.stringify(inventory.adapted)}\n`,
+	);
+	assert.throws(function run() {
+		verifyNuqsTypes(root);
+	}, /program membership drifted/);
+});
+
 test('verifyNuqsTypes fails closed when a lane include empties the program', async function rejectsEmptyInclude(t) {
 	const root = await mkdtemp(join(tmpdir(), 'nuqs-types-membership-'));
 	t.after(function cleanup() {

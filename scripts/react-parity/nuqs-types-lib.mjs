@@ -71,14 +71,10 @@ export function verifyTypeProjectMembership(baseRoot, config, inventory) {
 			.sort();
 		const selectedProbes = included
 			.filter(function keepProbe(fileName) {
-				if (!fileName.startsWith(`${suiteRoot}/`) || !fileName.endsWith('.test-d.ts')) {
-					return false;
-				}
-				if (side === 'adapted') {
-					const rest = fileName.slice(suiteRoot.length + 1);
-					if (rest.startsWith('pristine/')) return false;
-				}
-				return true;
+				return (
+					fileName.startsWith(`${suiteRoot}/`) &&
+					fileName.endsWith('.test-d.ts')
+				);
 			})
 			.sort();
 		if (JSON.stringify(selectedProbes) !== JSON.stringify(expected)) {
