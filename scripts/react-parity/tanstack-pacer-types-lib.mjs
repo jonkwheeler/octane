@@ -393,13 +393,29 @@ function matchesConfigGlob(configDir, pattern, absolutePath) {
 
 function configSelectsPath(configDir, config, absolutePath) {
 	if (!existsSync(absolutePath)) return false;
-	const include = Array.isArray(config.include) ? config.include : ['**/*'];
 	const exclude = Array.isArray(config.exclude) ? config.exclude : [];
-	const included = include.some(function matchesInclude(pattern) {
-		return matchesConfigGlob(configDir, pattern, absolutePath);
-	});
-	if (!included) return false;
-	return !exclude.some(function matchesExclude(pattern) {
+	if (
+		exclude.some(function matchesExclude(pattern) {
+			return matchesConfigGlob(configDir, pattern, absolutePath);
+		})
+	) {
+		return false;
+	}
+
+	const fileEntries = Array.isArray(config.files) ? config.files : null;
+	const includeEntries = Array.isArray(config.include) ? config.include : null;
+	const listedInFiles =
+		fileEntries !== null &&
+		fileEntries.some(function matchesFile(entry) {
+			return resolve(configDir, entry) === absolutePath;
+		});
+	if (listedInFiles) return true;
+
+	// `files` alone defines the program roots. Do not fall back to `**/*`.
+	if (fileEntries !== null && includeEntries === null) return false;
+
+	const include = includeEntries !== null ? includeEntries : ['**/*'];
+	return include.some(function matchesInclude(pattern) {
 		return matchesConfigGlob(configDir, pattern, absolutePath);
 	});
 }
