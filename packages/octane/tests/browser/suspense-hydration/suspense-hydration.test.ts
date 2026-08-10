@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import type { Browser, Page } from 'playwright';
-import { launchBrowser } from '../../../../../test-utils/playwright-browser.js';
+import { browserName, launchBrowser } from '../../../../../test-utils/playwright-browser.js';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 import { octane } from 'octane/compiler/vite';
 import * as ServerRuntime from 'octane/server';
@@ -218,8 +218,14 @@ describe.sequential('real-browser Suspense and async hydration evidence', () => 
 		state = await snapshot();
 		expect(state.inputSame).toBe(true);
 		expect(state.inputVisible).toBe(true);
-		// Chromium normalizes focus to <body> before the async reveal completes.
-		expect(state.activeId).toBe('');
+		if (browserName === 'chromium') {
+			// Chromium normalizes focus to <body> before the async reveal completes.
+			expect(state.activeId).toBe('');
+		} else {
+			// Firefox React observation for the same reveal path: focus also
+			// lands on <body>, so the engine-specific oracle still expects ''.
+			expect(state.activeId).toBe('');
+		}
 		expect(state.globalFailures).toEqual([]);
 	});
 
