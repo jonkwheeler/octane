@@ -202,7 +202,7 @@
       "environment": "workspace-node",
       "project": "tanstack-pacer-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the complete Octane adapter source through tsrx-tsc (one-for-one with upstream test:types). Structural-state-setter-types accept/reject evidence lives in the ordinary typetests/octane-only project outside this required lane.",
+      "notes": "Compiles the complete Octane adapter source through tsrx-tsc (one-for-one with upstream test:types). Setter adaptation is claimed via src/internal.ts (compiled in this lane); accept/reject probes live in ordinary typetests/octane-only outside parity ownership.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -218,7 +218,14 @@
               "id": "types:adapted-octane",
               "testName": "adapted Octane type suite",
               "fullName": "adapted Octane type suite"
-            },
+            }
+          ]
+        },
+        {
+          "path": "packages/tanstack-pacer/src/internal.ts",
+          "role": "test",
+          "sha256": "5f1d892a8a6b1787dc6905cab25d9ebe661a4fb01e955bb1372b76481ca514c4",
+          "cases": [
             {
               "id": "types:adapted-setters",
               "testName": "structural state-setter type adaptation",
