@@ -24,6 +24,8 @@ type Equal<X, Y> =
 	(<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
 type IsAny<T> = 0 extends 1 & T ? true : false;
 type NotAny<T> = IsAny<T> extends true ? false : true;
+type IsNever<T> = [T] extends [never] ? true : false;
+type ConcreteResult<T> = IsNever<T> extends true ? false : NotAny<T>;
 type ApplyProps<C, P> = C extends (props: P, ...args: any[]) => infer R ? R : never;
 
 // 1. UseEditorOptions accepts starter options.
@@ -60,7 +62,7 @@ const contentProps: EditorContentProps = {
 };
 type _editorContentNotAny = Expect<NotAny<typeof EditorContent>>;
 type _editorContentResultNotAny = Expect<
-	NotAny<ApplyProps<typeof EditorContent, typeof contentProps>>
+	ConcreteResult<ApplyProps<typeof EditorContent, typeof contentProps>>
 >;
 
 // 6. BubbleMenu / FloatingMenu accept these props on their callable signatures.
@@ -74,8 +76,12 @@ const floatingProps = {
 } satisfies FloatingMenuProps;
 type _bubbleMenuNotAny = Expect<NotAny<typeof BubbleMenu>>;
 type _floatingMenuNotAny = Expect<NotAny<typeof FloatingMenu>>;
-type _bubbleResultNotAny = Expect<NotAny<ApplyProps<typeof BubbleMenu, typeof bubbleProps>>>;
-type _floatingResultNotAny = Expect<NotAny<ApplyProps<typeof FloatingMenu, typeof floatingProps>>>;
+type _bubbleResultNotAny = Expect<
+	ConcreteResult<ApplyProps<typeof BubbleMenu, typeof bubbleProps>>
+>;
+type _floatingResultNotAny = Expect<
+	ConcreteResult<ApplyProps<typeof FloatingMenu, typeof floatingProps>>
+>;
 
 // 7. Unknown UseEditorOptions keys are rejected.
 // @ts-expect-error unknown editor option is rejected

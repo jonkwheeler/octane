@@ -30,8 +30,8 @@ the shared `@ts-expect-error` control).
 2. `useEditor` returns exact `Editor` (rejects erased `any`).
 3. `useCurrentEditor().editor` is exact `Editor | null` (rejects erased `any`).
 4. `useEditorState` selector result is exact `string` (rejects erased `any`).
-5. `EditorContent` accepts the constructed props on its callable signature (non-`any` result via `ApplyProps`).
-6. `BubbleMenu` / `FloatingMenu` accept the constructed props on their callable signatures (non-`any` results via `ApplyProps`).
+5. `EditorContent` accepts the constructed props on its callable signature (concrete non-`any`/`never` result via `ApplyProps`+`ConcreteResult`).
+6. `BubbleMenu` / `FloatingMenu` accept the constructed props on their callable signatures (concrete non-`any`/`never` results via `ApplyProps`+`ConcreteResult`).
 7. Unknown `UseEditorOptions` keys are rejected.
 
 Octane-only declaration contracts (`useTiptap`, node/mark views, `ReactRenderer`,
