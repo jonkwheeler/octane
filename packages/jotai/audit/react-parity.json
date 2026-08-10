@@ -75,8 +75,8 @@
             },
             {
               "id": "differential:jotai-async-atom",
-              "testName": "AsyncApp: pending fallback → resolved value, byte-identical at both steps",
-              "fullName": "differential: @octanejs/jotai vs real jotai on React AsyncApp: pending fallback → resolved value, byte-identical at both steps"
+              "testName": "AsyncApp: pending fallback \u2192 resolved value, byte-identical at both steps",
+              "fullName": "differential: @octanejs/jotai vs real jotai on React AsyncApp: pending fallback \u2192 resolved value, byte-identical at both steps"
             }
           ]
         },
@@ -118,7 +118,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "745d95f91db82820eaec6b3a4f1ae6b621f2debe580de17137779d795d61ed3d"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         }
       ]
     }
