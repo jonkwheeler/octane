@@ -12,7 +12,7 @@ import {
 } from './inventory-lib.mjs';
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
-import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 import { verifyIntersectionObserverTestClassifications } from './intersection-observer-classifications-lib.mjs';
 import { verifyIntersectionObserverTypes } from './intersection-observer-types-lib.mjs';
 import { verifyIntersectionObserverUpstream } from './intersection-observer-upstream-lib.mjs';
