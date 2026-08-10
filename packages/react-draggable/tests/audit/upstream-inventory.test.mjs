@@ -206,3 +206,44 @@ await rejectsMutation(
 	},
 	/artifact: stale hash tag\/test\/browser\/test\.html/,
 );
+
+await rejectsMutation(
+	'a deleted adapted assertion fails closed even when the title is unchanged',
+	async (root) => {
+		const path = join(root, 'tests/upstream/public-root.test.ts');
+		const source = await readFile(path, 'utf8');
+		await writeFile(
+			path,
+			source.replace(
+				"expect(mounted.node.classList.contains('react-draggable')).toBe(true);",
+				'void mounted.node;',
+			),
+		);
+	},
+	/adapted case structure: structure drifted|adapted case structure: assertions drifted/,
+);
+
+await rejectsMutation(
+	'a removed adapted @ts-expect-error fails closed',
+	async (root) => {
+		const path = join(root, 'typetests/adapted/typeCompat.fixture.ts');
+		const source = await readFile(path, 'utf8');
+		await writeFile(
+			path,
+			source.replace(
+				'// @ts-expect-error positions require both coordinates\nconst badPosition: ControlPosition = { x: 1 };',
+				'const badPosition: ControlPosition = { x: 1, y: 0 };',
+			),
+		);
+	},
+	/react-draggable adapted type inventory drifted|missing required adapted assertion group|expected at least 2 @ts-expect-error/,
+);
+
+await rejectsMutation(
+	'an unclassified authored test fails closed',
+	async (root) => {
+		const path = join(root, 'tests/runtime/orphan-unclassified.test.ts');
+		await writeFile(path, "import { test } from 'vitest';\ntest('orphan', () => {});\n");
+	},
+	/every authored react-draggable test must have exactly one classification/,
+);

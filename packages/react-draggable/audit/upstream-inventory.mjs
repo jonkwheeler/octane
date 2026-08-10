@@ -2,9 +2,22 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+	buildAdaptedStructureInventory,
+	buildUpstreamStructureInventory,
+	sameStructureLedgers,
+} from '../../../scripts/react-parity/react-draggable-case-structure-lib.mjs';
+import { verifyReactDraggableTestClassifications } from '../../../scripts/react-parity/react-draggable-classifications-lib.mjs';
+import { verifyReactDraggableTypes } from '../../../scripts/react-parity/react-draggable-types-lib.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const inventoryPath = join(packageRoot, 'audit/upstream-inventory.json');
+const ORACLE_VERSIONS = {
+	react: '19.2.7',
+	'react-dom': '19.2.7',
+	'@types/react': '19.2.17',
+	'@types/react-dom': '19.2.3',
+};
 
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
@@ -148,11 +161,42 @@ async function buildInventory(root = packageRoot) {
 		{ id: 'type-program:pristine', path: 'typetests/tsconfig.pristine.json' },
 		{ id: 'type-program:adapted', path: 'typetests/tsconfig.adapted.json' },
 	);
+	const adaptedStructure = buildAdaptedStructureInventory(root);
+	const upstreamStructure = buildUpstreamStructureInventory(root, publicUnitCases, browserCases);
 	const adaptedById = new Map(adaptedCases.map((entry) => [entry.id, entry]));
 	assert(
 		adaptedById.size === adaptedCases.length,
 		'adapted parity case identifiers must be unique',
 	);
+	const structureByIdentity = new Map(
+		adaptedStructure.map(function pair(entry) {
+			return [entry.identity, entry];
+		}),
+	);
+	for (const entry of publicUnitCases) {
+		const identity = adaptedUnitIdentity(entry);
+		assert(
+			structureByIdentity.has(identity),
+			`adapted public unit case structure missing for ${identity}`,
+		);
+		assert(
+			structureByIdentity.get(identity).assertions.length > 0 ||
+				structureByIdentity.get(identity).scenarioSteps.length > 0,
+			`adapted public unit case ${identity} has an empty callback structure`,
+		);
+	}
+	for (const entry of browserCases) {
+		const identity = adaptedBrowserIdentity(entry);
+		assert(
+			structureByIdentity.has(identity),
+			`adapted browser case structure missing for ${identity}`,
+		);
+		assert(
+			structureByIdentity.get(identity).assertions.length > 0 ||
+				structureByIdentity.get(identity).scenarioSteps.length > 0,
+			`adapted browser case ${identity} has an empty callback structure`,
+		);
+	}
 
 	const sourceFiles = artifactFiles.filter((path) => path.startsWith('tag/lib/'));
 	const runtimeExports = ['default', 'DraggableCore'];
@@ -223,6 +267,8 @@ async function buildInventory(root = packageRoot) {
 			commit: 'bcbaa8eb285aea49865ca8870c0b7b441c2fe6a4',
 			tree: '7b17a5d02449287945f87dee0cecdadcfb56cdc5',
 			license: 'MIT',
+			oracleVersions: ORACLE_VERSIONS,
+			oracleCatalog: 'react-draggable-react-oracle',
 		},
 		publicSurface: { runtimeExports, typeExports, subpaths: ['.', './package.json'] },
 		artifacts,
@@ -234,6 +280,8 @@ async function buildInventory(root = packageRoot) {
 			fixtures,
 			typeAssertions: expectTypeAssertions(typeSource),
 			adaptedCases,
+			adaptedCaseStructures: adaptedStructure,
+			upstreamCaseStructures: upstreamStructure,
 		},
 		crosswalk: {
 			source: sourceFiles.map((value) =>
@@ -302,30 +350,17 @@ async function buildInventory(root = packageRoot) {
 					'type-assertion',
 					[
 						'typetests/adapted/typeCompat.fixture.ts',
+						'audit/pristine-types.json',
+						'audit/adapted-types.json',
+						'audit/type-parity.json',
 						'typetests/tsconfig.pristine.json',
 						'typetests/tsconfig.adapted.json',
 					],
-					'Checked by both pristine-upstream and adapted public-contract type programs.',
-					[
-						'type-program:adapted-consumer',
-						'type-program:adapted-compatibility',
-						'type-program:pristine',
-						'type-program:adapted',
-					],
+					'Inventoried at assertion-group granularity by audit/type-parity.json; pristine and adapted hashes are compared, with explicit droppedAssertionGroups for React-only children/JSX/class probes.',
+					['type-program:adapted-compatibility'],
 				),
 			),
-			authoredTests: [
-				{
-					upstream: 'octane-only:upstream-inventory-negative-controls',
-					kind: 'octane-only-test',
-					disposition: 'octane-only-framework-contract',
-					evidence: ['tests/audit/upstream-inventory.test.mjs'],
-					path: 'tests/audit/upstream-inventory.test.mjs',
-					classification: 'octane-only-framework-contract',
-					reason:
-						'Negative controls prove that the provenance and crosswalk machinery fails closed; upstream has no equivalent self-audit.',
-				},
-			],
+			authoredTests: await authoredTestCrosswalk(root),
 		},
 		allowedTransforms: [
 			{
@@ -368,13 +403,44 @@ function sameIdentities(actual, expected, label, getId = (value) => value) {
 		assert(expectedIds.includes(id), `${label}: unapproved identity ${id}`);
 }
 
+async function authoredTestCrosswalk(root) {
+	const classifications = JSON.parse(
+		await readFile(join(root, 'audit/test-classifications.json'), 'utf8'),
+	);
+	return classifications.tests.map(function toCrosswalk(entry) {
+		const relativePath = entry.path.replace(/^packages\/react-draggable\//, '');
+		return {
+			upstream: `authored:${relativePath}`,
+			kind: 'authored-test',
+			disposition: entry.disposition,
+			evidence: [relativePath],
+			path: relativePath,
+			classification: entry.disposition,
+			reason: entry.reason ?? entry.oracle ?? '',
+		};
+	});
+}
+
 export async function validate(root = packageRoot) {
 	const expected = JSON.parse(await readFile(join(root, 'audit/upstream-inventory.json'), 'utf8'));
 	const actual = await buildInventory(root);
+	actual.crosswalk.authoredTests = await authoredTestCrosswalk(root);
 	assert(
 		JSON.stringify(actual.release) === JSON.stringify(expected.release),
 		'immutable release coordinates changed',
 	);
+	assert(
+		JSON.stringify(actual.release.oracleVersions) === JSON.stringify(ORACLE_VERSIONS),
+		'immutable React oracle versions changed',
+	);
+	const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
+	for (const [name, version] of Object.entries(ORACLE_VERSIONS)) {
+		assert(
+			manifest.devDependencies?.[name] === `catalog:react-draggable-react-oracle`,
+			`package.json must pin ${name} through catalog:react-draggable-react-oracle (got ${manifest.devDependencies?.[name]})`,
+		);
+		void version;
+	}
 	sameIdentities(actual.artifacts, expected.artifacts, 'artifact', (value) => value.path);
 	for (const artifact of expected.artifacts) {
 		const current = actual.artifacts.find((value) => value.path === artifact.path);
@@ -416,6 +482,25 @@ export async function validate(root = packageRoot) {
 		'adapted case',
 		(value) => value.id,
 	);
+	sameStructureLedgers(
+		actual.inventories.adaptedCaseStructures,
+		expected.inventories.adaptedCaseStructures,
+		'adapted case structure',
+	);
+	sameStructureLedgers(
+		actual.inventories.upstreamCaseStructures,
+		expected.inventories.upstreamCaseStructures,
+		'upstream case structure',
+	);
+	sameIdentities(
+		actual.crosswalk.authoredTests,
+		expected.crosswalk.authoredTests,
+		'authored test',
+		(value) => value.upstream,
+	);
+
+	verifyReactDraggableTestClassifications(root, { packageRoot: root });
+	verifyReactDraggableTypes(root, { packageRoot: root });
 
 	for (const [ledger, inventory] of [
 		['source', expected.inventories.sourceFiles],
@@ -480,7 +565,6 @@ export async function validate(root = packageRoot) {
 	const reusedCaseId = oneToOneCaseIds.find((id, index) => oneToOneCaseIds.indexOf(id) !== index);
 	assert(!reusedCaseId, `adapted case is mapped more than once: ${reusedCaseId}`);
 
-	const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 	sameIdentities(Object.keys(manifest.exports), ['.', './package.json'], 'package subpath');
 	assert(
 		!manifest.files.some((path) => /^(?:upstream|audit|tests\/audit)(?:\/|$)/.test(path)),

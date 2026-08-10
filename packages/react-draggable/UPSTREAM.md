@@ -11,12 +11,18 @@ floating compatibility range.
 - npm integrity: `sha512-wa3tzfFnYt3yaZLuyU58fl1TNunfWfBekDgWhZA1+gb2jnp42wZ0ymuopR6M5kqDYmm4hKmzGlcKWjZf3Zb6RQ==`
 - npm tarball SHA-1: `e502c3cfe0cc97d691e12aaa377a975fce097d71`
 - license: MIT
+- React oracle: `react@19.2.7` / `react-dom@19.2.7`
+- React type oracle: `@types/react@19.2.17` / `@types/react-dom@19.2.3`
+- oracle catalog: `catalog:react-draggable-react-oracle` (immutable pin; not
+  `catalog:default`)
 
 The npm tarball is the consumer authority for runtime bytes, declarations,
 exports, and package conditions. The annotated Git tag is the source, test,
 fixture, and license authority. The tag object resolves directly to the commit
 above. [`audit/artifact-authorities.json`](./audit/artifact-authorities.json)
-records every npm/tag boundary discrepancy and its disposition.
+records every npm/tag boundary discrepancy and its disposition. Oracle versions
+are also recorded under `release.oracleVersions` in
+[`audit/upstream-inventory.json`](./audit/upstream-inventory.json).
 
 ## Vendored boundary
 
@@ -49,28 +55,58 @@ not the source module's convenience exports, is authoritative.
 [`audit/upstream-inventory.json`](./audit/upstream-inventory.json) is the
 machine-readable crosswalk. It hashes every vendored artifact and gives exactly
 one disposition to every source module, public runtime export, public type
-export, unit/type case, browser case, fixture, and type assertion. U1 records
-future adaptations as `pending-adaptation`; later units must replace those
-entries with executable evidence rather than deleting them.
+export, unit/type case, browser case, fixture, and type assertion.
 
 The pinned repository contains exactly 204 non-browser unit/type cases across
-11 test files and 23 browser cases. The type-compatibility fixture contains 40
-explicit `expectType` assertions. Test identities include file, source line,
-and title so same-titled cases in different `describe` blocks remain distinct.
-The sole port-authored U1 test is classified as an Octane-only framework
-contract because it mutation-tests the audit machinery itself.
+11 test files and 23 browser cases. The type-compatibility fixture contains
+explicit `expectType` assertions plus children/JSX/class probes. Test identities
+include file, source line, and title so same-titled cases in different
+`describe` blocks remain distinct.
 
-`node audit/upstream-inventory.mjs` recomputes file hashes and identities from
-the vendored bytes, verifies the crosswalk is bijective, rejects duplicate or
-skip dispositions, checks the exact public subpaths, and verifies the root MIT
-notice. `node --test tests/audit/upstream-inventory.test.mjs` proves failures for
-a missing/renamed source, renamed unit case, removed browser case, removed type
-assertion, duplicate disposition, invented export, invented subpath, skip
-disposition, and stale fixture hash.
+Adapted public unit and browser cases live in
+`tests/upstream/public-root.test.ts` and `tests/browser/parity.browser.test.ts`.
+Each `adaptedCase(identity, …)` identity is the upstream citation
+(`tag/test/…::title`). The audit inventories every adapted callback's
+assertions, scenario steps, and fixture refs (`inventories.adaptedCaseStructures`)
+and every corresponding upstream case structure
+(`inventories.upstreamCaseStructures`). Deleting or weakening an adapted
+`expect(...)` while keeping the title fails closed.
 
-No source transformation is permitted at this milestone. Future adapted files
-must be governed by explicit entries in `allowedTransforms`; an empty ledger is
-intentional and fail-closed.
+Type parity is governed by [`audit/type-parity.json`](./audit/type-parity.json)
+with file/assertion-group inventories in `audit/pristine-types.json` and
+`audit/adapted-types.json`. React-only children/JSX/`React.Component` probes are
+recorded as `upstreamOnlyAssertionGroups`; adapted `@ts-expect-error` controls
+are required.
+
+Every authored package test is classified in
+[`audit/test-classifications.json`](./audit/test-classifications.json). Discovery
+and the classification ledger must be equal and disjoint.
+
+`node audit/upstream-inventory.mjs` recomputes file hashes, identities, and case
+structures from the vendored/adapted bytes, verifies the crosswalk is bijective,
+rejects duplicate or skip dispositions, checks the exact public subpaths,
+verifies oracle catalog pins, and verifies the root MIT notice.
+`node --test tests/audit/upstream-inventory.test.mjs` proves failures for a
+missing/renamed source, renamed unit case, removed browser case, removed type
+assertion, deleted adapted assertion body, removed `@ts-expect-error`,
+unclassified authored test, duplicate disposition, invented export, invented
+subpath, skip disposition, and stale fixture hash.
+
+## Allowed transforms
+
+Source and type adaptations are fail-closed behind an explicit ledger. The
+current `allowedTransforms` entries are:
+
+| id | Applies to | Authorization |
+|---|---|---|
+| `import-root-octanejs` | adapted runtime + types | Rewrite `react-draggable` imports to `@octanejs/react-draggable` |
+| `native-events` | adapted types | Replace React synthetic `MouseEvent`/`TouchEvent` unions with native events |
+| `function-components` | adapted types | Replace `React.Component` class assignability with Octane function-component types |
+| `nodeRef-prop-surface` | adapted runtime + types | Express consumer refs through Octane `nodeRef` props rather than class-component refs |
+
+Type-lane detail and upstream-only probe dispositions live in
+`audit/type-parity.json` `permittedTransformations` /
+`upstreamOnlyAssertionGroups`.
 
 ## License provenance
 

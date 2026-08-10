@@ -923,6 +923,19 @@ catalogs:
     typescript:
       specifier: 5.9.3
       version: 5.9.3
+  react-draggable-react-oracle:
+    '@types/react':
+      specifier: 19.2.17
+      version: 19.2.17
+    '@types/react-dom':
+      specifier: 19.2.3
+      version: 19.2.3
+    react:
+      specifier: 19.2.7
+      version: 19.2.7
+    react-dom:
+      specifier: 19.2.7
+      version: 19.2.7
 
 overrides:
   esrap: ^2.3.0
@@ -5306,10 +5319,10 @@ importers:
         specifier: 15.7.15
         version: 15.7.15
       '@types/react':
-        specifier: catalog:default
+        specifier: catalog:react-draggable-react-oracle
         version: 19.2.17
       '@types/react-dom':
-        specifier: catalog:default
+        specifier: catalog:react-draggable-react-oracle
         version: 19.2.3(@types/react@19.2.17)
       '@vitejs/plugin-react':
         specifier: catalog:default
@@ -5324,10 +5337,10 @@ importers:
         specifier: 15.8.1
         version: 15.8.1
       react:
-        specifier: catalog:default
+        specifier: catalog:react-draggable-react-oracle
         version: 19.2.7
       react-dom:
-        specifier: catalog:default
+        specifier: catalog:react-draggable-react-oracle
         version: 19.2.7(react@19.2.7)
       vite:
         specifier: catalog:default
