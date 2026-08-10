@@ -12,7 +12,7 @@ import {
 } from './inventory-lib.mjs';
 import { verifyHookFormUpstream } from './hook-form-upstream-lib.mjs';
 import { verifyHookFormTypes } from './hook-form-types-lib.mjs';
-import { verifyPortTestClassifications } from './hook-form-classifications-lib.mjs';
+import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
@@ -148,11 +148,7 @@ for (const relativeFile of BINDING_MANIFESTS) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
 		if (!validateOnly) {
-			runRequiredBindingLanes({
-				relativeFile,
-				harnessPath: HARNESS_PATH,
-				repo: REPO,
-			});
+			runRequiredBindingLanes({ relativeFile, harnessPath: HARNESS_PATH, repo: REPO });
 		}
 	} catch (error) {
 		errors.push(`${relativeFile} is invalid: ${error.message}`);

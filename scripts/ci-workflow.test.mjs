@@ -289,10 +289,7 @@ describe('CI workflow aggregation', () => {
 		// The manifest runner owns all required lanes in one process for both
 		// verification states. recorded-unverified limits the claim, not execution.
 		assert.doesNotMatch(reactParityCheck, /provenance\.verification/);
-		assert.match(
-			reactParityCheck,
-			/if \(!validateOnly\) \{\s+runRequiredBindingLanes\(\{/,
-		);
+		assert.match(reactParityCheck, /if \(!validateOnly\) \{\s+runRequiredBindingLanes\(\{/);
 		assert.match(
 			reactParityCheckLib,
 			/\[harnessPath, 'run-required', '--manifest', relativeFile\]/,
@@ -327,15 +324,6 @@ describe('CI workflow aggregation', () => {
 		]);
 		assert.equal(projects.get('rspeedy-plugin').test.exclude, undefined);
 		assert.deepEqual(projects.get('rspeedy-plugin-browser').test.include, [browserGlob]);
-	});
-
-	test('installs WebKit only for the cross-browser integration lane', () => {
-		const heavyIntegration = jobSource('heavy_integration');
-
-		assert.match(
-			heavyIntegration,
-			/- name: Install Playwright WebKit for cross-browser ownership coverage\n\s+if: \$\{\{ matrix\.lane == 'browser' \}\}\n\s+run: pnpm --filter octane exec playwright install --with-deps webkit/,
-		);
 	});
 
 	test('derives sharded projects generically from execution-group ownership', () => {

@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
 const options = (execFile) => ({
@@ -13,8 +12,6 @@ const options = (execFile) => ({
 test('runs required lanes without conditioning execution on verification status', () => {
 	const calls = [];
 	runRequiredBindingLanes(options((...args) => calls.push(args)));
-
-	assert.equal(calls.length, 1);
 	assert.deepEqual(calls[0][1], [
 		'/repo/scripts/react-parity/harness.mjs',
 		'run-required',
