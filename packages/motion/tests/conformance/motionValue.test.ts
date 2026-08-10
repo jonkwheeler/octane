@@ -31,8 +31,7 @@ describe('useMotionValue', function useMotionValueSuite() {
 		const x = motionValue(40);
 		r.update(StyleXLater, { x });
 		await nextPaint();
-		expect(div.style.transform).toContain('scale(2)');
-		expect(div.style.transform).toContain('translateX(40px)');
+		expect(div.style.transform).toBe('translateX(40px) scale(2)');
 		r.unmount();
 	});
 

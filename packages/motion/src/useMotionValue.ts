@@ -47,6 +47,23 @@ const PX_KEYS = new Set(['x', 'y', 'z']);
 const DEG_KEYS = new Set(['rotate', 'rotateX', 'rotateY', 'rotateZ', 'skewX', 'skewY']);
 const NO_UNIT = new Set(['opacity', 'zIndex', 'scale', 'scaleX', 'scaleY']);
 
+// Motion-style CSS transform function order: translate before scale/rotate so
+// offsets are not scaled when both are present.
+const TRANSFORM_ORDER = [
+	'translateX',
+	'translateY',
+	'translateZ',
+	'scale',
+	'scaleX',
+	'scaleY',
+	'rotate',
+	'rotateX',
+	'rotateY',
+	'rotateZ',
+	'skewX',
+	'skewY',
+];
+
 export function isTransformKey(k: string): boolean {
 	return k in TRANSFORM_FN;
 }
@@ -87,6 +104,20 @@ function findTransformFnRange(
 	return null;
 }
 
+function insertTransformFn(current: string, next: string, fn: string): string {
+	const orderIdx = TRANSFORM_ORDER.indexOf(fn);
+	if (orderIdx === -1) return `${current} ${next}`.trim();
+	for (let i = orderIdx + 1; i < TRANSFORM_ORDER.length; i++) {
+		const later = findTransformFnRange(current, TRANSFORM_ORDER[i]);
+		if (later) {
+			const before = current.slice(0, later.start).trimEnd();
+			const after = current.slice(later.start).trimStart();
+			return before ? `${before} ${next} ${after}` : `${next} ${after}`;
+		}
+	}
+	return `${current} ${next}`.trim();
+}
+
 /** Patch one transform function into the live CSS string without wiping others. */
 export function patchTransformFn(node: HTMLElement, key: string, val: any): void {
 	const fn = TRANSFORM_FN[key];
@@ -100,7 +131,7 @@ export function patchTransformFn(node: HTMLElement, key: string, val: any): void
 	const range = findTransformFnRange(current, fn);
 	node.style.transform = range
 		? (current.slice(0, range.start) + next + current.slice(range.end)).trim()
-		: `${current} ${next}`.trim();
+		: insertTransformFn(current, next, fn);
 }
 
 /** Remove one transform function from the live CSS string. */
