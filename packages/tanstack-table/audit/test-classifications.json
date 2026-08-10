@@ -33,9 +33,8 @@
     },
     {
       "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
-      "disposition": "octane-only-divergence",
-      "reason": "Paired package-export observation: React publishes ./legacy while Octane omits it. Stays outside testExecution so it is not counted as adapted parity evidence.",
-      "divergenceId": "legacy-migration-subpath"
+      "disposition": "react-octane-differential",
+      "oracle": "Same-scenario package-export check: @tanstack/react-table publishes ./legacy and @octanejs/tanstack-table omits it (pins divergence legacy-migration-subpath)."
     },
     {
       "path": "packages/tanstack-table/tests/conformance/parity.test.ts",
