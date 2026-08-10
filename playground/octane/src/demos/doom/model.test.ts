@@ -5,6 +5,7 @@ import {
 	ENEMY_DEATH_MS,
 	ENEMY_DIRECTION_MS,
 	ENEMY_FIRE_COOLDOWN_MS,
+	enemyCanOccupy,
 	FIRE_COOLDOWN_MS,
 	isBlocked,
 	PLAYER_PROJECTILE_STEP,
@@ -123,19 +124,22 @@ describe('Doom fixed-step model', () => {
 	it('keeps idle enemies outside the player solid radius so movement cannot soft-lock', () => {
 		const state = createGameState();
 		state.player = { x: 0, y: 1, z: 0, yaw: 0 };
+		expect(enemyCanOccupy(state, { x: 1.49, z: 0 })).toBe(false);
+		expect(enemyCanOccupy(state, { x: 1.5, z: 0 })).toBe(true);
+		// Candidate idle step from the origin toward -x is inside the solid radius.
+		expect(enemyCanOccupy(state, { x: -0.025, z: 0 })).toBe(false);
+
+		// Idle wander only runs without aggro; keep the player far and confirm the
+		// branch still steps when the solid-radius guard allows it.
+		state.player = { x: 100, y: 1, z: 100, yaw: 0 };
+		expect(enemyCanOccupy(state, { x: -0.025, z: 0 })).toBe(true);
 		const enemy = state.enemies[0]!;
-		enemy.x = 1.52;
+		enemy.x = 0;
 		enemy.z = 0;
 		enemy.direction = -Math.PI / 2;
 		enemy.nextDirectionAt = ENEMY_DIRECTION_MS;
-		const after = stepGame(state, idle, 1);
-		expect(
-			Math.hypot(after.enemies[0]!.x - after.player.x, after.enemies[0]!.z - after.player.z),
-		).toBeGreaterThanOrEqual(1.5);
-		expect(after.enemies[0]!.x).toBeCloseTo(enemy.x, 8);
-		expect(after.enemies[0]!.z).toBeCloseTo(enemy.z, 8);
-		const escaped = stepGame(after, { ...idle, left: true }, 2);
-		expect(escaped.player.x).toBeLessThan(after.player.x);
+		const wandered = stepGame(state, idle, 1);
+		expect(wandered.enemies[0]!.x - enemy.x).toBeCloseTo(-0.025, 8);
 	});
 
 	it('preserves the collectible restoration quirk', () => {

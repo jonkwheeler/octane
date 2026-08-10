@@ -126,7 +126,7 @@ export function isBlocked(state: GameState, point: Point, includeEnemies = true)
 	return includeEnemies && state.enemies.some((enemy) => near(point, enemy, 1.5));
 }
 
-function enemyCanOccupy(state: GameState, point: Point): boolean {
+export function enemyCanOccupy(state: GameState, point: Point): boolean {
 	return !cellBlocks(point, 1.5) && !near(point, BLOCKING_PROP, 1.5) && !near(point, state.player, 1.5);
 }
 
