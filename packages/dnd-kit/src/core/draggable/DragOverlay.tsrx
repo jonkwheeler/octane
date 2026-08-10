@@ -64,7 +64,7 @@ export function DragOverlay<T extends Data, U extends Draggable<T>>(props: DragO
 
 	let content: unknown = null;
 	if (source && !isDisabled) {
-		// OCTANE DIVERGENCE[dnd-kit-drag-overlay-compiled-children][adapted:dnd-kit-drag-overlay-compiled-children]
+		// OCTANE DIVERGENCE[dnd-kit-drag-overlay-compiled-children][differential:dnd-kit-drag-overlay-compiled-children]
 		// Upstream treats every function child as a render prop. Octane compiled
 		// children blocks are also functions, so distinguish them with
 		// isChildrenBlock and only call plain render props.

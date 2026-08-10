@@ -19,7 +19,7 @@
     {
       "path": "packages/dnd-kit/tests/differential/parity.test.ts",
       "disposition": "react-octane-differential",
-      "oracle": "Runs one identical authored programmatic manager-action drag fixture against both adapters (sensors=[], manager.actions)."
+      "oracle": "Runs one identical authored programmatic manager-action drag fixture against both adapters (sensors=[], manager.actions), plus behavioral cases for the structured DragOverlay and OptimisticSortingPlugin adaptations."
     },
     {
       "path": "packages/dnd-kit/tests/hydration/hydration.test.ts",
