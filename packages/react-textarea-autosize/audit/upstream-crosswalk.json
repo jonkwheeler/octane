@@ -1,15 +1,21 @@
 {
   "schemaVersion": 1,
   "upstream": "react-textarea-autosize@8.5.9",
+  "pristineInventory": "packages/react-textarea-autosize/audit/pristine-runtime.json",
+  "adaptedInventory": "packages/react-textarea-autosize/audit/adapted-runtime.json",
   "cases": [
     {
-      "upstream": "<TextareaAutosize /> renders ok",
-      "adapted": "<TextareaAutosize /> adapted upstream inventory renders ok",
+      "upstreamFullName": "<TextareaAutosize /> renders ok",
+      "adaptedFullName": "<TextareaAutosize /> adapted upstream inventory renders ok",
+      "upstreamFile": "upstream/src/__tests__/index.test.js",
+      "adaptedFile": "packages/react-textarea-autosize/tests/upstream/adapted.test.ts",
       "status": "ported"
     },
     {
-      "upstream": "<TextareaAutosize /> renders with initial height passed in style prop",
-      "adapted": "<TextareaAutosize /> adapted upstream inventory renders with initial height passed in style prop",
+      "upstreamFullName": "<TextareaAutosize /> renders with initial height passed in style prop",
+      "adaptedFullName": "<TextareaAutosize /> adapted upstream inventory renders with initial height passed in style prop",
+      "upstreamFile": "upstream/src/__tests__/index.test.js",
+      "adaptedFile": "packages/react-textarea-autosize/tests/upstream/adapted.test.ts",
       "status": "ported"
     }
   ]

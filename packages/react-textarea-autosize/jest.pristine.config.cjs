@@ -8,9 +8,9 @@ module.exports = {
 		'^#is-browser$': '<rootDir>/upstream/src/conditions/true.ts',
 		'^#is-development$': '<rootDir>/upstream/src/conditions/true.ts',
 		'^@testing-library/jest-dom/extend-expect$':
-			'<rootDir>/../../node_modules/@testing-library/jest-dom/dist/index.js',
-		'^react$': '<rootDir>/../../node_modules/react',
-		'^react-dom/(.*)$': '<rootDir>/../../node_modules/react-dom/$1',
+			'<rootDir>/node_modules/@testing-library/jest-dom/dist/index.js',
+		'^react$': '<rootDir>/node_modules/react',
+		'^react-dom/(.*)$': '<rootDir>/node_modules/react-dom/$1',
 	},
 	transform: {
 		'^.+\\.[jt]sx?$': [

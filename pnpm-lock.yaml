@@ -923,6 +923,16 @@ catalogs:
     typescript:
       specifier: 5.9.3
       version: 5.9.3
+  react-textarea-autosize-react-oracle:
+    '@types/react':
+      specifier: 19.2.17
+      version: 19.2.17
+    react:
+      specifier: 19.2.7
+      version: 19.2.7
+    react-dom:
+      specifier: 19.2.7
+      version: 19.2.7
 
 overrides:
   esrap: ^2.3.0
@@ -4625,7 +4635,7 @@ importers:
         version: 0.28.1
       jest:
         specifier: 30.4.2
-        version: 30.4.2(@types/node@25.9.5)(supports-color@10.2.2)
+        version: 30.4.2(@types/node@26.1.1)(supports-color@10.2.2)
       jest-environment-jsdom:
         specifier: 30.4.1
         version: 30.4.1(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
@@ -4646,7 +4656,7 @@ importers:
         version: 7.81.0(react@19.2.7)
       vitest:
         specifier: catalog:default
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
       whatwg-fetch:
         specifier: 3.6.20
         version: 3.6.20
@@ -5365,7 +5375,7 @@ importers:
         specifier: catalog:default
         version: 24.13.3
       '@types/react':
-        specifier: catalog:default
+        specifier: catalog:react-textarea-autosize-react-oracle
         version: 19.2.17
       '@vitejs/plugin-react':
         specifier: 6.0.3
@@ -5386,10 +5396,10 @@ importers:
         specifier: catalog:default
         version: 1.61.1
       react:
-        specifier: catalog:default
+        specifier: catalog:react-textarea-autosize-react-oracle
         version: 19.2.7
       react-dom:
-        specifier: catalog:default
+        specifier: catalog:react-textarea-autosize-react-oracle
         version: 19.2.7(react@19.2.7)
       typescript:
         specifier: catalog:default
@@ -5405,7 +5415,7 @@ importers:
         version: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
       vitest:
         specifier: catalog:default
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/recharts:
     dependencies:
@@ -36813,7 +36823,7 @@ snapshots:
       magicast: 0.5.3
       obug: 2.1.4
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -36829,7 +36839,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -36855,14 +36865,6 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
-
-  '@vitest/mocker@4.1.10(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))':
-    dependencies:
-      '@vitest/spy': 4.1.10
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
 
   '@vitest/mocker@4.1.10(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
@@ -42265,7 +42267,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-cli@30.4.2(@types/node@25.9.5)(supports-color@10.2.2):
+  jest-cli@30.4.2(@types/node@26.1.1)(supports-color@10.2.2):
     dependencies:
       '@jest/core': 30.4.2(supports-color@10.2.2)
       '@jest/test-result': 30.4.1
@@ -42273,7 +42275,7 @@ snapshots:
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.4.2(@types/node@25.9.5)(supports-color@10.2.2)
+      jest-config: 30.4.2(@types/node@26.1.1)(supports-color@10.2.2)
       jest-util: 30.4.1
       jest-validate: 30.4.1
       yargs: 17.7.3
@@ -42342,6 +42344,37 @@ snapshots:
       strip-json-comments: 3.1.1
     optionalDependencies:
       '@types/node': 25.9.5
+    transitivePeerDependencies:
+      - babel-plugin-macros
+      - supports-color
+
+  jest-config@30.4.2(@types/node@26.1.1)(supports-color@10.2.2):
+    dependencies:
+      '@babel/core': 7.29.7(supports-color@10.2.2)
+      '@jest/get-type': 30.1.0
+      '@jest/pattern': 30.4.0
+      '@jest/test-sequencer': 30.4.1
+      '@jest/types': 30.4.1
+      babel-jest: 30.4.1(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2)
+      chalk: 4.1.2
+      ci-info: 4.4.0
+      deepmerge: 4.3.1
+      glob: 10.5.0
+      graceful-fs: 4.2.11
+      jest-circus: 30.4.2(supports-color@10.2.2)
+      jest-docblock: 30.4.0
+      jest-environment-node: 30.4.1
+      jest-regex-util: 30.4.0
+      jest-resolve: 30.4.1
+      jest-runner: 30.4.2(supports-color@10.2.2)
+      jest-util: 30.4.1
+      jest-validate: 30.4.1
+      parse-json: 5.2.0
+      pretty-format: 30.4.1
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+    optionalDependencies:
+      '@types/node': 26.1.1
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
@@ -42611,12 +42644,12 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest@30.4.2(@types/node@25.9.5)(supports-color@10.2.2):
+  jest@30.4.2(@types/node@26.1.1)(supports-color@10.2.2):
     dependencies:
       '@jest/core': 30.4.2(supports-color@10.2.2)
       '@jest/types': 30.4.1
       import-local: 3.2.0
-      jest-cli: 30.4.2(@types/node@25.9.5)(supports-color@10.2.2)
+      jest-cli: 30.4.2(@types/node@26.1.1)(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -48835,6 +48868,38 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)):
+    dependencies:
+      '@vitest/expect': 4.1.10
+      '@vitest/mocker': 4.1.10(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      '@vitest/pretty-format': 4.1.10
+      '@vitest/runner': 4.1.10
+      '@vitest/snapshot': 4.1.10
+      '@vitest/spy': 4.1.10
+      '@vitest/utils': 4.1.10
+      es-module-lexer: 2.3.1
+      expect-type: 1.4.0
+      magic-string: 0.30.21
+      obug: 2.1.4
+      pathe: 2.0.3
+      picomatch: 4.0.5
+      std-env: 4.2.0
+      tinybench: 2.9.0
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.1.0
+      vite: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.1
+      '@types/node': 24.13.3
+      '@vitest/coverage-istanbul': 4.1.10(supports-color@10.2.2)(vitest@4.1.10)
+      '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
+      happy-dom: 20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      jsdom: 26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - msw
+
   vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
@@ -48867,10 +48932,10 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)):
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.10(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -48887,7 +48952,7 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.1.5(@types/node@25.9.5)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
+      vite: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
@@ -48895,7 +48960,7 @@ snapshots:
       '@vitest/coverage-istanbul': 4.1.10(supports-color@10.2.2)(vitest@4.1.10)
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
       happy-dom: 20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
-      jsdom: 26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10)
+      jsdom: 30.0.1(@noble/hashes@2.2.0)
     transitivePeerDependencies:
       - msw
 

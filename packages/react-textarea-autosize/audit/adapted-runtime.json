@@ -2,9 +2,7 @@
   "schemaVersion": 1,
   "project": "react-textarea-autosize",
   "roots": ["packages/react-textarea-autosize/tests/upstream"],
-  "files": [
-    "packages/react-textarea-autosize/tests/upstream/adapted.test.ts"
-  ],
+  "files": ["packages/react-textarea-autosize/tests/upstream/adapted.test.ts"],
   "tests": [
     {
       "id": "runtime:upstream:empty",

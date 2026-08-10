@@ -10,8 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": true,
     "strict": true,
-    "jsx": "react-jsx",
+    "skipLibCheck": true,
     "types": ["react"]
   },
-  "include": ["public-api.tsx", "../../upstream/dist/declarations/src/index.d.ts"]
+  "include": ["public-api.test-d.ts", "../../upstream/dist/declarations/src/index.d.ts"]
 }

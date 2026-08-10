@@ -6,6 +6,7 @@
 - npm integrity: `sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A==`
 - Source commit: `ed1894cd8611d99fbea1c47adcf6ee522b1030fd`
 - License: MIT, copyright 2013 Andrey Popp
+- React oracle: `19.2.7` with `@types/react@19.2.17` via catalog `react-textarea-autosize-react-oracle` (exact pins; not `catalog:default`)
 
 The npm artifact supplies the published distribution and package-condition boundary. The exact repository commit supplies the source and two upstream Jest artifacts absent from the tarball. `upstream/` is byte-exact development evidence and is excluded from publication.
 
@@ -25,5 +26,7 @@ The npm artifact supplies the published distribution and package-condition bound
 | --- | --- |
 | `src/__tests__/index.test.js` | Run pristine with React and adapted case-for-case under `tests/upstream/` |
 | `src/__tests__/__snapshots__/index.test.js.snap` | Retained pristine; equivalent adapted DOM assertions avoid framework snapshot internals |
+
+Port-authored runtime and type tests are classified fail-closed in `audit/test-classifications.json`. The pristine→adapted case map and negative controls live in `audit/upstream-crosswalk.json` and `scripts/react-parity/react-textarea-autosize-controls.test.mjs`. Paired type evidence is recorded in `audit/type-parity.json` with assertion-group inventories.
 
 The public callback remains named `onChange`, but Octane supplies a native input event rather than a React SyntheticEvent. The binding guarantees per-edit timing, target/currentTarget value during dispatch, bubbling, cancellation, and callback ordering. React-only event identity and fields are documented divergences.
