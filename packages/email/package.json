@@ -1,5 +1,5 @@
 {
-  "name": "@octanejs/react-email",
+  "name": "@octanejs/email",
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
-    "directory": "packages/react-email"
+    "directory": "packages/email"
   },
   "main": "src/index.ts",
   "module": "src/index.ts",

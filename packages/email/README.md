@@ -1,9 +1,9 @@
-# @octanejs/react-email
+# @octanejs/email
 
 Email-safe components from [React Email](https://github.com/resend/react-email), ported to Octane.
 
 ```tsrx
-import { Button, Html, render } from '@octanejs/react-email';
+import { Button, Html, render } from '@octanejs/email';
 
 function Email(props: { url: string }) @{
 	<Html><Button href={props.url}>Open</Button></Html>
@@ -20,6 +20,6 @@ Rich email authoring includes `Markdown`, Prism-powered `CodeBlock`, and `Tailwi
 
 Use `<Preview text="Inbox preview" />`. Octane's natural JSX children are render blocks, so text-inspecting components use explicit string props.
 
-Template export and development tooling lives in `@octanejs/react-email-cli`.
+Template export and development tooling lives in `@octanejs/email-cli`.
 
 Ported from React Email 6.9.2 at `ffe605819782b31d7f946e30f938b1b63e6b239c` (MIT).

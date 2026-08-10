@@ -41,9 +41,9 @@ export async function exportTemplates(outputDirectoryPath, emailsDirectoryPath, 
 	/** @type {ExportedTemplate[]} */
 	const templates = [];
 	try {
-		const emailLibrary = await server.ssrLoadModule('@octanejs/react-email');
+		const emailLibrary = await server.ssrLoadModule('@octanejs/email');
 		if (typeof emailLibrary.render !== 'function') {
-			throw new Error('@octanejs/react-email does not export render()');
+			throw new Error('@octanejs/email does not export render()');
 		}
 
 		for (const sourcePath of templatePaths) {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from '../src/index.ts';
 import { WelcomeEmail } from './_fixtures/email.tsrx';
 
-describe('@octanejs/react-email', () => {
+describe('@octanejs/email', () => {
 	it('renders an email-safe static document through the public API', async () => {
 		const html = await render(WelcomeEmail, { name: 'Ada' });
 		expect(html.startsWith('<!DOCTYPE html PUBLIC')).toBe(true);

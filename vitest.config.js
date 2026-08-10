@@ -1268,8 +1268,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-email',
-					include: ['packages/react-email/tests/**/*.test.ts'],
+					name: 'email',
+					include: ['packages/email/tests/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -1289,8 +1289,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-email-cli',
-					include: ['packages/react-email-cli/tests/**/*.test.ts'],
+					name: 'email-cli',
+					include: ['packages/email-cli/tests/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},

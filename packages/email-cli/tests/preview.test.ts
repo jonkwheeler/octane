@@ -18,8 +18,8 @@ async function fixture() {
 	await mkdir(join(root, 'node_modules', '@octanejs'), { recursive: true });
 	await symlink(join(repositoryRoot, 'packages/octane'), join(root, 'node_modules/octane'), 'dir');
 	await symlink(
-		join(repositoryRoot, 'packages/react-email'),
-		join(root, 'node_modules/@octanejs/react-email'),
+		join(repositoryRoot, 'packages/email'),
+		join(root, 'node_modules/@octanejs/email'),
 		'dir',
 	);
 	await writeFile(join(root, 'package.json'), JSON.stringify({ type: 'module' }));
@@ -43,7 +43,7 @@ describe('startPreviewServer', () => {
 		await mkdir(join(emails, 'account'));
 		await writeFile(
 			join(emails, 'account', 'welcome.tsrx'),
-			"import { Html, Text } from '@octanejs/react-email';\nexport default function Welcome() @{ <Html><Text>{'Hello preview'}</Text></Html> }\n",
+			"import { Html, Text } from '@octanejs/email';\nexport default function Welcome() @{ <Html><Text>{'Hello preview'}</Text></Html> }\n",
 		);
 		const server = await preview(emails);
 
@@ -61,7 +61,7 @@ describe('startPreviewServer', () => {
 		const template = join(emails, 'notice.tsrx');
 		await writeFile(
 			template,
-			"import { Html, Text } from '@octanejs/react-email';\nexport default function Notice() @{ <Html><Text>{'First version'}</Text></Html> }\n",
+			"import { Html, Text } from '@octanejs/email';\nexport default function Notice() @{ <Html><Text>{'First version'}</Text></Html> }\n",
 		);
 		await writeFile(join(emails, 'static', 'logo.txt'), 'logo');
 		const server = await preview(emails);
@@ -75,7 +75,7 @@ describe('startPreviewServer', () => {
 
 		await writeFile(
 			template,
-			"import { Html, Text } from '@octanejs/react-email';\nexport default function Notice() @{ <Html><Text>{'Second version'}</Text></Html> }\n",
+			"import { Html, Text } from '@octanejs/email';\nexport default function Notice() @{ <Html><Text>{'Second version'}</Text></Html> }\n",
 		);
 		await expect
 			.poll(() => fetch(`${server.url}preview/notice`).then((response) => response.text()), {

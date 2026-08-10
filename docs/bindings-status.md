@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 60 `@octanejs/*` framework bindings.
+The central status table for the 62 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -27,6 +27,8 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/dexie`](#octanejsdexie) | `dexie-react-hooks@4.4.0` | Port of the public dexie-react-hooks surface: useObservable, useLiveQuery, useSuspendingObservable, useSuspendingLiveQuery, usePermissions, and useDocument, with Dexie's framework-neutral API re-exported from the package root. | Suspending hooks integrate with Octane's use() rather than React's use() or thrown-promise implementation details; Hook call-site slots are forwarded through Octane's compiler binding ABI; useDocument requires consumers to install and import y-dexie and yjs before using the hook; those integrations remain optional | Supported for non-suspending live queries: SSR returns the configured default without opening IndexedDB, and hydration adopts the server host before replacing the default with live data. Suspending live queries remain client-oriented and do not claim server data loading. | 2026-07-16 |
 | [`@octanejs/dnd-kit`](#octanejsdnd-kit) | `@dnd-kit/react@0.5.0` | Complete modern dnd-kit React-adapter surface: DragDropProvider, DragOverlay, useDraggable/useDroppable, manager/monitor/operation hooks, PointerSensor/KeyboardSensor re-exports, the public signal-hook utilities, useSortable, and all four upstream entry points. | DragOverlay distinguishes octane compiled children blocks from function render props; ordinary typed usage is behaviorally equivalent; useSortable retains the upstream keyboard plugin by default but omits OptimisticSortingPlugin because moving one host element before application state commits can split an Octane keyed DOM range; explicit plugin arrays remain authoritative | Static SSR and hydration are covered; DOM plugins initialize only after client refs register. | 2026-07-15 |
 | [`@octanejs/electron`](#octanejselectron) | `electron@43.2.0` | Process-split Electron bindings: ./main registers ipcMain handlers, ./main/native re-exports main-only Electron APIs (Menu, Tray, session, protocol, BrowserWindow, …), ./preload exposes Electron IPC and desktop helpers via contextBridge, and the renderer entry provides Octane hooks (useInvoke, useInvokeState, useIpcEvent, useNativeTheme, useWindowState) plus promise helpers for app/window/dialog/shell/clipboard/screen. Menu/Tray/session/protocol stay intentional main-only under contextIsolation. | There is no React binding upstream; Electron is framework-agnostic, so this package mirrors the React Electron process layout rather than porting a React library; Renderer code uses window.__OCTANE_ELECTRON__ because contextIsolation forbids importing electron in the page; Menu, Tray, session, and protocol are re-exported from @octanejs/electron/main/native for main-process consumers and are intentionally not bridged into the renderer; Hook call-site slots are forwarded through Octane's compiler binding ABI; useInvoke integrates with Octane's use() rather than React's use(); useInvokeState returns to pending on refetch and does not implement stale-while-revalidate; Built-in desktop helpers use octane:* IPC channels; apps may allowlist additional channels in preload | Server rendering performs no IPC. useInvokeState renders pending and issues the command on the client after hydration; useIpcEvent and reactive desktop hooks subscribe only on the client. useInvoke without a host rejects with ElectronUnavailableError. | 2026-08-02 |
+| [`@octanejs/email`](#octanejsemail) | `react-email@6.9.2` | Email component surface: Body, Button, CodeBlock, CodeInline, Column, Container, Font, Head, Heading, Hr, Html, Img, Link, Markdown, Preview, Row, Section, Tailwind, Text, Prism themes, the pixel-based Tailwind preset, and an Octane-native static render helper. | render accepts an Octane component plus props rather than a pre-created React node, matching octane/server's entry-point API; Preview accepts its inspectable preview copy through the text prop; natural .tsrx children are opaque render blocks; Refs are ordinary Octane ref props rather than forwardRef components; Head uses Octane's metadata-hoisting channel; render reconstructs the consumer-visible document head around hoisted tags; Tailwind transforms fully rendered static HTML rather than cloning a React element tree, allowing natural .tsrx children and nested compiled components | Supported and tested through renderToStaticMarkup: output has the React Email XHTML Transitional doctype and no hydration markers. | 2026-08-10 |
+| [`@octanejs/email-cli`](#octanejsemail-cli) | `react-email@6.9.2` | Octane-native `export` and `dev` commands: recursive .tsrx template discovery, static HTML export, nested output paths, static assets, development template index and previews, Vite live reload, and compile/render error pages. | The preview application is a lightweight Octane/Vite server rather than upstream's bundled React/Next application; The executable is named octane-email to avoid colliding with upstream's email binary | Templates compile with the Octane Vite plugin in SSR mode and render through @octanejs/email. | 2026-08-10 |
 | [`@octanejs/floating-ui`](#octanejsfloating-ui) | `@floating-ui/react@0.27.19` | Positioning (`useFloating`, ref-aware `arrow`, the `@floating-ui/dom` middleware re-exports, the floating tree), the full interaction-hook set (`useInteractions`, `useHover` + `safePolygon`, `useClick`, `useFocus`, `useDismiss`, `useRole`, `useClientPoint`, `useListNavigation`, `useTypeahead`), the component layer (`FloatingPortal`, `FloatingOverlay`, `FloatingFocusManager`, `FloatingArrow`, `FloatingList`, `Composite`), and transitions + `FloatingDelayGroup`. | `forwardRef` becomes octane's ref-as-prop | No dedicated SSR/hydration tests. | 2026-07-05 |
 | [`@octanejs/gsap`](#octanejsgsap) | `@gsap/react@2.1.2` | Full useGSAP hook contract: callback, dependency-array and config signatures; scoped contexts; contextSafe; revertOnUpdate; register; and headless. | The adapter imports Octane hooks and uses compiler-selected manual hook slots instead of React hooks; GSAP remains an external peer dependency and is not redistributed by this MIT-licensed adapter | Server rendering creates stable context helpers without running GSAP effects. Client hydration activates the standard lifecycle. | 2026-08-02 |
 | [`@octanejs/hook-form`](#octanejshook-form) | `react-hook-form@7.81.0` | Complete port of react-hook-form 7.81.0 (tag commit 46b217e034dd92f7aa3cb3a478815556b416b299). The automated parity check runs all 1,193 original tests against the pinned React package as a pristine baseline; the Octane port separately runs byte-locked, unfiltered DOM and server suites with exact collected/executed inventories containing 1,187 entries representing 1,178 unique file/full-name identities. The nine duplicate entries are repeated titles within the DOM inventory; the server inventory is disjoint. Coverage includes `useForm`, `useController`, `useFieldArray`, `useFormState`, `useWatch`, `useFormContext`/`FormProvider`, schema resolvers, and all validation modes. | `register()` returns `onInput` (octane's native per-keystroke event) instead of React's synthetic `onChange`; mode names and `register` option keys keep the upstream spelling; The structured parity ledger records native no-op input delivery, microtask batching, duplicate resolver notification, async act flush, reset render-count, and eager `Object.is` bailout differences with executable case identities, consumer impact, and migration guidance; the suite contains no skipped or expected-failure cases | Supported and tested — the upstream `*.server.test.tsx` suite runs via `octane/server` with byte-identical markup. | 2026-08-01 |
@@ -256,6 +258,46 @@ Known divergences:
 SSR / hydration: Server rendering performs no IPC. useInvokeState renders pending and issues the command on the client after hydration; useIpcEvent and reactive desktop hooks subscribe only on the client. useInvoke without a host rejects with ElectronUnavailableError.
 
 Scope/evidence last checked: 2026-08-02.
+
+## @octanejs/email
+
+[`packages/email`](../packages/email) `0.0.1` — ports `react-email@6.9.2`. Status data: [`packages/email/status.json`](../packages/email/status.json).
+
+Email component surface: Body, Button, CodeBlock, CodeInline, Column, Container, Font, Head, Heading, Hr, Html, Img, Link, Markdown, Preview, Row, Section, Tailwind, Text, Prism themes, the pixel-based Tailwind preset, and an Octane-native static render helper.
+
+Known divergences:
+
+- render accepts an Octane component plus props rather than a pre-created React node, matching octane/server's entry-point API.
+- Preview accepts its inspectable preview copy through the text prop; natural .tsrx children are opaque render blocks.
+- Refs are ordinary Octane ref props rather than forwardRef components.
+- Head uses Octane's metadata-hoisting channel; render reconstructs the consumer-visible document head around hoisted tags.
+- Tailwind transforms fully rendered static HTML rather than cloning a React element tree, allowing natural .tsrx children and nested compiled components.
+
+SSR / hydration: Supported and tested through renderToStaticMarkup: output has the React Email XHTML Transitional doctype and no hydration markers.
+
+Scope/evidence last checked: 2026-08-10.
+
+- Ported from upstream commit ffe605819782b31d7f946e30f938b1b63e6b239c under the MIT license.
+- The two primary Prism themes, vscDarkPlus and xonokai, are included; upstream's full generated theme catalog is not yet copied.
+- Export/preview tooling and editor serialization are published as separate Octane packages.
+
+## @octanejs/email-cli
+
+[`packages/email-cli`](../packages/email-cli) `0.0.1` — ports `react-email@6.9.2`. Status data: [`packages/email-cli/status.json`](../packages/email-cli/status.json).
+
+Octane-native `export` and `dev` commands: recursive .tsrx template discovery, static HTML export, nested output paths, static assets, development template index and previews, Vite live reload, and compile/render error pages.
+
+Known divergences:
+
+- The preview application is a lightweight Octane/Vite server rather than upstream's bundled React/Next application.
+- The executable is named octane-email to avoid colliding with upstream's email binary.
+
+SSR / hydration: Templates compile with the Octane Vite plugin in SSR mode and render through @octanejs/email.
+
+Scope/evidence last checked: 2026-08-10.
+
+- Ported from the workflow contract of React Email commit ffe605819782b31d7f946e30f938b1b63e6b239c under the MIT license.
+- The React-specific generated .react-email Next application is intentionally replaced by native Octane tooling.
 
 ## @octanejs/floating-ui
 

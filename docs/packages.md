@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**74 publishable package(s), including 60 framework binding(s) and 3 framework integration(s).**
+**76 publishable package(s), including 62 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -27,6 +27,8 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/dnd-kit` | [`packages/dnd-kit`](../packages/dnd-kit) | framework binding | `0.1.28` | 4 |
 | `@octanejs/docusaurus` | [`packages/docusaurus`](../packages/docusaurus) | framework integration | `0.0.17` | 8 |
 | `@octanejs/electron` | [`packages/electron`](../packages/electron) | framework binding | `0.0.11` | 6 |
+| `@octanejs/email` | [`packages/email`](../packages/email) | framework binding | `0.0.1` | 1 |
+| `@octanejs/email-cli` | [`packages/email-cli`](../packages/email-cli) | framework binding | `0.0.1` | 2 |
 | `@octanejs/floating-ui` | [`packages/floating-ui`](../packages/floating-ui) | framework binding | `0.1.32` | 1 |
 | `@octanejs/gsap` | [`packages/gsap`](../packages/gsap) | framework binding | `0.0.2` | 1 |
 | `@octanejs/hook-form` | [`packages/hook-form`](../packages/hook-form) | framework binding | `0.1.30` | 1 |

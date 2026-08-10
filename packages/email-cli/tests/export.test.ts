@@ -18,8 +18,8 @@ async function fixture() {
 	await mkdir(join(root, 'node_modules', '@octanejs'), { recursive: true });
 	await symlink(join(repositoryRoot, 'packages/octane'), join(root, 'node_modules/octane'), 'dir');
 	await symlink(
-		join(repositoryRoot, 'packages/react-email'),
-		join(root, 'node_modules/@octanejs/react-email'),
+		join(repositoryRoot, 'packages/email'),
+		join(root, 'node_modules/@octanejs/email'),
 		'dir',
 	);
 	await writeFile(join(root, 'package.json'), JSON.stringify({ type: 'module' }));
@@ -36,11 +36,11 @@ describe('exportTemplates', () => {
 		const { emails, out } = await fixture();
 		await writeFile(
 			join(emails, 'welcome.tsrx'),
-			"import { Html, Text } from '@octanejs/react-email';\nexport default function Welcome() @{ <Html><Text>{'Welcome!'}</Text></Html> }\n",
+			"import { Html, Text } from '@octanejs/email';\nexport default function Welcome() @{ <Html><Text>{'Welcome!'}</Text></Html> }\n",
 		);
 		await writeFile(
 			join(emails, 'account', 'reset.tsrx'),
-			"import { Html, Text } from '@octanejs/react-email';\nexport default function Reset() @{ <Html><Text>{'Reset password'}</Text></Html> }\n",
+			"import { Html, Text } from '@octanejs/email';\nexport default function Reset() @{ <Html><Text>{'Reset password'}</Text></Html> }\n",
 		);
 
 		const result = await exportTemplates(out, emails);
@@ -57,7 +57,7 @@ describe('exportTemplates', () => {
 		const { emails, out } = await fixture();
 		await writeFile(
 			join(emails, 'notice.tsrx'),
-			"import { Html } from '@octanejs/react-email';\nexport default function Notice() @{ <Html /> }\n",
+			"import { Html } from '@octanejs/email';\nexport default function Notice() @{ <Html /> }\n",
 		);
 		await writeFile(join(emails, 'static', 'images', 'logo.svg'), '<svg>logo</svg>');
 

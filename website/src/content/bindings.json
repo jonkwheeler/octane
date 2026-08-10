@@ -60,13 +60,15 @@
   },
   {
     "title": "Forms and content",
-    "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
+    "description": "Forms, rich-text editing, streaming Markdown, React Email components and preview/export tooling, MDX, and translations.",
     "packages": [
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
       "@octanejs/lexical",
       "@octanejs/tiptap",
       "@octanejs/streamdown",
+      "@octanejs/email",
+      "@octanejs/email-cli",
       "@octanejs/monaco-editor",
       "@octanejs/mdx",
       "@octanejs/i18next"

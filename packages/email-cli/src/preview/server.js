@@ -59,9 +59,9 @@ export async function startPreviewServer(options = {}) {
 				if (typeof emailModule.default !== 'function') {
 					throw new TypeError(`${template.relativePath} must default-export an email component`);
 				}
-				const emailLibrary = await vite.ssrLoadModule('@octanejs/react-email');
+				const emailLibrary = await vite.ssrLoadModule('@octanejs/email');
 				if (typeof emailLibrary.render !== 'function') {
-					throw new Error('@octanejs/react-email does not export render()');
+					throw new Error('@octanejs/email does not export render()');
 				}
 				const markup = await emailLibrary.render(emailModule.default);
 				return sendHtml(response, 200, enableLiveReload(markup));

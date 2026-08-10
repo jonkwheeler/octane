@@ -1,5 +1,5 @@
 {
-  "name": "@octanejs/react-email-cli",
+  "name": "@octanejs/email-cli",
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
@@ -13,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
-    "directory": "packages/react-email-cli"
+    "directory": "packages/email-cli"
   },
   "bin": {
     "octane-email": "./src/cli.js"
@@ -32,7 +32,7 @@
     "dev": "node ./src/cli.js dev"
   },
   "dependencies": {
-    "@octanejs/react-email": "workspace:*",
+    "@octanejs/email": "workspace:*",
     "vite": "catalog:default"
   },
   "peerDependencies": {
