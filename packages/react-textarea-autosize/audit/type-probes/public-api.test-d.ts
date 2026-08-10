@@ -7,7 +7,7 @@ declare function expectType<T>(value: T): void;
 
 const objectRef = { current: null as HTMLTextAreaElement | null };
 const callbackRef = function callbackRef(node: HTMLTextAreaElement | null) {
-	return node;
+	void node;
 };
 
 expectType<typeof TextareaAutosize>(TextareaAutosize);
@@ -33,8 +33,8 @@ const props = {
 } satisfies TextareaAutosizeProps;
 
 expectType<TextareaAutosizeProps>(props);
-void objectRef;
-void callbackRef;
+TextareaAutosize({ ...props, ref: objectRef });
+TextareaAutosize({ ...props, ref: callbackRef });
 void TextareaAutosize;
 
 // @ts-expect-error minHeight is intentionally excluded in favor of minRows.

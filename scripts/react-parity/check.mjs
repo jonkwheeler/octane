@@ -17,6 +17,7 @@ import { verifyLivestoreTestClassifications } from './livestore-classifications-
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyReactTextareaAutosizeTestClassifications } from './react-textarea-autosize-classifications-lib.mjs';
+import { verifyReactTextareaAutosizeCrosswalk } from './react-textarea-autosize-crosswalk-lib.mjs';
 import { verifyReactTextareaAutosizeTypes } from './react-textarea-autosize-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
@@ -72,6 +73,11 @@ try {
 	verifyReactTextareaAutosizeTestClassifications(REPO);
 } catch (error) {
 	errors.push(`react-textarea-autosize test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyReactTextareaAutosizeCrosswalk(REPO);
+} catch (error) {
+	errors.push(`react-textarea-autosize upstream crosswalk is invalid: ${error.message}`);
 }
 try {
 	verifyReactTextareaAutosizeTypes(REPO);

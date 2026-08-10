@@ -153,7 +153,7 @@
 				{
 					"path": "packages/react-textarea-autosize/audit/pristine-types.json",
 					"role": "test",
-					"sha256": "20ade238fa0b1ad81fe6d6b4e948c8e0a7e4dadb032dc8bef8f9162fe55d2e14",
+					"sha256": "16d2e2feed56a6bd3f1898d49009ef840b808d7f68074735f1dee4365cc02035",
 					"cases": [
 						{
 							"id": "types:pristine",
@@ -165,7 +165,7 @@
 				{
 					"path": "packages/react-textarea-autosize/audit/type-probes/public-api.test-d.ts",
 					"role": "support",
-					"sha256": "7044e8b3c8fd815259e687604bedf84e2c7ae922795d2d128f6d643de86944f8"
+					"sha256": "1a6b40998b27dabb1a024807ffc5fb5bc3e6a44f01714f0e850fba9fa8ee89b0"
 				},
 				{
 					"path": "packages/react-textarea-autosize/audit/type-probes/tsconfig.pristine.json",
@@ -196,7 +196,7 @@
 				{
 					"path": "packages/react-textarea-autosize/audit/adapted-types.json",
 					"role": "test",
-					"sha256": "c565d8dd95dad784098b58492d24d6519ba1da1d852a751f1b5e06010296bfb2",
+					"sha256": "3da75fb1319411ed4b496a89cd23672ff6fa7f1d35b652df3df4cac91c40707f",
 					"cases": [
 						{
 							"id": "types:adapted",
@@ -208,7 +208,7 @@
 				{
 					"path": "packages/react-textarea-autosize/typetests/public-api.test-d.ts",
 					"role": "support",
-					"sha256": "558e1e1f35845b94d2fef17ff91e4435a942b34d8bd570c6f92846395686eb55"
+					"sha256": "f69ccde04fc491a3b512ef2d17f0811d49837de47341a8650d1ad2b58fb5c783"
 				},
 				{
 					"path": "packages/react-textarea-autosize/typetests/tsconfig.json",
