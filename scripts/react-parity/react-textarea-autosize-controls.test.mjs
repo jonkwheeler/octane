@@ -124,3 +124,20 @@ test('skipping an adapted inventory file entry fails verification', () => {
 		/adaptedFile missing from adapted inventory files/,
 	);
 });
+
+test('non-ported crosswalk status fails verification', () => {
+	const crosswalk = readJson('packages/react-textarea-autosize/audit/upstream-crosswalk.json');
+	assert.throws(
+		() =>
+			verifyReactTextareaAutosizeCrosswalk(root, {
+				crosswalk: {
+					...crosswalk,
+					cases: crosswalk.cases.map(function skipFirst(entry, index) {
+						if (index !== 0) return entry;
+						return { ...entry, status: 'skipped' };
+					}),
+				},
+			}),
+		/crosswalk status must be ported/,
+	);
+});
