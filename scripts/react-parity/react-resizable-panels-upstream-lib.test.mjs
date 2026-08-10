@@ -14,6 +14,8 @@ import {
 	extractCaseLedger,
 	mapPristineFileToAdapted,
 	runtimeIdentityMultiset,
+	structuralSupportSource,
+	verifyReactResizablePanelsSupportFiles,
 	verifyReactResizablePanelsUpstream,
 } from './react-resizable-panels-upstream-lib.mjs';
 
@@ -30,6 +32,34 @@ test('pristine-to-adapted case ledger covers the pinned suite', function coversP
 	assert.equal(result.runtimeIdentities, 426);
 	assert.ok(result.assertionGroups > 0);
 	assert.ok(result.permittedTransformations > 0);
+	assert.equal(result.supportFiles, 7);
+});
+
+test('support fixtures map to upstream after declared helper transforms', function supportMappings() {
+	const result = verifyReactResizablePanelsSupportFiles(repo);
+	assert.equal(result.supportFiles, 7);
+	const upstreamMove = readRepo(
+		'packages/react-resizable-panels/upstream/source/lib/global/test/moveSeparator.ts',
+	);
+	const adaptedMove = readRepo(
+		'packages/react-resizable-panels/tests/upstream/global/test/moveSeparator.ts',
+	);
+	const rewrites = new Map([
+		['@testing-library/user-event', '#rrp-user-event'],
+		['../../test/userEvent', '#rrp-user-event'],
+		['node:assert', '#rrp-assert'],
+		['../../../../src/utils/assert', '#rrp-assert'],
+	]);
+	assert.equal(
+		structuralSupportSource(upstreamMove, 'global/test/moveSeparator.ts', {
+			importRewrites: rewrites,
+			normalizeAssertImport: true,
+		}),
+		structuralSupportSource(adaptedMove, 'global/test/moveSeparator.ts', {
+			importRewrites: rewrites,
+			normalizeAssertImport: true,
+		}),
+	);
 });
 
 test('runtime inventories match one-for-one after explicit path mapping', function crosswalk() {
@@ -138,6 +168,30 @@ test('replacing an interaction with direct state mutation fails scenario structu
 			return step.includes('result.current =');
 		}),
 	);
+});
+
+test('non-test.each forEach tables keep row data when collapsing assertions', function preservesForEachTables() {
+	const upstream = readRepo(
+		'packages/react-resizable-panels/upstream/source/lib/global/utils/adjustLayoutByDelta.test.ts',
+	);
+	const cases = extractCaseLedger(upstream, 'global/utils/adjustLayoutByDelta.test.ts');
+	const target = cases.find(function find(entry) {
+		return entry.title === 'edge case issues/639';
+	});
+	assert.ok(target);
+	assert.equal(target.scenarioSteps.length, 1);
+	assert.match(target.scenarioSteps[0], /\[-10, l\(\[20, 40, 40\]\)\]/);
+	assert.match(target.scenarioSteps[0], /\[-50, l\(\[0, 20, 80\]\)\]/);
+	assert.match(target.scenarioSteps[0], /\.forEach\(\(\[delta, expectedLayout\]\)/);
+	assert.match(target.scenarioSteps[0], /__ASSERTION__/);
+	assert.doesNotMatch(target.scenarioSteps[0], /adjustLayoutByDelta/);
+	const weakenedRows = upstream.replace('[-50, l([0, 20, 80])]', '[-50, l([0, 0, 100])]');
+	const drifted = extractCaseLedger(weakenedRows, 'global/utils/adjustLayoutByDelta.test.ts');
+	const driftedCase = drifted.find(function find(entry) {
+		return entry.title === 'edge case issues/639';
+	});
+	assert.ok(driftedCase);
+	assert.notDeepEqual(driftedCase.scenarioSteps, target.scenarioSteps);
 });
 
 test('test.each bodies enter the case ledger with table, title, and assertions', function recordsEach() {

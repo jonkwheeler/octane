@@ -177,6 +177,27 @@ if (process.argv.includes('--negative-controls')) {
 	} finally {
 		unlinkSync(extraAdaptedPath);
 	}
+	const userEventPath = join(packageRoot, 'tests/upstream/test/userEvent.ts');
+	const originalUserEvent = readFileSync(userEventPath);
+	const weakenedUserEvent = originalUserEvent
+		.toString('utf8')
+		.replace(
+			'async function pointer(steps: PointerStep[]): Promise<void> {',
+			'async function pointer(_steps: PointerStep[]): Promise<void> { return;',
+		);
+	try {
+		writeFileSync(userEventPath, weakenedUserEvent);
+		writeFileSync(adaptedSumsPath, renderReactResizablePanelsAdaptedInventory(repoRoot));
+		expectFailure(
+			'weakened authored user-event helper after regenerating adapted SHA list',
+			function weakenedHelperAfterHashBlessing() {
+				verifyReactResizablePanelsUpstream(repoRoot);
+			},
+		);
+	} finally {
+		writeFileSync(userEventPath, originalUserEvent);
+		writeFileSync(adaptedSumsPath, adaptedSums);
+	}
 }
 
 console.log(

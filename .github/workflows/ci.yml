@@ -457,6 +457,7 @@ jobs:
           --exclude "packages/dexie/tests/browser/**/*.test.ts"
           --exclude "packages/tiptap/tests/browser/**/*.test.ts"
           --exclude "packages/three/tests/browser/**/*.test.ts"
+          --exclude "packages/react-resizable-panels/tests/browser/**/*.browser.test.ts"
           --exclude "$ASTRO_E2E_SPEC"
 
   react_parity_checks:
@@ -608,6 +609,7 @@ jobs:
               packages/dexie/tests/browser
               packages/tiptap/tests/browser
               packages/three/tests/browser
+              packages/react-resizable-panels/tests/browser
           - lane: astro
             chromium: true
             specs: packages/astro/tests/astro.e2e.test.ts

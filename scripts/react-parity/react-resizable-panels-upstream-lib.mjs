@@ -172,19 +172,62 @@ function extractAssertionsFrom(node, printer, sourceFile) {
 	return groups;
 }
 
+function isOutermostExpectExpression(node) {
+	if (!(
+		ts.isCallExpression(node) ||
+		ts.isPropertyAccessExpression(node) ||
+		ts.isElementAccessExpression(node)
+	)) {
+		return false;
+	}
+	let cursor = node;
+	while (
+		ts.isPropertyAccessExpression(cursor) ||
+		ts.isCallExpression(cursor) ||
+		ts.isElementAccessExpression(cursor)
+	) {
+		if (ts.isCallExpression(cursor) && isExpectRoot(cursor)) {
+			return outermostExpect(cursor) === node;
+		}
+		cursor = cursor.expression;
+	}
+	return false;
+}
+
+function unwrapParenthesizedExpressions(node) {
+	function visit(current) {
+		if (ts.isParenthesizedExpression(current)) {
+			return visit(current.expression);
+		}
+		return ts.visitEachChild(current, visit, undefined);
+	}
+	return visit(node);
+}
+
+function collapseExpectExpressions(node) {
+	// Preserve enclosing control-flow and table data (forEach/for/... blocks).
+	// Collapse only outermost expect(...) chains; assertion text is compared
+	// separately via extractAssertionsFrom.
+	function visit(current) {
+		if (isOutermostExpectExpression(current)) {
+			return ts.factory.createIdentifier('__ASSERTION__');
+		}
+		return ts.visitEachChild(current, visit, undefined);
+	}
+	return visit(node);
+}
+
 function extractScenarioSteps(body, printer, sourceFile) {
 	const steps = [];
 	for (const statement of body.statements) {
-		// Assertion text is compared separately per case. Any statement that
-		// contains expect(...) is collapsed so permitted assertion transforms
-		// and recorded divergences do not false-fail structure checks.
-		if (containsExpect(statement)) {
-			steps.push('__ASSERTION__');
-			continue;
-		}
-		steps.push(
-			normalizeAssertionText(printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile)),
-		);
+		const node = containsExpect(statement)
+			? unwrapParenthesizedExpressions(collapseExpectExpressions(statement))
+			: unwrapParenthesizedExpressions(statement);
+		let text = normalizeAssertionText(printer.printNode(ts.EmitHint.Unspecified, node, sourceFile));
+		// Pure assertion statements stay the historical sentinel so divergence
+		// transforms that key on '__ASSERTION__' keep matching.
+		if (text === '__ASSERTION__;') text = '__ASSERTION__';
+		steps.push(text);
 	}
 	return steps;
 }
@@ -537,6 +580,206 @@ export function renderReactResizablePanelsAdaptedInventory(repoRoot) {
 		.join('\n')}\n`;
 }
 
+/**
+ * Support fixtures under tests/upstream that are not case-ledger artifacts.
+ * Mapped files are compared to upstream after declared import rewrites; the
+ * authored user-event helper is checked for its pointer/type export contract.
+ */
+const SUPPORT_FILE_CONTRACTS = [
+	{
+		kind: 'mapped',
+		upstreamRelative: 'global/test/mockPointerEvent.ts',
+		adaptedRelative: 'global/test/mockPointerEvent.ts',
+	},
+	{
+		kind: 'mapped',
+		upstreamRelative: 'utils/test/mockGetComputedStyle.ts',
+		adaptedRelative: 'utils/test/mockGetComputedStyle.ts',
+	},
+	{
+		kind: 'mapped',
+		upstreamRelative: 'utils/test/mockResizeObserver.ts',
+		adaptedRelative: 'utils/test/mockResizeObserver.ts',
+	},
+	{
+		kind: 'mapped',
+		upstreamRelative: 'utils/test/mockBoundingClientRect.ts',
+		adaptedRelative: 'utils/test/mockBoundingClientRect.ts',
+	},
+	{
+		kind: 'mapped',
+		upstreamRelative: 'global/test/mockGroup.ts',
+		adaptedRelative: 'global/test/mockGroup.ts',
+		importRewrites: new Map([
+			['../../components/group/types', '#rrp-group-types'],
+			['../../components/panel/types', '#rrp-panel-types'],
+			['../../components/separator/types', '#rrp-separator-types'],
+			['../../../../src/components/group/types', '#rrp-group-types'],
+			['../../../../src/components/panel/types', '#rrp-panel-types'],
+			['../../../../src/components/separator/types', '#rrp-separator-types'],
+		]),
+	},
+	{
+		kind: 'mapped',
+		upstreamRelative: 'global/test/moveSeparator.ts',
+		adaptedRelative: 'global/test/moveSeparator.ts',
+		importRewrites: new Map([
+			['@testing-library/user-event', '#rrp-user-event'],
+			['../../test/userEvent', '#rrp-user-event'],
+			['node:assert', '#rrp-assert'],
+			['../../../../src/utils/assert', '#rrp-assert'],
+		]),
+		normalizeAssertImport: true,
+	},
+	{
+		kind: 'authored-user-event',
+		adaptedRelative: 'test/userEvent.ts',
+	},
+];
+
+function normalizeSupportImportClause(statement, normalizeAssertImport) {
+	if (!normalizeAssertImport || !ts.isStringLiteral(statement.moduleSpecifier)) {
+		return statement;
+	}
+	if (statement.moduleSpecifier.text !== '#rrp-assert') return statement;
+	// Upstream uses default import; adapted uses a named binding from the package assert.
+	return ts.factory.updateImportDeclaration(
+		statement,
+		statement.modifiers,
+		ts.factory.createImportClause(false, ts.factory.createIdentifier('assert'), undefined),
+		ts.factory.createStringLiteral('#rrp-assert'),
+		statement.attributes,
+	);
+}
+
+export function structuralSupportSource(source, fileName, options = {}) {
+	const importRewrites = options.importRewrites ?? new Map();
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const printer = ts.createPrinter({ removeComments: true });
+	const parts = [];
+	for (const statement of sourceFile.statements) {
+		let next = unwrapParenthesizedExpressions(statement);
+		if (ts.isImportDeclaration(next) && ts.isStringLiteral(next.moduleSpecifier)) {
+			const specifier = next.moduleSpecifier.text;
+			const rewritten = importRewrites.get(specifier) ?? specifier;
+			if (rewritten !== specifier) {
+				next = ts.factory.updateImportDeclaration(
+					next,
+					next.modifiers,
+					next.importClause,
+					ts.factory.createStringLiteral(rewritten),
+					next.attributes,
+				);
+			}
+			next = normalizeSupportImportClause(next, options.normalizeAssertImport === true);
+		}
+		parts.push(
+			normalizeAssertionText(printer.printNode(ts.EmitHint.Unspecified, next, sourceFile)),
+		);
+	}
+	return parts.join('\n');
+}
+
+function authoredUserEventExports(source, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const names = new Set();
+	for (const statement of sourceFile.statements) {
+		if (ts.isFunctionDeclaration(statement) && statement.name) {
+			names.add(statement.name.text);
+		}
+		if (!ts.isExportAssignment(statement) || statement.isExportEquals) continue;
+		const expr = statement.expression;
+		if (!ts.isObjectLiteralExpression(expr)) {
+			throw new Error(`${fileName}: authored user-event default export must be an object literal`);
+		}
+		for (const prop of expr.properties) {
+			if (ts.isShorthandPropertyAssignment(prop)) {
+				names.add(prop.name.text);
+				continue;
+			}
+			if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
+				names.add(prop.name.text);
+			}
+		}
+	}
+	return [...names].sort();
+}
+
+export function verifyReactResizablePanelsSupportFiles(repoRoot) {
+	const upstreamRoot = resolve(repoRoot, UPSTREAM_TEST_ROOT);
+	const portedRoot = resolve(repoRoot, PORTED_TEST_ROOT);
+	const declaredAdapted = new Set();
+	for (const contract of SUPPORT_FILE_CONTRACTS) {
+		declaredAdapted.add(contract.adaptedRelative);
+		const adaptedPath = resolve(portedRoot, contract.adaptedRelative);
+		const adaptedSource = readFileSync(adaptedPath, 'utf8');
+		if (contract.kind === 'authored-user-event') {
+			const exports = authoredUserEventExports(adaptedSource, contract.adaptedRelative);
+			if (!exports.includes('pointer') || !exports.includes('type')) {
+				throw new Error(
+					`${contract.adaptedRelative}: authored user-event helper must export pointer and type`,
+				);
+			}
+			const structural = structuralSupportSource(adaptedSource, contract.adaptedRelative, {});
+			const digest = createHash('sha256').update(structural).digest('hex');
+			const runtimeParity = JSON.parse(
+				readFileSync(resolve(repoRoot, RUNTIME_PARITY_CONFIG), 'utf8'),
+			);
+			const lock = (runtimeParity.authoredSupportLocks ?? []).find(function findLock(entry) {
+				return entry.path === contract.adaptedRelative;
+			});
+			if (!lock || typeof lock.structuralSha256 !== 'string') {
+				throw new Error(
+					`${contract.adaptedRelative}: runtime-parity.json must lock authoredSupportLocks.structuralSha256`,
+				);
+			}
+			if (lock.structuralSha256 !== digest) {
+				throw new Error(
+					`${contract.adaptedRelative}: authored support helper behavior drifted from structural lock`,
+				);
+			}
+			continue;
+		}
+		const upstreamSource = readFileSync(resolve(upstreamRoot, contract.upstreamRelative), 'utf8');
+		const expected = structuralSupportSource(upstreamSource, contract.upstreamRelative, {
+			importRewrites: contract.importRewrites,
+			normalizeAssertImport: contract.normalizeAssertImport,
+		});
+		const actual = structuralSupportSource(adaptedSource, contract.adaptedRelative, {
+			importRewrites: contract.importRewrites,
+			normalizeAssertImport: contract.normalizeAssertImport,
+		});
+		if (expected !== actual) {
+			throw new Error(
+				`${contract.adaptedRelative}: support fixture drifted from upstream after declared helper transformations`,
+			);
+		}
+	}
+
+	// Every non-test adapted file must be covered by a support contract or the
+	// case-ledger inventory (test files). Fail closed on undeclared helpers.
+	for (const file of filesBelow(portedRoot)) {
+		const relative = portableRelative(portedRoot, file);
+		if (/\.test\.(ts|tsrx|tsx)$/.test(relative)) continue;
+		if (!declaredAdapted.has(relative)) {
+			throw new Error(`${relative}: adapted support fixture has no declared support-file mapping`);
+		}
+	}
+	return { supportFiles: SUPPORT_FILE_CONTRACTS.length };
+}
+
 export function verifyReactResizablePanelsUpstream(repoRoot) {
 	const inventory = JSON.parse(readFileSync(resolve(repoRoot, TEST_INVENTORY_PATH), 'utf8'));
 	const runtimeParity = JSON.parse(readFileSync(resolve(repoRoot, RUNTIME_PARITY_CONFIG), 'utf8'));
@@ -680,6 +923,8 @@ export function verifyReactResizablePanelsUpstream(repoRoot) {
 		portedCases += actualLedger.length;
 	}
 
+	const support = verifyReactResizablePanelsSupportFiles(repoRoot);
+
 	const expectedPortedInventory = readFileSync(resolve(repoRoot, PORTED_INVENTORY_PATH), 'utf8');
 	const actualPortedInventory = renderReactResizablePanelsAdaptedInventory(repoRoot);
 	if (actualPortedInventory !== expectedPortedInventory) {
@@ -695,5 +940,6 @@ export function verifyReactResizablePanelsUpstream(repoRoot) {
 		assertionGroups,
 		permittedTransformations: runtimeParity.permittedTransformations.length,
 		runtimeIdentities: expectedIdentities.size,
+		supportFiles: support.supportFiles,
 	};
 }

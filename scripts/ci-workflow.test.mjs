@@ -253,6 +253,18 @@ describe('CI workflow aggregation', () => {
 		]);
 		assert.equal(baseProjects.get('react-resizable-panels-browser').testExecution, undefined);
 		assert.equal(baseProjects.get('react-resizable-panels-server').testExecution, undefined);
+		const rrpBrowserGlob = 'packages/react-resizable-panels/tests/browser/**/*.browser.test.ts';
+		assert.ok(jobSource('test_shard').includes(`--exclude "${rrpBrowserGlob}"`));
+		const heavyBrowserLane = jobSource('heavy_integration');
+		const browserLaneStart = heavyBrowserLane.indexOf('- lane: browser');
+		const browserLaneEnd = heavyBrowserLane.indexOf('- lane: astro', browserLaneStart);
+		assert.notEqual(browserLaneStart, -1);
+		assert.notEqual(browserLaneEnd, -1);
+		assert.ok(
+			heavyBrowserLane
+				.slice(browserLaneStart, browserLaneEnd)
+				.includes('packages/react-resizable-panels/tests/browser'),
+		);
 		for (const project of [
 			'react-resizable-panels-pristine',
 			'react-resizable-panels-differential',

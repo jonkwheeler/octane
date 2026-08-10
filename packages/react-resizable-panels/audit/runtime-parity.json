@@ -42,6 +42,21 @@
       "kind": "ref-object-literal",
       "rule": "createRef<T>() may be written as an explicit { current: null } ref object literal under Octane typings.",
       "files": ["hooks/useMergedRefs.test.tsx"]
+    },
+    {
+      "kind": "support-import-root",
+      "rule": "Adapted support fixtures may remap relative type imports to Octane package sources under src/."
+    },
+    {
+      "kind": "support-user-event",
+      "rule": "global/test/moveSeparator.ts substitutes @testing-library/user-event and node:assert with tests/upstream/test/userEvent.ts plus the package assert helper; the authored user-event adapter must keep pointer and type exports.",
+      "files": ["global/test/moveSeparator.ts", "test/userEvent.ts"]
+    }
+  ],
+  "authoredSupportLocks": [
+    {
+      "path": "test/userEvent.ts",
+      "structuralSha256": "e7693008cdab6f9e1b81c49af9ca479781427f10b3e4e531b7389ccc304e6e4b"
     }
   ],
   "divergences": [
