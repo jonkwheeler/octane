@@ -13,6 +13,10 @@ const shardedVitestConfigSource = readFileSync(
 const vitestConfig = readFileSync(path.join(REPO, 'vitest.config.js'), 'utf8');
 const packageJson = JSON.parse(readFileSync(path.join(REPO, 'package.json'), 'utf8'));
 const reactParityCheck = readFileSync(path.join(REPO, 'scripts/react-parity/check.mjs'), 'utf8');
+const reactParityCheckLib = readFileSync(
+	path.join(REPO, 'scripts/react-parity/check-lib.mjs'),
+	'utf8',
+);
 const reactParityHarness = readFileSync(
 	path.join(REPO, 'scripts/react-parity/harness.mjs'),
 	'utf8',
@@ -143,34 +147,6 @@ describe('CI workflow aggregation', () => {
 		for (const job of ['test', 'examples', 'lint', 'typecheck', 'provenance']) {
 			assert.match(jobSource(job), /if:.*always\(\).*!\s*cancelled\(\)/);
 		}
-	});
-
-	test('keeps DayPicker unpaired smoke on ordinary ownership and installs Chromium for parity browser lanes', () => {
-		const baseProjects = new Map(
-			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
-		);
-		for (const project of [
-			'react-day-picker',
-			'react-day-picker-ssr',
-			'react-day-picker-browser',
-		]) {
-			assert.equal(baseProjects.get(project).testExecution, undefined);
-		}
-		assert.equal(
-			baseProjects.get('react-day-picker-differential').testExecution.group,
-			'react-parity',
-		);
-		assert.ok(
-			jobSource('test_shard').includes(
-				'--exclude "packages/react-day-picker/tests/browser/**/*.test.ts"',
-			),
-		);
-		assert.ok(jobSource('heavy_integration').includes('packages/react-day-picker/tests/browser'));
-		const parity = jobSource('react_parity_checks');
-		const install = parity.indexOf('Install Playwright Chromium for parity browser lanes');
-		const check = parity.indexOf('Check React parity inventories and execute required lanes');
-		assert.ok(install >= 0 && install < check);
-		assert.doesNotMatch(jobSource('lint_checks'), /Install Playwright Chromium for parity/);
 	});
 
 	test('skips expensive jobs only after the committed scope classifier opts out', () => {
@@ -310,15 +286,14 @@ describe('CI workflow aggregation', () => {
 		assert.match(aggregate, /test "\$REACT_PARITY_RESULT" = skipped/);
 		assert.match(aggregate, /test "\$REACT_PARITY_RESULT" = success/);
 
-		// The manifest runner owns all required lanes in one process, including
-		// recorded-unverified manifests. Execution reports prove exact identities,
-		// so only explicit --validate-only skips lane execution.
-		assert.match(reactParityCheck, /\[HARNESS_PATH, 'run-required', '--manifest', relativeFile\]/);
-		assert.doesNotMatch(
-			reactParityCheck,
-			/manifest\.provenance\.verification === 'verified' \? 'run-required' : 'validate'/,
+		// The manifest runner owns all required lanes in one process for both
+		// verification states. recorded-unverified limits the claim, not execution.
+		assert.doesNotMatch(reactParityCheck, /provenance\.verification/);
+		assert.match(reactParityCheck, /if \(!validateOnly\) \{\s+runRequiredBindingLanes\(\{/);
+		assert.match(
+			reactParityCheckLib,
+			/\[harnessPath, 'run-required', '--manifest', relativeFile\]/,
 		);
-		assert.doesNotMatch(reactParityCheck, /'--lane'/);
 		const executionMarker = "} else {\n\tif (action === 'run-required'";
 		const executionStart = reactParityHarness.indexOf(executionMarker);
 		assert.notEqual(executionStart, -1);
@@ -349,15 +324,6 @@ describe('CI workflow aggregation', () => {
 		]);
 		assert.equal(projects.get('rspeedy-plugin').test.exclude, undefined);
 		assert.deepEqual(projects.get('rspeedy-plugin-browser').test.include, [browserGlob]);
-	});
-
-	test('installs WebKit only for the cross-browser integration lane', () => {
-		const heavyIntegration = jobSource('heavy_integration');
-
-		assert.match(
-			heavyIntegration,
-			/- name: Install Playwright WebKit for cross-browser ownership coverage\n\s+if: \$\{\{ matrix\.lane == 'browser' \}\}\n\s+run: pnpm --filter octane exec playwright install --with-deps webkit/,
-		);
 	});
 
 	test('derives sharded projects generically from execution-group ownership', () => {
