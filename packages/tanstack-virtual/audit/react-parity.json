@@ -131,27 +131,17 @@
           "sha256": "98085e53308052da1ffa7980e533f40b751ca337db51d6ec5e4a00681421ab8e"
         }
       ]
-    },
+    }
+  ],
+  "ordinaryEvidence": [
     {
-      "id": "tanstack-virtual-nested-flush-divergence",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "tanstack-virtual",
-      "evidenceOrigin": "repo-authored",
-      "notes": "Required identity for the nested flushSync divergence ledger. Runs only this ordinary-shard case via harness -t; the file stays outside the react-parity-owned differential project.",
-      "files": [
+      "path": "packages/tanstack-virtual/tests/conformance/nested-flush.test.ts",
+      "sha256": "24b49b238ffd6e3aeaf0b377e622be275fd2cc9f9f9a035cb5de00b16cbeac37",
+      "cases": [
         {
-          "path": "packages/tanstack-virtual/tests/conformance/nested-flush.test.ts",
-          "role": "test",
-          "sha256": "24b49b238ffd6e3aeaf0b377e622be275fd2cc9f9f9a035cb5de00b16cbeac37",
-          "cases": [
-            {
-              "id": "conformance:nested-flush-sync-scroll",
-              "testName": "sync scroll update inside a discrete-event flush still lands (flushSync degradation)",
-              "fullName": "state wiring + scrolling sync scroll update inside a discrete-event flush still lands (flushSync degradation)"
-            }
-          ]
+          "id": "conformance:nested-flush-sync-scroll",
+          "testName": "sync scroll update inside a discrete-event flush still lands (flushSync degradation)",
+          "fullName": "state wiring + scrolling sync scroll update inside a discrete-event flush still lands (flushSync degradation)"
         }
       ]
     }

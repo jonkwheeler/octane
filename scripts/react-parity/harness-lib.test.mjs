@@ -850,6 +850,96 @@ test('rejects stale divergences and accepts one divergence matching multiple kno
 	}
 });
 
+test('accepts ordinaryEvidence case ids for structured divergences without a parity lane', () => {
+	const ordinary = manifest({
+		ordinaryEvidence: [
+			{
+				path: 'packages/example/tests/conformance/nested.test.ts',
+				sha256: 'a'.repeat(64),
+				cases: [
+					{
+						id: 'conformance:nested',
+						testName: 'nested flush still lands',
+						fullName: 'suite nested flush still lands',
+					},
+				],
+			},
+		],
+		divergences: [divergence({ caseIds: ['conformance:nested'] })],
+	});
+	assert.deepEqual(validateManifest(ordinary), ordinary);
+
+	const duplicate = manifest({
+		ordinaryEvidence: [
+			{
+				path: 'packages/example/tests/conformance/nested.test.ts',
+				sha256: 'a'.repeat(64),
+				cases: [
+					{
+						id: 'adapted:example',
+						testName: 'does the thing',
+						fullName: 'example suite does the thing',
+					},
+				],
+			},
+		],
+	});
+	assert.throws(() => validateManifest(duplicate), /duplicate case id "adapted:example"/);
+});
+
+test('binds divergence markers to ordinaryEvidence cases without inventing a required lane', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-ordinary-'));
+	const testPath = 'packages/example/tests/conformance/nested.test.ts';
+	const sourcePath = 'packages/example/src/index.ts';
+	const lanePath = 'packages/example/tests/upstream/example.test.ts';
+	const testSource = `// @parity-case conformance:nested
+it('nested flush still lands', () => {});
+`;
+	const laneSource = `// @parity-case adapted:example
+it('does the thing', () => {});
+`;
+	const source = `// OCTANE DIVERGENCE[native-input][conformance:nested]: unpaired Octane-only contract
+export {};
+`;
+	const value = manifest({
+		adaptedRoots: {
+			source: {
+				roots: ['packages/example/src'],
+				include: ['\\.ts$'],
+				exclude: [],
+			},
+			tests: {
+				roots: ['packages/example/tests/upstream'],
+				include: ['\\.test\\.ts$'],
+				exclude: [],
+			},
+		},
+		ordinaryEvidence: [
+			{
+				path: testPath,
+				sha256: sha256(testSource),
+				cases: [
+					{
+						id: 'conformance:nested',
+						testName: 'nested flush still lands',
+						fullName: 'suite nested flush still lands',
+					},
+				],
+			},
+		],
+		divergences: [divergence({ caseIds: ['conformance:nested'] })],
+	});
+	value.lanes[0].files[0].path = lanePath;
+	value.lanes[0].files[0].sha256 = sha256(laneSource);
+	await mkdir(join(root, 'packages/example/src'), { recursive: true });
+	await mkdir(join(root, 'packages/example/tests/conformance'), { recursive: true });
+	await mkdir(join(root, 'packages/example/tests/upstream'), { recursive: true });
+	await writeFile(join(root, sourcePath), source);
+	await writeFile(join(root, testPath), testSource);
+	await writeFile(join(root, lanePath), laneSource);
+	await assert.doesNotReject(() => verifyManifestFiles(validateManifest(value), root));
+});
+
 test('rejects missing and tampered evidence files', async () => {
 	const root = await mkdtemp(join(tmpdir(), 'react-parity-'));
 	const value = manifest();
