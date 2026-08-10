@@ -2993,8 +2993,8 @@
       "upstream": "tag/src/shared/utils.spec.ts:6::returns $expectedResult given $input",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns $expectedResult given $input",
-      "adaptedDigest": "169e6e2164953f2fbbb142f270e6b04c2796963428fd96aee9cd517be8bae069",
-      "upstreamDigest": "169e6e2164953f2fbbb142f270e6b04c2796963428fd96aee9cd517be8bae069"
+      "adaptedDigest": "9275bc046e2988ed3ab960b13c97610413cbaeb9bce1f49b72ca12ec2a4e37ef",
+      "upstreamDigest": "9275bc046e2988ed3ab960b13c97610413cbaeb9bce1f49b72ca12ec2a4e37ef"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:19::throws given invalid data URI",
@@ -3014,22 +3014,22 @@
       "upstream": "tag/src/shared/utils.spec.ts:28::returns a byte string given base64 data URI",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 data URI",
-      "adaptedDigest": "1779ff77fbbabe55f28c258966c29689ba5aa514a5ad275d5111a786b2da483d",
-      "upstreamDigest": "1779ff77fbbabe55f28c258966c29689ba5aa514a5ad275d5111a786b2da483d"
+      "adaptedDigest": "2865c5d3b6de0a9e14ff9b3d6686d142082db349bbbb51a77abd5140afab25bd",
+      "upstreamDigest": "2865c5d3b6de0a9e14ff9b3d6686d142082db349bbbb51a77abd5140afab25bd"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:34::returns a byte string given base64 PDF data URI",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI",
-      "adaptedDigest": "2281f14a9c554ca96dadc5966555ebb25f574c71f54ff058c56527756ef556d9",
-      "upstreamDigest": "2281f14a9c554ca96dadc5966555ebb25f574c71f54ff058c56527756ef556d9"
+      "adaptedDigest": "2e662f72a6895f634e7b0ec10f3a88943bd5c0f2e8df6a7a3456bf5f7952f82d",
+      "upstreamDigest": "2e662f72a6895f634e7b0ec10f3a88943bd5c0f2e8df6a7a3456bf5f7952f82d"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:42::returns a byte string given base64 PDF data URI with filename",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI with filename",
-      "adaptedDigest": "3d381ae09ead61cfd95ae70479c358a56f1dd598bf975c2b0f557b3007738693",
-      "upstreamDigest": "3d381ae09ead61cfd95ae70479c358a56f1dd598bf975c2b0f557b3007738693"
+      "adaptedDigest": "02f0c7f989f36f7777c706e6248ce956992e4b42121361b9d0ebbcaece741581",
+      "upstreamDigest": "02f0c7f989f36f7777c706e6248ce956992e4b42121361b9d0ebbcaece741581"
     }
   ],
   "authoredTests": [

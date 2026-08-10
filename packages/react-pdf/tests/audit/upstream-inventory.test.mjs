@@ -132,3 +132,18 @@ test('fails closed when adapted evidence changes a numeric input', () => {
 		});
 	}, /diverges from upstream/);
 });
+
+test('fails closed when adapted evidence changes a semicolon inside a string fixture', () => {
+	const upstream =
+		"it('case', () => { expect(dataURItoByteString('data:text/plain;base64,QQ==')).toBe('A'); });";
+	const adapted =
+		"it('case', function () { expect(dataURItoByteString('data:text/plainbase64,QQ==')).toBe('A'); });";
+	assert.throws(function changedFixtureSemicolon() {
+		compareAdaptedEvidence({
+			upstreamSource: upstream,
+			upstreamTitle: 'case',
+			adaptedSource: adapted,
+			adaptedTitle: 'case',
+		});
+	}, /diverges from upstream/);
+});

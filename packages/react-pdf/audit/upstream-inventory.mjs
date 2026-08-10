@@ -89,15 +89,42 @@ function caseBody(source, title) {
 	return close === -1 ? null : source.slice(entry.index, close + 1);
 }
 
+function stripStatementSemicolons(source) {
+	let result = '';
+	let quote = null;
+	let escaped = false;
+	for (let index = 0; index < source.length; index++) {
+		const character = source[index];
+		if (quote) {
+			result += character;
+			if (escaped) escaped = false;
+			else if (character === '\\') escaped = true;
+			else if (character === quote) quote = null;
+			continue;
+		}
+		if (character === "'" || character === '"' || character === '`') {
+			quote = character;
+			result += character;
+			continue;
+		}
+		if (character === ';') continue;
+		result += character;
+	}
+	return result;
+}
+
 function normalizeCaseStructure(body) {
-	let normalized = body
-		.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
-		.replace(/\bfunction\s*\(([^)]*)\)\s*\{/g, '($1)=>{')
-		.replace(/\s+/g, '');
-	// Collapse single-statement arrow blocks and drop statement terminators so
-	// `() => expr` and `function () { expr; }` normalize identically.
+	let normalized = stripStatementSemicolons(
+		body
+			.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
+			.replace(/\bfunction\s*\(([^)]*)\)\s*\{/g, '($1)=>{')
+			.replace(/\s+/g, ''),
+	);
+	// Collapse single-statement arrow blocks so `() => expr` and
+	// `function () { expr; }` normalize identically. String-fixture semicolons
+	// survive stripStatementSemicolons and remain part of the digest.
 	for (let pass = 0; pass < 4; pass++) {
-		const next = normalized.replace(/(\([^)]*\)=>)\{([^{};]+);?\}/g, '$1$2').replace(/;/g, '');
+		const next = normalized.replace(/(\([^)]*\)=>)\{([^{}]+)\}/g, '$1$2');
 		if (next === normalized) break;
 		normalized = next;
 	}
