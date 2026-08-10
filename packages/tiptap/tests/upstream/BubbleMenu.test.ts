@@ -50,6 +50,7 @@ describe('BubbleMenu', function () {
 		document.body.innerHTML = '';
 	});
 
+	// Per upstream/src/menus/BubbleMenu.spec.ts:42.
 	it('applies html props to the actual menu element', function () {
 		const editor = createEditor();
 		const ref = { current: null as HTMLDivElement | null };
@@ -155,6 +156,7 @@ describe('BubbleMenu', function () {
 		expect(editor.unregisterPlugin).toHaveBeenCalledWith('bubbleMenu');
 	});
 
+	// Per upstream/src/menus/BubbleMenu.spec.ts:137.
 	it('creates unique plugin keys when none are provided', function () {
 		const editor = createEditor();
 		const shouldShowA = vi.fn(function () {

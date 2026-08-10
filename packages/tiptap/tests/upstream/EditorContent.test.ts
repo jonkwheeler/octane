@@ -15,6 +15,7 @@ function createRenderer(id: string) {
 }
 
 describe('createContentComponent', function () {
+	// Per upstream/src/EditorContent.spec.ts:14.
 	it('batches synchronous renderer change notifications', async function () {
 		const contentComponent = createContentComponent();
 		const subscriber = vi.fn();

@@ -140,22 +140,22 @@
 				{
 					"path": "packages/tiptap/tests/upstream/BubbleMenu.test.ts",
 					"role": "support",
-					"sha256": "2a5040b23a3676e7b1d83723930c7d076146d9611c96afe0710586863e91e9cf"
+					"sha256": "72a72496fe24eb9dabce298a5e9fdc721b33c1dea6f668a95cc853c1818f7ad5"
 				},
 				{
 					"path": "packages/tiptap/tests/upstream/EditorContent.test.ts",
 					"role": "support",
-					"sha256": "87a6eb08e5abe98b3d0030b23b2b7481030fde777fdaec4fe4555409a7e76e77"
+					"sha256": "787092aeb246ae24c18cf2057a93fe777a15cbf74575c1267673fee8c6342285"
 				},
 				{
 					"path": "packages/tiptap/tests/upstream/FloatingMenu.test.ts",
 					"role": "support",
-					"sha256": "7f9e23ca1cd25c10d3df5ade2c5000fbb58b71134b0aab7138748dfc52a5194c"
+					"sha256": "05d21f9f612c35ee777d3d5e2a0bed724e7b0690ad0f6901bd702068a6a94423"
 				},
 				{
 					"path": "packages/tiptap/tests/upstream/use-client.test.ts",
 					"role": "support",
-					"sha256": "3cb4a193805895b70d913d5ee7985de65c4a7dfe53aa90f18a50e239c8eb82ac"
+					"sha256": "71b09effe85a54c1af02eb46bc4f7480ed62d1744049f218f97dc905ceaabc8e"
 				}
 			]
 		},
@@ -214,7 +214,7 @@
 			"environment": "workspace-node",
 			"project": "tiptap-pristine-types",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Port-authored React declaration probes against @tiptap/react@3.28.0 with tsc. Permitted transformations are listed in typetests/assertions.md.",
+			"notes": "Port-authored React declaration probes against @tiptap/react@3.28.0 with tsc. Structural verification and inventories are owned by scripts/react-parity/tiptap-types-lib.mjs.",
 			"execution": {
 				"kind": "typescript",
 				"compiler": "tsc",
@@ -222,9 +222,9 @@
 			},
 			"files": [
 				{
-					"path": "packages/tiptap/typetests/pristine/types.test-d.ts",
+					"path": "packages/tiptap/audit/pristine-types.json",
 					"role": "test",
-					"sha256": "46a7b119512b21f25395a0a974331e9ef729de43684414911d766843ffdb5dd8",
+					"sha256": "1e163f6734a7ea78f3ba3a65887d1e740d631b820e1a5c45e6fab53276327f74",
 					"cases": [
 						{
 							"id": "types:tiptap-pristine",
@@ -234,14 +234,24 @@
 					]
 				},
 				{
+					"path": "packages/tiptap/typetests/pristine/types.test-d.ts",
+					"role": "support",
+					"sha256": "81ff7fd39229c9e2e3affb8c143f1bca24514a2c060a9fbc70e59c2e2306fc83"
+				},
+				{
 					"path": "packages/tiptap/typetests/pristine/tsconfig.json",
 					"role": "support",
 					"sha256": "625adac63dfb75c80a49670b8e58122bebf57f8395a4729d8f69e9a26c5c28fb"
 				},
 				{
+					"path": "packages/tiptap/audit/type-parity.json",
+					"role": "support",
+					"sha256": "73f0be2a8160ff05a5dddb0e7a95b7e58f839b70c2a38f69992bb98aedcfeba2"
+				},
+				{
 					"path": "packages/tiptap/typetests/assertions.md",
 					"role": "support",
-					"sha256": "4f0e22296f3143e3024506dcceb8f33211b3c3044410f094628d186e8807ca32"
+					"sha256": "97a2a0437babb07352e44e45eade1b87e333d92e35c6cd11a3280da68d4d7c5a"
 				}
 			]
 		},
@@ -252,17 +262,17 @@
 			"environment": "workspace-node",
 			"project": "tiptap-adapted-types",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Matching Octane public probes against @octanejs/tiptap with tsc. Permitted transformations are listed in typetests/assertions.md.",
+			"notes": "Matching Octane public probes against @octanejs/tiptap with tsrx-tsc. Permitted transformations are listed in typetests/assertions.md and verified by scripts/react-parity/tiptap-types-lib.mjs.",
 			"execution": {
 				"kind": "typescript",
-				"compiler": "tsc",
+				"compiler": "tsrx-tsc",
 				"project": "packages/tiptap/typetests/adapted/tsconfig.json"
 			},
 			"files": [
 				{
-					"path": "packages/tiptap/typetests/adapted/types.test-d.ts",
+					"path": "packages/tiptap/audit/adapted-types.json",
 					"role": "test",
-					"sha256": "e81c46e07ed7a78f8633d9680790abbb9511f67ef149d30af5ccb6829ad9aa26",
+					"sha256": "cc7c6b12e14818e078006e7628dabe0c6010133023ba021785c88dee27ccd84d",
 					"cases": [
 						{
 							"id": "types:tiptap-adapted",
@@ -272,14 +282,24 @@
 					]
 				},
 				{
+					"path": "packages/tiptap/typetests/adapted/types.test-d.ts",
+					"role": "support",
+					"sha256": "7dd53639719f142d7ff1956ef21584dbbeff960abc8f3f8e1b2caa2032c6a321"
+				},
+				{
 					"path": "packages/tiptap/typetests/adapted/tsconfig.json",
 					"role": "support",
 					"sha256": "85342f8f26ac24e2ac20a4f02687b4d82db76a7796c8395a2aa4d6933a398ecd"
 				},
 				{
+					"path": "packages/tiptap/audit/type-parity.json",
+					"role": "support",
+					"sha256": "73f0be2a8160ff05a5dddb0e7a95b7e58f839b70c2a38f69992bb98aedcfeba2"
+				},
+				{
 					"path": "packages/tiptap/typetests/assertions.md",
 					"role": "support",
-					"sha256": "4f0e22296f3143e3024506dcceb8f33211b3c3044410f094628d186e8807ca32"
+					"sha256": "97a2a0437babb07352e44e45eade1b87e333d92e35c6cd11a3280da68d4d7c5a"
 				}
 			]
 		}

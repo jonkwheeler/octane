@@ -17,10 +17,12 @@ function firstStatement(entry: string): string {
 }
 
 describe('use client boundary', function () {
+	// Per upstream/src/use-client.spec.ts:14 (./index.ts entry).
 	it('./index.ts starts with the "use client" directive', function () {
 		expect(firstStatement('src/index.ts')).toMatch(/^(['"])use client\1;?$/);
 	});
 
+	// Per upstream/src/use-client.spec.ts:14 (./menus/index.ts entry).
 	it('./menus/index.ts starts with the "use client" directive', function () {
 		expect(firstStatement('src/menus/index.ts')).toMatch(/^(['"])use client\1;?$/);
 	});

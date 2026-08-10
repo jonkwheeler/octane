@@ -50,6 +50,7 @@ describe('FloatingMenu', function () {
 		document.body.innerHTML = '';
 	});
 
+	// Per upstream/src/menus/FloatingMenu.spec.ts:42.
 	it('applies html props to the actual menu element', function () {
 		const editor = createEditor();
 		const ref = { current: null as HTMLDivElement | null };
@@ -135,6 +136,7 @@ describe('FloatingMenu', function () {
 		expect(editor.unregisterPlugin).toHaveBeenCalledWith('floatingMenu');
 	});
 
+	// Per upstream/src/menus/FloatingMenu.spec.ts:127.
 	it('creates unique plugin keys when none are provided', function () {
 		const editor = createEditor();
 		const shouldShowA = vi.fn(function () {
