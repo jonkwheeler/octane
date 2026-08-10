@@ -26,10 +26,17 @@ describe('published package contract', function packageContract() {
 		expect(manifest.devDependencies['@types/react']).toBe(
 			'catalog:react-textarea-autosize-react-oracle',
 		);
+		expect(manifest.devDependencies['@types/react-dom']).toBe(
+			'catalog:react-textarea-autosize-react-oracle',
+		);
 		expect(oracleBlock).not.toBeNull();
 		expect(oracleBlock![0]).toMatch(/react: 19\.2\.7/);
 		expect(oracleBlock![0]).toMatch(/react-dom: 19\.2\.7/);
+		expect(oracleBlock![0]).toMatch(/'@types\/react': 19\.2\.17/);
+		expect(oracleBlock![0]).toMatch(/'@types\/react-dom': 19\.2\.3/);
 		expect(oracleBlock![0]).not.toMatch(/react: \^/);
 		expect(oracleBlock![0]).not.toMatch(/react-dom: \^/);
+		expect(oracleBlock![0]).not.toMatch(/'@types\/react': \^/);
+		expect(oracleBlock![0]).not.toMatch(/'@types\/react-dom': \^/);
 	});
 });
