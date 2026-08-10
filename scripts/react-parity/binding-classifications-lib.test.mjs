@@ -30,6 +30,11 @@ test('rejects an unclassified port-authored test', async (t) => {
 	assert.throws(() => verifyPortTestClassifications(root), /exactly one classification/);
 });
 
+test('verifies an arbitrary binding classification ledger', () => {
+	const root = fileURLToPath(new URL('../..', import.meta.url));
+	assert.deepEqual(verifyPortTestClassifications(root, 'apollo-client'), { tests: 8 });
+});
+
 test('rejects a parity classification without an oracle', async (t) => {
 	const root = await fixture();
 	t.after(() => rm(root, { recursive: true, force: true }));
@@ -57,7 +62,35 @@ test('rejects a stale divergence classification', async (t) => {
 	assert.throws(() => verifyPortTestClassifications(root), /not present in the parity manifest/);
 });
 
-test('verifies an arbitrary binding classification ledger', () => {
-	const root = fileURLToPath(new URL('../..', import.meta.url));
-	assert.deepEqual(verifyPortTestClassifications(root, 'tanstack-store'), { tests: 8 });
-});
+for (const [binding, testCount] of [
+	['lexical', 16],
+	['lucide', 6],
+	['redux', 3],
+	['redux-toolkit', 6],
+	['shadcn', 23],
+	['sonner', 7],
+	['tanstack-store', 8],
+]) {
+	test(`verifies the ${binding} classification ledger`, async (t) => {
+		const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
+		t.after(() => rm(root, { recursive: true, force: true }));
+		await cp(
+			new URL(`../../packages/${binding}/tests`, import.meta.url),
+			join(root, `packages/${binding}/tests`),
+			{ recursive: true },
+		);
+		for (const file of ['test-classifications.json', 'react-parity.json']) {
+			await cp(
+				new URL(`../../packages/${binding}/audit/${file}`, import.meta.url),
+				join(root, `packages/${binding}/audit/${file}`),
+				{ recursive: true },
+			);
+		}
+		assert.deepEqual(verifyPortTestClassifications(root, binding), { tests: testCount });
+		await writeFile(join(root, `packages/${binding}/tests/unclassified.test.ts`), 'export {};\n');
+		assert.throws(
+			() => verifyPortTestClassifications(root, binding),
+			new RegExp(`every port-authored ${binding} test must have exactly one classification`),
+		);
+	});
+}
