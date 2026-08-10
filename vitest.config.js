@@ -500,9 +500,7 @@ export default defineConfig({
 				},
 			},
 			{
-				// Keep outside react-parity testExecution while provenance is
-				// recorded-unverified: the dedicated parity job only validates
-				// that manifest, so ordinary sharded CI must still execute this lane.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rxjs-differential',
 					include: ['packages/rxjs/tests/differential/**/*.test.ts'],
@@ -1003,6 +1001,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'usehooks-ts-differential',
 					include: ['packages/usehooks-ts/tests/differential/**/*.test.ts'],
@@ -1758,9 +1757,7 @@ export default defineConfig({
 				},
 			},
 			{
-				// Keep outside react-parity testExecution while provenance is
-				// recorded-unverified: react-parity:check only validates that
-				// lane, so ordinary shards must still execute the differential.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'wagmi-differential',
 					include: ['packages/wagmi/tests/differential/**/*.test.ts'],
@@ -1826,8 +1823,7 @@ export default defineConfig({
 				},
 			},
 			{
-				// Outside testExecution until provenance is verified; otherwise ordinary
-				// shards omit this project while react-parity:check only validates it.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'rainbowkit-differential',
 					globalSetup: ['packages/rainbowkit/tests/differential/_setup.ts'],
@@ -2466,9 +2462,7 @@ export default defineConfig({
 				},
 			},
 			{
-				// Keep outside react-parity ownership while the manifest is
-				// recorded-unverified: react-parity:check only validates that
-				// status, so ordinary shards must still execute the oracle.
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'recharts-differential',
 					include: ['packages/recharts/tests/differential/**/*.test.ts'],
@@ -2691,6 +2685,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'phosphor-icons-differential',
 					include: ['packages/phosphor-icons/tests/differential/**/*.test.ts'],
@@ -3139,6 +3134,24 @@ export default defineConfig({
 					globals: false,
 					testTimeout: 60_000,
 					hookTimeout: 60_000,
+				},
+			},
+			{
+				test: {
+					name: 'monaco-editor',
+					include: ['packages/monaco-editor/tests/**/*.test.ts'],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
+					alias: [
+						{
+							find: /^@octanejs\/monaco-editor$/,
+							replacement: resolve(import.meta.dirname, 'packages/monaco-editor/src/index.ts'),
+						},
+					],
 				},
 			},
 			{
@@ -4180,10 +4193,10 @@ export default defineConfig({
 				},
 			},
 			{
-				// Keep outside react-parity ownership while provenance is
-				// recorded-unverified: check.mjs only validates that lane, and
-				// a wholly-owned testExecution group would omit this project
-				// from ordinary shards with no CI executor left.
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/react-error-boundary/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'react-error-boundary-differential',
 					include: ['packages/react-error-boundary/tests/differential/**/*.test.ts'],
@@ -4531,6 +4544,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'mobx-differential',
 					include: ['packages/mobx/tests/differential/**/*.test.ts'],

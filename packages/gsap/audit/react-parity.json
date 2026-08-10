@@ -11,9 +11,16 @@
     "integrity": "sha256:180539218d55a844173d2f87a01cd92779238157b08e0e89be7108a998e8fa80",
     "verification": "verified"
   },
-  "upstreamSuites": { "runtime": "absent", "types": "absent" },
+  "upstreamSuites": {
+    "runtime": "absent",
+    "types": "absent"
+  },
   "adaptedRoots": {
-    "source": { "roots": ["packages/gsap/src"], "include": ["\\.(?:ts|tsrx)$"], "exclude": [] },
+    "source": {
+      "roots": ["packages/gsap/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": []
+    },
     "tests": {
       "roots": ["packages/gsap/tests/differential"],
       "include": ["\\.test\\.ts$"],
@@ -33,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "90408e01feff09d1fc1160adcca944b6efe98ede9db66b6ee3b279904c47d737"
+      "lockfileSha256": "f35079e8eb326a27cb442e0c3b49feac6241452364210e1387c807b8a16568e9"
     }
   },
   "lanes": [
@@ -173,7 +180,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         }
       ]
     }

@@ -11,7 +11,10 @@
     "integrity": "sha256:4be681123deea5cc4b4a4c5bf448aadf32aebeff2a51c9e5009e6602f3b4f00a",
     "verification": "recorded-unverified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/wagmi/src"],
@@ -37,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "90408e01feff09d1fc1160adcca944b6efe98ede9db66b6ee3b279904c47d737"
+      "lockfileSha256": "f35079e8eb326a27cb442e0c3b49feac6241452364210e1387c807b8a16568e9"
     }
   },
   "lanes": [
@@ -57,8 +60,8 @@
           "cases": [
             {
               "id": "differential:wagmi-connection",
-              "testName": "connection: disconnected → connected renders byte-identical",
-              "fullName": "differential: @octanejs/wagmi vs real wagmi connection: disconnected → connected renders byte-identical"
+              "testName": "connection: disconnected \u2192 connected renders byte-identical",
+              "fullName": "differential: @octanejs/wagmi vs real wagmi connection: disconnected \u2192 connected renders byte-identical"
             }
           ]
         },
@@ -80,7 +83,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         }
       ]
     }

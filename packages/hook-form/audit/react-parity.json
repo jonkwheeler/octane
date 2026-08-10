@@ -11,7 +11,10 @@
     "integrity": "sha256:2d49ffe1a26427eb579201d574fa6a76903f8a15bae5b0bab20c434273ebc8bd",
     "verification": "verified"
   },
-  "upstreamSuites": { "runtime": "present", "types": "present" },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "present"
+  },
   "adaptedRoots": {
     "source": {
       "roots": ["packages/hook-form/src"],
@@ -37,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "90408e01feff09d1fc1160adcca944b6efe98ede9db66b6ee3b279904c47d737"
+      "lockfileSha256": "f35079e8eb326a27cb442e0c3b49feac6241452364210e1387c807b8a16568e9"
     }
   },
   "lanes": [
@@ -74,7 +77,7 @@
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",
           "role": "support",
-          "sha256": "63641841ef1036467238d4a01188d14d529b639808814783b86d886efa00dc92"
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
         },
         {
           "path": "packages/hook-form/upstream/SHA256SUMS",
@@ -267,8 +270,8 @@
           "cases": [
             {
               "id": "differential:register",
-              "testName": "register: typing → per-keystroke validation → submit → reset renders byte-identical",
-              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing → per-keystroke validation → submit → reset renders byte-identical"
+              "testName": "register: typing \u2192 per-keystroke validation \u2192 submit \u2192 reset renders byte-identical",
+              "fullName": "differential: @octanejs/hook-form vs real react-hook-form register: typing \u2192 per-keystroke validation \u2192 submit \u2192 reset renders byte-identical"
             },
             {
               "id": "differential:controller",
@@ -300,7 +303,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "1295007fca6037ab9733c94ed96e7f0ff674053af2e8e9b445a18e32d7d6d9d9"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         }
       ]
     }
