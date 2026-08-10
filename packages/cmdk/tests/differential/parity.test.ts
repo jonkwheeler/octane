@@ -469,8 +469,12 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 
 		try {
 			// OCTANE DIVERGENCE[batcher-isolation][differential:cmdk-batcher-isolation]
+			// Filtering for this search is synchronous before the layout-effect
+			// batcher runs; the authenticated divergence is throw surface:
+			// upstream rethrows from the flush, Octane reports console.error and
+			// the consumer-visible filter result remains.
 			await differential.observe(
-				'throwing onValueChange still finishes sibling filter work on Octane',
+				'throwing onValueChange is reported on Octane while React rethrows',
 				async function (octane, react) {
 					await octane.input('[cmdk-input]', 'app');
 					let reactThrew = false;
@@ -478,8 +482,6 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 						await react.input('[cmdk-input]', 'app');
 					} catch (error) {
 						reactThrew = true;
-						// Upstream's layout-effect flush rethrows the user callback; the
-						// isolation divergence is that Octane reports and continues.
 						expect(String(error)).toContain('boom from onValueChange');
 					}
 					await settle();

@@ -113,7 +113,7 @@ export function useScheduleLayoutEffect() {
 				// Isolate, but never swallow. A scheduled callback can run user code
 				// (selectFirstItem -> setState('value') -> onValueChange), so a failure
 				// here must stay visible; report it the same way octane reports an
-				// exception raised inside an effect, and keep the siblings running.
+				// exception raised inside an effect. Upstream rethrows out of the flush.
 				console.error(error);
 			}
 		}

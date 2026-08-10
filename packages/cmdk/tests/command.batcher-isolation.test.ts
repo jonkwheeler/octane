@@ -11,7 +11,7 @@ describe('@octanejs/cmdk — batcher isolation divergence', () => {
 		// selectFirstItem -> setState('value')) disappeared silently.
 		const app = mount(ControlledCallbackMenu, {
 			value: '',
-			onValueChange: () => {
+			onValueChange: function throwOnChange() {
 				throw new Error('boom from onValueChange');
 			},
 		});
@@ -22,11 +22,18 @@ describe('@octanejs/cmdk — batcher isolation divergence', () => {
 
 		// The failure is reported...
 		const reported = consoleErrorCalls();
-		expect(reported.some((message) => message.includes('boom from onValueChange'))).toBe(true);
+		expect(
+			reported.some(function hasBoom(message) {
+				return message.includes('boom from onValueChange');
+			}),
+		).toBe(true);
 
-		// ...and the rest of the scheduled work still ran (isolation preserved):
-		// filtering applied, so only Apple remains.
-		expect(app.findAll('[cmdk-item]').map((el) => el.textContent)).toEqual(['Apple']);
+		// ...and the consumer-visible search update still applied.
+		expect(
+			app.findAll('[cmdk-item]').map(function textOf(el) {
+				return el.textContent;
+			}),
+		).toEqual(['Apple']);
 
 		app.unmount();
 		// This test asserts on the reported error itself, so acknowledge it.
