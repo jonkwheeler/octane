@@ -64,7 +64,7 @@
 				{
 					"path": "packages/cmdk/tests/differential/parity.test.ts",
 					"role": "test",
-					"sha256": "b18324d6aab7925148318582126d8b187ba8bf8531625447d65681355ad58529",
+					"sha256": "d881093daabe76080489ce61329a6847acb9765d991552390aae6ea50723fa2b",
 					"cases": [
 						{
 							"id": "differential:cmdk-filter-selection-empty",
@@ -78,8 +78,8 @@
 						},
 						{
 							"id": "differential:cmdk-force-mount-empty",
-							"testName": "documents Empty suppression while a force-mounted item is visible",
-							"fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents Empty suppression while a force-mounted item is visible"
+							"testName": "documents Empty suppression and release around force-mounted items",
+							"fullName": "differential: @octanejs/cmdk vs cmdk@1.1.1 documents Empty suppression and release around force-mounted items"
 						},
 						{
 							"id": "differential:cmdk-force-mount-rank",
@@ -136,7 +136,7 @@
 				{
 					"path": "packages/cmdk/tests/_fixtures/cmdk-diff.tsrx",
 					"role": "support",
-					"sha256": "ead041b167cbc0477e490b792ed399532fd5d09275129db5f9f4912d5b38fcb5"
+					"sha256": "c003b474bef9aca43b8574c7bd3cb4b3380f1e8d162ecc0b5c9c8b29c4c8af62"
 				},
 				{
 					"path": "packages/octane/tests/differential/_rig.ts",

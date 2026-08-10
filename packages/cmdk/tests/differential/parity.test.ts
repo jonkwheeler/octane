@@ -322,7 +322,7 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 	});
 
 	// @parity-case differential:cmdk-force-mount-empty
-	it('documents Empty suppression while a force-mounted item is visible', async function () {
+	it('documents Empty suppression and release around force-mounted items', async function () {
 		const differential = await mountDifferential(FIXTURE, 'CmdkDiffForceMount', undefined, CACHE);
 
 		// OCTANE DIVERGENCE[force-mount-empty-count][differential:cmdk-force-mount-empty]
@@ -337,6 +337,22 @@ describe('differential: @octanejs/cmdk vs cmdk@1.1.1', function () {
 				expect(itemTexts(react)).toEqual(['Always Here']);
 				expect(octane.container.querySelector('[cmdk-empty]')).toBeNull();
 				// Upstream skips forceMount registration, so Empty can render over it.
+				expect(react.container.querySelector('[cmdk-empty]')).not.toBeNull();
+			},
+		);
+
+		await differential.observe(
+			'Empty returns on Octane after the forceMount item unmounts',
+			async function (octane, react) {
+				await octane.click('#remove-forced');
+				await react.click('#remove-forced');
+				await settle();
+
+				expect(itemTexts(octane)).toEqual([]);
+				expect(itemTexts(react)).toEqual([]);
+				// Octane released forceMountedCount, so Empty can return.
+				expect(octane.container.querySelector('[cmdk-empty]')).not.toBeNull();
+				// Upstream Empty was already present while forceMount stayed mounted.
 				expect(react.container.querySelector('[cmdk-empty]')).not.toBeNull();
 			},
 		);

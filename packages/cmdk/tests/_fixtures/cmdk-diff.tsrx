@@ -41,13 +41,26 @@ export function CmdkDiffGroups() @{
 	</Command>
 }
 
-// Force-mounted item stays visible through any search; Empty must consult it.
+// Force-mounted item stays visible through any search; Empty must consult it,
+// then return after the force-mounted item is removed.
 export function CmdkDiffForceMount() @{
+	const [showForced, setShowForced] = useState(true);
 	<Command label="Command Menu">
+		<button
+			type="button"
+			id="remove-forced"
+			onClick={function onRemove() {
+				setShowForced(false);
+			}}
+		>
+			remove
+		</button>
 		<Command.Input placeholder="Search…" />
 		<Command.List>
 			<Command.Empty>No results found.</Command.Empty>
-			<Command.Item forceMount>Always Here</Command.Item>
+			@if (showForced) {
+				<Command.Item forceMount>Always Here</Command.Item>
+			}
 			<Command.Item>Apple</Command.Item>
 		</Command.List>
 	</Command>
