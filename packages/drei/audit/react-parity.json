@@ -47,7 +47,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8bb55de36aad1a71f85cce888295abdb62e5bddd3b8f73dcb43da88328b0ef0b"
+      "lockfileSha256": "278e954abbdc7f197a0f07c984a939f8d88f1f0878e6c09f239373c707c27836"
     }
   },
   "lanes": [
@@ -69,7 +69,7 @@
         {
           "path": "scripts/react-parity/playwright-full-runner.mjs",
           "role": "support",
-          "sha256": "2847e304659a45c0557a19a061951921ebbe9fd65d3a9dd461956ebb35b71e07"
+          "sha256": "236350603d5770d9a4bdc3b766d9caca5f1d164cea5941b9f2d79387628f2807"
         },
         {
           "path": "packages/drei/scripts/pristine-playwright.json",
