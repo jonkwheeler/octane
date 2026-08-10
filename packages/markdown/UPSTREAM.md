@@ -21,7 +21,7 @@ artifact does not publish `test.jsx` or `script/load-jsx.js`, so the canonical
 repository supplies that test boundary. The runtime source and license present
 in both artifacts are byte-identical.
 
-Run `pnpm --dir packages/react-markdown upstream:verify`. The verifier locks all
+Run `pnpm --dir packages/markdown upstream:verify`. The verifier locks all
 16 vendored files, package identity and license, the public API, and all 87
 `test.jsx` registrations. Its negative controls must reject source drift,
 license drift, a renamed upstream test, a removed inventory row, and a missing

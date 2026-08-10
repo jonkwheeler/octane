@@ -19,7 +19,7 @@
 
 | Class | Frozen edit | Library-specific redesign? |
 | --- | --- | --- |
-| Dependency mapping | `react-markdown` → `@octanejs/react-markdown` | No; declared package mapping |
+| Dependency mapping | `react-markdown` → `@octanejs/markdown` | No; declared package mapping |
 | Import mapping | change only the package root | No; declared package mapping |
 | Framework syntax | `.tsx` JSX → `.tsrx` templates | No; ordinary React-to-Octane conversion |
 | Framework type | React renderable/event/intrinsic types → Octane/native equivalents | No; ordinary framework conversion |

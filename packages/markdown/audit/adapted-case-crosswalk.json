@@ -20,7 +20,7 @@
       "adapted": [
         {
           "id": "runtime:cf81bb17d3865b81",
-          "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
+          "file": "packages/markdown/tests/conformance/public-types.test.ts",
           "fullName": "exposes the public api",
           "sourceSha256": "8abb0289ee08c3a9c0c18e4afd8f76cc000d399d2c49ecc9507c00b429af0f80"
         }
@@ -45,7 +45,7 @@
       "adapted": [
         {
           "id": "runtime:8405d9e64b10e579",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the pristine default renderer for \"# heading\\n\\nA [safe](https://example.com) link.\"",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -70,7 +70,7 @@
       "adapted": [
         {
           "id": "runtime:8ebf28c5aad28f21",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects removed prop source",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -95,7 +95,7 @@
       "adapted": [
         {
           "id": "runtime:03ff8e5ea27a65b7",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects non-string children with the pinned message",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -117,7 +117,7 @@
       "adapted": [
         {
           "id": "runtime:3f5f8ba2fead421b",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects boolean true children with the exact pinned diagnostic",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -142,7 +142,7 @@
       "adapted": [
         {
           "id": "runtime:de5359a9878bbea5",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "accepts pinned empty child null",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -167,7 +167,7 @@
       "adapted": [
         {
           "id": "runtime:6ec71928dd0170b6",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "accepts pinned empty child undefined",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -192,7 +192,7 @@
       "adapted": [
         {
           "id": "runtime:e820231d50268321",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects removed prop allowDangerousHtml",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -217,7 +217,7 @@
       "adapted": [
         {
           "id": "runtime:36c2628e4cfb068a",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: block quote",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -242,7 +242,7 @@
       "adapted": [
         {
           "id": "runtime:05f2e97e043ce8c9",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: break",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -267,7 +267,7 @@
       "adapted": [
         {
           "id": "runtime:fe0e95c1235dda49",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: indented code",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -292,7 +292,7 @@
       "adapted": [
         {
           "id": "runtime:b22a7af6bcd4beeb",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: fenced code",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -317,7 +317,7 @@
       "adapted": [
         {
           "id": "runtime:e3509e4c5c186116",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: delete",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -342,7 +342,7 @@
       "adapted": [
         {
           "id": "runtime:52c15497958da745",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: emphasis",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -367,7 +367,7 @@
       "adapted": [
         {
           "id": "runtime:e21febf544107f7c",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: footnote",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -392,7 +392,7 @@
       "adapted": [
         {
           "id": "runtime:6b57624dac683eb7",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: heading",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -417,7 +417,7 @@
       "adapted": [
         {
           "id": "runtime:e9d27c9fe2bbf755",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: raw HTML",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -442,7 +442,7 @@
       "adapted": [
         {
           "id": "runtime:28a815ad8f068e93",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine rehype-raw behavior",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -467,7 +467,7 @@
       "adapted": [
         {
           "id": "runtime:c1c8e5a375ca7926",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: image",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -492,7 +492,7 @@
       "adapted": [
         {
           "id": "runtime:a162bcc8641816d1",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: image title",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -517,7 +517,7 @@
       "adapted": [
         {
           "id": "runtime:f0d20c1db2c89b8a",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: image reference",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -542,7 +542,7 @@
       "adapted": [
         {
           "id": "runtime:467abf057d3bc5e1",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: inline code",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -567,7 +567,7 @@
       "adapted": [
         {
           "id": "runtime:7a247a9d5f71353c",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: link",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -592,7 +592,7 @@
       "adapted": [
         {
           "id": "runtime:c8c51e58efd41ce1",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: link title",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -617,7 +617,7 @@
       "adapted": [
         {
           "id": "runtime:685522707e4d6e60",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: link reference",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -642,7 +642,7 @@
       "adapted": [
         {
           "id": "runtime:74962374091e3157",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: prototype-polluting definitions",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -667,7 +667,7 @@
       "adapted": [
         {
           "id": "runtime:12ad6c80233473aa",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: duplicate definitions",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -692,7 +692,7 @@
       "adapted": [
         {
           "id": "runtime:45d2d551298bb978",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: unordered list",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -717,7 +717,7 @@
       "adapted": [
         {
           "id": "runtime:54bad030a3708b21",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: ordered list",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -742,7 +742,7 @@
       "adapted": [
         {
           "id": "runtime:e631e708209d8bab",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: paragraph",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -767,7 +767,7 @@
       "adapted": [
         {
           "id": "runtime:8525cdecca856515",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: strong",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -792,7 +792,7 @@
       "adapted": [
         {
           "id": "runtime:900475c7a7b2a1b9",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: table",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -817,7 +817,7 @@
       "adapted": [
         {
           "id": "runtime:f10bea66a68d797a",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: aligned table",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -842,7 +842,7 @@
       "adapted": [
         {
           "id": "runtime:81523bf9cb17d4fe",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: thematic break",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -867,7 +867,7 @@
       "adapted": [
         {
           "id": "runtime:8ab6d756e0efb565",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: absolute path",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -892,7 +892,7 @@
       "adapted": [
         {
           "id": "runtime:f6a14f6585be95a5",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: absolute URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -917,7 +917,7 @@
       "adapted": [
         {
           "id": "runtime:2befada496497227",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: uppercase protocol",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -942,7 +942,7 @@
       "adapted": [
         {
           "id": "runtime:e8551d8b3bcdbe9f",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: javascript URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -967,7 +967,7 @@
       "adapted": [
         {
           "id": "runtime:1d8f9068cba2602b",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: vbscript URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -992,7 +992,7 @@
       "adapted": [
         {
           "id": "runtime:26cbd999b3e4698e",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: uppercase vbscript URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1017,7 +1017,7 @@
       "adapted": [
         {
           "id": "runtime:90330ca82b1b319b",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: file URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1042,7 +1042,7 @@
       "adapted": [
         {
           "id": "runtime:75aa0a7b6562aa26",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: empty URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1067,7 +1067,7 @@
       "adapted": [
         {
           "id": "runtime:cec002264847ad73",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: query URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1092,7 +1092,7 @@
       "adapted": [
         {
           "id": "runtime:da16b6b30d515557",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: ampersand URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1117,7 +1117,7 @@
       "adapted": [
         {
           "id": "runtime:18d214ca6e953e79",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine sync identity: hash URL",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1142,7 +1142,7 @@
       "adapted": [
         {
           "id": "runtime:20e62e65276d5c67",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream href urlTransform public-render fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1167,7 +1167,7 @@
       "adapted": [
         {
           "id": "runtime:537136ca2595fdb1",
-          "file": "packages/react-markdown/tests/differential/url-transform.test.ts",
+          "file": "packages/markdown/tests/differential/url-transform.test.ts",
           "fullName": "the pinned URL oracle transforms \"\" to \"\"",
           "sourceSha256": "ba54f3394d093e567ca10b1031af27d2e8e9cb59e141e8c6a42dc72ac06205dd"
         }
@@ -1192,7 +1192,7 @@
       "adapted": [
         {
           "id": "runtime:62666e5fecdaf613",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream image src urlTransform returning null fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1217,7 +1217,7 @@
       "adapted": [
         {
           "id": "runtime:df796150e8d55d22",
-          "file": "packages/react-markdown/tests/differential/processor.test.ts",
+          "file": "packages/markdown/tests/differential/processor.test.ts",
           "fullName": "matches pinned raw handling and filtering order",
           "sourceSha256": "ffb156a541f08d9aca0a71bd82253be718beedc1085ee534d835c7d0b0e9c763"
         }
@@ -1239,7 +1239,7 @@
       "adapted": [
         {
           "id": "runtime:bf6e7624cf30b61e",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream allowedElements drop fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1264,7 +1264,7 @@
       "adapted": [
         {
           "id": "runtime:3ca4712df44cbe4d",
-          "file": "packages/react-markdown/tests/differential/processor.test.ts",
+          "file": "packages/markdown/tests/differential/processor.test.ts",
           "fullName": "passes exact element index and parent to allowElement",
           "sourceSha256": "ffb156a541f08d9aca0a71bd82253be718beedc1085ee534d835c7d0b0e9c763"
         }
@@ -1289,7 +1289,7 @@
       "adapted": [
         {
           "id": "runtime:98b6ab01a91c3ed5",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream disallowedElements fixture without unwrap",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1314,7 +1314,7 @@
       "adapted": [
         {
           "id": "runtime:990481e14d5bcc08",
-          "file": "packages/react-markdown/tests/validation.test.ts",
+          "file": "packages/markdown/tests/validation.test.ts",
           "fullName": "rejects combined element lists with the pinned message",
           "sourceSha256": "888ee515dab2a28ec5f2efc274d8c1835cb06c50b890ba488d44cce452d645eb"
         }
@@ -1336,7 +1336,7 @@
       "adapted": [
         {
           "id": "runtime:21e126ff95b2f6cb",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream unwrapDisallowed with allowedElements fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1361,7 +1361,7 @@
       "adapted": [
         {
           "id": "runtime:0c31045076dccbbb",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection publicly renders exact unwrapDisallowed with disallowedElements fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1386,7 +1386,7 @@
       "adapted": [
         {
           "id": "runtime:2544c277b5fdb5d1",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream remarkRehypeOptions clobberPrefix footnote output",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1411,7 +1411,7 @@
       "adapted": [
         {
           "id": "runtime:a112bb863ac4ec74",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection supports intrinsic remapping, null components, and fragments",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1436,7 +1436,7 @@
       "adapted": [
         {
           "id": "runtime:f790ec86e665b380",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection passes complete intrinsic props and node while keeping key special",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1461,7 +1461,7 @@
       "adapted": [
         {
           "id": "runtime:9c4989f9a58cb4ef",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection preserves sibling projection and rejects invalid mappings",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1486,7 +1486,7 @@
       "adapted": [
         {
           "id": "runtime:69f5d039da625392",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (headings) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1511,7 +1511,7 @@
       "adapted": [
         {
           "id": "runtime:3abe373c6f7e85ae",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (code) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1536,7 +1536,7 @@
       "adapted": [
         {
           "id": "runtime:aa8f61570d348570",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (li) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1561,7 +1561,7 @@
       "adapted": [
         {
           "id": "runtime:c0faaf3fc5992b1e",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (ol) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1586,7 +1586,7 @@
       "adapted": [
         {
           "id": "runtime:fa589a869e389fac",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (ul) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1611,7 +1611,7 @@
       "adapted": [
         {
           "id": "runtime:ee36ebea71e78f5c",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (tr) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1636,7 +1636,7 @@
       "adapted": [
         {
           "id": "runtime:adb89e6e53378f7f",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the upstream components (td and th) fixture, output, node tags, and call count",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1658,7 +1658,7 @@
       "adapted": [
         {
           "id": "runtime:d853764df692474d",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection passes the complete upstream HAST node including child and source positions",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1683,7 +1683,7 @@
       "adapted": [
         {
           "id": "runtime:14d6a5c135c6f8a7",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream remark-gfm single-tilde fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1705,7 +1705,7 @@
       "adapted": [
         {
           "id": "runtime:d5050f366996856b",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches pristine remark-toc output for the upstream fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1730,7 +1730,7 @@
       "adapted": [
         {
           "id": "runtime:52c80c5c94041b1d",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created ARIA property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1755,7 +1755,7 @@
       "adapted": [
         {
           "id": "runtime:c5cd49f14eb93169",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created data property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1780,7 +1780,7 @@
       "adapted": [
         {
           "id": "runtime:6cb86ea421795b13",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created comma-separated property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1805,7 +1805,7 @@
       "adapted": [
         {
           "id": "runtime:4191409c2580cd05",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created style property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1830,7 +1830,7 @@
       "adapted": [
         {
           "id": "runtime:c982891ec636936d",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created vendor-prefixed style property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1855,7 +1855,7 @@
       "adapted": [
         {
           "id": "runtime:42901f712e4ea60b",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream plugin-created broken style property fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1877,7 +1877,7 @@
       "adapted": [
         {
           "id": "runtime:69d006d9955d2bbb",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream SVG projection fixture",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1899,7 +1899,7 @@
       "adapted": [
         {
           "id": "runtime:8cf35d7144a5a047",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection ignores the exact upstream root comment while preserving the paragraph",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1924,7 +1924,7 @@
       "adapted": [
         {
           "id": "runtime:ffc3e1ebaa17d492",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream GFM aligned table cell with merged plugin style",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1946,7 +1946,7 @@
       "adapted": [
         {
           "id": "runtime:7f054a986e2f123f",
-          "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
+          "file": "packages/markdown/tests/conformance/sync.server.test.ts",
           "fullName": "synchronous public projection matches the exact upstream root-replaced-by-comment empty output",
           "sourceSha256": "94d6e7f21bbbca915fe878a4cad2583249dcf7a6c16dcd0554204c0771c16884"
         }
@@ -1972,7 +1972,7 @@
       "adapted": [
         {
           "id": "runtime:090a6b90380b5935",
-          "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+          "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
           "fullName": "MarkdownAsync documents the synchronous-render framework divergence with the upstream fixture",
           "sourceSha256": "fc460bede4f5dfe9420e38aabbdeddec40c0523dfaf37f543ed718696539c18b"
         }
@@ -1994,7 +1994,7 @@
       "adapted": [
         {
           "id": "runtime:db91988cfb235ff3",
-          "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+          "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
           "fullName": "MarkdownAsync matches the upstream pipeable-stream output fixture",
           "sourceSha256": "fc460bede4f5dfe9420e38aabbdeddec40c0523dfaf37f543ed718696539c18b"
         }
@@ -2016,7 +2016,7 @@
       "adapted": [
         {
           "id": "runtime:052ced3137ef63b1",
-          "file": "packages/react-markdown/tests/async/markdown-async.server.test.ts",
+          "file": "packages/markdown/tests/async/markdown-async.server.test.ts",
           "fullName": "MarkdownAsync matches exact starry-night highlighted HTML for the upstream fixture",
           "sourceSha256": "fc460bede4f5dfe9420e38aabbdeddec40c0523dfaf37f543ed718696539c18b"
         }
@@ -2041,7 +2041,7 @@
       "adapted": [
         {
           "id": "runtime:022869b7d63b27dc",
-          "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+          "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle matches the pinned no-fallback initial empty DOM and resolved paragraph",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
         }
@@ -2066,7 +2066,7 @@
       "adapted": [
         {
           "id": "runtime:220745d3a5b56e21",
-          "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+          "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle matches exact async MarkdownHooks starry-night JavaScript highlighted HTML",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
         }
@@ -2091,7 +2091,7 @@
       "adapted": [
         {
           "id": "runtime:01cbc40342ec4745",
-          "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+          "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle matches pristine fallback and async resolution",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
         }
@@ -2116,7 +2116,7 @@
       "adapted": [
         {
           "id": "runtime:ae1ab0e444ff0faa",
-          "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+          "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle surfaces async errors through rendering",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
         }
@@ -2141,7 +2141,7 @@
       "adapted": [
         {
           "id": "runtime:aa46d56015467bbd",
-          "file": "packages/react-markdown/tests/hooks/markdown-hooks.test.ts",
+          "file": "packages/markdown/tests/hooks/markdown-hooks.test.ts",
           "fullName": "MarkdownHooks lifecycle rerenders a to b, resolves both async runs, and commits only b",
           "sourceSha256": "1586dd39e1723e754362b08bdb176e48a722d306b8a73a61a42bf13448f00a5c"
         }

@@ -13,7 +13,7 @@ const sha256 = (path) =>
 const support = (path) => ({ path, role: 'support', sha256: sha256(path) });
 const test = (path, cases) => ({ path, role: 'test', sha256: sha256(path), cases });
 const adaptedRuntimeCount = JSON.parse(
-	readFileSync(resolve(root, 'packages/react-markdown/audit/adapted-runtime.json'), 'utf8'),
+	readFileSync(resolve(root, 'packages/markdown/audit/adapted-runtime.json'), 'utf8'),
 ).tests.length;
 
 const manifest = {
@@ -32,21 +32,21 @@ const manifest = {
 	upstreamSuites: { runtime: 'present', types: 'absent' },
 	adaptedRoots: {
 		source: {
-			roots: ['packages/react-markdown/src'],
+			roots: ['packages/markdown/src'],
 			include: ['\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$'],
 			exclude: [],
 		},
 		tests: {
-			roots: ['packages/react-markdown/tests'],
+			roots: ['packages/markdown/tests'],
 			include: ['\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$'],
 			exclude: [
-				'packages/react-markdown/tests/pristine/',
-				'packages/react-markdown/tests/adoption/',
-				'packages/react-markdown/tests/audit/',
-				'packages/react-markdown/tests/probes/',
-				'packages/react-markdown/tests/hydration/',
-				'packages/react-markdown/tests/ssr/',
-				'packages/react-markdown/tests/parity/',
+				'packages/markdown/tests/pristine/',
+				'packages/markdown/tests/adoption/',
+				'packages/markdown/tests/audit/',
+				'packages/markdown/tests/probes/',
+				'packages/markdown/tests/hydration/',
+				'packages/markdown/tests/ssr/',
+				'packages/markdown/tests/parity/',
 				'\\.local\\.',
 			],
 		},
@@ -79,17 +79,17 @@ const manifest = {
 				'Executes the vendored test.jsx byte-for-byte with Node test, the pinned JSX loader, React 19.0.0, and every declared upstream test dependency; all 87 leaf assertions and interactions must pass.',
 			execution: {
 				kind: 'node-full',
-				root: 'packages/react-markdown/upstream/source',
-				file: 'packages/react-markdown/upstream/source/test.jsx',
-				loader: 'packages/react-markdown/upstream/source/script/load-jsx.js',
-				inventory: 'packages/react-markdown/audit/pristine-runtime.json',
+				root: 'packages/markdown/upstream/source',
+				file: 'packages/markdown/upstream/source/test.jsx',
+				loader: 'packages/markdown/upstream/source/script/load-jsx.js',
+				inventory: 'packages/markdown/audit/pristine-runtime.json',
 			},
 			files: [
-				support('packages/react-markdown/audit/test-inventory.json'),
-				support('packages/react-markdown/audit/pristine-runtime.json'),
-				support('packages/react-markdown/upstream/source/test.jsx'),
-				support('packages/react-markdown/upstream/source/script/load-jsx.js'),
-				support('packages/react-markdown/upstream/source/package.json'),
+				support('packages/markdown/audit/test-inventory.json'),
+				support('packages/markdown/audit/pristine-runtime.json'),
+				support('packages/markdown/upstream/source/test.jsx'),
+				support('packages/markdown/upstream/source/script/load-jsx.js'),
+				support('packages/markdown/upstream/source/package.json'),
 				support('scripts/react-parity/node-full-runner.mjs'),
 			],
 		},
@@ -104,11 +104,11 @@ const manifest = {
 				'Executes the one-for-one adapted Octane counterparts of the 87 upstream test.jsx identities with exact collected and executed identities.',
 			execution: {
 				kind: 'vitest-full',
-				inventory: 'packages/react-markdown/audit/adapted-runtime.json',
+				inventory: 'packages/markdown/audit/adapted-runtime.json',
 			},
 			files: [
-				support('packages/react-markdown/audit/adapted-runtime.json'),
-				support('packages/react-markdown/audit/adapted-case-crosswalk.json'),
+				support('packages/markdown/audit/adapted-runtime.json'),
+				support('packages/markdown/audit/adapted-case-crosswalk.json'),
 				support('scripts/react-parity/react-markdown-runtime-inventory.mjs'),
 				support('scripts/react-parity/react-markdown-crosswalk.mjs'),
 				support('vitest.config.js'),
@@ -124,7 +124,7 @@ const manifest = {
 			notes:
 				'Runs the same Markdown and URL fixtures through pristine React and Octane public entry points.',
 			files: [
-				test('packages/react-markdown/tests/parity/differential.test.ts', [
+				test('packages/markdown/tests/parity/differential.test.ts', [
 					{
 						id: 'react-markdown:differential:sync',
 						testName: 'sync Markdown output matches pristine React',
@@ -155,19 +155,19 @@ const manifest = {
 			execution: {
 				kind: 'typescript',
 				compiler: 'tsc',
-				project: 'packages/react-markdown/audit/type-probes/tsconfig.pristine.json',
+				project: 'packages/markdown/audit/type-probes/tsconfig.pristine.json',
 			},
 			files: [
-				test('packages/react-markdown/audit/pristine-types.json', [
+				test('packages/markdown/audit/pristine-types.json', [
 					{
 						id: 'types:react-markdown-pristine',
 						testName: 'pinned React declaration probes',
 						fullName: 'pinned React declaration probes',
 					},
 				]),
-				support('packages/react-markdown/audit/type-probes/public-api.test-d.ts'),
-				support('packages/react-markdown/audit/type-probes/tsconfig.pristine.json'),
-				support('packages/react-markdown/audit/type-parity.json'),
+				support('packages/markdown/audit/type-probes/public-api.test-d.ts'),
+				support('packages/markdown/audit/type-probes/tsconfig.pristine.json'),
+				support('packages/markdown/audit/type-parity.json'),
 			],
 		},
 		{
@@ -182,19 +182,19 @@ const manifest = {
 			execution: {
 				kind: 'typescript',
 				compiler: 'tsrx-tsc',
-				project: 'packages/react-markdown/typetests/tsconfig.json',
+				project: 'packages/markdown/typetests/tsconfig.json',
 			},
 			files: [
-				test('packages/react-markdown/audit/adapted-types.json', [
+				test('packages/markdown/audit/adapted-types.json', [
 					{
 						id: 'types:react-markdown-adapted',
 						testName: 'adapted Octane declaration probes',
 						fullName: 'adapted Octane declaration probes',
 					},
 				]),
-				support('packages/react-markdown/typetests/public-api.test-d.ts'),
-				support('packages/react-markdown/typetests/tsconfig.json'),
-				support('packages/react-markdown/audit/type-parity.json'),
+				support('packages/markdown/typetests/public-api.test-d.ts'),
+				support('packages/markdown/typetests/tsconfig.json'),
+				support('packages/markdown/audit/type-parity.json'),
 				support('scripts/react-parity/react-markdown-types-lib.mjs'),
 			],
 		},
@@ -236,7 +236,7 @@ const manifest = {
 	],
 };
 
-const destination = resolve(root, 'packages/react-markdown/audit/react-parity.json');
+const destination = resolve(root, 'packages/markdown/audit/react-parity.json');
 writeFileSync(
 	destination,
 	await format(JSON.stringify(manifest), {
@@ -244,4 +244,4 @@ writeFileSync(
 		filepath: destination,
 	}),
 );
-console.log('packages/react-markdown/audit/react-parity.json');
+console.log('packages/markdown/audit/react-parity.json');

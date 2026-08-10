@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
-export const TYPE_PARITY_CONFIG = 'packages/react-markdown/audit/type-parity.json';
+export const TYPE_PARITY_CONFIG = 'packages/markdown/audit/type-parity.json';
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
@@ -11,6 +11,55 @@ function sha256(value) {
 
 function posix(value) {
 	return value.split(sep).join('/');
+}
+
+function resolveProjectProbeFiles(root, projectPath) {
+	const absoluteProject = resolve(root, projectPath);
+	const read = ts.readConfigFile(absoluteProject, ts.sys.readFile);
+	if (read.error) {
+		throw new Error(
+			`${projectPath}: ${ts.flattenDiagnosticMessageText(read.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		read.config,
+		ts.sys,
+		dirname(absoluteProject),
+		undefined,
+		absoluteProject,
+	);
+	if (parsed.errors.length > 0) {
+		throw new Error(
+			`${projectPath}: ${ts.flattenDiagnosticMessageText(parsed.errors[0].messageText, '\n')}`,
+		);
+	}
+	const projectDir = dirname(absoluteProject);
+	return parsed.fileNames
+		.map(function toProbeRelative(fileName) {
+			return posix(relative(projectDir, fileName));
+		})
+		.filter(function keepProbes(path) {
+			return path.endsWith('.test-d.ts');
+		})
+		.sort();
+}
+
+function verifyLanePrograms(root, config, inventory) {
+	const declared = inventory.upstream.map(function pathOf(entry) {
+		return entry.path;
+	});
+	for (const side of ['pristine', 'adapted']) {
+		const lane = config.lanes?.[side];
+		if (!lane?.project) {
+			throw new Error(`type-parity.json lanes.${side}.project is required`);
+		}
+		const programFiles = resolveProjectProbeFiles(root, lane.project);
+		if (JSON.stringify(programFiles) !== JSON.stringify(declared)) {
+			throw new Error(
+				`${lane.project}: compiler program probes must match the ${side} type inventory exactly`,
+			);
+		}
+	}
 }
 
 function listFiles(root) {
@@ -98,7 +147,7 @@ function normalizeSpecifier(specifier) {
 		specifier === 'react-markdown' ||
 		specifier === '../src/index' ||
 		specifier === '../src/index.ts' ||
-		specifier === '@octanejs/react-markdown'
+		specifier === '@octanejs/markdown'
 	) {
 		return '#markdown-public';
 	}
@@ -203,6 +252,7 @@ export function verifyReactMarkdownTypes(root, { configPath = TYPE_PARITY_CONFIG
 			);
 		}
 	}
+	verifyLanePrograms(root, config, inventory);
 	return {
 		files: inventory.upstream.length,
 		assertions: inventory.upstream.reduce(function sumAssertions(sum, file) {

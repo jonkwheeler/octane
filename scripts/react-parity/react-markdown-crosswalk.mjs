@@ -21,16 +21,16 @@ const readSource = (path) =>
 const readJson = (path) =>
 	JSON.parse(
 		readFileSync(
-			path === 'packages/react-markdown/audit/parameter-row-map.json' && parameterMapOverrideFile
+			path === 'packages/markdown/audit/parameter-row-map.json' && parameterMapOverrideFile
 				? parameterMapOverrideFile
 				: resolve(root, path),
 			'utf8',
 		),
 	);
-const upstream = readJson('packages/react-markdown/audit/test-inventory.json');
-const adapted = readJson('packages/react-markdown/audit/adapted-runtime.json');
-const stableMap = readJson('packages/react-markdown/audit/adapted-case-map.json');
-const parameterRows = readJson('packages/react-markdown/audit/parameter-row-map.json');
+const upstream = readJson('packages/markdown/audit/test-inventory.json');
+const adapted = readJson('packages/markdown/audit/adapted-runtime.json');
+const stableMap = readJson('packages/markdown/audit/adapted-case-map.json');
+const parameterRows = readJson('packages/markdown/audit/parameter-row-map.json');
 const expectedParameterRowBindings = 54;
 if (Object.keys(parameterRows).length !== expectedParameterRowBindings)
 	throw new Error(
@@ -355,7 +355,7 @@ const cases = Object.entries(stableMap).map(([upstreamId, adaptedId]) => {
 	};
 });
 
-const destination = resolve(root, 'packages/react-markdown/audit/adapted-case-crosswalk.json');
+const destination = resolve(root, 'packages/markdown/audit/adapted-case-crosswalk.json');
 writeFileSync(
 	destination,
 	await format(JSON.stringify({ schemaVersion: 2, cases }), {

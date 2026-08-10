@@ -1,9 +1,9 @@
-# @octanejs/react-markdown
+# @octanejs/markdown
 
 Octane bindings for [`react-markdown@10.1.0`](https://github.com/remarkjs/react-markdown). The default export and the `MarkdownAsync`, `MarkdownHooks`, and `defaultUrlTransform` named exports preserve the upstream processing and option contracts while producing Octane output.
 
 ```tsrx
-import Markdown from '@octanejs/react-markdown';
+import Markdown from '@octanejs/markdown';
 import remarkGfm from 'remark-gfm';
 
 export function Article() {
@@ -22,7 +22,7 @@ export function Article() {
 }
 ```
 
-Migrate by replacing the `react-markdown` dependency and import root with `@octanejs/react-markdown`, then apply the ordinary React-to-Octane syntax and type conversion. Plugin values and tuples, component keys and callback props, filtering options, URL transforms, and the sync/async/hooks API shapes remain unchanged.
+Migrate by replacing the `react-markdown` dependency and import root with `@octanejs/markdown`, then apply the ordinary React-to-Octane syntax and type conversion. Plugin values and tuples, component keys and callback props, filtering options, URL transforms, and the sync/async/hooks API shapes remain unchanged.
 
 Author `Markdown` in React-style value position (`return <Markdown>{markdown}</Markdown>`) so its static or expression child remains an inspectable Markdown value. Template-position children compile to an opaque render block and are rejected rather than invoked without their runtime scope. In a template body, pass the source explicitly with `<Markdown children={markdown} />`.
 

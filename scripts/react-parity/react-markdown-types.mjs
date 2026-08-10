@@ -17,7 +17,7 @@ if (process.argv.includes('--write')) {
 }
 const result = verifyReactMarkdownTypes(root);
 const manifest = await loadManifest(
-	resolve(root, 'packages/react-markdown/audit/react-parity.json'),
+	resolve(root, 'packages/markdown/audit/react-parity.json'),
 );
 const typeLanes = manifest.lanes.filter(
 	(lane) => lane.oracle === 'required' && lane.available !== false && lane.type.endsWith('-types'),

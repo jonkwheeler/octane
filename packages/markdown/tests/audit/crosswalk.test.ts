@@ -32,15 +32,15 @@ type Crosswalk = {
 const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url));
 const read = <T>(path: string): T => JSON.parse(readFileSync(join(repoRoot, path), 'utf8')) as T;
 const upstream = read<{ cases: Array<{ id: string; title: string }> }>(
-	'packages/react-markdown/audit/test-inventory.json',
+	'packages/markdown/audit/test-inventory.json',
 );
 const adapted = read<{ tests: RuntimeTest[] }>(
-	'packages/react-markdown/audit/adapted-runtime.json',
+	'packages/markdown/audit/adapted-runtime.json',
 );
-const crosswalk = read<Crosswalk>('packages/react-markdown/audit/adapted-case-crosswalk.json');
+const crosswalk = read<Crosswalk>('packages/markdown/audit/adapted-case-crosswalk.json');
 const parameterRows = read<
 	Record<string, { template: string; rowIndex: number; rowSha256: string }>
->('packages/react-markdown/audit/parameter-row-map.json');
+>('packages/markdown/audit/parameter-row-map.json');
 
 function staticParameterValue(node: ts.Expression): unknown {
 	while (

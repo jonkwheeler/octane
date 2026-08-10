@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Ship `@octanejs/react-markdown` as the source-compatible Octane migration target for `react-markdown@10.1.0`, preserving its default, async, hooks, plugin, filtering, component, URL, SSR, and public-type contracts.
+- **Objective:** Ship `@octanejs/markdown` as the source-compatible Octane migration target for `react-markdown@10.1.0`, preserving its default, async, hooks, plugin, filtering, component, URL, SSR, and public-type contracts.
 - **Authority:** The `react-markdown@10.1.0` npm artifact and canonical commit `44d2e4a44b37461ab7778d6870c1a9eb36393ad2` govern parity; Octane repository guidance governs adaptation and proof.
 - **Execution profile:** Source-near port over Unified with exhaustive upstream inventory, pristine React and adapted Octane lanes, differential security and projection oracles, SSR/hydration evidence, and a bounded Chromium hooks lifecycle lane when jsdom cannot prove scheduling behavior.
 - **Stop conditions:** Stop only for an upstream contract Octane cannot express without a product decision—including the pinned promise-returning mapped-component contract—a licensing contradiction, a prerequisite that belongs in a separate PR, or a human-only repository permission blocker.
@@ -26,7 +26,7 @@ execution: code
 
 Applications importing `react-markdown` should migrate through the ordinary React-to-Octane syntax/type conversion plus a dependency and import-root change, without library-specific API redesign, replacement Markdown renderers, or rewritten Unified plugin logic and component-mapping behavior. The port must retain the pinned package's synchronous, awaited asynchronous, and client-hook execution models and its security-relevant URL and raw-HTML behavior.
 
-Here, exact binding means an equivalent mapped Octane package and API contract, not preserving the original `react-markdown` import identity through a package-manager override. Package.json discovery should map `react-markdown` to `@octanejs/react-markdown`; normal framework conversion changes the import root and React syntax/types.
+Here, exact binding means an equivalent mapped Octane package and API contract, not preserving the original `react-markdown` import identity through a package-manager override. Package.json discovery should map `react-markdown` to `@octanejs/markdown`; normal framework conversion changes the import root and React syntax/types.
 
 ### Problem Frame
 
@@ -36,7 +36,7 @@ Octane's MDX and Streamdown packages are adjacent capabilities, not import-compa
 
 **Public package and provenance**
 
-- R1. Publish `@octanejs/react-markdown` with default export `Markdown`, named runtime exports `MarkdownAsync`, `MarkdownHooks`, and `defaultUrlTransform`, and public types `AllowElement`, `Components`, `ExtraProps`, `HooksOptions`, `Options`, and `UrlTransform`.
+- R1. Publish `@octanejs/markdown` with default export `Markdown`, named runtime exports `MarkdownAsync`, `MarkdownHooks`, and `defaultUrlTransform`, and public types `AllowElement`, `Components`, `ExtraProps`, `HooksOptions`, `Options`, and `UrlTransform`.
 - R2. Pin the npm artifact and canonical commit, vendor redistributable source and tests byte-exact, retain MIT attribution, hash both evidence boundaries, and account for every public export, public type, upstream artifact, and all 87 upstream subtests.
 - R3. Preserve accepted and rejected TypeScript programs for default and named imports, options, plugin tuples, components, callbacks, async return values, and intrinsic properties without React runtime or public-type dependencies.
 
@@ -80,7 +80,7 @@ Octane's MDX and Streamdown packages are adjacent capabilities, not import-compa
 
 - Port `react-markdown@10.1.0`; do not absorb Streamdown, MDX, `remark-gfm`, `rehype-raw`, or other plugins into the package.
 - Adapt only the framework seam: React elements, JSX runtime, hooks, component and renderable types become Octane equivalents. Do not change Unified ordering, validation, filtering, URL, or lifecycle behavior.
-- Preserving the original `react-markdown` module specifier through aliasing or overrides is outside this binding. The migration inventory reports the exact `react-markdown` → `@octanejs/react-markdown` mapping.
+- Preserving the original `react-markdown` module specifier through aliasing or overrides is outside this binding. The migration inventory reports the exact `react-markdown` → `@octanejs/markdown` mapping.
 - Do not add a sanitization policy beyond upstream. Document that custom transforms and plugins can weaken safety, and prove the pinned default contract.
 - A newer major or prerelease belongs in a later isolated PR.
 
@@ -147,7 +147,7 @@ flowchart TB
 - **Goal:** Establish immutable source, npm, license, export, type, and test boundaries and prove the load-bearing promise-returning mapped-component seam before the port architecture depends on it.
 - **Requirements:** R1-R3, R15.
 - **Dependencies:** None.
-- **Files:** `packages/react-markdown/upstream/`, `packages/react-markdown/UPSTREAM.md`, `packages/react-markdown/audit/public-api.json`, `packages/react-markdown/audit/test-inventory.json`, `packages/react-markdown/audit/verify-provenance.mjs`, `packages/react-markdown/package.json`, `packages/react-markdown/tsconfig.json`, `packages/react-markdown/tests/probes/async-component.tsrx`, `packages/react-markdown/tests/probes/async-component.server.test.ts`, `packages/react-markdown/tests/adoption/consumer.tsrx`, `packages/react-markdown/tests/adoption/consumer.test.ts`, `packages/react-markdown/tests/adoption/MIGRATION.md`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`.
+- **Files:** `packages/markdown/upstream/`, `packages/markdown/UPSTREAM.md`, `packages/markdown/audit/public-api.json`, `packages/markdown/audit/test-inventory.json`, `packages/markdown/audit/verify-provenance.mjs`, `packages/markdown/package.json`, `packages/markdown/tsconfig.json`, `packages/markdown/tests/probes/async-component.tsrx`, `packages/markdown/tests/probes/async-component.server.test.ts`, `packages/markdown/tests/adoption/consumer.tsrx`, `packages/markdown/tests/adoption/consumer.test.ts`, `packages/markdown/tests/adoption/MIGRATION.md`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`.
 - **Approach:** Vendor the 10.1.0 package and canonical source/test boundary byte-exact. Inventory the default export, three named runtime exports, six public types, source modules, artifacts, and all 87 upstream subtests. Create the minimal package exports, scripts, workspace registration, and direct runtime/dev dependency declarations needed to execute U2-U5. Before U2, exercise the proposed HAST-to-Octane adapter shape with a promise-returning mapped component through public-like entry points, including successful SSR, rejection, nested children, and its intended public type; failure triggers the plan stop condition and reopens KTD2-KTD3. Also freeze two adoption inputs before architecture commitment: pinned canonical react-markdown examples and one attribution-compatible public application consumer selected for default/named APIs, public types, plugin tuples, intrinsic/custom mappings, hooks, and async usage. Record every baseline framework-wide and library-specific edit separately. Defer public docs, release metadata, playground, changeset, and generated integration outputs to U6.
 - **Test scenarios:** Missing or modified vendored files fail; altered license or package identity fails; missing/extra runtime or type exports fail; removed, renamed, skipped, duplicated, or unclassified upstream cases fail; the async-component probe resolves nested server output, propagates rejection, and typechecks through the planned mapping surface; the frozen adoption corpus exposes any react-markdown-specific redesign before U2 begins.
 - **Verification:** Provenance and all negative controls pass with exact counts and hashes, and the architecture probe proves the entry condition for U2-U4.
@@ -157,7 +157,7 @@ flowchart TB
 - **Goal:** Preserve framework-neutral Markdown processing and security-sensitive transforms before rendering adaptation.
 - **Requirements:** R4, R7-R9, R12-R13; KTD1, KTD4.
 - **Dependencies:** U1.
-- **Files:** `packages/react-markdown/src/processor.ts`, `packages/react-markdown/src/url-transform.ts`, `packages/react-markdown/src/types.ts`, `packages/react-markdown/tests/differential/processor.test.ts`, `packages/react-markdown/tests/differential/url-transform.test.ts`, `packages/react-markdown/tests/validation.test.ts`.
+- **Files:** `packages/markdown/src/processor.ts`, `packages/markdown/src/url-transform.ts`, `packages/markdown/src/types.ts`, `packages/markdown/tests/differential/processor.test.ts`, `packages/markdown/tests/differential/url-transform.test.ts`, `packages/markdown/tests/validation.test.ts`.
 - **Approach:** Keep upstream processor construction, VFile creation, deprecation checks, raw-node transformation, URL-attribute traversal, filtering order, and unwrapping source-near and renderer-independent.
 - **Test scenarios:** Covers AE3. Compare relative/query/hash/absolute/allowed and unsafe protocols, case, whitespace/control characters, empty values, every pinned URL property/tag applicability, plugin-created URL-bearing elements, exact custom-transform arguments and returns, and untouched non-applicable pairs; validate non-string children, removed props, simultaneous allow/disallow lists, parent/index callbacks, unwrap on/off, plugin-created nodes, raw HTML, `skipHtml`, and transform ordering.
 - **Verification:** Pristine/adapted differential identities and validation messages match the pin; deliberate mutations fail.
@@ -167,7 +167,7 @@ flowchart TB
 - **Goal:** Ship the default `Markdown` export and exact component projection contract through public entry points.
 - **Requirements:** R1 (default export), R3-R9, R13; KTD1-KTD2.
 - **Dependencies:** U1-U2.
-- **Files:** `packages/react-markdown/src/index.tsrx`, `packages/react-markdown/src/project.ts`, `packages/react-markdown/src/types.ts`, `packages/react-markdown/tests/upstream/`, `packages/react-markdown/tests/conformance/`, `packages/react-markdown/typetests/`.
+- **Files:** `packages/markdown/src/index.tsrx`, `packages/markdown/src/project.ts`, `packages/markdown/src/types.ts`, `packages/markdown/tests/upstream/`, `packages/markdown/tests/conformance/`, `packages/markdown/typetests/`.
 - **Approach:** Adapt `hast-util-to-jsx-runtime` to Octane's JSX runtime while preserving intrinsic/custom component dispatch, keys, nodes, properties, fragments, and failures. Keep public component types strict and React-free.
 - **Test scenarios:** Covers AE1. Execute every applicable upstream sync case; inspect complete props for headings, code, lists, tables, links, images, SVG, plugin-created nodes, null components, keyed sibling updates, styles, ARIA/data properties, invalid components, root replacement, the default import, accepted plugin tuples, and rejected public-type programs.
 - **Verification:** All sync upstream identities execute once; the default export, differential tree, and pristine/adapted type lanes pass.
@@ -177,7 +177,7 @@ flowchart TB
 - **Goal:** Preserve awaited async rendering and client effect lifecycle without stale results.
 - **Requirements:** R1 (named runtime exports), R9-R11, R13-R14; KTD3.
 - **Dependencies:** U2-U3.
-- **Files:** `packages/react-markdown/src/markdown-async.ts`, `packages/react-markdown/src/markdown-hooks.tsrx`, `packages/react-markdown/src/index.ts`, `packages/react-markdown/tests/async/`, `packages/react-markdown/tests/hooks/`, `packages/react-markdown/tests/browser/`.
+- **Files:** `packages/markdown/src/markdown-async.ts`, `packages/markdown/src/markdown-hooks.tsrx`, `packages/markdown/src/index.ts`, `packages/markdown/tests/async/`, `packages/markdown/tests/hooks/`, `packages/markdown/tests/browser/`.
 - **Approach:** Implement `MarkdownAsync` as a plain TypeScript function returning the exact awaited promise type so it does not enter TSRX's forbidden async-component lowering. Keep `MarkdownHooks` in compiler-processed TSRX with the pinned effect dependency list and cancellation behavior. Define how promise-returning mapped components pass through HAST projection into Octane's generic return-reconciliation path; if no source-compatible authoring form survives server rendering, stop and record the incompatibility rather than weakening R10.
 - **Test scenarios:** Covers AE2. Named imports, async remark/rehype success, tuple ordering, sync throw versus async rejection, fallback, error propagation, rerender, recovery, slow-old/fast-new completion, changed plugin/options identity, repeated effect setup, unmount cleanup, and no obsolete commit. Separately prove promise-returning mapped-component server success and rejection through public entry points. Activate Chromium only for scheduling behavior not faithfully proven in jsdom.
 - **Verification:** Every upstream async/hooks identity plus port-authored race/cleanup identity executes; pristine and adapted outcomes/errors match.
@@ -187,7 +187,7 @@ flowchart TB
 - **Goal:** Make every contract lane executable and fail-closed in package and global CI.
 - **Requirements:** R2-R3, R14-R15; KTD5-KTD6.
 - **Dependencies:** U1-U4.
-- **Files:** `packages/react-markdown/tests/ssr/`, `packages/react-markdown/tests/hydration/`, `packages/react-markdown/audit/react-parity.json`, `packages/react-markdown/audit/runtime-inventory.json`, `scripts/react-parity/react-markdown-*.mjs`, `scripts/react-parity/check.mjs`, `vitest.config.js`.
+- **Files:** `packages/markdown/tests/ssr/`, `packages/markdown/tests/hydration/`, `packages/markdown/audit/react-parity.json`, `packages/markdown/audit/runtime-inventory.json`, `scripts/react-parity/react-markdown-*.mjs`, `scripts/react-parity/check.mjs`, `vitest.config.js`.
 - **Approach:** Add pristine React runtime/server/type projects; adapted sync/async/hooks/SSR/hydration/type projects; focused differential projects; and bounded Chromium projects for required browser-only contracts, with exact collected/executed identities, source hashes, and negative controls.
 - **Test scenarios:** Covers AE4. Sync and awaited async SSR without globals; exact server markup; hooks pinned initial/fallback result; default/plugin/filter/URL/component hydration; original-node adoption; no diagnostics; interactive updates; missing, stale, renamed, skipped, duplicated, or unexecuted lane rejection.
 - **Verification:** Package projects and `react-parity:check` execute every required lane; the manifest earns `verified` only after all evidence passes.
@@ -197,7 +197,7 @@ flowchart TB
 - **Goal:** Make the binding installable, discoverable, demonstrable, and accurately tracked.
 - **Requirements:** R16; KTD7.
 - **Dependencies:** U1-U5.
-- **Files:** `packages/react-markdown/package.json`, `packages/react-markdown/README.md`, `packages/react-markdown/status.json`, `packages/react-markdown/LICENSE`, `packages/react-markdown/tests/adoption/consumer.test.ts`, `package.json`, `playground/octane/`, `website/src/content/bindings.json`, `.changeset/`, generated package/status/parity inventories.
+- **Files:** `packages/markdown/package.json`, `packages/markdown/README.md`, `packages/markdown/status.json`, `packages/markdown/LICENSE`, `packages/markdown/tests/adoption/consumer.test.ts`, `package.json`, `playground/octane/`, `website/src/content/bindings.json`, `.changeset/`, generated package/status/parity inventories.
 - **Approach:** Finalize package files and root typecheck/project registration, add a controlled plugin/component playground demo, and execute the adoption corpus already frozen in U1. Its complete migration record must require only ordinary framework-wide syntax/type conversion plus the declared dependency/import mapping—no react-markdown-specific API or behavioral redesign—then add the patch changeset, status/catalog metadata, and generated outputs. README security guidance must state that default raw HTML is rendered as text, `rehype-raw` parses but does not sanitize, plugins and component mappings are trusted code, custom URL transforms can broaden the allowed set, and untrusted content needs an explicitly positioned sanitizer. Minimal dependency, workspace, export, build, and adoption-source scaffolding already belongs to U1.
 - **Test scenarios:** Covers F4. Workspace and packed imports resolve; the pre-adaptation consumer includes JSX-returning component mappings, intrinsic-prop forwarding, `node` destructuring, null returns, and the published `Components` type; its recorded Octane diff contains no library-specific API redesign; no React dependency leaks; playground builds and demonstrates sync/plugin/component behavior; a default raw-HTML case and deliberately unsafe plugin/component/custom-transform fixture keep documentation claims precise; generated docs remain clean.
 - **Verification:** Package pack, scoped type/format/tests, playground production build, `pnpm sync`, changeset/status/catalog checks, and global parity all pass.

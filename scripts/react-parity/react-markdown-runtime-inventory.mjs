@@ -10,26 +10,26 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const adaptedFiles = [
-	'packages/react-markdown/tests/conformance/public-types.test.ts',
-	'packages/react-markdown/tests/conformance/sync.server.test.ts',
-	'packages/react-markdown/tests/async/markdown-async.server.test.ts',
-	'packages/react-markdown/tests/hooks/markdown-hooks.test.ts',
-	'packages/react-markdown/tests/validation.test.ts',
-	'packages/react-markdown/tests/differential/processor.test.ts',
-	'packages/react-markdown/tests/differential/url-transform.test.ts',
+	'packages/markdown/tests/conformance/public-types.test.ts',
+	'packages/markdown/tests/conformance/sync.server.test.ts',
+	'packages/markdown/tests/async/markdown-async.server.test.ts',
+	'packages/markdown/tests/hooks/markdown-hooks.test.ts',
+	'packages/markdown/tests/validation.test.ts',
+	'packages/markdown/tests/differential/processor.test.ts',
+	'packages/markdown/tests/differential/url-transform.test.ts',
 ];
 const lanes = [
 	{
 		project: 'node:test',
-		destination: 'packages/react-markdown/audit/pristine-runtime.json',
-		root: 'packages/react-markdown/upstream/source',
-		file: 'packages/react-markdown/upstream/source/test.jsx',
-		inventory: 'packages/react-markdown/audit/test-inventory.json',
+		destination: 'packages/markdown/audit/pristine-runtime.json',
+		root: 'packages/markdown/upstream/source',
+		file: 'packages/markdown/upstream/source/test.jsx',
+		inventory: 'packages/markdown/audit/test-inventory.json',
 	},
 	{
 		project: 'react-markdown',
-		destination: 'packages/react-markdown/audit/adapted-runtime.json',
-		roots: ['packages/react-markdown/tests'],
+		destination: 'packages/markdown/audit/adapted-runtime.json',
+		roots: ['packages/markdown/tests'],
 		include: (file) => adaptedFiles.includes(file),
 	},
 ];

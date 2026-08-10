@@ -14,21 +14,21 @@
   "upstreamSuites": { "runtime": "present", "types": "absent" },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-markdown/src"],
+      "roots": ["packages/markdown/src"],
       "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-markdown/tests"],
+      "roots": ["packages/markdown/tests"],
       "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": [
-        "packages/react-markdown/tests/pristine/",
-        "packages/react-markdown/tests/adoption/",
-        "packages/react-markdown/tests/audit/",
-        "packages/react-markdown/tests/probes/",
-        "packages/react-markdown/tests/hydration/",
-        "packages/react-markdown/tests/ssr/",
-        "packages/react-markdown/tests/parity/",
+        "packages/markdown/tests/pristine/",
+        "packages/markdown/tests/adoption/",
+        "packages/markdown/tests/audit/",
+        "packages/markdown/tests/probes/",
+        "packages/markdown/tests/hydration/",
+        "packages/markdown/tests/ssr/",
+        "packages/markdown/tests/parity/",
         "\\.local\\."
       ]
     }
@@ -60,34 +60,34 @@
       "notes": "Executes the vendored test.jsx byte-for-byte with Node test, the pinned JSX loader, React 19.0.0, and every declared upstream test dependency; all 87 leaf assertions and interactions must pass.",
       "execution": {
         "kind": "node-full",
-        "root": "packages/react-markdown/upstream/source",
-        "file": "packages/react-markdown/upstream/source/test.jsx",
-        "loader": "packages/react-markdown/upstream/source/script/load-jsx.js",
-        "inventory": "packages/react-markdown/audit/pristine-runtime.json"
+        "root": "packages/markdown/upstream/source",
+        "file": "packages/markdown/upstream/source/test.jsx",
+        "loader": "packages/markdown/upstream/source/script/load-jsx.js",
+        "inventory": "packages/markdown/audit/pristine-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-markdown/audit/test-inventory.json",
+          "path": "packages/markdown/audit/test-inventory.json",
           "role": "support",
           "sha256": "0e306940d5e25ebec59c379d3ecbccda9e5e98f90728450f01b9bf12de0972cf"
         },
         {
-          "path": "packages/react-markdown/audit/pristine-runtime.json",
+          "path": "packages/markdown/audit/pristine-runtime.json",
           "role": "support",
           "sha256": "7384b7332e0eccd85c093a3f632b6623d7daa41b496e05e3a7c854fb30872ff9"
         },
         {
-          "path": "packages/react-markdown/upstream/source/test.jsx",
+          "path": "packages/markdown/upstream/source/test.jsx",
           "role": "support",
           "sha256": "05533bc0d41c5ec8f922affccf88d8ca72b3acfaead2462f291e41477c6fb2be"
         },
         {
-          "path": "packages/react-markdown/upstream/source/script/load-jsx.js",
+          "path": "packages/markdown/upstream/source/script/load-jsx.js",
           "role": "support",
           "sha256": "0a5ad1f96095e21e399e25c7452e23359084cef9784c1844c462760b04015d08"
         },
         {
-          "path": "packages/react-markdown/upstream/source/package.json",
+          "path": "packages/markdown/upstream/source/package.json",
           "role": "support",
           "sha256": "c6b7d280b5e5a6b620ad252abfd318560f2223562e67414fcc3dcd1f784e89c5"
         },
@@ -108,16 +108,16 @@
       "notes": "Executes the one-for-one adapted Octane counterparts of the 87 upstream test.jsx identities with exact collected and executed identities.",
       "execution": {
         "kind": "vitest-full",
-        "inventory": "packages/react-markdown/audit/adapted-runtime.json"
+        "inventory": "packages/markdown/audit/adapted-runtime.json"
       },
       "files": [
         {
-          "path": "packages/react-markdown/audit/adapted-runtime.json",
+          "path": "packages/markdown/audit/adapted-runtime.json",
           "role": "support",
           "sha256": "885b72bd318ad8e41570dde4d1ff6ced7ba276c9d1c08f2d10699391adbc86c7"
         },
         {
-          "path": "packages/react-markdown/audit/adapted-case-crosswalk.json",
+          "path": "packages/markdown/audit/adapted-case-crosswalk.json",
           "role": "support",
           "sha256": "2e16c205caff88994ef39457b5d5372330a0d9b1aeb3640b42a370d3f8023fe6"
         },
@@ -148,7 +148,7 @@
       "notes": "Runs the same Markdown and URL fixtures through pristine React and Octane public entry points.",
       "files": [
         {
-          "path": "packages/react-markdown/tests/parity/differential.test.ts",
+          "path": "packages/markdown/tests/parity/differential.test.ts",
           "role": "test",
           "sha256": "08944b4886f59ea44d5f07a133e32d99a0254ba35e7e9393793539755eab39b9",
           "cases": [
@@ -182,11 +182,11 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
-        "project": "packages/react-markdown/audit/type-probes/tsconfig.pristine.json"
+        "project": "packages/markdown/audit/type-probes/tsconfig.pristine.json"
       },
       "files": [
         {
-          "path": "packages/react-markdown/audit/pristine-types.json",
+          "path": "packages/markdown/audit/pristine-types.json",
           "role": "test",
           "sha256": "7d1963b6b1439059e157ceb2d476cf90dfcae901bc294ae23bbf0257af5adad2",
           "cases": [
@@ -198,17 +198,17 @@
           ]
         },
         {
-          "path": "packages/react-markdown/audit/type-probes/public-api.test-d.ts",
+          "path": "packages/markdown/audit/type-probes/public-api.test-d.ts",
           "role": "support",
           "sha256": "99b5cf5781bceae0f66a9d0976ab2fac1b4ea8bcd26f578e42f01613af455bef"
         },
         {
-          "path": "packages/react-markdown/audit/type-probes/tsconfig.pristine.json",
+          "path": "packages/markdown/audit/type-probes/tsconfig.pristine.json",
           "role": "support",
           "sha256": "62d63a5cab0e1fc17ae87132ef75baa469f60be856b13c09f0b6bf8115b87d7b"
         },
         {
-          "path": "packages/react-markdown/audit/type-parity.json",
+          "path": "packages/markdown/audit/type-parity.json",
           "role": "support",
           "sha256": "8fa159d2752d7c3bd1983980bdb035b9481d84ba4bc0bc3f20e84dd2a4877a9b"
         }
@@ -225,11 +225,11 @@
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/react-markdown/typetests/tsconfig.json"
+        "project": "packages/markdown/typetests/tsconfig.json"
       },
       "files": [
         {
-          "path": "packages/react-markdown/audit/adapted-types.json",
+          "path": "packages/markdown/audit/adapted-types.json",
           "role": "test",
           "sha256": "8c50ca6cf4ffc341ee00fa5c0ce71fdfd39036aa95c87a75bb0023c915fec82c",
           "cases": [
@@ -241,17 +241,17 @@
           ]
         },
         {
-          "path": "packages/react-markdown/typetests/public-api.test-d.ts",
+          "path": "packages/markdown/typetests/public-api.test-d.ts",
           "role": "support",
           "sha256": "ada7ef01f35217469da0b1d88a1a05f57167d91290b44c2293a02030138351a6"
         },
         {
-          "path": "packages/react-markdown/typetests/tsconfig.json",
+          "path": "packages/markdown/typetests/tsconfig.json",
           "role": "support",
           "sha256": "3e5a10a15c7cfc431288f01fe2a1a279724e378d6ab0f154297d6f708dab6417"
         },
         {
-          "path": "packages/react-markdown/audit/type-parity.json",
+          "path": "packages/markdown/audit/type-parity.json",
           "role": "support",
           "sha256": "8fa159d2752d7c3bd1983980bdb035b9481d84ba4bc0bc3f20e84dd2a4877a9b"
         },

@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "upstreamRoot": "packages/react-markdown/audit/type-probes",
-  "adaptedRoot": "packages/react-markdown/typetests",
+  "upstreamRoot": "packages/markdown/audit/type-probes",
+  "adaptedRoot": "packages/markdown/typetests",
   "inventories": {
-    "upstream": "packages/react-markdown/audit/pristine-types.json",
-    "adapted": "packages/react-markdown/audit/adapted-types.json"
+    "upstream": "packages/markdown/audit/pristine-types.json",
+    "adapted": "packages/markdown/audit/adapted-types.json"
   },
   "lanes": {
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/react-markdown/audit/type-probes/tsconfig.pristine.json",
+      "project": "packages/markdown/audit/type-probes/tsconfig.pristine.json",
       "sourcePolicy": "repo-authored React declaration probes against pinned react-markdown 10.1.0"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/react-markdown/typetests/tsconfig.json",
+      "project": "packages/markdown/typetests/tsconfig.json",
       "sourcePolicy": "structurally equivalent Octane public probes after permitted transformations"
     }
   },

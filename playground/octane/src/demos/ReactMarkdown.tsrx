@@ -1,4 +1,4 @@
-import Markdown from '@octanejs/react-markdown';
+import Markdown from '@octanejs/markdown';
 
 function markCallouts() {
 	return (tree: {

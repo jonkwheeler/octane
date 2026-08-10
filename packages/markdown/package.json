@@ -1,5 +1,5 @@
 {
-  "name": "@octanejs/react-markdown",
+  "name": "@octanejs/markdown",
   "version": "0.1.20",
   "license": "MIT",
   "type": "module",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octanejs/octane.git",
-    "directory": "packages/react-markdown"
+    "directory": "packages/markdown"
   },
   "main": "src/index.ts",
   "module": "src/index.ts",
@@ -38,7 +38,7 @@
   "scripts": {
     "test": "pnpm upstream:verify && pnpm test:pristine && vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts tests/adoption/consumer.test.ts tests/adoption/consumer.server.test.ts tests/audit tests/differential tests/conformance tests/async tests/hooks tests/validation.test.ts",
     "test:architecture": "vitest run --config vitest.config.ts --root . tests/probes/async-component.server.test.ts",
-    "test:pristine": "node ../../scripts/react-parity/node-full-runner.mjs --root packages/react-markdown/upstream/source --file packages/react-markdown/upstream/source/test.jsx --loader packages/react-markdown/upstream/source/script/load-jsx.js --inventory packages/react-markdown/audit/pristine-runtime.json",
+    "test:pristine": "node ../../scripts/react-parity/node-full-runner.mjs --root packages/markdown/upstream/source --file packages/markdown/upstream/source/test.jsx --loader packages/markdown/upstream/source/script/load-jsx.js --inventory packages/markdown/audit/pristine-runtime.json",
     "upstream:verify": "node audit/verify-provenance.mjs --self-test",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
