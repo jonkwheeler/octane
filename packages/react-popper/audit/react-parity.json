@@ -71,7 +71,7 @@
         {
           "path": "packages/react-popper/tests/upstream-original.test.ts",
           "role": "support",
-          "sha256": "81a887e377b314b2d62fa6b80cbaf16f55b5cc5279421ddf023c517200682fe9"
+          "sha256": "b805d8143f0d486878d9cfc4f9aba9d9335ee4ca2f8832fa36ea69aaeee21084"
         },
         {
           "path": "packages/react-popper/audit/pristine-runtime.json",
@@ -112,6 +112,16 @@
           "path": "packages/react-popper/audit/adapted-runtime.json",
           "role": "support",
           "sha256": "928997cefef92004a08758db111fbd7d82b5b86067ed9e1e77981ff20c61f929"
+        },
+        {
+          "path": "packages/react-popper/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "c790620090c0c8b9741dcf9bfdb25edeab326874d57be488f430ed8819341f01"
+        },
+        {
+          "path": "scripts/react-parity/react-popper-classifications-lib.mjs",
+          "role": "support",
+          "sha256": "a8ab4a10fee8251b81656984d334f3f1426337531cb67a2b7f25df64df6c4400"
         }
       ]
     },
@@ -134,6 +144,11 @@
               "fullName": "differential: @octanejs/react-popper vs react-popper@2.3.0 matches Manager/Reference/Popper markup, placement updates, and lifecycle"
             }
           ]
+        },
+        {
+          "path": "packages/react-popper/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "c790620090c0c8b9741dcf9bfdb25edeab326874d57be488f430ed8819341f01"
         }
       ]
     },
@@ -144,7 +159,7 @@
       "environment": "workspace-node",
       "project": "react-popper-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Typechecks the two upstream typings programs unchanged.",
+      "notes": "Typechecks the two upstream typings programs unchanged; assertion-group inventory is shared with the adapted type-parity ledger.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -179,6 +194,16 @@
           "path": "packages/react-popper/typetests/tsconfig.pristine.json",
           "role": "support",
           "sha256": "11f66d3ee6cd77bd17b1f2ec9bb6299d97b9f8e79c9ebe118bb1994e3d73bc21"
+        },
+        {
+          "path": "packages/react-popper/audit/type-parity.json",
+          "role": "support",
+          "sha256": "a1d94f1f07a33b2ce2b5a54e47c6de250bde18f95dfaf1d7a6625cdaeed77457"
+        },
+        {
+          "path": "packages/react-popper/audit/upstream-types.json",
+          "role": "support",
+          "sha256": "df41cbd204f7fb1b8f1746b13246eef0ccb4f69bb220834742c29c3772e13bbe"
         }
       ]
     },
@@ -189,7 +214,7 @@
       "environment": "workspace-node",
       "project": "react-popper-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Typechecks one-for-one Octane adaptations of the upstream typings programs plus the public API contract.",
+      "notes": "One-for-one adapted Octane typings for every adapted disposition, with file/assertion-group inventory, permitted-transformation ledger, structural compare, and skipped-file/deleted-assertion/removed-@ts-expect-error negative controls.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -199,7 +224,7 @@
         {
           "path": "packages/react-popper/typetests/main-test.tsx",
           "role": "test",
-          "sha256": "703c86fee41ab5a01c2a788e47546fb1c0fbf8e99c40856be1ef1e6c27b5b781",
+          "sha256": "6da128143d4451ad92cba314beaba924db44a04ad0e67c4c0715ef20fe162846",
           "cases": [
             {
               "id": "types:react-popper-adapted-main",
@@ -211,7 +236,7 @@
         {
           "path": "packages/react-popper/typetests/svg-test.tsx",
           "role": "test",
-          "sha256": "894f5b67ff5ac1f7392f22f4c024c40c272878992ddb79aaedde5a2d8dcd7019",
+          "sha256": "68b97e087a0a462413b2941a916f92541dee26ab10a527cc2a45914dba795083",
           "cases": [
             {
               "id": "types:react-popper-adapted-svg",
@@ -236,6 +261,36 @@
           "path": "packages/react-popper/typetests/tsconfig.adapted.json",
           "role": "support",
           "sha256": "7f222cf7d4efd497aa67aba9a1610e81e5ff25acdaf68583b61f8639c04624c2"
+        },
+        {
+          "path": "packages/react-popper/audit/type-parity.json",
+          "role": "support",
+          "sha256": "a1d94f1f07a33b2ce2b5a54e47c6de250bde18f95dfaf1d7a6625cdaeed77457"
+        },
+        {
+          "path": "packages/react-popper/audit/upstream-types.json",
+          "role": "support",
+          "sha256": "df41cbd204f7fb1b8f1746b13246eef0ccb4f69bb220834742c29c3772e13bbe"
+        },
+        {
+          "path": "packages/react-popper/audit/adapted-types.json",
+          "role": "support",
+          "sha256": "1b1bdbda730f24fdaf0d9e01952504a23be9ba13e51d76f34df0335d36b1b6be"
+        },
+        {
+          "path": "packages/react-popper/audit/adapted-only-types.json",
+          "role": "support",
+          "sha256": "c78375daba13615426fd74dbb36c7af2a01c2ebf6a4994fc2718f40dac5ed901"
+        },
+        {
+          "path": "packages/react-popper/typetests/assertions.md",
+          "role": "support",
+          "sha256": "e45ab91a2e2ea940154b9462aa4033ad7d2308166b868892c784bf39c7f894c4"
+        },
+        {
+          "path": "scripts/react-parity/react-popper-types-lib.mjs",
+          "role": "support",
+          "sha256": "e3feaabfcaf79e62ef0d566eac15363ad4e0238bb6fd7d2be2f6f809f08cf26e"
         }
       ]
     }

@@ -82,14 +82,22 @@ export function TransparentManagerHarness() {
 	</Manager>;
 }
 
-export function ReferenceSetterSpyHarness(props: {
-	setReferenceNode: (node: Element | null) => void;
+/** Direct ManagerReferenceNodeSetterContext.Provider fixture matching upstream Reference.test.js. */
+export function ReferenceProviderHarness(props: {
+	setReferenceNode?: ((node: Element | null) => void) | undefined;
+	innerRef?: any;
 }) {
 	return <ManagerReferenceNodeSetterContext.Provider value={props.setReferenceNode}>
-		<Reference>
+		<Reference innerRef={props.innerRef}>
 			{({ ref }) => <div id="reference" ref={ref} />}
 		</Reference>
 	</ManagerReferenceNodeSetterContext.Provider>;
+}
+
+export function ReferenceSetterSpyHarness(props: {
+	setReferenceNode: (node: Element | null) => void;
+}) {
+	return <ReferenceProviderHarness setReferenceNode={props.setReferenceNode} />;
 }
 
 export function ServerPopperHarness() {

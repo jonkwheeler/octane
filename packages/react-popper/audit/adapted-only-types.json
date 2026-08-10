@@ -1,0 +1,11 @@
+[
+  {
+    "path": "packages/react-popper/typetests/public-api.test.ts",
+    "sha256": "d637cc6762e73d9460b0d1e5c0d7a390cb74cbaed0cb037c55ef85b981fb63e4",
+    "assertionGroups": [
+      "07062e31fcccde213cbe50590acac65a00f2579032b177d8d33e9084c73e4fee",
+      "b40640d17d6cd65954773558eeb280acc4f3c6d70b3b04ad5acbb6795cdb895f"
+    ],
+    "rationale": "Octane public type contract plus @ts-expect-error negative controls; no upstream typings twin."
+  }
+]

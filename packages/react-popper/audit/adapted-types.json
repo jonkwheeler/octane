@@ -1,0 +1,12 @@
+[
+  {
+    "path": "main-test.tsx",
+    "sha256": "6da128143d4451ad92cba314beaba924db44a04ad0e67c4c0715ef20fe162846",
+    "assertionGroups": []
+  },
+  {
+    "path": "svg-test.tsx",
+    "sha256": "68b97e087a0a462413b2941a916f92541dee26ab10a527cc2a45914dba795083",
+    "assertionGroups": []
+  }
+]

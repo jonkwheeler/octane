@@ -40,9 +40,10 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "test": "pnpm upstream:verify && pnpm test:audit && pnpm typecheck && vitest run --root ../.. --project react-popper-pristine --project react-popper --project react-popper-ssr --project react-popper-hydration --project react-popper-differential",
+    "test": "pnpm upstream:verify && pnpm test:audit && pnpm test:type-parity && pnpm typecheck && vitest run --root ../.. --project react-popper-pristine --project react-popper --project react-popper-ssr --project react-popper-hydration --project react-popper-differential",
     "upstream:verify": "node audit/upstream-inventory.mjs",
     "test:audit": "node --test tests/audit/upstream-inventory.test.mjs",
+    "test:type-parity": "node ../../scripts/react-parity/react-popper-types.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.adapted.json && tsc --noEmit -p typetests/tsconfig.pristine.json"
   },
   "dependencies": {

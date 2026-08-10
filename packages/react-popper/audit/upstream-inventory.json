@@ -10,12 +10,7 @@
     "license": "MIT"
   },
   "publicSurface": {
-    "runtimeExports": [
-      "Manager",
-      "Popper",
-      "Reference",
-      "usePopper"
-    ],
+    "runtimeExports": ["Manager", "Popper", "Reference", "usePopper"],
     "typeExports": [
       "ManagerProps",
       "Modifier",
@@ -27,9 +22,7 @@
       "ReferenceProps",
       "StrictModifier"
     ],
-    "subpaths": [
-      "."
-    ]
+    "subpaths": ["."]
   },
   "artifacts": [
     {
