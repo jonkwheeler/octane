@@ -17,7 +17,7 @@ headless subset.
 | Published files | 138 |
 | Published unpacked bytes | 725,500 |
 | Pristine React oracle | `react@16.14.0` and `react-dom@16.14.0` via `react-select-pristine-react` / `react-select-pristine-react-dom` |
-| Type oracle | `@types/react@19.2.17` and `@types/react-dom@19.2.3` (workspace `catalog:default`) for the required `tsc` lane against pinned `react-select@5.10.2` declarations |
+| Type oracle | `@types/react@19.2.17` and `@types/react-dom@19.2.3` (literal exact pins in `package.json`) for the required `tsc` lane against pinned `react-select@5.10.2` declarations |
 | Pristine Jest | `jest@25.5.4`, `jest-environment-jsdom@25.5.0`, `babel-jest@25.5.1` |
 | Pristine Testing Library | `@testing-library/react@12.1.4`, `@testing-library/jest-dom@6.9.1`, `@testing-library/user-event@10.4.1` |
 | Pristine Emotion | `@emotion/react@11.9.3`, `@emotion/jest@11.5.0`, `@emotion/cache@11.9.3` |
