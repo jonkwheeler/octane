@@ -175,6 +175,13 @@ test('rejects a mapped .tsrx omitted from a files-only tsconfig', async (t) => {
 	t.after(function cleanup() {
 		return rm(value.root, { recursive: true, force: true });
 	});
+	const inventory = buildTypeInventory(value.root, value.config);
+	const files = inventory.adapted.map(function toRoot(entry) {
+		if (entry.path === 'provider/PacerProvider.tsrx') {
+			return '../../adapted/provider/PacerProvider.tsrx.d.ts';
+		}
+		return `../../adapted/${entry.path}`;
+	});
 	await writeFile(
 		join(value.root, 'typetests/adapted/tsconfig.json'),
 		`${JSON.stringify(
@@ -189,10 +196,7 @@ test('rejects a mapped .tsrx omitted from a files-only tsconfig', async (t) => {
 					skipLibCheck: true,
 					strict: true,
 				},
-				files: [
-					'../../adapted/debouncer/useDebouncer.ts',
-					'../../adapted/provider/PacerProvider.tsrx.d.ts',
-				],
+				files,
 			},
 			null,
 			'\t',
@@ -200,7 +204,7 @@ test('rejects a mapped .tsrx omitted from a files-only tsconfig', async (t) => {
 	);
 	assert.throws(function omittedFromFiles() {
 		verifyTanstackPacerTypes(value.root, { configPath: 'type-parity.json' });
-	}, /adapted compiler program omits mapped inventory member/);
+	}, /adapted compiler program omits mapped inventory member.*PacerProvider\.tsrx/);
 });
 
 test('rejects an unauthorized structural change', async (t) => {
