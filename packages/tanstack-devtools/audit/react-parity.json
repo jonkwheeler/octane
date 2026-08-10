@@ -97,7 +97,7 @@
         {
           "path": "packages/tanstack-devtools/audit/upstream-crosswalk.json",
           "role": "support",
-          "sha256": "cc41c51080de024ddd3daf5170a37ce1b64589d3058c21dfef4a86e038442b3d"
+          "sha256": "4a68437d90ae8aac5f9478c0cbcdd7b56e960e1aacf45387d76baae49baed6cd"
         },
         {
           "path": "packages/tanstack-devtools/audit/test-classifications.json",
