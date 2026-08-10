@@ -4,7 +4,7 @@
     {
       "path": ".",
       "octanePath": ".",
-      "disposition": "surface-present-unverified"
+      "disposition": "surface-present"
     },
     {
       "path": "./package.json",
