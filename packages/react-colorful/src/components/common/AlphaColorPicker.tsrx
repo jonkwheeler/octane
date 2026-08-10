@@ -30,7 +30,11 @@ function AlphaColorPickerRoot({
 	onChange,
 	onChangeEnd,
 }: RootProps) {
-	return <div {...hostProps} ref={[hostProps.ref ?? null, nodeRef]} class={['react-colorful', className, classValue]}>
+	return <div
+		{...hostProps}
+		ref={[hostProps.ref ?? null, nodeRef]}
+		class={['react-colorful', className, classValue]}
+	>
 		<Saturation hsva={hsva} onChange={onChange} onChangeEnd={onChangeEnd} />
 		<Hue hue={hsva.h} onChange={onChange} onChangeEnd={onChangeEnd} />
 		<Alpha

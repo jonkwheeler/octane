@@ -65,6 +65,7 @@ test('rejects a stale divergence classification', async (t) => {
 for (const [binding, testCount] of [
 	['lexical', 16],
 	['lucide', 6],
+	['react-colorful', 6],
 	['redux', 3],
 	['redux-toolkit', 6],
 	['shadcn', 23],

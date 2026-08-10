@@ -6,7 +6,10 @@ const stripping = new WeakSet();
 expect.addSnapshotSerializer({
 	test: function test(value) {
 		return Boolean(
-			value && value.nodeType === 1 && typeof value.cloneNode === 'function' && !stripping.has(value),
+			value &&
+			value.nodeType === 1 &&
+			typeof value.cloneNode === 'function' &&
+			!stripping.has(value),
 		);
 	},
 	serialize: function serialize(value, config, indentation, depth, refs, printer) {

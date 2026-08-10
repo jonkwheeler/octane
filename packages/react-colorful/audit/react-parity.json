@@ -47,7 +47,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8e0f46a116bd58d24e354ccd5d9f68d6eee0c0a81f4dee6520c4aa5fa5f70797"
+      "lockfileSha256": "1dc7d30ea1e9d37a54a16a1fadd34d652e9598cd8d60d743bcc93d25badc5f0a"
     }
   },
   "lanes": [
@@ -84,7 +84,7 @@
         {
           "path": "packages/react-colorful/tests/upstream-jest.snapshot.cjs",
           "role": "support",
-          "sha256": "ed97d44778c35b0db19f86f4821e880f87822b22080c6950decc7a1914f08ff7"
+          "sha256": "77f9a7cffd7dacc56d759e82bd334510fcdea9921eb28c6c17314d9287f9f6d1"
         },
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",
@@ -109,7 +109,7 @@
         {
           "path": "packages/react-colorful/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "115e5823a86b184665a0eb70bcc0e0f67f77604e1a0a7cee22c66320311c33ee"
+          "sha256": "e2a551b6df5d38023d46aff0b61b5cb9a8706fab24e53db6e91adee088bd1014"
         }
       ]
     },
@@ -132,6 +132,11 @@
               "fullName": "differential: @octanejs/react-colorful vs react-colorful@5.8.0 matches controlled picker markup, input edits, and keyboard color updates"
             }
           ]
+        },
+        {
+          "path": "packages/react-colorful/audit/test-classifications.json",
+          "role": "support",
+          "sha256": "e8f05a9659d14afd5ce3537f7d324fd30758ee4730b5bef52526da8dd740e61a"
         }
       ]
     },
@@ -142,7 +147,7 @@
       "environment": "workspace-node",
       "project": "react-colorful-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the pinned upstream check-types program (tsc --noEmit on tag/src).",
+      "notes": "Runs the pinned upstream check-types program (tsc --noEmit on tag/src) and registers the fail-closed one-for-one public type-probe crosswalk inventories.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -160,6 +165,46 @@
               "fullName": "react-colorful 5.8.0 upstream check-types program"
             }
           ]
+        },
+        {
+          "path": "packages/react-colorful/audit/pristine-types.json",
+          "role": "support",
+          "sha256": "c129c2f11cad2d3d0231179e03c5ee46ad5a93c35a4da8274194cd9983cbc681"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-parity.json",
+          "role": "support",
+          "sha256": "ac0b2b7f77d41a2c648be7769efd713bfa242d1cd43252918eaab51abe49607b"
+        },
+        {
+          "path": "packages/react-colorful/audit/adapted-types.json",
+          "role": "support",
+          "sha256": "4aa09fb25a3ec06bd8f53d9279afd5eff105de09193314444300a10d32d7d784"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-probes/public-api.test.ts",
+          "role": "support",
+          "sha256": "a3eff2ac9c1004437384837b585170d0520d7c977b4ffaac5716fc47753b9ba1"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "7b3d35c2e45de39cea67628684ea5094552f9febe3ab1842caf37c8d9828c308"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-types-lib.mjs",
+          "role": "support",
+          "sha256": "3d7cb281c8546f1d19726462f591b627d2a6f67bb1d56e6dbac2999a25699671"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-types-lib.test.mjs",
+          "role": "support",
+          "sha256": "1304469625965f041331d63ce6da8af8063673ac48922c556b353b59653f7628"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-types.mjs",
+          "role": "support",
+          "sha256": "2bc8b06b7bf55d030cd86df9e260cedfcbbadc56e36236a0197a5a4133c80568"
         }
       ]
     },
@@ -170,7 +215,7 @@
       "environment": "workspace-node",
       "project": "react-colorful-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Compiles the Octane binding source plus shared public API assertions with tsrx-tsc.",
+      "notes": "Compiles the Octane binding source plus the adapted public API probe with tsrx-tsc, paired one-for-one with the React probe via type-parity inventories.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -192,10 +237,66 @@
         {
           "path": "packages/react-colorful/typetests/tsconfig.adapted.json",
           "role": "support",
-          "sha256": "f29e4ff2d2173485b201052bab773cf86faa44f3510ccfffe741279891ff95e5"
+          "sha256": "cf514cb28054b42c7066cb16da4a4df7443ce5960e52e49135abb9fd8e5a4f38"
+        },
+        {
+          "path": "packages/react-colorful/audit/adapted-types.json",
+          "role": "support",
+          "sha256": "4aa09fb25a3ec06bd8f53d9279afd5eff105de09193314444300a10d32d7d784"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-parity.json",
+          "role": "support",
+          "sha256": "ac0b2b7f77d41a2c648be7769efd713bfa242d1cd43252918eaab51abe49607b"
+        },
+        {
+          "path": "packages/react-colorful/audit/pristine-types.json",
+          "role": "support",
+          "sha256": "c129c2f11cad2d3d0231179e03c5ee46ad5a93c35a4da8274194cd9983cbc681"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-probes/public-api.test.ts",
+          "role": "support",
+          "sha256": "a3eff2ac9c1004437384837b585170d0520d7c977b4ffaac5716fc47753b9ba1"
+        },
+        {
+          "path": "packages/react-colorful/audit/type-probes/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "7b3d35c2e45de39cea67628684ea5094552f9febe3ab1842caf37c8d9828c308"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-types-lib.mjs",
+          "role": "support",
+          "sha256": "3d7cb281c8546f1d19726462f591b627d2a6f67bb1d56e6dbac2999a25699671"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-types-lib.test.mjs",
+          "role": "support",
+          "sha256": "1304469625965f041331d63ce6da8af8063673ac48922c556b353b59653f7628"
+        },
+        {
+          "path": "scripts/react-parity/react-colorful-types.mjs",
+          "role": "support",
+          "sha256": "2bc8b06b7bf55d030cd86df9e260cedfcbbadc56e36236a0197a5a4133c80568"
         }
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "react-colorful-native-event-attributes",
+      "caseIds": [
+        "differential:react-colorful-controlled",
+        "types:react-colorful-adapted"
+      ],
+      "upstreamResult": "Picker and HexColorInput host prop types extend React synthetic DOM attribute types (InputHTMLAttributes / HTMLAttributes).",
+      "octaneResult": "The same surfaces extend Octane intrinsic prop types, so residual host handlers such as onInput/onBlur use native DOM event attributes instead of React synthetic event types.",
+      "rationale": "Octane has no synthetic event layer; native delegated events are the supported host contract while public color onChange callbacks remain unchanged.",
+      "classification": "event-model",
+      "consumerImpact": "Type-level host event handlers on pickers/inputs use native event types; runtime DOM events and color callback values still match upstream.",
+      "migrationGuidance": "Keep binding color updates through the public onChange callback. When typing residual host handlers (for example HexColorInput onInput), use native DOM event types rather than React.ChangeEvent.",
+      "owner": "@octanejs/react-colorful",
+      "reviewCondition": "Review if Octane introduces a React-compatible synthetic event type layer for host attributes."
+    }
+  ]
 }

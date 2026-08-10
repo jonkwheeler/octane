@@ -9,6 +9,8 @@
 - repository tag: `v5.8.0`
 - repository commit: `d914e7647c40a8bbdb286985176e769d76061732`
 - license: MIT
+- React oracle: `react@19.2.7` / `react-dom@19.2.7` with `@types/react@19.2.17` / `@types/react-dom@19.2.3` via the dedicated `react-colorful-react-oracle` pnpm catalog (exact pins; not `catalog:default`)
+- Pristine upstream `check-types` types: `@types/react@17.0.83` / `@types/react-dom@17.0.26` via npm aliases (`@types/react-colorful-pristine`, `@types/react-dom-colorful-pristine`)
 
 The byte-preserved tag sources and tests live under `upstream/tag`; the
 published declaration and package authorities live under `upstream/npm`.
@@ -18,7 +20,8 @@ Framework-neutral color utilities are source-correspondent. React components,
 hooks, JSX, synthetic event wrappers, and DOM prop types are adapted to Octane
 components, hooks, `.tsrx`, native events, and Octane intrinsic prop types.
 The public component callback named `onChange` remains unchanged; only the
-internal text-input host wiring uses Octane's native `onInput`.
+internal text-input host wiring uses Octane's native `onInput`. Structured
+ledger: `react-colorful-native-event-attributes` in `audit/react-parity.json`.
 
 ## Test-suite disposition
 
@@ -30,15 +33,20 @@ internal text-input host wiring uses Octane's native `onInput`.
 | `tag/tests/shadowDom.test.js` (1 case) | **ported** → `tests/upstream/shadowDom.test.ts` | adapted-octane lane |
 | `tag/tests/__snapshots__/*` | **pristine-only** (Jest snapshots); adapted asserts structure | pristine-upstream lane |
 | Upstream `check-types` (`tsc --noEmit` on `src`) | **pristine** via `typetests/tsconfig.pristine.json` | pristine-types lane |
-| Octane source + public API assertions | **adapted types** via `typetests/tsconfig.adapted.json` | adapted-types lane |
+| Public type probes | **one-for-one** React (`audit/type-probes/public-api.test.ts`) ↔ Octane (`typetests/public-api.test.ts`) under `audit/type-parity.json` | type inventories + `pnpm test:type-parity` |
+| Octane source + adapted probe | **adapted types** via `typetests/tsconfig.adapted.json` | adapted-types lane |
 
-### Port-authored (not parity ownership)
+### Port-authored classifications
+
+Every non-`tests/upstream/` port-authored `*.test.{ts,tsx,tsrx}` file is classified
+exactly once in `audit/test-classifications.json` (fail-closed discovery). The
+directory prose below is a summary only.
 
 | File | Classification |
 | --- | --- |
-| `tests/runtime/exports.test.ts` | octane-only public-export smoke |
-| `tests/runtime/owner-document.test.ts` | octane-only ownerDocument contract |
-| `tests/hydration/**` | octane-only hydration conformance |
-| `tests/ssr/**` | octane-only SSR conformance |
-| `tests/browser/**` | octane-only real-browser conformance |
-| `tests/differential/**` | repo-authored React/Octane differential |
+| `tests/runtime/exports.test.ts` | octane-only-framework-contract |
+| `tests/runtime/owner-document.test.ts` | octane-only-framework-contract |
+| `tests/hydration/**` | octane-only-framework-contract |
+| `tests/ssr/**` | octane-only-framework-contract |
+| `tests/browser/**` | octane-only-framework-contract |
+| `tests/differential/**` | react-octane-differential |

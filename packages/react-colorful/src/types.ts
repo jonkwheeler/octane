@@ -51,6 +51,8 @@ export interface ColorPickerBaseProps<T extends AnyColor> extends ColorPickerHTM
 	onChangeEnd?: (newColor: T) => void;
 }
 
+// OCTANE DIVERGENCE[react-colorful-native-event-attributes][types:react-colorful-adapted]: residual host handlers use Octane native DOM event attributes instead of React synthetic event types.
+// OCTANE DIVERGENCE[react-colorful-native-event-attributes][differential:react-colorful-controlled]: same event-model adaptation observed by the controlled differential against react-colorful@5.8.0.
 type ColorInputHTMLAttributes = Omit<Octane.JSX.IntrinsicElements['input'], 'onChange' | 'value'>;
 
 export interface ColorInputBaseProps extends ColorInputHTMLAttributes {

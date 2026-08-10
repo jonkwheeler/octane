@@ -28,17 +28,8 @@
       "RgbaStringColorPicker",
       "setNonce"
     ],
-    "typeExports": [
-      "HslColor",
-      "HslaColor",
-      "HsvColor",
-      "HsvaColor",
-      "RgbColor",
-      "RgbaColor"
-    ],
-    "subpaths": [
-      "."
-    ]
+    "typeExports": ["HslColor", "HslaColor", "HsvColor", "HsvaColor", "RgbColor", "RgbaColor"],
+    "subpaths": ["."]
   },
   "artifacts": [
     {
