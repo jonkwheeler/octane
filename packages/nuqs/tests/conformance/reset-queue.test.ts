@@ -20,8 +20,6 @@ async function wait(ms: number) {
 }
 
 describe('NuqsTestingAdapter shared-queue reset', () => {
-	// OCTANE DIVERGENCE[testing-adapter-reset-once][adapted:nuqs-testing-reset]
-	// @parity-case adapted:nuqs-testing-reset
 	it('does not drop a pending debounced write when a re-render happens before it flushes', async () => {
 		const onUrlUpdate = vi.fn<(e: UrlUpdateEvent) => void>();
 		const r = mount(ResetApp, { onUrlUpdate });

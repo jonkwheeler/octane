@@ -16,7 +16,9 @@ lanes (and upstream-suite type evidence) exist.
 Interim evidence that does run today:
 
 - a same-fixture differential against `nuqs@2.9.1`
-- repo-authored Octane-only conformance and divergence probes (ordinary Vitest
-  coverage; not counted as adapted upstream-suite parity)
 - paired pristine (`tsc` vs published `nuqs`) and adapted (`tsrx-tsc` vs
   `@octanejs/nuqs`) public-API typetests with structural import-only verification
+
+Repo-authored Octane-only conformance and divergence probes stay on the ordinary
+`nuqs` Vitest project. They are framework-contract coverage, not required adapted
+parity evidence.
