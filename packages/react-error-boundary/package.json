@@ -38,7 +38,7 @@
     }
   },
   "scripts": {
-    "test": "vitest run --root ../.. --project react-error-boundary --project react-error-boundary-ssr"
+    "test": "vitest run --root ../.. --project react-error-boundary --project react-error-boundary-differential --project react-error-boundary-ssr"
   },
   "peerDependencies": {
     "octane": "workspace:*"
