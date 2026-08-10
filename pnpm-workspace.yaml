@@ -136,6 +136,14 @@ catalogs:
     react-dom: 19.2.3
     react-window: 1.8.11
     vite: 7.3.1
+  # Exact React oracle for @octanejs/cmdk differential evidence. catalog:default
+  # pins React as a caret range, so a lock refresh could change the
+  # implementation under the same cmdk parity claim.
+  cmdk-react-oracle:
+    '@types/react': 19.2.17
+    '@types/react-dom': 19.2.3
+    react: 19.2.7
+    react-dom: 19.2.7
   lynx:
     '@lynx-js/css-extract-webpack-plugin': 0.9.0
     '@lynx-js/qrcode-rsbuild-plugin': 0.6.0

@@ -303,6 +303,7 @@ describe('@octanejs/cmdk — score ordering (Phase 2)', () => {
 		app.unmount();
 	});
 
+	// @parity-case octane:force-mount-rank
 	it('keeps a force-mounted non-match below the ranked matches', async () => {
 		// A force-mounted item never scores and never unmounts, so it is the only
 		// item that stays rendered without a rank. Upstream sorts every valid item by
@@ -675,6 +676,7 @@ describe('@octanejs/cmdk — controlled modes (Phase 3)', () => {
 		app.unmount();
 	});
 
+	// @parity-case octane:force-mount-empty-visible
 	it('does not announce "no results" while a forceMount item is visible', async () => {
 		// A force-mounted item is exempt from filtering, so it never enters
 		// `filtered.count` — but it is on screen, and Empty and a visible item are
@@ -693,6 +695,7 @@ describe('@octanejs/cmdk — controlled modes (Phase 3)', () => {
 		app.unmount();
 	});
 
+	// @parity-case octane:force-mount-empty-release
 	it('shows Empty again once the last forceMount item unmounts', async () => {
 		// The force-mount count has to be released on unmount, or Empty is
 		// suppressed forever after a force-mounted item goes away.
@@ -859,6 +862,7 @@ describe('@octanejs/cmdk — controlled modes (Phase 3)', () => {
 		app.unmount();
 	});
 
+	// @parity-case octane:registration-force-mount-release
 	it('does not report a duplicate after a forceMount item is replaced', async () => {
 		// Every registration path goes through the same `useValue`, so every
 		// teardown has to release the value it registered. When only the plain-item
@@ -882,6 +886,7 @@ describe('@octanejs/cmdk — controlled modes (Phase 3)', () => {
 		app.unmount();
 	});
 
+	// @parity-case octane:registration-group-release
 	it('does not report a duplicate after a group is replaced', async () => {
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 		const app = mount(GroupSwapMenu, { first: true });

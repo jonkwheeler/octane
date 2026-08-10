@@ -23,8 +23,8 @@ describe('@octanejs/cmdk parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	it('keeps the canonical upstream suite outside the bounded parity claim', () => {
-		expect(manifest.upstreamSuites.runtime).toBe('insufficient');
+	it('records the present upstream suite without claiming suite-level lanes yet', () => {
+		expect(manifest.upstreamSuites.runtime).toBe('present');
 		expect(
 			manifest.lanes.some(
 				(lane: { type?: string; evidenceOrigin?: string }) =>

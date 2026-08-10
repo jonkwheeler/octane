@@ -8,8 +8,13 @@
     },
     {
       "path": "packages/cmdk/tests/command.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Exercises Octane component integration and explicit divergences without a same-case React oracle."
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises documented consumer-visible divergences (force-mount Empty counting, force-mount ranking, and registration teardown release) without a same-case React oracle.",
+      "divergenceIds": [
+        "force-mount-empty-count",
+        "force-mount-rank-order",
+        "registration-teardown-release"
+      ]
     },
     {
       "path": "packages/cmdk/tests/differential/parity.test.ts",
@@ -28,8 +33,9 @@
     },
     {
       "path": "packages/cmdk/tests/ssr/server.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Exercises Octane server rendering and is not counted as React parity."
+      "disposition": "octane-only-divergence",
+      "reason": "Asserts Command.Empty stays suppressed during SSR where item registration cannot run.",
+      "divergenceIds": ["ssr-empty-suppressed"]
     }
   ]
 }

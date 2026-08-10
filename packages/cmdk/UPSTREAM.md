@@ -12,7 +12,9 @@
 - npm lock integrity: `sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==`
 - Supported upstream range: exactly `1.1.1`
 - License: MIT
-- React oracle: the workspace-pinned React and React DOM versions
+- React oracle: `react@19.2.7` and `react-dom@19.2.7` via the dedicated
+  `catalog:cmdk-react-oracle` pin (exact versions, not `catalog:default`'s caret
+  range)
 
 The published archive contains compiled runtime and declarations, but not the canonical
 Playwright suite. The byte-exact package source, all test specs and fixtures, test configuration,
@@ -40,12 +42,13 @@ Surface presence is not a full parity claim. The manifest remains `recorded-unve
 ## Upstream suite disposition
 
 The tagged repository has seven Playwright spec files and eleven page/fixture files. They are
-vendored byte-for-byte, including the Next.js pages/fixtures, but are not yet wired as required
-`pristine-upstream` / `adapted-octane` suite-level lanes. Until those lanes run the pinned suite
-unchanged in its native environment and adapt every applicable case (or record an individual
-disposition), `upstreamSuites.runtime` stays `insufficient`. The existing differential lane is
-repo-authored evidence that runs the same `.tsrx` scenarios against both runtimes; it does not
-replace the suite-level lanes. The release has no dedicated type assertion suite.
+vendored byte-for-byte, including the Next.js pages/fixtures, so `upstreamSuites.runtime` is
+`present`. Those specs are not yet wired as required `pristine-upstream` / `adapted-octane`
+suite-level lanes. Until those lanes run the pinned suite unchanged in its native environment and
+adapt every applicable case (or record an individual disposition), provenance stays
+`recorded-unverified`. The existing differential lane is repo-authored evidence that runs the same
+`.tsrx` scenarios against both runtimes; it does not replace the suite-level lanes. The release has
+no dedicated type assertion suite.
 
 | Upstream spec | Current disposition |
 | --- | --- |
