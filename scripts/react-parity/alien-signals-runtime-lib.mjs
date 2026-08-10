@@ -395,31 +395,74 @@ function bindingNameDeclares(nameNode, name) {
 	return false;
 }
 
+function isVarDeclarationList(list) {
+	return (list.flags & ts.NodeFlags.Let) === 0 && (list.flags & ts.NodeFlags.Const) === 0;
+}
+
+function isFunctionLikeScope(node) {
+	return (
+		ts.isFunctionDeclaration(node) ||
+		ts.isFunctionExpression(node) ||
+		ts.isArrowFunction(node) ||
+		ts.isMethodDeclaration(node) ||
+		ts.isConstructorDeclaration(node) ||
+		ts.isGetAccessorDeclaration(node) ||
+		ts.isSetAccessorDeclaration(node)
+	);
+}
+
+/**
+ * True when `root` contains a function-scoped binding of `name` (`var` or a
+ * `function` declaration). Nested function bodies are skipped — their hoisted
+ * bindings do not escape into `root`.
+ */
+function hasHoistedNameBinding(root, name) {
+	let found = false;
+	function visit(node) {
+		if (found) return;
+		if (ts.isFunctionDeclaration(node)) {
+			if (node.name && node.name.text === name) found = true;
+			return;
+		}
+		if (isFunctionLikeScope(node)) return;
+		if (ts.isVariableDeclarationList(node) && isVarDeclarationList(node)) {
+			for (const declaration of node.declarations) {
+				if (bindingNameDeclares(declaration.name, name)) {
+					found = true;
+					return;
+				}
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(root);
+	return found;
+}
+
 /**
  * True when `identifier` resolves to a local binding rather than the unshadowed
- * global of the same spelling. Walks enclosing scopes via parent pointers
- * (source files are created with `setParentNodes`).
+ * global of the same spelling. Lexical `let`/`const`/`class`/imports are read
+ * from enclosing scopes via parent pointers; function-scoped `var`/`function`
+ * bindings are deep-scanned in the enclosing function (or script) so a nested
+ * `if`/`for`/`switch`/`try` `var Promise` still counts.
  */
 function identifierHasLocalBinding(identifier) {
 	const name = identifier.text;
+	let functionScope = null;
+	let scriptScope = null;
 	let current = identifier.parent;
 	while (current !== undefined && current !== null) {
-		if (
-			ts.isFunctionDeclaration(current) ||
-			ts.isFunctionExpression(current) ||
-			ts.isArrowFunction(current) ||
-			ts.isMethodDeclaration(current) ||
-			ts.isConstructorDeclaration(current) ||
-			ts.isGetAccessorDeclaration(current) ||
-			ts.isSetAccessorDeclaration(current)
-		) {
+		if (isFunctionLikeScope(current)) {
 			if (current.name && ts.isIdentifier(current.name) && current.name.text === name) {
 				return true;
 			}
 			for (const parameter of current.parameters) {
 				if (bindingNameDeclares(parameter.name, name)) return true;
 			}
+			if (functionScope === null) functionScope = current;
 		}
+
+		if (ts.isSourceFile(current)) scriptScope = current;
 
 		if (ts.isCatchClause(current) && current.variableDeclaration) {
 			if (bindingNameDeclares(current.variableDeclaration.name, name)) return true;
@@ -441,8 +484,11 @@ function identifierHasLocalBinding(identifier) {
 		if (ts.isBlock(current) || ts.isSourceFile(current) || ts.isModuleBlock(current)) {
 			for (const statement of current.statements) {
 				if (ts.isVariableStatement(statement)) {
-					for (const declaration of statement.declarationList.declarations) {
-						if (bindingNameDeclares(declaration.name, name)) return true;
+					// `var` is handled by the hoisted deep-scan below.
+					if (!isVarDeclarationList(statement.declarationList)) {
+						for (const declaration of statement.declarationList.declarations) {
+							if (bindingNameDeclares(declaration.name, name)) return true;
+						}
 					}
 				}
 				if (ts.isFunctionDeclaration(statement) && statement.name && statement.name.text === name) {
@@ -469,7 +515,7 @@ function identifierHasLocalBinding(identifier) {
 
 		if (ts.isCaseClause(current) || ts.isDefaultClause(current)) {
 			for (const statement of current.statements) {
-				if (ts.isVariableStatement(statement)) {
+				if (ts.isVariableStatement(statement) && !isVarDeclarationList(statement.declarationList)) {
 					for (const declaration of statement.declarationList.declarations) {
 						if (bindingNameDeclares(declaration.name, name)) return true;
 					}
@@ -479,7 +525,14 @@ function identifierHasLocalBinding(identifier) {
 
 		current = current.parent;
 	}
-	return false;
+
+	const hoistedRoot =
+		functionScope !== null
+			? functionScope.body !== undefined
+				? functionScope.body
+				: functionScope
+			: scriptScope;
+	return hoistedRoot !== null && hasHoistedNameBinding(hoistedRoot, name);
 }
 
 /**

@@ -667,6 +667,34 @@ test('rejects shadowed Promise.resolve clicks paired with live direct source wri
 	}, /bypasses .* hook-surface transition/);
 });
 
+test('rejects nested-block var Promise.resolve clicks paired with live direct source writes', function rejectsNestedVarPromiseResolveClickPadding() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const padded = adaptedSource.replace(
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tresult.click('#set');\n\t\texpect(countSignal()).toBe(10);\n\t\tresult.click('#inc');\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tif (true) {\n\t\t\tvar Promise = { resolve() { return { then(_callback) {} }; } };\n\t\t}\n\t\tPromise.resolve().then(function padSet() {\n\t\t\tresult.click('#set');\n\t\t});\n\t\tPromise.resolve().then(function padInc() {\n\t\t\tresult.click('#inc');\n\t\t});\n\t\tcountSignal(10);\n\t\texpect(countSignal()).toBe(10);\n\t\tcountSignal(15);\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+	);
+	assert.notEqual(padded, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: padded,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects dead while-loop fixture record of the setter', function rejectsDeadWhileLoopFixtureRecord() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
