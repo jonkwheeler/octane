@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/jotai/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/jotai/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/jotai/tests"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/jotai/tests"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -48,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "396cf807a9d5360f761ce3deb8de91f8dcbeae88d7c57f4e0fa7564b4c975c3c"
+      "lockfileSha256": "9bfa66384d7cd40cb59b589c777f176cc5f8dc6a3f17a865039e902402bea226"
     }
   },
   "lanes": [
@@ -126,7 +118,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "49d70e93848d1afbe0ca65efdbe805976fac579bf17f85b31060ee3d1781d68f"
+          "sha256": "22270530e881b4664083d76b2986943e9e469047966c51db4f409bac146b779a"
         }
       ]
     }
