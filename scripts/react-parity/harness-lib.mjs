@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { promisify } from 'node:util';
@@ -661,46 +661,25 @@ function caseIdsForManifest(manifest) {
 	);
 }
 
-function packageRootsFromManifest(manifest) {
-	const roots = new Set();
-	for (const lane of manifest.lanes) {
-		for (const file of lane.files) {
-			const match = /^(packages\/[^/]+)\//.exec(file.path);
-			if (match) roots.add(match[1]);
-		}
-	}
-	for (const root of manifest.adaptedRoots?.source?.roots ?? []) {
-		const match = /^(packages\/[^/]+)\//.exec(`${root}/`);
-		if (match) roots.add(match[1]);
-	}
-	for (const root of manifest.adaptedRoots?.tests?.roots ?? []) {
-		const match = /^(packages\/[^/]+)\//.exec(`${root}/`);
-		if (match) roots.add(match[1]);
-	}
-	return [...roots];
-}
-
 async function discoverConformanceCaseIds(root, manifest) {
 	const found = new Map();
-	for (const packageRoot of packageRootsFromManifest(manifest)) {
-		const testsRoot = `${packageRoot}/tests`;
-		if (!existsSync(resolve(root, testsRoot))) continue;
-		const markers = await discoverAdaptedFiles(root, {
-			roots: [testsRoot],
-			include: ['\\.test\\.(?:ts|tsx)$'],
-			exclude: [],
-		});
-		for (const path of markers) {
-			const source = await readFile(resolve(root, path), 'utf8');
-			for (const match of source.matchAll(/^\s*\/\/\s*@parity-case\s+(conformance:\S+)\s*$/gm)) {
-				const caseId = match[1];
-				if (found.has(caseId) && found.get(caseId) !== path) {
-					throw new Error(
-						`duplicate conformance case id "${caseId}" in ${found.get(caseId)} and ${path}`,
-					);
-				}
-				found.set(caseId, path);
+	const markers = await discoverAdaptedFiles(root, manifest.adaptedRoots.tests);
+	for (const path of markers) {
+		const source = await readFile(resolve(root, path), 'utf8');
+		for (const match of source.matchAll(/^\s*\/\/\s*@parity-case\s+(conformance:\S+)\s*$/gm)) {
+			const caseId = match[1];
+			const markerEnd = match.index + match[0].length;
+			const tail = source.slice(markerEnd).trimStart();
+			const declaration = /^(?:it|test)(?:\.(skip|todo))?\s*\(\s*/.exec(tail);
+			if (!declaration || declaration[1]) {
+				throw new Error(`${path}: @parity-case ${caseId} must immediately precede one active test`);
 			}
+			if (found.has(caseId) && found.get(caseId) !== path) {
+				throw new Error(
+					`duplicate conformance case id "${caseId}" in ${found.get(caseId)} and ${path}`,
+				);
+			}
+			found.set(caseId, path);
 		}
 	}
 	return new Set(found.keys());

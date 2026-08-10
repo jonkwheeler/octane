@@ -1086,6 +1086,10 @@ test('conformance case ids authenticate structured divergences without a parity 
 		'// OCTANE DIVERGENCE[example-divergence][conformance:example]\n' +
 		'// @parity-case conformance:example\n' +
 		'it("does the thing", () => {})\n';
+	const skippedSource =
+		'// OCTANE DIVERGENCE[example-divergence][conformance:example]\n' +
+		'// @parity-case conformance:example\n' +
+		'it.skip("is disabled", () => {})\n';
 	const requiredSource =
 		'// @parity-case differential:required\n' + 'it("stays required", () => {})\n';
 	await writeFile(join(root, probePath), probeSource);
@@ -1134,6 +1138,12 @@ test('conformance case ids authenticate structured divergences without a parity 
 		['required-differential'],
 	);
 	await assert.doesNotReject(() => verifyManifestFiles(validateManifest(value), root));
+
+	await writeFile(join(root, probePath), skippedSource);
+	await assert.rejects(
+		() => verifyManifestFiles(validateManifest(value), root),
+		/must immediately precede one active test/,
+	);
 });
 
 test('rejects additional properties at every strict manifest level', () => {
