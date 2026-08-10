@@ -18,6 +18,7 @@ import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyTiptapTypes } from './tiptap-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
+import { runRequiredBindingLanes } from './check-lib.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AUDIT = path.join(REPO, 'packages/octane/audit');
@@ -152,11 +153,7 @@ for (const relativeFile of BINDING_MANIFESTS) {
 			await verifyLaneEnvironment(manifest, lane, REPO, pnpmVersion);
 		}
 		if (!validateOnly) {
-			const action = manifest.provenance.verification === 'verified' ? 'run-required' : 'validate';
-			execFileSync(process.execPath, [HARNESS_PATH, action, '--manifest', relativeFile], {
-				cwd: REPO,
-				stdio: 'inherit',
-			});
+			runRequiredBindingLanes({ relativeFile, harnessPath: HARNESS_PATH, repo: REPO });
 		}
 	} catch (error) {
 		errors.push(`${relativeFile} is invalid: ${error.message}`);

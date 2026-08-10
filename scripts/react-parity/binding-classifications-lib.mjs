@@ -47,10 +47,9 @@ export function verifyPortTestClassifications(root, binding = 'hook-form') {
 			const classifiedDivergences = entry.divergenceIds ?? [entry.divergenceId].filter(Boolean);
 			if (!classifiedDivergences.length)
 				throw new Error(`${entry.path}: divergence tests require a manifest divergence id`);
-			for (const divergenceId of classifiedDivergences) {
+			for (const divergenceId of classifiedDivergences)
 				if (!divergenceIds.has(divergenceId))
 					throw new Error(`${entry.path}: divergence id is not present in the parity manifest`);
-			}
 		}
 	}
 	return { tests: discovered.length };
