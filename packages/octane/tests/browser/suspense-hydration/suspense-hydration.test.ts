@@ -303,14 +303,9 @@ describe.sequential('real-browser Suspense and async hydration evidence', () => 
 		state = await snapshot();
 		expect(state.inputSame).toBe(true);
 		expect(state.inputVisible).toBe(true);
-		if (browserName === 'chromium') {
-			// Chromium normalizes focus to <body> before the async reveal completes.
-			expect(state.activeId).toBe('');
-		} else {
-			// Firefox React observation for the same reveal path: focus also
-			// lands on <body>, so the engine-specific oracle still expects ''.
-			expect(state.activeId).toBe('');
-		}
+		// Chromium and Firefox both normalize focus to <body> before the async
+		// reveal completes on this React baseline path.
+		expect(state.activeId).toBe('');
 		expect(state.globalFailures).toEqual([]);
 	});
 
