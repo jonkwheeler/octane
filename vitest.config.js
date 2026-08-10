@@ -2912,17 +2912,9 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'motion-pristine',
-					include: ['packages/motion/upstream/src/**/*.test.tsx'],
-					environment: 'jsdom',
-					globalSetup: ['packages/motion/tests/pristine/_setup.ts'],
-					// Upstream Motion Jest suites use describe/test/expect globals.
-					globals: true,
-				},
-				oxc: {
-					jsx: {
-						runtime: 'automatic',
-						importSource: 'react',
-					},
+					include: ['packages/motion/tests/upstream-original.test.ts'],
+					environment: 'node',
+					globals: false,
 				},
 			},
 			{

@@ -121,6 +121,11 @@
       "reason": "Checks production-bundle reachability for the public motion entry."
     },
     {
+      "path": "packages/motion/tests/upstream-original.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Runs the curated Motion useMotionValue Jest suite byte-exact against motion/react@12.42.2."
+    },
+    {
       "path": "packages/motion/tests/upstream/use-motion-value.test.ts",
       "disposition": "adapted-upstream-suite",
       "oracle": "One-for-one Octane adaptation of the curated useMotionValue upstream cases from motion@12.42.2."

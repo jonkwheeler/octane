@@ -30,9 +30,9 @@ The binding reuses Motion's framework-neutral animation engine and ports a bound
 
 Upstream ships an extensive Jest client suite plus Cypress and embedded type tests under `packages/framer-motion`. The npm tarball does not include those tests; they are taken from the git pin.
 
-This package records `upstreamSuites.runtime/types` as **insufficient** and provenance as **recorded-unverified** until every pin artifact receives an adapted or supported-exclusion disposition. The current curated subset still runs:
+This package records `upstreamSuites.runtime/types` as **present** (the pin contains those suites) and provenance as **recorded-unverified** until every pin artifact receives an adapted or supported-exclusion disposition. The current curated subset still runs:
 
-- pristine: byte-exact `useMotionValue` cases from the pin, run against `motion/react@12.42.2`
+- pristine: byte-exact `useMotionValue` Jest cases from the pin, executed with native Jest (`jest-full`) against `motion/react@12.42.2`
 - adapted: one-for-one Octane ports of those cases
 - repo-authored pristine/adapted type probes with structural assertion inventory
 - repo-authored differential host-rendering lane

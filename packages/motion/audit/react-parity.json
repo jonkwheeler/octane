@@ -12,8 +12,8 @@
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "insufficient",
-    "types": "insufficient"
+    "runtime": "present",
+    "types": "present"
   },
   "adaptedRoots": {
     "source": {
@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "bd025dbbac0f3d7fe716d023daeaeeda97315e9d8afec7a290cc3852461d2272"
+      "lockfileSha256": "4800c8e2801f0faafb4c585e62340db66d9ff29492c13ef57b5a118e4749eb67"
     }
   },
   "lanes": [
@@ -51,21 +51,38 @@
       "environment": "workspace-node",
       "project": "motion-pristine",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the curated Motion 12.42.2 useMotionValue Jest cases byte-exact against motion/react via Vitest, with pin artifacts under packages/motion/upstream/.",
+      "notes": "Runs the curated Motion 12.42.2 useMotionValue Jest cases byte-exact against motion/react in native Jest (jest-full), with pin artifacts under packages/motion/upstream/.",
       "execution": {
-        "kind": "vitest-full",
+        "kind": "jest-full",
+        "config": "packages/motion/tests/upstream-jest.config.cjs",
+        "root": "packages/motion/upstream",
         "inventory": "packages/motion/audit/pristine-runtime.json"
       },
       "files": [
         {
+          "path": "packages/motion/tests/upstream-original.test.ts",
+          "role": "support",
+          "sha256": "062ac469737dd974b4a65e678c0e946df475e56df333a438c9c7a7fd2c312eea"
+        },
+        {
           "path": "packages/motion/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "47a6c96b1d1cd8ab02b018cfa4fa088c46d2f0be2ad4fc85459c279f95fffe81"
+          "sha256": "21f1b2549f11af48d24274bb0b9365e8186c583b8425e6ff6babd5e55ca36790"
+        },
+        {
+          "path": "scripts/react-parity/jest-full-runner.mjs",
+          "role": "support",
+          "sha256": "e6b4e02afb9953e3d469a026d21e0d4dbb9244debcf352926b017144fa6efacf"
         },
         {
           "path": "packages/motion/upstream/SHA256SUMS",
           "role": "support",
-          "sha256": "b8a0d2c797ad4e252fd1bba1ca255693057b204721f0ef2fe5c443ba0f610d3b"
+          "sha256": "82bea0b9b535d78ebf27976bdc826480f6481c7bfea6e0abdb0c3f0bbf756afc"
+        },
+        {
+          "path": "packages/motion/tests/upstream-jest.config.cjs",
+          "role": "support",
+          "sha256": "7284a19f8c8310628796865c53bc3bffea16e87bfb575fc2eff6a9a7cbde5fdb"
         },
         {
           "path": "packages/motion/scripts/verify-upstream.mjs",
@@ -86,6 +103,11 @@
           "path": "packages/motion/upstream/src/value/__tests__/use-motion-value.test.tsx",
           "role": "support",
           "sha256": "8e651d66fa7f5292f6f5d335e6bd492959a73d59682fb1c31a2f702d2894ef3b"
+        },
+        {
+          "path": "packages/motion/upstream/src/jest.setup.tsx",
+          "role": "support",
+          "sha256": "b3a4efce5810f0f4a83d9cdb5581b66de0746819d3d618ccb8e10070ae01a9dd"
         },
         {
           "path": "packages/motion/upstream/src/jest.setup.upstream.tsx",
