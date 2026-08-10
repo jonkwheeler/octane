@@ -19,6 +19,7 @@ import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyTiptapTypes } from './tiptap-types-lib.mjs';
 import { verifyTiptapRuntimeCrosswalk } from './tiptap-runtime-lib.mjs';
 import { verifyTiptapTestClassifications } from './tiptap-classifications-lib.mjs';
+import { verifyTanstackHotkeysTestClassifications } from './tanstack-hotkeys-classifications-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -79,6 +80,11 @@ try {
 	verifyLivestoreTestClassifications(REPO);
 } catch (error) {
 	errors.push(`livestore test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyTanstackHotkeysTestClassifications(REPO);
+} catch (error) {
+	errors.push(`tanstack-hotkeys test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
