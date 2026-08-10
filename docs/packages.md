@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**73 publishable package(s), including 59 framework binding(s) and 3 framework integration(s).**
+**74 publishable package(s), including 60 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -26,6 +26,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/dexie` | [`packages/dexie`](../packages/dexie) | framework binding | `0.1.26` | 1 |
 | `@octanejs/dnd-kit` | [`packages/dnd-kit`](../packages/dnd-kit) | framework binding | `0.1.28` | 4 |
 | `@octanejs/docusaurus` | [`packages/docusaurus`](../packages/docusaurus) | framework integration | `0.0.17` | 8 |
+| `@octanejs/drei` | [`packages/drei`](../packages/drei) | framework binding | `0.0.1` | 5 |
 | `@octanejs/electron` | [`packages/electron`](../packages/electron) | framework binding | `0.0.11` | 6 |
 | `@octanejs/floating-ui` | [`packages/floating-ui`](../packages/floating-ui) | framework binding | `0.1.32` | 1 |
 | `@octanejs/gsap` | [`packages/gsap`](../packages/gsap) | framework binding | `0.0.2` | 1 |
@@ -82,7 +83,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/visx` | [`packages/visx`](../packages/visx) | framework binding | `0.1.27` | 49 |
 | `@octanejs/vite-plugin` | [`packages/vite-plugin-octane`](../packages/vite-plugin-octane) | metaframework | `0.1.33` | 3 |
 | `@octanejs/wagmi` | [`packages/wagmi`](../packages/wagmi) | framework binding | `0.0.13` | 3 |
-| `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.32` | 5 |
+| `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.32` | 6 |
 | `create-octane` | [`packages/create-octane`](../packages/create-octane) | project scaffolder | `0.0.7` | 1 |
 | `octane` | [`packages/octane`](../packages/octane) | core runtime + compiler | `0.1.33` | 22 |
 
