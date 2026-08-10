@@ -7,11 +7,16 @@
 - License: MIT
 - Archive SHA-256: `23b331aa1371c760b349b81a26ca87c505e5991c14e23b6fd0ab8759dc3784c5`
 
-Nuqs colocates runtime, browser, and type tests with source. This binding does
-**not** vendor a pristine upstream runtime or type suite, and it does not ship
-one-for-one adapted copies of those suites (`upstreamSuites.runtime` and
-`upstreamSuites.types` are therefore `absent`). Provenance is `verified` with
-repo-authored evidence: a same-fixture differential against `nuqs@2.9.1`, full
-adapted-octane Vitest inventories for conformance/divergence and Node server
-lanes, plus paired pristine (`tsc` vs published `nuqs`) and adapted
-(`tsrx-tsc` vs `@octanejs/nuqs`) public-API typetests.
+Nuqs colocates runtime, browser, and type tests with source, so
+`upstreamSuites.runtime` and `upstreamSuites.types` are `present`. Those suites
+have not been vendored and adapted one-for-one yet, so the parity manifest
+remains `recorded-unverified` until required pristine-upstream and adapted-octane
+lanes (and upstream-suite type evidence) exist.
+
+Interim evidence that does run today:
+
+- a same-fixture differential against `nuqs@2.9.1`
+- repo-authored Octane-only conformance and divergence probes (ordinary Vitest
+  coverage; not counted as adapted upstream-suite parity)
+- paired pristine (`tsc` vs published `nuqs`) and adapted (`tsrx-tsc` vs
+  `@octanejs/nuqs`) public-API typetests with structural import-only verification

@@ -1,5 +1,15 @@
 {
   "schemaVersion": 1,
+  "discoveryRoots": [
+    {
+      "root": "packages/nuqs/tests",
+      "include": "\\.test\\.(?:ts|tsx|tsrx)$"
+    },
+    {
+      "root": "packages/nuqs/typetests",
+      "include": "\\.test-d\\.ts$"
+    }
+  ],
   "tests": [
     {
       "path": "packages/nuqs/tests/conformance/binding.test.ts",
@@ -43,6 +53,16 @@
       "path": "packages/nuqs/tests/ssr/server.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks the React-free server entry in a Node environment."
+    },
+    {
+      "path": "packages/nuqs/typetests/pristine/public-api.test-d.ts",
+      "disposition": "repo-authored-pristine-types",
+      "oracle": "Repo-authored public-API typetest compiled with tsc against published nuqs@2.9.1."
+    },
+    {
+      "path": "packages/nuqs/typetests/public-api.test-d.ts",
+      "disposition": "repo-authored-adapted-types",
+      "oracle": "Repo-authored adapted public-API typetest compiled with tsrx-tsc against @octanejs/nuqs."
     }
   ]
 }

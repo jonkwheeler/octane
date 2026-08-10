@@ -16,6 +16,7 @@ import { verifyPortTestClassifications } from './binding-classifications-lib.mjs
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
+import { verifyNuqsTypes } from './nuqs-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -55,6 +56,11 @@ try {
 	verifySolanaReactTypes(REPO);
 } catch (error) {
 	errors.push(`@octanejs/solana-react type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyNuqsTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/nuqs type evidence is invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);

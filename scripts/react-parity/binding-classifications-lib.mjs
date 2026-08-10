@@ -9,35 +9,68 @@ const DISPOSITIONS = new Set([
 	'octane-only-divergence',
 	'octane-only-framework-contract',
 	'octane-only-audit-contract',
+	'repo-authored-pristine-types',
+	'repo-authored-adapted-types',
 ]);
 
 function isPortAuthoredTestPath(path) {
 	return !path.includes('/tests/upstream/');
 }
 
+function toPortable(path) {
+	return path.split(sep).join('/');
+}
+
+function defaultDiscoveryRoots(binding) {
+	return [
+		{
+			root: `packages/${binding}/tests`,
+			include: '\\.test\\.(?:ts|tsx|tsrx)$',
+		},
+	];
+}
+
+function discoverFromRoots(root, discoveryRoots) {
+	const discovered = [];
+	for (const entry of discoveryRoots) {
+		const absoluteRoot = resolve(root, entry.root);
+		if (!existsSync(absoluteRoot)) continue;
+		const include = new RegExp(entry.include);
+		for (const file of readdirSync(absoluteRoot, { recursive: true, withFileTypes: true })) {
+			if (!file.isFile()) continue;
+			const relativePath = toPortable(
+				relative(root, resolve(file.parentPath ?? file.path, file.name)),
+			);
+			if (!include.test(relativePath) && !include.test(file.name)) continue;
+			discovered.push(relativePath);
+		}
+	}
+	return discovered.filter(isPortAuthoredTestPath).sort();
+}
+
 export function verifyPortTestClassifications(root, binding = 'hook-form') {
 	const configPath = `packages/${binding}/audit/test-classifications.json`;
 	const manifestPath = `packages/${binding}/audit/react-parity.json`;
-	const testsRoot = resolve(root, `packages/${binding}/tests`);
-	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
-		.filter((entry) => entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name))
-		.map((entry) =>
-			relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
-				.split(sep)
-				.join('/'),
-		)
-		.filter(isPortAuthoredTestPath)
-		.sort();
 	const absoluteConfigPath = resolve(root, configPath);
 	if (!existsSync(absoluteConfigPath))
 		throw new Error(`missing port-test classifications: ${configPath}`);
 	const config = JSON.parse(readFileSync(absoluteConfigPath, 'utf8'));
+	const discoveryRoots = Array.isArray(config.discoveryRoots)
+		? config.discoveryRoots
+		: defaultDiscoveryRoots(binding);
+	const discovered = discoverFromRoots(root, discoveryRoots);
 	const manifest = JSON.parse(readFileSync(resolve(root, manifestPath), 'utf8'));
-	const divergenceIds = new Set(manifest.divergences.map((entry) => entry.id));
+	const divergenceIds = new Set(
+		manifest.divergences.map(function id(entry) {
+			return entry.id;
+		}),
+	);
 	// Vendored upstream suites may also be classified for binding-local control
 	// tests; the generic port-authored audit compares only non-upstream paths.
 	const declared = config.tests
-		.map((entry) => entry.path)
+		.map(function path(entry) {
+			return entry.path;
+		})
 		.filter(isPortAuthoredTestPath)
 		.sort();
 	if (JSON.stringify(discovered) !== JSON.stringify(declared))

@@ -9,11 +9,11 @@
     "testRoot": "packages/nuqs/src",
     "license": "MIT",
     "integrity": "sha256:23b331aa1371c760b349b81a26ca87c505e5991c14e23b6fd0ab8759dc3784c5",
-    "verification": "verified"
+    "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
-    "types": "absent"
+    "runtime": "present",
+    "types": "present"
   },
   "adaptedRoots": {
     "source": {
@@ -28,8 +28,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 27,
-    "uniqueIdentities": 27,
+    "inventoryEntries": 0,
+    "uniqueIdentities": 0,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -51,7 +51,7 @@
       "environment": "workspace-node",
       "project": "nuqs-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs initial parsing, functional updates, and URL reconciliation against both adapters.",
+      "notes": "Runs initial parsing, functional updates, and URL reconciliation against both adapters. Upstream suites are present but not yet vendored; this differential is interim evidence while the manifest stays recorded-unverified.",
       "files": [
         {
           "path": "packages/nuqs/tests/differential/parity.test.ts",
@@ -98,7 +98,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "nuqs",
-      "notes": "Full repo-authored Octane adapted suite (conformance + divergence probes). Upstream suites are absent; this vitest-full lane is the required adapted-octane evidence.",
+      "notes": "Selected Octane-only divergence probes bound to manifest divergences. These are not one-for-one adaptations of upstream tests and are not counted as upstream-suite adapted parity; they run as filtered case identities only.",
       "files": [
         {
           "path": "packages/nuqs/tests/conformance/core.test.ts",
@@ -142,58 +142,11 @@
           ]
         },
         {
-          "path": "packages/nuqs/audit/adapted-runtime.json",
-          "role": "support",
-          "sha256": "b7dd36e8259094a3f815be3fed1211ce524a037635c0a4b0d183c769c619f4ae"
-        },
-        {
           "path": "vitest.config.js",
           "role": "support",
           "sha256": "2a74497a1fe4505908c32fab35ddd6e125e7812ff217d2f30110ec23e1c909dc"
         }
-      ],
-      "evidenceOrigin": "repo-authored",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/nuqs/audit/adapted-runtime.json"
-      }
-    },
-    {
-      "id": "nuqs-server-runtime",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "nuqs-ssr",
-      "notes": "Full repo-authored Node server suite for the react-free server entry (vitest-full).",
-      "files": [
-        {
-          "path": "packages/nuqs/tests/ssr/server.test.ts",
-          "role": "test",
-          "sha256": "c2b710f2c69cb04ea8aac47f9daf5fa6410f89de26f1c50ab05db320381af840",
-          "cases": [
-            {
-              "id": "ssr:nuqs-server-entry",
-              "testName": "parses and serializes search params without a DOM or renderer",
-              "fullName": "@octanejs/nuqs server entry parses and serializes search params without a DOM or renderer"
-            }
-          ]
-        },
-        {
-          "path": "packages/nuqs/audit/adapted-runtime-server.json",
-          "role": "support",
-          "sha256": "a07b83005a97e96bcd961b4c2f88181bbca3d032d5c153096cbe3bfefef40a19"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "2a74497a1fe4505908c32fab35ddd6e125e7812ff217d2f30110ec23e1c909dc"
-        }
-      ],
-      "evidenceOrigin": "repo-authored",
-      "execution": {
-        "kind": "vitest-full",
-        "inventory": "packages/nuqs/audit/adapted-runtime-server.json"
-      }
+      ]
     },
     {
       "id": "nuqs-pristine-types",
@@ -203,7 +156,7 @@
       "environment": "workspace-node",
       "project": "nuqs-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored public-API typetests compiled with tsc against published nuqs@2.9.1 (upstream type suite absent).",
+      "notes": "Repo-authored public-API typetests compiled with tsc against published nuqs@2.9.1. Upstream type suites remain present but unvendored; structural verification pairs this lane with the adapted typetest.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -213,7 +166,7 @@
         {
           "path": "packages/nuqs/audit/pristine-types.json",
           "role": "test",
-          "sha256": "02b561b749aaa7b816f86abda93b1e5d923985d90315ab9ddf2929fb9a2fa2e4",
+          "sha256": "6e46b5713a746889fd9738c5c2ad35a250d69040fbf8191efaf885f38f219f23",
           "cases": [
             {
               "id": "types:nuqs-pristine-public-api",
@@ -231,6 +184,11 @@
           "path": "packages/nuqs/typetests/pristine/tsconfig.json",
           "role": "support",
           "sha256": "ac8f8e2771d0c8f261bcd8776dcd6045d1eb0c70b9452279141aeb26ed012cc8"
+        },
+        {
+          "path": "packages/nuqs/audit/type-parity.json",
+          "role": "support",
+          "sha256": "3514a7776973b1eb1ad4b9a2a160668a9f28d6394d4203fba6f459ec0d09a4ac"
         }
       ]
     },
@@ -241,7 +199,7 @@
       "environment": "workspace-node",
       "project": "nuqs-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Repo-authored adapted public-API typetests (upstream type suite not vendored; upstreamSuites.types is absent).",
+      "notes": "Repo-authored adapted public-API typetests. Structural verification permits only the nuqs \u2192 @octanejs/nuqs import transformation against the pristine pair.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -251,7 +209,7 @@
         {
           "path": "packages/nuqs/audit/adapted-types.json",
           "role": "test",
-          "sha256": "8676744372aba8733622ae9ed005fff5d7b6afcc43cc9fa202bef648b96ddd77",
+          "sha256": "e8de08e55ded0a01f5188a844b20f7b9b8510bb474654f1e6889dd3a29700813",
           "cases": [
             {
               "id": "types:nuqs-public-api",
@@ -269,6 +227,11 @@
           "path": "packages/nuqs/typetests/tsconfig.json",
           "role": "support",
           "sha256": "d999d9d832e80137a5a0b485aba5348581dd6a45d703bfc2bb659c33361cd13c"
+        },
+        {
+          "path": "packages/nuqs/audit/type-parity.json",
+          "role": "support",
+          "sha256": "3514a7776973b1eb1ad4b9a2a160668a9f28d6394d4203fba6f459ec0d09a4ac"
         }
       ]
     }
