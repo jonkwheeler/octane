@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Add `@octanejs/react-colorful` as an exact, source-accounted Octane port of `react-colorful@5.8.0`, including its complete root runtime/type surface, styling behavior, React parity harness, SSR/hydration, and real-browser interaction evidence.
+- **Objective:** Add `@octanejs/colorful` as an exact, source-accounted Octane port of `react-colorful@5.8.0`, including its complete root runtime/type surface, styling behavior, React parity harness, SSR/hydration, and real-browser interaction evidence.
 - **Authority:** The published npm package defines the consumer contract. The matching `v5.8.0` repository tag defines source and test provenance. Octane repository guidance defines the permitted framework adaptations and evidence bar.
 - **Execution profile:** One isolated branch and one draft PR. The PR remains draft through current-head CI and Cursor review; an Octane maintainer alone decides readiness and merge.
 - **Stop conditions:** Do not claim parity if any public export, upstream source/test identity, stylesheet behavior, native interaction path, or type contract lacks an explicit disposition; if an Octane runtime/compiler defect is exposed, repair it in a separate prerequisite PR.
@@ -21,7 +21,7 @@ execution: code
 
 ### Summary
 
-Applications importing `react-colorful` should be able to map that package to `@octanejs/react-colorful` without replacing its components or color model. The binding targets the complete public contract of release `5.8.0`, not a similar picker API.
+Applications importing `react-colorful` should be able to map that package to `@octanejs/colorful` without replacing its components or color model. The binding targets the complete public contract of release `5.8.0`, not a similar picker API.
 
 ### Requirements
 
@@ -77,7 +77,7 @@ Applications importing `react-colorful` should be able to map that package to `@
 ### Key Technical Decisions
 
 - KTD1. **Exact current release.** Target `5.8.0`, including the newly current `onChangeEnd` and closest-root style injection behavior, rather than the older API commonly remembered from `5.6.x`.
-- KTD2. **One binding, one draft PR.** This branch owns only `@octanejs/react-colorful` and binding-local integration. It stays draft regardless of green checks or automated approval.
+- KTD2. **One binding, one draft PR.** This branch owns only `@octanejs/colorful` and binding-local integration. It stays draft regardless of green checks or automated approval.
 - KTD3. **Transcribe framework-neutral logic, re-author framework seams.** Color conversion/validation/equality code stays source-correspondent; components and hooks are authored for Octane and `.tsrx` rather than trying to execute React JSX.
 - KTD4. **Native events with public callback parity.** Picker handlers receive native `MouseEvent`, `TouchEvent`, `KeyboardEvent`, and `FocusEvent`. `HexColorInput` uses host `onInput` while continuing to expose upstream's component-level `onChange(string)`.
 - KTD5. **Retain automatic styles.** Package the pinned CSS as an internal string and preserve one-style-per-root insertion, nonce, ShadowRoot, and iframe behavior. A consumer-imported stylesheet would be only similar, not exact.
@@ -96,7 +96,7 @@ flowchart TB
   B --> F["Per-root stylesheet and nonce manager"]
   F --> E
   E --> G["Differential + SSR/hydration + browser evidence"]
-  G --> H["Packed @octanejs/react-colorful consumer"]
+  G --> H["Packed @octanejs/colorful consumer"]
 ```
 
 ### Risks and Mitigations
@@ -112,7 +112,7 @@ flowchart TB
 
 ### U1. Pin and inventory upstream
 
-- Vendor immutable audit inputs under `packages/react-colorful/upstream/`, retain the MIT license, and record npm/tag coordinates in `UPSTREAM.md`.
+- Vendor immutable audit inputs under `packages/colorful/upstream/`, retain the MIT license, and record npm/tag coordinates in `UPSTREAM.md`.
 - Build inventories for source files, public runtime/type exports, upstream test identities, and allowed adaptations.
 - Keep all vendored audit inputs out of the published tarball.
 - Add mutation controls for missing/stale/renamed/duplicate evidence.

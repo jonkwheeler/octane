@@ -18,6 +18,7 @@ import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
 import { verifyReactColorfulTypes } from './react-colorful-types-lib.mjs';
 import { verifyReactColorfulUpstream } from './react-colorful-upstream-lib.mjs';
+import { verifyReactColorfulTestClassifications } from './react-colorful-classifications-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -66,17 +67,17 @@ try {
 try {
 	await verifyReactColorfulUpstream(REPO);
 } catch (error) {
-	errors.push(`@octanejs/react-colorful upstream evidence is invalid: ${error.message}`);
+	errors.push(`@octanejs/colorful upstream evidence is invalid: ${error.message}`);
 }
 try {
 	verifyReactColorfulTypes(REPO);
 } catch (error) {
-	errors.push(`@octanejs/react-colorful type evidence is invalid: ${error.message}`);
+	errors.push(`@octanejs/colorful type evidence is invalid: ${error.message}`);
 }
 try {
-	verifyPortTestClassifications(REPO, 'react-colorful');
+	verifyReactColorfulTestClassifications(REPO);
 } catch (error) {
-	errors.push(`@octanejs/react-colorful test classifications are invalid: ${error.message}`);
+	errors.push(`@octanejs/colorful test classifications are invalid: ${error.message}`);
 }
 try {
 	verifyLivestoreTestClassifications(REPO);

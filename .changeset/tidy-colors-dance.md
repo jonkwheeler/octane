@@ -1,5 +1,5 @@
 ---
-'@octanejs/react-colorful': patch
+'@octanejs/colorful': patch
 ---
 
 Add an exact Octane binding for `react-colorful@5.8.0`, including every picker,

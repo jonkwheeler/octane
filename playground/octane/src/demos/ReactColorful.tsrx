@@ -1,4 +1,4 @@
-import { HexAlphaColorPicker, HexColorInput } from '@octanejs/react-colorful';
+import { HexAlphaColorPicker, HexColorInput } from '@octanejs/colorful';
 import { useState } from 'octane';
 
 export function ReactColorfulDemo() @{

@@ -11,7 +11,7 @@ remain at zero. Zero pins does **not** imply complete upstream parity. Consult
 [`docs/bindings-status.md`](bindings-status.md) for each binding's supported
 surface and evidence.
 
-**0 active pin(s) across 60 binding package(s).**
+**0 active pin(s) across 61 binding package(s).**
 
 | Package | Active pins |
 | --- | ---: |
@@ -20,6 +20,7 @@ surface and evidence.
 | `@octanejs/aria` | 0 |
 | `@octanejs/base-ui` | 0 |
 | `@octanejs/cmdk` | 0 |
+| `@octanejs/colorful` | 0 |
 | `@octanejs/devtools` | 0 |
 | `@octanejs/dexie` | 0 |
 | `@octanejs/dnd-kit` | 0 |
@@ -42,7 +43,6 @@ surface and evidence.
 | `@octanejs/phosphor-icons` | 0 |
 | `@octanejs/radix` | 0 |
 | `@octanejs/rainbowkit` | 0 |
-| `@octanejs/react-colorful` | 0 |
 | `@octanejs/react-error-boundary` | 0 |
 | `@octanejs/react-map-gl` | 0 |
 | `@octanejs/recharts` | 0 |

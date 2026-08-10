@@ -49,7 +49,7 @@
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
       "@octanejs/react-error-boundary",
-      "@octanejs/react-colorful",
+      "@octanejs/colorful",
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",

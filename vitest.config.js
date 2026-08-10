@@ -1046,8 +1046,8 @@ export default defineConfig({
 				// view drops the whole project instead of retaining an empty one.
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-colorful-upstream',
-					include: ['packages/react-colorful/tests/upstream/**/*.test.ts'],
+					name: 'colorful-upstream',
+					include: ['packages/colorful/tests/upstream/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1055,8 +1055,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-colorful',
-					include: ['packages/react-colorful/tests/runtime/**/*.test.ts'],
+					name: 'colorful',
+					include: ['packages/colorful/tests/runtime/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1065,18 +1065,18 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-colorful-differential',
-					include: ['packages/react-colorful/tests/differential/**/*.test.ts'],
+					name: 'colorful-differential',
+					include: ['packages/colorful/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
-					globalSetup: ['packages/react-colorful/tests/differential/_setup.ts'],
+					globalSetup: ['packages/colorful/tests/differential/_setup.ts'],
 					globals: false,
 				},
 				plugins: [octane()],
 			},
 			{
 				test: {
-					name: 'react-colorful-hydration',
-					include: ['packages/react-colorful/tests/hydration/**/*.test.ts'],
+					name: 'colorful-hydration',
+					include: ['packages/colorful/tests/hydration/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -1084,8 +1084,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-colorful-ssr',
-					include: ['packages/react-colorful/tests/ssr/**/*.test.ts'],
+					name: 'colorful-ssr',
+					include: ['packages/colorful/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -1101,8 +1101,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-colorful-browser',
-					include: ['packages/react-colorful/tests/browser/**/*.test.ts'],
+					name: 'colorful-browser',
+					include: ['packages/colorful/tests/browser/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 60_000,

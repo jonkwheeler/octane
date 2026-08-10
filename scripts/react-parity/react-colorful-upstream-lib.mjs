@@ -3,9 +3,9 @@ import {
 	buildInventory,
 	compareInventories,
 	validate,
-} from '../../packages/react-colorful/audit/upstream-inventory.mjs';
+} from '../../packages/colorful/audit/upstream-inventory.mjs';
 
-const PACKAGE_ROOT = 'packages/react-colorful';
+const PACKAGE_ROOT = 'packages/colorful';
 
 export async function verifyReactColorfulUpstream(repoRoot) {
 	const root = resolve(repoRoot, PACKAGE_ROOT);

@@ -1,11 +1,16 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
-export const TYPE_PARITY_CONFIG = 'packages/react-colorful/audit/type-parity.json';
+export const TYPE_PARITY_CONFIG = 'packages/colorful/audit/type-parity.json';
 
 const DISPOSITIONS = new Set(['adapted', 'pristine-only', 'out-of-scope']);
+const TSRX_EXTENSION = {
+	extension: '.tsrx',
+	isMixedContent: false,
+	scriptKind: ts.ScriptKind.TSX,
+};
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
@@ -36,10 +41,89 @@ function listProbeFiles(root) {
 	});
 }
 
-function listProgramFiles(root) {
-	return listFiles(root, function keepProgram(path) {
-		return true;
-	});
+function tsrxReadDirectory(path, extensions, excludes, includes, depth) {
+	const withTsrx = extensions ? [...extensions, '.tsrx'] : ['.ts', '.tsx', '.d.ts', '.tsrx'];
+	return ts.sys.readDirectory(path, withTsrx, excludes, includes, depth);
+}
+
+export function listCompilerProgramFiles(root, projectPath, sourceRoot) {
+	const configPath = resolve(root, projectPath);
+	if (!existsSync(configPath)) {
+		throw new Error(`missing compiler project for program membership: ${projectPath}`);
+	}
+	const readResult = ts.readConfigFile(configPath, ts.sys.readFile);
+	if (readResult.error) {
+		throw new Error(
+			`failed to read ${projectPath}: ${ts.flattenDiagnosticMessageText(readResult.error.messageText, '\n')}`,
+		);
+	}
+	const host = {
+		...ts.sys,
+		readDirectory: tsrxReadDirectory,
+	};
+	const parsed = ts.parseJsonConfigFileContent(
+		readResult.config,
+		host,
+		dirname(configPath),
+		undefined,
+		configPath,
+		undefined,
+		[TSRX_EXTENSION],
+	);
+	if (parsed.errors.length > 0) {
+		throw new Error(
+			`${projectPath}: ${ts.flattenDiagnosticMessageText(parsed.errors[0].messageText, '\n')}`,
+		);
+	}
+	const sourceAbs = resolve(root, sourceRoot);
+	return parsed.fileNames
+		.filter(function underSourceRoot(filePath) {
+			const rel = relative(sourceAbs, filePath);
+			return (
+				rel &&
+				!rel.startsWith('..') &&
+				!rel.includes(`..${sep}`) &&
+				/\.(?:ts|tsx|tsrx|d\.ts)$/.test(filePath)
+			);
+		})
+		.map(function toRelative(filePath) {
+			return posix(relative(sourceAbs, filePath));
+		})
+		.sort();
+}
+
+function listProbeProgramFiles(root, projectPath) {
+	const configPath = resolve(root, projectPath);
+	if (!existsSync(configPath)) {
+		throw new Error(`missing compiler project for probe membership: ${projectPath}`);
+	}
+	const readResult = ts.readConfigFile(configPath, ts.sys.readFile);
+	if (readResult.error) {
+		throw new Error(
+			`failed to read ${projectPath}: ${ts.flattenDiagnosticMessageText(readResult.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		readResult.config,
+		ts.sys,
+		dirname(configPath),
+		undefined,
+		configPath,
+	);
+	if (parsed.errors.length > 0) {
+		throw new Error(
+			`${projectPath}: ${ts.flattenDiagnosticMessageText(parsed.errors[0].messageText, '\n')}`,
+		);
+	}
+	const projectDir = dirname(configPath);
+	return parsed.fileNames
+		.map(function toRelative(filePath) {
+			return posix(relative(projectDir, filePath));
+		})
+		.filter(function keepProbe(path) {
+			return /\.test\.ts$/.test(path);
+		})
+		.sort();
 }
 
 function normalizeComment(comment) {
@@ -96,7 +180,7 @@ function assertionGroups(source, fileName) {
 }
 
 function normalizeSpecifier(specifier) {
-	if (specifier === 'react-colorful' || specifier === '@octanejs/react-colorful') {
+	if (specifier === 'react-colorful' || specifier === '@octanejs/colorful') {
 		return '#react-colorful-public';
 	}
 	if (specifier === './host-input-event') {
@@ -156,6 +240,14 @@ export function readTypeParityConfig(root, configPath = TYPE_PARITY_CONFIG) {
 	if (!config.programInventories?.upstream || !config.programInventories?.adapted) {
 		throw new Error('type-parity.json must declare programInventories for both source programs');
 	}
+	if (!config.lanes?.pristine?.project || !config.lanes?.adapted?.project) {
+		throw new Error('type-parity.json lanes must declare pristine and adapted compiler projects');
+	}
+	if (!config.lanes?.pristine?.probeProject || !config.lanes?.adapted?.probeProject) {
+		throw new Error(
+			'type-parity.json lanes must declare pristine and adapted probe compiler projects',
+		);
+	}
 	if (!Array.isArray(config.fileDispositions) || config.fileDispositions.length === 0) {
 		throw new Error('type-parity.json must list fileDispositions for every upstream program file');
 	}
@@ -192,10 +284,16 @@ export function readTypeParityConfig(root, configPath = TYPE_PARITY_CONFIG) {
 }
 
 export function assertProgramDispositions(root, config) {
-	const upstreamRoot = resolve(root, config.programRoots.upstream);
-	const adaptedRoot = resolve(root, config.programRoots.adapted);
-	const upstreamFiles = listProgramFiles(upstreamRoot);
-	const adaptedFiles = listProgramFiles(adaptedRoot);
+	const upstreamFiles = listCompilerProgramFiles(
+		root,
+		config.lanes.pristine.project,
+		config.programRoots.upstream,
+	);
+	const adaptedFiles = listCompilerProgramFiles(
+		root,
+		config.lanes.adapted.project,
+		config.programRoots.adapted,
+	);
 	const disposed = new Set(
 		config.fileDispositions.map(function path(entry) {
 			return entry.path;
@@ -208,7 +306,9 @@ export function assertProgramDispositions(root, config) {
 	}
 	for (const entry of config.fileDispositions) {
 		if (!upstreamFiles.includes(entry.path)) {
-			throw new Error(`type disposition references missing upstream program file ${entry.path}`);
+			throw new Error(
+				`type disposition references ${entry.path} which is not in the pristine compiler program ${config.lanes.pristine.project}`,
+			);
 		}
 	}
 
@@ -217,7 +317,7 @@ export function assertProgramDispositions(root, config) {
 		if (entry.disposition === 'adapted') {
 			if (!adaptedFiles.includes(entry.adaptedPath)) {
 				throw new Error(
-					`${entry.path}: adaptedPath ${entry.adaptedPath} is missing from the adapted program`,
+					`${entry.path}: adaptedPath ${entry.adaptedPath} is missing from the adapted compiler program ${config.lanes.adapted.project}`,
 				);
 			}
 			accountedAdapted.add(entry.adaptedPath);
@@ -228,20 +328,42 @@ export function assertProgramDispositions(root, config) {
 	}
 	for (const file of adaptedFiles) {
 		if (!accountedAdapted.has(file)) {
-			throw new Error(`adapted program file ${file} is not covered by any disposition mapping`);
+			throw new Error(
+				`adapted program file ${file} is not covered by any disposition mapping for ${config.lanes.adapted.project}`,
+			);
 		}
 	}
 	return { upstreamFiles, adaptedFiles };
 }
 
+function assertProbeProgramMembership(root, config, inventory) {
+	for (const [side, laneKey] of [
+		['upstream', 'pristine'],
+		['adapted', 'adapted'],
+	]) {
+		const projectPath = config.lanes[laneKey].probeProject;
+		const programFiles = listProbeProgramFiles(root, projectPath);
+		const expected = inventory[side]
+			.map(function pathOf(entry) {
+				return entry.path;
+			})
+			.sort();
+		if (JSON.stringify(programFiles) !== JSON.stringify(expected)) {
+			throw new Error(
+				`${projectPath}: compiler program probes must match the ${side} type inventory exactly; expected ${JSON.stringify(expected)} but compiler selected ${JSON.stringify(programFiles)}`,
+			);
+		}
+	}
+}
+
 export function buildProgramInventory(root, config) {
-	assertProgramDispositions(root, config);
+	const { upstreamFiles, adaptedFiles } = assertProgramDispositions(root, config);
 	const upstreamRoot = resolve(root, config.programRoots.upstream);
 	const adaptedRoot = resolve(root, config.programRoots.adapted);
-	const upstream = listProgramFiles(upstreamRoot).map(function entry(path) {
+	const upstream = upstreamFiles.map(function entry(path) {
 		return { path, sha256: sha256(readFileSync(resolve(upstreamRoot, path))) };
 	});
-	const adapted = listProgramFiles(adaptedRoot).map(function entry(path) {
+	const adapted = adaptedFiles.map(function entry(path) {
 		return { path, sha256: sha256(readFileSync(resolve(adaptedRoot, path))) };
 	});
 	return { upstream, adapted };
@@ -306,6 +428,7 @@ export function verifyReactColorfulTypes(root, { configPath = TYPE_PARITY_CONFIG
 		);
 	}
 	const probeInventory = buildTypeInventory(root, config);
+	assertProbeProgramMembership(root, config, probeInventory);
 	for (const side of ['upstream', 'adapted']) {
 		requireRecordedInventory(root, config.inventories[side], probeInventory[side], `${side} type`);
 	}
