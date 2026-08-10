@@ -106,6 +106,11 @@ for (const entry of classifications.tests) {
 			fail(`${entry.path} is not a declared public-API type parity file`);
 	} else if (!entry.disposition.startsWith('octane-only-') || !entry.reason || entry.oracle) {
 		fail(`${entry.path} has an invalid unpaired classification`);
+	} else if (entry.disposition === 'octane-only-divergence') {
+		if (!entry.divergenceId)
+			fail(`${entry.path}: divergence tests require a manifest divergence id`);
+		if (!manifest.divergences.some((divergence) => divergence.id === entry.divergenceId))
+			fail(`${entry.path}: divergence id is not present in the parity manifest`);
 	} else if (entry.path.includes('/typetests/')) {
 		if (TYPE_PARITY_FILES.has(entry.path))
 			fail(`${entry.path} public-API type pair must use repo-authored-type-parity`);
@@ -197,22 +202,39 @@ if (
 	)
 )
 	fail('view-renderer-boundary must not be claimed as differential lane evidence');
-const boundaryLane = manifest.lanes.find((lane) => lane.id === 'drei-octane-only-view-boundary');
+if (manifest.lanes.some((lane) => lane.id === 'drei-octane-only-view-boundary'))
+	fail('view-renderer-boundary must not be registered as a React-parity lane');
 if (
-	boundaryLane?.type !== 'adapted-octane' ||
-	boundaryLane.oracle !== 'required' ||
-	boundaryLane.project !== 'drei-guards' ||
-	boundaryLane.execution !== undefined ||
-	!boundaryLane.files?.some(
-		(file) =>
-			file.path === 'packages/drei/tests/view-renderer-boundary.test.ts' &&
-			file.role === 'test' &&
-			file.cases?.some((parityCase) => parityCase.id === 'octane-only:view-renderer-boundary'),
+	manifest.lanes.some((lane) =>
+		lane.files?.some(
+			(file) =>
+				file.role === 'test' && file.path === 'packages/drei/tests/view-renderer-boundary.test.ts',
+		),
+	)
+)
+	fail('view-renderer-boundary must stay outside required parity-lane test evidence');
+const boundaryDivergence = manifest.divergences.find(
+	(entry) => entry.id === 'view-renderer-boundary',
+);
+if (
+	!boundaryDivergence?.caseIds?.includes('ordinary:view-renderer-boundary') ||
+	!boundaryDivergence.ordinaryEvidence?.some(
+		(evidence) =>
+			evidence.id === 'ordinary:view-renderer-boundary' &&
+			evidence.path === 'packages/drei/tests/view-renderer-boundary.test.ts',
 	)
 )
 	fail(
-		'view-renderer-boundary must be inventoried in a required ordinary drei-guards lane (no differential/vitest-full claim)',
+		'view-renderer-boundary must cite ordinary:view-renderer-boundary audit identity outside parity lanes',
 	);
+const boundaryClassification = classifications.tests.find(
+	(entry) => entry.path === 'packages/drei/tests/view-renderer-boundary.test.ts',
+);
+if (
+	boundaryClassification?.disposition !== 'octane-only-divergence' ||
+	boundaryClassification.divergenceId !== 'view-renderer-boundary'
+)
+	fail('view-renderer-boundary must be classified as ordinary octane-only-divergence evidence');
 const upstreamFiles = readdirSync(resolve(root, 'packages/drei/upstream'), {
 	recursive: true,
 	withFileTypes: true,

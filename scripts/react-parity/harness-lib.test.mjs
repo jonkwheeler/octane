@@ -870,6 +870,62 @@ test('rejects stale divergences and accepts one divergence matching multiple kno
 	}
 });
 
+test('accepts ordinary audit identities for divergences outside parity lanes', () => {
+	const ordinary = divergence({
+		caseIds: ['ordinary:view-boundary'],
+		ordinaryEvidence: [
+			{
+				id: 'ordinary:view-boundary',
+				path: 'packages/example/tests/view-boundary.test.ts',
+				sha256: sha256('boundary'),
+				testName: 'documents the boundary',
+				fullName: 'View boundary documents the boundary',
+			},
+		],
+	});
+	assert.deepEqual(
+		validateManifest(manifest({ divergences: [ordinary] })),
+		manifest({ divergences: [ordinary] }),
+	);
+
+	assert.throws(
+		() =>
+			validateManifest(
+				manifest({
+					divergences: [
+						divergence({
+							caseIds: ['ordinary:view-boundary'],
+						}),
+					],
+				}),
+			),
+		/unknown case id "ordinary:view-boundary"/,
+	);
+
+	assert.throws(
+		() =>
+			validateManifest(
+				manifest({
+					divergences: [
+						divergence({
+							caseIds: ['ordinary:view-boundary'],
+							ordinaryEvidence: [
+								{
+									id: 'adapted:example',
+									path: 'packages/example/tests/view-boundary.test.ts',
+									sha256: sha256('boundary'),
+									testName: 'documents the boundary',
+									fullName: 'View boundary documents the boundary',
+								},
+							],
+						}),
+					],
+				}),
+			),
+		/must start with "ordinary:"/,
+	);
+});
+
 test('rejects missing and tampered evidence files', async () => {
 	const root = await mkdtemp(join(tmpdir(), 'react-parity-'));
 	const value = manifest();

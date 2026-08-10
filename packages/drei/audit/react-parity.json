@@ -16,21 +16,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/drei/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/drei/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/drei/tests/browser"
-      ],
-      "include": [
-        "\\.browser\\.test\\.ts$"
-      ],
+      "roots": ["packages/drei/tests/browser"],
+      "include": ["\\.browser\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -141,12 +133,12 @@
         {
           "path": "packages/drei/audit/runtime-evidence.json",
           "role": "support",
-          "sha256": "e6d71aefdac935885be2f1ee1eea9a1107bb0e34dc65db3ddf285f36c42b0b5f"
+          "sha256": "bb77d8f12fa1efe0d9d304c1deebcdde67432456992bb01bb6455d92aea5b224"
         },
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "e3ae21a4713d44b42137b85e4f4ff202ddad85b415877a9ff3f97299fa619f96"
+          "sha256": "b8769998f398412afb00f94338685359f429d4cf0a2caee5567e3db9cada2fbd"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
@@ -156,7 +148,7 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "0fd319bcc25ea0d4e8e6229994e75643f148078cf4a4375623701d335d5be31e"
+          "sha256": "3e16a425d352e48bc311262bfd5aa5d9e13a25b599ff2e6133c1b26ff90cda24"
         },
         {
           "path": "packages/drei/tests/differential/view.test.ts",
@@ -172,28 +164,6 @@
               "id": "differential:view-visibility",
               "testName": "matches invisible and offscreen clear/render boundaries and event connection cleanup",
               "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "drei-octane-only-view-boundary",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "drei-guards",
-      "notes": "Ordinary drei-guards inventory for the View renderer-boundary case the divergence links to. Owned by drei-guards (outside testExecution / differential); required so the divergence marker binds without a vitest-full parity claim.",
-      "files": [
-        {
-          "path": "packages/drei/tests/view-renderer-boundary.test.ts",
-          "role": "test",
-          "sha256": "6c6a33608d17203ff1a0de01217d58e23143cb4fd70f9e7bff5f9e80c37225e8",
-          "cases": [
-            {
-              "id": "octane-only:view-renderer-boundary",
-              "testName": "documents the outside-DOM renderer boundary while keeping View.Port callable",
-              "fullName": "View renderer boundary documents the outside-DOM renderer boundary while keeping View.Port callable"
             }
           ]
         }
@@ -269,8 +239,15 @@
   "divergences": [
     {
       "id": "view-renderer-boundary",
-      "caseIds": [
-        "octane-only:view-renderer-boundary"
+      "caseIds": ["ordinary:view-renderer-boundary"],
+      "ordinaryEvidence": [
+        {
+          "id": "ordinary:view-renderer-boundary",
+          "path": "packages/drei/tests/view-renderer-boundary.test.ts",
+          "sha256": "cb7ba202238e852df230ad227a78880bbafa1a4f6b8bd6bd2ea6a0d9f50ec731",
+          "testName": "documents the outside-DOM renderer boundary while keeping View.Port callable",
+          "fullName": "View renderer boundary documents the outside-DOM renderer boundary while keeping View.Port callable"
+        }
       ],
       "upstreamResult": "React Drei View can render from a DOM root and move authored Three children through View.Port via tunnel-rat.",
       "octaneResult": "Calling View from an Octane DOM root fails with the universal renderer-boundary diagnostic, and View.Port is a callable no-op.",

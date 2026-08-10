@@ -772,7 +772,7 @@
     },
     {
       "path": "packages/drei/tests/view-renderer-boundary.test.ts",
-      "sha256": "6c6a33608d17203ff1a0de01217d58e23143cb4fd70f9e7bff5f9e80c37225e8",
+      "sha256": "cb7ba202238e852df230ad227a78880bbafa1a4f6b8bd6bd2ea6a0d9f50ec731",
       "assertionCount": 1,
       "assertionInventorySha256": "94da7a2764f9178115fa4c3a2c6b2b62f74c4c7e760ee513483f76f36c9113fc"
     },

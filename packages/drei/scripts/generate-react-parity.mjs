@@ -130,9 +130,10 @@ function classifyPath(path) {
 		if (path.endsWith('/view-renderer-boundary.test.ts')) {
 			return {
 				path,
-				disposition: 'octane-only-framework-contract',
+				disposition: 'octane-only-divergence',
 				reason:
-					'Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence.',
+					'Pins the intentional DOM-root View renderer-boundary divergence as ordinary drei-guards evidence; it is not paired React behavioral evidence.',
+				divergenceId: 'view-renderer-boundary',
 			};
 		}
 		if (path.includes('/tests/octane-contracts/')) {
@@ -482,32 +483,6 @@ manifest.lanes = [
 		],
 	},
 	{
-		id: 'drei-octane-only-view-boundary',
-		type: 'adapted-octane',
-		oracle: 'required',
-		environment: 'workspace-node',
-		project: 'drei-guards',
-		notes:
-			'Ordinary drei-guards inventory for the View renderer-boundary case the divergence links to. Owned by drei-guards (outside testExecution / differential); required so the divergence marker binds without a vitest-full parity claim.',
-		files: [
-			{
-				path: 'packages/drei/tests/view-renderer-boundary.test.ts',
-				role: 'test',
-				sha256: digest(
-					readFileSync(resolve(root, 'packages/drei/tests/view-renderer-boundary.test.ts')),
-				),
-				cases: [
-					{
-						id: 'octane-only:view-renderer-boundary',
-						testName:
-							'documents the outside-DOM renderer boundary while keeping View.Port callable',
-						fullName: viewBoundaryCase.fullName,
-					},
-				],
-			},
-		],
-	},
-	{
 		id: 'drei-pristine-types',
 		type: 'pristine-types',
 		oracle: 'required',
@@ -580,10 +555,20 @@ manifest.lanes = [
 	},
 ];
 
+const viewBoundaryPath = 'packages/drei/tests/view-renderer-boundary.test.ts';
 manifest.divergences = [
 	{
 		id: 'view-renderer-boundary',
-		caseIds: ['octane-only:view-renderer-boundary'],
+		caseIds: ['ordinary:view-renderer-boundary'],
+		ordinaryEvidence: [
+			{
+				id: 'ordinary:view-renderer-boundary',
+				path: viewBoundaryPath,
+				sha256: digest(readFileSync(resolve(root, viewBoundaryPath))),
+				testName: 'documents the outside-DOM renderer boundary while keeping View.Port callable',
+				fullName: viewBoundaryCase.fullName,
+			},
+		],
 		upstreamResult:
 			'React Drei View can render from a DOM root and move authored Three children through View.Port via tunnel-rat.',
 		octaneResult:

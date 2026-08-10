@@ -50,10 +50,11 @@ package typecheck.
 
 `audit/react-parity.json` registers the pristine upstream Playwright lane, the
 separate adapted upstream browser lane, the `drei-differential` Vitest project
-(all paired React/Octane characterization files, including the View canary), a
-separate ordinary `drei-guards` lane for the View renderer-boundary case (so the
-divergence can link without claiming differential evidence), and repo-authored
-pristine/adapted type lanes with the global `react-parity:check` harness.
+(all paired React/Octane characterization files, including the View canary), and
+repo-authored pristine/adapted type lanes with the global `react-parity:check`
+harness. The View renderer-boundary divergence cites an ordinary
+`ordinary:view-renderer-boundary` audit identity (not a React-parity lane) so
+authentication stays in the ordinary `drei-guards` project.
 `audit/test-classifications.json` gives every port-authored runtime and type
 test file exactly one disposition. Paired files import the pinned React Drei
 oracle in the test body; `config.test.ts`, `crosswalk-guard.test.ts`,
