@@ -38,7 +38,7 @@ afterEach(() => {
 	document.querySelector('textarea[aria-hidden="true"]')?.remove();
 });
 
-describe('react-textarea-autosize measurement', () => {
+describe('textarea-autosize measurement', () => {
 	it('uses the Firefox-stabilizing second content read for content-box height', () => {
 		const reads: string[] = [];
 		let contentReads = 0;

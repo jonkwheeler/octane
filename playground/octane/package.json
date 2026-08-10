@@ -33,7 +33,7 @@
     "@octanejs/rainbowkit": "workspace:*",
     "@octanejs/solana-react": "workspace:*",
     "@octanejs/react-error-boundary": "workspace:*",
-    "@octanejs/react-textarea-autosize": "workspace:*",
+    "@octanejs/textarea-autosize": "workspace:*",
     "@octanejs/rxjs": "workspace:*",
     "@octanejs/shadcn": "workspace:*",
     "@octanejs/sonner": "workspace:*",

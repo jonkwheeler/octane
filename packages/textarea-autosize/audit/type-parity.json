@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "upstreamRoot": "packages/react-textarea-autosize/audit/type-probes",
-  "adaptedRoot": "packages/react-textarea-autosize/typetests",
+  "upstreamRoot": "packages/textarea-autosize/audit/type-probes",
+  "adaptedRoot": "packages/textarea-autosize/typetests",
   "inventories": {
-    "upstream": "packages/react-textarea-autosize/audit/pristine-types.json",
-    "adapted": "packages/react-textarea-autosize/audit/adapted-types.json"
+    "upstream": "packages/textarea-autosize/audit/pristine-types.json",
+    "adapted": "packages/textarea-autosize/audit/adapted-types.json"
   },
   "lanes": {
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/react-textarea-autosize/audit/type-probes/tsconfig.pristine.json",
+      "project": "packages/textarea-autosize/audit/type-probes/tsconfig.pristine.json",
       "sourcePolicy": "repo-authored React declaration probes against pinned upstream public typings"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/react-textarea-autosize/typetests/tsconfig.json",
+      "project": "packages/textarea-autosize/typetests/tsconfig.json",
       "sourcePolicy": "structurally equivalent Octane public probes after permitted transformations"
     }
   },

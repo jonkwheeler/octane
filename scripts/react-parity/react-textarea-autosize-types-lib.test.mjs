@@ -5,27 +5,57 @@ import { tmpdir } from 'node:os';
 import test from 'node:test';
 import { buildTypeInventory } from './react-textarea-autosize-types-lib.mjs';
 
+const SIMPLE_TSCONFIG = {
+	compilerOptions: {
+		strict: true,
+		noEmit: true,
+		module: 'ESNext',
+		moduleResolution: 'Bundler',
+		target: 'ES2022',
+		skipLibCheck: true,
+	},
+};
+
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'textarea-types-'));
 	const upstreamRoot = join(root, 'upstream');
 	const adaptedRoot = join(root, 'adapted');
 	await cp(
-		new URL('../../packages/react-textarea-autosize/audit/type-probes', import.meta.url),
+		new URL('../../packages/textarea-autosize/audit/type-probes', import.meta.url),
 		upstreamRoot,
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-textarea-autosize/typetests', import.meta.url),
+		new URL('../../packages/textarea-autosize/typetests', import.meta.url),
 		adaptedRoot,
 		{ recursive: true },
 	);
-	await rm(join(upstreamRoot, 'tsconfig.pristine.json'), { force: true });
-	await rm(join(adaptedRoot, 'tsconfig.json'), { force: true });
+	await writeFile(
+		join(upstreamRoot, 'tsconfig.pristine.json'),
+		`${JSON.stringify({ ...SIMPLE_TSCONFIG, include: ['./public-api.test-d.ts'] }, null, 2)}\n`,
+	);
+	await writeFile(
+		join(adaptedRoot, 'tsconfig.json'),
+		`${JSON.stringify({ ...SIMPLE_TSCONFIG, include: ['./public-api.test-d.ts'] }, null, 2)}\n`,
+	);
 	return {
 		root,
 		upstreamRoot,
 		adaptedRoot,
-		config: { upstreamRoot: 'upstream', adaptedRoot: 'adapted' },
+		config: {
+			upstreamRoot: 'upstream',
+			adaptedRoot: 'adapted',
+			lanes: {
+				pristine: {
+					compiler: 'tsc',
+					project: 'upstream/tsconfig.pristine.json',
+				},
+				adapted: {
+					compiler: 'tsrx-tsc',
+					project: 'adapted/tsconfig.json',
+				},
+			},
+		},
 	};
 }
 
@@ -81,4 +111,21 @@ test('rejects retargeting an adapted public import', async function rejectsRetar
 	assert.throws(function run() {
 		buildTypeInventory(value.root, value.config);
 	}, /change outside the permitted transformations/);
+});
+
+test('rejects inventoried probes missing from the compiler program', async function rejectsOutsideProgram(
+	t,
+) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	await writeFile(join(value.upstreamRoot, 'empty.ts'), 'export {};\n');
+	await writeFile(
+		join(value.upstreamRoot, 'tsconfig.pristine.json'),
+		`${JSON.stringify({ ...SIMPLE_TSCONFIG, include: ['./empty.ts'] }, null, 2)}\n`,
+	);
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /not included in compiler program/);
 });

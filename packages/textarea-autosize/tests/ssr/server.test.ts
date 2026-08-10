@@ -10,7 +10,7 @@ const style = {
 	width: '120px',
 };
 
-describe('@octanejs/react-textarea-autosize SSR', () => {
+describe('@octanejs/textarea-autosize SSR', () => {
 	it('renders textarea attributes and the caller-owned initial style without browser globals', () => {
 		const onChange = vi.fn();
 		const onHeightChange = vi.fn();

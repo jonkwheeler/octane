@@ -35,7 +35,7 @@ function settle(): void {
 	flushSync(() => {});
 }
 
-describe('@octanejs/react-textarea-autosize hydration', () => {
+describe('@octanejs/textarea-autosize hydration', () => {
 	it('adopts the server textarea, measures it, and activates input behavior', () => {
 		const container = document.createElement('div');
 		container.innerHTML = SERVER_HTML;

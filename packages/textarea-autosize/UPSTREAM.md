@@ -1,4 +1,4 @@
-# react-textarea-autosize upstream evidence
+# textarea-autosize upstream evidence
 
 - Package: `react-textarea-autosize@8.5.9`
 - npm tarball SHA-1: `ab8627b09aa04d8a2f45d5b5cd94c84d1d4a8893`

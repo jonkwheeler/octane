@@ -61,7 +61,7 @@ export const PACKED_TSRX_CONSUMER_PACKAGES = [
 	'@octanejs/cmdk',
 	'@octanejs/floating-ui',
 	'@octanejs/radix',
-	'@octanejs/react-textarea-autosize',
+	'@octanejs/textarea-autosize',
 	'@octanejs/sonner',
 	'@octanejs/tiptap',
 	'octane',
@@ -118,7 +118,7 @@ export function createPackedTsrxConsumerConfig() {
 
 export function renderPackedTsrxConsumerSource() {
 	return `import { Command } from '@octanejs/cmdk';
-import TextareaAutosize from '@octanejs/react-textarea-autosize';
+import TextareaAutosize from '@octanejs/textarea-autosize';
 import { toast, Toaster } from '@octanejs/sonner';
 import {
 	Editor,
@@ -184,7 +184,7 @@ export function PublishedSourceConsumer() @{
 
 export function renderPackedTsrxConsumerTypeProbe() {
 	return `import { Command, type CommandProps } from '@octanejs/cmdk';
-import TextareaAutosize, { type TextareaAutosizeProps } from '@octanejs/react-textarea-autosize';
+import TextareaAutosize, { type TextareaAutosizeProps } from '@octanejs/textarea-autosize';
 import { Toaster, useSonner, type ToasterProps } from '@octanejs/sonner';
 import {
 	EditorContent,

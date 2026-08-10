@@ -1,4 +1,4 @@
-import TextareaAutosize, { type TextareaHeightChangeMeta } from '@octanejs/react-textarea-autosize';
+import TextareaAutosize, { type TextareaHeightChangeMeta } from '@octanejs/textarea-autosize';
 import { useRef, useState } from 'octane';
 
 const INITIAL = 'Octane grows with your message.';

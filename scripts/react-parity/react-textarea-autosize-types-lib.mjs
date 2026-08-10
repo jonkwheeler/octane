@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { relative, resolve, sep } from 'node:path';
+import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
-export const TYPE_PARITY_CONFIG = 'packages/react-textarea-autosize/audit/type-parity.json';
+export const TYPE_PARITY_CONFIG = 'packages/textarea-autosize/audit/type-parity.json';
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
@@ -11,6 +11,72 @@ function sha256(value) {
 
 function posix(value) {
 	return value.split(sep).join('/');
+}
+
+function compilerProgramFiles(root, projectPath) {
+	const configPath = resolve(root, projectPath);
+	if (!existsSync(configPath)) {
+		throw new Error(`missing compiler project: ${projectPath}`);
+	}
+	const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+	if (configFile.error) {
+		throw new Error(
+			`failed to read ${projectPath}: ${ts.flattenDiagnosticMessageText(configFile.error.messageText, '\n')}`,
+		);
+	}
+	const parsed = ts.parseJsonConfigFileContent(
+		configFile.config,
+		ts.sys,
+		dirname(configPath),
+		undefined,
+		configPath,
+	);
+	if (parsed.errors.length > 0) {
+		throw new Error(
+			`failed to parse ${projectPath}: ${ts.flattenDiagnosticMessageText(parsed.errors[0].messageText, '\n')}`,
+		);
+	}
+	return new Set(
+		parsed.fileNames.map(function toRepoPath(fileName) {
+			return posix(relative(root, fileName));
+		}),
+	);
+}
+
+function assertFilesBelongToProgram(root, relativeFiles, projectPath, label) {
+	const programFiles = compilerProgramFiles(root, projectPath);
+	for (const relativeFile of relativeFiles) {
+		const repoPath = posix(relativeFile);
+		if (!programFiles.has(repoPath)) {
+			throw new Error(
+				`${label}: inventoried file ${repoPath} is not included in compiler program ${projectPath}`,
+			);
+		}
+	}
+}
+
+function verifyInventoriedFilesBelongToPrograms(root, config, inventory) {
+	const pristineProject = config.lanes?.pristine?.project;
+	const adaptedProject = config.lanes?.adapted?.project;
+	if (typeof pristineProject !== 'string' || typeof adaptedProject !== 'string') {
+		throw new Error('type-parity.json must declare lanes.pristine.project and lanes.adapted.project');
+	}
+	assertFilesBelongToProgram(
+		root,
+		inventory.upstream.map(function toPath(entry) {
+			return posix(`${config.upstreamRoot}/${entry.path}`);
+		}),
+		pristineProject,
+		'pristine type suite',
+	);
+	assertFilesBelongToProgram(
+		root,
+		inventory.adapted.map(function toPath(entry) {
+			return posix(`${config.adaptedRoot}/${entry.path}`);
+		}),
+		adaptedProject,
+		'adapted type suite',
+	);
 }
 
 function listFiles(root) {
@@ -87,7 +153,7 @@ function normalizeSpecifier(specifier) {
 	if (
 		specifier === '../../upstream/dist/declarations/src/index.js' ||
 		specifier === '../src/index.tsrx' ||
-		specifier === '@octanejs/react-textarea-autosize'
+		specifier === '@octanejs/textarea-autosize'
 	) {
 		return '#textarea-public';
 	}
@@ -180,7 +246,9 @@ export function buildTypeInventory(root, config) {
 			assertionGroups: adaptedGroups.map(sha256),
 		});
 	}
-	return { upstream, adapted };
+	const inventory = { upstream, adapted };
+	verifyInventoriedFilesBelongToPrograms(root, config, inventory);
+	return inventory;
 }
 
 export function verifyReactTextareaAutosizeTypes(root, { configPath = TYPE_PARITY_CONFIG } = {}) {

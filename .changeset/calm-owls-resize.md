@@ -1,5 +1,5 @@
 ---
-'@octanejs/react-textarea-autosize': patch
+'@octanejs/textarea-autosize': patch
 '@octanejs/cli': patch
 '@octanejs/mcp-server': patch
 ---

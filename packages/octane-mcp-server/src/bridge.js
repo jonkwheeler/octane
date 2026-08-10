@@ -52,7 +52,7 @@ export const KNOWN_BINDINGS = {
 	'@dnd-kit/react': '@octanejs/dnd-kit',
 	sonner: '@octanejs/sonner',
 	'react-error-boundary': '@octanejs/react-error-boundary',
-	'react-textarea-autosize': '@octanejs/react-textarea-autosize',
+	'react-textarea-autosize': '@octanejs/textarea-autosize',
 	streamdown: '@octanejs/streamdown',
 	// The official plugins are consolidated as subpaths of the same package.
 	// The bundled bridge skill documents each exact import rewrite.

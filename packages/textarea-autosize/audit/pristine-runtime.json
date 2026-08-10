@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "root": "packages/react-textarea-autosize",
+  "root": "packages/textarea-autosize",
   "tests": [
     {
       "file": "upstream/src/__tests__/index.test.js",

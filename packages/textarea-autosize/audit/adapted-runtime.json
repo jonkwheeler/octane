@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "project": "react-textarea-autosize",
-  "roots": ["packages/react-textarea-autosize/tests/upstream"],
-  "files": ["packages/react-textarea-autosize/tests/upstream/adapted.test.ts"],
+  "project": "textarea-autosize",
+  "roots": ["packages/textarea-autosize/tests/upstream"],
+  "files": ["packages/textarea-autosize/tests/upstream/adapted.test.ts"],
   "tests": [
     {
       "id": "runtime:upstream:empty",
-      "file": "packages/react-textarea-autosize/tests/upstream/adapted.test.ts",
+      "file": "packages/textarea-autosize/tests/upstream/adapted.test.ts",
       "fullName": "<TextareaAutosize /> adapted upstream inventory renders ok"
     },
     {
       "id": "runtime:upstream:style-height",
-      "file": "packages/react-textarea-autosize/tests/upstream/adapted.test.ts",
+      "file": "packages/textarea-autosize/tests/upstream/adapted.test.ts",
       "fullName": "<TextareaAutosize /> adapted upstream inventory renders with initial height passed in style prop"
     }
   ]

@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Ship `@octanejs/react-textarea-autosize` as an exact Octane binding for `react-textarea-autosize@8.5.9`, including its default component, named public types, package conditions, and observable browser lifecycle.
+- **Objective:** Ship `@octanejs/textarea-autosize` as an exact Octane binding for `react-textarea-autosize@8.5.9`, including its default component, named public types, package conditions, and observable browser lifecycle.
 - **Authority:** The npm artifact with SHA-1 `ab8627b09aa04d8a2f45d5b5cd94c84d1d4a8893`, upstream commit `ed1894cd8611d99fbea1c47adcf6ee522b1030fd`, repository guidance, and executable React-oracle evidence govern parity in that order.
 - **Execution profile:** Port the pinned source module by module, preserve framework-neutral measurement logic, re-author the React component seam for Octane, and prove layout behavior in Chromium.
 - **Stop conditions:** Stop for a source/license mismatch, an unexpressible public surface, a required Octane core change that belongs in a prerequisite PR, or browser evidence that contradicts the parity claim.
@@ -24,7 +24,7 @@ execution: code
 
 ### Summary
 
-Developers can replace `react-textarea-autosize` with `@octanejs/react-textarea-autosize` without redesigning their component API. The Octane package must preserve the native textarea surface, row constraints, measurement cache, height callback, ref identity, SSR output, and browser resizing lifecycle of the pinned release.
+Developers can replace `react-textarea-autosize` with `@octanejs/textarea-autosize` without redesigning their component API. The Octane package must preserve the native textarea surface, row constraints, measurement cache, height callback, ref identity, SSR output, and browser resizing lifecycle of the pinned release.
 
 ### Problem Frame
 
@@ -145,7 +145,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Establish immutable, fail-closed inputs for the exact release.
 - **Requirements:** R1-R4, the upstream-input portion of R14, and the upstream-inventory portion of R15; KTD1, KTD6.
-- **Files:** `packages/react-textarea-autosize/package.json`, `packages/react-textarea-autosize/LICENSE`, `packages/react-textarea-autosize/UPSTREAM.md`, `packages/react-textarea-autosize/upstream/`, `packages/react-textarea-autosize/audit/`, `packages/react-textarea-autosize/scripts/`, `packages/react-textarea-autosize/src/conditions/`.
+- **Files:** `packages/textarea-autosize/package.json`, `packages/textarea-autosize/LICENSE`, `packages/textarea-autosize/UPSTREAM.md`, `packages/textarea-autosize/upstream/`, `packages/textarea-autosize/audit/`, `packages/textarea-autosize/scripts/`, `packages/textarea-autosize/src/conditions/`.
 - **Approach:** Retain byte-exact npm and source/test/license inputs, source-boundary hashes, export/package-condition/type/test inventories, the initial crosswalk, and a parity-manifest skeleton. Identify the existing Octane textarea host, ref composition, lifecycle listener, provenance, and browser-harness helpers; record which are reused and which exact parity constraint requires direct host logic. U4 and U7 own adapted evidence inventories and verified lane status; U6 owns final-head hashes.
 - **Test scenarios:** Correct pin passes; altered tarball/source/license hash fails; omitted export, condition, test, type assertion, or evidence file fails; vendored inputs remain unpublished; condition resolution selects browser/development, browser/production, and non-browser modules for worker, workerd, edge-light, import, module, and default combinations.
 - **Verification:** Provenance, inventory, marker, and React parity manifest validation identify the exact counts and hashes.
@@ -154,7 +154,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Match upstream pixel-height calculation independently of the component wrapper.
 - **Requirements:** R5, R7-R10; KTD3-KTD4.
-- **Files:** `packages/react-textarea-autosize/src/calculateNodeHeight.ts`, `packages/react-textarea-autosize/src/getSizingData.ts`, `packages/react-textarea-autosize/src/forceHiddenStyles.ts`, `packages/react-textarea-autosize/src/utils.ts`, `packages/react-textarea-autosize/tests/measurement/`.
+- **Files:** `packages/textarea-autosize/src/calculateNodeHeight.ts`, `packages/textarea-autosize/src/getSizingData.ts`, `packages/textarea-autosize/src/forceHiddenStyles.ts`, `packages/textarea-autosize/src/utils.ts`, `packages/textarea-autosize/tests/measurement/`.
 - **Approach:** Preserve the pinned module boundaries, sizing-property list, box-model adjustments, double scroll read, clamp rules, cache boundary, and hidden textarea reset behavior.
 - **Test scenarios:** Content and border box; padding and borders; explicit lines and wrapping; placeholder and sentinel; min/max/default rows; every sizing property; cached and uncached styles; multiple instances; detached node; second-read negative control.
 - **Verification:** Deterministic module tests and paired Chromium measurement cases match React results.
@@ -163,7 +163,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Falsify the two load-bearing framework assumptions before most implementation cost is incurred.
 - **Requirements:** R2, R11-R12; KTD2, KTD5. Depends on U1.
-- **Files:** `packages/react-textarea-autosize/tests/feasibility/`, `packages/react-textarea-autosize/vitest.browser.config.ts`, `vitest.config.js`.
+- **Files:** `packages/textarea-autosize/tests/feasibility/`, `packages/textarea-autosize/vitest.browser.config.ts`, `vitest.config.js`.
 - **Approach:** Build the smallest React-server-to-Octane-hydration fixture for controlled and uncontrolled native textareas, plus the public callback adapter seam. Stop for a core adoption or event contract that cannot meet the declared boundary without a separate prerequisite.
 - **Test scenarios:** Mutate value, selection, and focus before hydration; assert host identity, callback/object ref, native input dispatch, controlled reassertion, uncontrolled persistence, and cleanup. Probe every input/change capture/bubble handler alone and together to pin exact order, bubbling, cancellation, target/currentTarget lifetime, and the documented SyntheticEvent boundary.
 - **Verification:** The minimal Chromium oracle passes against both ownership modes and every event field guaranteed by R2 before U2-U7 continue.
@@ -172,7 +172,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Expose the exact component behavior with explicit Octane event/ref adaptations.
 - **Requirements:** R1-R3, R6-R10, R13; KTD2-KTD4.
-- **Files:** `packages/react-textarea-autosize/src/index.tsrx`, `packages/react-textarea-autosize/src/hooks.ts`, `packages/react-textarea-autosize/src/useLatest.ts`, `packages/react-textarea-autosize/src/useComposedRef.ts`, `packages/react-textarea-autosize/src/types.ts`, `packages/react-textarea-autosize/src/conditions/`, `packages/react-textarea-autosize/tests/runtime/`, `packages/react-textarea-autosize/tests/conformance/`.
+- **Files:** `packages/textarea-autosize/src/index.tsrx`, `packages/textarea-autosize/src/hooks.ts`, `packages/textarea-autosize/src/useLatest.ts`, `packages/textarea-autosize/src/useComposedRef.ts`, `packages/textarea-autosize/src/types.ts`, `packages/textarea-autosize/src/conditions/`, `packages/textarea-autosize/tests/runtime/`, `packages/textarea-autosize/tests/conformance/`.
 - **Approach:** Use refs as props, reproduce the two React helper-hook semantics locally, preserve public callback naming, compose all capture/bubble input/change paths in the U8-oracle order, and install each upstream listener with exact cleanup and reset guards. Browser access is gated through the binding-local condition modules from KTD9.
 - **Test scenarios:** Object and callback ref attach, replacement, and null teardown with exact React type acceptance; latest callback freshness without listener churn; label/id association; ARIA label, description, and invalid state; required, disabled, and read-only behavior; tab and programmatic focus/selection; native keyboard entry; every input/change capture/bubble handler alone and together; controlled and uncontrolled grow/shrink; guaranteed event fields and declared SyntheticEvent divergences; callback order and de-duplication; window resize; fonts present/absent; own-form reset value/height/callback sequence; other-form reset isolation; post-unmount RAF; remount; development and production style assertion paths. The hidden measurement textarea remains `aria-hidden` and unfocusable.
 - **Verification:** Adapted upstream cases, Octane conformance cases, and negative controls pass without a synthetic event layer.
@@ -181,7 +181,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Execute deterministic runtime, server, package-condition, and type claims against the pinned React implementation.
 - **Requirements:** R1-R4, R6-R7, R11, R13-R15; KTD4-KTD6.
-- **Files:** `packages/react-textarea-autosize/tests/pristine/`, `packages/react-textarea-autosize/tests/differential/`, `packages/react-textarea-autosize/tests/ssr/`, `packages/react-textarea-autosize/typetests/`, `packages/react-textarea-autosize/vitest*.config.ts`, `vitest.config.js`.
+- **Files:** `packages/textarea-autosize/tests/pristine/`, `packages/textarea-autosize/tests/differential/`, `packages/textarea-autosize/tests/ssr/`, `packages/textarea-autosize/typetests/`, `packages/textarea-autosize/vitest*.config.ts`, `vitest.config.js`.
 - **Approach:** Register complete pristine/adapted runtime and type lanes plus a separate server project. Keep layout-dependent claims out of deterministic DOM emulation.
 - **Test scenarios:** Deterministic U2-U3 cases; single-host SSR; packed resolution and safe evaluation across browser/development, browser/production, worker, workerd, edge-light, import, module, and default conditions; callback/ref/prop forwarding; package type accepts/rejects; deleted assertion/case/fixture/manifest negative controls.
 - **Verification:** Every deterministic required lane executes, every upstream and authored case has one classification, and parity validation reports no stale or duplicate identities.
@@ -190,7 +190,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Prove every layout, adoption, cache, and environmental lifecycle claim in real Chromium against the pinned React implementation.
 - **Requirements:** R5-R12, R15; KTD4-KTD6.
-- **Files:** `packages/react-textarea-autosize/tests/hydration/`, `packages/react-textarea-autosize/tests/browser/`, `packages/react-textarea-autosize/vitest.browser.config.ts`, `vitest.config.js`.
+- **Files:** `packages/textarea-autosize/tests/hydration/`, `packages/textarea-autosize/tests/browser/`, `packages/textarea-autosize/vitest.browser.config.ts`, `vitest.config.js`.
 - **Approach:** Run identical fixtures in fresh isolated documents or same-origin frames within one browser process. Reset global listeners, styles, fonts hooks, and measurement nodes between identities; alternate and randomize React/Octane order. Normalize an explicit allowlist of environment-only fields and retain host identity, values, focus, pixel metrics, callback order, listener effects, and cleanup evidence.
 - **Test scenarios:** Every U2-U3 layout and lifecycle case; controlled and uncontrolled hydration node/value/selection/focus/ref/event preservation and first-update ownership; width and font changes; form reset and unmount race; cached and uncached style changes; shared hidden textarea isolation; contaminated-order negative control; mutation controls for each load-bearing branch; Firefox dynamic-toggle regression proving the second scroll-height read.
 - **Verification:** Hydration, Chromium, and focused Firefox lanes execute from the parity manifest and match the React oracle for every classified identity.
@@ -199,7 +199,7 @@ Pin and verify provenance before writing product code. Prove the load-bearing hy
 
 - **Goal:** Make the exact binding discoverable, migratable, runnable, and releasable through normal Octane surfaces.
 - **Requirements:** R4, R16; KTD6. Depends on U4 and U7.
-- **Files:** `packages/react-textarea-autosize/README.md`, `packages/react-textarea-autosize/status.json`, `website/src/content/bindings.json`, `packages/octane-mcp-server/src/bridge.js`, `packages/cli/tests/catalog.test.js`, `playground/octane/package.json`, `playground/octane/src/demos/ReactTextareaAutosize.tsrx`, `playground/octane/src/catalog.ts`, `package.json`, `.changeset/`, generated binding/parity/package/CLI/eval inventories.
+- **Files:** `packages/textarea-autosize/README.md`, `packages/textarea-autosize/status.json`, `website/src/content/bindings.json`, `packages/octane-mcp-server/src/bridge.js`, `packages/cli/tests/catalog.test.js`, `playground/octane/package.json`, `playground/octane/src/demos/ReactTextareaAutosize.tsrx`, `playground/octane/src/catalog.ts`, `package.json`, `.changeset/`, generated binding/parity/package/CLI/eval inventories.
 - **Approach:** Document exact compatibility and event-type adaptation, add the exact package rewrite/install mapping, preserve the `./package.json` export, and generate all maintained catalogs from source. The playground provides labeled controlled and uncontrolled examples with deterministic initial content, visible row limits, measured height/row-height and callback output, grow/shrink text actions, form reset, focus/ref state, and reset-to-initial behavior.
 - **Test scenarios:** CLI/MCP rewrite; keyboard-operable playground labels and controls; controlled/uncontrolled grow, shrink, row clamps, focus, callback output, and reset; external packed consumer resolves all conditions and types without React; generated checks reject stale entries.
 - **Verification:** Playground production build, CLI/MCP tests, packed-package consumers, sync, changeset, and all generated checks pass.

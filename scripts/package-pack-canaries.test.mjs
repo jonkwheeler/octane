@@ -106,7 +106,7 @@ describe('packed TSRX source consumers', () => {
 		'@octanejs/cmdk': 'file:/tmp/cmdk.tgz',
 		'@octanejs/floating-ui': 'file:/tmp/floating-ui.tgz',
 		'@octanejs/radix': 'file:/tmp/radix.tgz',
-		'@octanejs/react-textarea-autosize': 'file:/tmp/react-textarea-autosize.tgz',
+		'@octanejs/textarea-autosize': 'file:/tmp/react-textarea-autosize.tgz',
 		'@octanejs/sonner': 'file:/tmp/sonner.tgz',
 		'@octanejs/tiptap': 'file:/tmp/tiptap.tgz',
 		octane: 'file:/tmp/octane.tgz',

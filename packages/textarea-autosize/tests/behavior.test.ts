@@ -62,7 +62,7 @@ function input(node: HTMLTextAreaElement, value: string): void {
 	node.dispatchEvent(new InputEvent('input', { bubbles: true, data: value }));
 }
 
-describe('@octanejs/react-textarea-autosize behavior', () => {
+describe('@octanejs/textarea-autosize behavior', () => {
 	it('renders the pristine empty textarea contract and measures the initial row', () => {
 		const heights: Array<[number, number]> = [];
 		const app = mount(TextareaAutosize, {

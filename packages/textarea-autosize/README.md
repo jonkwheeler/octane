@@ -1,9 +1,9 @@
-# @octanejs/react-textarea-autosize
+# @octanejs/textarea-autosize
 
 Octane binding for `react-textarea-autosize@8.5.9`.
 
 ```tsrx
-import TextareaAutosize from '@octanejs/react-textarea-autosize';
+import TextareaAutosize from '@octanejs/textarea-autosize';
 
 export function Notes() @{
   <TextareaAutosize minRows={2} maxRows={8} />

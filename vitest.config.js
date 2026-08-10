@@ -12,7 +12,7 @@ import { threeRenderers as THREE_RENDERERS } from './packages/three/src/config.t
 import { websiteMdxOptions } from './website/mdx-options.ts';
 
 const requireReactTextareaAutosize = createRequire(
-	resolve(import.meta.dirname, 'packages/react-textarea-autosize/package.json'),
+	resolve(import.meta.dirname, 'packages/textarea-autosize/package.json'),
 );
 const requireFromUseLatest = createRequire(requireReactTextareaAutosize.resolve('use-latest'));
 function reactTextareaAutosizeEsm(resolvedCjs) {
@@ -4407,16 +4407,16 @@ export default defineConfig({
 				// measurement, and hydration stay in the ordinary shards.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-textarea-autosize/tests/upstream/**/*.test.ts'],
+					include: ['packages/textarea-autosize/tests/upstream/**/*.test.ts'],
 				},
 				test: {
-					name: 'react-textarea-autosize',
-					include: ['packages/react-textarea-autosize/tests/**/*.test.ts'],
+					name: 'textarea-autosize',
+					include: ['packages/textarea-autosize/tests/**/*.test.ts'],
 					exclude: [
 						...configDefaults.exclude,
-						'packages/react-textarea-autosize/tests/browser/**/*.test.ts',
-						'packages/react-textarea-autosize/tests/ssr/**/*.test.ts',
-						'packages/react-textarea-autosize/tests/differential/**/*.test.ts',
+						'packages/textarea-autosize/tests/browser/**/*.test.ts',
+						'packages/textarea-autosize/tests/ssr/**/*.test.ts',
+						'packages/textarea-autosize/tests/differential/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -4452,8 +4452,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-textarea-autosize-differential',
-					include: ['packages/react-textarea-autosize/tests/differential/**/*.test.ts'],
+					name: 'textarea-autosize-differential',
+					include: ['packages/textarea-autosize/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 					server: {
@@ -4490,11 +4490,11 @@ export default defineConfig({
 				// Octane-only browser-global/server assertion stays ordinary.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-textarea-autosize/tests/ssr/react-contract.test.ts'],
+					include: ['packages/textarea-autosize/tests/ssr/react-contract.test.ts'],
 				},
 				test: {
-					name: 'react-textarea-autosize-ssr',
-					include: ['packages/react-textarea-autosize/tests/ssr/**/*.test.ts'],
+					name: 'textarea-autosize-ssr',
+					include: ['packages/textarea-autosize/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					server: {
@@ -4529,8 +4529,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-textarea-autosize-browser',
-					include: ['packages/react-textarea-autosize/tests/browser/**/*.test.ts'],
+					name: 'textarea-autosize-browser',
+					include: ['packages/textarea-autosize/tests/browser/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 30_000,

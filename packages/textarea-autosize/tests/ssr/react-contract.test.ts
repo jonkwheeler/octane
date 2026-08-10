@@ -20,7 +20,7 @@ function normalizeServerMarkup(html: string): string {
 	});
 }
 
-describe('@octanejs/react-textarea-autosize SSR React contract', () => {
+describe('@octanejs/textarea-autosize SSR React contract', () => {
 	// @parity-case ssr:react-contract
 	it('matches the pristine React server-visible contract', () => {
 		const props = {

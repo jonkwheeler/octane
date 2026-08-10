@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 
-const CONFIG = 'packages/react-textarea-autosize/audit/test-classifications.json';
-const MANIFEST = 'packages/react-textarea-autosize/audit/react-parity.json';
+const CONFIG = 'packages/textarea-autosize/audit/test-classifications.json';
+const MANIFEST = 'packages/textarea-autosize/audit/react-parity.json';
 const DISPOSITIONS = new Set([
 	'adapted-upstream-suite',
 	'adapted-type-suite',
@@ -17,7 +17,7 @@ function posix(root, absolutePath) {
 }
 
 function listRuntimeTests(root) {
-	const testsRoot = resolve(root, 'packages/react-textarea-autosize/tests');
+	const testsRoot = resolve(root, 'packages/textarea-autosize/tests');
 	return readdirSync(testsRoot, { recursive: true, withFileTypes: true })
 		.filter(function keepTestFiles(entry) {
 			return entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name);
@@ -29,8 +29,8 @@ function listRuntimeTests(root) {
 
 function listTypeProbes(root) {
 	const roots = [
-		'packages/react-textarea-autosize/audit/type-probes',
-		'packages/react-textarea-autosize/typetests',
+		'packages/textarea-autosize/audit/type-probes',
+		'packages/textarea-autosize/typetests',
 	];
 	const files = [];
 	for (const relativeRoot of roots) {
@@ -67,7 +67,7 @@ export function verifyReactTextareaAutosizeTestClassifications(root) {
 		.sort();
 	if (JSON.stringify(discovered) !== JSON.stringify(declared)) {
 		throw new Error(
-			'every port-authored react-textarea-autosize runtime/type test must have exactly one classification',
+			'every port-authored textarea-autosize runtime/type test must have exactly one classification',
 		);
 	}
 	for (const entry of config.tests) {

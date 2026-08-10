@@ -79,7 +79,7 @@ async function dispatchInput(node: HTMLTextAreaElement, value: string): Promise<
 	await act(() => node.dispatchEvent(new InputEvent('input', { bubbles: true, data: value })));
 }
 
-describe('react-textarea-autosize pristine differential', () => {
+describe('textarea-autosize pristine differential', () => {
 	// @parity-case differential:initial
 	it('matches initial measurement, row metadata, attributes, and important height', async () => {
 		const reactHeights: Array<[number, number]> = [];

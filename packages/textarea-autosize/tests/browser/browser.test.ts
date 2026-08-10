@@ -121,7 +121,7 @@ async function exercise(browserType: BrowserType): Promise<void> {
 	expect(await state('octane')).toEqual(await state('react'));
 }
 
-describe.sequential('react-textarea-autosize real-browser parity', () => {
+describe.sequential('textarea-autosize real-browser parity', () => {
 	// @parity-case browser:chromium
 	it('matches React in Chromium', async () => {
 		await exercise(chromium);
