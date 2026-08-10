@@ -32,6 +32,11 @@ const project = typeof config.project === 'string' ? config.project : 'chromium'
 
 if (!packageVersion) throw new Error('playwright-full config requires packageVersion');
 
+const verifyScript =
+	typeof config.verifyScript === 'string' && config.verifyScript.length > 0
+		? resolve(repoRoot, config.verifyScript)
+		: null;
+
 const workRoot = mkdtempSync(join(tmpdir(), 'octane-playwright-full-'));
 const reportPath = join(workRoot, 'playwright-report.json');
 
@@ -92,6 +97,10 @@ function collectTests(suites) {
 }
 
 try {
+	if (verifyScript) {
+		run(process.execPath, [verifyScript], repoRoot);
+	}
+
 	mkdirSync(workRoot, { recursive: true });
 	cpSync(join(suiteRoot, 'test'), join(workRoot, 'test'), { recursive: true });
 	cpSync(join(suiteRoot, 'playwright.config.ts'), join(workRoot, 'playwright.config.ts'));

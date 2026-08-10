@@ -7,14 +7,20 @@ This port targets the published `sonner@2.0.7` runtime and the matching
 | --- | --- | --- |
 | npm tarball | `https://registry.npmjs.org/sonner/-/sonner-2.0.7.tgz` | SHA-256 `eb0f5dd35d890d38e8dcba1b242e9ac38cf45cc92c02aa914f144d98cfa7ce8f` |
 | Git tag | `https://github.com/emilkowalski/sonner/tree/v2.0.7` | commit `3ba7aa17ab7e8101b9cf4893936f873b0d4769b3` |
-| Vendored pin | `packages/sonner/upstream/` | same tag commit; source + Playwright suite |
+| Vendored pin | `packages/sonner/upstream/` | same tag commit; source + Playwright suite locked by `upstream/SHA256SUMS` |
 
 The npm artifact contains the compiled runtime, declarations, styles, README,
 package metadata, and MIT license. It does **not** contain the upstream test
 suite. The Git tag does: `test/tests/basic.spec.ts` is an executable Playwright
 suite backed by the Next.js app under `test/`. npm-tarball absence is therefore
 not evidence that the repository has no tests; `upstreamSuites.runtime` is
-`present`, and the suite is vendored at `packages/sonner/upstream/`.
+`present`, and the suite is vendored at `packages/sonner/upstream/` and locked
+file-by-file by `upstream/SHA256SUMS`. It is excluded from the published package
+by the explicit `files` allowlist.
+
+Run `pnpm --dir packages/sonner upstream:verify` to verify every vendored byte
+and the Playwright harness inventory. The pristine React-parity lane runs that
+same verifier before copying or executing the upstream suite.
 
 Bounded required React-parity evidence currently registered in
 `audit/react-parity.json`:

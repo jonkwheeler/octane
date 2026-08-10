@@ -34,7 +34,8 @@
     "./dist/styles.css": "./src/styles.css"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "upstream:verify": "node scripts/verify-upstream.mjs"
   },
   "peerDependencies": {
     "octane": "workspace:*"
