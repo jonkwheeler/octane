@@ -14,8 +14,8 @@ async function advanceWait(ms: number): Promise<void> {
 async function flushBothRuntimes(): Promise<void> {
 	drainPassiveEffects();
 	await reactAct(async function () {
-		const wait = new Promise<void>(function (resolve) {
-			setTimeout(resolve, 0);
+		const wait = new Promise<void>(function (resolveWait) {
+			setTimeout(resolveWait, 0);
 		});
 		await vi.advanceTimersByTimeAsync(0);
 		await wait;
@@ -33,7 +33,7 @@ afterEach(function () {
 
 describe('differential: @octanejs/tanstack-pacer vs @tanstack/react-pacer', () => {
 	// @parity-case differential:tanstack-pacer-scheduler-lifecycle
-	it('matches debounce, throttle, batch, and teardown behavior', async () => {
+	it('matches debounce, throttle, batch, and teardown behavior', async function () {
 		const onPending = vi.fn();
 		const differential = await mountDifferential(fixture, 'PacerParity', { onPending }, cache);
 		await differential.step('mount', function () {});
@@ -84,5 +84,75 @@ describe('differential: @octanejs/tanstack-pacer vs @tanstack/react-pacer', () =
 		differential.unmount();
 		await advanceWait(40);
 		expect(onPending).not.toHaveBeenCalled();
+	});
+
+	// @parity-case differential:tanstack-pacer-latest-prop-and-value
+	it('matches latest-prop debounce/throttle and useDebouncedValue', async function () {
+		const differential = await mountDifferential(fixture, 'PacerParity', {}, cache);
+		await differential.step('mount', function () {});
+		await differential.step('debounce keeps only the latest label', async function (octane, react) {
+			await octane.click('#debounce-label');
+			await react.click('#debounce-label');
+			await octane.click('#set-latest');
+			await react.click('#set-latest');
+			await flushBothRuntimes();
+			await octane.click('#debounce-label');
+			await react.click('#debounce-label');
+			await advanceWait(40);
+			await flushBothRuntimes();
+			expect(octane.find('#debounced-label').textContent).toBe('debounced-label:latest');
+			expect(react.find('#debounced-label').textContent).toBe('debounced-label:latest');
+			expect(octane.find('#debounced-value').textContent).toBe('debounced-value:latest');
+			expect(react.find('#debounced-value').textContent).toBe('debounced-value:latest');
+		});
+		await differential.step(
+			'throttle leading first then trailing latest',
+			async function (octane, react) {
+				await advanceWait(40);
+				await flushBothRuntimes();
+				await octane.click('#set-first');
+				await react.click('#set-first');
+				await flushBothRuntimes();
+				await octane.click('#throttle-label');
+				await react.click('#throttle-label');
+				expect(octane.find('#throttled-label').textContent).toBe('throttled-label:first');
+				expect(react.find('#throttled-label').textContent).toBe('throttled-label:first');
+				await octane.click('#set-latest');
+				await react.click('#set-latest');
+				await flushBothRuntimes();
+				await octane.click('#throttle-label');
+				await react.click('#throttle-label');
+				expect(octane.find('#throttled-label').textContent).toBe('throttled-label:first');
+				expect(react.find('#throttled-label').textContent).toBe('throttled-label:first');
+				await advanceWait(40);
+				await flushBothRuntimes();
+				expect(octane.find('#throttled-label').textContent).toBe('throttled-label:latest');
+				expect(react.find('#throttled-label').textContent).toBe('throttled-label:latest');
+			},
+		);
+		await differential.step(
+			'useDebouncedValue lags then catches label',
+			async function (octane, react) {
+				await octane.click('#set-first');
+				await react.click('#set-first');
+				await flushBothRuntimes();
+				await advanceWait(40);
+				await flushBothRuntimes();
+				expect(octane.find('#debounced-value').textContent).toBe('debounced-value:first');
+				expect(react.find('#debounced-value').textContent).toBe('debounced-value:first');
+				await octane.click('#set-latest');
+				await react.click('#set-latest');
+				await flushBothRuntimes();
+				expect(octane.find('#label').textContent).toBe('label:latest');
+				expect(react.find('#label').textContent).toBe('label:latest');
+				expect(octane.find('#debounced-value').textContent).toBe('debounced-value:first');
+				expect(react.find('#debounced-value').textContent).toBe('debounced-value:first');
+				await advanceWait(40);
+				await flushBothRuntimes();
+				expect(octane.find('#debounced-value').textContent).toBe('debounced-value:latest');
+				expect(react.find('#debounced-value').textContent).toBe('debounced-value:latest');
+			},
+		);
+		differential.unmount();
 	});
 });

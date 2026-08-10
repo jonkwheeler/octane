@@ -59,7 +59,7 @@
 			"environment": "workspace-node",
 			"project": "tanstack-pacer-adapted",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Repo-authored Octane scheduler lifecycle suite covering debounce, throttle, batching, and teardown; paired against React by the differential lane.",
+			"notes": "Repo-authored Octane scheduler lifecycle suite covering debounce, throttle, batching, teardown, latest-label debounce/throttle, and useDebouncedValue; paired against React by the differential lane.",
 			"execution": {
 				"kind": "vitest-full",
 				"inventory": "packages/tanstack-pacer/audit/adapted-runtime.json"
@@ -94,17 +94,22 @@
 			"environment": "workspace-node",
 			"project": "tanstack-pacer-differential",
 			"evidenceOrigin": "repo-authored",
-			"notes": "Runs one representative same-fixture fake-timer scheduler lifecycle against @octanejs/tanstack-pacer and the pinned React adapter; upstream provides no adapter runtime suite.",
+			"notes": "Runs the same authored scheduler fixture against @octanejs/tanstack-pacer and the pinned React adapter for counter debounce/throttle, batching, teardown, latest-label debounce/throttle, and useDebouncedValue; upstream provides no adapter runtime suite.",
 			"files": [
 				{
 					"path": "packages/tanstack-pacer/tests/differential/parity.test.ts",
 					"role": "test",
-					"sha256": "23ef984f982ee225fdbbee3da53d2e07f5f5a63e6cc81b8f09517c3235f3b038",
+					"sha256": "74a7494fef39f479e02c2602a18c6e7156b06b429e4c6d73c9a13aad34eb9620",
 					"cases": [
 						{
 							"id": "differential:tanstack-pacer-scheduler-lifecycle",
 							"testName": "matches debounce, throttle, batch, and teardown behavior",
 							"fullName": "differential: @octanejs/tanstack-pacer vs @tanstack/react-pacer matches debounce, throttle, batch, and teardown behavior"
+						},
+						{
+							"id": "differential:tanstack-pacer-latest-prop-and-value",
+							"testName": "matches latest-prop debounce/throttle and useDebouncedValue",
+							"fullName": "differential: @octanejs/tanstack-pacer vs @tanstack/react-pacer matches latest-prop debounce/throttle and useDebouncedValue"
 						}
 					]
 				},
@@ -116,7 +121,7 @@
 				{
 					"path": "packages/tanstack-pacer/tests/_fixtures/pacer-diff.tsrx",
 					"role": "support",
-					"sha256": "042521ff874b6b4e7b98cab9cfff09c99f75be40bed2d1a474bcea0c7685f706"
+					"sha256": "d7b13248050f8200dabffbc7b7066660f35db65c0a5cb936243a4f825c2860f9"
 				},
 				{
 					"path": "packages/octane/tests/differential/_rig.ts",
@@ -136,7 +141,7 @@
 				{
 					"path": "packages/tanstack-pacer/audit/test-classifications.json",
 					"role": "support",
-					"sha256": "6a73417a6daadb9e7e17e759806a6dba2f4cd5910849acac57a5521ef4290679"
+					"sha256": "7fe5f9f2a56481e0bf0c43c6d96c3d3a610242c39bc4b63a39edaade73b6ac21"
 				},
 				{
 					"path": "packages/tanstack-pacer/scripts/check-upstream-ledger.mjs",
