@@ -25,12 +25,18 @@ describe('descriptorChildren', () => {
 
 	it('keeps @if children under a marked call inspectable and renderable', () => {
 		const inspect = vi.fn();
-		const mounted = mount(DescriptorChildrenDirectiveApp, { show: true, inspect });
+		const shown = mount(DescriptorChildrenDirectiveApp, { show: true, inspect });
 
 		expect(inspect).toHaveBeenCalledTimes(1);
 		expect(descriptorIsElement(inspect.mock.calls[0][0])).toBe(true);
-		expect(mounted.findAll('button')).toHaveLength(1);
-		expect(mounted.html()).toContain('gated');
-		mounted.unmount();
+		expect(shown.findAll('button.gated')).toHaveLength(1);
+		shown.unmount();
+
+		inspect.mockClear();
+		const hidden = mount(DescriptorChildrenDirectiveApp, { show: false, inspect });
+		expect(inspect).toHaveBeenCalledTimes(1);
+		expect(descriptorIsElement(inspect.mock.calls[0][0])).toBe(true);
+		expect(hidden.findAll('button.gated')).toHaveLength(0);
+		hidden.unmount();
 	});
 });
