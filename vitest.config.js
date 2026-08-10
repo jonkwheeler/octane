@@ -1459,7 +1459,12 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				// Provenance is recorded-unverified until pinned upstream React e2e /
+				// table-core suites are inventoried, so react-parity:check only
+				// validates this manifest. Keep the differential project in the
+				// ordinary shards (no testExecution.group) so the five scenarios
+				// still execute in CI; restore react-parity ownership when
+				// verification becomes verified.
 				test: {
 					name: 'tanstack-table-differential',
 					include: ['packages/tanstack-table/tests/differential/**/*.test.ts'],

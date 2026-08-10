@@ -51,7 +51,7 @@
       "environment": "workspace-node",
       "project": "tanstack-table-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact rendering, sorting, filtering/pagination, selection, and visibility/expanding scenarios against @tanstack/react-table@9.0.0-beta.58.",
+      "notes": "Runs exact rendering, sorting, filtering/pagination, selection, and visibility/expanding scenarios against @tanstack/react-table@9.0.0-beta.58. While provenance is recorded-unverified, this Vitest project stays outside testExecution.group react-parity so ordinary CI shards execute it; react-parity:check only validates the manifest.",
       "files": [
         {
           "path": "packages/tanstack-table/tests/differential/parity.test.ts",
