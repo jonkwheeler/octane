@@ -33,7 +33,8 @@ export function compileFixture(path: string, cache: string, dependencies: Depend
 			/from\s+["']@octanejs\/tiptap(\/[^"']*)?["']/g,
 			(_match, subpath) => `from "@tiptap/react${subpath || ''}"`,
 		)
-		.replace(/from\s+["']octane["']/g, 'from "react"');
+		.replace(/from\s+["']octane["']/g, 'from "react"')
+		.replace(/\bconst\s+paritySide\s*=\s*["']octane["']/g, 'const paritySide = "react"');
 	dependencies.writeFile(
 		join(cache, `${basename(path).replace(/\.tsrx$/, '')}-${hashString(path)}.js`),
 		rewritten,

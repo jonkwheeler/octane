@@ -222,6 +222,7 @@ function findMarkedRange(editor) {
 }
 
 export function CustomViewsParity(props) @{
+	const paritySide = 'octane';
 	const [theme, setTheme] = useState('day');
 	const rendererHost = useRef(null);
 	const rendererRef = useRef(null);
@@ -230,7 +231,9 @@ export function CustomViewsParity(props) @{
 			StarterKit,
 			ParityPanel.configure({ onLifecycle: props.onLifecycle }),
 			ParityBadge.configure({
-				onMarkLifecycle: props.onMarkLifecycle ?? (() => {}),
+				onMarkLifecycle: function onMarkLifecycle(phase) {
+					props.onMarkLifecycle ?? () => {}(paritySide, phase);
+				},
 			}),
 		],
 		content: initialContent,
