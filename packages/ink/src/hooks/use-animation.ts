@@ -65,7 +65,8 @@ const Spinner = () => {
 ```
 */
 export default function useAnimation(options?: Options): AnimationResult {
-	const { interval = defaultAnimationInterval, isActive = true } = options ?? {};
+	const normalizedOptions = typeof options === 'symbol' ? undefined : options;
+	const { interval = defaultAnimationInterval, isActive = true } = normalizedOptions ?? {};
 	const safeInterval = normalizeAnimationInterval(interval);
 	const { subscribe, renderThrottleMs } = useContext(AnimationContext);
 	const [resetKey, setResetKey] = useState(0);

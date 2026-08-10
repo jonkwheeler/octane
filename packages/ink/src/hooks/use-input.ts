@@ -156,11 +156,12 @@ const UserInput = () => {
 ```
 */
 const useInput = (inputHandler: Handler, options: Options = {}) => {
+	const normalizedOptions = typeof options === 'symbol' ? {} : options;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const { setRawMode, internal_exitOnCtrlC, internal_eventEmitter } = useStdinContext();
 
 	useEffect(() => {
-		if (options.isActive === false) {
+		if (normalizedOptions.isActive === false) {
 			return;
 		}
 
@@ -169,7 +170,7 @@ const useInput = (inputHandler: Handler, options: Options = {}) => {
 		return () => {
 			setRawMode(false);
 		};
-	}, [options.isActive, setRawMode]);
+	}, [normalizedOptions.isActive, setRawMode]);
 
 	const handleData = useEffectEvent((data: string) => {
 		const keypress = parseKeypress(data);
@@ -245,7 +246,7 @@ const useInput = (inputHandler: Handler, options: Options = {}) => {
 	});
 
 	useEffect(() => {
-		if (options.isActive === false) {
+		if (normalizedOptions.isActive === false) {
 			return;
 		}
 
@@ -254,7 +255,7 @@ const useInput = (inputHandler: Handler, options: Options = {}) => {
 		return () => {
 			internal_eventEmitter.removeListener('input', handleData);
 		};
-	}, [options.isActive, internal_eventEmitter]);
+	}, [normalizedOptions.isActive, internal_eventEmitter]);
 };
 
 export default useInput;

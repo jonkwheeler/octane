@@ -36,11 +36,12 @@ const MyInput = () => {
 ```
 */
 const usePaste = (handler: (text: string) => void, options: Options = {}): void => {
+	const normalizedOptions = typeof options === 'symbol' ? {} : options;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const { setRawMode, setBracketedPasteMode, internal_eventEmitter } = useStdinContext();
 
 	useEffect(() => {
-		if (options.isActive === false) {
+		if (normalizedOptions.isActive === false) {
 			return;
 		}
 
@@ -51,14 +52,14 @@ const usePaste = (handler: (text: string) => void, options: Options = {}): void 
 			setRawMode(false);
 			setBracketedPasteMode(false);
 		};
-	}, [options.isActive, setRawMode, setBracketedPasteMode]);
+	}, [normalizedOptions.isActive, setRawMode, setBracketedPasteMode]);
 
 	const handlePaste = useEffectEvent((text: string) => {
 		handler(text);
 	});
 
 	useEffect(() => {
-		if (options.isActive === false) {
+		if (normalizedOptions.isActive === false) {
 			return;
 		}
 
@@ -67,7 +68,7 @@ const usePaste = (handler: (text: string) => void, options: Options = {}): void 
 		return () => {
 			internal_eventEmitter.removeListener('paste', handlePaste);
 		};
-	}, [options.isActive, internal_eventEmitter]);
+	}, [normalizedOptions.isActive, internal_eventEmitter]);
 };
 
 export default usePaste;

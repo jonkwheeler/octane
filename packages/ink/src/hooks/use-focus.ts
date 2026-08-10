@@ -35,7 +35,12 @@ type Output = {
 A React hook that returns focus state and focus controls for the current component.
 A component that uses the `useFocus` hook becomes "focusable" to Ink, so when the user presses <kbd>Tab</kbd>, Ink will switch focus to this component. If there are multiple components that execute the `useFocus` hook, focus will be given to them in the order in which these components are rendered.
 */
-const useFocus = ({ isActive = true, autoFocus = false, id: customId }: Input = {}): Output => {
+const useFocus = (options: Input = {}): Output => {
+	const {
+		isActive = true,
+		autoFocus = false,
+		id: customId,
+	} = typeof options === 'symbol' ? {} : options;
 	const { isRawModeSupported, setRawMode } = useStdin();
 	const { activeId, add, remove, activate, deactivate, focus } = useContext(FocusContext);
 
