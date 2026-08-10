@@ -35,4 +35,21 @@ describe('useMotionValue', function useMotionValueSuite() {
 		expect(div.style.transform).toContain('translateX(40px)');
 		r.unmount();
 	});
+
+	it('patches and removes nested calc() transform values', async function nestedCalcTransformValues() {
+		const x = motionValue('calc(100% - 10px)');
+		const r = mount(StyleXLater, { x });
+		await nextPaint();
+		const div = r.find('#box');
+		expect(div.style.transform).toContain('translateX(calc(100% - 10px))');
+
+		x.set('calc(50% + 4px)');
+		await nextPaint();
+		expect(div.style.transform).toBe('translateX(calc(50% + 4px))');
+
+		r.update(StyleXLater, {});
+		await nextPaint();
+		expect(div.style.transform).toBe('');
+		r.unmount();
+	});
 });

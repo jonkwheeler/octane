@@ -58,19 +58,48 @@ function unitizeTransformValue(key: string, val: any): string {
 	return `${val}`;
 }
 
+/** Locate `fn(...)` with balanced parentheses so nested `calc(...)` survives. */
+function findTransformFnRange(
+	transform: string,
+	fn: string,
+): { start: number; end: number } | null {
+	const needle = fn + '(';
+	let from = 0;
+	while (from < transform.length) {
+		const idx = transform.indexOf(needle, from);
+		if (idx === -1) return null;
+		// Prefer a token boundary so `scale(` does not match inside `scaleX(`.
+		if (idx > 0 && /\S/.test(transform.charAt(idx - 1))) {
+			from = idx + 1;
+			continue;
+		}
+		let depth = 0;
+		for (let i = idx + fn.length; i < transform.length; i++) {
+			const ch = transform.charAt(i);
+			if (ch === '(') depth++;
+			else if (ch === ')') {
+				depth--;
+				if (depth === 0) return { start: idx, end: i + 1 };
+			}
+		}
+		return null;
+	}
+	return null;
+}
+
 /** Patch one transform function into the live CSS string without wiping others. */
 export function patchTransformFn(node: HTMLElement, key: string, val: any): void {
 	const fn = TRANSFORM_FN[key];
 	if (!fn) return;
 	const next = `${fn}(${unitizeTransformValue(key, val)})`;
 	const current = node.style.transform || '';
-	const re = new RegExp(`${fn}\\([^)]*\\)`);
 	if (!current || current === 'none') {
 		node.style.transform = next;
 		return;
 	}
-	node.style.transform = re.test(current)
-		? current.replace(re, next).trim()
+	const range = findTransformFnRange(current, fn);
+	node.style.transform = range
+		? (current.slice(0, range.start) + next + current.slice(range.end)).trim()
 		: `${current} ${next}`.trim();
 }
 
@@ -80,7 +109,11 @@ export function removeTransformFn(node: HTMLElement, key: string): void {
 	if (!fn) return;
 	const current = node.style.transform || '';
 	if (!current || current === 'none') return;
-	node.style.transform = current.replace(new RegExp(`\\s*${fn}\\([^)]*\\)\\s*`), ' ').trim();
+	const range = findTransformFnRange(current, fn);
+	if (!range) return;
+	const before = current.slice(0, range.start).trimEnd();
+	const after = current.slice(range.end).trimStart();
+	node.style.transform = before && after ? `${before} ${after}` : before || after;
 }
 
 // Apply one style/transform value to the element. Transform shorthands patch the
