@@ -8,21 +8,21 @@ const cache = resolve(__dirname, '.react-cache');
 
 describe('@octanejs/visx React differential', () => {
 	// @parity-case differential:visx-primitives
-	it('matches scale, grid, gradient, axis, glyph, bar, and line SVG', async () => {
+	it('matches scale, grid, gradient, axis, glyph, bar, and line SVG', async function () {
 		const differential = await mountDifferential(
 			fixture,
 			'PrimitiveDifferential',
 			undefined,
 			cache,
 		);
-		await differential.step('mount', () => {});
+		await differential.step('mount', function () {});
 		differential.unmount();
 	});
 
 	// @parity-case differential:visx-layout
-	it('matches render-prop pie layout and path generation', async () => {
+	it('matches render-prop pie layout and path generation', async function () {
 		const differential = await mountDifferential(fixture, 'LayoutDifferential', undefined, cache);
-		await differential.step('mount', () => {});
+		await differential.step('mount', function () {});
 		differential.unmount();
 	});
 
@@ -49,22 +49,17 @@ describe('@octanejs/visx React differential', () => {
 	});
 
 	// @parity-case differential:visx-functional-controllers
-	it('matches interactive selection without class-instance controller refs', async function () {
-		const differential = await mountDifferential(
-			fixture,
-			'InteractiveDifferential',
-			undefined,
-			cache,
-		);
+	it('matches functional Brush selection without class-instance controller refs', async function () {
+		const differential = await mountDifferential(fixture, 'BrushDifferential', undefined, cache);
 		await differential.step('mount', function () {});
 		differential.unmount();
 	});
 
 	// @parity-case differential:visx-native-gestures
-	it('matches primitive SVG under native gesture and spring adapters', async function () {
+	it('matches Zoom native wheel and pointer gesture listeners', async function () {
 		const differential = await mountDifferential(
 			fixture,
-			'PrimitiveDifferential',
+			'GestureSpringDifferential',
 			undefined,
 			cache,
 		);

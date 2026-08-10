@@ -1,8 +1,7 @@
-// OCTANE DIVERGENCE[visx-reactnode-to-octane-renderables][differential:visx-layout]:
-// children/renderable props are OctaneNode rather than React.ReactNode.
 import { useCallback, useEffect, useMemo, useRef } from 'octane';
 import type { OctaneNode } from 'octane';
-import { debounce } from '@octanejs/visx/responsive';import type { DebouncedFunction } from '@octanejs/visx/responsive';
+import { debounce } from '@octanejs/visx/responsive';
+import type { DebouncedFunction } from '@octanejs/visx/responsive';
 import { useTooltip } from '@octanejs/visx/tooltip';
 import TooltipContext from '../context/TooltipContext.tsrx';
 import type { EventHandlerParams, TooltipContextType, TooltipData } from '../types';

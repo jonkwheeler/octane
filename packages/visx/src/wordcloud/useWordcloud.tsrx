@@ -1,5 +1,3 @@
-// OCTANE DIVERGENCE[visx-deterministic-measurement][differential:visx-primitives]:
-// Collision-aware estimated wordcloud rectangles replace browser/canvas measurement for SSR-stable packing.
 import { useMemo } from 'octane';
 import getStringWidth from '../text/util/getStringWidth';
 import type { BaseDatum, CloudWord, WordcloudConfig } from './types';

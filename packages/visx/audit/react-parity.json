@@ -63,12 +63,12 @@
       "environment": "workspace-node",
       "project": "visx-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact primitive SVG, render-prop layout, interactive state, controller-ref, and native gesture/spring adapter scenarios against @visx/visx@4.0.0.",
+      "notes": "Runs exact primitive SVG, render-prop layout, interactive state, Brush controller, and Zoom native-gesture scenarios against @visx/visx@4.0.0. Deterministic text/SplitLinePath/wordcloud measurement divergences remain documented in status.json because they intentionally differ from React Visx and cannot bind matching differential cases.",
       "files": [
         {
           "path": "packages/visx/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "42f671d4fbc69dbac9d4e88e0e900352ab2c5a68029218db4be241d749ea1d66",
+          "sha256": "210afb5a6122149a0ac04d211a1fedced60cb88e071cfcf1c68c731e5ee0d784",
           "cases": [
             {
               "id": "differential:visx-primitives",
@@ -87,13 +87,13 @@
             },
             {
               "id": "differential:visx-functional-controllers",
-              "testName": "matches interactive selection without class-instance controller refs",
-              "fullName": "@octanejs/visx React differential matches interactive selection without class-instance controller refs"
+              "testName": "matches functional Brush selection without class-instance controller refs",
+              "fullName": "@octanejs/visx React differential matches functional Brush selection without class-instance controller refs"
             },
             {
               "id": "differential:visx-native-gestures",
-              "testName": "matches primitive SVG under native gesture and spring adapters",
-              "fullName": "@octanejs/visx React differential matches primitive SVG under native gesture and spring adapters"
+              "testName": "matches Zoom native wheel and pointer gesture listeners",
+              "fullName": "@octanejs/visx React differential matches Zoom native wheel and pointer gesture listeners"
             }
           ]
         },
@@ -110,7 +110,7 @@
         {
           "path": "packages/visx/tests/_fixtures/differential.tsrx",
           "role": "support",
-          "sha256": "485b57d3b0034b0fcc534fd73c1d716a4b33d0c5273dffe99d57c51f654abb42"
+          "sha256": "3cc462c233fd3b58bb87fe5c3d33871d854b3416db44ed13aa2f6628587943e6"
         },
         {
           "path": "vitest.config.js",
@@ -150,32 +150,18 @@
       "reviewCondition": "Review if Octane adds class-component or class-instance ref compatibility."
     },
     {
-      "id": "visx-deterministic-measurement",
-      "caseIds": [
-        "differential:visx-primitives"
-      ],
-      "upstreamResult": "Text metrics, annotation bounds, SplitLinePath sampling, and wordcloud packing depend on browser measurement/canvas paths.",
-      "octaneResult": "Deterministic text metrics and annotation bounds, pure SplitLinePath SVG sampling, and collision-aware estimated wordcloud rectangles replace browser-only measurement/canvas paths.",
-      "rationale": "Fixed-size SSR and first hydration must match without browser layout or canvas measurement.",
-      "classification": "ssr-determinism",
-      "consumerImpact": "Font-specific wrapping, browser-specific path length rounding, and pixel-exact d3-cloud packing can differ from React Visx in the browser.",
-      "migrationGuidance": "Treat fixed-size SSR/hydration snapshots as the contract; do not assert browser-specific glyph packing pixels.",
-      "owner": "@octanejs/visx",
-      "reviewCondition": "Review if Octane gains browser-faithful measurement APIs suitable for SSR parity."
-    },
-    {
-      "id": "visx-spring-and-gesture-adapters",
+      "id": "visx-native-zoom-gestures",
       "caseIds": [
         "differential:visx-native-gestures"
       ],
-      "upstreamResult": "react-spring uses spring-physics timing and Zoom uses @use-gesture/react listeners.",
-      "octaneResult": "react-spring uses a deterministic requestAnimationFrame numeric interpolator, and Zoom uses native wheel/pointer/touch listeners rather than @use-gesture/react at runtime.",
-      "rationale": "Octane avoids React-only spring/gesture runtimes while preserving public Visx props and exports; Zoom imports framework-neutral @use-gesture/core types only.",
+      "upstreamResult": "Zoom uses @use-gesture/react listeners for wheel, pointer, and touch interaction.",
+      "octaneResult": "Zoom attaches native wheel/pointer/touch listeners rather than @use-gesture/react at runtime.",
+      "rationale": "Octane avoids the React-only @use-gesture/react runtime while preserving public Zoom props and exports; Zoom imports framework-neutral @use-gesture/core types only.",
       "classification": "runtime-adapter",
-      "consumerImpact": "Animation timing and gesture delivery can differ from React Visx even when props and exported APIs match.",
-      "migrationGuidance": "Assert final animated/gesture state rather than spring-physics frame timing or @use-gesture/react internals.",
+      "consumerImpact": "Gesture delivery can differ from React Visx even when Zoom props and exported APIs match.",
+      "migrationGuidance": "Assert final Zoom transform state rather than @use-gesture/react internals.",
       "owner": "@octanejs/visx",
-      "reviewCondition": "Review if Octane ports react-spring/@use-gesture/react with matching runtime semantics."
+      "reviewCondition": "Review if Octane ports @use-gesture/react with matching runtime semantics."
     },
     {
       "id": "visx-reactnode-to-octane-renderables",
