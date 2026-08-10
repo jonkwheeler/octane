@@ -33,11 +33,6 @@
       "fullName": "exposes the public api"
     },
     {
-      "id": "runtime:648b865f39a56fb4",
-      "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
-      "fullName": "keeps the binding public surface free of React imports and types"
-    },
-    {
       "id": "runtime:8cf35d7144a5a047",
       "file": "packages/react-markdown/tests/conformance/sync.server.test.ts",
       "fullName": "synchronous public projection ignores the exact upstream root comment while preserving the paragraph"

@@ -15,14 +15,14 @@
       },
       "identityEvidence": {
         "runtimeId": "runtime:cf81bb17d3865b81",
-        "ownershipSha256": "06bd3f6545aabad510897b1a8f42319b4ddf0beff3b8aa5be4a43398aec624c5"
+        "ownershipSha256": "7cd0a2e190778bf008332f3401f45f689e4ccaef8559250ec0abfe52f4566e23"
       },
       "adapted": [
         {
           "id": "runtime:cf81bb17d3865b81",
           "file": "packages/react-markdown/tests/conformance/public-types.test.ts",
           "fullName": "exposes the public api",
-          "sourceSha256": "d3f7644b0d4d533889c70222762aad66e3c5593960bf017509004d5330309481"
+          "sourceSha256": "8abb0289ee08c3a9c0c18e4afd8f76cc000d399d2c49ecc9507c00b429af0f80"
         }
       ]
     },
