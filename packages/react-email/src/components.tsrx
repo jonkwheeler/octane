@@ -1,5 +1,6 @@
 import type { OctaneNode } from 'octane';
 import type { EmailElementProps, EmailStyle } from './types.ts';
+import { computeOutlookSpacing, parseButtonPadding, pixelsToPoints } from './button-utils.ts';
 import { computeMargins, splitPadding, withMargins } from './utils.ts';
 
 function withRef<T>(ref: ((element: T | null) => void) | { current: T | null } | null | undefined) {
@@ -320,6 +321,10 @@ export function CodeInline({ children, style, ref, ...props }: CodeInlineProps) 
 
 export type ButtonProps = EmailElementProps<HTMLAnchorElement> & { href?: string; target?: string };
 export function Button({ children, style = {}, target = '_blank', ref, ...props }: ButtonProps) @{
+	const [paddingTop, paddingRight, paddingBottom, paddingLeft] = parseButtonPadding(style);
+	const textRaise = pixelsToPoints((paddingTop ?? 0) + (paddingBottom ?? 0));
+	const [leftFontWidth, leftSpaceCount] = computeOutlookSpacing(paddingLeft ?? 0);
+	const [rightFontWidth, rightSpaceCount] = computeOutlookSpacing(paddingRight ?? 0);
 	const buttonStyle: EmailStyle = {
 		lineHeight: '100%',
 		textDecoration: 'none',
@@ -327,15 +332,36 @@ export function Button({ children, style = {}, target = '_blank', ref, ...props 
 		maxWidth: '100%',
 		msoPaddingAlt: '0px',
 		...style,
+		paddingTop,
+		paddingRight,
+		paddingBottom,
+		paddingLeft,
 	};
 	const labelStyle: EmailStyle = {
 		maxWidth: '100%',
 		display: 'inline-block',
 		lineHeight: '120%',
 		msoPaddingAlt: '0px',
+		msoTextRaise: pixelsToPoints(paddingBottom),
 	};
 	<a {...props} {...withRef(ref)} style={buttonStyle} target={target}>
+		<span
+			dangerouslySetInnerHTML={{
+				__html: `<!--[if mso]><i style="mso-font-width:${
+					leftFontWidth * 100
+				}%;mso-text-raise:${textRaise}px" hidden>${'&#8202;'.repeat(
+					leftSpaceCount,
+				)}</i><![endif]-->`,
+			}}
+		/>
 		<span style={labelStyle}>{children}</span>
+		<span
+			dangerouslySetInnerHTML={{
+				__html: `<!--[if mso]><i style="mso-font-width:${
+					rightFontWidth * 100
+				}%" hidden>${'&#8202;'.repeat(rightSpaceCount)}&#8203;</i><![endif]-->`,
+			}}
+		/>
 	</a>
 }
 
