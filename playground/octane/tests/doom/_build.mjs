@@ -3,7 +3,6 @@ import { resolve } from 'node:path';
 import { build } from 'vite';
 
 const playgroundRoot = resolve(import.meta.dirname, '../..');
-const repositoryRoot = resolve(playgroundRoot, '../..');
 const stagingRoot = resolve(process.argv[2]);
 const mode = process.argv[3] ?? 'all';
 const clientOut = resolve(stagingRoot, 'client');
@@ -13,7 +12,8 @@ const configFile = resolve(playgroundRoot, 'vite.config.ts');
 mkdirSync(stagingRoot, { recursive: true });
 const stagedModules = resolve(stagingRoot, 'node_modules');
 if (!existsSync(stagedModules)) {
-	symlinkSync(resolve(repositoryRoot, 'node_modules'), stagedModules, 'dir');
+	// Resolve playground deps (including `three`) when the SSR bundle keeps them external.
+	symlinkSync(resolve(playgroundRoot, 'node_modules'), stagedModules, 'dir');
 }
 
 process.env.VITE_DOOM_PROOF = '1';

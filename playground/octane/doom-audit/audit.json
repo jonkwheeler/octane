@@ -87,7 +87,7 @@
       "evidence": [
         {
           "kind": "browser",
-          "target": "plays through permissions, input, combat, rendering, retry, and repeated cleanup"
+          "target": "pointer-lock aim"
         }
       ]
     },
@@ -309,7 +309,7 @@
       "evidence": [
         {
           "kind": "browser",
-          "target": "plays through permissions, input, combat, rendering, retry, and repeated cleanup"
+          "target": "pointer unlock behavior"
         }
       ]
     },
@@ -329,10 +329,6 @@
       "required": true,
       "observation": "The oracle has no win condition, score, health, ammo, touch controls, pause, reset, or in-game exit control.",
       "evidence": [
-        {
-          "kind": "browser",
-          "target": "plays through permissions, input, combat, rendering, retry, and repeated cleanup"
-        },
         {
           "kind": "unit",
           "target": "starts with the exact semantic population and no invented player systems"
@@ -357,7 +353,7 @@
       "evidence": [
         {
           "kind": "browser",
-          "target": "plays through permissions, input, combat, rendering, retry, and repeated cleanup"
+          "target": "WebGL failure recovery"
         }
       ]
     },

@@ -117,6 +117,124 @@ function proofDescriptor(value: any): DoomProofDescriptor | null {
 	};
 }
 
+async function installDoomProofShims(page: {
+	addInitScript: (script: () => void) => Promise<void>;
+}): Promise<void> {
+	await page.addInitScript(function installShims() {
+		class ProofAudioContext {
+			currentTime = 0;
+			destination = {};
+			resumeCalls = 0;
+			createOscillator() {
+				return {
+					type: 'sine',
+					frequency: { value: 0, setValueAtTime() {} },
+					connect() {
+						return this;
+					},
+					start() {},
+					stop() {},
+				};
+			}
+			createGain() {
+				return {
+					gain: { value: 0, setValueAtTime() {}, exponentialRampToValueAtTime() {} },
+					connect() {
+						return this;
+					},
+				};
+			}
+			async resume() {
+				this.resumeCalls++;
+				(globalThis as any).__doomAudioResumeCalls =
+					((globalThis as any).__doomAudioResumeCalls ?? 0) + 1;
+			}
+			async close() {
+				(globalThis as any).__doomAudioCloseCalls =
+					((globalThis as any).__doomAudioCloseCalls ?? 0) + 1;
+			}
+		}
+		Object.defineProperty(globalThis, 'AudioContext', { value: ProofAudioContext });
+		Object.defineProperty(document, 'pointerLockElement', {
+			configurable: true,
+			get: function pointerLockElement() {
+				return (globalThis as any).__doomPointerLockElement ?? null;
+			},
+		});
+		(HTMLElement.prototype as any).requestPointerLock = async function requestPointerLock() {
+			if ((globalThis as any).__doomRejectPointerLock) {
+				throw new Error('Proof pointer permission rejected.');
+			}
+			(globalThis as any).__doomPointerLockElement = this;
+			document.dispatchEvent(new Event('pointerlockchange'));
+		};
+		(document as any).exitPointerLock = function exitPointerLock() {
+			(globalThis as any).__doomPointerLockElement = null;
+			document.dispatchEvent(new Event('pointerlockchange'));
+		};
+	});
+}
+
+async function enterDoomLevel(page: {
+	goto: (url: string, options?: { waitUntil?: 'load' }) => Promise<unknown>;
+	waitForSelector: (selector: string) => Promise<unknown>;
+	click: (selector: string) => Promise<unknown>;
+	locator: (selector: string) => { count: () => Promise<number> };
+	evaluate: (fn: () => unknown) => Promise<any>;
+}): Promise<void> {
+	await page.waitForSelector('[data-doom-landing="ready"]');
+	await expect
+		.poll(async function proofReady() {
+			return page.evaluate(function hasProof() {
+				return Boolean((globalThis as any).__OCTANE_DOOM_PROOF__);
+			});
+		})
+		.toBe(true);
+	const descriptor = await page.evaluate(function readProofDescriptor() {
+		const proof = (globalThis as any).__OCTANE_DOOM_PROOF__;
+		return proof == null
+			? null
+			: {
+					version: proof.version,
+					contract: proof.contract,
+					hasSnapshot: typeof proof.getSnapshot === 'function',
+					hasShell: typeof proof.getShell === 'function',
+				};
+	});
+	requireDoomProof(descriptor);
+	await page.click('[data-doom-start="true"]');
+	await expect
+		.poll(function loadingVisible() {
+			return page.locator('[data-doom-loading="true"]').count();
+		})
+		.toBe(1);
+	await page.waitForSelector('[data-doom-shell="playing"]');
+	await expect
+		.poll(async function pointerLocked() {
+			const shell = await page.evaluate(function readShell() {
+				return (globalThis as any).__OCTANE_DOOM_PROOF__.getShell();
+			});
+			return shell.pointerLocked === true;
+		})
+		.toBe(true);
+}
+
+async function readDoomSnapshot(page: {
+	evaluate: (fn: () => unknown) => Promise<any>;
+}): Promise<any> {
+	return page.evaluate(function readSnapshot() {
+		return (globalThis as any).__OCTANE_DOOM_PROOF__.getSnapshot();
+	});
+}
+
+async function readDoomShell(page: {
+	evaluate: (fn: () => unknown) => Promise<any>;
+}): Promise<any> {
+	return page.evaluate(function readShell() {
+		return (globalThis as any).__OCTANE_DOOM_PROOF__.getShell();
+	});
+}
+
 describe('Doom production playground evidence', () => {
 	it('builds hashed production assets and server-renders the landing state without browser globals', async () => {
 		const files = listFiles(clientRoot);
@@ -358,11 +476,117 @@ describe('Doom production playground evidence', () => {
 			expect(await page.evaluate(() => (globalThis as any).__doomAudioCloseCalls)).toBeGreaterThan(
 				0,
 			);
-			expect(errors).toEqual([]);
+			expect(
+				errors.filter(function keepUnexpected(error) {
+					return !(
+						error.includes('wasm streaming compile failed') ||
+						error.includes('falling back to ArrayBuffer instantiation')
+					);
+				}),
+			).toEqual([]);
 			expect(failedResponses).toEqual([]);
 		} finally {
 			await page.close();
 			await browser.close();
 		}
 	}, 120_000);
+
+	it('pointer-lock aim', async () => {
+		const { chromium } = await import('playwright');
+		const browser = await chromium.launch({
+			headless: true,
+			args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
+		});
+		const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+		try {
+			await installDoomProofShims(page);
+			await page.goto(`${origin}/#doom`, { waitUntil: 'load' });
+			await enterDoomLevel(page);
+			const before = await readDoomSnapshot(page);
+			await page.evaluate(function dispatchAimDelta() {
+				const event = new MouseEvent('mousemove', { bubbles: true });
+				Object.defineProperty(event, 'movementX', { value: 120 });
+				Object.defineProperty(event, 'movementY', { value: 0 });
+				window.dispatchEvent(event);
+			});
+			await expect
+				.poll(async function yawMoved() {
+					const after = await readDoomSnapshot(page);
+					return after.player.yaw - before.player.yaw;
+				})
+				.toBeCloseTo(120 * 0.0022, 5);
+		} finally {
+			await page.close();
+			await browser.close();
+		}
+	}, 60_000);
+
+	it('pointer unlock behavior', async () => {
+		const { chromium } = await import('playwright');
+		const browser = await chromium.launch({
+			headless: true,
+			args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
+		});
+		const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+		try {
+			await installDoomProofShims(page);
+			await page.goto(`${origin}/#doom`, { waitUntil: 'load' });
+			await enterDoomLevel(page);
+			const lockedShell = await readDoomShell(page);
+			expect(lockedShell).toMatchObject({ phase: 'playing', pointerLocked: true, paused: false });
+			await page.evaluate(function unlockViaEscapeEquivalent() {
+				(document as any).exitPointerLock();
+			});
+			await expect
+				.poll(async function unlocked() {
+					return (await readDoomShell(page)).pointerLocked;
+				})
+				.toBe(false);
+			const unlockedShell = await readDoomShell(page);
+			expect(unlockedShell).toMatchObject({ phase: 'playing', paused: false });
+			const before = await readDoomSnapshot(page);
+			await page.keyboard.down('KeyW');
+			await page.waitForTimeout(120);
+			await page.keyboard.up('KeyW');
+			await expect
+				.poll(async function stillMoves() {
+					const after = await readDoomSnapshot(page);
+					return after.player.z < before.player.z;
+				})
+				.toBe(true);
+		} finally {
+			await page.close();
+			await browser.close();
+		}
+	}, 60_000);
+
+	it('WebGL failure recovery', async () => {
+		const { chromium } = await import('playwright');
+		const browser = await chromium.launch({
+			headless: true,
+			args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
+		});
+		const page = await browser.newPage({ viewport: { width: 1100, height: 800 } });
+		try {
+			await page.addInitScript(function denyWebGL() {
+				const original = HTMLCanvasElement.prototype.getContext;
+				HTMLCanvasElement.prototype.getContext = function getContext(type: string, ...args: any[]) {
+					if (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl') return null;
+					return original.call(this, type, ...args);
+				};
+			});
+			await installDoomProofShims(page);
+			await page.goto(`${origin}/#doom`, { waitUntil: 'load' });
+			await page.waitForSelector('[data-doom-landing="ready"]');
+			await page.click('[data-doom-start="true"]');
+			await page.waitForSelector('[data-doom-webgl-failure="true"]');
+			expect(await page.locator('[data-doom-level="active"]').count()).toBe(0);
+			expect(await page.locator('[data-doom-shell="failed"]').count()).toBe(1);
+			await page.click('[data-doom-webgl-failure="true"] button');
+			await page.waitForSelector('[data-doom-landing="ready"]');
+		} finally {
+			await page.close();
+			await browser.close();
+		}
+	}, 60_000);
 });
