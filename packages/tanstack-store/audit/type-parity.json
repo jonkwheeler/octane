@@ -17,7 +17,7 @@
     "adapted": {
       "compiler": "tsrx-tsc",
       "project": "packages/tanstack-store/typetests/tsconfig.json",
-      "sourcePolicy": "structurally equivalent Octane adaptation after permitted import-root transformation and intentional _useStore omission evidence"
+      "sourcePolicy": "structurally equivalent Octane adaptation after permitted import-root transformation, with inventoried paired _useStore omission divergence evidence"
     }
   },
   "permittedTransformations": [
@@ -27,7 +27,7 @@
     },
     {
       "kind": "intentional-omission",
-      "rule": "_useStore typetests remain pristine-only; adaptedEvidence records the documented export omission"
+      "rule": "_useStore typetests remain pristine-only; adaptedEvidence inventories the paired export-omission assertion groups (not existence alone)"
     },
     {
       "kind": "negative-control",

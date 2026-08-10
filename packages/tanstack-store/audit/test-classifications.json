@@ -46,7 +46,7 @@
       "path": "packages/tanstack-store/typetests/_useStore-omission.test-d.ts",
       "disposition": "octane-only-divergence",
       "divergenceId": "tanstack-store-experimental-use-store",
-      "reason": "Octane-only type evidence that the experimental _useStore export is absent from the published binding."
+      "reason": "Paired divergence evidence: authenticates the documented type-level omission of the experimental _useStore export against the same divergence as the runtime export-surface check."
     },
     {
       "path": "packages/tanstack-store/typetests/test.test-d.ts",

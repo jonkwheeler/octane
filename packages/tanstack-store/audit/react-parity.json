@@ -145,7 +145,7 @@
         {
           "path": "packages/tanstack-store/audit/test-classifications.json",
           "role": "support",
-          "sha256": "20da4d0d9c9ac4828f07a59307448922dca586fa9885ee76012506f133dee1ed"
+          "sha256": "32610b5626bababc6cecca42901cfb01166b9f5c8a2f2116bdfeb7562fde5bc6"
         },
         {
           "path": "vitest.config.js",
@@ -171,7 +171,7 @@
         {
           "path": "packages/tanstack-store/audit/pristine-types.json",
           "role": "test",
-          "sha256": "947963811e0dc8f08fecea90bba1ef07ba8f3c08e9d75e6e245af06a1c8f879c",
+          "sha256": "3a530c5654f766623b8ff41ff79bedc6889d9cf214c1f6a56f9f6e93e90a199e",
           "cases": [
             {
               "id": "types:tanstack-store-pristine-upstream",
@@ -183,7 +183,7 @@
         {
           "path": "packages/tanstack-store/audit/type-parity.json",
           "role": "support",
-          "sha256": "5f257ef7f1794daf8131ea61ec46c764e3a68b872a675f5d0275de1b70368015"
+          "sha256": "71a7a3979f5855c72f2031878f707d8a3296454a696640a74695be455ba59295"
         },
         {
           "path": "packages/tanstack-store/audit/upstream-typetests/tsconfig.pristine.json",
@@ -209,7 +209,7 @@
       "environment": "workspace-node",
       "project": "tanstack-store-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the structurally equivalent Octane typetest after permitted import-root transformation and intentional _useStore omission evidence.",
+      "notes": "Runs the structurally equivalent Octane typetest after permitted import-root transformation, with inventoried paired _useStore omission divergence evidence.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -219,7 +219,7 @@
         {
           "path": "packages/tanstack-store/audit/adapted-types.json",
           "role": "test",
-          "sha256": "909cbeeca7bcacfed447b73a1dc87a26a7568a664e1fc7bf7381fbacc1f7ced5",
+          "sha256": "7c60fde11c510f1de2218f7c150a6c2311908834522fbb25cffbaf7969a80618",
           "cases": [
             {
               "id": "types:tanstack-store-adapted-upstream",
@@ -246,12 +246,12 @@
         {
           "path": "packages/tanstack-store/audit/type-parity.json",
           "role": "support",
-          "sha256": "5f257ef7f1794daf8131ea61ec46c764e3a68b872a675f5d0275de1b70368015"
+          "sha256": "71a7a3979f5855c72f2031878f707d8a3296454a696640a74695be455ba59295"
         },
         {
           "path": "packages/tanstack-store/audit/pristine-types.json",
           "role": "support",
-          "sha256": "947963811e0dc8f08fecea90bba1ef07ba8f3c08e9d75e6e245af06a1c8f879c"
+          "sha256": "3a530c5654f766623b8ff41ff79bedc6889d9cf214c1f6a56f9f6e93e90a199e"
         }
       ]
     },
@@ -294,7 +294,7 @@
         {
           "path": "packages/tanstack-store/audit/test-classifications.json",
           "role": "support",
-          "sha256": "20da4d0d9c9ac4828f07a59307448922dca586fa9885ee76012506f133dee1ed"
+          "sha256": "32610b5626bababc6cecca42901cfb01166b9f5c8a2f2116bdfeb7562fde5bc6"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",

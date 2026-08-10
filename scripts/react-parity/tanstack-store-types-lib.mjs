@@ -49,6 +49,16 @@ function assertionGroups(source, fileName) {
 			`expect-error:${match[1].trim()}:${match[2].replace(/\s+/g, ' ').trim().replace(/;$/, '')}`,
 		);
 	}
+	for (const match of source.matchAll(
+		/expectTypeOf\(([^)]+)\)\.not\.toHaveProperty\((['"])([^'"]+)\2\)/g,
+	)) {
+		groups.push(
+			`expect-type-of-not-property:${match[1].replace(/\s+/g, ' ').trim()}:${match[3]}`,
+		);
+	}
+	for (const match of source.matchAll(/test\((['"])((?:\\.|[^\\])*?)\1/g)) {
+		groups.push(`test:${match[2]}`);
+	}
 	function visit(node) {
 		if (ts.isTypeAliasDeclaration(node) && node.type && containsExpect(node.type)) {
 			groups.push(
@@ -59,6 +69,26 @@ function assertionGroups(source, fileName) {
 	}
 	visit(sourceFile);
 	return groups;
+}
+
+function evidenceInventoryEntry(root, evidencePath) {
+	const absolute = resolve(root, evidencePath);
+	if (!existsSync(absolute)) {
+		throw new Error(`missing adaptedEvidence file: ${evidencePath}`);
+	}
+	const source = readFileSync(absolute, 'utf8');
+	const groups = assertionGroups(source, evidencePath);
+	if (groups.length === 0) {
+		throw new Error(
+			`adaptedEvidence ${evidencePath} has no authenticating assertions (existence alone is not enough)`,
+		);
+	}
+	return {
+		path: posix(evidencePath),
+		role: 'divergence-evidence',
+		sha256: sha256(source),
+		assertionGroups: groups.map(sha256),
+	};
 }
 
 function normalizeSpecifier(specifier) {
@@ -205,6 +235,11 @@ export function buildTypeInventory(root, config) {
 			assertionGroups: adaptedGroups.map(sha256),
 		},
 	];
+	// adaptedEvidence is paired divergence evidence: inventory its assertions so
+	// an empty/mutated module cannot keep the structural audit green after hash refresh.
+	for (const evidence of config.adaptedEvidence ?? []) {
+		adapted.push(evidenceInventoryEntry(root, evidence));
+	}
 	return { upstream, adapted };
 }
 

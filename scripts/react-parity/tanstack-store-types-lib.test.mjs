@@ -42,10 +42,9 @@ async function fixture() {
 }
 
 test('committed tanstack-store type inventories verify', function committedInventoriesVerify() {
-	assert.deepEqual(verifyTanstackStoreTypes(REPO, { configPath: TYPE_PARITY_CONFIG }), {
-		files: 1,
-		assertions: 2,
-	});
+	const summary = verifyTanstackStoreTypes(REPO, { configPath: TYPE_PARITY_CONFIG });
+	assert.equal(summary.files, 1);
+	assert.ok(summary.assertions > 2);
 });
 
 test('assertion group compare ignores @ts-expect-error inside pristine-only _useStore blocks', async function ignoresOmittedExpectError(t) {
@@ -91,4 +90,119 @@ test('config still documents the intentional _useStore omission', function docum
 			return entry.kind === 'intentional-omission';
 		}),
 	);
+	assert.deepEqual(config.adaptedEvidence, [
+		'packages/tanstack-store/typetests/_useStore-omission.test-d.ts',
+	]);
+});
+
+test('adaptedEvidence inventories the omission assertion, not mere existence', function inventoriesOmissionEvidence() {
+	const config = JSON.parse(readFileSync(join(REPO, TYPE_PARITY_CONFIG), 'utf8'));
+	const inventory = buildTypeInventory(REPO, config);
+	const evidence = inventory.adapted.find(function isEvidence(entry) {
+		return entry.role === 'divergence-evidence';
+	});
+	assert.ok(evidence);
+	assert.equal(evidence.path, 'packages/tanstack-store/typetests/_useStore-omission.test-d.ts');
+	assert.ok(evidence.assertionGroups.length >= 2);
+	const source = readFileSync(join(REPO, evidence.path), 'utf8');
+	assert.match(source, /expectTypeOf\(binding\)\.not\.toHaveProperty\('_useStore'\)/);
+});
+
+test('rejects deleting adaptedEvidence omission file', async function rejectsDeletedOmission(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const evidenceRel = 'adapted/_useStore-omission.test-d.ts';
+	await writeFile(
+		join(value.root, evidenceRel),
+		[
+			"import { expectTypeOf, test } from 'vitest';",
+			"import * as binding from '../src';",
+			'',
+			"test('omits the upstream experimental _useStore hook', () => {",
+			"\texpectTypeOf(binding).not.toHaveProperty('_useStore');",
+			'});',
+			'',
+		].join('\n'),
+	);
+	const config = {
+		...value.config,
+		adaptedEvidence: [evidenceRel],
+	};
+	assert.doesNotThrow(function run() {
+		buildTypeInventory(value.root, config);
+	});
+	await rm(join(value.root, evidenceRel));
+	assert.throws(function run() {
+		buildTypeInventory(value.root, config);
+	}, /missing adaptedEvidence|ENOENT|no such file/i);
+});
+
+test('rejects emptying adaptedEvidence omission module', async function rejectsEmptyOmission(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const evidenceRel = 'adapted/_useStore-omission.test-d.ts';
+	await writeFile(join(value.root, evidenceRel), 'export {};\n');
+	const config = {
+		...value.config,
+		adaptedEvidence: [evidenceRel],
+	};
+	assert.throws(function run() {
+		buildTypeInventory(value.root, config);
+	}, /no authenticating assertions/);
+});
+
+test('rejects mutating adaptedEvidence omission assertion', async function rejectsMutatedOmission(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const evidenceRel = 'adapted/_useStore-omission.test-d.ts';
+	const absolute = join(value.root, evidenceRel);
+	await writeFile(
+		absolute,
+		[
+			"import { expectTypeOf, test } from 'vitest';",
+			"import * as binding from '../src';",
+			'',
+			"test('omits the upstream experimental _useStore hook', () => {",
+			"\texpectTypeOf(binding).not.toHaveProperty('_useStore');",
+			'});',
+			'',
+		].join('\n'),
+	);
+	const config = {
+		...value.config,
+		adaptedEvidence: [evidenceRel],
+		inventories: {
+			upstream: 'pristine-types.json',
+			adapted: 'adapted-types.json',
+		},
+	};
+	const baseline = buildTypeInventory(value.root, config);
+	const evidence = baseline.adapted.find(function isEvidence(entry) {
+		return entry.role === 'divergence-evidence';
+	});
+	assert.ok(evidence);
+	await writeFile(
+		absolute,
+		[
+			"import { expectTypeOf, test } from 'vitest';",
+			"import * as binding from '../src';",
+			'',
+			"test('omits the upstream experimental _useStore hook', () => {",
+			"\texpectTypeOf(binding).not.toHaveProperty('useSelector');",
+			'});',
+			'',
+		].join('\n'),
+	);
+	const mutated = buildTypeInventory(value.root, config);
+	const mutatedEvidence = mutated.adapted.find(function isEvidence(entry) {
+		return entry.role === 'divergence-evidence';
+	});
+	assert.notDeepEqual(mutatedEvidence.assertionGroups, evidence.assertionGroups);
+	assert.notEqual(mutatedEvidence.sha256, evidence.sha256);
 });
