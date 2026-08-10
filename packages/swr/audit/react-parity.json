@@ -342,18 +342,6 @@
           ]
         },
         {
-          "path": "packages/swr/tests/differential/config.test.ts",
-          "role": "test",
-          "sha256": "9022e7d7d019e3661f0cea7e5dd91db1cd94d83b60de0fc0bb448b030fce69c6",
-          "cases": [
-            {
-              "id": "differential:internal-exports",
-              "testName": "exports every and only pinned runtime name",
-              "fullName": "SWR U2 exact _internal runtime oracle exports every and only pinned runtime name"
-            }
-          ]
-        },
-        {
           "path": "packages/swr/tests/differential/root.test.ts",
           "role": "test",
           "sha256": "8ed056d9f68c1fd15c17a78deab2e09499fa62b4964eb354609bc57084e2378c",

@@ -12,11 +12,6 @@
       "oracle": "Compares serialize/stableHash/mergeConfigs/cache helper traces against pinned upstream/src/_internal utilities."
     },
     {
-      "path": "packages/swr/tests/differential/config.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Literal export-name oracle against public-api.json; it does not run a paired React/Octane scenario."
-    },
-    {
       "path": "packages/swr/tests/differential/root.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Compares the Octane root binding export surface with pinned upstream/src/index."
@@ -35,6 +30,11 @@
       "path": "packages/swr/tests/unit/core.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Framework-neutral core unit coverage and Octane devtools helpers; not counted as React parity evidence."
+    },
+    {
+      "path": "packages/swr/tests/unit/internal-exports.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Literal export-name oracle against public-api.json; it does not run a paired React/Octane scenario."
     },
     {
       "path": "packages/swr/tests/unit/provider-slot.test.ts",

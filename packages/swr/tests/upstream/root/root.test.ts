@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRoot, drainPassiveEffects, flushSync } from 'octane';
+import * as Octane from 'octane';
 import { cache, mutate } from '../../../src/_internal/index';
-import { setupOctaneDevtools } from '../../../src/_internal/devtools-contract';
+import { setupDevTools } from '../../../src/_internal/utils/devtools';
 import { captured, SWRReader, SWRSiblings, SWRSuspense } from './fixtures.tsrx';
 
 // Cases adapted from the pinned SWR 2.4.2 suite under `packages/swr/upstream/test/`.
@@ -213,12 +214,22 @@ describe('SWR U3 root lifecycle', () => {
 	});
 
 	// Per use-swr-devtools.test.tsx:29 — 'window.__SWR_DEVTOOLS_REACT__ should be the same reference with React'.
-	// OCTANE DIVERGENCE[swr-devtools-global][runtime:c00d484f4ecc81a0]: Octane exposes
-	// __SWR_DEVTOOLS_OCTANE__ and deliberately does not claim __SWR_DEVTOOLS_REACT__.
+	// OCTANE DIVERGENCE[swr-devtools-global][runtime:c00d484f4ecc81a0]: production setupDevTools
+	// identifies Octane and deliberately does not claim React's __SWR_DEVTOOLS_REACT__.
 	it('exposes __SWR_DEVTOOLS_OCTANE__ and does not claim __SWR_DEVTOOLS_REACT__', () => {
-		const target: Record<string, unknown> = {};
-		setupOctaneDevtools(target, { runtime: 'octane' });
-		expect(target.__SWR_DEVTOOLS_OCTANE__).toEqual({ runtime: 'octane' });
-		expect(target.__SWR_DEVTOOLS_REACT__).toBeUndefined();
+		const previousOctane = window.__SWR_DEVTOOLS_OCTANE__;
+		const previousReact = window.__SWR_DEVTOOLS_REACT__;
+		try {
+			delete window.__SWR_DEVTOOLS_OCTANE__;
+			delete window.__SWR_DEVTOOLS_REACT__;
+			setupDevTools();
+			expect(window.__SWR_DEVTOOLS_OCTANE__).toBe(Octane);
+			expect(window.__SWR_DEVTOOLS_REACT__).toBeUndefined();
+		} finally {
+			if (previousOctane === undefined) delete window.__SWR_DEVTOOLS_OCTANE__;
+			else window.__SWR_DEVTOOLS_OCTANE__ = previousOctane;
+			if (previousReact === undefined) delete window.__SWR_DEVTOOLS_REACT__;
+			else window.__SWR_DEVTOOLS_REACT__ = previousReact;
+		}
 	});
 });

@@ -197,14 +197,6 @@ const manifest = {
 							'SWR U2 React/Octane differential traces matches cache snapshots and callback logs',
 					},
 				]),
-				file('packages/swr/tests/differential/config.test.ts', 'test', [
-					{
-						id: 'differential:internal-exports',
-						testName: 'exports every and only pinned runtime name',
-						fullName:
-							'SWR U2 exact _internal runtime oracle exports every and only pinned runtime name',
-					},
-				]),
 				file('packages/swr/tests/differential/root.test.ts', 'test', [
 					{
 						id: 'differential:root-surface',

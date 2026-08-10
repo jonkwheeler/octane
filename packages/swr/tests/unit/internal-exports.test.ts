@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 import * as internal from '../../src/_internal/index';
 
 describe('SWR U2 exact _internal runtime oracle', () => {
-	// @parity-case differential:internal-exports
 	it('exports every and only pinned runtime name', () => {
 		const oracle = JSON.parse(
 			readFileSync(resolve(import.meta.dirname, '../../audit/public-api.json'), 'utf8'),
